@@ -51,6 +51,7 @@ if ($dbconn) {
 include_once(__DIR__ . '/../init/init.php');
 include_once(__DIR__.'/../init/init_menu.php');
 include_once(__DIR__.'/../init/init_templates.php');
+include_once(__DIR__.'/../init/common.php');
 
 $entitiesPath = array('src/Model');
 $emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
