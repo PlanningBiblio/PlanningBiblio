@@ -89,6 +89,7 @@ class HolidayHelper extends BaseHelper
 
             $date_current = new \DateTime($current);
             $week_id = $date_current->format("W");
+            $day_id = $date_current->format("N") - 1;
 
             // Check agent's planning.
             $planning = $this->getPlanning($current);
@@ -121,10 +122,45 @@ class HolidayHelper extends BaseHelper
 
             $debutConges = $current == $debut ? $hre_debut : "00:00:00";
             $finConges = $current == $fin ? $hre_fin : "23:59:59";
+
+            // Convert free break as fixed break if needed
+            $free_break_already_removed = false;
+            $has_fixed_break = !empty($planning['times'][$day_id][1]) || !empty($planning['times'][$day_id][5]);
+
+            if (isset($planning['breaktimes']) && !$has_fixed_break) {
+
+                $free_break_already_removed = true;
+                $free_break_start = $this->config('PlanningHebdo-DebutPauseLibre');
+                $free_break_end = $this->config('PlanningHebdo-FinPauseLibre');
+                $free_break_duration = $planning['breaktimes'][$day_id] * 60;
+
+                if (strtotime($debutConges) >= strtotime($free_break_start) &&
+                    strtotime($finConges)   <= strtotime($free_break_end)) {
+
+                    // If the holiday is shorter than the free break, the free break starts at the beginning of the holiday
+                    $planning["times"][$day_id][1] = $debutConges;
+                    $planning["times"][$day_id][2] = date('H:i:s', strtotime("+ $free_break_duration minutes $debutConges"));
+
+                } elseif (substr($debutConges, 0, 2) >= 12) {
+
+                    // If the holiday is in the afternoon, the free break is at the end of its period.
+                    $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
+                    $planning["times"][$day_id][1] = $fixed_free_break_start;
+                    $planning["times"][$day_id][2] = $free_break_end;
+
+                } else {
+
+                    // If the holiday is in the morning, the free break is at the beginning of its period.
+                    $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
+                    $planning["times"][$day_id][1] = $free_break_start;
+                    $planning["times"][$day_id][2] = $fixed_free_break_end;
+                }
+            }
+
             $debutConges = strtotime($debutConges);
             $finConges = strtotime($finConges);
 
-            $times = $this->getTimes($planning, $current);
+            $times = $this->getTimes($planning, $current, $free_break_already_removed);
 
             $today = 0;
             foreach ($times as $t) {
@@ -332,7 +368,7 @@ class HolidayHelper extends BaseHelper
      * Jérôme added something similar on WeekPlanningHelper (getTimes($date, $agent = null, $planning = null))
      * TODO : See if WeekPlanningHelper::getTimes can be used instead of HolidayHelper::getTimes
      */
-    private function getTimes($planning, $date)
+    private function getTimes($planning, $date, $free_break_already_removed)
     {
         // Sinon, on calcule les heures d'absence
         $d = new \datePl($date, $planning['nb_semaine']);
@@ -342,7 +378,7 @@ class HolidayHelper extends BaseHelper
         $day = $day + (($week - 1) * 7) - 1;
 
         if ($this->config('PlanningHebdo-PauseLibre')) {
-            $wh = new WorkingHours($planning['times'], $planning['breaktimes']);
+            $wh = new WorkingHours($planning['times'], $planning['breaktimes'], $free_break_already_removed);
         } else {
             $wh = new WorkingHours($planning['times']);
         }
