@@ -9,20 +9,22 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="absences_infos")
+ * @Entity @Table(name="pl_notes")
  **/
-class AbsenceInfo extends PLBEntity
+class PlanningNotification extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
     /** @Column(type="date") **/
-    protected $debut;
+    protected $date;
 
-    /** @Column(type="date") **/
-    protected $fin;
+    /** @Column(type="integer") **/
+    protected $site;
+
+    /** @Column(type="datetime") */
+    protected $update_time;
 
     /** @Column(type="text") **/
-    protected $texte;
-
+    protected $data;
 }

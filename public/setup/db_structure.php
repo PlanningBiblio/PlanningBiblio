@@ -51,8 +51,8 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
 
 $sql[]="CREATE TABLE `{$dbprefix}absences_infos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `debut` date NOT NULL DEFAULT '0000-00-00',
-  `fin` date NOT NULL DEFAULT '0000-00-00',
+  `debut` date DATE',
+  `fin` date DATE,
   `texte` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
@@ -190,7 +190,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_notifications` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
-  `date` VARCHAR(10),
+  `date` DATE,
   `site` INT(2) NOT NULL DEFAULT '1',
   `update_time` TIMESTAMP,
   `data` TEXT,

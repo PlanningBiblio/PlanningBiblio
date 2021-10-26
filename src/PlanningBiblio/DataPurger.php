@@ -5,7 +5,21 @@ namespace App\PlanningBiblio;
 include_once __DIR__ . '/../../public/absences/class.absences.php';
 
 use App\Model\Absence;
+use App\Model\AbsenceInfo;
+use App\Model\AdminInfo;
+use App\Model\CallForHelp;
+use App\Model\Holiday;
+use App\Model\HolidayInfo;
+use App\Model\HoursAbsence;
+use App\Model\IPBlocker;
+use App\Model\Logs;
+use App\Model\PlanningNote;
+use App\Model\PlanningNotification;
+use App\Model\PlanningPoste;
+use App\Model\PublicServiceHours;
+use App\Model\PublicHoliday;
 use App\Model\RecurringAbsence;
+use App\Model\SaturdayWorkingHours;
 use App\PlanningBiblio\Logger;
 
 class DataPurger
@@ -30,7 +44,16 @@ class DataPurger
 
         // TODO : change me to use $delay
         $limit_date = new \DateTime('NOW');
+        $today = new \DateTime('NOW');
+        $end_of_week_limit_date = $limit_date->sub(new \DateInterval('P6D')); 
+        $three_years_limit_date = $today->sub(new \Dateinterval('P3Y'));
+        $three_years_limit_date = ($limit_date > $three_years_limit_date) ? $three_years_limit_date : $limit_date;
 
+        $this->log("limit date: " . $limit_date->format('Y-m-d H:i:s'));
+        $this->log("three years limit date: " . $three_years_limit_date->format('Y-m-d H:i:s'));
+
+
+        // Absences
         $this->log("Start purging absences");
         $builder = $this->entityManager->createQueryBuilder();
         $builder->select('a')
@@ -46,32 +69,46 @@ class DataPurger
             //$absence->purge();
         }
 
-        $this->log("Start purging recurring absences");
+
+        // Recurring Absences
         $builder = $this->entityManager->createQueryBuilder();
-        // TODO: Use delete since we have nothing else to do
-        $builder->select('a')
+        $builder->delete()
                 ->from(RecurringAbsence::class, 'a')
-                ->andWhere('a.end = 1')
+                ->andWhere('a.end = :ended')
                 ->andWhere('a.timestamp < :limit_date')
+                ->setParameter('ended', "1")
                 ->setParameter('limit_date', $limit_date);
         $results = $builder->getQuery()->getResult();
-        foreach ($results as $result) {
-            $this->log("Purging recurring absence id " . $result->id() . " perso_id " . $result->perso_id());
-#            $absence = new \absences();
-#            $absence->fetchById($absenceModel->id());
-            //$absence->purge();
-        }
+        $this->log("Purging $results recurring absences");
 
 
-        $this->log("Start purging absences_info");
-#        $absences_infos = $this->entityManager->getRepository(AbsenceInfo::class)->findBy(['id' => 14203]);
-        
-
-        $this->log("Start purging appel_dispo");
-
+        $this->simplePurge(AbsenceInfo::class,          'fin',       $limit_date);
+        $this->simplePurge(CallForHelp::class,          'timestamp', $limit_date);
+        $this->simplePurge(Holiday::class,              'fin',       $limit_date);
+        $this->simplePurge(HolidayInfo::class,          'fin',       $limit_date);
+        $this->simplePurge(SaturdayWorkingHours::class, 'semaine',   $end_of_week_limit_date);
+        $this->simplePurge(HoursAbsence::class,         'semaine',   $end_of_week_limit_date);
+        $this->simplePurge(PublicServiceHours::class,   'semaine',   $end_of_week_limit_date);
+        $this->simplePurge(AdminInfo::class,            'fin',       $limit_date);
+        $this->simplePurge(IPBlocker::class,            'timestamp', $limit_date);
+        $this->simplePurge(PublicHoliday::class,        'jour',      $three_years_limit_date);
+        $this->simplePurge(Logs::class,                 'timestamp', $limit_date);
+        $this->simplePurge(PlanningNote::class,         'date',      $limit_date);
+        $this->simplePurge(PlanningNotification::class, 'date',      $limit_date);
+        $this->simplePurge(PlanningPoste::class,        'date',      $limit_date);
 
         $this->entityManager->flush();
         $this->log("End purging old data");
+    }
+
+    private function simplePurge($class, $field, $limit_date) {
+        $builder = $this->entityManager->createQueryBuilder();
+        $builder->delete()
+                ->from($class, 'a')
+                ->andWhere('a.' . $field . ' < :limit_date')
+                ->setParameter('limit_date', $limit_date);
+        $results = $builder->getQuery()->getResult();
+        $this->log("Purging $results $class");
     }
 
     private function log($message) {
