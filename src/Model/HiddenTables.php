@@ -7,8 +7,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\JoinColumn;
 
 /**
  * @Entity @Table(name="hidden_tables")
@@ -26,13 +24,6 @@ class HiddenTables extends PLBEntity
 
     /** @Column(type="text") **/
     protected $hidden_tables;
-
-    /**
-     * @ManyToOne(targetEntity="PlanningPositionTab", inversedBy="tableaux")
-     * @JoinColumn(name="tableau", referencedColumnName="tableau")
-     */
-    protected $positiontab;
-
 
     public function purge()
     {

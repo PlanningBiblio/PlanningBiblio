@@ -89,20 +89,20 @@ class DataPurger
         $this->log("Purging $results recurring absences");
 
 
-        $this->simplePurge(AbsenceInfo::class,          'fin',       $limit_date);
-        $this->simplePurge(CallForHelp::class,          'timestamp', $limit_date);
-        $this->simplePurge(Holiday::class,              'fin',       $limit_date);
-        $this->simplePurge(HolidayInfo::class,          'fin',       $limit_date);
-        $this->simplePurge(SaturdayWorkingHours::class, 'semaine',   $end_of_week_limit_date);
-        $this->simplePurge(HoursAbsence::class,         'semaine',   $end_of_week_limit_date);
-        $this->simplePurge(PublicServiceHours::class,   'semaine',   $end_of_week_limit_date);
-        $this->simplePurge(AdminInfo::class,            'fin',       $limit_date);
-        $this->simplePurge(IPBlocker::class,            'timestamp', $limit_date);
-        $this->simplePurge(PublicHoliday::class,        'jour',      $three_years_limit_date);
-        $this->simplePurge(Logs::class,                 'timestamp', $limit_date);
-        $this->simplePurge(PlanningNote::class,         'date',      $limit_date);
-        $this->simplePurge(PlanningNotification::class, 'date',      $limit_date);
-        $this->simplePurge(PlanningPosition::class,     'date',      $limit_date);
+        $this->simplePurge(AbsenceInfo::class,          'fin',       '<', $limit_date);
+        $this->simplePurge(CallForHelp::class,          'timestamp', '<', $limit_date);
+        $this->simplePurge(Holiday::class,              'fin',       '<', $limit_date);
+        $this->simplePurge(HolidayInfo::class,          'fin',       '<', $limit_date);
+        $this->simplePurge(SaturdayWorkingHours::class, 'semaine',   '<', $end_of_week_limit_date);
+        $this->simplePurge(HoursAbsence::class,         'semaine',   '<', $end_of_week_limit_date);
+        $this->simplePurge(PublicServiceHours::class,   'semaine',   '<', $end_of_week_limit_date);
+        $this->simplePurge(AdminInfo::class,            'fin',       '<', $limit_date);
+        $this->simplePurge(IPBlocker::class,            'timestamp', '<', $limit_date);
+        $this->simplePurge(PublicHoliday::class,        'jour',      '<', $three_years_limit_date);
+        $this->simplePurge(Logs::class,                 'timestamp', '<', $limit_date);
+        $this->simplePurge(PlanningNote::class,         'date',      '<', $limit_date);
+        $this->simplePurge(PlanningNotification::class, 'date',      '<', $limit_date);
+        $this->simplePurge(PlanningPosition::class,     'date',      '<', $limit_date);
 
         // Planning Postes Tab;
         // TODO : use simplePurge when done
@@ -128,36 +128,28 @@ class DataPurger
         $builder->select('a')
                 ->from(PlanningPositionTab::class, 'a')
                 ->andWhere('a.id = :limit_date')
-                ->setParameter('limit_date', '9');
+                ->setParameter('limit_date', '10');
         $this->log($builder->getQuery()->getSQL());
         $this->log(print_r($builder->getQuery()->getParameters(), 1));
         $results = $builder->getQuery()->getResult();
 
         foreach ($results as $result) {
             $this->log("Purging PlanningPositionTab id " . $result->id());
-            $positionTab = $this->entityManager->getRepository(PlanningPositionTab::class)->find($result->id());
+            $this->entityManager->getRepository(PlanningPositionTab::class)->purge($result->id());
+//          $positionTab = $this->entityManager->getRepository(PlanningPositionTab::class)->find($result->id());
 
-            $this->entityManager->remove($positionTab);
-            // TODO: Try with uniq key or something
-/*
-            $hiddenTables = new HiddenTables();
-            $hiddenTables->perso_id(12);
-//            $hiddenTables->tableau(1);
-            $hiddenTables->hidden_tables("totoaaa");
-            $positionTab->addHiddenTables($hiddenTables);
-*/
         }
 
         $this->entityManager->flush();
         $this->log("End purging old data");
     }
 
-    private function simplePurge($class, $field, $limit_date) {
+    private function simplePurge($class, $field, $operator, $value) {
         $builder = $this->entityManager->createQueryBuilder();
         $builder->delete()
                 ->from($class, 'a')
-                ->andWhere('a.' . $field . ' < :limit_date')
-                ->setParameter('limit_date', $limit_date);
+                ->andWhere('a.' . $field . ' ' . $operator . ' :value')
+                ->setParameter('value', $value);
         $results = $builder->getQuery()->getResult();
         $this->log("Purging $results $class");
     }
