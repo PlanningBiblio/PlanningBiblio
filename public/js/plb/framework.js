@@ -96,7 +96,7 @@ function supprimeTableau(tableau){
       dataType: "json",
       data: {tableau: tableau, CSRFToken: CSRFToken, name: nom},
       success: function(){
-        window.location.href = baseURL + '/framework';
+        window.location.href = baseURL + 'framework';
       },
       error: function(result){
         CJInfo("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"\n"+result.responseText,"error");
