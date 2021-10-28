@@ -15,12 +15,15 @@ use App\Model\IPBlocker;
 use App\Model\Logs;
 use App\Model\PlanningNote;
 use App\Model\PlanningNotification;
-use App\Model\PlanningPoste;
+use App\Model\PlanningPosition;
+use App\Model\PlanningPositionTab;
 use App\Model\PublicServiceHours;
 use App\Model\PublicHoliday;
 use App\Model\RecurringAbsence;
 use App\Model\SaturdayWorkingHours;
 use App\PlanningBiblio\Logger;
+
+use App\Model\HiddenTables;
 
 class DataPurger
 {
@@ -42,11 +45,15 @@ class DataPurger
         $GLOBALS['entityManager'] = $this->entityManager;
         $this->log("Start purging $this->delay years old data");
 
-        // TODO : change me to use $delay
-        $limit_date = new \DateTime('NOW');
         $today = new \DateTime('NOW');
-        $end_of_week_limit_date = $limit_date->sub(new \DateInterval('P6D')); 
-        $three_years_limit_date = $today->sub(new \Dateinterval('P3Y'));
+        // TODO : change me to use $delay
+        $limit_date = clone $today;
+
+        $end_of_week_limit_date = clone $limit_date; 
+        $end_of_week_limit_date->sub(new \DateInterval('P6D')); 
+
+        $three_years_limit_date = clone $limit_date;
+        $three_years_limit_date->sub(new \Dateinterval('P3Y'));
         $three_years_limit_date = ($limit_date > $three_years_limit_date) ? $three_years_limit_date : $limit_date;
 
         $this->log("limit date: " . $limit_date->format('Y-m-d H:i:s'));
@@ -95,7 +102,51 @@ class DataPurger
         $this->simplePurge(Logs::class,                 'timestamp', $limit_date);
         $this->simplePurge(PlanningNote::class,         'date',      $limit_date);
         $this->simplePurge(PlanningNotification::class, 'date',      $limit_date);
-        $this->simplePurge(PlanningPoste::class,        'date',      $limit_date);
+        $this->simplePurge(PlanningPosition::class,     'date',      $limit_date);
+
+        // Planning Postes Tab;
+        // TODO : use simplePurge when done
+        /*
+       $builder = $this->entityManager->createQueryBuilder();
+        $builder->delete()
+                ->from(PlanningPositionTab::class, 'a')
+                ->andWhere('a.id = :limit_date')
+                ->setParameter('limit_date', '8');
+        $this->log($builder->getQuery()->getSQL());
+        $results = $builder->getQuery()->getResult();
+        $this->log("Purging $results Postes Tab");
+*/
+
+        $this->log("Start purging pl_poste_tab");
+        // TODO: Use three_years_limit_date
+
+                /*
+                ->andWhere('a.supprime < :limit_date')
+                ->setParameter('limit_date', $limit_date);
+                */
+        $builder = $this->entityManager->createQueryBuilder();
+        $builder->select('a')
+                ->from(PlanningPositionTab::class, 'a')
+                ->andWhere('a.id = :limit_date')
+                ->setParameter('limit_date', '9');
+        $this->log($builder->getQuery()->getSQL());
+        $this->log(print_r($builder->getQuery()->getParameters(), 1));
+        $results = $builder->getQuery()->getResult();
+
+        foreach ($results as $result) {
+            $this->log("Purging PlanningPositionTab id " . $result->id());
+            $positionTab = $this->entityManager->getRepository(PlanningPositionTab::class)->find($result->id());
+
+            $this->entityManager->remove($positionTab);
+            // TODO: Try with uniq key or something
+/*
+            $hiddenTables = new HiddenTables();
+            $hiddenTables->perso_id(12);
+//            $hiddenTables->tableau(1);
+            $hiddenTables->hidden_tables("totoaaa");
+            $positionTab->addHiddenTables($hiddenTables);
+*/
+        }
 
         $this->entityManager->flush();
         $this->log("End purging old data");

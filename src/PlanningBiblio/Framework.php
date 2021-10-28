@@ -50,6 +50,12 @@ class Framework
         }
     }
 
+    public function purge()
+    {
+        
+
+    }
+
     /**
      * fetchAll : retourne les tableaux enregistrés dans la base de données
      * @param boolean $this->supprime : si true : affiche les tableaux supprimés lors de la dernière année, sinon, affiche les tableaux non-supprimés, default = false
