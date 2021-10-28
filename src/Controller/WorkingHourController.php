@@ -557,7 +557,7 @@ class WorkingHourController extends BaseController
         $this->templateParams(
             array(
                 "action"             => $action,
-                "admin"              => ($adminN1 or $adminN2),
+                "admin"              => ($this->adminN1 or $this->adminN2),
                 "adminN1"            => $this->adminN1,
                 "adminN2"            => $this->adminN2,
                 "cle"                => $cle,
@@ -576,7 +576,6 @@ class WorkingHourController extends BaseController
                 "nbSites"            => $nbSites,
                 "nbSemaine"          => $nbSemaine,
                 "nomAgent"           => $nomAgent,
-                "notAdmin"           => $notAdmin,
                 "perso_id"           => $perso_id,
                 "remplace"           => $remplace,
                 "retour"             => $retour,

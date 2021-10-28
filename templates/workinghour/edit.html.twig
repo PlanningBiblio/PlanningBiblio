@@ -26,7 +26,7 @@
           {% if request_exception is not null %}
             <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
           {% endif %}
-          {% if notAdmin == true %}
+          {% if admin == false %}
             <h3>Nouveaux horaires pour {{ nomAgent }}</h3>
           {% elseif copy is not null %}
             <h3>Copie des heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
@@ -90,7 +90,7 @@
             <p><b class='important'>Les horaires ont été importés depuis une source externe.</b></p>
           {% elseif not modifAutorisee == true %}
             <p><b class='important'>Vos horaires ont été validés.</b><br/>Pour les modifier, contactez votre chef de service.</p>
-          {% elseif valide_n2 > 0 and notAdmin == true %}
+          {% elseif valide_n2 > 0 and admin == false %}
             <p>
               <b class='important'>Vos horaires ont été validés.</b><br/>
               Si vous souhaitez les changer, modifiez la date de début et/ou de fin d'effet.<br/>
