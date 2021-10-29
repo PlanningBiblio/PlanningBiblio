@@ -5,6 +5,7 @@ use App\PlanningBiblio\Helper\HolidayHelper;
 # way to twigizing this part.
 $config = $GLOBALS['config'];
 $temps = $GLOBALS['temps'];
+$breaktimes = $GLOBALS['breaktimes'];
 $hours_tab = '';
 
 if ($config['PlanningHebdo']) {
@@ -58,6 +59,11 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<td style='width:135px;'>Début de pause</td><td style='width:135px;'>Fin de pause</td>";
     }
     $hours_tab .= "<td style='width:135px;'>Heure de départ</td>";
+
+    if ($config['PlanningHebdo-PauseLibre'] && $config['PlanningHebdo']) {
+        $hours_tab .= "<td>Temps de pause</td>";
+    }
+
     if ($config['Multisites-nombre']>1) {
         $hours_tab .= "<td>Site</td>";
     }
@@ -137,6 +143,14 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $t3 = isset($temps[$t][3]) ? $temps[$t][3] : '';
         $hours_tab .= "value='$t3'/>";
         $hours_tab .= "</td>\n";
+
+        if ($config['PlanningHebdo-PauseLibre'] && $config['PlanningHebdo']) {
+            $hours_tab .= '<td id="break_' . ($i-1) . '" data-break="' . $breaktimes[$i -1] . '">';
+            $hours_tab .= "<input name='break_{$t}' $disabled ";
+            $hours_tab .= "class='planno-break-timepicker'";
+            $hours_tab .= "value='{$breaktimes[$i -1]}'/>";
+            $hours_tab .= '</td>';
+        }
 
         if ($config['Multisites-nombre']>1) {
             if ($disabled) {
