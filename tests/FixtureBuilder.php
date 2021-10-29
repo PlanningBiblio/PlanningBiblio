@@ -61,6 +61,18 @@ class FixtureBuilder
         return $entity;
     }
 
+    public function delete($model)
+    {
+        $entities = $this->em->getRepository($model)->findAll();
+        foreach ($entities as $entity) {
+            if ($model == 'App\Model\Agent' && ($entity->id() == 1 or $entity->id() == 2)) {
+                continue;
+            }
+            $this->em->remove($entity);
+        }
+        $this->em->flush();
+    }
+
     private function getDefaultFixture($model)
     {
         $namespace = explode('\\', $model);

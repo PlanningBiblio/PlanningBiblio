@@ -10,6 +10,8 @@ class WorkingHourControllerTest extends PLBWebTestCase
     public function testAccessWorkingHoursList() {
         $client = static::createClient();
         $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
 
         // Anonymous user.

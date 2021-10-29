@@ -22,6 +22,7 @@ class ConfigControllerTest extends PLBWebTestCase
     public function testAccessWithAuthorizedUser() {
 
         $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
 
         $this->logInAgent($agent, array(20));

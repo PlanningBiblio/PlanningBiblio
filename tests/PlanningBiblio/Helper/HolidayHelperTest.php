@@ -63,6 +63,7 @@ class HolidayHelperTest extends TestCase
         );
 
         $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
         $bob_site1 = $builder->build(Agent::class, array('login' => 'bob', 'sites' => '["1"]'));
         $john_site2 = $builder->build(Agent::class, array('login' => 'john', 'sites' => '["2"]'));
         $olivia_all_site = $builder->build(Agent::class, array('login' => 'olivia', 'sites' => '["1","2"]'));
