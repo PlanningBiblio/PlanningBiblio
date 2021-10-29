@@ -4,8 +4,8 @@ use App\Model\Agent;
 
 use App\PlanningBiblio\Helper\HolidayHelper;
 use PHPUnit\Framework\TestCase;
-use Tests\Utils;
 use Tests\FixtureBuilder;
+use Tests\Utils;
 
 class HolidayHelperTest extends TestCase
 {
@@ -61,10 +61,12 @@ class HolidayHelperTest extends TestCase
             1001,1002,901,801,802,6,9,99,100,20
         );
 
-        $bob_site1 = Utils::createAgent(array('login' => 'bob', 'sites' => '["1"]'));
-        $john_site2 = Utils::createAgent(array('login'=> 'john', 'sites' => '["2"]'));
-        $olivia_all_site = Utils::createAgent(array('login' => 'olivia', 'sites' => '["1","2"]'));
-        $deleted_agent = Utils::createAgent(array('login' => 'foo', 'sites' => '["1","2"]', 'supprime' => 1));
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+        $bob_site1 = $builder->build(Agent::class, array('login' => 'bob', 'sites' => '["1"]'));
+        $john_site2 = $builder->build(Agent::class, array('login' => 'john', 'sites' => '["2"]'));
+        $olivia_all_site = $builder->build(Agent::class, array('login' => 'olivia', 'sites' => '["1","2"]'));
+        $deleted_agent = $builder->build(Agent::class, array('login' => 'foo', 'sites' => '["1","2"]', 'supprime' => 1));
 
         $helper = new HolidayHelper();
         $managed_agents = $helper->getManagedAgent(true, false);
