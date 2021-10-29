@@ -248,4 +248,15 @@ class Framework
             $db->insert("pl_poste_tab_grp", $post);
         }
     }
+
+    public function is_used()
+    {
+        $db = new \db();
+        $db->select('pl_poste_tab_affect', null, "tableau = $this->id");
+        if ($db->result) {
+            return true;
+        }
+
+        return false;
+    }
 }

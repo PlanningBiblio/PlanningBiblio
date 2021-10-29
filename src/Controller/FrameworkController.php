@@ -148,14 +148,18 @@ class FrameworkController extends BaseController
             $t = new Framework();
             $t->id = $id;
             $t->CSRFToken = $CSRFToken;
-            $t->setNumbers($nombre);
+
+            $not_used = $t->is_used() ? false : true;
+            if ($not_used) {
+                $t->setNumbers($nombre);
+            }
 
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->sanitize_string = false;
             $db->update("pl_poste_tab", array("nom" => trim($nom)), array("tableau" => $id));
 
-            if ($site) {
+            if ($site && $not_used) {
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->update('pl_poste_tab', array('site' => $site), array('tableau' => $id));
@@ -228,7 +232,6 @@ class FrameworkController extends BaseController
     public function editTable (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
         $cfgType = $request->get("cfg-type");
-        $cfgTypeGet = $request->get("cfg-type");
         $tableauNumero = $request->request->get("id");
         $tableauGet = $request->get("id");
         $nbSites = $this->config('Multisites-nombre');
@@ -239,14 +242,8 @@ class FrameworkController extends BaseController
         }
 
         // Choix de l'onglet (cfg-type)
-        if ($cfgTypeGet) {
-            $cfgType = $cfgTypeGet;
-        }
         if (!$cfgType and in_array("cfg_type", $_SESSION)) {
-            $cfgType = $_SESSION['cfg_type'];
-        }
-        if (!$cfgType and !in_array("cfg_type", $_SESSION)) {
-            $cfgType = "infos";
+            $cfgType = in_array("cfg_type", $_SESSION) ? $_SESSION['cfg_type'] : 'infos';
         }
         $_SESSION['cfg_type'] = $cfgType;
 
@@ -273,6 +270,10 @@ class FrameworkController extends BaseController
         $nombre = $t->length;
         $site = 1;
 
+        if ($t->is_used()) {
+            $cfgType = 'infos';
+        }
+
 
         // Site
         if ($nbSites > 1 && $tableauNumero) {
@@ -294,23 +295,6 @@ class FrameworkController extends BaseController
                     $tableaux[$elem['tableau']]=array('tableau'=>$elem['tableau'], 'horaires'=>array());
                 }
                 $tableaux[$elem['tableau']]['horaires'][]=array("id"=>$elem["id"], "debut"=>$elem["debut"],"fin"=>$elem["fin"]);
-            }
-        }
-
-        //	Liste des tableaux utilisés
-        $used = array();
-        $db = new \db();
-        $db->select("pl_poste_tab_affect", "tableau", null, "group by tableau");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $used[] = $elem['tableau'];
-            }
-        }
-        $db = new \db();
-        $db->select("pl_poste_modeles_tab", "tableau", null, "group by tableau");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $used[] = $elem['tableau'];
             }
         }
 
@@ -361,6 +345,7 @@ class FrameworkController extends BaseController
                 "tableauNumero" => $tableauNumero,
                 "tableaux"      => $tableaux,
                 "tabs"          => $tabs,
+                'used'          => $t->is_used() ? 1 : 0
             )
         );
 
@@ -374,6 +359,18 @@ class FrameworkController extends BaseController
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableauNumero = $post['numero'];
+
+        $framework = new Framework();
+        $framework->id = $tableauNumero;
+        if ($framework->is_used()) {
+            return $this->redirectToRoute('framework.edit_table',
+                array(
+                    'id' => $tableauNumero,
+                    'cfg-type' => 0,
+                    'msg' => 'Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.',
+                    'msgType' => 'error'
+                ));
+        }
 
         if (isset($post['action'])) {
             $db = new \db();
@@ -417,7 +414,7 @@ class FrameworkController extends BaseController
 
             return $this->redirectToRoute('framework.edit_table', array("id" => $tableauNumero, "cfg-type"=> $post['cfg-type'], "msg" => $msg, "msgType" => $msgType));
         }
-    }   
+    }
 
     /**
      * @Route ("framework-table/save-line", name="framework.save_table_line", methods={"POST"})
@@ -427,6 +424,12 @@ class FrameworkController extends BaseController
         $CSRFToken = $form_post['CSRFToken'];
         $tableauNumero = $form_post['id'];
         $dbprefix = $GLOBALS['dbprefix'];
+
+        $framework = new Framework();
+        $framework->id = $tableauNumero;
+        if ($framework->is_used()) {
+            return $this->json('used', 403);
+        }
 
         $post=array();
         foreach ($_POST as $key => $value) {

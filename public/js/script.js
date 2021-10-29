@@ -889,7 +889,8 @@ $(function(){
 	  }
 	  return false;
 	}
-      }
+      },
+      disabled: $(".ui-tabs").attr("data-disabled") ? jQuery.parseJSON($(".ui-tabs").attr("data-disabled")) : []
     });
     $(".ui-tab-submit").css("position","absolute");
     $(".ui-tab-submit").css("right",5);
