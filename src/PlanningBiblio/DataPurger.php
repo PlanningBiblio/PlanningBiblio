@@ -124,10 +124,7 @@ class DataPurger
                 ->from(PlanningPositionTab::class, 'a')
                 ->andWhere('a.supprime < :limit_date')
                 ->setParameter('limit_date', $three_years_limit_date);
-        $this->log($builder->getQuery()->getSQL());
-        $this->log(print_r($builder->getQuery()->getParameters(), 1));
         $results = $builder->getQuery()->getResult();
-
         $i = 0; 
         foreach ($results as $result) {
             $this->entityManager->getRepository(PlanningPositionTab::class)->purge($result->id());
