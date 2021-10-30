@@ -28,6 +28,12 @@ class ConfigController extends BaseController
         );
         $elements = array();
         foreach ($configParams as $cp) {
+
+            // Do not display hidden information
+            if ($cp->type() == "hidden") {
+                continue;
+            }
+
             $elem = array(
                 'type'          => $cp->type(),
                 'nom'           => $cp->nom(),
@@ -106,7 +112,7 @@ class ConfigController extends BaseController
             );
 
             foreach ($configParams as $cp) {
-                if ($cp->type() == 'info' and $cp->nom() != 'URL') {
+                if (in_array($cp->type(), ['hidden','info']) and $cp->nom() != 'URL') {
                     continue;
                 }
                 // boolean and checkboxes elements.
