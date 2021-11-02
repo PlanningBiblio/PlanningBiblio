@@ -11,7 +11,8 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 /**
  * @Entity @Table(name="volants")
  **/
-class Detached extends PLBEntity {
+class Detached extends PLBEntity
+{
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 

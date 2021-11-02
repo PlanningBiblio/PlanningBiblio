@@ -7,6 +7,7 @@ include_once __DIR__ . '/../../public/absences/class.absences.php';
 use App\Model\Absence;
 use App\Model\AbsenceInfo;
 use App\Model\AdminInfo;
+use App\Model\Agent;
 use App\Model\CallForHelp;
 use App\Model\CompTime;
 use App\Model\Detached;
@@ -86,8 +87,9 @@ class DataPurger
         $this->simplePurge(SaturdayWorkingHours::class,           'semaine',   '<', $end_of_week_limit_date);
         $this->simplePurge(WeekPlanning::class,                   'fin',       '<', $limit_date);
 
+        $this->log("Purging special cases:");
+
         // Absences
-        $this->log("Start purging absences");
         $builder = $this->entityManager->createQueryBuilder();
         $builder->select('a')
                 ->from(Absence::class, 'a')
@@ -95,28 +97,19 @@ class DataPurger
                 ->setParameter('limit_date', $limit_date);
         $results = $builder->getQuery()->getResult();
 
-        $i = 0;
+        $deleted_absences = 0;
         foreach ($results as $result) {
-            $this->log("Purging absence id " . $result->id() . " perso_id " . $result->perso_id());
+            //$this->log("Purging absence id " . $result->id() . " perso_id " . $result->perso_id());
             $absence = new \absences();
             $absence->fetchById($result->id());
             //$absence->purge();
-            $i++;
+            $deleted_absences++;
         }
-        $this->log("Purging $i App\Model\Absence");
+        $this->log("Purging $deleted_absences App\Model\Absence");
 
-
-        // Recurring Absences
-        $builder = $this->entityManager->createQueryBuilder();
-        $builder->delete()
-                ->from(RecurringAbsence::class, 'a')
-                ->andWhere('a.end = :ended')
-                ->andWhere('a.timestamp < :limit_date')
-                ->setParameter('ended', "1")
-                ->setParameter('limit_date', $limit_date);
-        $results = $builder->getQuery()->getResult();
-        $this->log("Purging $results recurring absences");
-
+        // Agents
+        $deleted_agents = $this->entityManager->getRepository(Agent::class)->purge();
+        $this->log("Purging $deleted_agents \App\Model\Agent");
 
         // Planning Position Tab
         $builder = $this->entityManager->createQueryBuilder();
@@ -132,27 +125,16 @@ class DataPurger
         }
         $this->log("Purging $i \App\Model\PlanningPositionTab");
 
-
-        // Agents
-/*
+        // Recurring Absences
         $builder = $this->entityManager->createQueryBuilder();
-        $builder->select('a')
-                ->from(PlanningPositionTab::class, 'a')
-                ->andWhere('a.supprime < :limit_date')
-                ->setParameter('limit_date', $three_years_limit_date);
-        $this->log($builder->getQuery()->getSQL());
-        $this->log(print_r($builder->getQuery()->getParameters(), 1));
+        $builder->delete()
+                ->from(RecurringAbsence::class, 'a')
+                ->andWhere('a.end = :ended')
+                ->andWhere('a.timestamp < :limit_date')
+                ->setParameter('ended', "1")
+                ->setParameter('limit_date', $limit_date);
         $results = $builder->getQuery()->getResult();
-
-        $i = 0; 
-        foreach ($results as $result) {
-            $this->entityManager->getRepository(PlanningPositionTab::class)->purge($result->id());
-            $i++;
-        }
-        $this->log("Purging $i \App\Model\PlanningPositionTab");
-*/
-
-        
+        $this->log("Purging $results App\Model\RecurringAbsence");
 
         $this->entityManager->flush();
         $this->log("End purging old data");

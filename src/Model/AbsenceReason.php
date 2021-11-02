@@ -5,7 +5,8 @@ namespace App\Model;
 /**
  * @Entity @Table(name="select_abs")
  **/
-class AbsenceReason extends PLBEntity {
+class AbsenceReason extends PLBEntity
+{
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
