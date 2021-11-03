@@ -726,29 +726,6 @@ class absences
         return false;
     }
 
-    public function purge()
-    {
-        $this->deleteAllDocuments();
-        $db=new \db();
-        $db->delete("absences", array("id"=>$this->id));
-    }
-
-    public function deleteAllDocuments() {
-        if (!$this->id) return;
-        $entityManager = $GLOBALS['entityManager'];
-        $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $this->id]);
-        foreach ($absdocs as $absdoc) {
-            $absdoc->deleteFile();
-            $entityManager->remove($absdoc);
-        }
-        $entityManager->flush();
-
-        $absenceDocument = new AbsenceDocument();
-        if (is_dir($absenceDocument->upload_dir() . $this->id)) {
-            rmdir($absenceDocument->upload_dir() . $this->id);
-        }
-    }
-
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
         $entityManager = $GLOBALS['entityManager'];

@@ -2,8 +2,6 @@
 
 namespace App\PlanningBiblio;
 
-include_once __DIR__ . '/../../public/absences/class.absences.php';
-
 use App\Model\Absence;
 use App\Model\AbsenceInfo;
 use App\Model\AdminInfo;
@@ -53,17 +51,18 @@ class DataPurger
         $this->log("Start purging $this->delay years old data");
 
         $today = new \DateTime('NOW');
-        // TODO : change me to use $delay
         $limit_date = clone $today;
+        $limit_date->sub(new \DateInterval('P' . $this->delay . 'Y')); 
 
         $end_of_week_limit_date = clone $limit_date; 
         $end_of_week_limit_date->sub(new \DateInterval('P6D')); 
 
-        $three_years_limit_date = clone $limit_date;
+        $three_years_limit_date = clone $today;
         $three_years_limit_date->sub(new \Dateinterval('P3Y'));
         $three_years_limit_date = ($limit_date > $three_years_limit_date) ? $three_years_limit_date : $limit_date;
 
         $this->log("limit date: " . $limit_date->format('Y-m-d H:i:s'));
+        $this->log("end of week limit date: " . $end_of_week_limit_date->format('Y-m-d H:i:s'));
         $this->log("three years limit date: " . $three_years_limit_date->format('Y-m-d H:i:s'));
 
         $this->simplePurge(AbsenceInfo::class,                    'fin',       '<', $limit_date);
@@ -99,17 +98,14 @@ class DataPurger
 
         $deleted_absences = 0;
         foreach ($results as $result) {
-            //$this->log("Purging absence id " . $result->id() . " perso_id " . $result->perso_id());
-            $absence = new \absences();
-            $absence->fetchById($result->id());
-            //$absence->purge();
+            $this->entityManager->getRepository(Absence::class)->purge($result->id());
             $deleted_absences++;
         }
         $this->log("Purging $deleted_absences App\Model\Absence");
 
         // Agents
         $deleted_agents = $this->entityManager->getRepository(Agent::class)->purge();
-        $this->log("Purging $deleted_agents \App\Model\Agent");
+        $this->log("Purging $deleted_agents App\Model\Agent");
 
         // Planning Position Tab
         $builder = $this->entityManager->createQueryBuilder();
@@ -118,12 +114,12 @@ class DataPurger
                 ->andWhere('a.supprime < :limit_date')
                 ->setParameter('limit_date', $three_years_limit_date);
         $results = $builder->getQuery()->getResult();
-        $i = 0; 
+        $deleted_planning_position_tab = 0; 
         foreach ($results as $result) {
             $this->entityManager->getRepository(PlanningPositionTab::class)->purge($result->id());
-            $i++;
+            $deleted_planning_position_tab++;
         }
-        $this->log("Purging $i \App\Model\PlanningPositionTab");
+        $this->log("Purging $deleted_planning_position_tab App\Model\PlanningPositionTab");
 
         // Recurring Absences
         $builder = $this->entityManager->createQueryBuilder();

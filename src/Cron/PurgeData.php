@@ -35,7 +35,15 @@ Example: php bin/console PlanningBiblio:PurgeData \"5\"
             return 0;
         }
 
-        $delay = $input->getArgument('delay') ?? 5;
+        $delay = $input->getArgument('delay');
+        if ($delay != null) {
+            if (!is_numeric($delay)) {
+                $output->writeln('The delay argument must be a number of years.');
+                return 0;
+            }
+        } else {
+            $delay = 5;
+        }
 
         $kernel = $this->getApplication()->getKernel();
         $container = $kernel->getContainer();
