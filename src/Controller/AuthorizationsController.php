@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Psr\Log\LoggerInterface;
@@ -166,7 +167,8 @@ class AuthorizationsController extends BaseController
      */
     public function denied(Request $request)
     {
-        return $this->output('access-denied.html.twig');
+        $content = $this->renderView('access-denied.html.twig');
+        return new Response($content, 403);
     }
 
     private function redirectCAS($logger)
