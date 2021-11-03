@@ -458,6 +458,7 @@ class WorkingHourController extends BaseController
         // Sécurité
         $this->adminN1 = in_array(1101, $droits);
         $this->adminN2 = in_array(1201, $droits);
+        $admin = ($this->adminN1 or $this->adminN2);
         $p = new \planningHebdo();
         $p->id = $id;
         $p->fetch();
@@ -470,6 +471,10 @@ class WorkingHourController extends BaseController
         $temps = $p->elements[0]['temps'];
         $breaktime = $p->elements[0]['breaktime'];
         $thisNbSemaine = $p->elements[0]['nb_semaine'];
+
+        if (!$admin && $perso_id != $_SESSION['login_id']) {
+            return $this->redirectToRoute('access-denied');
+        }
 
         if ($p->elements[0]['exception']) {
             $is_exception = 1;

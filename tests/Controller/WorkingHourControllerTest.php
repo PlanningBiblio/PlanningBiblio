@@ -141,4 +141,49 @@ class WorkingHourControllerTest extends PLBWebTestCase
             'With PlanningHebdo-Agents disabled, users without right cannot create own working hours'
         );
     }
+
+    public function testEditOtherAgentsWorkingHours() {
+        $client = static::createClient();
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+
+        $GLOBALS['config']['PlanningHebdo-Agents'] = 1;
+
+        $loggedin_agent = $builder->build(Agent::class, array('login' => 'test'));
+        $greg = $builder->build(Agent::class, array('login' => 'greg'));
+
+        $greg_workinghours = array(
+            0 => array('0' => '09:00:00', '1' => '', '2' => '', '3' => '17:00:00'),
+            1 => array('0' => '09:00:00', '1' => '', '2' => '', '3' => '17:00:00'),
+            2 => array('0' => '09:00:00', '1' => '', '2' => '', '3' => '17:00:00'),
+            3 => array('0' => '09:00:00', '1' => '', '2' => '', '3' => '17:00:00'),
+            4 => array('0' => '09:00:00', '1' => '', '2' => '', '3' => '17:00:00'),
+            5 => array('0' => '09:00:00', '1' => '', '2' => '', '3' => '17:00:00'),
+        );
+
+        $_SESSION['oups']['CSRFToken'] = '00000';
+        $db = new \db();
+        $db->CSRFToken = '00000';
+        $greg_wh_id = $db->insert(
+            'planning_hebdo',
+            array(
+                'perso_id' => $greg->id(),
+                'debut' => '2021-01-01',
+                'fin' => '2021-12-31',
+                'temps' => json_encode($greg_workinghours),
+                'valide_n1' => 0,
+                'valide' => 0,
+                'nb_semaine' => 1
+            )
+        );
+
+        $this->logInAgent($loggedin_agent, array(100));
+        $client->request('GET', "/workinghour/$greg_wh_id");
+        $client->followRedirect();
+        $this->assertEquals(
+            403,
+            $client->getResponse()->getStatusCode(),
+            'Users without right cannot access working hours of other agents'
+        );
+    }
 }
