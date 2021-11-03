@@ -122,4 +122,23 @@ class WorkingHourControllerTest extends PLBWebTestCase
         $this->assertEquals('Accepté', $statuses[3], 'User with 1201 right can choose status accepted level 2');
         $this->assertEquals('Refusé', $statuses[4], 'User with 1201 right can choose status rejected level 2');
     }
+
+    public function testCreateOwnWorkingHours() {
+        $client = static::createClient();
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+
+        $GLOBALS['config']['PlanningHebdo-Agents'] = 0;
+
+        $agent = $builder->build(Agent::class, array('login' => 'test'));
+
+        $this->logInAgent($agent, array(100));
+        $client->request('GET', '/workinghour/add');
+        $client->followRedirect();
+        $this->assertEquals(
+            403,
+            $client->getResponse()->getStatusCode(),
+            'With PlanningHebdo-Agents disabled, users without right cannot create own working hours'
+        );
+    }
 }

@@ -296,6 +296,11 @@ class WorkingHourController extends BaseController
         $nbSemaine = $this->config('nb_semaine');
         $nbSites = $this->config('Multisites-nombre');
         $multisites = array();
+
+        if (!$admin && !$this->config('PlanningHebdo-Agents') ) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         for ($i = 1; $i < $nbSites+1; $i++) {
             $sites[] = $i;
             $multisites[$i] = $this->config("Multisites-site{$i}");
