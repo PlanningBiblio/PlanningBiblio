@@ -50,14 +50,14 @@ class DataPurger
         $GLOBALS['entityManager'] = $this->entityManager;
         $this->log("Start purging $this->delay years old data");
 
-        $today = new \DateTime('NOW');
-        $limit_date = clone $today;
+        $first_of_january = new \DateTime('first day of January this year');
+        $limit_date = clone $first_of_january;
         $limit_date->sub(new \DateInterval('P' . $this->delay . 'Y'));
 
         $end_of_week_limit_date = clone $limit_date;
         $end_of_week_limit_date->sub(new \DateInterval('P6D'));
 
-        $three_years_limit_date = clone $today;
+        $three_years_limit_date = clone $first_of_january;
         $three_years_limit_date->sub(new \Dateinterval('P3Y'));
         $three_years_limit_date = ($limit_date > $three_years_limit_date) ? $three_years_limit_date : $limit_date;
 
