@@ -70,9 +70,6 @@ class Absence extends PLBEntity
     /** @Column(type="text") */
     protected $ical_key;
 
-    /** @Column(type="text") */
-    protected $external_ical_key;
-
     /** @Column(type="string") */
     protected $last_modified;
 
