@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 
 use App\Model\Absence;
+use App\Model\Agent;
 use App\Model\CompTime;
 use App\Model\Detached;
 use App\Model\HiddenTables;
@@ -22,7 +23,24 @@ use App\Model\WeekPlanning;
 
 class AgentRepository extends EntityRepository
 {
-    public function purge()
+
+    public function getAllSkills() {
+        $entityManager = $this->getEntityManager();
+        $agents = $entityManager->getRepository(Agent::class)->findAll();
+        $all_skills = array();
+        foreach ($agents as $agent) {
+            $activites = $agent->postes();
+            if (is_array($activites)) {
+                foreach ($activites as $activite) {
+                    array_push($all_skills, $activite);
+                }
+            }
+        }
+        $all_skills = array_unique($all_skills);
+        return $all_skills;
+    }
+
+    public function purgeAll()
     {
         $agents = $this->findBy(['supprime' => '2']);
         $entityManager = $this->getEntityManager();

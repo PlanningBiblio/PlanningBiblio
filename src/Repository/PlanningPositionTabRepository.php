@@ -8,6 +8,8 @@ use App\Model\HiddenTables;
 use App\Model\PlanningPositionCells;
 use App\Model\PlanningPositionLines;
 use App\Model\PlanningPositionHours;
+use App\Model\PlanningPositionTabAffectation;
+use App\Model\PlanningPositionTab;
 use App\Model\PlanningPositionTabGroup;
 
 class PlanningPositionTabRepository extends EntityRepository
@@ -17,6 +19,11 @@ class PlanningPositionTabRepository extends EntityRepository
         $planningPositionTab = $this->find($id);
         $tableau = $planningPositionTab->tableau();
         $entityManager = $this->getEntityManager();
+
+        $objects = $entityManager->getRepository(PlanningPositionTabAffectation::class)->findBy(['tableau' => $tableau]); 
+        foreach ($objects as $object) {
+            return 0;
+        }
 
         $this->removeObjects(HiddenTables::class,          'tableau', $tableau);
         $this->removeObjects(PlanningPositionCells::class, 'numero',  $tableau);
@@ -37,7 +44,27 @@ class PlanningPositionTabRepository extends EntityRepository
         $results = $builder->getQuery()->getResult();
 
         $entityManager->remove($planningPositionTab);
+        $entityManager->flush();
+        return 1;
     }
+
+    public function purgeAll($limit_date) {
+        $entityManager = $this->getEntityManager();
+        $builder = $entityManager->createQueryBuilder();
+        $builder->select('a')
+                ->from(PlanningPositionTab::class, 'a')
+                ->andWhere('a.supprime < :limit_date')
+                ->andWhere('a.supprime IS NOT NULL')
+                ->setParameter('limit_date', $limit_date);
+        $results = $builder->getQuery()->getResult();
+        $deleted_planning_position_tab = 0;
+        foreach ($results as $result) {
+            $deleted = $this->purge($result->id());
+            if ($deleted) $deleted_planning_position_tab++;
+        }
+        return $deleted_planning_position_tab;
+    }
+
 
     private function removeObjects($class, $field, $value) {
         $entityManager = $this->getEntityManager();

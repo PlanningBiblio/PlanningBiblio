@@ -5,7 +5,7 @@ namespace App\Model;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
 /**
- * @Entity @Table(name="activites")
+ * @Entity(repositoryClass="App\Repository\SkillRepository") @Table(name="activites")
  **/
 class Skill extends PLBEntity{
     /** @Id @Column(type="integer", length = 11) @GeneratedValue **/
