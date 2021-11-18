@@ -534,7 +534,7 @@ class conges
         }
 
         $db=new db();
-        $db->select("personnel", "id,nom,prenom,conges_credit,conges_reliquat,conges_anticipation,comp_time,conges_annuel", "`supprime` IN ('$supprime') AND `id`<>'2' AND actif like 'Actif' $sitesReq");
+        $db->select("personnel", "id,nom,prenom,conges_credit,conges_reliquat,conges_anticipation,comp_time,conges_annuel", "`supprime` IN ('$supprime') AND `id`<>'2' $sitesReq");
         if (!$db->result) {
             return false;
         }
