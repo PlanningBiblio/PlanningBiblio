@@ -163,27 +163,28 @@ $(function() {
     var date=$('#date').val();
     var site=$('#site').val();
     var CSRFToken = $("#planning-data").attr("data-CSRFToken");
-    
+
     $.ajax({
       url: "planning/poste/ajax.validation.php",
       dataType: "json",
       data: {date: date, site: site, verrou: 0, CSRFToken: CSRFToken },
       type: "get",
       success: function(result){
-	if(result[1]=="highlight"){
-	  $("#icon-lock").hide();
-	  $(".pl-validation").hide();
-	  $("#icon-unlock").show();
-	  // data-verrou : pour activer le menudiv
-	  $("#planning-data").attr("data-verrou",0);
-	}
-	
-	// Affichage des lignes vides
-	$(".pl-line").show();
-	CJInfo(result[0],result[1]);
+        if(result[1]=="highlight"){
+          $("#icon-lock").hide();
+          $(".pl-validation").hide();
+          $('#planning-drop').show();
+          $("#icon-unlock").show();
+          // data-verrou : pour activer le menudiv
+          $("#planning-data").attr("data-verrou",0);
+        }
+
+        // Affichage des lignes vides
+        $(".pl-line").show();
+        CJInfo(result[0],result[1]);
       },
       error: function(result){
-	CJInfo("Erreur lors du dev&eacute;rrouillage du planning","error");
+        CJInfo("Erreur lors du dev&eacute;rrouillage du planning","error");
       }
     });
   });
@@ -200,29 +201,30 @@ $(function() {
       data: {date: date, site: site, verrou: 1, CSRFToken: CSRFToken },
       type: "get",
       success: function(result){
-	if(result[1]=="highlight"){
-	  $("#icon-unlock").hide();
-	  $("#icon-lock").show();
-	  $(".pl-validation").html(result[2]);
-	  $(".pl-validation").show();
-	  // data-verrou : pour désactiver le menudiv
-	  $("#planning-data").attr("data-verrou",1);
-	  // data-validation : actualise la date de validation pour éviter un refresh_poste inutile
-	  $("#planning-data").attr("data-validation",result[3]);
-	  // refresh_poste : contrôle toute les 30 sec si le planning est validé depuis un autre poste
-	  setTimeout("refresh_poste()",30000);
-	}
-	
-	// Envoi des notifications
-	planningNotifications(date, site, CSRFToken);
+        if(result[1]=="highlight"){
+          $("#icon-unlock").hide();
+          $("#icon-lock").show();
+          $(".pl-validation").html(result[2]);
+          $(".pl-validation").show();
+          $('#planning-drop').hide();
+          // data-verrou : pour désactiver le menudiv
+          $("#planning-data").attr("data-verrou",1);
+          // data-validation : actualise la date de validation pour éviter un refresh_poste inutile
+          $("#planning-data").attr("data-validation",result[3]);
+          // refresh_poste : contrôle toute les 30 sec si le planning est validé depuis un autre poste
+          setTimeout("refresh_poste()",30000);
+        }
 
-	// Masque les lignes vides
-	hideEmptyLines();
+        // Envoi des notifications
+        planningNotifications(date, site, CSRFToken);
 
-	CJInfo(result[0],result[1]);
+        // Masque les lignes vides
+        hideEmptyLines();
+
+        CJInfo(result[0],result[1]);
       },
       error: function(result){
-	CJInfo("Erreur lors de la validation du planning","error");
+        CJInfo("Erreur lors de la validation du planning","error");
       }
     });
   });
