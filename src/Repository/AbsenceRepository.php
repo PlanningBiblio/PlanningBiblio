@@ -19,6 +19,22 @@ class AbsenceRepository extends EntityRepository
         $entityManager->flush();
     }
 
+    public function purgeAll($limit_date) {
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->select('a')
+                ->from(Absence::class, 'a')
+                ->andWhere('a.fin < :limit_date')
+                ->setParameter('limit_date', $limit_date);
+        $results = $builder->getQuery()->getResult();
+
+        $deleted_absences = 0;
+        foreach ($results as $result) {
+            $this->purge($result->id());
+            $deleted_absences++;
+        }
+        return $deleted_absences;
+    }
+
     public function deleteAllDocuments($id) {
         $entityManager = $this->getEntityManager();
         $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);

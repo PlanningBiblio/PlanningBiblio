@@ -25,6 +25,7 @@ use App\Model\PublicServiceHours;
 use App\Model\PublicHoliday;
 use App\Model\RecurringAbsence;
 use App\Model\SaturdayWorkingHours;
+use App\Model\Skill;
 use App\Model\WeekPlanning;
 use App\PlanningBiblio\Logger;
 
@@ -80,7 +81,6 @@ class DataPurger
         $this->simplePurge(PlanningPosition::class,               'date',      '<', $limit_date);
         $this->simplePurge(PlanningPositionLock::class,           'date',      '<', $limit_date);
         $this->simplePurge(PlanningPositionTabAffectation::class, 'date',      '<', $limit_date);
-        $this->simplePurge(Position::class,                       'supprime',  '<', $three_years_limit_date);
         $this->simplePurge(PublicServiceHours::class,             'semaine',   '<', $end_of_week_limit_date);
         $this->simplePurge(PublicHoliday::class,                  'jour',      '<', $three_years_limit_date);
         $this->simplePurge(SaturdayWorkingHours::class,           'semaine',   '<', $end_of_week_limit_date);
@@ -89,37 +89,24 @@ class DataPurger
         $this->log("Purging special cases:");
 
         // Absences
-        $builder = $this->entityManager->createQueryBuilder();
-        $builder->select('a')
-                ->from(Absence::class, 'a')
-                ->andWhere('a.fin < :limit_date')
-                ->setParameter('limit_date', $limit_date);
-        $results = $builder->getQuery()->getResult();
-
-        $deleted_absences = 0;
-        foreach ($results as $result) {
-            $this->entityManager->getRepository(Absence::class)->purge($result->id());
-            $deleted_absences++;
-        }
+        $deleted_absences = $this->entityManager->getRepository(Absence::class)->purgeAll($limit_date);
         $this->log("Purging $deleted_absences App\Model\Absence");
 
         // Agents
-        $deleted_agents = $this->entityManager->getRepository(Agent::class)->purge();
+        $deleted_agents = $this->entityManager->getRepository(Agent::class)->purgeAll();
         $this->log("Purging $deleted_agents App\Model\Agent");
 
         // Planning Position Tab
-        $builder = $this->entityManager->createQueryBuilder();
-        $builder->select('a')
-                ->from(PlanningPositionTab::class, 'a')
-                ->andWhere('a.supprime < :limit_date')
-                ->setParameter('limit_date', $three_years_limit_date);
-        $results = $builder->getQuery()->getResult();
-        $deleted_planning_position_tab = 0;
-        foreach ($results as $result) {
-            $this->entityManager->getRepository(PlanningPositionTab::class)->purge($result->id());
-            $deleted_planning_position_tab++;
-        }
+        $deleted_planning_position_tab = $this->entityManager->getRepository(PlanningPositionTab::class)->purgeAll($limit_date);
         $this->log("Purging $deleted_planning_position_tab App\Model\PlanningPositionTab");
+
+        // Position
+        $deleted_position = $this->entityManager->getRepository(Position::class)->purgeAll($limit_date);
+        $this->log("Purging $deleted_position App\Model\Position");
+
+        // Skills
+        $deleted_skill = $this->entityManager->getRepository(Skill::class)->purgeAll($limit_date);
+        $this->log("Purging $deleted_skill App\Model\Skill");
 
         // Recurring Absences
         $builder = $this->entityManager->createQueryBuilder();
