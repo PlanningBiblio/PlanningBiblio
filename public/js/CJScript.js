@@ -137,6 +137,16 @@ function CJPosition(object,top,left){
   }
 }
 
+function clearString (str) {
+  return str.toLowerCase()
+    .replace(/[áãà]/g, 'a')
+    .replace(/[éèê]/g, 'e')
+    .replace(/[íï]/g, 'i')
+    .replace(/[óõô]/g, 'o')
+    .replace(/[úü]/g, 'u')
+    .replace(/ç/g, 'c');
+}
+
 // Fonction JQuery
 $(function(){
 
@@ -217,6 +227,10 @@ $(function(){
 	else if(th[i].hasClass("dataTableNoSort")){
 	  aoCol.push({"bSortable":false});
 	}
+    // For accentuated string
+    else if(th[i].hasClass('clear-string')){
+      aoCol.push({'sType': 'clear-string'});
+    }
 	// Par défaut (encore) : tri basic
 	else{
 	  aoCol.push({"bSortable":true});
@@ -283,6 +297,14 @@ $(function(){
     }
 
   });
+
+  $.fn.dataTableExt.oSort['clear-string-asc'] = function (x, y) {
+    return clearString(x) > clearString(y) ? 1 : -1;
+  };
+
+  $.fn.dataTableExt.oSort['clear-string-desc'] = function (x, y) {
+    return clearString(x) < clearString(y) ? 1 : -1;
+  };
 
    // Check all checkboxes 
    $(".CJCheckAll").click(function(){
