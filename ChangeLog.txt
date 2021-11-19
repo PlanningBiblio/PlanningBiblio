@@ -1,6 +1,13 @@
 *** Unreleased ***
-
 - Enhancements
+- Fixes
+- Plumbing
+
+*** Version 21.10.00       (2021-11-19)   ***
+- Enhancements
+Allow holiday for a few hours
+New rules for free break substraction (#507)
+Prevent editing used frameworks (#489)
 Optimize calendars display
 Add more working hours cycles (MT 30755)
 Make installer ignore default /home/plb/.my.cnf
@@ -13,6 +20,20 @@ Add green/red color on queries status in updatedabase.php
 Multiple agents for holidays (#474)
 
 - Fixes
+ICS : Don't import ICS calendars if check_ics is not checked
+Prevent redirect to wrong URL when config URL is not properly set
+Handle non validated working hours
+Remove PHP warnings and useless string in planning/poste/semaine.php
+Fix redirect after framework deletion
+Exclude rejected (-1) absences from non validated absences list
+Add name and firstname as title in planning cells
+Framework's lines edition: fix updating cells color
+Remove HTML entities in absence list
+Restore red marking when an absence is not validated
+Prevent creating empty working hours for non authorized users
+Show deleted agent in holiday account: Remove "Active" filter in DB query of fetchAllCredits function
+Hide/show drop icon when locking/unlocking planning
+Add clear-string class on datatable columns that needs sort on accents
 ICS parser gets the right date when the TimeZone contains ":" (#438)
 broken link to import agents from LDAP (#437)
 Defined length for check_ics and default for check_hamac
@@ -47,6 +68,8 @@ Return access denied when editing unknown absence id
 Make ICS parser gets the right EXDATE when the TimeZone contains (MT 34284)
 
 - Plumbing
+Working hours: add a dedicated method for permissions checking
+Add unit tests for working hours permissions
 Load an up-to-date SQL file
 Add a fixture builder to simplify tests writing
 Absences: use route names according to PLB naming convention
