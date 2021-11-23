@@ -47,11 +47,11 @@
               <td style='white-space: nowrap;'>
                 <select name='etage' id='etage' style='width:255px' class='ui-widget-content ui-corner-all'>
                   <option value=''>&nbsp;</option>
-                  {% for floor in etages %}
-                    {% if etage == floor.valeur %}
-                      <option value='{{floor.valeur}}' selected=selected>{{ floor.valeur }}</option>
+                  {% for floor in floors %}
+                    {% if etage == floor.id %}
+                      <option value='{{floor.id}}' selected=selected>{{ floor.valeur }}</option>
                     {% else %}
-                      <option value='{{floor.valeur}}' >{{ floor.valeur }}</option>
+                      <option value='{{floor.id}}' >{{ floor.valeur }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>
@@ -63,11 +63,11 @@
               <td style='white-space: nowrap;'>
                 <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
                   <option value=''>&nbsp;</option>
-                  {% for group in groupes %}
-                    {% if groupe == group.valeur %}
-                      <option value='{{ group.valeur }}' selected=selected  >{{ group.valeur }}</option>
+                  {% for group in groups %}
+                    {% if groupe == group.id %}
+                      <option value='{{ group.id }}' selected=selected  >{{ group.valeur }}</option>
                     {% else %}
-                      <option value='{{ group.valeur }}'>{{ group.valeur }}</option>
+                      <option value='{{ group.id }}'>{{ group.valeur }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>
@@ -109,15 +109,13 @@
             <tr style='vertical-align:top;'>
               <td>Activités :</td>
               <td>
-                {% if not actList is empty %}
-                  {% for a in actList %}
-                    {% if a.id in activites %}
-                      <input type='checkbox' name='activites[]' value='{{ a.id }}' checked=checked /> {{ a.nom | raw }}<br/>
-                    {% else %}
-                      <input type='checkbox' name='activites[]' value='{{ a.id }}' /> {{ a.nom | raw }}<br/>
-                    {% endif %}
-                  {% endfor %}
-                {% endif %}
+                {% for s in skillList %}
+                  {% if s.id in activites %}
+                    <input type='checkbox' name='activites[]' value='{{ s.id }}' checked=checked /> {{ s.nom | raw }}<br/>
+                  {% else %}
+                    <input type='checkbox' name='activites[]' value='{{ s.id }}' /> {{ s.nom | raw }}<br/>
+                  {% endif %}
+                {% endfor %}
               </td>
             </tr>
             {% if categoriesList is iterable and not categoriesList is empty %}
@@ -162,12 +160,12 @@
       </p>
       <fieldset>
         <ul id="etages-sortable">
-          {% if etages is iterable %}
-            {% for e in etages %}
-              <li class='ui-state-default' id='li_{{ e.id }}'>
+          {% if floors is iterable %}
+            {% for f in floors %}
+              <li class='ui-state-default' id='li_{{ f.id }}'>
                 <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
-                <font id='valeur_{{ e.id }}'>{{ e.valeur }}</font>
-                {% if e.valeur in usedFloors == false %}
+                <font id='valeur_{{ f.id }}'>{{ f.valeur }}</font>
+                {% if f.id in usedFloors == false %}
                   <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>
@@ -188,11 +186,11 @@
       </p>
       <fieldset>
         <ul id="groups-sortable">
-          {% if groupes is iterable %}
-            {% for g in groupes %}
+          {% if groups is iterable %}
+            {% for g in groups %}
               <li class='ui-state-default' id='li_{{ g.id }}'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
                 <font id='valeur_{{ g.id }}'>{{ g.valeur }}</font>
-                {% if g.valeur in usedGroups == false %}
+                {% if g.id in usedGroups == false %}
                   <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>

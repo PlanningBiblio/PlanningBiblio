@@ -28,13 +28,20 @@ $(function() {
     tab=new Array();
     $("#etages-sortable li").each(function(){
       var id=$(this).attr("id").replace("li_","");
-       tab.push(new Array($("#valeur_"+id).text(), $(this).index()));
+        tab.push({
+          id: id,
+          value: $("#valeur_"+id).text(),
+          place: $(this).index()
+        });
     });
+
+    tab = JSON.stringify(tab);
+
     // Transmet le tableau à la page de validation ajax
     $.ajax({
       url: url('include/ajax.menus.php'),
       type: "post",
-          dataType: "json",
+      dataType: "json",
       data: {tab: tab, menu: "etages", CSRFToken: $('#CSRFSession').val()},
       success: function(){
             var current_val = $('#etage').val();
@@ -44,8 +51,8 @@ $(function() {
             $("#etages-sortable li").each(function(){
               var id=$(this).attr("id").replace("li_","");
               var val = $("#valeur_"+id).text();
-              var selected = (val == current_val) ? "selected='selected'" : "";
-              var option = "<option value='"+val+"' "+selected+">"+val+"</option>";
+              var selected = (id == current_val) ? "selected='selected'" : "";
+              var option = "<option value='"+id+"' "+selected+">"+val+"</option>";
               $('#etage').append(option);
             });
             $("#add-etage-form").dialog( "close" );
@@ -134,8 +141,14 @@ $(function() {
     tab=new Array();
     $("#groups-sortable li").each(function(){
       var id=$(this).attr("id").replace("li_","");
-       tab.push(new Array($("#valeur_"+id).text(), $(this).index()));
+        tab.push({
+          id: id,
+          value: $("#valeur_"+id).text(),
+          place: $(this).index()
+        });
     });
+
+    tab = JSON.stringify(tab);
 
     // Transmet le tableau à la page de validation ajax
     $.ajax({
@@ -151,8 +164,8 @@ $(function() {
             $("#groups-sortable li").each(function(){
               var id=$(this).attr("id").replace("li_","");
               var val = $("#valeur_"+id).text();
-              var selected = (val == current_val) ? "selected='selected'" : "";
-              var option = "<option value='"+val+"' "+selected+">"+val+"</option>";
+              var selected = (id == current_val) ? "selected='selected'" : "";
+              var option = "<option value='"+id+"' "+selected+">"+val+"</option>";
               $('#groupe').append(option);
             });
             $("#add-group-form").dialog( "close" );

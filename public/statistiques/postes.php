@@ -23,6 +23,7 @@ require_once "personnel/class.personnel.php";
 require_once "include/horaires.php";
 
 use App\Model\AbsenceReason;
+use App\Model\SelectFloor;
 
 // Initialisation des variables :
 $debut=filter_input(INPUT_POST, "debut", FILTER_SANITIZE_STRING);
@@ -118,6 +119,8 @@ foreach ($absences_reasons as $elem) {
 
 $tab=array();
 
+$floors = $entityManager->getRepository(SelectFloor::class);
+
 // Récupération des infos sur les agents
 $p=new personnel();
 $p->fetch();
@@ -127,6 +130,10 @@ $agents_infos=$p->elements;
 $db=new db();
 $db->select2("postes", "*", array("statistiques"=>"1"), "ORDER BY `etage`,`nom`");
 $postes_list=$db->result;
+
+foreach ($postes_list as $k => $v) {
+    $postes_list[$k]['etage'] = $floors->find($v['etage']) ? $floors->find($v['etage'])->valeur() : null;
+}
 
 if (!empty($postes)) {
     //	Recherche du nombre de jours concernés
