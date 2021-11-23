@@ -559,6 +559,7 @@ class AbsenceController extends BaseController
     {
         $date = date("Y-m-d");
         $db = new \db();
+        $db->sanitize_string = false;
         $db->query("SELECT * FROM `{$this->dbprefix}absences_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
         $absences_infos = array();
         if ($db->result) {
