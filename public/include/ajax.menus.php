@@ -29,13 +29,50 @@ $menu = FILTER_INPUT(INPUT_POST, 'menu', FILTER_SANITIZE_STRING);
 $option = FILTER_INPUT(INPUT_POST, 'option', FILTER_SANITIZE_STRING);
 $tab = $_POST['tab'];
 
+// New method to use for updating menus
+if (in_array($menu, array('etages', 'groupes'))) {
+    $tab = json_decode($tab);
+
+    // Deleting items put in trash
+    $ids = array();
+    foreach ($tab as $elem) {
+        $ids[] = $elem->id;
+    }
+    $ids = implode(',', $ids);
+
+    $db=new db();
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("select_$menu", ['id' => "NOT IN$ids"]);
+
+
+    // Adding new items
+    $db_ids = array();
+    $db=new db();
+    $db->select("select_$menu");
+    foreach ($db->result as $elem) {
+        $db_ids[] = $elem['id'];
+    }
+
+    foreach ($tab as $elem) {
+        if (!in_array($elem->id, $db_ids)) {
+            $db = new db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert("select_$menu", ["valeur" => $elem->value, "rang" => $elem->place]);
+        } else {
+            $db = new db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update("select_$menu", ["rang" => $elem->place], ["id" => $elem->id]);
+        }
+    }
+
+    echo json_encode('ok');
+    exit;
+}
+
 $db=new db();
 $db->CSRFToken = $CSRFToken;
 $db->delete("select_$menu");
 foreach ($tab as $elem) {
-    if (!in_array($menu, array('etages', 'groupes'))) {
-        $elem[0] = htmlentities($elem[0], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
-    }
     $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
     if ($option == 'type') {
         $elements['type'] = $elem[2];
