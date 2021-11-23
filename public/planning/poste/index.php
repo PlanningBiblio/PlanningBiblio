@@ -128,6 +128,7 @@ if ($db->result) {
 
 //	Selection des messages d'informations
 $db=new db();
+$db->sanitize_string = false;
 $db->select2("infos", "*", array("debut"=>"<={$date}", "fin"=>">={$date}"), "ORDER BY `debut`,`fin`");
 $messages_infos=null;
 if ($db->result) {
