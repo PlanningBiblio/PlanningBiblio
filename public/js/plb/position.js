@@ -30,9 +30,12 @@ $(function() {
       var id=$(this).attr("id").replace("li_","");
        tab.push(new Array($("#valeur_"+id).text(), $(this).index()));
     });
+
     // Transmet le tableau à la page de validation ajax
+    baseURL = $('#baseURL').val();
+
     $.ajax({
-      url: $('#baseURL').val() + "/include/ajax.menus.php",
+      url: baseURL + "include/ajax.menus.php",
       type: "post",
           dataType: "json",
       data: {tab: tab, menu: "etages", CSRFToken: $('#CSRFSession').val()},
@@ -138,8 +141,10 @@ $(function() {
     });
 
     // Transmet le tableau à la page de validation ajax
+    baseURL = $('#baseURL').val();
+
     $.ajax({
-      url: $('#baseURL').val() + "/include/ajax.menus.php",
+      url: baseURL + "include/ajax.menus.php",
       type: "post",
           dataType: "json",
       data: {tab: tab, menu: "groupes", CSRFToken: $('#CSRFSession').val()},
