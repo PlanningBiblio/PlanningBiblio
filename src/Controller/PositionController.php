@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\Position;
+use App\Model\SelectFloor;
+use App\Model\SelectGroup;
 use App\Model\Skill;
 
 require_once(__DIR__ . '/../../public/postes/class.postes.php');
@@ -61,6 +63,10 @@ class PositionController extends BaseController
             'CSRFSession'   => $GLOBALS['CSRFSession']
         ));
 
+        // Floors and groups
+        $floors = $this->entityManager->getRepository(SelectFloor::class);
+        $groups = $this->entityManager->getRepository(SelectGroup::class);
+
         $positions = array();
 
         foreach ($postes as $id => $value) {
@@ -94,8 +100,8 @@ class PositionController extends BaseController
             $new['activites'] = $activites;
             $new['activitesAffichees'] = $activitesAffichees;
             $new['id'] = $value->id();
-            $new['groupe'] = $value->groupe();
-            $new['etage'] = $value->etage();
+            $new['groupe'] = $groups->find($value->groupe()) ? $groups->find($value->groupe())->valeur() : null;
+            $new['etage'] = $floors->find($value->etage()) ? $floors->find($value->etage())->valeur() : null;
             $new['statistiques'] = $value->statistiques();
             $new['bloquant'] = $value->bloquant();
             $new['obligatoire'] = $value->obligatoire();
@@ -109,121 +115,56 @@ class PositionController extends BaseController
 
     /**
      * @Route("/position/add", name="position.add", methods={"GET"})
-     */
-    public function add(Request $request)
-    {
-        $a = new \activites();
-        $a->fetch();
-        $actList = $a->elements;
-
-        $db = new \db();
-        $db->select2("select_categories", "*", "1", "order by rang");
-        $categories_list = $db->result;
-
-        $db = new \db();
-        $db->select2("select_etages", "*", "1", "order by rang");
-        $etages = $db->result;
-
-        $db = new \db();
-        $db->select2("select_groupes", "*", "1", "order by rang");
-        $groupes = $db->result;
-
-        $activites = $actList;
-        $categories = $categories_list;
-
-        $nbMultisite = $this->config('Multisites-nombre');
-        $sites = array();
-        $selectedSites = array();
-
-        if ($nbMultisite>1) {
-            for ($elem = 0; $elem < $nbMultisite +1; $elem++){
-                if ($this->config("Multisites-site$elem")){
-                    $sites[] = $this->config("Multisites-site$elem");
-                    $selectedSites[] = null;
-                }
-            }
-        }
-        $nom ="";
-        $groupe ="";
-        $etage ="";
-        $activites = "[]";
-        $categories = "";
-        $groupe_id  = '0';
-        $obligatoire = "checked";
-        $bloq1 = "checked";
-        $stat1 = "checked";
-        $teleworking2 = "checked";
-
-
-
-        $this->templateParams(array(
-            'activites'      => $activites,
-            'actList'        => $actList,
-            'categories'     => $categories,
-            'bloq1'          => $bloq1,
-            'bloq2'          => null,
-            'CSRFToken'      => $GLOBALS['CSRFSession'],
-            'categoriesList' => $categories_list,
-            'etage'          => $etage,
-            'etages'         => $etages,
-            'groupe'         => $groupe,
-            'groupes'        => $groupes,
-            'group_id'       => $groupe_id,
-            'id'             => null,
-            'multisite'      => $sites,
-            'nbSites'        => $nbMultisite,
-            'nom'            => $nom,
-            'obligatoire'    => $obligatoire,
-            'renfort'        => null,
-            'selectedSites'  => $selectedSites,
-            'stat1'          => $stat1,
-            'stat2'          => null,
-            'teleworking1'   => null,
-            'teleworking2'   => $teleworking2,
-            'usedFloors'     => null,
-            'usedGroups'     => null,
-
-        ));
-        return $this->output('position/edit.html.twig');
-    }
-
-    /**
      * @Route("/position/{id}", name="position.edit", methods={"GET"})
      */
     public function edit(Request $request)
     {
         // Initialisation des variables
         $id = $request->get('id');
-        $a = new \activites();
-        $a->fetch();
-        $actList = $a->elements;
 
-        $position  =  $this->entityManager->getRepository(Position::class)->find($id);
-        $nom =  $position->nom();
-        $etage = $position->etage();
-        $groupe = $position->groupe();
-        $groupe_id = $position->groupe_id();
-        $categories  =  $position->categories() ?  : array();
-        $site = $position->site();
-        $activites = $position->activites();
-        $obligatoire = $position->obligatoire() =="Obligatoire"?"checked='checked'":"";
-        $renfort = $position->obligatoire() == "Renfort"?"checked='checked'":"";
-        $stat1 = $position->statistiques()?"checked='checked'":"";
-        $stat2 = !$position->statistiques()?"checked='checked'":"";
-        $bloq1 = $position->bloquant()?"checked='checked'":"";
-        $bloq2 = !$position->bloquant()?"checked='checked'":"";
-        $teleworking1 = $position->teleworking() ? "checked='checked'" : "";
-        $teleworking2 = !$position->teleworking() ? "checked='checked'" : "";
+        if (is_numeric($id)) {
+            $position  =  $this->entityManager->getRepository(Position::class)->find($id);
+            $nom =  $position->nom();
+            $etage = $position->etage();
+            $groupe = $position->groupe();
+            $groupe_id = $position->groupe_id();
+            $categories  =  $position->categories() ?  : array();
+            $site = $position->site();
+            $activites = $position->activites();
+            $obligatoire = $position->obligatoire() =="Obligatoire"?"checked='checked'":"";
+            $renfort = $position->obligatoire() == "Renfort"?"checked='checked'":"";
+            $stat1 = $position->statistiques()?"checked='checked'":"";
+            $stat2 = !$position->statistiques()?"checked='checked'":"";
+            $bloq1 = $position->bloquant()?"checked='checked'":"";
+            $bloq2 = !$position->bloquant()?"checked='checked'":"";
+            $teleworking1 = $position->teleworking() ? "checked='checked'" : "";
+            $teleworking2 = !$position->teleworking() ? "checked='checked'" : "";
+        } else {
+            $id = null;
+            $nom =  null;
+            $etage = null;
+            $groupe = null;
+            $groupe_id = null;
+            $categories = array();
+            $site = null;
+            $activites = array();
+            $obligatoire = 'checked';
+            $renfort = null;
+            $stat1 = 'checked';
+            $stat2 = null;
+            $bloq1 = 'checked';
+            $bloq2 = null;
+            $teleworking1 = null;
+            $teleworking2 = 'checked';
+        }
 
-        $checked = null;
+        // Floors, groups and skills
+        $floors = $this->entityManager->getRepository(SelectFloor::class)->findBy([], ['rang' => 'ASC']);
+        $groups = $this->entityManager->getRepository(SelectGroup::class)->findBy([], ['rang' => 'ASC']);
+        $skill_list = $this->entityManager->getRepository(Skill::class)->findBy(['supprime' => null], ['nom' => 'ASC']);
 
-        // Recherche des étages
-        $db = new \db();
-        $db->select2("select_etages", "*", "1", "order by rang");
-        $etages = $db->result;
-
-        // Recherche des étages utilisés
-        $etages_utilises = array();
+        // Used floors
+        $used_floors = array();
 
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('a.etage')
@@ -237,17 +178,12 @@ class PositionController extends BaseController
 
         if ($response) {
             foreach ($response as $elem) {
-                $etages_utilises[] = $elem['etage'];
+                $used_floors[] = $elem['etage'];
             }
         }
 
-        // Recherche des groupes
-        $db = new \db;
-        $db->select2("select_groupes", "*", "1", "order by rang");
-        $groupes = $db->result;
-
-        //Recherche des groupes utilisés
-        $groupes_utilises = array();
+        // Used groups
+        $used_groups = array();
 
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('p.groupe')
@@ -260,7 +196,7 @@ class PositionController extends BaseController
         $response = $query->getResult();
         if ($response) {
             foreach ($response as $elem) {
-                $groupes_utilises[] = $elem['groupe'];
+                $used_groups[] = $elem['groupe'];
             }
         }
 
@@ -296,14 +232,14 @@ class PositionController extends BaseController
             'teleworking2'  => $teleworking2,
             'bloq1'         => $bloq1,
             'bloq2'         => $bloq2,
-            'etages'        => $etages,
-            'groupes'       => $groupes,
+            'floors'        => $floors,
+            'groups'        => $groups,
             'nbSites'       => $nbSites,
             'multisite'     => $multisite,
-            'actList'       => $actList,
+            'skillList'     => $skill_list,
             'categoriesList'=> $categories_list,
-            'usedGroups'    => $groupes_utilises,
-            'usedFloors'    => $etages_utilises,
+            'usedGroups'    => $used_groups,
+            'usedFloors'    => $used_floors,
             'selectedSites' => $selectedSites,
             'CSRFToken'     => $GLOBALS['CSRFSession']
             )

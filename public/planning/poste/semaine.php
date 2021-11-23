@@ -24,6 +24,7 @@ include_once "personnel/class.personnel.php";
 include "fonctions.php";
 
 use App\Model\AbsenceReason;
+use App\Model\SelectFloor;
 use App\PlanningBiblio\Framework;
 
 // Initialisation des variables
@@ -120,6 +121,9 @@ if ($db->result) {
     }
 }
 
+// Floors
+$floors =  $entityManager->getRepository(SelectFloor::class);
+
 // Récupération des postes
 $db=new db();
 $db->select2("postes", "*", "1", "ORDER BY `id`");
@@ -148,7 +152,13 @@ if ($db->result) {
     
 
         // Tableau $postes
-        $postes[$elem['id']]=array("nom"=>$elem['nom'], "etage"=>$elem['etage'], "obligatoire"=>$elem['obligatoire'], "teleworking"=>$elem['teleworking'], "classes"=>implode(" ", $classesPoste));
+        $postes[$elem['id']] = array(
+            "nom" => $elem['nom'],
+            "etage" => $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
+            "obligatoire" => $elem['obligatoire'],
+            "teleworking" => $elem['teleworking'],
+            "classes" => implode(" ", $classesPoste)
+        );
     }
 }
 
