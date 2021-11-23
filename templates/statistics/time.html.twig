@@ -15,25 +15,18 @@
           <input type='text' name='debut' class='datepicker' value='{{ debutFr }}' style='margin:0 20px 0 5px;' />
           <label for='fin'>Fin</label>
           <input type='text' name='fin' class='datepicker' value='{{ finFr }}' style='margin:0 0 0 5px;' />
-          {% if groupes is iterable and nbGroupes > 1 %}
-            {% if checked is not null %}
-              <span id='stat-temps-aff-grp'>
-                <input type='checkbox' value='on' id='selection_groupe' name='selection_groupe' checked />
-                <label for='selection_groupe'>Afficher les heures par groupe de postes</label>
-              </span>
-            {% else %}
-              <span id='stat-temps-aff-grp'>
-                <input type='checkbox' value='on' id='selection_groupe' name='selection_groupe'/>
-                <label for='selection_groupe'>Afficher les heures par groupe de postes</label>
-              </span>
-            {% endif %}
+          {% if groups_exist %}
+            <span id='stat-temps-aff-grp'>
+              <input type='checkbox' value='on' id='selection_groupe' name='selection_groupe' {{ checked }} />
+              <label for='selection_groupe'>Afficher les heures par groupe de postes</label>
+            </span>
           {% endif %}
           <input type='submit' value='OK' id='submit' class='ui-button' style='margin-left:30px;'/>
         </form>
       </td>
     </tr>
   </table><br/>
-  {% if tab is not iterable %}
+  {% if tab|length < 1 %}
     Les plannings de la période choisie sont vides.<br/><br/><br/><br/><br/><br/>
   {% else %}
     <table id='tableStatTemps' class='CJDataTable' data-fixedColumns='2'>
@@ -52,16 +45,9 @@
               {% endif %}
             {% endfor %}
           {% endif %}
-          {% if groupes_keys is iterable %}
-            {% for g in groupes_keys %}
-              {% if g != emptystr and g in totauxGroupesPerso %}
-                <th class='dataTableHeureFR'> {{ g }} </th>
-              {% endif %}
-            {% endfor %}
-            {% if emptystr in groupes_keys and emptystr in totauxGroupesPerso %}
-              <th class='dataTableHeureFR' > Autres </th>
-            {% endif %}
-          {% endif %}
+          {% for g in groups %}
+            <th class='dataTableHeureFR'> {{ g.valeur }} </th>
+          {% endfor %}
           <th class='dataTableHeureFR' > Total </th>
           <th class='dataTableHeureFR' > Max. </th>
           {% if nbSemaines != 1 %}
@@ -86,17 +72,12 @@
                 <td  style ='text-align:center;'>
               {% endif %}
                 <strong>{{ t[d[0]].total }} </strong>
-                {% if groupes_keys is not empty %}
+                {% if groups is iterable %}
                   <br/>
-                  {% for g in groupes_keys %}
-                    {% if t[d[0]].groupe[g] is not null %}
+                  {% for g in groups %}
+                    {% if t[d[0]].groupe[g.id] is not null %}
                       <br/>
-                      {% if g is not same as("") %}
-                        {{ g }}
-                      {% else %}
-                        Autres
-                      {% endif %}
-                      : {{ t[d[0]].groupe[g] }}
+                      {{ g.valeur }} : {{ t[d[0]].groupe[g.id] }}
                     {% endif %}
                   {% endfor %}
                {% endif %}
@@ -110,24 +91,15 @@
                 {% endif %}
               {% endfor %}
             {% endif %}
-            {% if groupes_keys is not empty %}
-              {% for g in groupes_keys %}
-                {% if g != emptystr and g in totauxGroupesPerso %}
-                  {% if t.groupe[g] is defined %}
-                    <td style ='text-align : center;'>{{ t.groupe[g] }}</td>
-                  {% else %}
-                    <td style ='text-align : center;'>-</td>
-                  {% endif %}
+            {% for g in groups %}
+              <td style='text-align:center;'>
+                {% if t.groupe[g.id] is defined %}
+                  {{ t.groupe[g.id] }}
+                {% else %}
+                  -
                 {% endif %}
-                {% if emptystr in groupes_keys and emptystr in totauxGroupesPerso %}
-                  {% if t.group_ is defined %}
-                    <td style ='text-align : center;'>{{ t.group_ }}</td>
-                  {% else %}
-                    <td style ='text-align : center;'>-</td>
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
-            {% endif %}
+              </td>
+            {% endfor %}
             {% if nbSemaines != 1 %}
               {% if t.diff1 > 0 %}
               <td style='text-align : center; font-weight: bold; background : red ;'> {{ t.total }} </td>
@@ -167,16 +139,10 @@
                 {% endif %}
               {% endfor %}
             {% endif %}
-            {% if groupes_keys is not empty %}
-              {% for g in groupes_keys %}
-                {% if g is not null and g in totauxGroupesPerso %}
-                  <th> {{ totauxGroupesHeures[g] }}</th>
-                {% endif %}
-              {% endfor %}
-            {% endif %}
-            {% if emptystr in groupes_keys and emptystr in totauxGroupesPerso %}
-              <th>{{ totauxGroupesHeures[emptystr] }}</th>
-            {% endif %}
+            {% for g in groups %}
+              <th> {{ totauxGroupesHeures[g.id] }} </th>
+              {# <th> {{ g.valeur }}{{ totauxGroupesHeures[g.id] }}</th> #}
+            {% endfor %}
             <th>{{ totalHeures }}</th>
             {% if nbSemaines != 1%}
               <th colspan='3'>&nbsp;</th>
@@ -197,16 +163,9 @@
                 {% endif %}
               {% endfor %}
             {% endif %}
-            {% if groupes_keys is not empty %}
-              {% for g in groupes_keys %}
-                {% if g is not null and g in totauxGroupesPerso %}
-                  <th> {{ totauxGroupesPerso[g] }}</th>
-                {% endif %}
-              {% endfor %}
-            {% endif %}
-            {% if emptystr in groupes_keys and emptystr in totauxGroupesPerso %}
-              <th>{{ totauxGroupesPerso[emptystr] }}</th>
-            {% endif %}
+            {% for g in groups %}
+              <th> {{ totauxGroupesPerso[g.id] }}</th>
+            {% endfor %}
             <th>{{ totalAgents }}</th>
             {% if nbSemaines != 1%}
               <th colspan='3'>&nbsp;</th>

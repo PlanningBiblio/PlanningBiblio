@@ -42,6 +42,17 @@ class postes
 
     public function fetch($sort="nom", $name=null, $group=null)
     {
+        // Floors
+        $floors = array();
+        $db=new db();
+        $db->sanitize_string = false;
+        $db->select("select_etages");
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $floors[$elem['id']] = $elem['valeur'];
+            }
+        }
+
         $where=array("supprime"=>null);
     
         if ($this->site) {
@@ -57,6 +68,7 @@ class postes
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $all[$elem['id']]=$elem;
+                $all[$elem['id']]['etage'] = $floors[$elem['etage']];
             }
         }
 
