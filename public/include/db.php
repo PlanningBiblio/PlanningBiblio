@@ -438,7 +438,8 @@ class db
         }
 
         $values=implode("),(", $tab);
-        $this->query("INSERT INTO `$table` (`$fields`) VALUES ($values);");
+        $this->query("INSERT INTO `$table` (`$fields`) VALUES ($values);", true);
+        return $this->inserted_id;
     }
 
 
@@ -479,7 +480,20 @@ class db
 
             return "{$key} IN ('$values')";
         }
-    
+
+        elseif (substr($value, 0, 6)=="NOT IN") {
+            $tmp=trim(substr($value, 6));
+            $tmp=explode(",", $tmp);
+
+            $values=array();
+            foreach ($tmp as $elem) {
+                $values[]=$this->escapeString(htmlentities(trim($elem), ENT_QUOTES | ENT_IGNORE, "UTF-8", false));
+            }
+            $values=implode("','", $values);
+
+            return "{$key} NOT IN ('$values')";
+        }
+
         // NULL
         elseif ($value===null) {
             $operator=" IS NULL";

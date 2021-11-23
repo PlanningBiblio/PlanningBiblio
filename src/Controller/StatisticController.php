@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\AbsenceReason;
+use App\Model\SelectFloor;
+use App\Model\SelectGroup;
 use App\PlanningBiblio\PresentSet;
 
 $version = 'symfony';
@@ -567,6 +569,8 @@ class StatisticController extends BaseController
                 $resultat[$i]['service_id'] = $agents[$resultat[$i]['perso_id']]['service_id'];
             }
 
+            $floors = $this->entityManager->getRepository(SelectFloor::class);
+
             //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
             //	pour chaque service sélectionné
 
@@ -620,7 +624,13 @@ class StatisticController extends BaseController
                             if ($elem['absent']!="1") {		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
                                 // on créé un tableau par poste avec son nom, étage et la somme des heures faites par service
                                 if (!array_key_exists($elem['poste'], $postes)) {
-                                    $postes[$elem['poste']] = array($elem['poste'],$elem['poste_nom'],$elem['etage'],0,"site"=>$elem['site']);
+                                    $postes[$elem['poste']] = array(
+                                        $elem['poste'],
+                                        $elem['poste_nom'],
+                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
+                                        0,
+                                        "site"=>$elem['site']
+                                    );
                                 }
                                 $postes[$elem['poste']][3] += diff_heures($elem['debut'], $elem['fin'], "decimal");
                                 // On compte les heures de chaque site
@@ -999,7 +1009,7 @@ class StatisticController extends BaseController
                 ),
                 array("statistiques"=>"1"),
                 "ORDER BY `poste_nom`,`etage`"
-        );
+            );
             $resultat = $db->result;
 
             // Ajoute le statut pour chaque agents dans le tableau resultat
@@ -1012,6 +1022,8 @@ class StatisticController extends BaseController
                 $resultat[$i]['statut'] = $agents[$resultat[$i]['perso_id']]['statut'];
                 $resultat[$i]['statut_id'] = $agents[$resultat[$i]['perso_id']]['statut_id'];
             }
+
+            $floors = $this->entityManager->getRepository(SelectFloor::class);
 
             //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
             //	pour chaque statut sélectionné
@@ -1067,7 +1079,13 @@ class StatisticController extends BaseController
                             if ($elem['absent'] != "1") {		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
                                 // on créé un tableau par poste avec son nom, étage et la somme des heures faites par statut
                                 if (!array_key_exists($elem['poste'], $postes)) {
-                                    $postes[$elem['poste']] = array($elem['poste'],$elem['poste_nom'],$elem['etage'],0,"site"=>$elem['site']);
+                                    $postes[$elem['poste']] = array(
+                                        $elem['poste'],
+                                        $elem['poste_nom'],
+                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
+                                        0,
+                                        "site"=>$elem['site']
+                                    );
                                 }
                                 $postes[$elem['poste']][3] += diff_heures($elem['debut'], $elem['fin'], "decimal");
                                 // On compte les heures de chaque site
@@ -1669,6 +1687,11 @@ class StatisticController extends BaseController
         $db->query("SELECT * FROM `{$dbprefix}postes` WHERE `statistiques`='1' ORDER BY `etage`,`nom`;");
         $postes_list = $db->result;
 
+        $floors = $this->entityManager->getRepository(SelectFloor::class);
+        foreach ($postes_list as $k => $v) {
+            $postes_list[$k]['etage'] = $floors->find($v['etage']) ? $floors->find($v['etage'])->valeur() : null;
+        }
+
         if (!empty($postes)) {
             //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
             //	On stock le tout dans le tableau $resultat
@@ -2005,6 +2028,8 @@ class StatisticController extends BaseController
             $db->query($req);
             $resultat = $db->result;
 
+            $floors = $this->entityManager->getRepository(SelectFloor::class);
+
             //    Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
             //    pour chaques agents sélectionnés
             foreach ($agents as $agent) {
@@ -2057,7 +2082,7 @@ class StatisticController extends BaseController
                                     $postes[$elem['poste']] = array(
                                         $elem['poste'],
                                         $elem['poste_nom'],
-                                        $elem['etage'],
+                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
                                         0,
                                         "site"=>$elem['site']
                                     );
@@ -2337,8 +2362,6 @@ class StatisticController extends BaseController
 
         // Affichage des statistiques par groupe de postes
         $groupes = array();
-        $groupes_keys = array();
-        $affichage_groupe = null;
         $totauxGroupesHeures = null;
         $totauxGroupesPerso = null;
 
@@ -2347,39 +2370,35 @@ class StatisticController extends BaseController
         // Rassemble les postes dans un tableau en fonction de leur groupe (ex: $groupe['pret'] = array(1,2,3))
 
         foreach ($p->elements as $poste) {
-            $groupes[$poste['groupe']][] = $poste['id'];
+            if (!empty($poste['groupe'])) {
+                $groupes[$poste['groupe']][] = $poste['id'];
+            } else {
+                $groupes[-1][] = $poste['id'];
+            }
         }
 
-        $checked = null;
-        if (!empty($groupes) and count($groupes)>1) {
-            $checked = $selection_groupe ? "checked='checked'" : null;
-            $affichage_groupe = "<span id='stat-temps-aff-grp'><input type='checkbox' value='on' id='selection_groupe' name='selection_groupe' $checked /><label for='selection_groupe'>Afficher les heures par groupe de postes</label></span>";
+        $checked = $selection_groupe ? 'checked' : null;
+
+        $keys = array_keys($groupes);
+
+        // Affichage des groupes selon l'ordre du menu déroulant
+
+        // Groups used on requested period
+        $used_groups = array();
+
+        // Groups assigned to at least one position
+        $groups = $this->entityManager->getRepository(SelectGroup::class)->findBy(['id' => $keys], ['rang' => 'ASC']);
+        if (!empty($groups)) {
+            $other = new SelectGroup;
+            $other->id(-1);
+            $other->valeur('Autres');
+            $groups[] = $other;
         }
 
-        if ($affichage_groupe and $selection_groupe) {
-            // $groupes_keys : nom des groupes
-            $keys = array_keys($groupes);
-
-            // Affichage des groupes selon l'ordre du menu déroulant
-            $db = new \db();
-            $db->select2('select_groupes', 'valeur', null, 'order by rang');
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    if (in_array($elem['valeur'], $keys)) {
-                        $groupes_keys[] = $elem['valeur'];
-                    }
-                }
-            }
-            // Autres (les postes qui ne sont pas affectés à des groupes)
-            if (in_array('', $keys)) {
-                $groupes_keys[] = '';
-            }
-
-            // Initialisation des totaux (footer)
-            foreach ($groupes_keys as $g) {
-                $totauxGroupesHeures[$g] = 0;
-                $totauxGroupesPerso[$g] = array();
-            }
+        // Initialisation des totaux (footer)
+        foreach ($groups as $g) {
+            $totauxGroupesHeures[$g->id()] = 0;
+            $totauxGroupesPerso[$g->id()] = array();
         }
 
         // Teleworking
@@ -2484,16 +2503,14 @@ class StatisticController extends BaseController
                     );
                     foreach ($dates as $d) {
                         $tab[$elem['perso_id']][$d[0]] = array('total'=>0);
-                        if (!empty($groupes_keys)) {
-                            foreach ($groupes_keys as $g) {
-                                $tab[$elem['perso_id']][$d[0]]['groupe'][$g] = 0;
-                            }
+                        foreach ($groups as $g) {
+                            $tab[$elem['perso_id']][$d[0]]['groupe'][$g->id()] = 0;
                         }
                     }
 
                     // Totaux par groupe de postes
-                    foreach ($groupes_keys as $g){
-                        $tab[$elem['perso_id']]['groupe'][$g] = 0;
+                    foreach ($groups as $g){
+                        $tab[$elem['perso_id']]['groupe'][$g->id()] = 0;
                     }
                 }
 
@@ -2515,19 +2532,36 @@ class StatisticController extends BaseController
                     $siteHeures[$elem['site']] = 0;
                 }
                 $siteHeures[$elem['site']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+
                 // Totaux par groupe de postes
-                foreach ($groupes_keys as $g) {
-                    if (in_array($elem['poste'], $groupes[$g])) {
-                        $tab[$elem['perso_id']]['groupe'][$g] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                        $tab[$elem['perso_id']][$elem['date']]['groupe'][$g] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                        $totauxGroupesHeures[$g] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                        if (!in_array($elem['perso_id'], $totauxGroupesPerso[$g])) {
-                            $totauxGroupesPerso[$g][] = $elem['perso_id'];
+                foreach ($groups as $g) {
+                    if (in_array($elem['poste'], $groupes[$g->id()])) {
+                        $tab[$elem['perso_id']]['groupe'][$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                        $tab[$elem['perso_id']][$elem['date']]['groupe'][$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                        $totauxGroupesHeures[$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+
+                        if (!in_array($g->id(), $used_groups)) {
+                            $used_groups[] = $g->id();
+                        }
+
+                        if (!in_array($elem['perso_id'], $totauxGroupesPerso[$g->id()])) {
+                            $totauxGroupesPerso[$g->id()][] = $elem['perso_id'];
                         }
                     }
-
                 }
             }
+        }
+
+        // Delete groups which are not used on requested period
+        foreach ($groups as $k => $v) {
+            if (!in_array($v->id(), $used_groups)) {
+                unset($groups[$k]);
+            }
+        }
+
+        // No need to show groups if there is no more one item
+        if (count($groups) < 2 ) {
+            $groups = array();
         }
 
         $nbSites = $this->config('Multisites-nombre');
@@ -2538,8 +2572,8 @@ class StatisticController extends BaseController
         }
 
         // Totaux par groupe de postes
-        foreach ($groupes_keys as $g) {
-            $totauxGroupesPerso[$g] = count($totauxGroupesPerso[$g]);
+        foreach ($groups as $g) {
+            $totauxGroupesPerso[$g->id()] = count($totauxGroupesPerso[$g->id()]);
         }
 
         // pour chaque jour, on compte les heures et les agents
@@ -2592,17 +2626,14 @@ class StatisticController extends BaseController
                 $tab[$key]["sites"][] = array_key_exists("site{$i}", $tab[$key]) ? heure4(number_format($tab[$key]["site{$i}"], 2, '.', ' ')) : "-";
             }
 
-            foreach ($dates as $d) {
-                if (!empty($groupes_keys)) {
-                    foreach ($groupes_keys as $g) {
-                        if ($tab[$key][$d[0]]["group_$g"]) {
-                            $tab[$key]['groupe'][$g] = $elem[$d[0]]["groupe"][$g];
-                        } else {
-                            $tab[$key]['groupe'][$g] = null ;
-                        }
-                        $tab[$key][$d[0]]['groupe'][$g] = heure4($tab[$key][$d[0]]["groupe"][$g]);
-                    }
+           foreach ($dates as $d) {
+                foreach ($groups as $g) {
+                    $tab[$key][$d[0]]['groupe'][$g->id()] = heure4($tab[$key][$d[0]]["groupe"][$g->id()]);
                 }
+            }
+
+            foreach ($tab[$key]['groupe'] as $k => $v) {
+                $tab[$key]['groupe'][$k] = !empty($v) ? heure4($v) : '-';
             }
 
             $tab[$key]['total'] = number_format($tab[$key]['total'], 2, '.', ' ');
@@ -2637,6 +2668,8 @@ class StatisticController extends BaseController
             }
         }
 
+        $totauxGroupesHeures = array_map('heure4', $totauxGroupesHeures);
+
         foreach ($dates as $d) {
             if (array_key_exists($d[0], $heures)) {
                 $heures[$d[0]] = $heures[$d[0]] != 0 ? heure4(number_format($heures[$d[0]], 2, '.', ' ')) : "-";
@@ -2664,6 +2697,7 @@ class StatisticController extends BaseController
                 $siteAgents[$i] = "-";
             } 
         }
+
         // passage en session du tableau pour le fichier export.php
         $_SESSION['stat_tab'] = $tab;
         $_SESSION['stat_heures'] = $heures;
@@ -2671,7 +2705,6 @@ class StatisticController extends BaseController
         $_SESSION['stat_dates'] = $dates;
         $_SESSION['oups']['stat_totalHeures'] = $totalHeures;
         $_SESSION['oups']['stat_nbAgents'] = $nbAgents;
-        $_SESSION['oups']['stat_groupes'] = $groupes_keys;
         $_SESSION['oups']['stat_groupesHeures'] = $totauxGroupesHeures;
         $_SESSION['oups']['stat_groupesPerso'] = $totauxGroupesPerso;
 
@@ -2681,9 +2714,8 @@ class StatisticController extends BaseController
             'CSRFToken'           => $CSRFToken,
             'dates'               => $dates,
             'heures'              => $heures,
-            'groupes'             => $groupes,
-            'groupes_keys'        => $groupes_keys,
-            'nbGroupes'           => count($groupes),
+            'groups'              => $checked ? $groups : [],
+            'groups_exist'        => count($groups) > 1,
             'checked'             => $checked,
             'nbAgents'            => $nbAgents,
             'nbSites'             => $nbSites,
@@ -2816,6 +2848,11 @@ class StatisticController extends BaseController
         $db = new \db();
         $db->select2("postes", "*", array("obligatoire"=>"Renfort", "statistiques"=>"1"), "ORDER BY `etage`,`nom`");
         $postes_list = $db->result;
+
+        $floors = $this->entityManager->getRepository(SelectFloor::class);
+        foreach ($postes_list as $k => $v) {
+            $postes_list[$k]['etage'] = $floors->find($v['etage']) ? $floors->find($v['etage'])->valeur() : null;
+        }
 
         if (!empty($postes)) {
             //	Recherche du nombre de jours concernés

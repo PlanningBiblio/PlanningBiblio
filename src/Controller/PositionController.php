@@ -61,6 +61,23 @@ class PositionController extends BaseController
             'CSRFSession'   => $GLOBALS['CSRFSession']
         ));
 
+        // Floors and groups
+        $floors = array();
+        $db=new \db();
+        $db->sanitize_string = false;
+        $db->select("select_etages");
+        foreach ($db->result as $elem) {
+            $floors[$elem['id']] = $elem['valeur'];
+        }
+
+        $groups = array();
+        $db=new \db();
+        $db->sanitize_string = false;
+        $db->select("select_groupes");
+        foreach ($db->result as $elem) {
+            $groups[$elem['id']] = $elem['valeur'];
+        }
+        
         $positions = array();
 
         foreach ($postes as $id => $value) {
@@ -94,8 +111,8 @@ class PositionController extends BaseController
             $new['activites'] = $activites;
             $new['activitesAffichees'] = $activitesAffichees;
             $new['id'] = $value->id();
-            $new['groupe'] = $value->groupe();
-            $new['etage'] = $value->etage();
+            $new['groupe'] = $groups[$value->groupe()];
+            $new['etage'] = $floors[$value->etage()];
             $new['statistiques'] = $value->statistiques();
             $new['bloquant'] = $value->bloquant();
             $new['obligatoire'] = $value->obligatoire();
@@ -219,6 +236,7 @@ class PositionController extends BaseController
 
         // Recherche des étages
         $db = new \db();
+        $db->sanitize_string = false;
         $db->select2("select_etages", "*", "1", "order by rang");
         $etages = $db->result;
 
@@ -243,6 +261,7 @@ class PositionController extends BaseController
 
         // Recherche des groupes
         $db = new \db;
+        $db->sanitize_string = false;
         $db->select2("select_groupes", "*", "1", "order by rang");
         $groupes = $db->result;
 
