@@ -158,7 +158,7 @@ if ($db->result) {
 // (Calendar widget, days, week and action icons)
 echo $twig->render('planning/poste/menu.html.twig',
     array(
-        'date' => '', 'dates' => $dates, 'site' => $site,
+        'date' => $date, 'dates' => $dates, 'site' => $site,
         'affSem' => $affSem,
         'day' => $jour,
         'public_holiday' => jour_ferie($date),
