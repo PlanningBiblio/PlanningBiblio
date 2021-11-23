@@ -35,12 +35,12 @@
 
         <table class='noprint' id='tab_jours'>
           <tr valign='top'>
-            <td><a href='index.php?date={{ dates[0] }}'  class="{{ date == dates[0] ? 'menuRed' : 'menu' }}" >Lundi</a> / </td>
-            <td><a href='index.php?date={{ dates[1] }}'  class="{{ date == dates[1] ? 'menuRed' : 'menu' }}" >Mardi</a> / </td>
-            <td><a href='index.php?date={{ dates[2] }}'  class="{{ date == dates[2] ? 'menuRed' : 'menu' }}" >Mercredi</a> / </td>
-            <td><a href='index.php?date={{ dates[3] }}'  class="{{ date == dates[3] ? 'menuRed' : 'menu' }}" >Jeudi</a> / </td>
-            <td><a href='index.php?date={{ dates[4] }}'  class="{{ date == dates[4] ? 'menuRed' : 'menu' }}" >Vendredi</a> / </td>
-            <td><a href='index.php?date={{ dates[5] }}'  class="{{ date == dates[5] ? 'menuRed' : 'menu' }}" >Samedi</a></td>
+            <td><a href='index.php?date={{ dates[0] }}'  class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </td>
+            <td><a href='index.php?date={{ dates[1] }}'  class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </td>
+            <td><a href='index.php?date={{ dates[2] }}'  class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </td>
+            <td><a href='index.php?date={{ dates[3] }}'  class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </td>
+            <td><a href='index.php?date={{ dates[4] }}'  class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </td>
+            <td><a href='index.php?date={{ dates[5] }}'  class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></td>
             {% if config('Dimanche') %}
             <td align='center'> / <a href='index.php?date={{ dates[6] }}'  class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </td>
             {% endif %}
