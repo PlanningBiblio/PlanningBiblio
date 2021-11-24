@@ -1283,7 +1283,7 @@ class conges
             'end' => $data['fin'],
             'hour_end' => $data['hre_fin'],
             'perso_id' => $data['perso_id'],
-            'is_recover' => false
+            'is_recover' => $data['debit'] == 'recuperation' ? true : false
         ));
         $result = $holidayHlper->getCountedHours();
         $regul = $result['rest'];
