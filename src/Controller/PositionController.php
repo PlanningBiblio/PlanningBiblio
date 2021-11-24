@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\Position;
+use App\Model\SelectFloor;
+use App\Model\SelectGroup;
 use App\Model\Skill;
 
 require_once(__DIR__ . '/../../public/postes/class.postes.php');
@@ -62,22 +64,9 @@ class PositionController extends BaseController
         ));
 
         // Floors and groups
-        $floors = array();
-        $db=new \db();
-        $db->sanitize_string = false;
-        $db->select("select_etages");
-        foreach ($db->result as $elem) {
-            $floors[$elem['id']] = $elem['valeur'];
-        }
+        $floors = $this->entityManager->getRepository(SelectFloor::class);
+        $groups = $this->entityManager->getRepository(SelectGroup::class);
 
-        $groups = array();
-        $db=new \db();
-        $db->sanitize_string = false;
-        $db->select("select_groupes");
-        foreach ($db->result as $elem) {
-            $groups[$elem['id']] = $elem['valeur'];
-        }
-        
         $positions = array();
 
         foreach ($postes as $id => $value) {
@@ -111,8 +100,8 @@ class PositionController extends BaseController
             $new['activites'] = $activites;
             $new['activitesAffichees'] = $activitesAffichees;
             $new['id'] = $value->id();
-            $new['groupe'] = $groups[$value->groupe()];
-            $new['etage'] = $floors[$value->etage()];
+            $new['groupe'] = $groups->find($value->groupe()) ? $groups->find($value->groupe())->valeur() : null;
+            $new['etage'] = $floors->find($value->etage()) ? $floors->find($value->etage())->valeur() : null;
             $new['statistiques'] = $value->statistiques();
             $new['bloquant'] = $value->bloquant();
             $new['obligatoire'] = $value->obligatoire();
@@ -137,13 +126,46 @@ class PositionController extends BaseController
         $db->select2("select_categories", "*", "1", "order by rang");
         $categories_list = $db->result;
 
-        $db = new \db();
-        $db->select2("select_etages", "*", "1", "order by rang");
-        $etages = $db->result;
+        // Floors and groups
+        $floors = $this->entityManager->getRepository(SelectFloor::class)->findBy([], ['rang' => 'ASC']);
+        $groups = $this->entityManager->getRepository(SelectGroup::class)->findBy([], ['rang' => 'ASC']);
 
-        $db = new \db();
-        $db->select2("select_groupes", "*", "1", "order by rang");
-        $groupes = $db->result;
+        // Used floors
+        $used_floors = array();
+
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('a.etage')
+           ->from(Position::class,'a')
+           ->where($qb->expr()->isNull('a.supprime'))
+           ->groupBy('a.etage');
+
+        $query = $qb->getQuery();
+
+        $response = $query->getResult();
+
+        if ($response) {
+            foreach ($response as $elem) {
+                $used_floors[] = $elem['etage'];
+            }
+        }
+
+        // Used groups
+        $used_groups = array();
+
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('p.groupe')
+           ->from(Position::class,'p')
+           ->where($qb->expr()->isNull('p.supprime'))
+           ->groupBy('p.groupe');
+
+        $query = $qb->getQuery();
+
+        $response = $query->getResult();
+        if ($response) {
+            foreach ($response as $elem) {
+                $used_groups[] = $elem['groupe'];
+            }
+        }
 
         $activites = $actList;
         $categories = $categories_list;
@@ -182,9 +204,9 @@ class PositionController extends BaseController
             'CSRFToken'      => $GLOBALS['CSRFSession'],
             'categoriesList' => $categories_list,
             'etage'          => $etage,
-            'etages'         => $etages,
+            'floors'         => $floors,
             'groupe'         => $groupe,
-            'groupes'        => $groupes,
+            'groups'         => $groups,
             'group_id'       => $groupe_id,
             'id'             => null,
             'multisite'      => $sites,
@@ -197,8 +219,8 @@ class PositionController extends BaseController
             'stat2'          => null,
             'teleworking1'   => null,
             'teleworking2'   => $teleworking2,
-            'usedFloors'     => null,
-            'usedGroups'     => null,
+            'usedGroups'     => $used_groups,
+            'usedFloors'     => $used_floors,
 
         ));
         return $this->output('position/edit.html.twig');
@@ -234,14 +256,12 @@ class PositionController extends BaseController
 
         $checked = null;
 
-        // Recherche des étages
-        $db = new \db();
-        $db->sanitize_string = false;
-        $db->select2("select_etages", "*", "1", "order by rang");
-        $etages = $db->result;
+        // Floors and groups
+        $floors = $this->entityManager->getRepository(SelectFloor::class)->findBy([], ['rang' => 'ASC']);
+        $groups = $this->entityManager->getRepository(SelectGroup::class)->findBy([], ['rang' => 'ASC']);
 
-        // Recherche des étages utilisés
-        $etages_utilises = array();
+        // Used floors
+        $used_floors = array();
 
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('a.etage')
@@ -255,18 +275,12 @@ class PositionController extends BaseController
 
         if ($response) {
             foreach ($response as $elem) {
-                $etages_utilises[] = $elem['etage'];
+                $used_floors[] = $elem['etage'];
             }
         }
 
-        // Recherche des groupes
-        $db = new \db;
-        $db->sanitize_string = false;
-        $db->select2("select_groupes", "*", "1", "order by rang");
-        $groupes = $db->result;
-
-        //Recherche des groupes utilisés
-        $groupes_utilises = array();
+        // Used groups
+        $used_groups = array();
 
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('p.groupe')
@@ -279,7 +293,7 @@ class PositionController extends BaseController
         $response = $query->getResult();
         if ($response) {
             foreach ($response as $elem) {
-                $groupes_utilises[] = $elem['groupe'];
+                $used_groups[] = $elem['groupe'];
             }
         }
 
@@ -315,14 +329,14 @@ class PositionController extends BaseController
             'teleworking2'  => $teleworking2,
             'bloq1'         => $bloq1,
             'bloq2'         => $bloq2,
-            'etages'        => $etages,
-            'groupes'       => $groupes,
+            'floors'        => $floors,
+            'groups'        => $groups,
             'nbSites'       => $nbSites,
             'multisite'     => $multisite,
             'actList'       => $actList,
             'categoriesList'=> $categories_list,
-            'usedGroups'    => $groupes_utilises,
-            'usedFloors'    => $etages_utilises,
+            'usedGroups'    => $used_groups,
+            'usedFloors'    => $used_floors,
             'selectedSites' => $selectedSites,
             'CSRFToken'     => $GLOBALS['CSRFSession']
             )
