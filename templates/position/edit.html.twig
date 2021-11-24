@@ -109,15 +109,13 @@
             <tr style='vertical-align:top;'>
               <td>Activités :</td>
               <td>
-                {% if not actList is empty %}
-                  {% for a in actList %}
-                    {% if a.id in activites %}
-                      <input type='checkbox' name='activites[]' value='{{ a.id }}' checked=checked /> {{ a.nom | raw }}<br/>
-                    {% else %}
-                      <input type='checkbox' name='activites[]' value='{{ a.id }}' /> {{ a.nom | raw }}<br/>
-                    {% endif %}
-                  {% endfor %}
-                {% endif %}
+                {% for s in skillList %}
+                  {% if s.id in activites %}
+                    <input type='checkbox' name='activites[]' value='{{ s.id }}' checked=checked /> {{ s.nom | raw }}<br/>
+                  {% else %}
+                    <input type='checkbox' name='activites[]' value='{{ s.id }}' /> {{ s.nom | raw }}<br/>
+                  {% endif %}
+                {% endfor %}
               </td>
             </tr>
             {% if categoriesList is iterable and not categoriesList is empty %}
