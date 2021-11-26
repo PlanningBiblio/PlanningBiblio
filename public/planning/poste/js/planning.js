@@ -1281,7 +1281,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
   // Affiche un message en haut du planning si pas de catégorie A en fin de service 
   verif_categorieA();
 
-  updatePlanningAlert(debut, fin);
+  updatePlanningAlert();
 
   /*
   Exemple de valeur pour la variable result :
@@ -1301,30 +1301,31 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
   */
 }
 
-function updatePlanningAlert(debut, fin) {
+function updatePlanningAlert() {
     var link = $('a.non_places');
     if (!link) return;
     var date = $('#date').val();
     var site = $('#site').val();
-    $.ajax({
-        url: "planning/poste/ajax.getPlanningAlert.php",
-        dataType: "json",
-        data: {date: date, site: site, debut: debut, fin: fin},
-        type: "get",
-        success: function(result){
-            if (result['amount'] == 0) {
-                tooltip = 'Aucun';
-            } else {
-                tooltip = result['names'].join(', ');
-            }
-            tridstart = debut.replace(/:/g, "");
-            tridend = fin.replace(/:/g, "");
-            $('[id^=' + tridstart + '], [id$=' + tridend + ']').each(function() {
+    $('.tableau0.tr_horaires > .td_horaires').each(function() {
+        var horaires = $(this).attr('id');
+        var debut = horaires.substr(0, 8);
+        var fin = horaires.substr(8);
+        $.ajax({
+            url: "planning/poste/ajax.getPlanningAlert.php",
+            dataType: "json",
+            data: {date: date, site: site, debut: debut, fin: fin},
+            type: "get",
+            success: function(result){
+                if (result['amount'] == 0) {
+                    tooltip = 'Aucun';
+                } else {
+                    tooltip = result['names'].join(', ');
+                }
                 if ($(this).find("a").length > 0) {
                     $(this).find("a").replaceWith("<a href='#' title='" + tooltip + "'> (" + result['amount'] + ")</a>");
                 }
-            });
-        },
+            },
+        });
     });
 }
 
