@@ -47,7 +47,7 @@ $(function() {
     baseURL = $('#baseURL').val();
 
     $.ajax({
-      url: baseURL + "include/ajax.menus.php",
+      url: baseURL + "/include/ajax.menus.php",
       type: "post",
       dataType: "json",
       data: {tab: tab, menu: "etages", CSRFToken: $('#CSRFSession').val()},
@@ -162,7 +162,7 @@ $(function() {
     baseURL = $('#baseURL').val();
 
     $.ajax({
-      url: baseURL + "include/ajax.menus.php",
+      url: baseURL + "/include/ajax.menus.php",
       type: "post",
           dataType: "json",
       data: {tab: tab, menu: "groupes", CSRFToken: $('#CSRFSession').val()},
