@@ -286,7 +286,9 @@ class IndexController extends BaseController
                                 // TODO: Display $non_places on template
 /*
 -            echo "<td class='sticky-line' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
-+            echo "<td id='" . str_replace(':', '', $horaires['debut']) . str_replace(':', '', $horaires['fin']) . "' class='sticky-line td_horaires' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin']).$non_places."</td>";
+
++            echo "<td id='" . $horaires['debut'] . $horaires['fin'] . "' class='sticky-line td_horaires' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin']).$non_places."</td>";
+
 */
                             }
                         }
