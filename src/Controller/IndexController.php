@@ -81,6 +81,10 @@ class IndexController extends BaseController
 
         $this->templateParams(array(
             'date' => $date, 'dates' => $dates, 'site' => $site,
+            'start' => $d->dates[0],
+            'startHr' => dateFr($d->dates[0]),
+            'end' => $d->dates[6],
+            'endHr' => dateFr($d->dates[6]),
             'dateFr' => $dateFr,
             'affSem' => $affSem, 'day' => $jour,
             'public_holiday' => jour_ferie($date),
@@ -97,6 +101,7 @@ class IndexController extends BaseController
             'show_framework_select' => $show_framework_select,
             'base_url' => $this->config('URL'),
             'comments' => $comments,
+            'CSRFToken' => $GLOBALS['CSRFSession'],
         ));
 
 
@@ -479,6 +484,63 @@ class IndexController extends BaseController
         }
 
         return $this->output('planning/poste/index.html.twig');
+    }
+
+    /**
+     * @Route("/deleteplanning", name="planning.delete", methods={"POST"})
+     */
+    public function delete_planning(Request $request, Session $session)
+    {
+        $CSRFToken = $request->get('CSRFToken');
+        $week = $request->get('week');
+        $site = $request->get('site');
+        $date = $request->get('date');
+        $start = $request->get('start');
+        $end = $request->get('end');
+
+        $droits = $GLOBALS['droits'];
+        if (!in_array((300 + $site), $droits)) {
+            $session->getFlashBag()->add('error', "Vous n'avez pas les droits suffisants pour supprimer le(s) planning(s)");
+            return $this->redirectToRoute('index');
+        }
+
+        if ($week) {
+            // Table pl_poste (agents assignment)
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete('pl_poste', array(
+                'site' => $site,
+                'date' => "BETWEEN{$start}AND{$end}")
+            );
+
+            // Table pl_poste_tab_affect (frameworks assignment)
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete('pl_poste_tab_affect', array(
+                'site' => $site,
+                'date'=>"BETWEEN{$start}AND{$end}")
+            );
+
+            return $this->redirectToRoute('index');
+        }
+
+        // Table pl_poste (agents assignment)
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete('pl_poste', array(
+            'site' => $site,
+            'date' => $date)
+        );
+
+        // Table pl_poste_tab_affect (frameworks assignment)
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete('pl_poste_tab_affect', array(
+            'site' => $site,
+            'date' => $date)
+        );
+
+        return $this->redirectToRoute('index');
     }
 
     private function setDate($date)
