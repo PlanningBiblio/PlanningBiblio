@@ -138,6 +138,10 @@ function sethours() {
     return;
   }
 
+  if ( $('#conges-heures').val() == '1' ) {
+    return;
+  }
+
   // Set default values and return if halfday dropdowns are hidden
   if ($('select[name="start_halfday"]').is(':visible') == false) {
     $('#hre_debut_select').val('');
