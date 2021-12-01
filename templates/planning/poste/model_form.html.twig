@@ -37,7 +37,7 @@
       </form>
     {% else %}
       {% set model = models | first  %}
-        <form name='form' method='get' action='{{ asset("modelimport") }}' onsubmit='return ctrl_form("nom");'>
+        <form name='form' method='post' action='{{ asset("modelimport") }}' onsubmit='return ctrl_form("nom");'>
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <input type='hidden' name='model' value='{{ model.model_id }}' />
           <input type='hidden' name='date' value='{{ date }}' />
