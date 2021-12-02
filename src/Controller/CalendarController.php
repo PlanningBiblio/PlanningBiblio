@@ -286,6 +286,8 @@ class CalendarController extends BaseController
                     $site = $horaires[4];
                     if ($site != '-1') {
                         $site_name = $this->config("Multisites-site$site");
+                    } else {
+                        $site_name = '';
                     }
                 }
                 $schedule = array();
