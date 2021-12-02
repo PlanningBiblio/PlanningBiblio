@@ -1069,6 +1069,8 @@ class AgentController extends BaseController
         $agent_id = $request->get('id');
         $response = new Response();
 
+        $login = filter_var($login, FILTER_SANITIZE_EMAIL);
+
         $agent = $this->entityManager->find(Agent::class, $agent_id);
 
         $duplicate = $this->entityManager
@@ -1094,7 +1096,7 @@ class AgentController extends BaseController
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
 
-        $response->setContent('Login successfully changed');
+        $response->setContent($login);
         $response->setStatusCode(200);
 
         return $response;
