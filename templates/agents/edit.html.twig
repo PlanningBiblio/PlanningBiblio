@@ -84,9 +84,9 @@
                 type: "POST",
                 dataType: "html",
                 data: {login: login, id: agent_id},
-                success: function(){
+                success: function(filtered_login){
                     $("#reset-login-form").dialog( "close" );
-                    $('#login').html(login);
+                    $('#login').html(filtered_login);
                 },
                 error: function(xhr, ajaxOptions, thrownError){
                   if (xhr.responseText == 'duplicate') {
