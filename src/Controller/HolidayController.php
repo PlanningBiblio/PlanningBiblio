@@ -322,7 +322,7 @@ class HolidayController extends BaseController
             $request_type = 'recover';
         }
         $show_allday = 0;
-        if ($this->config('Conges-Heures') or $data['debit']=="recuperation") {
+        if (!$this->config('Conges-Recuperations') or $data['debit']=="recuperation") {
             $show_allday = 1;
         }
         $displayHeures=null;
@@ -352,7 +352,6 @@ class HolidayController extends BaseController
             'hre_debut'             => $hre_debut,
             'hre_fin'               => $hre_fin,
             'conges_mode'           => $this->config('Conges-Mode'),
-            'conges_heures'         => $this->config('Conges-Heures'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
             'request_type'          => $request_type,
             'adminN1'               => $adminN1,
@@ -515,7 +514,6 @@ class HolidayController extends BaseController
             'perso_id'              => $perso_id,
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
-            'conges_heures'         => $this->config('Conges-Heures'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
             'CSRFToken'             => $CSRFSession,
             'reliquat'              => $reliquat,
