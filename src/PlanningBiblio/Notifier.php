@@ -33,6 +33,7 @@ class Notifier
     public function __construct()
     {
         $this->config = $GLOBALS['config'];
+        $this->setTransporter(new \CJMail());
     }
 
     public function send()

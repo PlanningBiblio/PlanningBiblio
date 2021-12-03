@@ -66,4 +66,16 @@ class NotifierTest extends TestCase
         $notifier->send();
         $this->assertEquals('', $notifier->getError(), 'No transporter error');
     }
+
+    public function testDefaultTransporter()
+    {
+        $GLOBALS['config']['Mail-IsEnabled'] = 1;
+
+        $notifier = new Notifier();
+
+        $notifier->setMessageCode('create_account');
+        $notifier->send();
+        $this->assertEquals('', $notifier->getError(), 'No transporter error');
+    }
+
 }
