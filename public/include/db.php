@@ -438,8 +438,7 @@ class db
         }
 
         $values=implode("),(", $tab);
-        $this->query("INSERT INTO `$table` (`$fields`) VALUES ($values);", true);
-        return $this->inserted_id;
+        $this->query("INSERT INTO `$table` (`$fields`) VALUES ($values);");
     }
 
 
