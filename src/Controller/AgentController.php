@@ -882,8 +882,7 @@ class AgentController extends BaseController
                 $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
 
                 $notifier = $this->container->get('notifier');
-                $notifier->setTransporter(new \CJMail())
-                         ->setRecipients($mail)
+                $notifier->setRecipients($mail)
                          ->setMessageCode('create_account')
                          ->setMessageParameters(array(
                              'login' => $login,
