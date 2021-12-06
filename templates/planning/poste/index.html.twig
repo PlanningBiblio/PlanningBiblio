@@ -52,7 +52,9 @@
            data-validation="{{ validation2 }}" data-lignesVides="{{ lignesVides }}"
            data-sr-debut="{{ config('Planning-SR-debut') }}"
            data-sr-fin="{{ config('Planning-SR-fin') }}"
-           data-CSRFToken='{{ CSRFSession }}' style='display:none;'>&nbsp;
+           data-CSRFToken="{{ CSRFSession }}"
+           data-postesFrontOffice="{{ postesFrontOffice }}"
+           style="display:none;">&nbsp;
       </div>
 
       <div id='tableau' data-tableId="{{ tab }}">

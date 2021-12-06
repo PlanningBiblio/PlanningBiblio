@@ -229,6 +229,7 @@ class IndexController extends BaseController
             // BSG: Front Office / Back Office Positions
             $planning = new planning();
             $postesFrontOffice = join(',', $planning->getPostesFrontOffice());
+            $this->templateParams(array('postesFrontOffice' => $postesFrontOffice));
 
             $sn=1;
 
