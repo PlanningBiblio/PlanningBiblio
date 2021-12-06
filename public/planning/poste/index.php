@@ -305,7 +305,7 @@ $postesFrontOffice = join(',', $planning->getPostesFrontOffice());
 
 echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisationN1' data-validation='$validation2' 
   data-lignesVides='$lignesVides' data-sr-debut='{$config['Planning-SR-debut']}' data-sr-fin='{$config['Planning-SR-fin']}'
-  data-CSRFToken='$CSRFSession' style='display:none;'>&nbsp;</div>\n";
+  data-CSRFToken='$CSRFSession' data-postesFrontOffice='$postesFrontOffice' style='display:none;'>&nbsp;</div>\n";
 
 // Actualisation du planning si validé et mis à jour depuis un autre poste
 if ($verrou) {
