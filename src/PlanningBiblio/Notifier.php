@@ -3,6 +3,7 @@
 namespace App\PlanningBiblio;
 
 use App\PlanningBiblio\NotificationTransporter\NotificationTransporterInterface;
+use App\PlanningBiblio\Notifier\Message;
 
 class Notifier
 {
@@ -47,14 +48,15 @@ class Notifier
             return;
         }
 
-        if (!isset($this->messages[$this->message_code])) {
+        $message = new Message($this->message_code);
+
+        if ($message->error()) {
             $this->error = "Unknown message code: $this->message_code";
             return;
         }
 
-        $message = $this->messages[$this->message_code];
-        $this->subject = $message['subject'];
-        $this->body = $this->setPlaceHolders($message['body']);
+        $this->subject = $message->subject();
+        $this->body = $this->setPlaceHolders($message->body());
 
         if (!$this->transporter) {
             $this->error = "no transporter provided";
