@@ -45,8 +45,8 @@ class NotifierTest extends TestCase
 
         $this->assertEquals($expected, $notifier->body, 'Get body without placeholders replacements');
         $notifier->setMessageParameters(array(
-            '%login' => 'joe',
-            '%password' => 'foo'
+            'login' => 'joe',
+            'password' => 'foo'
         ));
         $notifier->send();
         $expected = 'Votre compte Planning Biblio a été créé :

@@ -97,7 +97,11 @@ class Notifier
     private function setPlaceHolders($string)
     {
         $params = $this->message_parameters;
-        return str_replace(array_keys($params), array_values($params), $string);
+        $tokens = array();
+        foreach (array_keys($params) as $token) {
+            $tokens[] = "%$token";
+        }
+        return str_replace($tokens, array_values($params), $string);
     }
 
     public function getError()
