@@ -17,14 +17,6 @@ class Notifier
 
     private $config = array();
 
-    private $messages = array(
-        'create_account' => array(
-            'subject' => 'Création de compte',
-            'body' => 'Votre compte Planning Biblio a été créé :
-            <ul><li>Login : %login</li><li>Mot de passe : %password</li></ul>'
-        )
-    );
-
     public $subject;
 
     public $body;
