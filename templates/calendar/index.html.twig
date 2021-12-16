@@ -74,32 +74,34 @@
                   </td>
                 {% else %}
                   {% if d.presence is not empty %}
-                    {% if d.presence.schedule | length > 1 %}
-                      {% if nbSites > 1 %}
-                        {% if d.presence.site == -1 %}
-                          <p style='margin-bottom:0;'> Présence sur tous les sites : </p>
+                    <div class='attendance'>
+                      {% if d.presence.schedule | length > 1 %}
+                        {% if nbSites > 1 %}
+                          {% if d.presence.site == -1 %}
+                            <p style='margin-bottom:0;'> Présence sur tous les sites : </p>
+                          {% else %}
+                            <p style='margin-bottom:0;'> Présence à {{ d.presence.site_name }} : </p>
+                          {% endif %}
                         {% else %}
-                          <p style='margin-bottom:0;'> Présence à {{ d.presence.site_name }} : </p>
+                          <p style='margin-bottom:0;'> Présence :</p>
                         {% endif %}
+                        <ul>
+                        {% for p in d.presence.schedule %}
+                          <li> de {{ p.begin }} à {{ p.end }} </li>
+                        {% endfor %}
+                        </ul>
                       {% else %}
-                        <p style='margin-bottom:0;'> Présence :</p>
-                      {% endif %}
-                      <ul>
-                       {% for p in d.presence.schedule %}
-                         <li> de {{ p.begin }} à {{ p.end }} </li>
-                       {% endfor %}
-                      </ul>
-                    {% else %}
-                      {% if nbSites > 1 %}
-                        {% if d.presence.site == -1 %}
-                          <p> Présent(e) sur tous les sites de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
+                        {% if nbSites > 1 %}
+                          {% if d.presence.site == -1 %}
+                            <p> Présent(e) sur tous les sites de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
+                          {% else %}
+                            <p> Présent(e) à {{ d.presence.site_name }} de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
+                          {% endif %}
                         {% else %}
-                          <p> Présent(e) à {{ d.presence.site_name }} de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
+                          <p> Présent(e) de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
                         {% endif %}
-                      {% else %}
-                        <p> Présent(e) de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
                       {% endif %}
-                    {% endif %}
+                    </div>
                   {% endif %}
                   {% if d.absence is not empty %}
                     <div class ='important'>
