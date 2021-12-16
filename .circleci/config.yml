@@ -50,7 +50,6 @@ jobs:
             - ./vendor
 
       # run tests with phpunit or codecept
-      #- run: ./vendor/bin/phpunit
       - run: sudo cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && echo 'xdebug.mode=coverage' | sudo tee -a $PHP_INI_DIR/php.ini
-      - run: ./vendor/bin/simple-phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
+      - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
       - run: bash <(curl -s https://codecov.io/bash)

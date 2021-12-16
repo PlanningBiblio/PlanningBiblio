@@ -25,7 +25,7 @@ if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['
 #  * .env.$APP_ENV       committed environment-specific defaults
 #  * .env.$APP_ENV.local uncommitted environment-specific overrides
 
-$dotenv = new Dotenv();
+$dotenv = new Dotenv(false);
 if (file_exists(__DIR__ . '/../../.env')) {
     $dotenv->load(__DIR__ . '/../../.env');
 }

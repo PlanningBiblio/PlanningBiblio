@@ -2,7 +2,7 @@
 
 namespace App\PlanningBiblio\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class BaseEvent extends Event
 {
