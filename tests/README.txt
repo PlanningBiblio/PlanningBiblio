@@ -18,7 +18,7 @@ MAILER_URL=null://localhost
 Install composer (needed to run the tests): https://getcomposer.org/doc/00-intro.md
 
 run tests like the following:
-./vendor/bin/simple-phpunit --bootstrap tests/bootstrap.php tests/
+./vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/
 
 bootstrap.php create a database (named like choosen in .env.test.local)
 and init the ORM.
