@@ -13,11 +13,10 @@
       });
 
       $('.copy-table').click(function(e){
-        var baseURL = $('#baseURL').val();
         e.preventDefault();
         id = $(this).data('id');
         $("#copy-div").dialog('open');
-        $("#copy-form").attr("action", baseURL + "framework/copy/"+id);
+        $("#copy-form").attr("action", url('framework/copy/' + id));
         $("#copy-form#numero").attr("value", id);
 
       });

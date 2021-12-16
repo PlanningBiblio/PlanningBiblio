@@ -489,15 +489,10 @@ function verifConges(){
     }
   }
 
-  var baseURL = $('#baseURL').val();
-  if (baseURL == undefined) {
-      baseURL = '';
-  }
-
   // Vérifions si un autre congé a été demandé ou validé
 
   var result=$.ajax({
-    url: baseURL + "ajax/holiday-absence-control",
+    url: url('ajax/holiday-absence-control'),
     type: "get",
     dataType: "json",
     data: {perso_ids: JSON.stringify(perso_ids), debut: debut, fin: fin, id: id, type:'holiday'},
@@ -558,9 +553,8 @@ function verifConges(){
       if (valid == true) {
           // Vérifions les plannings de présence pour le calcul des crédits
           if (multipleAgentsSelected()) {
-            var baseURL = $('#baseURL').val();
             var result=$.ajax({
-                url: baseURL + 'ajax/check-planning',
+                url: url('ajax/check-planning'),
                 type: "post",
                 data: "perso_ids="+JSON.stringify(perso_ids)+"&start="+debut+"&end="+fin,
                 async: false,
