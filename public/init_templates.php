@@ -17,8 +17,8 @@
 
 use App\Twig\AppExtension;
 
-$loader = new Twig_Loader_Filesystem(__DIR__.'/../templates');
-$twig = new Twig_Environment($loader);
+$loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/../templates');
+$twig = new \Twig\Environment($loader);
 $twig->addExtension(new App\Twig\AppExtension());
 
 $templates_params = array(

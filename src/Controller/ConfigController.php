@@ -131,7 +131,7 @@ class ConfigController extends BaseController
 
                 // App URL
                 if ($cp->nom() == 'URL') {
-                    $request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')));
+                    $request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')), Request::HEADER_X_FORWARDED_ALL);
                     $value = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
                 }
                 if (substr($cp->nom(), -9)=="-Password") {

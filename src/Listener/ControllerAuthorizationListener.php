@@ -24,7 +24,7 @@ class ControllerAuthorizationListener
 
     protected $entityManager;
 
-    public function __construct(\Twig_Environment $twig, EntityManagerInterface $em)
+    public function __construct(\Twig\Environment $twig, EntityManagerInterface $em)
     {
         $this->permissions = Yaml::parseFile(__DIR__."/../../config/permissions.yaml");
 

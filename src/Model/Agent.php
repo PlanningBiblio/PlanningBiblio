@@ -47,7 +47,7 @@ class Agent extends PLBEntity {
     /** @Column(type="string") **/
     protected $actif;
 
-    /** @Column(type="json_array") **/
+    /** @Column(type="json") **/
     protected $droits;
 
     /** @Column(type="string") **/
