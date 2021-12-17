@@ -2,6 +2,9 @@
     "phpstan/phpdoc-parser": {
         "version": "1.2.0"
     },
+    "psr/event-dispatcher": {
+        "version": "1.0.0"
+    },
     "symfony/flex": {
         "version": "1.17",
         "recipe": {
@@ -14,10 +17,16 @@
             ".env"
         ]
     },
-    "symfony/inflector": {
-        "version": "v4.4.34"
+    "symfony/password-hasher": {
+        "version": "v5.4.0"
+    },
+    "symfony/polyfill-intl-grapheme": {
+        "version": "v1.23.1"
     },
     "symfony/polyfill-intl-icu": {
         "version": "v1.23.0"
+    },
+    "symfony/string": {
+        "version": "v5.4.0"
     }
 }

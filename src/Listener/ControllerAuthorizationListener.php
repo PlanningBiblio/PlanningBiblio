@@ -3,7 +3,7 @@
 namespace App\Listener;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Doctrine\Common\Annotations\Reader;
@@ -35,7 +35,7 @@ class ControllerAuthorizationListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         $page = $event->getRequest()->getPathInfo();
         $page = preg_replace('/([a-z\/]*).*/', "$1", $page);
@@ -116,7 +116,7 @@ class ControllerAuthorizationListener
         return false;
     }
 
-    private function triggerAccessDenied(GetResponseEvent $event){
+    private function triggerAccessDenied(RequestEvent $event){
 
         $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
 
