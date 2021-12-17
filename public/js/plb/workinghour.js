@@ -11,7 +11,7 @@ function updateTables(selected_weeks) {
     $('#select_number_of_weeks').val(weeks);
 
     $.ajax({
-        url: "/ajax/workinghour-tables",
+        url: url('ajax/workinghour-tables'),
         data: {weeks: weeks, perso_id: $("#perso_id").val(), ph_id: $("#id").val()},
         dataType: "html",
         type: "get",
