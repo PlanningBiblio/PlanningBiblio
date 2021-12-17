@@ -14,10 +14,10 @@
             ".env"
         ]
     },
-    "symfony/polyfill-intl-grapheme": {
-        "version": "v1.23.1"
+    "symfony/inflector": {
+        "version": "v4.4.34"
     },
-    "symfony/string": {
-        "version": "v5.4.0"
+    "symfony/polyfill-intl-icu": {
+        "version": "v1.23.0"
     }
 }

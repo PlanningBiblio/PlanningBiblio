@@ -13,10 +13,7 @@ class ConfigControllerTest extends PLBWebTestCase
         $client->request('GET', '/config');
 
         $response = $client->getResponse()->getContent();
-        $this->assertContains(
-            'Accès refusé',
-            $response
-        );
+        $this->assertMatchesRegularExpression('/Accès refusé/', $response);
     }
 
     public function testAccessWithAuthorizedUser() {
@@ -32,13 +29,13 @@ class ConfigControllerTest extends PLBWebTestCase
         $client->request('GET', '/config');
 
         $response = $client->getResponse()->getContent();
-        $this->assertContains(
-            '<h3>Configuration</h3>',
+        $this->assertMatchesRegularExpression(
+            '/<h3>Configuration<\/h3>/',
             $response
         );
 
-        $this->assertContains(
-            '<span> Divers</span>',
+        $this->assertMatchesRegularExpression(
+            '/<span> Divers<\/span>/',
             $response
         );
     }
