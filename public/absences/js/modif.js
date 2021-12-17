@@ -59,7 +59,7 @@ $(function() {
 
         // Transmet le tableau à la page de validation ajax
 	$.ajax({
-	  url: "/ajax/edit-absence-reasons",
+	  url: url('ajax/edit-absence-reasons'),
 	  type: "post",
           dataType: "json",
 	  data: {data: tab, menu:"abs", option: "type", CSRFToken: $('#CSRFSession').val()},

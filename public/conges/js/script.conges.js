@@ -67,7 +67,7 @@ function calculCredit(){
   }
 
   $.ajax({
-    url: "/ajax/holiday-credit",
+    url: url('ajax/holiday-credit'),
     data: {debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, perso_id: perso_id, is_recover: is_recover},
     dataType: "json",
     type: "get",
@@ -399,7 +399,7 @@ function supprimeConges(retour){
   conf=confirm("Etes-vous sûr(e) de vouloir supprimer ce congé ?");
   if(conf){
     $.ajax({
-      url: "/ajax/holiday-delete",
+      url: url('ajax/holiday-delete'),
       type: "get",
       data: "id="+$("#id").val()+"&CSRFToken="+$("#CSRFSession").val(),
       success: function(){
@@ -739,7 +739,7 @@ function supprimeAgent(id){
 function getAgentsBySites(sites) {
   var agents = null;
   $.ajax({
-    url: "/ajax/agents-by-sites",
+    url: url('ajax/agents-by-sites'),
     data: {sites: sites},
     dataType: "json",
     type: "get",

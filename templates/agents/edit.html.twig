@@ -80,7 +80,7 @@
               $('#login-empty').show();
             } else {
               $.ajax({
-                url: url('/ajax/update_agent_login'),
+                url: url('ajax/update_agent_login'),
                 type: "POST",
                 dataType: "html",
                 data: {login: login, id: agent_id},
