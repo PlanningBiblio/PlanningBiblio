@@ -530,10 +530,8 @@ function resetICSURL(id, CSRFToken, nom){
   }
   
   if(res){
-    var baseURL = $('#baseURL').val();
-
     $.ajax({
-      url: baseURL + 'ics/ajax.resetURL.php',
+      url: url('ics/ajax.resetURL.php'),
       type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
@@ -602,9 +600,8 @@ function updateAgentsList(me,select_id){
   var index=$("#perso_id").val();
   var in_array=false;
 
-  var baseURL = $('#baseURL').val();
   $.ajax({
-    url: baseURL + "personnel/ajax.updateAgentsList.php",
+    url: url('personnel/ajax.updateAgentsList.php'),
     type: "get",
     data: "deleted="+deleted,
     success: function(result){
@@ -771,6 +768,15 @@ function verif_mail(mail){
   if (p<1 || p==(tmp[1].length-1))
     return false;
   return true;
+}
+
+function url(path) {
+  var baseURL = $('#baseURL').val();
+  if (baseURL == undefined || baseURL == '') {
+    baseURL = '/';
+  }
+
+  return baseURL + path;
 }
 //	---------------------------		FIN Fonctions communes		------------------------	//
 //	--------------------------------	Absences		---------------------------------	//

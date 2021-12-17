@@ -15,7 +15,6 @@ Fichier regroupant les fonctions JavaScript utiles à la gestion des agents (ind
 $(function() {
 
     var allFields = $( [] );
-    var baseURL = $('#baseURL').val();
 
     $( "#dialog-form" ).dialog({
         autoOpen: false,
@@ -57,10 +56,10 @@ $(function() {
                             var msg = result;
                             var msgType = 'error';
                         }
-                        location.href = baseURL +'agent?msg='+msg+'&msgType='+msgType;
+                        location.href = url('agent?msg=' + msg + '&msgType=' + msgType);
                         },
                     error: function(){
-                        location.href = baseURL + 'agent?msg=Une erreur est survenue lors de la modification des agents&msgType=error';
+                        location.href = url('agent?msg=Une erreur est survenue lors de la modification des agents&msgType=error');
                         }
                     });
                 },
@@ -83,9 +82,6 @@ function agent_list() {
         alert('Veuillez sélectionner un ou plusieurs agents.');
         return false;
     }
-   
-    var baseURL = $('#baseURL').val();
-
 
     // Action
     var action = $('#action').val();
@@ -111,10 +107,10 @@ function agent_list() {
                 dataType: "json",
                 data: {list: list, CSRFToken: $('#CSRFSession').val()},
                 success: function(){
-                    location.href = baseURL +'agent?msg=Les agents ont été supprimés avec succès&msgType=success';
+                    location.href = url('agent?msg=Les agents ont été supprimés avec succès&msgType=success');
                     },
                 error: function(){
-                    location.href =  baseURL +'agent?msg=Une erreur est survenue lors de la suppresion des agents&msgType=error';
+                    location.href = url('agent?msg=Une erreur est survenue lors de la suppresion des agents&msgType=error');
                     }
                 });
 
