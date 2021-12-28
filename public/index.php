@@ -49,8 +49,20 @@ if (empty($_SESSION['login_id'])) {
             unset($_GET['noCAS']);
         }
 
+        $get = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
+
+        if (!empty($get['ticket'])) {
+            $ticket = $get['ticket'];
+            unset($get['ticket']);
+        }
+
         $login_params = array();
-        $login_params['redirURL'] = 'index.php?' . http_build_query($_GET);
+        $login_params['redirURL'] = 'index.php?' . http_build_query($get);
+
+        if (isset($ticket)) {
+            $login_params['ticket'] = $ticket;
+        }
+
         if ($noCAS) {
             $login_params['noCAS'] = '';
         }
