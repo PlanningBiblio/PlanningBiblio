@@ -56,6 +56,18 @@ if (empty($_SESSION['login_id'])) {
         }
         $base_url = plannoBaseUrl($request);
         $login_url = "$base_url/login?" . http_build_query($login_params);
+
+        if (in_array($config['Auth-Mode'], ['CAS', 'CAS-SQL'])
+            and !empty($config['CAS-ServiceURL'])
+            and !$noCAS) {
+
+            $ticket = filter_input(INPUT_GET, 'ticket', FILTER_SANITIZE_STRING);
+
+            if ($ticket) {
+                $login_url = "$base_url/login?ticket=$ticket";
+            }
+        }
+
         header("Location: $login_url");
         exit;
     }
