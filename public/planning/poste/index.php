@@ -626,8 +626,7 @@ if (!$verrou and !$autorisationN1) {
                 }
             }
 
-            echo "<td id='" . $horaires['debut'] . $horaires['fin'] . "' class='sticky-line td_horaires' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaire
-s['fin']).$non_places."</td>";
+            echo "<td id='" . $horaires['debut'] . $horaires['fin'] . "' class='sticky-line td_horaires' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin']).$non_places."</td>";
 
             $colspan+=nb30($horaires['debut'], $horaires['fin']);
         }
