@@ -529,11 +529,11 @@ if (!$verrou and !$autorisationN1) {
                     } else {
                         $noms_agents_non_places = 'Aucun';
                     }
-                    $non_places = " <a class='non_places' href='#' title='" . $noms_agents_non_places . "'>(" . sizeof($agents_non_places) . ")</a>";
+                    $non_places = " <a id='" . $horaires['debut'] . $horaires['fin'] . "' class='non_places' href='#' title='" . $noms_agents_non_places . "'>(" . sizeof($agents_non_places) . ")</a>";
                 }
             }
 
-            echo "<td id='" . $horaires['debut'] . $horaires['fin'] . "' class='sticky-line td_horaires' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin']).$non_places."</td>";
+            echo "<td class='sticky-line td_horaires' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin']).$non_places."</td>";
 
             $colspan+=nb30($horaires['debut'], $horaires['fin']);
         }
