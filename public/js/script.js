@@ -339,7 +339,7 @@ function addAbsenceDocument(id) {
     var form_data = new FormData();
     form_data.append('documentFile', file_data);
     $.ajax({
-        url: '/absences/document/' + id,
+        url: url('absences/document/' + id),
         type: 'POST',
         dataType: 'text',
         cache: false,
@@ -355,7 +355,7 @@ function addAbsenceDocument(id) {
 
 function refreshAbsenceDocumentList(id) {
         $.ajax({
-            url: '/absences/documents/' + id,
+            url: url('absences/documents/' + id),
             type: 'GET',
             success: function(result) {
                 listString = "<ul id='documentsList'>";
@@ -372,7 +372,7 @@ function refreshAbsenceDocumentList(id) {
 function deleteAbsenceDocument(id) {
     if (confirm("Êtes vous sûr(e) de vouloir supprimer ce document ?")) {
         $.ajax({
-            url: '/absences/document/' + id,
+            url: url('absences/document/' + id),
             type: 'DELETE',
             success: function(id) {
                 $("#document_" + id).fadeOut("normal", function() {
@@ -772,8 +772,8 @@ function verif_mail(mail){
 
 function url(path) {
   var baseURL = $('#baseURL').val();
-  if (baseURL == undefined || baseURL == '') {
-    baseURL = '/';
+  if (baseURL == undefined) {
+    baseURL = '';
   }
 
   return baseURL + path;
@@ -807,7 +807,7 @@ function position(object,top,left){
 //	--------------------------------	Statistiques		---------------------------------	//
 function export_stat(nom,type){
   $.ajax({
-    url: "/statistiques/export.php",
+    url: url('statistiques/export.php'),
     type: "get",
     data: "nom="+nom+"&type="+type,
     success: function(result){
