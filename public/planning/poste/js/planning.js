@@ -134,7 +134,7 @@ $(document).ready(function(){
     checkcopy_agents = JSON.stringify(checkcopy_agents);
 
     $.ajax({
-        url: '/ajax/planningjob/checkcopy',
+        url: url('ajax/planningjob/checkcopy'),
         type: "get",
         dataType: "json",
         data: {date: date, from: cFrom, to: to, agents: checkcopy_agents},
@@ -394,7 +394,7 @@ $(function() {
     emptyContextMenu();
 
     $.ajax({
-      url: '/planningjob/contextmenu',
+      url: url('planningjob/contextmenu'),
       datatype: "json",
       data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id_origine},
       type: "get",

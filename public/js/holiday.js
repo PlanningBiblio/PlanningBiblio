@@ -161,7 +161,7 @@ function sethours() {
   var afternoon_start = '12:00:00';
 
   $.ajax({
-    url: "/ajax/holiday-halfday-hours",
+    url: url('ajax/holiday-halfday-hours'),
     data: {start: start, end: end, agent: agent},
     dataType: "json",
     type: "get",
