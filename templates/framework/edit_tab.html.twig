@@ -28,7 +28,6 @@
     // N'envoie que les éléments sélectionnés et visibles
     function configLignes(){
       tab=new Array();
-      var baseURL = $("#baseURL").val();
       // Récupération des titres
       $(".select_titre").each(function(){
         tab.push($(this).attr("name")+"="+$(this).val());
@@ -50,7 +49,7 @@
       
       // Enregistrement des données en ajax 
       $.ajax({
-        url: baseURL + "framework-table/save-line",
+        url: url('framework-table/save-line'),
         type: "post",
         data: data,
         success: function(){

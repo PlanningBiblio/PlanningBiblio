@@ -503,7 +503,6 @@ $(function() {
 
       "Uniquement cet événement": function() {
         var CSRFToken = $('#CSRFSession').val();
-        var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
         $( this ).dialog( "close" );
         delete_absence(CSRFToken, id, 'current');
@@ -511,7 +510,6 @@ $(function() {
 
       "Cet événement et les suivants": function() {
         var CSRFToken = $('#CSRFSession').val();
-        var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
         $( this ).dialog( "close" );
         delete_absence(CSRFToken, id, 'next');
@@ -519,7 +517,6 @@ $(function() {
 
       "Tous les événements": function() {
         var CSRFToken = $('#CSRFSession').val();
-        var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
         $( this ).dialog( "close" );
         delete_absence(CSRFToken, id, 'all');
@@ -600,9 +597,8 @@ function affiche_perso_ul(){
 }
 
 function delete_absence(CSRFToken, id, recurrence) {
-  var baseURL = $('#baseURL').val();
   $.ajax({
-    url: baseURL + 'absence',
+    url: url('absence'),
     data: {id: id, CSRFToken: CSRFToken, rec: recurrence},
     dataType: "json",
     type: "delete",
@@ -610,7 +606,7 @@ function delete_absence(CSRFToken, id, recurrence) {
     success: function(result){
       msg = result['msg'];
       msgType = result['msgType'];
-      url = baseURL + 'absence?msg=' + msg + '&msgType=' + msgType;
+      url = url('absence?msg=' + msg + '&msgType=' + msgType);
       if (result['msg2'] !== undefined) {
         url += '&msg2=' + result['msg2'] + '&msg2Type=' + result['msg2Type'];
       }
@@ -618,7 +614,7 @@ function delete_absence(CSRFToken, id, recurrence) {
     },
     error: function(xhr, ajaxOptions, thrownError) {
       msg = encodeURI('Une erreur s\'est produite lors de la suppression');
-      document.location.href = baseURL + 'absence?msg=' + msg + '&msgType=error';
+      document.location.href = url('absence?msg=' + msg + '&msgType=error');
     }
   });
 }
@@ -890,10 +886,9 @@ function verif_absences(ctrl_form){
   fin=fin+" "+hre_fin;
 
   var retour=true;
-  var baseURL = $('#baseURL').val();
 
   $.ajax({
-    url: baseURL + "ajax/holiday-absence-control",
+    url: url('ajax/holiday-absence-control'),
     type: "get",
     datatype: "json",
     data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin, type:'absence'},

@@ -19,7 +19,7 @@
     -->
     function save_password(agent_id, password) {
       $.ajax({
-        url: "/ajax/change-password",
+        url: url('ajax/change-password'),
         type: "POST",
         dataType: "html",
         data: {password: password, id: agent_id},
@@ -80,7 +80,7 @@
               $('#login-empty').show();
             } else {
               $.ajax({
-                url: "/ajax/update_agent_login",
+                url: url('/ajax/update_agent_login'),
                 type: "POST",
                 dataType: "html",
                 data: {login: login, id: agent_id},
