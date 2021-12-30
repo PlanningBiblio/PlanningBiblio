@@ -801,7 +801,8 @@ function updatePlanningAlert() {
     if (!link) return;
     var date = $('#date').val();
     var site = $('#site').val();
-    $('.tableau0.tr_horaires > .td_horaires').each(function() {
+    $('.tableau0.tr_horaires > .td_horaires > a.non_places').each(function() {
+	var caller = $(this);
         var horaires = $(this).attr('id');
         var debut = horaires.substr(0, 8);
         var fin = horaires.substr(8);
@@ -816,9 +817,7 @@ function updatePlanningAlert() {
                 } else {
                     tooltip = result['names'].join(', ');
                 }
-                if ($(this).find("a").length > 0) {
-                    $(this).find("a").replaceWith("<a href='#' title='" + tooltip + "'> (" + result['amount'] + ")</a>");
-                }
+	        caller.replaceWith("<a href='#' class='non_places' id='" + horaires + "' title='" + tooltip + "'> (" + result['amount'] + ")</a>");
             },
         });
     });
