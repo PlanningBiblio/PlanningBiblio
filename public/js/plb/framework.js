@@ -17,11 +17,10 @@ Fichier regroupant les scripts JS nécessaires aux pages /framework* (affichage 
 function supprimeGroupe(id){
   var CSRFToken = $('#CSRFSession').val();
   var nom=$("#td-groupe-"+id+"-nom").text();
-  var baseURL = $("#baseURL").val();
 
   if(confirm("Etes vous sûr(e) de vouloir supprimer le groupe \""+nom+"\"?")){
     $.ajax({
-      url: baseURL + "framework-group",
+      url: url('framework-group'),
       type: "delete",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
@@ -57,11 +56,10 @@ function supprimeGroupe(id){
 function supprimeLigne(id){
   var CSRFToken = $('#CSRFSession').val();
   var nom=$("#td-ligne-"+id+"-nom").text();
-  var baseURL = $("#baseURL").val();
-  
+
   if(confirm("Etes-vous sûr(e) de vouloir supprimer la ligne \""+nom+"\" ?")){
     $.ajax({
-      url: baseURL + "framework-line",
+      url: url('framework-line'),
       type: "delete",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
@@ -89,14 +87,13 @@ function supprimeTableau(tableau){
   var nom=$("#td-tableau-"+tableau+"-nom").text();
   if(confirm("Etes vous sûr(e) de vouloir supprimer le tableau \""+nom+"\"?\nLes groupes utilsant ce tableau seront également supprimés")){
     var CSRFToken = $('#CSRFSession').val();
-    var baseURL = $("#baseURL").val();
     $.ajax({
-      url: baseURL + "framework",
+      url: url('framework'),
       type: "delete",
       dataType: "json",
       data: {tableau: tableau, CSRFToken: CSRFToken, name: nom},
       success: function(){
-        window.location.href = baseURL + 'framework';
+        window.location.href = url('framework');
       },
       error: function(result){
         CJInfo("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"\n"+result.responseText,"error");
@@ -197,7 +194,6 @@ function supprime_select(classe,page){
   }
   else if(confirm("Etes-vous sûr(e) de vouloir supprimer les éléments sélectionnés ?\nLes groupes utilisant ces éléments seront également supprimés")){
 
-    var baseURL = $("#baseURL").val();
     var CSRFToken = $('#CSRFSession').val();
     $.ajax({
       url: page,
@@ -205,7 +201,7 @@ function supprime_select(classe,page){
       data: "ids="+ids+"&CSRFToken="+CSRFToken,
       success: function(result){
         msg=encodeURIComponent("Les éléments sélectionnés ont été supprimés avec succès");
-        window.location.href= baseURL + "framework?msgType=success&msg="+msg;
+        window.location.href= url('framework?msgType=success&msg=' + msg);
       },
       error: function(){
         CJInfo("Une erreur est survenue lors de la suppression.","error");
@@ -215,18 +211,17 @@ function supprime_select(classe,page){
 }
 
 function tableauxInfos(){
-  var baseURL = $("#baseURL").val();
   $.ajax({
-    url: baseURL + "framework/info",
+    url: url('framework/info'),
     type: "post",
     dataType: "json",
     data: {id:$("#id").val(), nom:$("#nom").val(), nombre:$("#nombre").val(), site:$("#site").val(), CSRFToken:$("#CSRFSession").val()},
     success: function(result){
       var msg=encodeURIComponent("Les informations ont été modifiées avec succès");
       if($("#id").val()){
-        location.href= baseURL + "framework/"+$("#id").val()+"?cfg-type=0&msg="+msg+"&msgType=success";
+        location.href= url('framework/' + $('#id').val() + '?cfg-type=0&msg=' + msg + '&msgType=success');
       }else{
-        location.href= baseURL + "framework/"+result+"?cfg-type=0&msg="+msg+"&msgType=success";
+        location.href= url('framework/' + result + '?cfg-type=0&msg=' + msg + '&msgType=success');
       }
     },
     error: function(result){
@@ -252,19 +247,18 @@ $(function(){
   // Récupération de tableaux supprimés (page index.php)
   $("#tableauxSupprimes").change(function(){
     if($(this).val()){
-      var baseURL = $('#baseURL').val();
       var CSRFToken=$('#CSRFSession').val();
       var id=$(this).val();
       var name=$("#tableauxSupprimes option:selected").text();
 
       if(confirm("Etes vous sûr(e) de vouloir récupérer le tableau \""+name+"\" ?")){
         $.ajax({
-          url: baseURL + "framework/restore_table",
+          url: url('framework/restore_table'),
           type: "post",
           dataType: "json",
           data: {id: id, CSRFToken: CSRFToken, name: name},
           success: function(){
-            location.href = baseURL + '/framework';
+            location.href = url('framework');
           },
           error: function(){
             CJInfo('Une erreur est survenue lors de la récupération du tableau "' + name + '".',"error");

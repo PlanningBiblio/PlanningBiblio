@@ -62,11 +62,9 @@ $(function() {
         
         notifications = JSON.stringify(tab);
 
-        var baseURL = $('#baseURL').val();
-
         // Enregistrement dans la base de données
         $.ajax({
-          url: baseURL + "notification",
+          url: url('notification'),
           type: "post",
           datatype: "json",
           data: {agents: agents, responsables: responsables, notifications: notifications, CSRFToken: $('#CSRFToken').val()},

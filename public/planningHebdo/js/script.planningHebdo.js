@@ -227,11 +227,10 @@ function plHebdoSupprime(id){
   if(confirm("Etes vous sûr(e) de vouloir supprimer ce planning de présence ?")){
 
     var CSRFToken = $('#CSRFSession').val();
-    var baseURL = $('#baseURL').val();
     // Suppression du planning en arrière plan
 
     $.ajax({
-      url: baseURL + "workinghour",
+      url: url('workinghour'),
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       type: "delete",
@@ -275,9 +274,8 @@ function plHebdoVerifForm(){
   }
 
   var retour=false;
-  var baseURL = $('#baseURL').val();
   $.ajax({
-    url: baseURL + "planningHebdo/ajax.verifPlannings.php",
+    url: url('planningHebdo/ajax.verifPlannings.php'),
     dataType: "json",
     data: data,
     type: "get",
