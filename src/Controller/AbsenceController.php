@@ -1004,8 +1004,10 @@ class AbsenceController extends BaseController
             return $this->redirectToRoute('absence.index');
         }
 
-        if (!$this->canEdit($perso_ids)) {
-            return $this->output('access-denied.html.twig');
+        $acces = $this->canEdit($perso_ids);
+        if (!$acces) {
+            $this->session->getFlashBag()->add('error', "Accès refusé");
+            return $this->redirectToRoute('absence.index');
         }
 
         // Define access right.
@@ -1638,8 +1640,10 @@ class AbsenceController extends BaseController
 
     private function canEdit($perso_ids)
     {
-        if ($this->admin) {
-            return true;
+        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+            if (in_array((200+$i), $this->droits) or in_array((500+$i), $this->droits)) {
+                return true;
+            }
         }
 
         if ($this->edit_own_absences and count($perso_ids) == 1 and in_array($_SESSION['login_id'], $perso_ids)) {
