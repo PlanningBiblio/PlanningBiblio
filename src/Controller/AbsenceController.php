@@ -754,6 +754,7 @@ class AbsenceController extends BaseController
         $msg=urlencode("L'absence a été supprimée avec succès");
         $msgType="success";
 
+        $msg2 = null;
         if (!empty($errors) && $errors[0] != '') {
             $msg2="<ul>";
             foreach ($errors as $error) {
@@ -820,6 +821,14 @@ class AbsenceController extends BaseController
 
         $hre_debut = !empty($hre_debut) ? $hre_debut : '00:00:00';
         $hre_fin = !empty($hre_fin) ? $hre_fin : '23:59:59';
+
+        if (preg_match('/^(\d+):(\d+)$/', $hre_debut)) {
+            $hre_debut .= ':00';
+        }
+
+        if (preg_match('/^(\d+):(\d+)$/', $hre_fin)) {
+            $hre_fin .= ':00';
+        }
 
         $pj1 = $request->get('pj1') ? 1 : 0;
         $pj2 = $request->get('pj2') ? 1 : 0;
