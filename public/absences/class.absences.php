@@ -1368,16 +1368,53 @@ class absences
         $perso_id = $this->perso_id;
         $folder = sys_get_temp_dir();
         $file = "$folder/PBCalendar-$perso_id.ics";
-        $tzid = date_default_timezone_get();
+        $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '$3$2$1', $this->debut).'T';
+        $dtstart .= preg_replace('/(\d+):(\d+):(\d+)/', '$1$2$3', $this->hre_debut);
+        $dtstamp = !empty($this->dtstamp) ? $this->dtstamp : gmdate('Ymd\THis\Z');
+        $uid = !empty($this->uid) ? $this->uid : $dtstart."_".$dtstamp;
+
+        $ics_content = $this->build_ics_content();
+
+        // Précise si la fin de la récurrence existe pour continuer à la traiter à l'avenir si elle n'est pas renseignée
+        $end = (strpos($this->rrule, 'UNTIL=') or strpos($this->rrule, 'COUNT=')) ? 1 : 0;
+
+        // On enregistre les infos dans la base de données
+        $db = new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->insert('absences_recurrentes', array('uid' => $uid, 'perso_id' => $perso_id, 'event' => $ics_content, 'end' => $end));
+
+        logs("Agent #$perso_id : Importation du fichier $file", "ICS", $this->CSRFToken);
+
+        // On ecrit le fichier
+        file_put_contents($file, $ics_content);
+
+        $ics=new CJICS();
+        $ics->src = $file;
+        $ics->perso_id = $perso_id;
+        $ics->pattern = '[SUMMARY]';
+        $ics->status = 'All';
+        $ics->table ="absences";
+        $ics->logs = true;
+        $ics->CSRFToken = $this->CSRFToken;
+        $ics->updateTable();
+
+        // On supprime le fichier
+        unlink($file);
+    }
+
+    public function build_ics_content()
+    {
+        $perso_id = $this->perso_id;
         $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '$3$2$1', $this->debut).'T';
         $dtstart .= preg_replace('/(\d+):(\d+):(\d+)/', '$1$2$3', $this->hre_debut);
         $dtend = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '$3$2$1', $this->fin).'T';
         $dtend .= preg_replace('/(\d+):(\d+):(\d+)/', '$1$2$3', $this->hre_fin);
+        $tzid = date_default_timezone_get();
         $dtstamp = !empty($this->dtstamp) ? $this->dtstamp : gmdate('Ymd\THis\Z');
         $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-        $cal_name = !empty($this->cal_name) ? $this->cal_name : "PlanningBiblio-Absences-$perso_id-$dtstamp";
         $uid = !empty($this->uid) ? $this->uid : $dtstart."_".$dtstamp;
         $status = $this->valide_n2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
+        $cal_name = !empty($this->cal_name) ? $this->cal_name : "PlanningBiblio-Absences-$perso_id-$dtstamp";
 
         // Description : en supprime les entités HTML et remplace les saut de lignes par des <br/> pour facilité le traitement des saut de lignes à l'affichage et lors des remplacements
         $description = html_entity_decode($this->commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
@@ -1442,31 +1479,7 @@ class absences
         $ics_content .= "END:VEVENT\n";
         $ics_content .= "END:VCALENDAR\n";
 
-        // Précise si la fin de la récurrence existe pour continuer à la traiter à l'avenir si elle n'est pas renseignée
-        $end = (strpos($this->rrule, 'UNTIL=') or strpos($this->rrule, 'COUNT=')) ? 1 : 0;
-
-        // On enregistre les infos dans la base de données
-        $db = new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->insert('absences_recurrentes', array('uid' => $uid, 'perso_id' => $perso_id, 'event' => $ics_content, 'end' => $end));
-
-        logs("Agent #$perso_id : Importation du fichier $file", "ICS", $this->CSRFToken);
-
-        // On ecrit le fichier
-        file_put_contents($file, $ics_content);
-
-        $ics=new CJICS();
-        $ics->src = $file;
-        $ics->perso_id = $perso_id;
-        $ics->pattern = '[SUMMARY]';
-        $ics->status = 'All';
-        $ics->table ="absences";
-        $ics->logs = true;
-        $ics->CSRFToken = $this->CSRFToken;
-        $ics->updateTable();
-
-        // On supprime le fichier
-        unlink($file);
+        return $ics_content;
     }
 
 
