@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="pl_notes")
+ * @Entity @Table(name="pl_notifications")
  **/
 class PlanningNotification extends PLBEntity
 {
