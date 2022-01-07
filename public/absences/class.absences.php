@@ -789,6 +789,10 @@ class absences
         // Sort
         $sort=$sort?$sort:"`debut`,`fin`,`nom`,`prenom`";
 
+	if (is_numeric($agent) and $agent !=0) {
+            $filter.=" AND `{$dbprefix}personnel`.`id` = '$agent' ";
+	}
+
         //	Select All
         $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
       ."`{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`sites` AS `sites`, "
