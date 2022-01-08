@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, ManyToOne, JoinColumn};
+
 /**
  * @Entity @Table(name="stated_week_planning_columns")
  **/
