@@ -539,6 +539,12 @@ class WorkingHourController extends BaseController
             $tab = $db->result;
         }
 
+        // The followings variables are only used when $cle is defined, but we need to initialize them to avoid errors.
+        $selected1 = false;
+        $selected2 = false;
+        $selected3 = false;
+        $selected4 = false;
+
         if (!$cle) {
             if ($modifAutorisee) {
                 $selected1 = isset($valide_n1) && $valide_n1 > 0 ? true : false;

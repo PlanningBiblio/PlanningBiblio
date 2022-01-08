@@ -104,7 +104,7 @@
                           </select>
                         </td>
                       {% else %}
-                        {% if temps[i-1][4] is defined %}
+                        {% if temps[i-1][4] is defined and multisites[temps[i-1][4]] is defined %}
                           <td class = "td_heures"> {{ multisites[temps[i-1][4]] | raw }} </td>
                         {% else %}
                           <td class = "td_heures">&nbsp;</td>
