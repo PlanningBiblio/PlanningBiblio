@@ -118,7 +118,9 @@
                             {% if temps[i-1][4] == '-1' %}
                               Tout site
                             {% else %}
-                              {{ multisites[temps[i-1][4]] | raw }}
+                              {% if multisites[temps[i-1][4]] is defined %}
+                                {{ multisites[temps[i-1][4]] | raw }}
+                              {% endif %}
                             {% endif %}
                           {% endif %}
                         </td>
