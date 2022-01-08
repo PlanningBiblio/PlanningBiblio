@@ -117,7 +117,7 @@ class StatedWeekHelper extends BaseHelper
                         if ($this->normalJobExists($agent_id, $date,
                                         $normal_job_id, $time_slot['debut'],
                                         $time_slot['fin'],
-                                        $this->config('statedweek_site_filter')))
+                                        '-1'))
                         {
                             continue;
                         }
@@ -129,7 +129,7 @@ class StatedWeekHelper extends BaseHelper
                             'chgt_login'    => $_SESSION['login_id'],
                             'debut'         => $time_slot['debut'],
                             'fin'           => $time_slot['fin'],
-                            'site'          => $this->config('statedweek_site_filter')
+                            'site'          => '-1',
                         );
                         $db->insert('pl_poste', $data);
                     }
@@ -258,7 +258,7 @@ class StatedWeekHelper extends BaseHelper
                 $break = $this->fixed_breaktime;
             }
 
-            $today[4] = $this->config('statedweek_site_filter');
+            $today[4] = '-1';
             $this->addDay($workingHours['temps'], $today, $day_index);
             $this->addDay($workingHours['breaktime'], $break, $day_index);
         }
@@ -305,7 +305,7 @@ class StatedWeekHelper extends BaseHelper
                 $today[1] = $time->end_time() ? $time->end_time()->format('H:i:s') : $this->columns[$time->column_id()]['to'];
             }
 
-            $today[4] = $this->config('statedweek_site_filter');
+            $today[4] = '-1';
             $this->addDay($hours, $today, $day_index);
             $this->addDay($breaktimes, $break, $day_index);
         }
