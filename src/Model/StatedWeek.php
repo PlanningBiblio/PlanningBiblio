@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, OneToMany};
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
