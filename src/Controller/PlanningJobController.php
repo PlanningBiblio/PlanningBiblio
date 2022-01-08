@@ -38,6 +38,9 @@ class PlanningJobController extends BaseController
         $poste = $request->get('poste');
         $CSRFToken = $request->get('CSRFToken');
 
+        $postesFrontOfficeString = $request->get('postesFrontOffice');
+        $postesFrontOffice = explode(',', $postesFrontOfficeString);
+
         $login_id = $_SESSION['login_id'];
         $this->droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
@@ -430,7 +433,7 @@ class PlanningJobController extends BaseController
         // Check agents already placed
         // just before or after the
         // requested time slot.
-        $deuxSP = deuxSP($date, $debut, $fin);
+        $deuxSP = deuxSP($date, $debut, $fin, $poste, $postesFrontOffice);
 
         // Retrieves the number of
         // agents already in the cell.
