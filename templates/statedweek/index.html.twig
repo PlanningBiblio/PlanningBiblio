@@ -75,7 +75,7 @@
       <div style='display:inline-block; min-width:600px; width:40%; vertical-align:top;' class='title titreSemFixe' >
         <strong>semaine {{ week_number }}</strong>
         <div id="date_text">
-          Planning du {{ date | fulldate | raw }}
+          Planning du {{ date | datefull | raw }}
           {% if date | publicholiday %}
             - <font id='public_holiday'> {{ date | publicholiday }}</font>
           {% endif %}
