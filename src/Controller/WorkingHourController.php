@@ -470,7 +470,7 @@ class WorkingHourController extends BaseController
         $perso_id = $p->elements[0]['perso_id'];
         $temps = $p->elements[0]['temps'];
         $breaktime = $p->elements[0]['breaktime'];
-        $thisNbSemaine = $p->elements[0]['nb_semaine'];
+        $thisNbSemaine = !empty($p->elements[0]['nb_semaine']) ? $p->elements[0]['nb_semaine'] : 1;
 
         if (!$admin && $perso_id != $_SESSION['login_id']) {
             return $this->redirectToRoute('access-denied');
