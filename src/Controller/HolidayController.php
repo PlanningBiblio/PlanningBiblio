@@ -836,7 +836,6 @@ class HolidayController extends BaseController
                 'is_recover' => $is_recover
             ));
             $result = $holidayHlper->getCountedHours();
-            error_log("getCountedHhours" . $perso_id . " : " . $result['hours']);
             $data['heures'] = $result['hours'];
             $data['minutes'] = $result['minutes'];
 
