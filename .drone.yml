@@ -1,0 +1,27 @@
+kind: pipeline
+type: docker
+name: php7.4-mariadb10.5
+services:
+- environment:
+    MYSQL_DATABASE: planningb
+    MYSQL_USER: plb
+    MYSQL_PASSWORD: plb
+    MYSQL_ROOT_PASSWORD: rootplb
+  image: mariadb:10.5
+  name: db
+steps:
+- name: test
+  image: php:7.4-cli
+  commands:
+  - apt update
+  - apt install -y libzip-dev
+  - docker-php-ext-install zip
+  - docker-php-ext-install mysqli
+  - docker-php-ext-install pdo_mysql
+  - cp .circleci/.env.test.local .env.test.local
+  - cp .circleci/.env.local .env.local
+  - composer install -n --prefer-dist
+
+  # run tests with phpunit or codecept
+  - cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && echo 'xdebug.mode=coverage' | tee -a $PHP_INI_DIR/php.ini
+  - ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
