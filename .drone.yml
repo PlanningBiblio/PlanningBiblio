@@ -18,8 +18,8 @@ steps:
   - docker-php-ext-install zip
   - docker-php-ext-install mysqli
   - docker-php-ext-install pdo_mysql
-  - cp .circleci/.env.test.local .env.test.local
-  - cp .circleci/.env.local .env.local
+  - cp .drone/.env.test.local .env.test.local
+  - cp .drone/.env.local .env.local
   - .drone/install-composer.sh
   - php composer.phar install -n --prefer-dist
 
