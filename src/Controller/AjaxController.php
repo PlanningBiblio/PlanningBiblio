@@ -29,11 +29,26 @@ class AjaxController extends BaseController
         $fin =dateSQL($request->get('fin'));
         $hre_debut = $request->get('hre_debut');
         $hre_fin = $request->get('hre_fin');
+        $start_halfday= $request->get('start_halfday');
+        $end_halfday= $request->get('end_halfday');
         $perso_id = $request->get('perso_id');
         $is_recover = $request->get('is_recover');
 
         $c = new \conges();
         $recover = $c->calculCreditRecup($perso_id, $debut);
+
+        // If halfday is checked, starting and
+        // ending hours depends on agent's working hours
+        if ($start_halfday && $end_halfday) {
+            $holidayHelper = new HolidayHelper(array(
+                'agent' => $perso_id,
+                'start' => $debut,
+                'end' => $fin,
+                'start_halfday' => $start_halfday,
+                'end_halfday' => $end_halfday,
+            ));
+            list($hre_debut, $hre_fin) = $holidayHelper->halfDayStartEndHours();
+        }
 
         $holidayHlper = new HolidayHelper(array(
             'start' => $debut,

@@ -707,66 +707,6 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/ajax/holiday-halfday-hours", name="ajax.holiday-halfday-hours", methods={"GET"})
-     */
-    public function halfdayHours(Request $request)
-    {
-        $agent = $request->get('agent');
-        $start = $request->get('start');
-        $end = $request->get('end');
-
-        $response = new Response();
-        if (!$agent or !$start or !$end) {
-            $response->setContent('Wrong parameters');
-            $response->setStatusCode(404);
-            return $response;
-        }
-
-        $hours_helper = new WeekPlanningHelper();
-        $hours_first_day = $hours_helper->getTimes($start, $agent);
-        $hours_last_day = $hours_helper->getTimes($end, $agent);
-
-        // Define morning's end from the end of the first period of the last day, default 12:00:00
-        $morning_end = $hours_last_day[0][1] ?? '12:00:00';
-        $afternoon_start = '12:00:00';
-
-        // If the 2nd period exists, afternoon_start = the first hour of this period
-        if (!empty($hours_first_day[1][0])) {
-            $afternoon_start = $hours_first_day[1][0];
-
-        } else {
-            // If the 2nd period doesn't exist and if the first period starts after 12:00,
-            // we suppose that this period is an afternoon and use the first hour to define afternoon_start
-            if ($hours_first_day[0][0] >= '12:00:00') {
-                $afternoon_start = $hours_first_day[0][0];
-
-            // Else, afternoon_start = the end of the single period
-            } else {
-                $afternoon_start = $hours_first_day[0][1];
-            }
-        }
-
-        // For the last day
-        // If the 2nd period doesn't exist and if the first period starts after 12:00,
-        // we suppose that this period is an afternoon and use the first hour to define morning_end
-        if (empty($hours_last_day[1][0])) {
-            if ($hours_last_day[0][0] >= '12:00:00') {
-                $morning_end = $hours_last_day[0][0];
-            }
-        }
-
-        $result = array(
-            'morning_end' => $morning_end,
-            'afternoon_start' => $afternoon_start,
-        );
-
-        $response->setContent(json_encode($result));
-        $response->setStatusCode(200);
-
-        return $response;
-    }
-
-    /**
      * @Route("/ajax/check-planning", name="ajax.checkplanning", methods={"POST"})
      */
     public function checkPlanning(Request $request)
@@ -814,6 +754,7 @@ class HolidayController extends BaseController
         $perso_id = $request->get('perso_id');
         $debut = $request->get('debut');
         $fin = $request->get('fin');
+        $halfday = $request->get('halfday');
 
         $perso_ids = array();
         if (!empty($perso_id) && $perso_id != 0) {
@@ -869,6 +810,22 @@ class HolidayController extends BaseController
         $data = $request->request->all();
 
         foreach ($perso_ids as $perso_id) {
+
+            // If halfday is checked, starting and
+            // ending hours depends on agent's working hours
+            if ($halfday) {
+                $holidayHelper = new HolidayHelper(array(
+                    'agent' => $perso_id,
+                    'start' => $debutSQL,
+                    'end' => $finSQL,
+                    'start_halfday' => $data['start_halfday'],
+                    'end_halfday' => $data['end_halfday'],
+                ));
+                list($hre_debut, $hre_fin) = $holidayHelper->halfDayStartEndHours();
+                $data['hre_debut']= $hre_debut;
+                $data['hre_fin']= $hre_fin;
+
+            }
 
             $holidayHlper = new HolidayHelper(array(
                 'start' => $debutSQL,
@@ -976,6 +933,22 @@ class HolidayController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
 
         $lang = $GLOBALS['lang'];
+
+        // If halfday is checked, starting and
+        // ending hours depends on agent's working hours
+        if ($post['halfday']) {
+            $holidayHelper = new HolidayHelper(array(
+                'agent' => $perso_id,
+                'start' => $debutSQL,
+                'end' => $finSQL,
+                'start_halfday' => $post['start_halfday'],
+                'end_halfday' => $post['end_halfday'],
+            ));
+            list($hre_debut, $hre_fin) = $holidayHelper->halfDayStartEndHours();
+            $post['hre_debut']= $hre_debut;
+            $post['hre_fin']= $hre_fin;
+
+        }
 
         // Enregistre la modification du congés
         $c=new \conges();
