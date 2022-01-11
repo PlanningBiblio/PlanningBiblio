@@ -58,17 +58,26 @@ function calculCredit(){
   hre_debut=hre_debut?hre_debut:"00:00:00";
   hre_fin=hre_fin?hre_fin:"23:59:59";
 
+  data = {
+    debut: debut,
+    fin: fin,
+    hre_debut: hre_debut,
+    hre_fin: hre_fin,
+    perso_id: perso_id,
+    is_recover: is_recover
+  };
+
   if (conges_mode == 'jours' && conges_demi_journee && halfday) {
     start_halfday = $('select[name="start_halfday"]').val();
     end_halfday = $('select[name="end_halfday"]').val();
 
-    start = ddmmyyyy_to_date(debut);
-    end = ddmmyyyy_to_date(fin);
+    data['start_halfday'] = start_halfday;
+    data['end_halfday'] = end_halfday;
   }
 
   $.ajax({
     url: url('ajax/holiday-credit'),
-    data: {debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, perso_id: perso_id, is_recover: is_recover},
+    data: data,
     dataType: "json",
     type: "get",
     async: false,

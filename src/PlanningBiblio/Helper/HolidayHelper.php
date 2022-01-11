@@ -333,6 +333,74 @@ class HolidayHelper extends BaseHelper
         return $agents;
     }
 
+    public function halfDayStartEndHours()
+    {
+        $agent = $this->data['agent'];
+        $start = $this->data['start'];
+        $end = $this->data['end'];
+        $start_halfday = $this->data['start_halfday'];
+        $end_halfday = $this->data['end_halfday'];
+
+        // Holiday on same day, on full day.
+        // No need to check working hours.
+        if ($start == $end && $start_halfday == 'fullday') {
+            return array('00:00:00', '23:59:59');
+        }
+
+        $hours_helper = new WeekPlanningHelper();
+        $hours_first_day = $hours_helper->getTimes($start, $agent);
+        $hours_last_day = $hours_helper->getTimes($end, $agent);
+
+        // Define morning's end from the end of the first period of the last day, default 12:00:00
+        $morning_end = $hours_last_day[0][1] ?? '12:00:00';
+        $afternoon_start = '12:00:00';
+
+        // If the 2nd period exists, afternoon_start = the first hour of this period
+        if (!empty($hours_first_day[1][0])) {
+            $afternoon_start = $hours_first_day[1][0];
+
+        } else {
+            // If the 2nd period doesn't exist and if the first period starts after 12:00,
+            // we suppose that this period is an afternoon and use the first hour to define afternoon_start
+            if ($hours_first_day[0][0] >= '12:00:00') {
+                $afternoon_start = $hours_first_day[0][0];
+
+            // Else, afternoon_start = the end of the single period
+            } else {
+                $afternoon_start = $hours_first_day[0][1];
+            }
+        }
+
+        // For the last day
+        // If the 2nd period doesn't exist and if the first period starts after 12:00,
+        // we suppose that this period is an afternoon and use the first hour to define morning_end
+        if (empty($hours_last_day[1][0])) {
+            if ($hours_last_day[0][0] >= '12:00:00') {
+                $morning_end = $hours_last_day[0][0];
+            }
+        }
+
+        if ($start == $end && $start_halfday == 'morning') {
+            return array('00:00:00', $morning_end);
+        }
+
+        if ($start == $end && $start_halfday == 'afternoon') {
+            return array($afternoon_start, '23:59:59');
+        }
+
+        $hour_start = '00:00:00';
+        $hour_end = '23:59:59';
+        if ($start_halfday == 'afternoon') {
+            $hour_start = $afternoon_start;
+        }
+
+        if ($end_halfday == 'morning') {
+            $hour_end = $morning_end;
+        }
+
+        return array($hour_start, $hour_end);
+    }
+
     private function applyWeekTable($week)
     {
         if($this->config('Conges-Mode') == 'heures' || $this->data['is_recover']) {
