@@ -26,3 +26,10 @@ steps:
   # run tests with phpunit or codecept
   - cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && echo 'xdebug.mode=coverage' | tee -a $PHP_INI_DIR/php.ini
   - ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
+- name: codecov
+  image: plugins/codecov
+  settings:
+    token:
+      from_secret: ccovtoken
+    files:
+    - coverage.xml
