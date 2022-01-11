@@ -20,7 +20,8 @@ steps:
   - docker-php-ext-install pdo_mysql
   - cp .circleci/.env.test.local .env.test.local
   - cp .circleci/.env.local .env.local
-  - composer install -n --prefer-dist
+  - .drone/install-composer.sh
+  - php composer.phar install -n --prefer-dist
 
   # run tests with phpunit or codecept
   - cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && echo 'xdebug.mode=coverage' | tee -a $PHP_INI_DIR/php.ini
