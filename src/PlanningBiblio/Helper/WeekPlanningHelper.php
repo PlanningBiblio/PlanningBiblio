@@ -55,7 +55,7 @@ class WeekPlanningHelper extends BaseHelper
             $planning = $this->getPlanning($date, $agent);
         }
 
-        $d = new \datePl($date, $nb_semaine);
+        $d = new \datePl($date);
         $week = $d->semaine3;
 
         $day = $d->position ? $d->position : 7;
