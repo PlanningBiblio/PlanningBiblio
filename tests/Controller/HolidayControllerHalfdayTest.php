@@ -15,7 +15,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         parent::setUp();
         $GLOBALS['config']['PlanningHebdo-Agents'] = 1;
         $GLOBALS['config']['Conges-Enable'] = 1;
-        $GLOBALS['config']['Conges-Mode'] = 1;
+        $GLOBALS['config']['Conges-Mode'] = 'jours';
         $GLOBALS['config']['Conges-demi-journees'] = 1;
         $_SESSION['oups']['CSRFToken'] = '00000';
 

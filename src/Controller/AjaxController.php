@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\PlanningBiblio\Helper\HolidayHelper;
 use App\Model\AbsenceReason;
 use App\Model\Agent;
 
@@ -19,52 +18,6 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 
 class AjaxController extends BaseController
 {
-    /**
-     * @Route("/ajax/holiday-credit", name="ajax.holidaycredit", methods={"GET"})
-     */
-    public function checkCredit(Request $request)
-    {
-        // Initilisation des variables
-        $debut =dateSQL($request->get('debut'));
-        $fin =dateSQL($request->get('fin'));
-        $hre_debut = $request->get('hre_debut');
-        $hre_fin = $request->get('hre_fin');
-        $start_halfday= $request->get('start_halfday');
-        $end_halfday= $request->get('end_halfday');
-        $perso_id = $request->get('perso_id');
-        $is_recover = $request->get('is_recover');
-
-        $c = new \conges();
-        $recover = $c->calculCreditRecup($perso_id, $debut);
-
-        // If halfday is checked, starting and
-        // ending hours depends on agent's working hours
-        if ($start_halfday && $end_halfday) {
-            $holidayHelper = new HolidayHelper(array(
-                'agent' => $perso_id,
-                'start' => $debut,
-                'end' => $fin,
-                'start_halfday' => $start_halfday,
-                'end_halfday' => $end_halfday,
-            ));
-            list($hre_debut, $hre_fin) = $holidayHelper->halfDayStartEndHours();
-        }
-
-        $holidayHlper = new HolidayHelper(array(
-            'start' => $debut,
-            'hour_start' => $hre_debut,
-            'end' => $fin,
-            'hour_end' => $hre_fin,
-            'perso_id' => $perso_id,
-            'is_recover' => $is_recover
-        ));
-        $result = $holidayHlper->getCountedHours();
-
-        $result['recover'] = $recover;
-
-        return $this->json($result);
-    }
-
     /**
      * @Route("/ajax/agents-by-sites", name="ajax.agentsbysites", methods={"GET"})
      */
