@@ -68,7 +68,7 @@ class postes
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $all[$elem['id']]=$elem;
-                $all[$elem['id']]['etage'] = $floors[$elem['etage']];
+                $all[$elem['id']]['etage'] = $floors[$elem['etage']] ?? '';
             }
         }
 
