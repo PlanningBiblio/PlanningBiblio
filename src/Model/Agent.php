@@ -2,7 +2,10 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, OneToMany};
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
@@ -114,6 +117,47 @@ class Agent extends PLBEntity
 
     /** @Column(type="float") **/
     protected $conges_annuel;
+
+    /**
+     * @OneToMany(targetEntity="Manager", mappedBy="perso_id", cascade={"ALL"})
+     */
+    protected $managers;
+
+    /**
+     * @OneToMany(targetEntity="Manager", mappedBy="responsable", cascade={"ALL"})
+     */
+    protected $managed;
+
+    public function __construct() {
+        $this->managers = new ArrayCollection();
+        $this->managed = new ArrayCollection();
+    }
+
+    public function getManaged()
+    {
+        return $this->managed->toArray();
+    }
+
+    public function addManaged(Manager $managed)
+    {
+        $this->managed->add($managed);
+        $managed->responsable($this);
+    }
+
+    public function isManagerOf($agent_ids = array())
+    {
+        $managed_ids = array_map(function($m) {
+            return $m->perso_id()->id();
+        }, $this->getManaged());
+
+        foreach ($agent_ids as $id) {
+            if (!in_array($id, $managed_ids)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public function can_access(array $accesses) {
         if (empty($accesses)) {

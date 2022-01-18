@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\Model\Agent;
+
 require_once(__DIR__. '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__. '/../../public/personnel/class.personnel.php');
 
@@ -158,18 +160,17 @@ class WorkingHourController extends BaseController
         $admin = ($adminN1 or $adminN2);
 
         // Droits de gestion des plannings de présence agent par agent
-        if ($adminN1 and $this->config('PlanningHebdo-notifications-agent-par-agent')) {
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
+        $perso_ids = array();
+        if ($adminN1
+            and $this->config('PlanningHebdo-notifications-agent-par-agent')
+            and !$adminN2) {
 
-            if (!$adminN2) {
-                $perso_ids = array($_SESSION['login_id']);
-                if ($db->result) {
-                    foreach ($db->result as $elem) {
-                        $perso_ids[] = $elem['perso_id'];
-                    }
-                }
-            }
+            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+            $perso_ids = array_map(function($m) {
+                return $m->perso_id()->id();
+            }, $logged_in->getManaged());
+            $perso_ids[] = $_SESSION['login_id'];
+
         }
 
         // Recherche des plannings
@@ -309,42 +310,23 @@ class WorkingHourController extends BaseController
         $valide_n2 = 0;
         if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2) {
         // Sélection des agents gérés (table responsables) et de l'agent logué
-            $perso_ids = array($_SESSION['login_id']);
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $perso_ids[] = $elem['perso_id'];
-                }
-            }
+            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+            $perso_ids = array_map(function($m) {
+                return $m->perso_id()->id();
+            }, $logged_in->getManaged());
+            $perso_ids[] = $_SESSION['login_id'];
+
             $perso_ids = implode(',', $perso_ids);
             $db = new \db();
             $db->select2('personnel', null, array('supprime'=>0, 'id' => "IN$perso_ids"), 'order by nom,prenom');
+            $tab = $db->result;
         } else {
             $db = new \db();
             $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
+            $tab = $db->result;
         }
         $nomAgent = nom($perso_id, "prenom nom");
 
-        if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2) {
-            // Sélection des agents gérés (table responsables) et de l'agent logué
-            $perso_ids = array($_SESSION['login_id']);
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $perso_ids[] = $elem['perso_id'];
-                }
-            }
-            $perso_ids = implode(',', $perso_ids);
-            $db = new \db();
-            $db->select2('personnel', null, array('supprime'=>0, 'id' => "IN$perso_ids"), 'order by nom,prenom');
-            $tab = $db->result;
-        } else {
-            $db = new \db();
-            $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
-            $tab = $db->result;
-        }
         if (!($adminN1 or $adminN2) and $valide_n2 > 0) {
             $action = "copie";
         }
@@ -497,9 +479,8 @@ class WorkingHourController extends BaseController
         $sites = $p->elements[0]['sites'];
         // Droits de gestion des plannings de présence agent par agent
         if ($this->adminN1 and $this->config('PlanningHebdo-notifications-agent-par-agent')) {
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('perso_id' => $perso_id, 'responsable' => $_SESSION['login_id']));
-            $this->adminN1 = $db->result ? true : false;
+            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+            $this->adminN1 = $logged_in->isManagerOf(array($perso_id));
         }
         // Modif autorisée si n'est pas validé ou si validé avec des périodes non définies (BSB).
         // Dans le 2eme cas copie des heures de présence avec modification des dates
@@ -519,16 +500,16 @@ class WorkingHourController extends BaseController
             $exception_id = $id;
         }
 
-        if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$this->adminN2 and $copy) {
+        if ($this->config('PlanningHebdo-notifications-agent-par-agent')
+            and !$this->adminN2 and $copy) {
+
             // Sélection des agents gérés (table responsables) et de l'agent logué
-            $perso_ids = array($_SESSION['login_id']);
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $perso_ids[] = $elem['perso_id'];
-                }
-            }
+            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+            $perso_ids = array_map(function($m) {
+                return $m->perso_id()->id();
+            }, $logged_in->getManaged());
+            $perso_ids[] = $_SESSION['login_id'];
+
             $perso_ids = implode(',', $perso_ids);
             $db = new \db();
             $db->select2('personnel', null, array('supprime'=>0, 'id' => "IN$perso_ids"), 'order by nom,prenom');
