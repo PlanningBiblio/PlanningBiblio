@@ -1993,6 +1993,7 @@ class absences
      */
     public function roles($perso_id, $accesDenied = false)
     {
+        $entityManager = $GLOBALS['entityManager'];
 
         // Droits d'administration niveau 1 et niveau 2
         // Droits nécessaires en mono-site
@@ -2020,17 +2021,10 @@ class absences
 
         // Si le paramètre "Absences-notifications-agent-par-agent" est coché, vérification du droit N1 à partir de la table "responsables"
         if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
-            $db = new db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    if ($elem['perso_id'] == $perso_id) {
-                        $adminN1 = true;
-                        break;
-                    }
-                }
+            $logged_in = $entityManager->getRepository(Agent::class)->find($_SESSION['login_id']);
+            if ($logged_in->isManagerOf(array($perso_id))) {
+                $adminN1 = true;
             }
-
         // Si le paramètre "Absences-notifications-agent-par-agent" n'est pascoché, vérification du droit N1 à partir des droits cochés dans la fiche de l'agent logué ($_SESSION['droits']
         } else {
             foreach ($droitsN1 as $elem) {

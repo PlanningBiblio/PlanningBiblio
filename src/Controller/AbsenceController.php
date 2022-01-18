@@ -160,17 +160,16 @@ class AbsenceController extends BaseController
             // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
             if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
                 $tmp = array();
+                $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
 
                 foreach ($agents_menu as $elem) {
                     if ($elem['id'] == $_SESSION['login_id']) {
                         $tmp[$elem['id']] = $elem;
-                    } else {
-                        foreach ($elem['responsables'] as $resp) {
-                            if ($resp['responsable'] == $_SESSION['login_id']) {
-                                $tmp[$elem['id']] = $elem;
-                                break;
-                            }
-                        }
+                        continue;
+                    }
+
+                    if ($logged_in->isManagerOf(array($elem['id']))) {
+                        $tmp[$elem['id']] = $elem;
                     }
                 }
 
@@ -417,22 +416,9 @@ class AbsenceController extends BaseController
 
         // Si l'option "Absences-notifications-agent-par-agent" est cochée, adapte la variable $adminN1 en fonction des agents de l'absence. S'ils sont tous gérés, $adminN1 = true, sinon, $adminN1 = false
         if ($this->config('Absences-notifications-agent-par-agent') and $adminN1) {
-            $perso_ids_verif = array(0);
-
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $perso_ids_verif[] = $elem['perso_id'];
-                }
-            }
-
-            foreach ($agents as $elem) {
-                if (!in_array($elem['perso_id'], $perso_ids_verif)) {
-                    $adminN1 = false;
-                    break;
-                }
-            }
+            $agent_ids = array_map(function($a) { return $a['perso_id'];}, $agents);
+            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+            $adminN1 = $logged_in->isManagerOf($agent_ids);
         }
 
         // Sécurité
@@ -560,22 +546,8 @@ class AbsenceController extends BaseController
         // check if logged in agent can manage all agents in absence.
         // Else, admin = false.
         if ($this->config('Absences-notifications-agent-par-agent') and $this->admin) {
-            $perso_ids_verif = array($_SESSION['login_id']);
-
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $perso_ids_verif[] = $elem['perso_id'];
-                }
-            }
-
-            foreach ($perso_ids as $elem) {
-                if (!in_array($elem, $perso_ids_verif)) {
-                    $this->admin = false;
-                    break;
-                }
-            }
+            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+            $this->admin = $logged_in->isManagerOf($perso_ids);
         }
 
         if ($this->admin or $this->adminN2) {
@@ -979,15 +951,10 @@ class AbsenceController extends BaseController
         // If Absences-notifications-agent-par-agent is true,
         // delete all agents the logged in user cannot create absences for.
         if ($this->config('Absences-notifications-agent-par-agent') and !$this->adminN2) {
-            $accepted_ids = array($_SESSION['login_id']);
+            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+            $accepted_ids = array_map(function($m) { return $m->perso_id()->id(); }, $logged_in->getManaged());
+            $accepted_ids[] = $_SESSION['login_id'];
 
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $accepted_ids[] = $elem['perso_id'];
-                }
-            }
             foreach ($valid_ids as $k => $v) {
                 if (!in_array($v, $accepted_ids)) {
                     unset($valid_ids[$k]);
