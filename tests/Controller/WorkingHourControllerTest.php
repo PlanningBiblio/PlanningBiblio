@@ -28,28 +28,9 @@ class WorkingHourControllerTest extends PLBWebTestCase
         $client->request('GET', '/workinghour');
         $response = $client->getResponse()->getContent();
         $this->assertEquals(
-            403,
-            $client->getResponse()->getStatusCode(),
-            'Users without exepected rights get forbiden access'
-        );
-
-        // User with rights.
-        $this->logInAgent($agent, array(1101));
-        $client->request('GET', '/workinghour');
-        $response = $client->getResponse()->getContent();
-        $this->assertEquals(
             200,
             $client->getResponse()->getStatusCode(),
-            'Users with 1101 right successfuly access'
-        );
-
-        $this->logInAgent($agent, array(1201));
-        $client->request('GET', '/workinghour');
-        $response = $client->getResponse()->getContent();
-        $this->assertEquals(
-            200,
-            $client->getResponse()->getStatusCode(),
-            'Users with 1201 right successfuly access'
+            'Users without exepected rights get access'
         );
     }
 

@@ -2,7 +2,10 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
+use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, OneToMany};
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/include/db.php');
@@ -113,6 +116,58 @@ class Agent extends PLBEntity
 
     /** @Column(type="float") **/
     protected $conges_annuel;
+
+    /**
+     * @OneToMany(targetEntity="Manager", mappedBy="perso_id", cascade={"ALL"})
+     */
+    protected $managers;
+
+    /**
+     * @OneToMany(targetEntity="Manager", mappedBy="responsable", cascade={"ALL"})
+     */
+    protected $managed;
+
+    public function __construct() {
+        $this->managers = new ArrayCollection();
+        $this->managed = new ArrayCollection();
+    }
+
+    public function getManaged()
+    {
+        return $this->managed->toArray();
+    }
+
+    public function getManagers()
+    {
+        return $this->managers->toArray();
+    }
+
+    public function addManaged(Manager $managed)
+    {
+        $this->managed->add($managed);
+        $managed->responsable($this);
+    }
+
+    public function isManagerOf($agent_ids = array(), $requested_level = null)
+    {
+        $managed_ids = array();
+        $managed = $this->getManaged();
+
+        foreach ($managed as $m) {
+            if (!$requested_level
+                or ($requested_level && $m->{$requested_level}())) {
+                $managed_ids[] = $m->perso_id()->id();
+            }
+        }
+
+        foreach ($agent_ids as $id) {
+            if (!in_array($id, $managed_ids)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public function can_access(array $accesses) {
         if (empty($accesses)) {
@@ -264,4 +319,42 @@ class Agent extends PLBEntity
         return is_array($skills) ? $skills : [];
     }
 
+    public function managedSites($needed_l1, $needed_l2)
+    {
+        $sites_number = $GLOBALS['config']['Multisites-nombre'];
+
+        // Module workinghour, no multisites.
+        if ($needed_l1 == 1100) {
+            $sites_number = 1;
+        }
+
+        $rights = $this->droits();
+
+        $managed_sites = array();
+        for ($i = 1; $i <= $sites_number; $i++) {
+            if (in_array($needed_l1 + $i, $rights)
+                or in_array($needed_l2 + $i, $rights)) {
+                $managed_sites[] = $i;
+            }
+        }
+
+        return $managed_sites;
+    }
+
+    public function inOneOfSites($sites)
+    {
+        $agent_sites = json_decode($this->sites(), true);
+
+        if (!is_array($agent_sites)) {
+            return false;
+        }
+
+        foreach ($agent_sites as $site) {
+            if (in_array($site, $sites)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

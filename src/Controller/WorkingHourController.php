@@ -9,11 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\Model\Agent;
+
 require_once(__DIR__. '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__. '/../../public/personnel/class.personnel.php');
 
 class WorkingHourController extends BaseController
 {
+    use \App\Controller\Traits\EntityValidationStatuses;
 
     private $imported = false;
     private $adminN1 = false;
@@ -153,26 +156,20 @@ class WorkingHourController extends BaseController
 
         // Droits d'administration
         // Seront utilisés pour n'afficher que les agents gérés si l'option "PlanningHebdo-notifications-agent-par-agent" est cochée
-        $adminN1 = in_array(1101, $droits);
-        $adminN2 = in_array(1201, $droits);
+        list($adminN1, $adminN2) = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('workinghour')
+            ->getValidationLevelFor($_SESSION['login_id']);
 
         $notAdmin = !($adminN1 or $adminN2);
         $admin = ($adminN1 or $adminN2);
 
         // Droits de gestion des plannings de présence agent par agent
-        if ($adminN1 and $this->config('PlanningHebdo-notifications-agent-par-agent')) {
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-
-            if (!$adminN2) {
-                $perso_ids = array($_SESSION['login_id']);
-                if ($db->result) {
-                    foreach ($db->result as $elem) {
-                        $perso_ids[] = $elem['perso_id'];
-                    }
-                }
-            }
-        }
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('workinghour')
+            ->getManagedFor($_SESSION['login_id']);
+        $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
 
         // Recherche des plannings
         $p = new \planningHebdo();
@@ -264,42 +261,47 @@ class WorkingHourController extends BaseController
     }
 
     /**
-     * @Route("/workinghour/add", name="workinghour.add", methods={"GET"})
+     * @Route("/workinghour/add/{agent_id<\d+>?}", name="workinghour.add", methods={"GET"})
      */
-    public function add(Request $request, Session $session){
+    public function add(Request $request, Session $session) {
         // Initialisation des variables
-        $copy = $request->get('copy');
         $retour = $request->get('retour');
         $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
-        $validation = "";
+        $perso_id = $request->get('agent_id') ?? $_SESSION['login_id'];
         $id = null;
-        $tab = array();
         $action = "ajout";
 
-        $is_new = 1;
         // Sécurité
-        $adminN1 = in_array(1101, $droits);
-        $adminN2 = in_array(1201, $droits);
+        list($adminN1, $adminN2) = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('workinghour')
+            ->forAgent($perso_id)
+            ->getValidationLevelFor($_SESSION['login_id']);
+
+        $this->setStatusesParams(array($perso_id), 'workinghour');
+
         $notAdmin = !($adminN1 or $adminN2);
         $admin = ($adminN1 or $adminN2);
-        $cle = null;
         $modifAutorisee = true;
         $debut1 = null;
         $fin1 = null;
         $debut1Fr = null;
         $fin1Fr = null;
-        $perso_id = $_SESSION['login_id'];
-        $valide_n2 = 0;
         $remplace = null;
         $sites = array();
         $nbSemaine = $this->config('nb_semaine');
         $nbSites = $this->config('Multisites-nombre');
         $multisites = array();
 
-        if (!$admin && !$this->config('PlanningHebdo-Agents') ) {
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('workinghour')
+            ->getManagedFor($_SESSION['login_id']);
+
+        if (!$admin && !$this->config('PlanningHebdo-Agents') && count($managed) < 2 ) {
             return $this->redirectToRoute('access-denied');
         }
 
@@ -307,69 +309,8 @@ class WorkingHourController extends BaseController
             $sites[] = $i;
             $multisites[$i] = $this->config("Multisites-site{$i}");
         }
-        $valide_n1 = 0;
-        $valide_n2 = 0;
-        if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2) {
-        // Sélection des agents gérés (table responsables) et de l'agent logué
-            $perso_ids = array($_SESSION['login_id']);
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $perso_ids[] = $elem['perso_id'];
-                }
-            }
-            $perso_ids = implode(',', $perso_ids);
-            $db = new \db();
-            $db->select2('personnel', null, array('supprime'=>0, 'id' => "IN$perso_ids"), 'order by nom,prenom');
-        } else {
-            $db = new \db();
-            $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
-        }
-        $nomAgent = nom($perso_id, "prenom nom");
 
-        if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2) {
-            // Sélection des agents gérés (table responsables) et de l'agent logué
-            $perso_ids = array($_SESSION['login_id']);
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $perso_ids[] = $elem['perso_id'];
-                }
-            }
-            $perso_ids = implode(',', $perso_ids);
-            $db = new \db();
-            $db->select2('personnel', null, array('supprime'=>0, 'id' => "IN$perso_ids"), 'order by nom,prenom');
-            $tab = $db->result;
-        } else {
-            $db = new \db();
-            $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
-            $tab = $db->result;
-        }
-        if (!($adminN1 or $adminN2) and $valide_n2 > 0) {
-            $action = "copie";
-        }
-        if (!$cle) {
-            if ($admin) {
-                $selected1 = isset($valide_n1) && $valide_n1 > 0 ? true : false;
-                $selected2 = isset($valide_n1) && $valide_n1 < 0 ? true : false;
-                $selected3 = isset($valide_n2) && $valide_n2 > 0 ? true : false;
-                $selected4 = isset($valide_n2) && $valide_n2 < 0 ? true : false;
-                // Si pas admin, affiche le niveau en validation en texte simple
-            } else {
-                $validation = "Demandé";
-                if ($valide_n2 > 0) {
-                    $validation = $lang['work_hours_dropdown_accepted'];
-                } elseif ($valide_n2 < 0) {
-                    $validation = $lang['work_hours_dropdown_refused'];
-                } elseif ($valide_n1 > 0) {
-                    $validation = $lang['work_hours_dropdown_accepted_pending'];
-                } elseif ($valide_n1 < 0) {
-                    $validation = $lang['work_hours_dropdown_refused_pending'];
-                }
-            }
-        }
+        $nomAgent = nom($perso_id, "prenom nom");
 
         $this->templateParams(
             array(
@@ -377,8 +318,8 @@ class WorkingHourController extends BaseController
                 "admin"              => $admin,
                 "adminN1"            => $adminN1,
                 "adminN2"            => $adminN2,
-                "cle"                => $cle,
-                "copy"               => $copy,
+                "cle"                => null,
+                "copy"               => null,
                 "debut1"             => $debut1,
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => null,
@@ -387,7 +328,7 @@ class WorkingHourController extends BaseController
                 "fin1Fr"             => $fin1Fr,
                 "id"                 => $id,
                 "is_exception"       => null,
-                "is_new"             => $is_new,
+                "is_new"             => 1,
                 "lang"               => $lang,
                 "login_id"           => $_SESSION['login_id'],
                 "modifAutorisee"     => $modifAutorisee,
@@ -396,28 +337,24 @@ class WorkingHourController extends BaseController
                 "nbSemaine"          => $nbSemaine,
                 "nomAgent"           => $nomAgent,
                 "notAdmin"           => $notAdmin,
+                "managed"            => $managed,
                 "pause2_enabled"     => $pause2_enabled,
                 "pauseLibre_enabled" => $pauseLibre_enabled,
                 "perso_id"           => $perso_id,
                 "remplace"           => null,
                 "retour"             => $retour,
                 "request_exception"  => null,
-                "selected1"          => null,
-                "selected2"          => null,
-                "selected3"          => null,
-                "selected4"          => null,
                 "sites"              => $sites,
-                "tab"                => $tab,
-                "valide_n1"          => $valide_n1,
-                "valide_n2"          => $valide_n2,
-                "validation"         => $validation
+                "valide_n1"          => 0,
+                "valide_n2"          => 0,
+                "validation"         => 'Demandé'
             )
         );
         return $this->output('/workinghour/edit.html.twig');
     }
 
     /**
-     * @Route("/workinghour/{id}", name="workinghour.edit", methods={"GET"})
+     * @Route("/workinghour/{id<\d+>}", name="workinghour.edit", methods={"GET"})
      */
     public function edit(Request $request, Session $session){
         // Initialisation des variables
@@ -451,20 +388,22 @@ class WorkingHourController extends BaseController
             $id = $copy;
         }
 
-    
         if ($request_exception) {
             $id = $request_exception;
         }
 
         $is_new = 0;
-        // Sécurité
-        $this->adminN1 = in_array(1101, $droits);
-        $this->adminN2 = in_array(1201, $droits);
-        $admin = ($this->adminN1 or $this->adminN2);
+
         $p = new \planningHebdo();
         $p->id = $id;
         $p->fetch();
         $this->workinghours = $p->elements[0];
+
+        if (!$this->workinghours) {
+            $this->templateParams(array('not_found' => 1));
+            return $this->output('/workinghour/edit.html.twig');
+        }
+
         $debut1 = $p->elements[0]['debut'];
         $fin1 = $p->elements[0]['fin'];
         $debut1Fr = dateFr($debut1);
@@ -473,6 +412,16 @@ class WorkingHourController extends BaseController
         $temps = $p->elements[0]['temps'];
         $breaktime = $p->elements[0]['breaktime'];
         $thisNbSemaine = !empty($p->elements[0]['nb_semaine']) ? $p->elements[0]['nb_semaine'] : 1;
+
+        // Sécurité
+        list($this->adminN1, $this->adminN2) = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('workinghour')
+            ->forAgent($perso_id)
+            ->getValidationLevelFor($_SESSION['login_id']);
+        $admin = ($this->adminN1 or $this->adminN2);
+
+        $this->setStatusesParams(array($perso_id), 'workinghour', $id);
 
         if (!$admin && $perso_id != $_SESSION['login_id']) {
             return $this->redirectToRoute('access-denied');
@@ -490,6 +439,7 @@ class WorkingHourController extends BaseController
             $valide_n1 = $p->elements[0]['valide_n1'] ?? 0;
             $valide_n2 = $p->elements[0]['valide'] ?? 0;
         }
+
         $remplace = $p->elements[0]['remplace'];
         $cle = $p->elements[0]['cle'];
         $this->imported = $cle ? true : false;
@@ -497,12 +447,7 @@ class WorkingHourController extends BaseController
         $p = new \personnel();
         $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
-        // Droits de gestion des plannings de présence agent par agent
-        if ($this->adminN1 and $this->config('PlanningHebdo-notifications-agent-par-agent')) {
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('perso_id' => $perso_id, 'responsable' => $_SESSION['login_id']));
-            $this->adminN1 = $db->result ? true : false;
-        }
+
         // Modif autorisée si n'est pas validé ou si validé avec des périodes non définies (BSB).
         // Dans le 2eme cas copie des heures de présence avec modification des dates
         $action = "modif";
@@ -521,25 +466,10 @@ class WorkingHourController extends BaseController
             $exception_id = $id;
         }
 
-        if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$this->adminN2 and $copy) {
-            // Sélection des agents gérés (table responsables) et de l'agent logué
-            $perso_ids = array($_SESSION['login_id']);
-            $db = new \db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $perso_ids[] = $elem['perso_id'];
-                }
-            }
-            $perso_ids = implode(',', $perso_ids);
-            $db = new \db();
-            $db->select2('personnel', null, array('supprime'=>0, 'id' => "IN$perso_ids"), 'order by nom,prenom');
-            $tab = $db->result;
-        } else {
-            $db = new \db();
-            $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
-            $tab = $db->result;
-        }
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('workinghour')
+            ->getManagedFor($_SESSION['login_id']);
 
         // The followings variables are only used when $cle is defined, but we need to initialize them to avoid errors.
         $selected1 = false;
@@ -598,7 +528,7 @@ class WorkingHourController extends BaseController
                 "remplace"           => $remplace,
                 "retour"             => $retour,
                 "request_exception"  => $request_exception,
-                "tab"                => $tab,
+                "managed"            => $managed,
                 "temps"              => $temps,
                 "thisNbSemaine"      => $thisNbSemaine,
                 "selected1"          => $selected1,

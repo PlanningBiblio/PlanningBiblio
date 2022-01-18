@@ -1,0 +1,149 @@
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript">
+    $(document).ready(function(){
+      update_rejected_element($('select[name="validation"]').val());
+    });
+
+    $(function(){
+      $('select[name="validation"]').change(function() {
+        update_rejected_element($(this).val())
+      });
+    });
+
+    function update_rejected_element(state) {
+      if(state < 0) {
+        $('.refus').show();
+      } else {
+        $('.refus').hide();
+      }
+    }
+  </script>
+{% endblock %}
+
+{% block page %}
+  <div id="content admin">
+    <h3>Récupération</h3>
+    <div class="admin-div">
+      <form method="post" action="{{ asset('comp-time') }}">
+        <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
+        <input type="hidden" name="id" value="{{ id }}" />
+
+        <table class="tableauFiches">
+          <tr>
+            <td class="textAlignRight">Agent : </td>
+            <td>{{ agent }}</td>
+          </tr>
+
+          {% if config('Recup-DeuxSamedis') %}
+            <tr>
+              <td class="textAlignRight">Date(s) concernée(s) : </td>
+              <td>{{ comptime.date | datefull }}</td>
+            </tr>
+
+            <tr>
+              <td>&nbsp;</td>
+              <td>{{ comptime.date2 | datefull }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td class="textAlignRight">Date concernée : </td>
+              <td>{{ comptime.date | datefull }}</td>
+            </tr>
+          {% endif %}
+
+          <tr>
+            <td class="textAlignRight">Date de la demande : </td>
+            <td>
+              {{ comptime.saisie }} {% if comptime.saisie_par and comptime.saisie_par == comptime.perso_id %} par comptime.saisie_par_nom {% endif %}
+            <td>
+          </tr>
+
+          <tr>
+            <td class="textAlignRight">Heures demandées : </td>
+            {% if comptime.editable %}
+              <td>
+                <input id="heures" name="heures" class="comptime-timepicker ui-widget-content ui-corner-all" value="{{ comptime.time }}" style="text-align: center;"/>
+              </td>
+            {% else %}
+              <td>{{ comptime.heures | hours }}</td>
+            {% endif %}
+          </tr>
+
+          <tr>
+            <td class="textAlignRight">Commentaires : </td>
+            {% if comptime.editable %}
+              <td>
+                <textarea name="commentaires">{{ comptime.commentaires }}</textarea>
+              </td>
+            {% else %}
+              <td>{{ comptime.commentaires | nl2br }}</td>
+            {% endif %}
+          </tr>
+
+          <tr>
+            <td class="textAlignRight">Validation : </td>
+            {% if show_select == true %}
+              <td>
+                <select name="validation" id="validation">
+                  <option value="0">Demandé</option>
+
+                  {% if show_n1 %}
+                    {% if entity_state == 2 %}
+                      <option value="2" selected>Accepté (En attente de validation hiérarchique)</option>
+                    {% else %}
+                      <option value="2" >Accepté (En attente de validation hiérarchique)</option>
+                    {% endif %}
+
+                    {% if entity_state == -2 %}
+                      <option value="-2" selected>Refusé (En attente de validation hiérarchique)</option>
+                    {% else %}
+                      <option value="-2" >Refusé (En attente de validation hiérarchique)</option>
+                    {% endif %}
+                  {% endif %}
+
+                  {% if show_n2 %}
+                    {% if entity_state == 1 %}
+                      <option value="1" selected>Accepté</option>
+                    {% else %}
+                      <option value="1" >Accepté</option>
+                    {% endif %}
+
+                    {% if entity_state == -1 %}
+                      <option value="-1" selected>Refusé</option>
+                    {% else %}
+                      <option value="-1" >Refusé</option>
+                    {% endif %}
+                  {% endif %}
+                </select>
+              </td>
+            {% else %}
+              <td>{{ entity_state_desc }}</td>
+            {% endif %}
+          </tr>
+
+          <tr class="refus">
+            <td class="textAlignRight">Motif du refus : </td>
+            {% if show_select == true %}
+              <td>
+                <textarea name="refus">{{ comptime.refus }}</textarea>
+              </td>
+            {% else %}
+              <td>{{ comptime.refus }}</td>
+            {% endif %}
+          </tr>
+
+          <tr>
+            <td colspan="2" class="td_validation">
+              <input type="button" class="ui-button ui-button-type2" value="Retour" onclick='location.href="/comp-time";' />
+              {% if comptime.save %}
+                <input type="submit" class="ui-button" value="Enregistrer"/>
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
+  </div>
+{% endblock %}

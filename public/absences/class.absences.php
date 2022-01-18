@@ -1307,46 +1307,31 @@ class absences
 
         switch ($notifications) {
 
-      // Si l'absence est ajoutée ou modifiée sans validation, envoi de la notification aux responsables enregistrés dans la page Validations / Notifications
+      // If the absence / holiday / compt-time is asked,
+      // send notification to manager having notification_level1
       case 1:
       case 2:
 
         foreach ($agents as $agent) {
             foreach ($agent['responsables'] as $elem) {
-                if ($elem['notification'] and !in_array($agents_tous[$elem['responsable']]['mail'], $destinataires)) {
+                if (($elem['notification_level1'])) {
                     $destinataires[] = $agents_tous[$elem['responsable']]['mail'];
                 }
             }
         }
         break;
 
-      // Si l'absence est validée au niveau 1, envoi de la notification aux agents ayant le droit de validation niveau 2
-      // Droits de gestion des absences niveau 2 : 50x
+      // If the absence / holiday / compt-time is validated level 1,
+      // send notification to manager having notification_level2
       case 3:
 
-        // Si $droit == 1200, on recherche les responsables niveau 2 des planning de présence
-        if ($droit == 1200) {
-            $db = new db();
-            $db->select2('personnel', 'mail', array('droits' => 'LIKE%1201%'));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $destinataires[] = $elem['mail'];
-                }
-            }
-        } else {
-            // Si $droit != 1200, on recherche les responsables des absences (niveau 2)
-            foreach ($agents as $agent) {
-                $a = new absences();
-                $a->getResponsables($debut, $fin, $agent['id'], $droit);
-
-                foreach ($a->responsables as $elem) {
-                    if (!in_array($elem['mail'], $destinataires)) {
-                        $destinataires[] = $elem['mail'];
-                    }
+        foreach ($agents as $agent) {
+            foreach ($agent['responsables'] as $elem) {
+                if (($elem['notification_level2'])) {
+                    $destinataires[] = $agents_tous[$elem['responsable']]['mail'];
                 }
             }
         }
-
 
         break;
 
@@ -1361,7 +1346,7 @@ class absences
         break;
     }
 
-        $this->recipients = $destinataires;
+        $this->recipients = array_unique($destinataires);
     }
 
 
@@ -1890,7 +1875,7 @@ class absences
     public function infoPlannings()
     {
         $version="absences";
-        require_once "postes/class.postes.php";
+        require_once __DIR__ . '/../postes/class.postes.php';
   
         $debut=dateSQL($this->debut);
         $fin=dateSQL($this->fin);
@@ -1998,82 +1983,6 @@ class absences
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
         $db->update("absences", array($pj => $checked), array("id"=>$id));
-    }
-
-    /** roles
-     * @param int $perso_id : ID de l'agent concerné par l'absence
-     * @param boolean $accessDenied default false : afficher "accès refusé" si la page demandée ne concerne pas l'agent logué et s'il n'est pas admin
-     * @return Array($adminN1, $adminN2) : tableau ayant pour 1ère valeur true si l'agent logué est adminN1, false sinon, pour 2ème valeur true s'il est adminN2, false sinon
-     * Affiche "accès refusé" si la page demandée ne concerne pas l'agent logué et s'il n'est pas admin
-     */
-    public function roles($perso_id, $accesDenied = false)
-    {
-
-        // Droits d'administration niveau 1 et niveau 2
-        // Droits nécessaires en mono-site
-        $droitsN1 = array(201);
-        $droitsN2 = array(501);
-
-        // Droits nécessaires en multisites avec vérification des sites attribués à l'agent concerné par l'absence
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            $droitsN1 = array();
-            $droitsN2 = array();
-
-            $p=new personnel();
-            $p->fetchById($perso_id);
-
-            if (is_array($p->elements[0]['sites'])) {
-                foreach ($p->elements[0]['sites'] as $site) {
-                    $droitsN1[] = 200 + $site;
-                    $droitsN2[] = 500 + $site;
-                }
-            }
-        }
-
-        // Ai-je le droit d'administration niveau 1 pour l'absence demandée
-        $adminN1 = false;
-
-        // Si le paramètre "Absences-notifications-agent-par-agent" est coché, vérification du droit N1 à partir de la table "responsables"
-        if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
-            $db = new db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    if ($elem['perso_id'] == $perso_id) {
-                        $adminN1 = true;
-                        break;
-                    }
-                }
-            }
-
-        // Si le paramètre "Absences-notifications-agent-par-agent" n'est pascoché, vérification du droit N1 à partir des droits cochés dans la fiche de l'agent logué ($_SESSION['droits']
-        } else {
-            foreach ($droitsN1 as $elem) {
-                if (in_array($elem, $_SESSION['droits'])) {
-                    $adminN1 = true;
-                    break;
-                }
-            }
-        }
-
-        // Ai-je le droit d'administration niveau 2 pour l'absence demandée
-        $adminN2 = false;
-        foreach ($droitsN2 as $elem) {
-            if (in_array($elem, $_SESSION['droits'])) {
-                $adminN2 = true;
-                break;
-            }
-        }
-
-        // Affiche accès refusé si l'absence ne concerne pas l'agent logué et qu'il n'est pas admin
-        if ($accesDenied and !$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
-            echo "<h3 style='text-align:center;'>Accès refusé</h3>\n";
-            echo "<p style='text-align:center;' >\n";
-            echo "<a href='javascript:history.back();'>Retour</a></p>\n";
-            include(__DIR__.'/../include/footer.php');
-        }
-
-        return array($adminN1, $adminN2);
     }
 
     public function update_time()

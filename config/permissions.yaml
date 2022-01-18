@@ -11,6 +11,8 @@
     - 100
 "absence.save":
     - 100
+"absence.statuses":
+    - 100
 "absences.document.index":
     - 100
 "absences.document.delete":
@@ -51,7 +53,11 @@
     - 100
 "ajax.update_agent_login":
     - 21
+"comp-time.edit":
+    - 100
 "comp-time.index":
+    - 100
+"comp-time.save":
     - 100
 "ajax.workinghourtables":
     - 100
@@ -136,8 +142,7 @@
 "statistics.time":
     - 17
 "workinghour.index":
-    - 1101
-    - 1201
+    - 100
 "workinghour.add":
     - 100
 "workinghour.edit":

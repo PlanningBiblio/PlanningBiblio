@@ -38,21 +38,8 @@
       <tr>
         <td style='width:350px;'>Nom, prénom : </td>
         <td>
-          {% if db_perso | length > 1 %}
-            <select name='perso_id' id='perso_id' style='width:40%;' class='googleCalendarTrigger'>
-              <option value='0' ></option>
-              {% for d in db_perso %}
-                {% if d.id == perso_id %}
-                  <option value="{{ d.id }}" selected='selected'>{{ d.nom }} {{ d.prenom }}</option>
-                {% else %}
-                  <option value="{{ d.id }}">{{ d.nom }} {{ d.prenom }}</option>
-                {% endif %}
-              {% endfor %}
-            </select>
-          {% else %}
-            <input type='hidden' name='perso_id' id='perso_id' value="{{ login_id}}"/>
-            {{ agent_name }}
-          {% endif %}
+          <input type='hidden' name='perso_id' id='perso_id' value="{{ perso_id}}"/>
+          {{ agent_name }}
         </td>
       </tr>
 
@@ -369,52 +356,9 @@
               </tr>
             {% endif %}
 
-            <tr>
+            <tr id="validation-line">
               <td>Validation</td>
-              {% if select_valide %}
-                <td>
-                  <select name='valide' id='validation' style='width:35%;' onchange="afficheRefus(this);">
-                    <option value='0'>&nbsp;</option>
-                    {% if adminN1 %}
-                      {% if valide_n1 > 0 and valide == 0 %}
-                      <option value='2' selected="selected">{{ accepted_pending_str }}</option>
-                      {% else %}
-                        <option value='2'>{{ accepted_pending_str }}</option>
-                      {% endif %}
-
-                      {% if valide_n1 < 0 and valide == 0 %}
-                        <option value='-2' selected="selected">{{ refused_pending_str }}</option>
-                      {% else %}
-                        <option value='-2'>{{ refused_pending_str }}</option>
-                      {% endif %}
-                    {% endif %}
-
-                    {% if select_valide_others %}
-                      {% if valide > 0 %}
-                        <option value='1' selected="selected">Accepté</option>
-                      {% else %}
-                        <option value='1'>Accepté</option>
-                      {% endif %}
-
-                      {% if valide < 0 %}
-                        <option value='-1' selected="selected">Refusé</option>
-                      {% else %}
-                        <option value='-1'>Refusé</option>
-                      {% endif %}
-                    {% endif %}
-                  </select>
-                </td>
-              {% else %}
-                {% if valide < 0 %}
-                  <td>Refusé</td>
-                {% elseif valide > 0 %}
-                  <td>Validé</td>
-                {% elseif valide_n1 %}
-                  <td>En attente de validation hiérarchique</td>
-                {% else %}
-                  <td>Demandé</td>
-                {% endif %}
-              {% endif %}
+                <td id="validation-statuses"></td>
             </tr>
 
             <tr id='tr_refus' style='vertical-align:top; {{ displayRefus }}'>

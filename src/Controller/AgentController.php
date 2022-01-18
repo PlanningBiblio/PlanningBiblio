@@ -848,7 +848,6 @@ class AgentController extends BaseController
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             if (in_array((200+$i), $droits) or in_array((500+$i), $droits)) {
                 $droits[] = 6;
-                $droits[] = 9;
                 break;
             }
         }

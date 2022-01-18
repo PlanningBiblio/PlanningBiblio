@@ -39,7 +39,8 @@
           {% if config('Multisites-nombre') > 1 %}
             <th>Sites</th>
           {% endif %}
-          <th>Validations / notifications</th>
+          <th>Validations / notifications niveau 1</th>
+          <th>Validations / notifications niveau 2</th>
         </tr>
       </thead>
       <tbody>
@@ -58,11 +59,36 @@
             {% elseif config('Multisites-nombre')>1 and not agent.sites_list is defined %}
                 <td>&nbsp;</td>
             {% endif %}
-            {% if agent.responsables_list is defined and not agent.responsables_list is empty %}
-                <td>{{ agent.responsables_list | raw }}</td>
-            {% else %}
-                <td>&nbsp;</td>
-            {% endif %}
+            <td>
+              {% for manager in agent.managers %}
+                {% if manager.level1 %}
+                  <span class="managerl1_{{ agent.id }}"
+                        data-manager="{{ manager.responsable.id }}"
+                        data-notif="{{ manager.notification_level1 }}">
+                    {{ manager.responsable.nom }} {{ manager.responsable.prenom | first }}
+                    {% if manager.notification_level1 %}
+                     - Notifications
+                    {% endif %}
+                  </span>
+                  <br />
+                {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for manager in agent.managers %}
+                {% if manager.level2 %}
+                  <span class="managerl2_{{ agent.id }}"
+                        data-manager="{{ manager.responsable.id }}"
+                        data-notif="{{ manager.notification_level2 }}">
+                    {{ manager.responsable.nom }} {{ manager.responsable.prenom | first }}
+                    {% if manager.notification_level2 %}
+                     - Notifications
+                    {% endif %}
+                  <span>
+                  <br />
+                {% endif %}
+              {% endfor %}
+            </td>
           </tr>
         {% endfor %}
       </tbody>
@@ -74,26 +100,44 @@
   <div id="update-form" title="Validations / Notifications" class='noprint' style='display:none;'>
     <p class="validateTips" style='text-align:justify;'>Choisissez les responsables qui ont le droit de valider les absences et congés des agents sélectionnés.<br/>Cochez la case s'ils doivent être notifiés lors de l'enregistrement d'une nouvelle absence ou demande de congés.</p>
     <form>
-      <table class='tableauFiches'>
+      <table class='table-validation-notification'>
         <thead style='text-align: left;'>
           <tr>
-            <th style='padding-bottom:10px;'>Responsables</th>
-            <th style='padding-bottom:10px;'>Notifications</th>
+            <th colspan="2" class="border-right"><center>Validation niveau 1</center></th>
+            <th colspan="2"><center>Validation niveau 2</center></th>
+          </tr>
+          <tr>
+            <td>Responsables</td>
+            <td class="border-right">Notifier</td>
+            <td>Responsables</td>
+            <td>Notifier</td>
           </tr>
         </thead>
         <tbody>
           {% for i in 0..5 %}
             <tr>
               <td>
-                <select name='responsable-{{i}}' id='responsable-{{i}}' class='responsables' data-id='{{i}}'>
+                <select name='responsable-{{i}}' id='responsable-{{i}}' class='responsablesl1' data-id='{{i}}'>
                   <option value=''>&nbsp;</option>
-                  {% for agent in agents_responsables %}
+                  {% for agent in manager_level1 %}
+                      echo "<option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td class="border-right">
+                <input type='checkbox' name='notification-{{i}}' id='notification-{{i}}' class='notificationsl1' data-id='{{i}}'/>
+              </td>
+
+              <td>
+                <select name='responsablel2-{{i}}' id='responsablel2-{{i}}' class='responsablesl2' data-id='{{i}}'>
+                  <option value=''>&nbsp;</option>
+                  {% for agent in manager_level2 %}
                       echo "<option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
                   {% endfor %}
                 </select>
               </td>
               <td>
-                <input type='checkbox' name='notification-{{i}}' id='notification-{{i}}' class='notifications' data-id='{{i}}'/>
+                <input type='checkbox' name='notificationl2-{{i}}' id='notificationl2-{{i}}' class='notificationsl2' data-id='{{i}}'/>
               </td>
             </tr>
           {% endfor %}

@@ -30,6 +30,7 @@
           <input type='hidden' name='groupe' id='groupe' value='{{ absence.groupe }}' />
           <input type='hidden' name='rrule' id='rrule' value='{{ absence.rrule }}' />
           <input type='hidden' name='recurrence-modif' id='recurrence-modif' value='' />
+          <input type='hidden' name='absence_status' id='absence_status' value="{{ absence.status }}" />
 
           <table class='tableauFiches'>
             {% for agent in agents %}
@@ -273,58 +274,9 @@
                 {% endif %}
 
               {% if absences_validation %}
-                <tr>
+                <tr id="validation-line">
                   <td class="textAlignRight"><label>Validation</label></td>
-                  <td>
-                    {% if absence.status_editable %}
-                      <select name='valide' class='ui-widget-content ui-corner-all'>
-                        <option value='0'>Demandée</option>
-
-                        {% if absence.status == 'ACCEPTED_N1' %}
-                          <option value='2' selected="selected">Acceptée (En attente de validation hiérarchique)</option>
-                        {% else %}
-                          <option value='2'>Acceptée (En attente de validation hiérarchique)</option>
-                        {% endif %}
-
-                        {% if absence.status == 'REJECTED_N1' %}
-                          <option value='-2' selected="selected">Refusée (En attente de validation hiérarchique)</option>
-                        {% else %}
-                          <option value='-2'>Refusée (En attente de validation hiérarchique)</option>
-                        {% endif %}
-
-                        {% if adminN2 %}
-                          {% if absence.status == 'ACCEPTED_N2' %}
-                            <option value='1' selected="selected">Acceptée</option>
-                          {% else %}
-                            <option value='1'>Acceptée</option>
-                          {% endif %}
-
-                          {% if absence.status == 'REJECTED_N2' %}
-                            <option value='-1' selected="selected">Refusée</option>
-                          {% else %}
-                            <option value='-1'>Refusée</option>
-                          {% endif %}
-                        {% endif %}
-                      </select>
-                    {% else %}
-                      {% if absence.status == 'ASKED' %}
-                        Demandée
-                        <input type='hidden' name='valide' value='0' />
-                      {% elseif absence.status == 'ACCEPTED_N1' %}
-                        Acceptée (En attente de validation hiérarchique)
-                        <input type='hidden' name='valide' value='2' />
-                      {% elseif absence.status == 'ACCEPTED_N2' %}
-                        Acceptée
-                        <input type='hidden' name='valide' value='1' />
-                      {% elseif absence.status == 'REJECTED_N1' %}
-                        Refusée (En attente de validation hiérarchique)
-                        <input type='hidden' name='valide' value='-2' />
-                      {% elseif absence.status == 'REJECTED_N2' %}
-                        Refusée
-                        <input type='hidden' name='valide' value='-1' />
-                      {% endif %}
-                    {% endif %}
-                  </td>
+                  <td id="validation-statuses"></td>
                 </tr>
               {% endif %}
 

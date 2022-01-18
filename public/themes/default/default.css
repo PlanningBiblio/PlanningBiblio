@@ -334,6 +334,33 @@ li .agent-acces-checked2{
   padding-right: 20px;
 }
 
+.table-validation-notification {
+  border-spacing: 0px;
+}
+
+.table-validation-notification td{
+  text-align: left;
+  vertical-align:top;
+  padding: 0 60px 10px 10px;
+  white-space: nowrap;
+}
+
+.table-validation-notification td:nth-child(2) {
+  width: 60px;
+}
+
+.table-validation-notification th {
+  padding-bottom: 10px;
+  padding-left: 10px;
+}
+
+.table-validation-notification .border-right {
+  border-right: 1px solid black;
+}
+
+
+
+
 .tableauFiches td{
   vertical-align:top;
   padding: 0 60px 10px 10px;
