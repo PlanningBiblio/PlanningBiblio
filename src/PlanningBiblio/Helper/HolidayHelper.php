@@ -313,21 +313,12 @@ class HolidayHelper extends BaseHelper
 
         // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
         if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
-            $tmp = array();
+            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+            $managed = $logged_in->getManaged();
+            $managed_ids = array_map(function($m) { return $m->perso_id()->id(); }, $logged_in->getManaged());
+            $managed_ids[] = $_SESSION['login_id'];
 
-            foreach ($agents as $elem) {
-                if ($elem['id'] == $_SESSION['login_id']) {
-                    $tmp[$elem['id']] = $elem;
-                } else {
-                    foreach ($elem['responsables'] as $resp) {
-                        if ($resp['responsable'] == $_SESSION['login_id']) {
-                            $tmp[$elem['id']] = $elem;
-                            break;
-                        }
-                    }
-                }
-            }
-            $agents = $tmp;
+            $agents = $managed_ids;
         }
 
         return $agents;
