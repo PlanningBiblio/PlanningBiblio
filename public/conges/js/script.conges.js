@@ -782,9 +782,12 @@ function updateAgentsListBySites() {
         options += '<option value="tous">Tous les agents</option>';
     }
 
+    selected_agent_id = $('#selected_agent_id').val();
     $.each(managed_sites_agents, function(index, value) {
         style = value.id == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
-        options += '<option' + style + ' value="' + value.id + '" id="option' + value.id + '">' + value.nom + ' ' + value.prenom + '</option>';
+        selected = value.id == selected_agent_id ? ' selected="selected"' : '';
+        options += '<option' + style + selected + ' value="' + value.id + '" id="option' + value.id;
+        options += '">' + value.nom + ' ' + value.prenom + '</option>';
     });
 
     $("#perso_ids").html(options);

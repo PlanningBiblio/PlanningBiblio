@@ -6,6 +6,15 @@
   <script type='text/JavaScript' src='{{ asset("conges/js/script.conges.js") }}'></script>
   <script type='text/JavaScript' src='{{ asset("js/dateUtils.js") }}'></script>
   <script type='text/JavaScript' src='{{ asset("js/holiday.js") }}'></script>
+  {% if not agents_multiples %}
+    <script type='text/JavaScript'>
+      $( document ).ready(function() {
+        $('select[name="perso_id"]').on('change', function() {
+          document.location.href="/holiday/new/" + this.value;
+        });
+      });
+    </script>
+  {% endif %}
 {% endblock %}
 
 {% block page %}
@@ -24,6 +33,7 @@
           <input type='hidden' name='anticipation' value='{{ anticipation }}' />
           <input type='hidden' id='agent' value='{{ agent_name }}' />
           <input type='hidden' id='agent_id' value='{{ loggedin_id }}' />
+          <input type='hidden' id='selected_agent_id' value='{{ selected_agent_id }}' />
           <input type='hidden' id='conges-recup' value='{{ conges_recuperations }}' />
           <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
           <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
