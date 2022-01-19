@@ -676,6 +676,7 @@ class HolidayController extends BaseController
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'multisites'            => $multisites,
+            'selected_agent_id'     => $perso_id,
             'sites_select'          => $sites_select,
             'show_allday'           => $show_allday,
         );
