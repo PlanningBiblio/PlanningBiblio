@@ -6,15 +6,6 @@
   <script type='text/JavaScript' src='{{ asset("conges/js/script.conges.js") }}'></script>
   <script type='text/JavaScript' src='{{ asset("js/dateUtils.js") }}'></script>
   <script type='text/JavaScript' src='{{ asset("js/holiday.js") }}'></script>
-  {% if not agents_multiples %}
-    <script type='text/JavaScript'>
-      $( document ).ready(function() {
-        $('select[name="perso_id"]').on('change', function() {
-          document.location.href="/holiday/new/" + this.value;
-        });
-      });
-    </script>
-  {% endif %}
 {% endblock %}
 
 {% block page %}
