@@ -22,7 +22,6 @@ Cette page est appelée par la page index.php
 use App\Model\HiddenSites;
 
 require_once "class.planning.php";
-require_once "planning/postes_cfg/class.tableaux.php";
 require_once __DIR__."/../volants/class.volants.php";
 include_once "absences/class.absences.php";
 include_once __DIR__ . "/../../conges/class.conges.php";
@@ -37,6 +36,7 @@ echo "<div id='plannings'>\n";
 include "fonctions.php";
 
 use PlanningBiblio\PresentSet;
+use App\PlanningBiblio\Framework;
 
 // Initialisation des variables
 $date=filter_input(INPUT_GET, "date", FILTER_SANITIZE_STRING);
@@ -349,7 +349,7 @@ while ($site <= $nb_sites) {
     }
 
     // Récupération de la structure du tableau
-    $t=new tableau();
+    $t = new Framework();
     $t->id=$tab;
     $t->get();
     $tabs=$t->elements;
