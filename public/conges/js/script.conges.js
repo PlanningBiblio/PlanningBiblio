@@ -41,7 +41,7 @@ function calculCredit(){
   fin=document.form.elements["fin"].value;
   hre_debut=document.form.elements["hre_debut"].value;
   hre_fin=document.form.elements["hre_fin"].value;
-  perso_id=$(".perso_ids_hidden").first().val() || document.form.elements["perso_id"].value;
+  perso_id=$('#selected_agent_id').val();
   halfday = $('input[name="halfday"]').is(':checked') ? 1 : 0;
   conges_mode = $('#conges-mode').val();
   is_recover = $('#is-recover').val();
