@@ -117,7 +117,7 @@ class StatedWeekHelper extends BaseHelper
                         if ($this->normalJobExists($agent_id, $date,
                                         $normal_job_id, $time_slot['debut'],
                                         $time_slot['fin'],
-                                        '-1'))
+                                        $this->config('statedweek_site_filter')))
                         {
                             continue;
                         }
@@ -129,7 +129,7 @@ class StatedWeekHelper extends BaseHelper
                             'chgt_login'    => $_SESSION['login_id'],
                             'debut'         => $time_slot['debut'],
                             'fin'           => $time_slot['fin'],
-                            'site'          => '-1',
+                            'site'          => $this->config('statedweek_site_filter')
                         );
                         $db->insert('pl_poste', $data);
                     }
