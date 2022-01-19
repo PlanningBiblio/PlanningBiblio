@@ -5,10 +5,18 @@ $( document ).ready(function() {
 });
 
 $(function(){
-  $('#perso_id').on('change', function() {
-    if (!window.location.href.includes('recup_pose.php')) {
-      document.location.href="/holiday/new/" + this.value;
+  $('select[name="perso_id"]').on('change', function() {
+    if (window.location.href.includes('recup_pose.php')) {
+      return;
     }
+
+    id = $('#id').val();
+    // Mode edition. No reload.
+    if (id) {
+      return;
+    }
+
+    document.location.href="/holiday/new/" + this.value;
   });
 
   $('select[name="debit"]').on('change', function() {
