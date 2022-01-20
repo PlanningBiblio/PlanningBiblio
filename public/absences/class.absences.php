@@ -835,6 +835,8 @@ class absences
                     }
                 }
 
+                $elem['absdocs'] = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $elem['id']]);
+
                 // Gestion des groupes : ajout des infos sur les autres agents et affichage d'une seule ligne si $this->groupe=true
                 $groupe = null;
                 if (!empty($elem['groupe'])) {
@@ -860,6 +862,9 @@ class absences
                         if ($groupe2 == $groupe) {
                             $perso_ids[]=$elem2['perso_id'];
                             $agents[]=$elem2['nom']." ".$elem2['prenom'];
+                            if (empty($elem['absdocs'])) {
+                                $elem['absdocs'] = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $elem2['id']]);
+                            }
                         }
                     }
                     $elem['perso_ids']=$perso_ids;

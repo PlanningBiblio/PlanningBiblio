@@ -196,8 +196,6 @@ class AbsenceController extends BaseController
 
                 $id=$elem['id'];
 
-                $elem['absdocs'] = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
-
                 $elem['nom_n1a'] = $elem['valide_n1'] != 99999 ? nom($elem['valide_n1'], 'nom p', $agents).", " : null;
                 $elem['nom_n1b'] = $elem['valide_n1'] != -99999 ? nom(-$elem['valide_n1'], 'nom p', $agents).", " : null;
                 $elem['nom_n2a'] = $elem['valide'] != 99999 ? nom($elem['valide'], 'nom p', $agents).", " : null;
@@ -508,7 +506,7 @@ class AbsenceController extends BaseController
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
         ));
 
-        $this->templateParams(array('documents' => $this->getDocuments($a->id)));
+        $this->templateParams(array('documents' => $this->getDocuments($a)));
         return $this->output('absences/edit.html.twig');
     }
 
@@ -771,12 +769,45 @@ class AbsenceController extends BaseController
         return $this->json($json_response);
     }
 
-    private function getDocuments($id) {
+    private function getDocuments($absence) {
+        $groupe = $absence->elements['groupe'];
+        $absdocs = array();
+
+        if (!$groupe) {
+            $absdocs = $this->entityManager
+                ->getRepository(AbsenceDocument::class)
+                ->findBy(['absence_id' => $absence->id]);
+
+        }
+
+        // For grouped absences (with multiple agents),
+        // we search for all absences of the same group
+        // to find the one with documents.
+        else {
+            $db = new \db();
+            $db->select('absences', 'id', "groupe='$groupe'");
+            $grouped_absences = $db->result;
+            if (!$grouped_absences) {
+                return;
+            }
+
+            foreach ($grouped_absences as $a) {
+                $absdocs = $this->entityManager
+                    ->getRepository(AbsenceDocument::class)
+                    ->findBy(['absence_id' => $a['id']]);
+                // We got the absence that
+                // contain documents. Stop loop here.
+                if (!empty($absdocs)) {
+                    break;
+                }
+            }
+        }
+
         $docsarray = array();
-        $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
         foreach ($absdocs as $absdoc) {
            $docsarray[] = array('filename' => $absdoc->filename(), 'id' => $absdoc->id());
         }
+
         return $docsarray;
     }
 
