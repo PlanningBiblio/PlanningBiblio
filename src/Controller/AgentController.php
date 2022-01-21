@@ -570,17 +570,15 @@ class AgentController extends BaseController
         if ($this->config('Multisites-nombre') > 1) {
             $sites_select = array();
             for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                if (in_array(21, $droits)) {
-                    $site_select = array(
-                        'id' => $i,
-                        'name' => $this->config("Multisites-site$i"),
-                        'checked' => 0
-                    );
-                    if ( in_array($i, $sites) ) {
-                        $site_select['checked'] = 1;
-                    }
-                    $sites_select[] = $site_select;
+                $site_select = array(
+                    'id' => $i,
+                    'name' => $this->config("Multisites-site$i"),
+                    'checked' => 0
+                );
+                if ( in_array($i, $sites) ) {
+                    $site_select['checked'] = 1;
                 }
+                $sites_select[] = $site_select;
             }
             $this->templateParams(array( 'sites_select' => $sites_select ));
         }
