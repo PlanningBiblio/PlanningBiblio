@@ -105,6 +105,14 @@
     - 301
 "planningjob.contextmenu":
     - 100
+"interchange.agents":
+    - 100
+"interchange.slots":
+    - 100
+"statedweek.gethours":
+    - 1401
+"statedweek.sethours":
+    - 1401
 "statedweek.availables":
     - 1401
 "statedweek.placed":
