@@ -117,6 +117,10 @@
     - 25
 "closingday.save":
     - 25
+"interchange.agents":
+    - 100
+"interchange.slots":
+    - 100
 "overtime.edit":
     - 100
 "overtime.index":
@@ -254,6 +258,10 @@
 "statedweek.placed":
     - 100
 "statedweek.add":
+    - 1401
+"statedweek.gethours":
+    - 1401
+"statedweek.sethours":
     - 1401
 "statedweek.slothours":
     - 1401
