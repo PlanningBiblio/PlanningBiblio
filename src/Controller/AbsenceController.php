@@ -795,14 +795,10 @@ class AbsenceController extends BaseController
             }
 
             foreach ($grouped_absences as $a) {
-                $absdocs = $this->entityManager
+                $absdocs = array_merge($absdocs,
+                    $this->entityManager
                     ->getRepository(AbsenceDocument::class)
-                    ->findBy(['absence_id' => $a['id']]);
-                // We got the absence that
-                // contain documents. Stop loop here.
-                if (!empty($absdocs)) {
-                    break;
-                }
+                    ->findBy(['absence_id' => $a['id']]));
             }
         }
 

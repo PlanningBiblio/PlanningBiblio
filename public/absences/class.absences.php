@@ -837,6 +837,7 @@ class absences
                 if ($groupe) {
                     // Pour ne plus afficher les membres du groupe par la suite
                     $groupes[]=$groupe;
+                    $elem['absdocs'] = array();
       
                     // Ajoute les ID des autres agents appartenant à ce groupe
                     $perso_ids=array();
@@ -846,8 +847,9 @@ class absences
                         if ($groupe2 == $groupe) {
                             $perso_ids[]=$elem2['perso_id'];
                             $agents[]=$elem2['nom']." ".$elem2['prenom'];
-                            if (empty($elem['absdocs'])) {
-                                $elem['absdocs'] = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $elem2['id']]);
+                            $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $elem2['id']]);
+                            if ($absdocs) {
+                                $elem['absdocs'] = array_merge($absdocs, $elem['absdocs']);
                             }
                         }
                     }
