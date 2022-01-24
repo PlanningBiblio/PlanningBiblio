@@ -802,9 +802,9 @@ function contextMenuCallForhelp(data) {
     id: 'td-appelDispo',
     onclick: 'appelDispo("' + data.site + '","' + data.site_name + '","'
               + data.position_id + '","' + data.position_name + '","'
-              + data.date + '","' + data.start + '","' + data.end + '");'
+              + data.date + '","' + data.start + '","' + data.end + '","'
+              + data.call_for_help_agents + '");'
   }).html('Appel à disponibilité');
-  td.data('agents', data.call_for_help_agents);
 
   if (data.call_for_help_nb) {
     nb_call = $('<strong>').html(data.call_for_help_nb);
@@ -1039,9 +1039,8 @@ function afficheTableauxDiv(){
  * appelDispo : Ouvre une fenêtre permettant d'envoyer un mail aux agents disponibles pour un poste et créneau horaire choisis
  * Appelée depuis le menu permettant de placer les agents dans le plannings (ajax.menudiv.php)
  */
-function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
-  var agents = $('#td-appelDispo').attr('data-agents');
-  
+function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
+
   var weekday = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
   var d = new Date(date);
   var jour = weekday[d.getDay()];
