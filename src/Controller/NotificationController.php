@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Model\AbsenceDocument;
+use App\Model\Manager;
+use App\Model\Agent;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,13 +35,24 @@ class NotificationController extends BaseController {
         $p->fetch("nom,prenom");
         $agents = $p->elements;
 
-        // Agents ayant les droits de validation d'absence N1
-        $agents_responsables = array();
+        // Agents that can validate absence to level 1.
+        $manager_level1 = array();
+        $manager_level2 = array();
         foreach ($agents as $elem) {
+            $droits = json_decode(html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+            if ($droits == null) {
+              continue;
+            }
+
             for ($i = 1; $i <= $nbSites; $i++) {
-                $droits = json_decode(html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
-                if ($droits != null and in_array((200+$i), $droits)) {
-                    $agents_responsables[$elem['id']] = $elem;
+                // FIXME Should rights for working hours
+                // be take into account (1100, 1200) ?
+                if (in_array((200+$i), $droits)) {
+                    $manager_level1[$elem['id']] = $elem;
+                }
+
+                if (in_array((500+$i), $droits)) {
+                    $manager_level2[$elem['id']] = $elem;
                 }
             }
         }
@@ -50,6 +63,9 @@ class NotificationController extends BaseController {
             }
             $id = $agent['id'];
             $sites = null;
+
+            $agent_model = $this->entityManager->find(Agent::class, $id);
+            $managers = $agent_model->getManagers();
 
             $agent['service'] = str_replace("`", "'", $agent['service']);
             if ($nbSites > 1) {
@@ -64,27 +80,8 @@ class NotificationController extends BaseController {
                 $sites=!empty($tmp)?implode(", ", $tmp):null;
             }
 
-            $responsables = array();
-            foreach ($agent['responsables'] as $resp) {
-                if (!empty($resp['responsable']) and array_key_exists($resp['responsable'], $agents)) {
-                    $notification = $resp['notification'] ? 1 : 0 ;
-                    $tmp = "<span class='resp_$id' data-resp='{$resp['responsable']}' data-notif='$notification' >";
-                    $tmp .= nom($resp['responsable'], $format="nom p", $agents);
-                    if ($notification) {
-                        $tmp .= ' - Notifications';
-                    }
-                       $tmp .= "</span>";
-                    $responsables[] = $tmp;
-                }
-            }
-
-            if (!empty($responsables)) {
-                usort($responsables, 'cmp_strip_tags');
-                $responsables = implode('<br/>', $responsables);
-            }
-
             $agent['sites_list'] = $sites;
-            $agent['responsables_list'] = $responsables;
+            $agent['managers'] = $managers;
             $agents_liste[] = $agent;
         }
 
@@ -92,7 +89,8 @@ class NotificationController extends BaseController {
             array(
                 "actif"                => $actif,
                 "agents"               => $agents_liste,
-                "agents_responsables"  => $agents_responsables,
+                "manager_level1"       => $manager_level1,
+                "manager_level2"       => $manager_level2,
                 "CSRFToken"            => $GLOBALS['CSRFSession'],
                 "nbSites"              => $nbSites
 
@@ -110,19 +108,26 @@ class NotificationController extends BaseController {
         $agents = $request->get('agents');
         $responsables = $request->get('responsables');
         $notifications = $request->get('notifications');
+        $responsablesl2 = $request->get('responsablesl2');
+        $notificationsl2 = $request->get('notificationsl2');
         $CSRFToken = $request->get('CSRFToken');
 
         $agents = html_entity_decode($agents, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         $responsables = html_entity_decode($responsables, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         $notifications = html_entity_decode($notifications, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $responsablesl2 = html_entity_decode($responsablesl2, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $notificationsl2 = html_entity_decode($notificationsl2, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
         $agents = json_decode($agents);
         $responsables = json_decode($responsables);
         $notifications = json_decode($notifications);
+        $responsablesl2 = json_decode($responsablesl2);
+        $notificationsl2 = json_decode($notificationsl2);
 
-        $p = new \personnel();
-        $p->CSRFToken = $CSRFToken;
-        $p->updateResponsibles($agents, $responsables, $notifications);
+        $this->entityManager->getRepository(Manager::class)->deleteForAgents($agents);
+        $this->entityManager->getRepository(Manager::class)
+            ->addForAgentsLevel1($agents, $responsables, $notifications)
+            ->addForAgentsLevel2($agents, $responsablesl2, $notificationsl2);
 
         return $this->json('ok');
     }

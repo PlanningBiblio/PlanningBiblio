@@ -107,7 +107,7 @@ class personnel
                 array('personnel', 'id'),
                 array('responsables', 'perso_id'),
                 array('id', 'nom', 'prenom', 'mail', 'mails_responsables', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics', 'check_hamac'),
-                array('responsable', 'notification'),
+                array('responsable', 'notification_level1'),
                 $filter,
                 array(),
                 "ORDER BY $tri"
@@ -141,14 +141,14 @@ class personnel
         
                 if ($this->responsablesParAgent) {
                     // Ajout des responsables et notifications
-                    $result[$elem['id']]['responsables'] = array( array('responsable' => $elem['responsable'], 'notification' =>$elem['notification']));
+                    $result[$elem['id']]['responsables'] = array( array('responsable' => $elem['responsable'], 'notification_level1' =>$elem['notification_level1']));
           
                     unset($result[$elem['id']]['responsable']);
-                    unset($result[$elem['id']]['notification']);
+                    unset($result[$elem['id']]['notification_level1']);
                 }
             } elseif ($this->responsablesParAgent) {
                 // Ajout des responsables et notifications
-                $result[$elem['id']]['responsables'][] = array('responsable' => $elem['responsable'], 'notification' => $elem['notification']);
+                $result[$elem['id']]['responsables'][] = array('responsable' => $elem['responsable'], 'notification_level1' => $elem['notification_level1']);
             }
         }
 
@@ -317,28 +317,6 @@ class personnel
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
             $db->insert("edt_samedi", $insert);
-        }
-    }
- 
-    public function updateResponsibles($agents, $responsables, $notifications)
-    {
-        // Suppression des éléments existant dans la base de données
-        $liste_agents = implode(',', $agents);
-        $db = new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->delete('responsables', array('perso_id' => "IN{$liste_agents}"));
-
-        // Insertion des nouvelles données
-        $db = new dbh();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->prepare("INSERT INTO `{$GLOBALS['config']['dbprefix']}responsables` (`perso_id`, `responsable`, `notification`) VALUES (:perso_id, :responsable, :notification);");
-  
-        foreach ($agents as $agent) {
-            foreach ($responsables as $responsable) {
-                $notification = in_array($responsable, $notifications) ? 1 : 0 ;
-      
-                $db->execute(array(':perso_id' => $agent, ':responsable' => $responsable, ':notification' => $notification));
-            }
         }
     }
 }
