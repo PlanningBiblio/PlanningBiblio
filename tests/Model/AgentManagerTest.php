@@ -32,7 +32,7 @@ class AgentManagerTest extends TestCase
 
         $manager = new Manager();
         $manager->perso_id($agent1);
-        $manager->notification(0);
+        $manager->notification_level1(0);
         $agent_manager->addManaged($manager);
 
         $this->entityManager->persist($agent_manager);
@@ -50,7 +50,7 @@ class AgentManagerTest extends TestCase
 
         $manager2 = new Manager();
         $manager2->perso_id($agent2);
-        $manager2->notification(0);
+        $manager2->notification_level1(0);
         $agent_manager->addManaged($manager2);
 
         $this->entityManager->persist($agent_manager);
