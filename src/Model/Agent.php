@@ -138,6 +138,11 @@ class Agent extends PLBEntity
         return $this->managed->toArray();
     }
 
+    public function getManagers()
+    {
+        return $this->managers->toArray();
+    }
+
     public function addManaged(Manager $managed)
     {
         $this->managed->add($managed);

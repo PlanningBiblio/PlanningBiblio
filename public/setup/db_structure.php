@@ -381,10 +381,13 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}responsables` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT, 
-  `perso_id` INT(11) NOT NULL DEFAULT '0', 
-  `responsable` INT(11) NOT NULL DEFAULT '0', 
-  `notification` INT(1) NOT NULL DEFAULT '0', 
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `perso_id` INT(11) NOT NULL DEFAULT '0',
+  `responsable` INT(11) NOT NULL DEFAULT '0',
+  `level1` INT(1) NOT NULL DEFAULT '1',
+  `level2` INT(1) NOT NULL DEFAULT '0',
+  `notification_level1` INT(1) NOT NULL DEFAULT '0',
+  `notification_level2` INT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`))
   ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
