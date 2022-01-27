@@ -169,9 +169,8 @@ Si oui, coche la case "Même planning que la semaine 1" et masque les tableaux c
 function plHebdoMemePlanning(){
 
   // Si modification autorisée (select affichés)
-  if($(".tableau").find("select").length){
-    var modif=true;
-  }else{
+  modif = true;
+  if($(".tableau").find("input:disabled").length){
     var modif=false;
   }
 
@@ -181,42 +180,34 @@ function plHebdoMemePlanning(){
     // On stock les infos des plannings dans des tableaux
     var i=$(this).attr("data-id");
     tab[i]=new Array();
-    
+
     var empty=true;
 
-    if(modif){
-      $(this).find(".select").each(function(){
-	var value=$(this).val();
-	tab[i].push(value);
+    $(this).find(".select").each(function(){
+      var value=$(this).val();
+      tab[i].push(value);
 
-	// Test si le tableau 1 est vide pour ne pas cocher les cases lors de la création de nouveaux plannings
-	if(value){
-	  empty=false;
-	}
-      });
-    }else{
-      $(this).find(".td_heures").each(function(){
-	var value=$(this).text();
-	tab[i].push(value);
-
-	// Test si le tableau 1 est vide pour ne pas cocher les cases lors de la création de nouveaux plannings
-	if(value){
-	  empty=false;
-	}
-      });      
-    }
+      // Test si le tableau 1 est vide pour
+      // ne pas cocher les cases lors de la
+      // création de nouveaux plannings
+      if(value){
+        empty=false;
+      }
+    });
 
     // On compare le tableau courant au premier tableau
     if(i>0 && empty==false){
       // Si les tableaux sont les mêmes
       if(JSON.stringify(tab[i]) == JSON.stringify(tab[0])){
-	// On coche la case "Même planning ...", le tableau sera caché par l'évènement $(".memePlanning").click()
-	if(modif){
-	  $("#memePlanning"+i).click();
-	}else{
-	  $("#memePlanning"+i).show();
-	  $("#div"+i).hide();
-	}
+        // On coche la case "Même planning ...",
+        // le tableau sera caché par l'évènement
+        // $(".memePlanning").click()
+        if(modif){
+          $("#memePlanning"+i).click();
+        }else{
+          $("#memePlanning"+i).show();
+          $("#div"+i).hide();
+        }
       }
     }
 
