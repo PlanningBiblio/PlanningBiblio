@@ -12,10 +12,10 @@ class AbsenceInfo extends PLBEntity
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
-    /** @Column(type="string") **/
+    /** @Column(type="date") **/
     protected $debut;
 
-    /** @Column(type="string") **/
+    /** @Column(type="date") **/
     protected $fin;
 
     /** @Column(type="text") **/

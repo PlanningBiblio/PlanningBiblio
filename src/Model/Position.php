@@ -5,7 +5,7 @@ namespace App\Model;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
 /**
- * @Entity @Table(name="postes")
+ * @Entity(repositoryClass="App\Repository\PositionRepository") @Table(name="postes")
  **/
 class Position extends PLBEntity
 {

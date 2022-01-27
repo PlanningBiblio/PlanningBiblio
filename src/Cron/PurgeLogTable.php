@@ -39,6 +39,7 @@ Example: php bin/console PlanningBiblio:PurgeLogTable \"12 MONTH\"
         $kernel = $this->getApplication()->getKernel();
         $container = $kernel->getContainer();
         $em = $container->get('doctrine')->getManager();
+        // TODO: Now that the model exists, I could be replaced by a query builder.
         $query = "DELETE FROM " . $_ENV['DATABASE_PREFIX'] . "log WHERE timestamp < (NOW() - INTERVAL $delay)";
         $statement = $em->getConnection()->prepare($query);
         $statement->execute();
