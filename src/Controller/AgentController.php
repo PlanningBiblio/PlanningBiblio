@@ -881,7 +881,7 @@ class AgentController extends BaseController
                 $mdp = gen_trivial_password();
                 $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
 
-                $notifier = $this->container->get('notifier');
+                $notifier = $this->notifier;
                 $notifier->setRecipients($mail)
                          ->setMessageCode('create_account')
                          ->setMessageParameters(array(
