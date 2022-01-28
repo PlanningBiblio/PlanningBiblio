@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\PlanningBiblio\Notifier;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -21,6 +23,8 @@ class BaseController extends AbstractController
 
     private $logger;
 
+    protected $notifier;
+
     public function __construct(RequestStack $requestStack, LoggerInterface $logger)
     {
         $request = $requestStack->getCurrentRequest();
@@ -34,6 +38,10 @@ class BaseController extends AbstractController
         $this->config = $GLOBALS['config'];
 
         $this->logger = $logger;
+    }
+
+    public function setNotifier(Notifier $notifier) {
+        $this->notifier = $notifier;
     }
 
     protected function templateParams( array $params = array() )
