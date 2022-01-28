@@ -1262,6 +1262,14 @@ div.presents-absents {
   white-space: nowrap;
 }
 
+.selectSite:disabled {
+  color: black;
+  appearance: none;
+  background-color: inherit;
+  border: white;
+  text-indent: 1px;
+}
+
 .abs-timepicker, .comptime-timepicker {
   width: 100%;
 }
