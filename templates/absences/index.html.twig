@@ -9,7 +9,7 @@
 {% block page %}
   <h3>Liste des absences</h3>
 
-  <form name='form' method='get' action='/absence'>
+  <form name='form' id='absencesListForm' method='get' action='/absence'>
     <span style='float:left; vertical-align:top; margin-bottom:20px;'>
       <table class='tableauStandard'>
         <tbody>
@@ -20,7 +20,7 @@
             </td>
             <td style='vertical-align:middle;'>
               <label class='intitule'>Fin :</label>
-              <input type='text' name='fin' value='{{ fin }}'  class='datepicker'/>
+              <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker'/>
             </td>
             {% if admin %}
               <td style='vertical-align:middle;text-align:left;'>
