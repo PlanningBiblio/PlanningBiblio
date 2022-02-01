@@ -6,13 +6,18 @@ $( document ).ready(function() {
 $(function(){
   $('select[name="perso_id"]').on('change', function() {
     if (window.location.href.includes('recup_pose.php')) {
-      return;
+      return false;
+    }
+
+    // Agent multiple. No relaod.
+    if ($('#agents-multiples').val() == 1) {
+      return false;
     }
 
     id = $('#id').val();
     // Mode edition. No reload.
     if (id) {
-      return;
+      return false;
     }
 
     document.location.href="/holiday/new/" + this.value;
