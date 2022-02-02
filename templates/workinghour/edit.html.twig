@@ -9,7 +9,7 @@
 
 {% block page %}
   <h3>Heures de présence</h3>
-  {% if id is not null and tab is null %}
+  {% if not_found is defined and not_found == 1 %}
     <p> Les heures demandées ne sont plus accessibles à cette adresse. <br/>
         Veuillez les rechercher dans le menu
         <a href="{{ asset('workinghour') }}">Administration / Heures de présence</a>
@@ -36,12 +36,12 @@
             <h3>Nouveaux horaires</h3>
           {% endif %}
           <div id='plHebdo-perso-id'>
-            {% if admin == true and request_exception is null %}
+            {% if managed | length > 1 and request_exception is null %}
               <label for='perso_id'>Pour l'agent</label>
               <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:200px; width:200px; text-align:center;' >
                 <option value=''>&nbsp;</option>
-                {% for elem in tab %}
-                  <option value='{{ elem.id }}' {{ (perso_id == elem.id) ? "selected = 'selected'" : " " }} >{{ elem.nom }} {{ elem.prenom }}</option>
+                {% for m in managed %}
+                  <option value='{{ m.id }}' {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.nom }} {{ m.prenom }}</option>
                 {% endfor %}
               </select>
             {% else %}
