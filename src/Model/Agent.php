@@ -147,11 +147,17 @@ class Agent extends PLBEntity
         $managed->responsable($this);
     }
 
-    public function isManagerOf($agent_ids = array())
+    public function isManagerOf($agent_ids = array(), $requested_level = null)
     {
-        $managed_ids = array_map(function($m) {
-            return $m->perso_id()->id();
-        }, $this->getManaged());
+        $managed_ids = array();
+        $managed = $this->getManaged();
+
+        foreach ($managed as $m) {
+            if (!$requested_level
+                or ($requested_level && $m->{$requested_level}())) {
+                $managed_ids[] = $m->perso_id()->id();
+            }
+        }
 
         foreach ($agent_ids as $id) {
             if (!in_array($id, $managed_ids)) {
@@ -311,5 +317,4 @@ class Agent extends PLBEntity
         $skills = json_decode($this->postes());
         return is_array($skills) ? $skills : [];
     }
-
 }

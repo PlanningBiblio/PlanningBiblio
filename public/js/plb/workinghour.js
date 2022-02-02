@@ -32,7 +32,8 @@ $(function(){
     });
 
     $("#perso_id").change(function() {
-        updateTables();
+        const queryString = window.location.search;
+        document.location.href="/workinghour/add/" + this.value + queryString;
     });
 
     $("#select_number_of_weeks").change(function() {
