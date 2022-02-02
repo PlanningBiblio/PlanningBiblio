@@ -1262,6 +1262,10 @@ div.presents-absents {
   white-space: nowrap;
 }
 
+.planno-timepicker:disabled {
+    color: black;
+}
+
 .abs-timepicker, .comptime-timepicker {
   width: 100%;
 }
