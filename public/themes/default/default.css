@@ -1270,6 +1270,10 @@ div.presents-absents {
   text-indent: 1px;
 }
 
+.planno-timepicker:disabled {
+    color: black;
+}
+
 .abs-timepicker, .comptime-timepicker {
   width: 100%;
 }
