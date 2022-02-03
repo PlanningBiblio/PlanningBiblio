@@ -795,6 +795,28 @@ class HolidayController extends BaseController
         return $this->json($result);
     }
 
+    /**
+     * @Route("/ajax/current-credits", name="ajax.currentcredits", methods={"get"})
+     */
+    public function current_credits(Request $request)
+    {
+        $agent_id = $request->get('id');
+
+        $agent = $this->entityManager->find(Agent::class, $agent_id);
+
+        $hh = new HolidayHelper();
+        $holiday_account = array(
+            'holiday_balance' => $hh->HumanReadableDuration($agent->conges_reliquat()),
+            'holiday_balance_decimal' => $agent->conges_reliquat() ?? 0,
+            'holiday_credit' => $hh->HumanReadableDuration($agent->conges_credit()),
+            'holiday_credit_decimal' => $agent->conges_credit() ?? 0,
+            'holiday_debit' => $hh->HumanReadableDuration($agent->conges_anticipation()),
+            'holiday_debit_decimal' => $agent->conges_anticipation() ?? 0
+        );
+
+        return $this->json($holiday_account);
+    }
+
     private function save($request)
     {
         $perso_id = $request->get('perso_id');
