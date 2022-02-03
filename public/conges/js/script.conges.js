@@ -28,6 +28,39 @@ function adaptDisplay() {
   }
 }
 
+function currentCredits() {
+  if (multipleAgentsSelected()) {
+    return;
+  }
+
+  perso_id = $('#selected_agent_id').val();
+
+  $.ajax({
+    url: url('ajax/current-credits'),
+    data: { id: perso_id },
+    dataType: 'json',
+    type: 'get',
+    async: false,
+    success: function(credits){
+      console.log(credits)
+      $('#holiday_balance').text(credits.holiday_balance);
+      $('#reliquat4').text(credits.holiday_balance);
+      $('input[name="reliquat"]').val(credits.holiday_balance_decimal);
+
+      $('#holiday_credit').text(credits.holiday_credit);
+      $('#credit4').text(credits.holiday_credit);
+      $('input[name="credit"]').val(credits.holiday_credit_decimal);
+
+      $('#holiday_debit').text(credits.holiday_debit);
+      $('#anticipation4').text(credits.holiday_debit);
+      $('input[name="anticipation"]').val(credits.holiday_debit_decimal);
+    },
+    error: function(xhr, ajaxOptions, thrownError){
+      information("Impossible de récupérer le compte de congés actuel.","error");
+    },
+  });
+}
+
 function calculCredit(){
 
   $("#erreurCalcul").val("false");
@@ -741,6 +774,7 @@ function supprimeAgent(id){
   $("#hidden"+id).remove();
   adaptDisplay();
   affiche_perso_ul();
+  currentCredits();
   calculCredit();
 }
 
@@ -856,6 +890,7 @@ $(function(){
       $("#perso_ids").val(0);
     }
 
+    currentCredits();
     calculCredit();
 
   });
