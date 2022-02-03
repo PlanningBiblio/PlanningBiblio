@@ -679,6 +679,14 @@ function affiche_perso_ul(){
     tab.push([name,id]);
   });
 
+  // Only one agent selected. So set the
+  // selected_agent_id to retrieve its
+  // own data (workinghours, holiday credits...)
+  $('#selected_agent_id').val('');
+  if (tab.length == 1) {
+    $('#selected_agent_id').val(tab[0][1]);
+  }
+
   tab.sort(function (a, b) {
     return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
   });
