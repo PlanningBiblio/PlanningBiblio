@@ -31,6 +31,8 @@
     - 100
 "ajax.checkplanning":
     - 100
+"ajax.currentcredits":
+    - 100
 "ajax.editabsencereasons":
     - 100
 "ajax.holidaycredit":
