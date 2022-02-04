@@ -80,7 +80,7 @@ class WorkingHourController extends BaseController
             $this->imported = $cle ? true : false;
             $perso_id = $p->elements[0]['perso_id'];
             $temps = $p->elements[0]['temps'];
-            $breaktime = $p->elements[0]['breaktime'];
+            $breaktime = $p->elements[0]['breaktime'] ?? array();
         }
 
         $modifAutorisee = $this->can_edit();
@@ -620,8 +620,10 @@ class WorkingHourController extends BaseController
         $msg = null;
         $msgType = null;
 
-        foreach ($post['breaktime'] as $index => $time) {
-          $post['breaktime'][$index] = $this->time_to_decimal($time);
+        if ($this->config('PlanningHebdo-PauseLibre')) {
+            foreach ($post['breaktime'] as $index => $time) {
+              $post['breaktime'][$index] = $this->time_to_decimal($time);
+            }
         }
 
         switch ($post["action"]) {
