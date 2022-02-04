@@ -1,5 +1,31 @@
 *** Unreleased ***
 
+
+*** Version 21.04.04       (2022-02-04)   ***
+-Fixes
+ICS : add a default cal_name is does not exist
+ICS : Don't import ICS calendars if check_ics is not checked (MT 34175)
+Remove HTML entities from agent's form
+Remove PHP warnings and useless string in planning/poste/semaine.php
+Exclude rejected (-1) absences from non validated absences list
+Add name and firstname as title in planning cells
+Framework's lines edition: fix updating cells color
+Restore red marking when an absence is not validated
+Initialize the widget calendar with the asked date when using the week view
+Fix display of html entities on information and absence information messages
+Fix HTML entities in floors and groups dropdown menus (position's form)
+Remove spaces from some read-only values in working hours table.
+
+- Enhancements
+Do not display hidden config elements
+
+-Plumbing
+Add missing FixtureBuilder class for units tests
+Add Agent's Fixture
+Delete agents in units test to avoid duplicate
+Working hours: add a dedicated method for permissions checking
+Add unit tests for working hours permissions
+
 *** Version 21.04.03       (2021-10-08)   ***
 - Enhancements
 
