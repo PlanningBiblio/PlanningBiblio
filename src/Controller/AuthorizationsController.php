@@ -24,8 +24,13 @@ class AuthorizationsController extends BaseController
 
         $error = $this->redirectCAS($logger);
 
-        if (loginFailedWait() > 0) {
-            return $this->redirectToRoute('access-denied');
+        $IPBlocker = loginFailedWait();
+        if ($IPBlocker > 0) {
+            $content = $this->renderView('forbidden.html.twig', array(
+                'remote_addr' => $_SERVER['REMOTE_ADDR'],
+                'ip_blocker' => $IPBlocker
+            ));
+            return new Response($content, 403);
         }
 
         $redirect_url = $request->get('redirURL');
