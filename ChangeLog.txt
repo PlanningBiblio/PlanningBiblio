@@ -15,6 +15,8 @@ Initialize the widget calendar with the asked date when using the week view
 Fix display of html entities on information and absence information messages
 Fix HTML entities in floors and groups dropdown menus (position's form)
 Remove spaces from some read-only values in working hours table.
+Show sites on the read-only agents page
+Remove html entities in read-only agents page
 
 - Enhancements
 Do not display hidden config elements
