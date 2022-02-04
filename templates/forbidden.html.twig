@@ -1,0 +1,27 @@
+{# forbidden.html.twig #}
+<html>
+  <head>
+    <title>Planning</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type='text/JavaScript' src='js/jquery-1.11.1.min.js'></script>
+    <script type='text/JavaScript' src='js/script.js'></script>
+  </head>
+
+  <body>
+    <center>
+      <h2 id='h2-authentification'>Accès refusé</h2>
+      <p style='font-weight:bold;'>
+        <!-- IP Blocker : Message affiché si l'IP a été bloquée -->
+        {% if ip_blocker is defined %}
+          L'adresse IP "{{ remote_addr }}" a été bloquée.
+          <p id='chrono'></p>
+          <script type='text/JavaScript'>decompte({{ ip_blocker }});</script>
+        {% endif %}
+      </p>
+      <div class='footer'>
+        Planning Biblio -
+        <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
+      </div>
+    </center>
+  </body>
+</html>
