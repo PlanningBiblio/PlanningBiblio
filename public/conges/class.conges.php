@@ -1135,6 +1135,11 @@ class conges
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
 
+        if ($data['allday']) {
+            $data['hre_debut'] = '00:00:00';
+            $data['hre_fin'] = '23:59:59';
+        }
+
         $update=array(
             'debut'         => $data['debut'] . ' ' . $data['hre_debut'],
             'fin'           => $data['fin'] . ' ' . $data['hre_fin'],

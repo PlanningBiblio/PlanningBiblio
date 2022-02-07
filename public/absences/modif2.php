@@ -39,6 +39,11 @@ $rrule=filter_input(INPUT_GET, "rrule", FILTER_SANITIZE_STRING);
 $recurrenceModif=filter_input(INPUT_GET, "recurrence-modif", FILTER_SANITIZE_STRING);
 $baseurl = $config['URL'];
 
+if ($_GET['allday']) {
+    $hre_debut = '00:00:00';
+    $hre_fin = '23:59:59';
+}
+
 $hre_debut = $hre_debut ? $hre_debut : '00:00:00';
 $hre_fin = $hre_fin ? $hre_fin : '23:59:59';
 
