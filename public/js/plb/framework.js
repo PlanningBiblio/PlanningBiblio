@@ -231,16 +231,23 @@ function tableauxInfos(){
 }
 
 $(function(){
+  used = $('#used').val();
   // Adaptation du bouton de validation en fonction de l'onglet actif (page index.php)
   $("#infos").click(function(){
     $(".tableaux-valide").attr("href","javascript:tableauxInfos();");
   });
 
   $("#horaires").click(function(){
+    if (used == 1) {
+      return false;
+    }
     $(".tableaux-valide").attr("href","javascript:document.form2.submit();");
   });
 
   $("#lignes").click(function(){
+    if (used == 1) {
+      return false;
+    }
     $(".tableaux-valide").attr("href","javascript:configLignes();");
   });
 
