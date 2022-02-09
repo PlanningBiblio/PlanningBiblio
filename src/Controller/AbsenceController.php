@@ -214,6 +214,7 @@ class AbsenceController extends BaseController
                 if ($admin or (!$this->config('Absences-adminSeulement') and in_array(6, $droits))) {
                     $elem['view_details'] = 1;
                 }
+                $elem['commentaires'] = html_entity_decode($elem['commentaires'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
                 $visibles_absences[] = $elem;
             }
 
