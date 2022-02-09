@@ -328,6 +328,7 @@ class AgentController extends BaseController
             $arrivee = dateFr($db->result[0]['arrivee']);
             $depart = dateFr($db->result[0]['depart']);
             $login = $db->result[0]['login'];
+            $breaktimes = array();
             if ($this->config('PlanningHebdo')) {
                 $p = new \planningHebdo();
                 $p->perso_id = $id;
@@ -337,7 +338,7 @@ class AgentController extends BaseController
                 $p->fetch();
                 if (!empty($p->elements)) {
                     $temps = $p->elements[0]['temps'];
-                    $breaktimes = $p->elements[0]['breaktime'];
+                    $breaktimes = $p->elements[0]['breaktime'] ?? array();
                 } else {
                     $temps = array();
                 }
