@@ -145,10 +145,11 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "</td>\n";
 
         if ($config['PlanningHebdo-PauseLibre'] && $config['PlanningHebdo']) {
-            $hours_tab .= '<td id="break_' . ($i-1) . '" data-break="' . $breaktimes[$i -1] . '">';
+            $breaktime = isset($breaktimes[$i -1]) ? $breaktimes[$i -1] : '';
+            $hours_tab .= '<td id="break_' . ($i-1) . '" data-break="' . $breaktime . '">';
             $hours_tab .= "<input name='break_{$t}' $disabled ";
             $hours_tab .= "class='planno-break-timepicker'";
-            $hours_tab .= "value='{$breaktimes[$i -1]}'/>";
+            $hours_tab .= "value='$breaktime'/>";
             $hours_tab .= '</td>';
         }
 
