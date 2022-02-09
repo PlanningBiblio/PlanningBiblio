@@ -8,158 +8,162 @@
 {% endblock %}
 
 {% block page %}
-  <h3>Heures de présence</h3>
-  {% if id is not null and tab is null %}
-    <p> Les heures demandées ne sont plus accessibles à cette adresse. <br/>
-        Veuillez les rechercher dans le menu
-        <a href="{{ asset('workinghour') }}">Administration / Heures de présence</a>
-    </p>
-  {% else %}
-    {% if id is not null and copy is null and request_exception is null %}
-      <h3>Heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
-    {% endif %}
-    <div id='working_hours'>
-      <form name='form1' method='post' action="{{ asset('workinghour') }}" onsubmit='return plHebdoVerifForm();'>
-        {% if id > 0 and copy is null and request_exception is null %}
-          <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
-        {% else %}
-          {% if request_exception is not null %}
-            <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
-          {% endif %}
-          {% if admin == false %}
-            <h3>Nouveaux horaires pour {{ nomAgent }}</h3>
-          {% elseif copy is not null %}
-            <h3>Copie des heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
-          {% elseif request_exception is not null %}
-            <h3>Création d'une exception au planning de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
-          {% else %}
-            <h3>Nouveaux horaires</h3>
-          {% endif %}
-          <div id='plHebdo-perso-id'>
-            {% if admin == true and request_exception is null %}
-              <label for='perso_id'>Pour l'agent</label>
-              <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:200px; width:200px; text-align:center;' >
-                <option value=''>&nbsp;</option>
-                {% for elem in tab %}
-                  <option value='{{ elem.id }}' {{ (perso_id == elem.id) ? "selected = 'selected'" : " " }} >{{ elem.nom }} {{ elem.prenom }}</option>
-                {% endfor %}
-              </select>
-            {% else %}
+  <div id="workhours">
+    <h3>Heures de présence</h3>
+    <div class="admin-div">
+      {% if id is not null and tab is null %}
+        <p> Les heures demandées ne sont plus accessibles à cette adresse. <br/>
+            Veuillez les rechercher dans le menu
+            <a href="{{ asset('workinghour') }}">Administration / Heures de présence</a>
+        </p>
+      {% else %}
+        {% if id is not null and copy is null and request_exception is null %}
+          <h3>Heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
+        {% endif %}
+        <div id='working_hours'>
+          <form name='form1' method='post' action="{{ asset('workinghour') }}" onsubmit='return plHebdoVerifForm();'>
+            {% if id > 0 and copy is null and request_exception is null %}
               <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
-            {% endif %}
-          </div>
-        {% endif %}
-        <div id='periode'>
-          <p>
-            <label for='debut'>Début d'utilisation</label>
-            <input type='text' name='debut' {% if request_exception is null %}value='{{ debut1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:200px; width:200px;' />
-          </p>
-          <p>
-            <label for='fin'>Fin d'utilisation</label>
-            <input type='text' name='fin' {% if request_exception is null %}value='{{ fin1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:200px; width:200px;' />
-          </p>
-        </div> <!-- id=periode -->
-        {% if thisNbSemaine is defined and copy is defined and copy != '' and nbSemaine is defined and thisNbSemaine != nbSemaine %}
-        <div id='cycle'>
-            <p>
-                <label for='select_number_of_weeks'>Cycle (en nombre de semaines)</label>
-                <select name='select_number_of_weeks' id='select_number_of_weeks'>
-                    <option value="{{ thisNbSemaine }}">{{ thisNbSemaine }} (ces heures de présence)</option>
-                    <option value="{{ nbSemaine }}">{{ nbSemaine }} (configuration actuelle)</option>
-                </select>
-            </p>
-        </div>
-        {% endif %}
-
-        <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
-        <input type='hidden' name='retour' value='{{ retour }}' />
-        <input type='hidden' name='action' value='{{ action }}' />
-        <input type='hidden' name='id' id='id' value='{{ id }}' />
-        <input type='hidden' name='valide' value='{{ login_id }}' />
-        <input type='hidden' name='remplace' value='{{ remplace }}' />
-        <input type='hidden' name='exception' value='{{ exception_id }}' >
-        <input type='hidden' name='copy' value='{{ copy }}' >
-        {% if thisNbSemaine is defined %}
-        <input type='hidden' name='this_number_of_weeks' id='this_number_of_weeks' value='{{ thisNbSemaine }}' />
-        {% endif %}
-        <input type='hidden' name='number_of_weeks' id='number_of_weeks' value='{{ nbSemaine }}' />
-        <div id='workinghour_tables'>
-        </div>
-        <div id='informations' style='margin-top:30px;' >
-          {% if cle is not null and cle != "" %}
-            <p><b class='important'>Les horaires ont été importés depuis une source externe.</b></p>
-          {% elseif not modifAutorisee == true %}
-            <p><b class='important'>Vos horaires ont été validés.</b><br/>Pour les modifier, contactez votre chef de service.</p>
-          {% elseif valide_n2 > 0 and admin == false %}
-            <p>
-              <b class='important'>Vos horaires ont été validés.</b><br/>
-              Si vous souhaitez les changer, modifiez la date de début et/ou de fin d'effet.<br/>
-              Vos nouveaux horaires seront enregistrés et devront être validés par un administrateur.<br/>
-              Les anciens horaires seront conservés en attendant la validation des nouveaux.
-            </p>
-          {% elseif valide_n2 > 0 and admin == true and copy is null %}
-            <p style='width:850px;text-align:justify;margin-top:30px;'>
-              <b class='important'>Ces horaires ont été validés.</b><br/>
-              Leur modification aura un effet immédiat.
-            </p>
-          {% endif %}
-          {% if (copy is not null or request_exception is not null) and nbSites>1 %}
-            <p id='info_copie' style='display:none;' class='important'>
-              <b>Attention : Veuillez vérifier les affectations aux sites avant d'enregistrer.</b>
-            </p>
-          {% endif %}
-        </div> <!-- id=informations -->
-        {% if cle is null or cle == "" %}
-          {% if modifAutorisee == true %}
-            <p>
-              <label for='validation'>Validation</label>
-              <select name='validation' id='validation' style='position:absolute; left:200px; width:200px;' >
-                {% if adminN1 == true or (valide_n1 == 0) %}
-                  <option value='0'>Demandé</option>
-                  {% if adminN1 == true or (valide_n1 > 0 and valide_n2 == 0) %}
-                    <option value='1' {{ (selected1 == true) ? "selected='selected'" : "" }} >{{ lang.work_hours_dropdown_accepted_pending }}</option>
-                  {% endif %}
-                  {% if adminN1 == true  or (valide_n1 < 0 and valide_n2 == 0) %}
-                    <option value='-1' {{ (selected2 == true) ? "selected = 'selected'" : " " }}>{{ lang.work_hours_dropdown_refused_pending }}</option>
-                  {% endif %}
-                  {% if (adminN2 == true  and (valide_n1 > 0 or config('PlanningHebdo-Validation-N2') == 0)) or valide_n2 > 0 %}
-                    <option value='2' {{ (selected3 == true) ? "selected = 'selected'" : " " }}>{{ lang.work_hours_dropdown_accepted }}</option>
-                  {% endif %}
-                  {% if (adminN2 == true  and (valide_n1 > 0 or config('PlanningHebdo-Validation-N2') == 0)) or valide_n2 < 0 %}
-                    <option value='-2' {{ (selected4==true) ? "selected = 'selected'" : " " }} >{{ lang.work_hours_dropdown_refused }}</option>
-                  {% endif %}
-                {% endif %}
-              </select>
-            </p>
-          {% else %}
-            <p>
-              <label>Validation</label>
-              <span style='position:absolute; left:200px;'>{{ validation }}</span>
-            </p>
-          {% endif %}
-        {% endif %}
-        <div id='boutons' style='padding-top:50px;'>
-          <input type='button' value='Retour' onclick='location.href="{{ retour }}";' class='ui-button' />
-          {% if admin == true and (cle == null or cle == "") %}
-            {% if request_exception == true %}
-              <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
             {% else %}
-              <input type='submit' value='Enregistrer' style="margin-left:30px"; class='ui-button' />
-            {% endif %}
-          {% else %}
-            {% if modifAutorisee == true %}
-              {% if request_exception == true %}
-                <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
+              {% if request_exception is not null %}
+                <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
+              {% endif %}
+              {% if admin == false %}
+                <h3>Nouveaux horaires pour {{ nomAgent }}</h3>
+              {% elseif copy is not null %}
+                <h3>Copie des heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
+              {% elseif request_exception is not null %}
+                <h3>Création d'une exception au planning de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
               {% else %}
-                <input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />
+                <h3>Nouveaux horaires</h3>
+              {% endif %}
+              <div id='plHebdo-perso-id'>
+                {% if admin == true and request_exception is null %}
+                  <label for='perso_id'>Pour l'agent</label>
+                  <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:350px; width:200px; text-align:center;' >
+                    <option value=''>&nbsp;</option>
+                    {% for elem in tab %}
+                      <option value='{{ elem.id }}' {{ (perso_id == elem.id) ? "selected = 'selected'" : " " }} >{{ elem.nom }} {{ elem.prenom }}</option>
+                    {% endfor %}
+                  </select>
+                {% else %}
+                  <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
+                {% endif %}
+              </div>
+            {% endif %}
+            <div id='periode'>
+              <p>
+                <label  for='debut'>Début d'utilisation</label>
+                <input type='text' name='debut' {% if request_exception is null %}value='{{ debut1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:400px; width:200px;' />
+              </p>
+              <p>
+                <label for='fin'>Fin d'utilisation</label>
+                <input type='text' name='fin' {% if request_exception is null %}value='{{ fin1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:400px; width:200px;' />
+              </p>
+            </div> <!-- id=periode -->
+            {% if thisNbSemaine is defined and copy is defined and copy != '' and nbSemaine is defined and thisNbSemaine != nbSemaine %}
+            <div id='cycle'>
+                <p>
+                    <label for='select_number_of_weeks'>Cycle (en nombre de semaines)</label>
+                    <select name='select_number_of_weeks' id='select_number_of_weeks'>
+                        <option value="{{ thisNbSemaine }}">{{ thisNbSemaine }} (ces heures de présence)</option>
+                        <option value="{{ nbSemaine }}">{{ nbSemaine }} (configuration actuelle)</option>
+                    </select>
+                </p>
+            </div>
+            {% endif %}
+
+            <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+            <input type='hidden' name='retour' value='{{ retour }}' />
+            <input type='hidden' name='action' value='{{ action }}' />
+            <input type='hidden' name='id' id='id' value='{{ id }}' />
+            <input type='hidden' name='valide' value='{{ login_id }}' />
+            <input type='hidden' name='remplace' value='{{ remplace }}' />
+            <input type='hidden' name='exception' value='{{ exception_id }}' >
+            <input type='hidden' name='copy' value='{{ copy }}' >
+            {% if thisNbSemaine is defined %}
+            <input type='hidden' name='this_number_of_weeks' id='this_number_of_weeks' value='{{ thisNbSemaine }}' />
+            {% endif %}
+            <input type='hidden' name='number_of_weeks' id='number_of_weeks' value='{{ nbSemaine }}' />
+            <div id='workinghour_tables'>
+            </div>
+            <div id='informations' style='margin-top:30px;' >
+              {% if cle is not null and cle != "" %}
+                <p><b class='important'>Les horaires ont été importés depuis une source externe.</b></p>
+              {% elseif not modifAutorisee == true %}
+                <p><b class='important'>Vos horaires ont été validés.</b><br/>Pour les modifier, contactez votre chef de service.</p>
+              {% elseif valide_n2 > 0 and admin == false %}
+                <p>
+                  <b class='important'>Vos horaires ont été validés.</b><br/>
+                  Si vous souhaitez les changer, modifiez la date de début et/ou de fin d'effet.<br/>
+                  Vos nouveaux horaires seront enregistrés et devront être validés par un administrateur.<br/>
+                  Les anciens horaires seront conservés en attendant la validation des nouveaux.
+                </p>
+              {% elseif valide_n2 > 0 and admin == true and copy is null %}
+                <p style='width:850px;text-align:justify;margin-top:30px;'>
+                  <b class='important'>Ces horaires ont été validés.</b><br/>
+                  Leur modification aura un effet immédiat.
+                </p>
+              {% endif %}
+              {% if (copy is not null or request_exception is not null) and nbSites>1 %}
+                <p id='info_copie' style='display:none;' class='important'>
+                  <b>Attention : Veuillez vérifier les affectations aux sites avant d'enregistrer.</b>
+                </p>
+              {% endif %}
+            </div> <!-- id=informations -->
+            {% if cle is null or cle == "" %}
+              {% if modifAutorisee == true %}
+                <p>
+                  <label for='validation'>Validation</label>
+                  <select name='validation' id='validation' style='position:absolute; left:340px; width:200px;' >
+                    {% if adminN1 == true or (valide_n1 == 0) %}
+                      <option value='0'>Demandé</option>
+                      {% if adminN1 == true or (valide_n1 > 0 and valide_n2 == 0) %}
+                        <option value='1' {{ (selected1 == true) ? "selected='selected'" : "" }} >{{ lang.work_hours_dropdown_accepted_pending }}</option>
+                      {% endif %}
+                      {% if adminN1 == true  or (valide_n1 < 0 and valide_n2 == 0) %}
+                        <option value='-1' {{ (selected2 == true) ? "selected = 'selected'" : " " }}>{{ lang.work_hours_dropdown_refused_pending }}</option>
+                      {% endif %}
+                      {% if (adminN2 == true  and (valide_n1 > 0 or config('PlanningHebdo-Validation-N2') == 0)) or valide_n2 > 0 %}
+                        <option value='2' {{ (selected3 == true) ? "selected = 'selected'" : " " }}>{{ lang.work_hours_dropdown_accepted }}</option>
+                      {% endif %}
+                      {% if (adminN2 == true  and (valide_n1 > 0 or config('PlanningHebdo-Validation-N2') == 0)) or valide_n2 < 0 %}
+                        <option value='-2' {{ (selected4==true) ? "selected = 'selected'" : " " }} >{{ lang.work_hours_dropdown_refused }}</option>
+                      {% endif %}
+                    {% endif %}
+                  </select>
+                </p>
+              {% else %}
+                <p>
+                  <label>Validation</label>
+                  <span style='position:absolute; left:200px;'>{{ validation }}</span>
+                </p>
               {% endif %}
             {% endif %}
-          {% endif %}
-          {% if ((adminN1 == true or adminN2 == true  or modifAutorisee == true ) and (not request_exception and not is_exception and not copy and not is_new)) %}
-            <input type='button' value='Ajouter une exception' onclick="location.href='{{asset("workinghour")}}/{{id}}?exception={{id}}&retour={{exception_back}}';" style='margin-left:30px;' class='ui-button' />
-          {% endif %}
-        </div> <!-- id=boutons -->
-      </form>
-    </div> <!-- working_hours -->
-  {% endif %}
+            <div id='boutons' style='padding-top:50px;'>
+              <input type='button' value='Retour' onclick='location.href="{{ retour }}";' class='ui-button ui-button-type2' />
+              {% if ((adminN1 == true or adminN2 == true  or modifAutorisee == true ) and (not request_exception and not is_exception and not copy and not is_new)) %}
+                <input type='button' value='Ajouter une exception' onclick="location.href='{{asset("workinghour")}}/{{id}}?exception={{id}}&retour={{exception_back}}';" style='margin-left:30px;' class='ui-button ui-button-type2' />
+              {% endif %}
+              {% if admin == true and (cle == null or cle == "") %}
+                {% if request_exception == true %}
+                  <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
+                {% else %}
+                  <input type='submit' value='Enregistrer' style="margin-left:30px"; class='ui-button' />
+                {% endif %}
+              {% else %}
+                {% if modifAutorisee == true %}
+                  {% if request_exception == true %}
+                    <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
+                  {% else %}
+                    <input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </div> <!-- id=boutons -->
+          </form>
+        </div> <!-- working_hours -->
+      {% endif %}
+    </div>
+  </div>
 {% endblock %}

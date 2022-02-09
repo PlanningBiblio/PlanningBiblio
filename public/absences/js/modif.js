@@ -36,6 +36,7 @@ $(function() {
     modal: true,
     resizable: false,
     draggable: false,
+    dialogClass: 'popup-background',
     buttons: {
       Enregistrer: function() {
 	// Supprime les lignes cachées lors du clic sur la corbeille
@@ -89,9 +90,13 @@ $(function() {
 	  }
 	});
       },
-      Annuler: function() {
-	$(this).dialog( "close" );
-      },
+      Annuler: {
+        click: function() {
+          $( this ).dialog( "close" );
+              },
+        text: "Annuler",
+        class: "ui-button-type2"
+            },
     },
     close: function() {
       $("#motifs-sortable li:hidden").each(function(){
@@ -269,6 +274,7 @@ $(function() {
     height: 480,
     width: 650,
     modal: true,
+    dialogClass: 'popup-background',
     buttons: {
       "Enregistrer": function() {
 
@@ -283,12 +289,16 @@ $(function() {
         $( this ).dialog( "close" );
       },
 
-      Annuler: function() {
-        if(!$('#recurrence-hidden').val()){
-          $('#recurrence-checkbox').prop('checked', false);
-        }
-	$( this ).dialog( "close" );
-      }
+      Annuler: {
+        click: function() {
+          if(!$('#recurrence-hidden').val()){
+            $('#recurrence-checkbox').prop('checked', false);
+          }
+          $( this ).dialog( "close" );
+              },
+        text: "Annuler",
+        class: "ui-button-type2"
+            },
     },
 
     close: function() {
@@ -483,9 +493,13 @@ $(function() {
         $( this ).dialog( "close" );
       },
 
-      Annuler: function() {
-	$( this ).dialog( "close" );
-      }
+      Annuler: {
+        click: function() {
+          $( this ).dialog( "close" );
+              },
+        text: "Annuler",
+        class: "ui-button-type2"
+            },
     },
     close: function() {
       $('.recurrence').removeClass( "ui-state-error" );
@@ -522,9 +536,13 @@ $(function() {
         delete_absence(CSRFToken, id, 'all');
       },
 
-      Annuler: function() {
-	$( this ).dialog( "close" );
-      }
+      Annuler: {
+        click: function() {
+          $( this ).dialog( "close" );
+              },
+        text: "Annuler",
+        class: "ui-button-type2"
+            },
     },
     close: function() {
       $('.recurrence').removeClass( "ui-state-error" );
@@ -577,7 +595,7 @@ function affiche_perso_ul(){
     var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
     if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
-      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
+      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-dropblack'></span></span>";
     }
 
     li+="</li>\n";

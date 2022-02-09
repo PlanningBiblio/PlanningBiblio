@@ -25,7 +25,7 @@
           {% if rights21 %}
           <input type='button' value='Ajouter' onclick="location.href='{{ asset('agent/add') }}';" class='ui-button'/>
             {% if LDAP_host and LDAP_suf %}
-              <input type='button' value='Import LDAP' onclick='location.href="{{ asset('index.php?page=personnel/import.php') }}";' class='ui-button' style='margin-left:21px;'/>
+              <input type='button' value='Import LDAP' onclick='location.href="{{ asset('index.php?page=personnel/import.php') }}";' class='ui-button ui-button-type2' style='margin-left:21px;'/>
             {% endif %}
           {% endif %}
         </td>
@@ -35,22 +35,22 @@
   <table id='tableAgents' class='CJDataTable' data-sort='[[1,"asc"],[2,"asc"]]'>
     <thead>
       <tr>
-        <th class='dataTableNoSort aLeft' >
+        <th class='dataTableNoSort tableSort aLeft' >
           {% if rights21 %}
             <input type='checkbox' class='CJCheckAll'/>
           {% endif %}
         </th>
-        <th class="clear-string">Nom</th>
-        <th class="clear-string">Prénom</th>
-        <th class='dataTableHeureFR'>Heures</th>
-        <th>Statut</th>
-        <th>Service</th>
+        <th class="clear-string tableSort">Nom</th>
+        <th class="clear-string tableSort">Prénom</th>
+        <th class='dataTableHeureFR tableSort'>Heures</th>
+        <th class="tableSort">Statut</th>
+        <th class="tableSort">Service</th>
         {% if nbSites > 1 %}
-          <th>Sites</th>
+          <th class="tableSort">Sites</th>
         {% endif %}
-        <th class='dataTableDateFR' >Arrivée</th>
-        <th class='dataTableDateFR' >Départ</th>
-        <th class='dataTableDateFR' >Accès</th>
+        <th class='dataTableDateFR tableSort' >Arrivée</th>
+        <th class='dataTableDateFR tableSort' >Départ</th>
+        <th class='dataTableDateFR tableSort' >Accès</th>
     </thead>
     <tbody>
       {% for a in agents %}
@@ -64,7 +64,7 @@
             </a>
             {% if rights21 and a.id != login_id and a.id > 1 %}
               <a href='javascript:popup("personnel/suppression.php&amp;id={{ a.id }}",450,240);'>
-                <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
               </a>
             {% endif %}
           </td>
@@ -201,10 +201,10 @@
                 </div>
               </td>
               <td style='text-align:center;padding-top:100px;'>
-                <input type='button' style='width:200px' value='Attribuer >>' onclick='select_add("postes_dispo","postes_attribues","postes",300);' /><br/><br/>
-                <input type='button' style='width:200px' value='Attribuer Tout >>' onclick='select_add_all("postes_dispo","postes_attribues","postes",300);' /><br/><br/>
-                <input type='button' style='width:200px' value='<< Supprimer' onclick='select_drop("postes_dispo","postes_attribues","postes",300);' /><br/><br/>
-                <input type='button' style='width:200px' value='<< Supprimer Tout' onclick='select_drop_all("postes_dispo","postes_attribues","postes",300);' /><br/><br/>
+                <input type='button' style='width:200px' value='Attribuer >>' onclick='select_add("postes_dispo","postes_attribues","postes",300);' class='ui-button ui-button-type2'/><br/><br/>
+                <input type='button' style='width:200px' value='Attribuer Tout >>' onclick='select_add_all("postes_dispo","postes_attribues","postes",300);' class='ui-button ui-button-type2'/><br/><br/>
+                <input type='button' style='width:200px' value='<< Supprimer' onclick='select_drop("postes_dispo","postes_attribues","postes",300);' class='ui-button ui-button-type3'/><br/><br/>
+                <input type='button' style='width:200px' value='<< Supprimer Tout' onclick='select_drop_all("postes_dispo","postes_attribues","postes",300);' class='ui-button ui-button-type3'/><br/><br/>
               </td>
               <td>
                 <b>Activités attribuées</b><br/>

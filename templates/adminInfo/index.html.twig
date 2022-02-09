@@ -6,17 +6,17 @@
     <h3>Messages d'informations</h3>
 
     <div class='top-button-div'>
-        <a href='{{ asset("admin/info/add") }}' class='ui-button'>Ajouter</a>
+        <a href='{{ asset("admin/info/add") }}' class='ui-button ui-button-type1'>Ajouter</a>
     </div>
 
     {% if info %}
         <table class='CJDataTable' data-sort='[[1,"asc"],[2,"asc"]]' id='AbsenceInfoTable'>
             <thead>
                 <tr>
-                    <th class='dataTableNoSort'></th>
-                    <th>Début</th>
-                    <th>Fin</th>
-                    <th>Texte</th>
+                    <th class='dataTableNoSort tableSort'></th>
+                    <th class="tableSort">Début</th>
+                    <th class="tableSort">Fin</th>
+                    <th class="tableSort">Texte</th>
                 </tr>
             </thead>
             <tbody>

@@ -293,7 +293,7 @@ if (!isset($db->result[0]['tableau']) and !$tableau and !$groupe and $autorisati
     $tab=$db->result[0]['tableau'];
 }
 if (!$tab) {
-    echo "<p>Le planning n'est pas pr&ecirc;t.</p>";
+    echo "<div class='decalage-gauche'><p>Le planning n'est pas pr&ecirc;t.</p></div>";
     if ($config['Planning-CommentairesToujoursActifs']) {
         include "comment.php";
     }
@@ -320,7 +320,7 @@ if ($verrou) {
 }
 
 if (!$verrou and !$autorisationN1) {
-    echo "<br/><br/><font color='red'>Le planning du $dateFr n'est pas validé !</font><br/>\n";
+    echo "<div class='decalage-gauche'><br/><br/><font color='red'>Le planning du $dateFr n'est pas validé !</font><br/></div>\n";
     if ($config['Planning-CommentairesToujoursActifs']) {
         include "comment.php";
     }
@@ -599,8 +599,8 @@ EOD;
         switch ($config['Absences-planning']) {
       case "1":
     if (!empty($absences_planning)) {
-        echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
-        echo "<table class='tableauStandard'>\n";
+        echo "<h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>\n";
+        echo "<div class='decalage-gauche'><table>\n";
         $class="tr1";
         foreach ($absences_planning as $elem) {
             if ($elem['valide'] <= 0 and $config['Absences-non-validees'] == 0) {
@@ -637,18 +637,18 @@ EOD;
             $class=$class=="tr1"?"tr2":"tr1";
             echo "<tr class='$class $bold'><td style='text-align:left;'>{$elem['nom']} {$elem['prenom']}{$heures}{$nonValidee}</td></tr>\n";
         }
-        echo "</table>\n";
+        echo "</table></div>\n";
     }
     break;
 
       case "2":
     if (!empty($absences_planning)) {
-        echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
+        echo "<h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>\n";
         echo "<table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'><thead>\n";
-        echo "<tr><th>Nom</th><th>Pr&eacute;nom</th>\n";
-        echo "<th class='dataTableDateFR'>D&eacute;but</th>\n";
-        echo "<th class='dataTableDateFR'>Fin</th>\n";
-        echo "<th>Motif</th></tr></thead>\n";
+        echo "<tr><th class='tableSort'>Nom</th><th class='tableSort'>Pr&eacute;nom</th>\n";
+        echo "<th class='dataTableDateFR tableSort'>D&eacute;but</th>\n";
+        echo "<th class='dataTableDateFR tableSort'>Fin</th>\n";
+        echo "<th class='tableSort'>Motif</th></tr></thead>\n";
         echo "<tbody>\n";
         foreach ($absences_planning as $elem) {
             if ($elem['valide'] <= 0 and $config['Absences-non-validees'] == 0) {
@@ -695,7 +695,7 @@ EOD;
     $presentset = new PresentSet($dateSQL, $d, $absents, $db);
     $presents = $presentset->all();
 
-    echo "<table class='tableauStandard'>\n";
+    echo "<div class='decalage-gauche'><table class='tableauStandard' style='width:auto'>\n";
     echo "<tr><td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
     if (!empty($absences_planning)) {
         echo "<td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3></td>";
@@ -756,7 +756,7 @@ EOD;
     }
     echo "</table>\n";
     echo "</td></tr>\n";
-    echo "</table>\n";
+    echo "</table></div>\n";
     break;
 
     }

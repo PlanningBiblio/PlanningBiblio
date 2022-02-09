@@ -71,37 +71,39 @@ if ($recup['valide'] < 0) {
 
 // Affichage
 echo <<<EOD
+<div id='content admin'>
 <h3>{$lang['comp_time']}</h3>
+<div class='admin-div'>
 <form method='post' action='index.php'>
 <input type='hidden' name='page' value='conges/recuperation_valide.php' />
 <input type='hidden' name='CSRFToken' value='$CSRFSession' />
 <input type='hidden' name='id' value='$id' />
 <table class='tableauFiches'>
-<tr><td>Agent : </td><td>$agent</td></td></tr>
+<tr><td class='textAlignRight'>Agent : </td><td>$agent</td></td></tr>
 EOD;
 if ($config['Recup-DeuxSamedis']) {
-    echo "<tr><td>Date(s) concernée(s) : </td><td>$dateAlpha</td></td></tr>\n";
+    echo "<tr><td class='textAlignRight'>Date(s) concernée(s) : </td><td>$dateAlpha</td></td></tr>\n";
     echo "<tr><td>&nbsp;</td><td>$date2Alpha</td></td></tr>\n";
 } else {
-    echo "<tr><td>Date concernée : </td><td>$dateAlpha</td></td></tr>\n";
+    echo "<tr><td class='textAlignRight'>Date concernée : </td><td>$dateAlpha</td></td></tr>\n";
 }
-echo "<tr><td>Date de la demande : </td><td>$saisie";
+echo "<tr><td class='textAlignRight'>Date de la demande : </td><td>$saisie";
 if ($recup['saisie_par'] and $recup['saisie_par']!=$recup['perso_id']) {
     echo " par ".nom($recup['saisie_par']);
 }
 
 echo "</td></td></tr>\n";
-echo "<tr><td>Heures demandées : </td>";
+echo "<tr><td class='textAlignRight'>Heures demandées : </td>";
 
 if ($recup['valide'] <= 0) {
     $heures = gmdate('H:i', floor($recup['heures'] * 3600));
     echo "<td>\n";
-    echo "<input id='heures' name='heures' class='comptime-timepicker ui-widget-content ui-corner-all' value='$heures'/>";
+    echo "<input id='heures' name='heures' class='comptime-timepicker ui-widget-content ui-corner-all' value='$heures' style='text-align: center;'/>";
     echo "</td></tr>\n";
 } else {
     echo "<td>".heure4($recup['heures'])."</td></tr>\n";
 }
-echo "<tr><td>Commentaires : </td>";
+echo "<tr><td class='textAlignRight'>Commentaires : </td>";
 if ($recup['valide'] <= 0) {
     echo "<td><textarea name='commentaires'>{$recup['commentaires']}</textarea></td>\n";
 } else {
@@ -109,7 +111,7 @@ if ($recup['valide'] <= 0) {
 }
 
 if (($adminN2 and $recup['valide'] <= 0) or ($adminN1 and $recup['valide']==0)) {
-    echo "<tr><td>Validation : </td>\n";
+    echo "<tr><td class='textAlignRight'>Validation : </td>\n";
     echo "<td><select name='validation'>\n";
     echo "<option value=''>&nbsp;</option>\n";
     if ($adminN1) {
@@ -126,14 +128,14 @@ if (($adminN2 and $recup['valide'] <= 0) or ($adminN1 and $recup['valide']==0)) 
     echo "<td><textarea name='refus'>{$recup['refus']}</textarea></td></tr>\n";
 } else {
     echo <<<EOD
-  <tr><td>Validation : </td><td>$validation</td></tr>
+  <tr><td class='textAlignRight'>Validation : </td><td>$validation</td></tr>
   <tr style='display:$displayRefus;' class='refus'><td>Motif du refus : </td>
     <td>{$recup['refus']}</td></tr>
 EOD;
 }
 echo <<<EOD
 <tr><td colspan='2' class='td_validation'>
-<input type='button' class='ui-button' value='Retour' onclick='location.href="/comp-time";' />
+<input type='button' class='ui-button ui-button-type2' value='Retour' onclick='location.href="/comp-time";' />
 EOD;
 if ((($adminN1 or $adminN2) and $recup['valide']<=0) or $recup['valide']==0) {
     echo "<input type='submit' class='ui-button' value='Enregistrer'/>";
@@ -142,6 +144,8 @@ if ((($adminN1 or $adminN2) and $recup['valide']<=0) or $recup['valide']==0) {
 </td></tr>
 </table>
 </form>
+</div>
+</div>
 
 <script type='text/JavaScript'>
 $("select[name=validation]").change(function(){

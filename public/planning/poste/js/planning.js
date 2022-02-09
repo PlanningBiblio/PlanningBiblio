@@ -256,53 +256,61 @@ $(function() {
     height: 480,
     width: 650,
     modal: true,
+    dialogClass: 'popup-background',
     buttons: {
-      "Enregistrer": function() {
-	allFields.removeClass( "ui-state-error" );
-	var bValid = true;
+      "Enregistrer": {
+	click: function() {
+          allFields.removeClass( "ui-state-error");
+          var bValid = true;
 
-	if ( bValid ) {
-	  // Enregistre le commentaire
-	  text.val(text.val().trim());
-	  var text2=text.val().replace(/\n/g,"#br#");
-	  var text3=text.val().replace(/\n/g,"<br/>");
-	  $.ajax({
-	    dataType: "json",
-	    url: "planning/poste/ajax.notes.php",
-	    type: "post",
-	    data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2), CSRFToken: $('#CSRFSession').val()},
-	    success: function(result){
-	      if(result.error){
-		CJInfo(result.error,"error");
-	      }
-	      else{
-		if(result.notes){
-		  $("#pl-notes-button").val("Modifier le commentaire");
-		  $("#pl-notes-div1").show();
-		  var suppression="";
-		}else{
-		  $("#pl-notes-button").val("Ajouter un commentaire");
-		  $("#pl-notes-div1").hide();
-		  var suppression="Suppression du commentaire : ";
-		}	
-		// Met à jour le texte affiché en bas du planning
-		$("#pl-notes-div1").html(result.notes);
-		$("#pl-notes-div1-validation").html(suppression+result.validation);
-		CJInfo("Le commentaire a été modifié avec succès","success");
-		// Ferme le dialog
-	      }
-	      $("#pl-notes-form").dialog( "close" );
-	    },
-	    error: function(){
-	      updateTips("Une erreur est survenue lors de l'enregistrement du commentaire", "error");
-	    }
-	  });
-	}
+          if ( bValid ) {
+            // Enregistre le commentaire
+            text.val(text.val().trim());
+            var text2=text.val().replace(/\n/g,"#br#");
+            var text3=text.val().replace(/\n/g,"<br/>");
+            $.ajax({
+              dataType: "json",
+              url: "planning/poste/ajax.notes.php",
+              type: "post",
+              data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2), CSRFToken: $('#CSRFSession').val()},
+              success: function(result){
+                if(result.error){
+                  CJInfo(result.error,"error");
+                }
+                else{
+                  if(result.notes){
+                    $("#pl-notes-button").val("Modifier le commentaire");
+                    $("#pl-notes-div1").show();
+                    var suppression="";
+                  }else{
+                    $("#pl-notes-button").val("Ajouter un commentaire");
+                    $("#pl-notes-div1").hide();
+                    var suppression="Suppression du commentaire : ";
+                  }	
+                  // Met à jour le texte affiché en bas du planning
+                  $("#pl-notes-div1").html(result.notes);
+                  $("#pl-notes-div1-validation").html(suppression+result.validation);
+                  CJInfo("Le commentaire a été modifié avec succès","success");
+                  // Ferme le dialog
+                }
+                $("#pl-notes-form").dialog( "close" );
+              },
+              error: function(){
+                updateTips("Une erreur est survenue lors de l'enregistrement du commentaire", "error");
+              }
+            });
+          }
+        },
+        text: 'Enregistrer'
       },
 
-      Annuler: function() {
-	$( this ).dialog( "close" );
-      }
+      Annuler: {
+        click: function() {
+          $( this ).dialog( "close" );
+              },
+        text: "Annuler",
+        class: "ui-button-type2"
+            },
     },
 
     close: function() {

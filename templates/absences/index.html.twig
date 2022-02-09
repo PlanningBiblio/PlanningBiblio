@@ -8,24 +8,23 @@
 
 {% block page %}
   <h3>Liste des absences</h3>
-
   <form name='form' id='absencesListForm' method='get' action='/absence'>
     <span style='float:left; vertical-align:top; margin-bottom:20px;'>
       <table class='tableauStandard'>
         <tbody>
           <tr>
             <td style='vertical-align:middle;'>
-              <label for="debut" class='intitule'>Début :</label>
+              <label for="debut" >Début :</label>
               <input type='text' id="debut" name='debut' value='{{ debut }}' class='datepicker'/>
             </td>
             <td style='vertical-align:middle;'>
-              <label class='intitule'>Fin :</label>
+              <label >Fin :</label>
               <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker'/>
             </td>
             {% if admin %}
               <td style='vertical-align:middle;text-align:left;'>
                 <span style='padding:5px;'>
-                  <label class='intitule'>Agent :</label>
+                  <label >Agent :</label>
                   <select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>
                     {% if perso_id == 0 %}
                       <option value='0' selected >Tous</option>
@@ -55,8 +54,8 @@
             {% endif %}
 
             <td>
-              <input type='submit' value='Rechercher' class='ui-button' style='margin-right:20px;' />
-              <input type='button' value='Réinitialiser' onclick="absences_reinit();"  class='ui-button' />
+              <input type='submit' value='Rechercher' class='ui-button ui-button-type1' style='margin-right:20px;' />
+              <input type='button' value='Réinitialiser' onclick="absences_reinit();"  class='ui-button ui-button-type2' />
             </td>
           </tr>
         </tbody>
@@ -64,33 +63,33 @@
     </span>
 
     <span style='float:right; vertical-align:top; margin:10px 5px;'>
-      <a href='absence/add' class='ui-button'>Ajouter</a>
+      <a href='absence/add' class='ui-button ui-button-type2'>Ajouter</a>
     </span>
   </form>
-
+  
   <table id='tableAbsencesVoir' class='CJDataTable' data-sort="{{ sort }}">
     <thead>
-      <tr>
-        <th class='dataTableNoSort' >&nbsp;</th>
-        <th class='dataTableDateFR' >Début</th>
-        <th class='dataTableDateFR-fin' >Fin</th>
-        <th id='thNom'>Agents</th>
-        {% if config('Absences-validation') %}
-          <th id='thValidation'>État</th>
-        {% endif %}
-        <th>Motif</th>
-        <th>Commentaires</th>
-        <th class='dataTableDateFR' >Demande</th>
-        {% if can_manage_sup_doc %}
-          <th id='thPiecesJustif' class='dataTableNoSort' >
-            <label style='white-space:nowrap'>Pièces justificatives</label><br/>
-            <div class='absences-pj'>PJ 1</div>
-            <div class='absences-pj'>PJ 2</div>
-            <div class='absences-pj'>SO</div>
-          </th>
-        {% endif %}
-        <th>Documents</th>
-      </tr>
+        <tr>
+          <th class='dataTableNoSort tableSort' >&nbsp;</th>
+          <th class='dataTableDateFR tableSort' >Début</th>
+          <th class='dataTableDateFR-fin tableSort' >Fin</th>
+          <th id='thNom' class="tableSort">Agents</th>
+          {% if config('Absences-validation') %}
+            <th id='thValidation' class="tableSort">État</th>
+          {% endif %}
+          <th class="tableSort">Motif</th>
+          <th class="tableSort">Commentaires</th>
+          <th class='dataTableDateFR tableSort' >Demande</th>
+          {% if can_manage_sup_doc %}
+            <th id='thPiecesJustif' class='dataTableNoSort tableSort' >
+              <label style='white-space:nowrap'>Pièces justificatives</label><br/>
+              <div class='absences-pj'>PJ 1</div>
+              <div class='absences-pj'>PJ 2</div>
+              <div class='absences-pj'>SO</div>
+            </th>
+          {% endif %}
+          <th class="tableSort">Documents</th>
+        </tr>
     </thead>
     <tbody>
       {% for abs in visibles_absences %}
@@ -167,4 +166,5 @@
       {% endfor %}
     </tbody>
   </table>
+
 {% endblock %}

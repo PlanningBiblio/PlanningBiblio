@@ -298,7 +298,7 @@ EOD;
     echo "<textarea name='commentaires' cols='16' rows='5' style='width:97%;'></textarea>\n";
     echo "</td></tr><tr><td>&nbsp;\n";
     echo "</td></tr><tr><td colspan='2' style='text-align:center;'>\n";
-    echo "<input type='button' value='Annuler' onclick='document.location.href=\"{$config['URL']}/holiday/index?recup=1\";' class='ui-button'/>";
+    echo "<input type='button' value='Annuler' onclick='document.location.href=\"{$config['URL']}/holiday/index?recup=1\";' class='ui-button ui-button-type2'/>";
     echo "&nbsp;&nbsp;\n";
     echo "<input type='button' value='Valider' class='ui-button' onclick='verifConges();' style='margin-left:20px;' id='submit-button'/>\n";
     echo "<div id='google-calendar-div' class='inline'></div>\n";
@@ -308,7 +308,7 @@ EOD;
     echo "</form>\n";
 }
 
-echo "</td><td style='color:#FF5E0E;'>\n";
+echo "</td><td style='color:#cd1b19;'>\n";
 
 $date=date("Y-m-d");
 $db=new db();

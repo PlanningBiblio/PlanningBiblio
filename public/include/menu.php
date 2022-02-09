@@ -71,7 +71,7 @@ $(document).click(function(){
 </script>
 
 <?php
-echo "<div id='topgauche'>\n";
+echo "<div id='topgauche' class='topgauche'>\n";
 echo "<table cellpadding='0' cellspacing='0' border='0' style='width:100%;'><tr>\n";
 echo "<td class='logo_td' rowspan='4'><font class='noprint'>\n";
 echo "<a href='index.php'><div id='logo'></div></a>\n";

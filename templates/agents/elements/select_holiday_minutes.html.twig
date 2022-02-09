@@ -1,6 +1,6 @@
 {# agents/elements/select_holiday_minutes.html.twig #}
 
-<select name='{{ name }}' id='{{ name }}' style='width:50px;'>
+<select name='{{ name }}' id='{{ name }}' style='width:70px;'>
   {% for i in range(low=0, high=59, step=config('Granularite')) %}
     {% if minutes == i %}
       <option value="{{ i * 0.016666666666667 }}" selected="selected">{{ "%02d"|format(i) }}</option>

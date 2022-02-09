@@ -216,20 +216,20 @@
 
   {% if id %}
     <tr>
-      <td>Login :</td>
-      <td><span id="login">{{ login }}</span> <a id="change-login-link" href="javascript:void(0)">Changer le login</a></td>
+      <td style="color:#29495C">Login :</td>
+      <td><span id="login">{{ login }}</span> <a id="change-login-link" href="javascript:void(0)" style="color:#29495C">Changer le login</a></td>
     </tr>
 
     <tr>
       <td colspan='2'>
-        <a href='javascript:modif_mdp();'>Envoyer un nouveau mot de passe</a>
+        <a href='javascript:modif_mdp();' style="color:#29495C">Envoyer un nouveau mot de passe</a>
       </td>
     </tr>
 
     {% if not demo %}
       <tr>
         <td colspan='2'>
-          <a id="change-password-link" href='javascript:void(0)'>Changer le mot de passe</a>
+          <a id="change-password-link" href='javascript:void(0)' style="color:#29495C">Changer le mot de passe</a>
         </td>
       </tr>
     {% endif %}

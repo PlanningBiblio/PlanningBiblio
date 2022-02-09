@@ -125,25 +125,25 @@
 
   <div class='ui-tabs'>
     <ul>
-      <li><a href='#main'>Infos générales</a></li>
-      <li><a href='#qualif'>Activités</a></li>
-      <li><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
+      <li id="admin"><a href='#main'>Infos générales</a></li>
+      <li id="admin"><a href='#qualif'>Activités</a></li>
+      <li id="admin"><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
 
       {% if agendas_and_sync is defined %}
-        <li><a href='#agendas'>Agendas et Synchronisation</a></li>
+        <li id="admin"><a href='#agendas'>Agendas et Synchronisation</a></li>
       {% endif %}
 
       {% if conges_enabled %}
-        <li><a href='#conges'>Cong&eacute;s</a></li>
+        <li id="admin"><a href='#conges'>Cong&eacute;s</a></li>
       {% endif %}
 
-      <li><a href='#access'>Droits d'accès</a></li>
+      <li id="admin"><a href='#access'>Droits d'accès</a></li>
 
       {% if can_manage_agent %}
-        <li class='ui-tab-cancel'><a href='{{ asset("/agent") }}'>Annuler</a></li>
-        <li class='ui-tab-submit'><a href='javascript:verif_form_agent();'>Valider</a></li>
+        <li id="admin" class='ui-tab-cancel'><a href='{{ asset("/agent") }}'>Annuler</a></li>
+        <li id="admin" class='ui-tab-submit'><a href='javascript:verif_form_agent();'>Valider</a></li>
       {% else %}
-        <li class='ui-tab-cancel'><a href='{{ asset("/agent") }}'>Fermer</a></li>
+        <li id="admin" class='ui-tab-cancel'><a href='{{ asset("/agent") }}'>Fermer</a></li>
       {% endif %}
     </ul>
 
@@ -169,7 +169,7 @@
         {% endif %}
       </div>
 
-      <div id='temps' style='margin-left:70px;display:none;padding-top:30px;'>
+      <div id='temps' style='display:none;padding-top:30px;'>
         {{ hours_tab | raw }}
       </div>
 
@@ -264,14 +264,14 @@
           {% if id and ics %}
             <tr>
               <td style='padding-top: 20px;'>Agenda ICS Planning Biblio</td>
-              <td style='padding-top: 20px;' id='url-ics'><a href="{{ config('URL') }}{{ ics | raw }}">{{ config('URL') }}{{ ics | raw }}</a></td>
+              <td style='padding-top: 20px;' id='url-ics'><a style="color:#29495C" href="{{ config('URL') }}{{ ics | raw }}">{{ config('URL') }}{{ ics | raw }}</a></td>
             </tr>
 
             {% if ICS_Code %}
               <tr>
                 <td>&nbsp;</td>
                 <td>
-                  <a href="javascript:resetICSURL('{{ id }}', '{{ CSRFSession }}', '{{ prenom }} {{ nom }}');">
+                  <a style="color:#29495C" href="javascript:resetICSURL('{{ id }}', '{{ CSRFSession }}', '{{ prenom }} {{ nom }}');">
                     R&eacute;initialiser l'URL
                   </a>
                 </td>
@@ -280,7 +280,7 @@
               <tr>
                 <td>&nbsp;</td>
                 <td>
-                  <a href='javascript:sendICSURL();'>
+                  <a style="color:#29495C" href='javascript:sendICSURL();'>
                     Envoyer l'URL &agrave; l&apos;agent par e-mail ({{ mail }})
                   </a>
                 </td>
@@ -310,7 +310,7 @@
     <form>
       <p>
         <input type='text' id='add-statut-text' style='width:300px;'/>
-        <input type='button' id='add-statut-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/>
+        <input type='button' id='add-statut-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
       </p>
 
       <fieldset>
@@ -320,7 +320,7 @@
               <li class='ui-state-default' id='li_{{ elem.id }}'>
                 <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
                 <font id='valeur_{{ elem.id }}'>{{ elem.valeur | raw }}</font>
-                <select id='categorie_{{ elem.id }}' style='position:absolute;left:330px;'>
+                <select id='categorie_{{ elem.id }}' class='select-popup'>
                   <option value='0'>&nbsp;</option>
                   {% for elem2 in categories %}
                     {% if elem2.id == elem.categorie %}
@@ -331,7 +331,7 @@
                   {% endfor %}
                 </select>
                 {% if elem.valeur not in statuts_utilises %}
-                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
+                  <span class='ui-icon ui-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>
             {% endfor %}
@@ -346,7 +346,7 @@
     <form>
       <p>
         <input type='text' id='add-service-text' style='width:300px;'/>
-        <input type='button' id='add-service-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/>
+        <input type='button' id='add-service-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
       </p>
 
       <fieldset>
@@ -357,7 +357,7 @@
                 <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
                 <font id='valeur_{{ elem.id }}'>{{ elem.valeur | raw }}</font>
                 {% if elem.valeur not in services_utilises %}
-                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
+                  <span class='ui-icon ui-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>
             {% endfor %}

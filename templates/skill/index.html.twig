@@ -19,8 +19,8 @@
   <table class='CJDataTable' data-sort='[1,"asc"]'>
     <thead>
       <tr>
-        <th class="dataTableNoSort">&nbsp;</th>
-        <th> Nom de l'activité </th>
+        <th class="dataTableNoSort tableSort">&nbsp;</th>
+        <th class="tableSort"> Nom de l'activité </th>
       </tr>
     </thead>
     <tbody>
@@ -33,7 +33,7 @@
             </a>
             {% if s.id in usedSkills == false %}
               &nbsp;&nbsp;
-              <span id='{{ s.id }}' class="pl-icon pl-icon-drop pointer" title="Supprimer" onclick="confirmDel(this.id)">
+              <span id='{{ s.id }}' class="pl-icon pl-icon-dropblack pointer" title="Supprimer" onclick="confirmDel(this.id)">
                 <script>
                   function confirmDel(id){
                     if (window.confirm("Voulez-vous vraiment supprimer cette activité ?")){

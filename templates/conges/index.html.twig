@@ -78,9 +78,9 @@
             </td>
             <td>
               {% if show_recovery %}
-                <a href='{{ asset("holiday/index") }}?recup=1&reset=on' class='ui-button' >Réinitialiser</a>
+                <a href='{{ asset("holiday/index") }}?recup=1&reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
               {% else %}
-                <a href='{{ asset("holiday/index") }}?reset=on' class='ui-button' >Réinitialiser</a>
+                <a href='{{ asset("holiday/index") }}?reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
               {% endif %}
             </td>
           </tr>
@@ -89,7 +89,7 @@
     </span>
 
     <span style='float:right; vertical-align:top; margin:10px 5px;'>
-      <a href='{{ addlink }}' class='ui-button'>Ajouter</a>
+      <a href='{{ addlink }}' class='ui-button ui-button-type2'>Ajouter</a>
     </span>
 
     {% if show_recovery %}
@@ -105,36 +105,36 @@
   {% endif %}
     <thead>
       <tr>
-        <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
-        <th rowspan='2' class='dataTableDateFR'>Début</th>
-        <th rowspan='2' class='dataTableDateFR-fin'>Fin</th>
+        <th rowspan='2' class='dataTableNoSort tableSort'>&nbsp;</th>
+        <th rowspan='2' class='dataTableDateFR tableSort'>Début</th>
+        <th rowspan='2' class='dataTableDateFR-fin tableSort'>Fin</th>
         {% if admin %}
-          <th rowspan='2'>Nom</th>
+          <th rowspan='2' class='tableSort'>Nom</th>
         {% endif %}
-        <th colspan='2' class='ui-state-default'>Validation</th>
+        <th colspan='2' class='ui-state-default tableSort'>Validation</th>
         {% if conges_mode == 'jours' and not show_recovery %}
-          <th rowspan='2'>Jours</th>
+          <th rowspan='2' class='tableSort'>Jours</th>
         {% else %}
-          <th rowspan='2' class='dataTableHeureFR'>Heures</th>
+          <th rowspan='2' class='dataTableHeureFR tableSort'>Heures</th>
         {% endif %}
 
         {% if balance %}
-          <th rowspan='2' class='dataTableHeureFR'>Crédits</th>
-          <th rowspan='2' class='dataTableHeureFR'>Reliquat</th>
+          <th rowspan='2' class='dataTableHeureFR tableSort' tableSort>Crédits</th>
+          <th rowspan='2' class='dataTableHeureFR tableSort'>Reliquat</th>
         {% endif %}
 
         {% if recovery %}
-          <th rowspan='2' class='dataTableHeureFR'>Récupérations</th>
+          <th rowspan='2' class='dataTableHeureFR tableSort'>Récupérations</th>
         {% endif %}
 
         {% if balance %}
-          <th rowspan='2' class='dataTableHeureFR'>Solde Débiteur</th>
+          <th rowspan='2' class='dataTableHeureFR tableSort'>Solde Débiteur</th>
         {% endif %}
-          <th rowspan='2' class='information'>Informations</th>
+          <th rowspan='2' class='information tableSort'>Informations</th>
       </tr>
       <tr>
-        <th>&Eacute;tat</th>
-        <th class='dataTableDateFR'>Date</th>
+        <th class='tableSort-bis'>&Eacute;tat</th>
+        <th class='dataTableDateFR tableSort-bis'>Date</th>
       </tr>
     </thead>
     <tbody>

@@ -32,27 +32,27 @@
     <table id='tableStatTemps' class='CJDataTable' data-fixedColumns='2'>
       <thead>
         <tr>
-          <th>Agents</th>
-          <th>Statut</th>
+          <th class=" tableSort">Agents</th>
+          <th class=" tableSort" style="border-right-color: #000;">Statut</th>
           {% for d in dates %}
-            <th class='dataTableHeureFR'>{{ d[1] | raw }}</th>
+            <th class='dataTableHeureFR tableSort'>{{ d[1] | raw }}</th>
           {% endfor %}
           {% if nbSites > 1 %}
             {% for i in 1..nbSites %}
-              <th class="dataTableHeureFR">{{ multisites[i-1] | raw }}</th>
+              <th class="dataTableHeureFR tableSort">{{ multisites[i-1] | raw }}</th>
               {% if nbSemaines!= 1 %}
-                <th class="dataTableHeureFR">Moyenne Hebdo.</th>
+                <th class="dataTableHeureFR tableSort">Moyenne Hebdo.</th>
               {% endif %}
             {% endfor %}
           {% endif %}
           {% for g in groups %}
-            <th class='dataTableHeureFR'> {{ g.valeur }} </th>
+            <th class='dataTableHeureFR tableSort'> {{ g.valeur }} </th>
           {% endfor %}
-          <th class='dataTableHeureFR' > Total </th>
-          <th class='dataTableHeureFR' > Max. </th>
+          <th class='dataTableHeureFR tableSort' > Total </th>
+          <th class='dataTableHeureFR tableSort' > Max. </th>
           {% if nbSemaines != 1 %}
-            <th class='dataTableHeureFR' > Moyenne<br/>Hebdo. </th>
-            <th class='dataTableHeureFR' > Max. Hebdo. </th>
+            <th class='dataTableHeureFR tableSort' > Moyenne<br/>Hebdo. </th>
+            <th class='dataTableHeureFR tableSort' > Max. Hebdo. </th>
           {% endif %}
         </tr>
       </thead>
@@ -61,13 +61,13 @@
           <tr style ='vertical-align:top;'>
             <td>{{ t.nom }} {{ t.prenom }}</td>
             {% if t.statut is not null %}
-              <td>{{ t.statut | raw }}</td>
+              <td style="border-right-color: #000;">{{ t.statut | raw }}</td>
             {% else %}
-              <td>&nbsp;</td>
+              <td style="border-right-color: #000;">&nbsp;</td>
             {% endif %}
             {% for d in dates %}
               {% if t[d[0]].total != '-' %}
-                <td class ='bg-yellow' style ='text-align:center;'>
+                <td style ='text-align:center;'>
               {% else %}
                 <td  style ='text-align:center;'>
               {% endif %}
@@ -102,7 +102,7 @@
             {% endfor %}
             {% if nbSemaines != 1 %}
               {% if t.diff1 > 0 %}
-              <td style='text-align : center; font-weight: bold; background : red ;'> {{ t.total }} </td>
+              <td style='text-align : center; font-weight: bold; background : #cd1b19;'> {{ t.total }} </td>
               {% else %}
                 {% if t.diff1 <= 0.5 and t.diff2 <= 0.5 %}
                   <td style='text-align : center; font-weight: bold; background : lightgreen ;'>{{ t.total }} </td>
@@ -113,7 +113,7 @@
               <td style='text-align : center;'> {{ t.max }} </td>
             {% endif %}
             {% if t.diff1 > 0 %}
-              <td style='text-align : center; font-weight: bold; background : red ;'>{{ t.semaine }}</td>
+              <td style='text-align : center; font-weight: bold; background : #cd1b19 ;'>{{ t.semaine }}</td>
             {% else %}
               {% if t.diff1 <= 0.5 and  t.diff2 <= 0.5 %}
                 <td style='text-align : center; font-weight: bold; background : lightgreen ;'>{{ t.semaine }}</td>
@@ -129,48 +129,48 @@
           <tr style='background:#DDDDDD;' >
             <th colspan='2'> Nombre d'heures</th>
             {% for d in dates %}
-              <th>{{ heures[d[0]] }}</th>
+              <th style="border-left:  1px solid #000;" class="left-border">{{ heures[d[0]] }}</th>
             {% endfor %}
             {% if nbSites > 1 %}
               {% for i in 1..nbSites %}
-                <th> {{ sitesHeures[i] }}</th>
+                <th style="border-left:  1px solid #000;" class="left-border"> {{ sitesHeures[i] }}</th>
                 {% if nbSemaines != 1 %}
-                  <th> &nbsp; </th>
+                  <th style="border-left:  1px solid #000;" class="left-border"> &nbsp; </th>
                 {% endif %}
               {% endfor %}
             {% endif %}
             {% for g in groups %}
-              <th> {{ totauxGroupesHeures[g.id] }} </th>
+              <th style="border-left:  1px solid #000;" class="left-border"> {{ totauxGroupesHeures[g.id] }} </th>
               {# <th> {{ g.valeur }}{{ totauxGroupesHeures[g.id] }}</th> #}
             {% endfor %}
-            <th>{{ totalHeures }}</th>
+            <th style="border-left:  1px solid #000;" class="left-border" class="left-border">{{ totalHeures }}</th>
             {% if nbSemaines != 1%}
-              <th colspan='3'>&nbsp;</th>
+              <th colspan='3' style="border-left:  1px solid #000;" class="left-border">&nbsp;</th>
             {% else %}
-              <th colspan='1'>&nbsp;</th>
+              <th colspan='1' style="border-left:  1px solid #000;" class="left-border">&nbsp;</th>
             {% endif %}
           </tr>
           <tr style='background:#DDDDDD;'>
             <th colspan='2'>Nombre d'agents</th>
             {% for d in dates %}
-              <th>{{ nbAgents[d[0]] }}</th>
+              <th style="border-left:  1px solid #000;" class="left-border"> {{ nbAgents[d[0]] }}</th>
             {% endfor %}
             {% if nbSites >1 %}
               {% for i in 1..nbSites %}
-                <th> {{ siteAgents[i] }}</th>
+                <th style="border-left:  1px solid #000;" class="left-border"> {{ siteAgents[i] }}</th>
                 {% if nbSemaines != 1 %}
-                  <th> &nbsp; </th>
+                  <th style="border-left:  1px solid #000;" class="left-border"> &nbsp; </th>
                 {% endif %}
               {% endfor %}
             {% endif %}
             {% for g in groups %}
-              <th> {{ totauxGroupesPerso[g.id] }}</th>
+              <th style="border-left:  1px solid #000;" class="left-border"> {{ totauxGroupesPerso[g.id] }}</th>
             {% endfor %}
-            <th>{{ totalAgents }}</th>
+            <th style="border-left:  1px solid #000;" class="left-border">{{ totalAgents }}</th>
             {% if nbSemaines != 1%}
-              <th colspan='3'>&nbsp;</th>
+              <th colspan='3' style="border-left:  1px solid #000;" class="left-border">&nbsp;</th>
             {% else %}
-              <th colspan='1'>&nbsp;</th>
+              <th colspan='1' style="border-left:  1px solid #000;" class="left-border">&nbsp;</th>
             {% endif %}
           </tr>
         </tfoot>

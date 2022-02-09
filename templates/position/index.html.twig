@@ -22,17 +22,17 @@
   <table id='tablePostes' class='CJDataTable' data-sort='[[1, "asc"],[2, "asc"]]'>
     <thead>
       <tr>
-        <th class='dataTableNoSort'>&nbsp;</th>
-        <th>Nom du poste</th>
+        <th class='dataTableNoSort tableSort'>&nbsp;</th>
+        <th class="tableSort">Nom du poste</th>
           {% if multisite > 1 %}
-            <th>Site</th>
+            <th class="tableSort">Site</th>
           {% endif %}
-        <th>Etage</th>
-        <th>Activités</th>
-        <th>Groupe</th>
-        <th>Obligatoire/renfort</th>
-        <th>Bloquant</th>
-        <th>Statistiques</th>
+        <th class="tableSort">Etage</th>
+        <th class="tableSort">Activités</th>
+        <th class="tableSort">Groupe</th>
+        <th class="tableSort">Obligatoire/renfort</th>
+        <th class="tableSort">Bloquant</th>
+        <th class="tableSort">Statistiques</th>
       </tr>
     </thead>
     <tbody>
@@ -45,7 +45,7 @@
             {% if j.id in usedPositions == false %}
               &nbsp;
               <a href='#'>
-                <span id='{{ j.id }}' class='pl-icon pl-icon-drop' title='Supprimer' onclick="confirmDel(this.id)"></span>
+                <span id='{{ j.id }}' class='pl-icon pl-icon-dropblack' title='Supprimer' onclick="confirmDel(this.id)"></span>
                 <script>
                   function confirmDel(id){
                     if (window.confirm("Voulez-vous vraiment supprimer ce poste ?")){

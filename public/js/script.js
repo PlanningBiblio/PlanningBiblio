@@ -616,7 +616,7 @@ function updateAgentsList(me,select_id){
       index=in_array?index:0;
       $("#"+select_id).val(index);
 
-      $("#"+select_id).closest("span").effect("highlight",null,2000);
+      $("#"+select_id).closest("span").effect("highlight",{color: "#FFD700"},2000);
     },
     error: function(){
       information("Une erreur est survenue lors de la mise à jour de la liste des agents.","error");
@@ -833,7 +833,9 @@ function verif_select(nom){
 $(function(){
   $(document).ready(function() {
     $(".ui-accordion").accordion({
-      heightStyle: "content"
+      heightStyle: "content",
+      collapsible: "true",
+      active: "false"
     });
 
     $(".ui-button").button();
