@@ -527,34 +527,24 @@ class AgentController extends BaseController
         }
 
         if (in_array(21, $droits)) {
-            $h = array();
-            for ($i = 1; $i<40; $i++) {
-                if ($this->config('Granularite') == 5) {
-                    $h[] = array($i,$i."h00");
-                    $h[] = array($i.".08",$i."h05");
-                    $h[] = array($i.".17",$i."h10");
-                    $h[] = array($i.".25",$i."h15");
-                    $h[] = array($i.".33",$i."h20");
-                    $h[] = array($i.".42",$i."h25");
-                    $h[] = array($i.".5",$i."h30");
-                    $h[] = array($i.".58",$i."h35");
-                    $h[] = array($i.".67",$i."h40");
-                    $h[] = array($i.".75",$i."h45");
-                    $h[] = array($i.".83",$i."h50");
-                    $h[] = array($i.".92",$i."h55");
-                } elseif ($this->config('Granularite')  == 15) {
-                    $h[] = array($i,$i."h00");
-                    $h[] = array($i.".25",$i."h15");
-                    $h[] = array($i.".5",$i."h30");
-                    $h[] = array($i.".75",$i."h45");
-                } elseif ($this->config('Granularite') == 30) {
-                    $h[] = array($i,$i."h00");
-                    $h[] = array($i.".5",$i."h30");
-                } else {
-                    $h[] = array($i,$i."h00");
+            $granularite = $this->config('Granularite') == 1
+                ? 5 : $this->config('Granularite');
+
+            $nb_interval = 60 / $granularite;
+            $end = 40;
+            $times = array();
+            for ($i = 1; $i < $end; $i++) {
+                $times[] = array($i + 0, $i . 'h00');
+                $minute = 0;
+                for ($y = 1; $y < $nb_interval; $y++) {
+                    $minute = sprintf("%02d", $minute + $granularite);
+                    $decimal = round($minute / 60, 2);
+                    $times[] = array($i + $decimal, $i . "h$minute");
                 }
             }
-            $this->templateParams(array( 'times' => $h ));
+            $times[] = array($end, $end . "h00");
+            $this->templateParams(array( 'times' => $times ));
+
         } else {
             $heuresHebdo_label = $heuresHebdo;
             if (!stripos($heuresHebdo, "%")) {
