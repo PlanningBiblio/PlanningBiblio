@@ -1270,7 +1270,8 @@ div.presents-absents {
   text-indent: 1px;
 }
 
-.planno-timepicker:disabled {
+.planno-timepicker:disabled,
+.planno-break-timepicker:disabled {
     color: black;
 }
 
