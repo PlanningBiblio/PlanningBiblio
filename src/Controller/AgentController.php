@@ -344,7 +344,6 @@ class AgentController extends BaseController
                 }
             } else {
                 $temps = json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                $breaktimes = $db->result[0]['breaktime'];
                 if (!is_array($temps)) {
                     $temps = array();
                 }
