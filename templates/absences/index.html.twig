@@ -22,7 +22,7 @@
               <label class='intitule'>Fin :</label>
               <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker'/>
             </td>
-            {% if admin %}
+            {% if managed | length > 1 %}
               <td style='vertical-align:middle;text-align:left;'>
                 <span style='padding:5px;'>
                   <label class='intitule'>Agent :</label>
@@ -33,7 +33,7 @@
                       <option value='0' >Tous</option>
                     {% endif %}
 
-                    {% for a in agents_menu %}
+                    {% for a in managed %}
                       {% if a.id == perso_id %}
                         <option value="{{ a.id }}" selected>{{ a.nom }} {{ a.prenom }}</option>
                       {% else %}
