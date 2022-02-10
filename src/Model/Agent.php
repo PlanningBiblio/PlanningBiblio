@@ -401,4 +401,42 @@ class Agent extends PLBEntity
         return true;
     }
 
+    public function managedSites($needed_l1, $needed_l2)
+    {
+        $sites_number = $GLOBALS['config']['Multisites-nombre'];
+
+        // Module workinghour, no multisites.
+        if ($needed_l1 == 1100) {
+            $sites_number = 1;
+        }
+
+        $rights = $this->droits();
+
+        $managed_sites = array();
+        for ($i = 1; $i <= $sites_number; $i++) {
+            if (in_array($needed_l1 + $i, $rights)
+                or in_array($needed_l2 + $i, $rights)) {
+                $managed_sites[] = $i;
+            }
+        }
+
+        return $managed_sites;
+    }
+
+    public function inOneOfSites($sites)
+    {
+        $agent_sites = json_decode($this->sites());
+
+        if (!is_array($agent_sites)) {
+            return false;
+        }
+
+        foreach ($agent_sites as $site) {
+            if (in_array($site, $sites)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
