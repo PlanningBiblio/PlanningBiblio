@@ -24,13 +24,17 @@ use App\Model\ConfigParam;
 
 class AgentRepository extends EntityRepository
 {
-    private $needed_level1 = 201;
+    private $module = 'absence';
 
-    private $needed_level2 = 501;
+    private $needed_level1 = 200;
+
+    private $needed_level2 = 500;
 
     private $by_agent_param = 'Absences-notifications-agent-par-agent';
 
     private $check_by_agent = true;
+
+    private $check_by_site = true;
 
     public function getAllSkills() {
         $entityManager = $this->getEntityManager();
@@ -111,12 +115,21 @@ class AgentRepository extends EntityRepository
             throw new \Exception("AgentRepository::setModule: Unsupported module $name");
         }
 
+        $this->module = $name;
         $this->check_by_agent = $check_by_agent;
 
         if ($name == 'workinghour') {
-            $this->needed_level1 = 1101;
-            $this->needed_level2 = 1201;
+            $this->needed_level1 = 1100;
+            $this->needed_level2 = 1200;
             $this->by_agent_param = 'PlanningHebdo-notifications-agent-par-agent';
+            $this->check_by_site = false;
+        }
+
+        if ($name == 'absence') {
+            $this->needed_level1 = 200;
+            $this->needed_level2 = 500;
+            $this->by_agent_param = 'Absences-notifications-agent-par-agent';
+            $this->check_by_site = true;
         }
 
         return $this;
@@ -129,6 +142,9 @@ class AgentRepository extends EntityRepository
         $by_agent_param = $entityManager->getRepository(ConfigParam::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
+        $sites_number = $entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled.
@@ -138,17 +154,34 @@ class AgentRepository extends EntityRepository
             }, $loggedin->getManaged());
 
             $managed[] = $loggedin;
+             usort($managed, function($a, $b) { return ($a->nom() < $b->nom()) ? -1 : 1; });
 
             return $managed;
         }
 
         $rights = $loggedin->droits();
+        $managed_sites = $loggedin->managedSites($this->needed_level1, $this->needed_level2);
 
-        if (in_array($this->needed_level1, $rights)
-            or in_array($this->needed_level2, $rights)) {
-
+        if (!empty($managed_sites)) {
             $agents = $entityManager->getRepository(Agent::class)
-            ->findBy(['supprime' => '0']);
+            ->getAgentsList();
+
+            foreach ($agents as $index => $agent) {
+                // Filter agents by sites
+                // Only for absence and holidays.
+                // There is no rights by sites
+                // for working hours.
+                if ($this->check_by_site && $sites_number > 1) {
+                    // Always keep logged in agent.
+                    if ($agent->id() == $loggedin->id()) {
+                        continue;
+                    }
+
+                    if (!$agent->inOneOfSites($managed_sites)) {
+                        unset($agents[$index]);
+                    }
+                }
+            }
 
             return $agents;
         }
@@ -163,6 +196,12 @@ class AgentRepository extends EntityRepository
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
         $by_agent_param = $entityManager->getRepository(ConfigParam::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
+
+        $sites_number = 1;
+        if ($this->check_by_site) {
+            $sites_number = $entityManager->getRepository(ConfigParam::class)
+                ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+        }
 
         $l1 = false;
         $l2 = false;
@@ -186,9 +225,31 @@ class AgentRepository extends EntityRepository
         // Check for module rights.
         $agent_rights = $loggedin->droits();
 
-        $l1 = in_array($this->needed_level1, $agent_rights);
-        $l2 = in_array($this->needed_level2, $agent_rights);
+        for ($i = 1; $i <= $sites_number; $i++) {
+            if (in_array($this->needed_level1 + $i, $agent_rights)) {
+                $l1 = true;
+            }
+
+            if (in_array($this->needed_level2 + $i, $agent_rights)) {
+                $l2 = true;
+            }
+        }
 
         return array($l1, $l2);
+    }
+
+    public function getAgentsList()
+    {
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->select('a')
+                ->from(Agent::class, 'a')
+                ->andWhere('a.supprime = :deleted')
+                ->andWhere('a.id != :all')
+                ->addOrderBy('a.nom', 'ASC')
+                ->setParameter('deleted', '0')
+                ->setParameter('all', 2);
+        $agents = $builder->getQuery()->getResult();
+
+        return $agents;
     }
 }
