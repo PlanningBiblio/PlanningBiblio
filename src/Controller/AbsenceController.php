@@ -42,23 +42,14 @@ class AbsenceController extends BaseController
         $agents = $p->elements;
 
 
-        //	Initialisation des variables
-        $admin = false;
-        $adminN2 = false;
-
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((200+$i), $droits)) {
-                $admin = true;
-            }
-            if (in_array((500+$i), $droits)) {
-                $admin = true;
-                $adminN2 = true;
-                break;
-            }
-        }
+        // Initialisation des variables
+        list($admin, $adminN2) = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('absence', false)
+            ->getValidationLevelFor($_SESSION['login_id']);
 
         if ($admin) {
-            $perso_id = filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
+            $perso_id = $request->get('perso_id');
             if ($perso_id === null) {
                 $perso_id = isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id'];
             }
@@ -96,23 +87,12 @@ class AbsenceController extends BaseController
         $debutSQL=dateSQL($debut);
         $finSQL=dateSQL($fin);
 
-        // Multisites : filtre pour n'afficher que les agents du site voulu
-        $sites = null;
-        if ($this->config('Multisites-nombre')>1) {
-            $sites = array();
-            for ($i=1; $i<31; $i++) {
-                if (in_array((200 + $i), $droits) or in_array((500 + $i), $droits)) {
-                    $sites[] = $i;
-                }
-            }
-        }
-
         $a = new \absences();
         $a->groupe = true;
         if ($agents_supprimes) {
             $a->agents_supprimes = array(0,1);
         }
-        $a->fetch(null, $perso_id, $debutSQL, $finSQL, $sites);
+        $a->fetch(null, $perso_id, $debutSQL, $finSQL);
         $absences = $a->elements;
 
         // Tri par défaut du tableau
@@ -129,64 +109,17 @@ class AbsenceController extends BaseController
             'sort'      => $sort,
         ));
 
-        if ($admin) {
-            $p = new \personnel();
-            if ($agents_supprimes) {
-                $p->supprime = array(0,1);
-            }
-            $p->responsablesParAgent = true;
-            $p->fetch();
-            $agents_menu = $p->elements;
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('absence')
+            ->getManagedFor($_SESSION['login_id']);
 
-            // Filtre pour n'afficher que les agents gérés en configuration multisites
-            if ($this->config('Multisites-nombre') > 1) {
-                foreach ($agents_menu as $k => $v) {
-                    $keep = false;
-                    if (!is_array($v['sites'])) {
-                        unset($agents_menu[$k]);
-                        continue;
-                    }
-                    foreach ($v['sites'] as $site) {
-                        if (in_array($site, $sites)) {
-                            $keep = true;
-                        }
-                    }
-                    if ($keep == false) {
-                        unset($agents_menu[$k]);
-                    }
-                }
-            }
-
-            // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
-            if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
-                $tmp = array();
-                $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
-
-                foreach ($agents_menu as $elem) {
-                    if ($elem['id'] == $_SESSION['login_id']) {
-                        $tmp[$elem['id']] = $elem;
-                        continue;
-                    }
-
-                    if ($logged_in->isManagerOf(array($elem['id']))) {
-                        $tmp[$elem['id']] = $elem;
-                    }
-                }
-
-                $agents_menu = $tmp;
-            }
-
-            // Liste des agents à conserver :
-            $perso_ids = array_keys($agents_menu);
-
-            $this->templateParams(array(
-                'agents_menu'           => $agents_menu,
-                'agents_deleted'        => $agents_supprimes,
-            ));
-        }
+        // Liste des agents à conserver :
+        $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
 
         $this->templateParams(array(
-            'absences'              => $absences,
+            'managed'               => $managed,
+            'agents_deleted'        => $agents_supprimes,
             'can_manage_sup_doc'    => in_array(701, $droits) ? 1 : 0,
         ));
 
