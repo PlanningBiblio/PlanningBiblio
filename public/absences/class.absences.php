@@ -1871,7 +1871,7 @@ class absences
     public function infoPlannings()
     {
         $version="absences";
-        require_once "postes/class.postes.php";
+        require_once __DIR__ . '/../postes/class.postes.php';
   
         $debut=dateSQL($this->debut);
         $fin=dateSQL($this->fin);
