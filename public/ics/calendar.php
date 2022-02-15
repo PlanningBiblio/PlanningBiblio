@@ -43,6 +43,7 @@ require_once "../include/function.php";
 require_once "../absences/class.absences.php";
 require_once "../personnel/class.personnel.php";
 require_once "../postes/class.postes.php";
+require_once __DIR__ . '/../init_entitymanager.php';
 
 $CSRFToken = CSRFToken();
 
