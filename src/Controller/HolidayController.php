@@ -425,6 +425,7 @@ class HolidayController extends BaseController
             'admin'                 => $admin,
             'id'                    => $id,
             'perso_id'              => $perso_id,
+            'selected_agent_id'     => $perso_id,
             'login_id'              => $_SESSION['login_id'],
             'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
             'halfday'               => $data['halfday'],
