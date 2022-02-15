@@ -182,7 +182,10 @@ class AbsenceController extends BaseController
         $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
 
-        $this->setAdminPermissions();
+        list($this->admin, $this->adminN2) = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('absence', false)
+            ->getValidationLevelFor($_SESSION['login_id']);
 
         $this->agents_multiples = ($this->admin or in_array(9, $this->droits));
 
@@ -690,6 +693,45 @@ class AbsenceController extends BaseController
           $json_response['msg2Type'] = $msg2Type;
         }
         return $this->json($json_response);
+    }
+
+    /**
+     * @Route("/absence-statuses", name="absence.statuses", methods={"GET"})
+     */
+    public function absence_validation_statuses(Request $request)
+    {
+        $agent_ids = $request->get('ids');
+        $module = $request->get('module');
+        $absence_id = $request->get('id');
+
+        $absence_valide_n1 = 0;
+        if ($absence_id) {
+            $absence = new \absences();
+            $absence->fetchById($absence_id);
+            $absence_valide_n1 = $absence->elements['valide_n1'];
+        }
+
+        $adminN1 = true;
+        $adminN2 = true;
+        foreach ($agent_ids as $id) {
+            list($N1, $N2) = $this->entityManager
+                ->getRepository(Agent::class)
+                ->setModule($module)
+                ->getValidationLevelFor($_SESSION['login_id'], $id);
+
+            $adminN1 = $N1 ? $adminN1 : false;
+            $adminN2 = $N2 ? $adminN2 : false;
+        }
+
+        $vaidation_N2_option = ($module == 'absence') ? 'Absences-Validation-N2' : 'Conges-Validation-N2';
+
+        // Prevent logged in to directly validate l2
+        // if Validation-N2 needs Validation-N1 before.
+        if ($this->config($vaidation_N2_option) && $absence_valide_n1 == 0) {
+            $adminN2 = false;
+        }
+
+        return $this->json(array('adminN1' => $adminN1, 'adminN2' => $adminN2));
     }
 
     private function getDocuments($absence) {

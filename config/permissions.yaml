@@ -11,6 +11,8 @@
     - 100
 "absence.save":
     - 100
+"absence.statuses":
+    - 100
 "absences.document.index":
     - 100
 "absences.document.delete":
