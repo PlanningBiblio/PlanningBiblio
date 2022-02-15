@@ -132,10 +132,65 @@ class AgentRepository extends EntityRepository
             $this->check_by_site = true;
         }
 
+        if ($name == 'holiday') {
+            $this->needed_level1 = 400;
+            $this->needed_level2 = 600;
+            $this->by_agent_param = 'Absences-notifications-agent-par-agent';
+            $this->check_by_site = true;
+        }
+
         return $this;
     }
 
-    public function getManagedFor($loggedin_id)
+    public function getManagedSitesFor($loggedin_id)
+    {
+        $entityManager = $this->getEntityManager();
+        $loggedin = $entityManager->find(Agent::class, $loggedin_id);
+        $by_agent_param = $entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => $this->by_agent_param]);
+
+        $sites_number = $entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+
+        // Param Absences-notifications-agent-par-agent
+        // or PlanningHebdo-notifications-agent-par-agent
+        // is enabled.
+        if ($by_agent_param->valeur()) {
+            $managed_sites = array();
+
+            foreach ($loggedin->getManaged() as $m) {
+                $managed_sites = array_merge($managed_sites, json_decode($m->perso_id()->sites()));
+            }
+
+            $managed_sites = array_unique($managed_sites);
+
+        }
+
+        $rights = $loggedin->droits();
+
+        $sites_select = array();
+        for ($i = 1; $i <= $sites_number; $i++) {
+            $name = $entityManager->getRepository(ConfigParam::class)
+                ->findOneBy(['nom' => "Multisites-site$i"])->valeur();
+
+            if ($by_agent_param->valeur()) {
+                if (in_array($i, $managed_sites)) {
+                    $sites_select[] = array('id' => $i, 'name' => $name);
+                }
+                continue;
+            }
+
+            if (in_array(($this->needed_level1 + $i), $rights)
+                or in_array(($this->needed_level2 + $i), $rights)) {
+
+                $sites_select[] = array('id' => $i, 'name' => $name);
+            }
+        }
+
+        return $sites_select;
+    }
+
+    public function getManagedFor($loggedin_id, $deleted = 0)
     {
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
@@ -154,7 +209,7 @@ class AgentRepository extends EntityRepository
             }, $loggedin->getManaged());
 
             $managed[] = $loggedin;
-             usort($managed, function($a, $b) { return ($a->nom() < $b->nom()) ? -1 : 1; });
+            usort($managed, function($a, $b) { return ($a->nom() < $b->nom()) ? -1 : 1; });
 
             return $managed;
         }
@@ -164,7 +219,7 @@ class AgentRepository extends EntityRepository
 
         if (!empty($managed_sites)) {
             $agents = $entityManager->getRepository(Agent::class)
-            ->getAgentsList();
+            ->getAgentsList($deleted);
 
             foreach ($agents as $index => $agent) {
                 // Filter agents by sites
@@ -249,16 +304,20 @@ class AgentRepository extends EntityRepository
         return array($l1, $l2);
     }
 
-    public function getAgentsList()
+    public function getAgentsList($deleted = 0)
     {
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->select('a')
                 ->from(Agent::class, 'a')
-                ->andWhere('a.supprime = :deleted')
                 ->andWhere('a.id != :all')
                 ->addOrderBy('a.nom', 'ASC')
-                ->setParameter('deleted', '0')
                 ->setParameter('all', 2);
+
+        if (!$deleted) {
+            $builder->andWhere('a.supprime = :deleted')
+                    ->setParameter('deleted', '0');
+        }
+
         $agents = $builder->getQuery()->getResult();
 
         return $agents;

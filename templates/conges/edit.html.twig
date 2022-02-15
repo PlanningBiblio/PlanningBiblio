@@ -38,21 +38,8 @@
       <tr>
         <td style='width:350px;'>Nom, prénom : </td>
         <td>
-          {% if db_perso | length > 1 %}
-            <select name='perso_id' id='perso_id' style='width:40%;' class='googleCalendarTrigger'>
-              <option value='0' ></option>
-              {% for d in db_perso %}
-                {% if d.id == perso_id %}
-                  <option value="{{ d.id }}" selected='selected'>{{ d.nom }} {{ d.prenom }}</option>
-                {% else %}
-                  <option value="{{ d.id }}">{{ d.nom }} {{ d.prenom }}</option>
-                {% endif %}
-              {% endfor %}
-            </select>
-          {% else %}
-            <input type='hidden' name='perso_id' id='perso_id' value="{{ login_id}}"/>
-            {{ agent_name }}
-          {% endif %}
+          <input type='hidden' name='perso_id' id='perso_id' value="{{ perso_id}}"/>
+          {{ agent_name }}
         </td>
       </tr>
 
@@ -367,7 +354,7 @@
               </tr>
             {% endif %}
 
-            <tr>
+            <tr id="validation-line">
               <td>Validation</td>
               {% if select_valide %}
                 <td>
