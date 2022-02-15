@@ -197,10 +197,21 @@ class AgentRepository extends EntityRepository
         $by_agent_param = $entityManager->getRepository(ConfigParam::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = 1;
+        $sites = array(1);
         if ($this->check_by_site) {
+            $sites = array();
             $sites_number = $entityManager->getRepository(ConfigParam::class)
                 ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+
+            for ($i = 1; $i <= $sites_number; $i++) {
+                $sites[] = $i;
+            }
+
+            // will only check for agent sites
+            if ($agent_id) {
+                $agent = $entityManager->find(Agent::class, $agent_id);
+                $sites = json_decode($agent->sites());
+            }
         }
 
         $l1 = false;
@@ -225,7 +236,7 @@ class AgentRepository extends EntityRepository
         // Check for module rights.
         $agent_rights = $loggedin->droits();
 
-        for ($i = 1; $i <= $sites_number; $i++) {
+        foreach ($sites as $i) {
             if (in_array($this->needed_level1 + $i, $agent_rights)) {
                 $l1 = true;
             }
