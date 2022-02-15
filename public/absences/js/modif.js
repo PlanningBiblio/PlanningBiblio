@@ -617,7 +617,6 @@ function update_validation_statuses() {
     url: url('absence-statuses'),
     data: { ids: perso_ids, module: 'absence', id: absence_id },
     dataType: "json",
-    //async: false,
     success: function(result){
       if (result.adminN1) {
         $('select[name="valide"]').append('<option value="2">Acceptée (En attente de validation hiérarchique)</option>');

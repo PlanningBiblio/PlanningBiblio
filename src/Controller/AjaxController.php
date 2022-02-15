@@ -24,15 +24,23 @@ class AjaxController extends BaseController
     public function agentsBySites(Request $request)
     {
         $sites = json_decode($request->get('sites'));
-        $db = new \db();
-        $db->select2("personnel", "id, nom, prenom, sites", array("supprime"=>0,"id"=>"<>2"), "order by nom,prenom");
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('holiday')
+            ->getManagedFor($_SESSION['login_id']);
+
         $agents = array();
-        foreach ($db->result as $agent) {
-            if ($agent['id'] == $_SESSION['login_id'] ||
-                $this->config('Multisites-nombre') == 1 ||
-               ($sites && $agent['sites'] != '' && array_intersect($sites, json_decode(html_entity_decode($agent['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true)))) {
-                array_push($agents, $agent);
+        foreach ($managed as $m) {
+            if (!$m->inOneOfSites($sites) && $m->id() != $_SESSION['login_id']) {
+                continue;
             }
+
+            $agents[] = array(
+                'id'        => $m->id(),
+                'nom'       => $m->nom(),
+                'prenom'    => $m->prenom(),
+                'sites'     => $m->sites(),
+            );
         }
         return $this->json($agents);
     }
@@ -310,15 +318,11 @@ class AjaxController extends BaseController
       }
 
       // Check if logged in user is admin
-      if ($type == 'absence') {
-        $c = new \absences();
-        $roles = $c->roles($perso_ids[0], false);
-        $result['admin'] = ($roles[0] or $roles[1]);
-      } else {
-        $c = new \conges();
-        $roles = $c->roles($perso_ids[0], false);
-        $result['admin'] = ($roles[0] or $roles[1]);
-      }
+      list($adminN1, $adminN2) = $this->entityManager
+          ->getRepository(Agent::class)
+          ->setModule($type == 'absence' ? 'absence' : 'holiday')
+          ->getValidationLevelFor($_SESSION['login_id'], $perso_ids[0]);
+      $result['admin'] = ($adminN1 or $adminN2);
 
       $result = json_encode($result);
 

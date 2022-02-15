@@ -27,6 +27,7 @@ require_once __DIR__."/../absences/class.absences.php";
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Model\Agent;
 
 class conges
 {
