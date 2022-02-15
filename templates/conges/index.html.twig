@@ -52,7 +52,7 @@
                       <option value='0'>Tous</option>
                     {% endif %}
 
-                    {% for a in agents_menu %}
+                    {% for a in managed %}
                       {% if a.id == perso_id %}
                         <option value='{{ a.id }}' selected="selected">{{ a.nom }} {{ a.prenom }}</option>
                       {% else %}

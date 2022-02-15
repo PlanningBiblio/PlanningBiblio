@@ -28,8 +28,8 @@
           <input type='hidden' id='conges-recup' value='{{ conges_recuperations }}' />
           <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
           <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
-          <input type='hidden' name="multisites" id='multisites' value='{{ multisites }}' />
-	  <input type='hidden' id='agents-multiples' value='{{ agents_multiples }}' />
+          <input type='hidden' name="multisites" id='multisites' value="{{ config('Multisites-nombre') > 1 ? 1 : 0  }}" />
+          <input type='hidden' id='agents-multiples' value='{{ agents_multiples }}' />
 
           <table class='tableauFiches'>
             <tr>
@@ -68,7 +68,7 @@
             <tr>
               <td>&nbsp;</td>
               <td>
-                  {% if multisites %}
+                  {% if config('Multisites-nombre') > 1 %}
                     Sites:
                      {% for s in sites_select %}
                       <input type="checkbox" checked="checked" name="selected_sites" value="{{s.id}}" id="site_{{s.id}}" /><label for="site_{{s.id}}">{{ s.name }}</label>
@@ -111,7 +111,7 @@
             <tr>
               <td>Date de début : </td>
               <td>
-                <input type='text' name='debut' id='debut' value='{{ debut }}' class='datepicker googleCalendarTrigger checkdate' />&nbsp;
+                <input type='text' name='debut' id='debut' value='' class='datepicker googleCalendarTrigger checkdate' />&nbsp;
                 {% if conges_recuperations and conges_demi_journee %}
                   <select name="start_halfday" style="display: none;" class="checkdate">
                     <option value="fullday">Journée complète</option>
@@ -134,7 +134,7 @@
             <tr>
               <td>Date de fin : </td>
               <td>
-                <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker googleCalendarTrigger checkdate' />&nbsp;
+                <input type='text' name='fin' id='fin' value=''  class='datepicker googleCalendarTrigger checkdate' />&nbsp;
                 {% if conges_recuperations and conges_demi_journee %}
                   <select name="end_halfday" style="display: none;" class="checkdate">
                     <option value="fullday">Journée complète</option>
@@ -311,7 +311,7 @@
           </tr>
 
           {% if config('Conges-validation') %}
-              <tr>
+              <tr id="validation-line">
                 <td>
                   <label class='intitule'>État </label>
                 </td>
