@@ -1298,7 +1298,8 @@ class absences
 
         foreach ($agents as $agent) {
             foreach ($agent['responsables'] as $elem) {
-                if ($elem['notification'] and !in_array($agents_tous[$elem['responsable']]['mail'], $destinataires)) {
+                if (($elem['notification_level1'] or $elem['notification_level2'])
+                    and !in_array($agents_tous[$elem['responsable']]['mail'], $destinataires)) {
                     $destinataires[] = $agents_tous[$elem['responsable']]['mail'];
                 }
             }
