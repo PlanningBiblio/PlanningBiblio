@@ -14,11 +14,13 @@ Description :
 Fichier permettant de modifier et valider les demandes de récupérations des samedis (formulaire)
 */
 
+use App\Model\Agent;
+
 include_once "class.conges.php";
 include_once "include/horaires.php";
 
 // Initialisation des variables
-
+$entityManager = $GLOBALS['entityManager'];
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 
 $c=new conges();
@@ -28,9 +30,10 @@ $recup=$c->elements[0];
 $perso_id=$recup['perso_id'];
 
 // Droits d'administration niveau 1 et niveau 2
-$c = new conges();
-$roles = $c->roles($perso_id, true);
-list($adminN1, $adminN2) = $roles;
+list($adminN1, $adminN2) = $entityManager
+    ->getRepository(Agent::class)
+    ->setModule('holiday')
+    ->getValidationLevelFor($_SESSION['login_id'], $perso_id);
 
 
 // Initialisation des variables (suite)
@@ -42,7 +45,7 @@ $date2Alpha=dateAlpha($date2);
 $saisie=dateFr($recup['saisie'], true);
 
 $selectAccept = array(null, null, null, null);
-$validation = null;
+$validation = 'Demandé';
 $displayRefus = "none";
 
 

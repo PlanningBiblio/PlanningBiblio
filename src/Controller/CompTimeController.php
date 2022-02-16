@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Model\Agent;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,10 +28,14 @@ class CompTimeController extends BaseController
         $perso_id = $request->get('perso_id');
 
         $this->droits = $GLOBALS['droits'];
-        $this->setAdminPermissions();
         $lang = $GLOBALS['lang'];
 
-        if ($this->admin and $perso_id === null) {
+        list($admin, $adminN2) = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('holiday', false)
+            ->getValidationLevelFor($_SESSION['login_id']);
+
+        if ($admin and $perso_id === null) {
             $perso_id = isset($_SESSION['oups']['recup_perso_id'])
                 ? $_SESSION['oups']['recup_perso_id']
                 : $_SESSION['login_id'];
@@ -58,7 +63,7 @@ class CompTimeController extends BaseController
 
         // Search for existing comp-times
         $c = new \conges();
-        $c->admin = $this->admin;
+        $c->admin = $admin;
         $c->debut = $debut;
         $c->fin = $fin;
         if ($perso_id != 0) {
@@ -68,22 +73,12 @@ class CompTimeController extends BaseController
         $recup = $c->elements;
 
         // Search agents
-        $agents = array();
-        if ($this->admin) {
-            $helper = new HolidayHelper();
-            $agents = $helper->getManagedAgent($this->adminN2, false);
-        }
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('holiday')
+            ->getManagedFor($_SESSION['login_id']);
 
-        if (empty($agents[$_SESSION['login_id']])) {
-            $p = new \personnel();
-            $p->fetchById($_SESSION['login_id']);
-            $agents[$_SESSION['login_id']] = $p->elements[0];
-        }
-
-        usort($agents, 'cmp_nom_prenom');
-
-        // List ids of agents to keep:
-        $perso_ids = array_column($agents, 'id');
+        $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
 
         // School year
         $annees = array();
@@ -95,7 +90,7 @@ class CompTimeController extends BaseController
             'years'     => $annees,
             'year_from' => $annee,
             'year_to'   => $annee + 1,
-            'admin'     => $this->admin,
+            'admin'     => $admin,
         ));
 
         $comptimes = array();
@@ -166,9 +161,8 @@ class CompTimeController extends BaseController
         ));
 
         $categories = array();
-        foreach ($agents as $index => $elem) {
-            $categories[$elem['id']] = $elem['categorie'];
-            $agents[$index]['name'] = nom($elem['id']);
+        foreach ($managed as $index => $m) {
+            $categories[$m->id()] = $m->categorie();
         }
 
         $this->templateParams(array(
@@ -182,30 +176,12 @@ class CompTimeController extends BaseController
             'recup_uneparjour'          => $this->config('Recup-Uneparjour') ? 'true' : 'false',
             'perso_id'                  => $perso_id,
             'perso_name'                => nom($perso_id, 'prenom nom'),
-            'agents'                    => $agents,
+            'managed'                   => $managed,
             'categories'                => json_encode($categories, JSON_HEX_APOS),
             'label'                     => ($this->config('Recup-DeuxSamedis')) ? "Date (1<sup>er</sup> samedi)" : "Date",
             'saturday'                  => "Date (2<sup>ème</sup> samedi) (optionel)",
         ));
 
         return $this->output('comp_time/index.html.twig');
-    }
-
-    private function setAdminPermissions()
-    {
-        // If can validate level 1: admin = true.
-        // If can validate level 2: adminN2 = true.
-        $this->admin = false;
-        $this->adminN2 = false;
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((400+$i), $this->droits)) {
-                $this->admin = true;
-            }
-            if (in_array((600+$i), $this->droits)) {
-                $this->admin = true;
-                $this->adminN2 = true;
-                break;
-            }
-        }
     }
 }
