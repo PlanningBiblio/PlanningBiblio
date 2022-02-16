@@ -262,7 +262,6 @@ class WorkingHourController extends BaseController
      */
     public function add(Request $request, Session $session) {
         // Initialisation des variables
-        $copy = $request->get('copy');
         $retour = $request->get('retour');
         $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
@@ -466,6 +465,11 @@ class WorkingHourController extends BaseController
             $exception_id = $id;
         }
 
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('workinghour')
+            ->getManagedFor($_SESSION['login_id']);
+
         // The followings variables are only used when $cle is defined, but we need to initialize them to avoid errors.
         $selected1 = false;
         $selected2 = false;
@@ -523,6 +527,7 @@ class WorkingHourController extends BaseController
                 "remplace"           => $remplace,
                 "retour"             => $retour,
                 "request_exception"  => $request_exception,
+                "managed"            => $managed,
                 "temps"              => $temps,
                 "thisNbSemaine"      => $thisNbSemaine,
                 "selected1"          => $selected1,
