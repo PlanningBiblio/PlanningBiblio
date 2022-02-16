@@ -1285,3 +1285,7 @@ div.presents-absents {
 .framework-timepicker {
   width: 85px;
 }
+
+.ejsmenu2.active {
+	color: #ffca20;
+}
