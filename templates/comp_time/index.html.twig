@@ -186,11 +186,11 @@
               {% else %}
                 <option value='0'>Tous</option>
               {% endif %}
-              {% for agent in agents %}
-                {% if agent.id == perso_id %}
-                  <option value="{{ agent.id }}" selected>{{ agent.nom }} {{ agent.prenom }}</option>
+              {% for m in managed %}
+                {% if m.id == perso_id %}
+                  <option value="{{ m.id }}" selected>{{ m.nom }} {{ m.prenom }}</option>
                 {% else %}
-                  <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                  <option value="{{ m.id }}">{{ m.nom }} {{ m.prenom }}</option>
                 {% endif %}
               {% endfor %}
             </select>
@@ -266,11 +266,11 @@
                 <td>
                   <select id='agent' name='agent' style='text-align:center;'>
                     <option value=''>&nbsp;</option>
-                    {% for elem in agents %}
-                      {% if elem.id == perso_id %}
-                        <option value="{{ elem.id }}" selected>{{ elem.name }}</option>
+                    {% for m in managed %}
+                      {% if m.id == perso_id %}
+                        <option value="{{ m.id }}" selected>{{ m.nom }} {{ m.prenom | first }}</option>
                       {% else %}
-                        <option value="{{ elem.id }}">{{ elem.name }}</option>
+                        <option value="{{ m.id }}">{{ m.nom }} {{ m.prenom | first }}</option>
                       {% endif %}
                     {% endfor %}
                   </select>
