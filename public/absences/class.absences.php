@@ -1288,47 +1288,31 @@ class absences
 
         switch ($notifications) {
 
-      // Si l'absence est ajoutée ou modifiée sans validation, envoi de la notification aux responsables enregistrés dans la page Validations / Notifications
+      // If the absence / holiday / compt-time is asked,
+      // send notification to manager having notification_level1
       case 1:
       case 2:
 
         foreach ($agents as $agent) {
             foreach ($agent['responsables'] as $elem) {
-                if (($elem['notification_level1'] or $elem['notification_level2'])
-                    and !in_array($agents_tous[$elem['responsable']]['mail'], $destinataires)) {
+                if (($elem['notification_level1'])) {
                     $destinataires[] = $agents_tous[$elem['responsable']]['mail'];
                 }
             }
         }
         break;
 
-      // Si l'absence est validée au niveau 1, envoi de la notification aux agents ayant le droit de validation niveau 2
-      // Droits de gestion des absences niveau 2 : 50x
+      // If the absence / holiday / compt-time is validated level 1,
+      // send notification to manager having notification_level2
       case 3:
 
-        // Si $droit == 1200, on recherche les responsables niveau 2 des planning de présence
-        if ($droit == 1200) {
-            $db = new db();
-            $db->select2('personnel', 'mail', array('droits' => 'LIKE%1201%'));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $destinataires[] = $elem['mail'];
-                }
-            }
-        } else {
-            // Si $droit != 1200, on recherche les responsables des absences (niveau 2)
-            foreach ($agents as $agent) {
-                $a = new absences();
-                $a->getResponsables($debut, $fin, $agent['id'], $droit);
-
-                foreach ($a->responsables as $elem) {
-                    if (!in_array($elem['mail'], $destinataires)) {
-                        $destinataires[] = $elem['mail'];
-                    }
+        foreach ($agents as $agent) {
+            foreach ($agent['responsables'] as $elem) {
+                if (($elem['notification_level2'])) {
+                    $destinataires[] = $agents_tous[$elem['responsable']]['mail'];
                 }
             }
         }
-
 
         break;
 
@@ -1343,7 +1327,7 @@ class absences
         break;
     }
 
-        $this->recipients = $destinataires;
+        $this->recipients = array_unique($destinataires);
     }
 
 
