@@ -19,6 +19,7 @@ include "class.conges.php";
 use App\Model\Agent;
 
 // Initialisation des variables
+$entityManager = $GLOBALS['entityManager'];
 $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_POST, "id", FILTER_SANITIZE_NUMBER_INT);
 $commentaires=trim(filter_input(INPUT_POST, "commentaires", FILTER_SANITIZE_STRING));
@@ -40,9 +41,10 @@ $recup=$c->elements[0];
 $perso_id=$recup['perso_id'];
 
 // Droits d'administration niveau 1 et niveau 2
-$c = new conges();
-$roles = $c->roles($perso_id);
-list($adminN1, $adminN2) = $roles;
+list($adminN1, $adminN2) = $entityManager
+    ->getRepository(Agent::class)
+    ->setModule('holiday')
+    ->getValidationLevelFor($_SESSION['login_id'], $perso_id);
 
 
 // Modification des heures
