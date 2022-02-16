@@ -276,54 +276,6 @@ class HolidayHelper extends BaseHelper
         return $this->config('conges-hours-per-day');
     }
 
-    public function getManagedAgent($adminN2, $deleted_agents = false)
-    {
-        $access_rights = $GLOBALS['droits'];
-
-        $agents = array();
-        $p=new \personnel();
-        $p->responsablesParAgent = true;
-        if ($deleted_agents) {
-            $p->supprime=array(0,1);
-        }
-        $p->fetch();
-        $agents=$p->elements;
-
-        $tmp = array();
-        foreach ($agents as $elem) {
-            if ($elem['id'] == $_SESSION['login_id']) {
-                $tmp[$elem['id']] = $elem;
-                continue;
-            }
-
-            if ($this->config('Multisites-nombre') == 1) {
-                $elem['sites'] = array(1);
-            }
-
-            if (is_array($elem['sites'])) {
-                foreach ($elem['sites'] as $site_agent) {
-                    if (in_array((400+$site_agent), $access_rights) or in_array((600+$site_agent), $access_rights)) {
-                        $tmp[$elem['id']] = $elem;
-                        continue 2;
-                    }
-                }
-            }
-        }
-        $agents = $tmp;
-
-        // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
-        if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
-            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
-            $managed = $logged_in->getManaged();
-            $managed_ids = array_map(function($m) { return $m->perso_id()->id(); }, $logged_in->getManaged());
-            $managed_ids[] = $_SESSION['login_id'];
-
-            $agents = $managed_ids;
-        }
-
-        return $agents;
-    }
-
     public function halfDayStartEndHours()
     {
         $agent = $this->data['agent'];
