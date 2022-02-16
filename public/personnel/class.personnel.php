@@ -107,7 +107,7 @@ class personnel
                 array('personnel', 'id'),
                 array('responsables', 'perso_id'),
                 array('id', 'nom', 'prenom', 'mail', 'mails_responsables', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics', 'check_hamac'),
-                array('responsable', 'notification_level1'),
+                array('responsable', 'notification_level1', 'notification_level2'),
                 $filter,
                 array(),
                 "ORDER BY $tri"
@@ -141,14 +141,22 @@ class personnel
         
                 if ($this->responsablesParAgent) {
                     // Ajout des responsables et notifications
-                    $result[$elem['id']]['responsables'] = array( array('responsable' => $elem['responsable'], 'notification_level1' =>$elem['notification_level1']));
+                    $result[$elem['id']]['responsables'] = array(array(
+                        'responsable' => $elem['responsable'],
+                        'notification_level1' => $elem['notification_level1'],
+                        'notification_level2' => $elem['notification_level2']
+                    ));
           
                     unset($result[$elem['id']]['responsable']);
                     unset($result[$elem['id']]['notification_level1']);
                 }
             } elseif ($this->responsablesParAgent) {
                 // Ajout des responsables et notifications
-                $result[$elem['id']]['responsables'][] = array('responsable' => $elem['responsable'], 'notification_level1' => $elem['notification_level1']);
+                $result[$elem['id']]['responsables'][] = array(
+                    'responsable' => $elem['responsable'],
+                    'notification_level1' => $elem['notification_level1'],
+                    'notification_level2' => $elem['notification_level2']
+                );
             }
         }
 
