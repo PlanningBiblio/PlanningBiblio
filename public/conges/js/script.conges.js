@@ -42,7 +42,6 @@ function currentCredits() {
     type: 'get',
     async: false,
     success: function(credits){
-      console.log(credits)
       $('#holiday_balance').text(credits.holiday_balance);
       $('#reliquat4').text(credits.holiday_balance);
       $('input[name="reliquat"]').val(credits.holiday_balance_decimal);
@@ -774,8 +773,6 @@ function update_validation_statuses() {
     perso_ids.push($(this).data('id'));
   });
 
-  absence_id = $('input[name="id"]').val();
-
   $('select[name="valide"] option[value="2"]').remove();
   $('select[name="valide"] option[value="-2"]').remove();
   $('select[name="valide"] option[value="1"]').remove();
@@ -784,7 +781,7 @@ function update_validation_statuses() {
 
   $.ajax({
     url: url('absence-statuses'),
-    data: { ids: perso_ids, module: 'holiday', id: absence_id },
+    data: { ids: perso_ids, module: 'holiday' },
     dataType: "json",
     success: function(result){
       if (result.adminN1) {
@@ -962,5 +959,11 @@ $(function(){
 
 $(document).ready(function() {
     updateAgentsListBySites();
-    affiche_perso_ul();
+
+    // Only check statuses dynamically
+    // at start for new holiday.
+    // Not for edition.
+    if ( $('input[name="id"]').length == 0) {
+        affiche_perso_ul();
+    }
 });

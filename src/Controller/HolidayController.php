@@ -335,7 +335,6 @@ class HolidayController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        // FIXME That seems redundant with the ajax update.
         if ($this->config('Conges-Validation-N2') && $data['valide_n1'] == 0) {
             $adminN2 = false;
         }
