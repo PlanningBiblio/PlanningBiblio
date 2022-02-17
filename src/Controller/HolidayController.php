@@ -331,6 +331,10 @@ class HolidayController extends BaseController
             ->setModule('holiday')
             ->getValidationLevelFor($_SESSION['login_id'], $perso_id);
 
+        if (!$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
+            return $this->output('access-denied.html.twig');
+        }
+
         if ($this->config('Conges-Validation-N2') && $data['valide_n1'] == 0) {
             $adminN2 = false;
         }
