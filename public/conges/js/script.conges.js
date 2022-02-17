@@ -962,4 +962,5 @@ $(function(){
 
 $(document).ready(function() {
     updateAgentsListBySites();
+    affiche_perso_ul();
 });
