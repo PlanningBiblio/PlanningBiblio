@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
+require_once(__DIR__ . '/../../public/conges/class.conges.php');
 
 class AbsenceController extends BaseController
 {
@@ -692,9 +693,16 @@ class AbsenceController extends BaseController
 
         $absence_valide_n1 = 0;
         if ($absence_id) {
-            $absence = new \absences();
-            $absence->fetchById($absence_id);
-            $absence_valide_n1 = $absence->elements['valide_n1'];
+            if ($module == 'absence') {
+                $absence = new \absences();
+                $absence->fetchById($absence_id);
+                $absence_valide_n1 = $absence->elements['valide_n1'];
+            } else {
+                $c = new \conges();
+                $c->id = $absence_id;
+                $c->fetch();
+                $absence_valide_n1 = $c->elements[0]['valide_n1'];
+            }
         }
 
         $adminN1 = true;
