@@ -265,7 +265,7 @@ class AgentRepository extends EntityRepository
             // will only check for agent sites
             if ($agent_id) {
                 $agent = $entityManager->find(Agent::class, $agent_id);
-                $sites = json_decode($agent->sites());
+                $sites = json_decode($agent->sites()) ?? array();
             }
         }
 
