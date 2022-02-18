@@ -35,6 +35,14 @@ list($adminN1, $adminN2) = $entityManager
     ->setModule('holiday')
     ->getValidationLevelFor($_SESSION['login_id'], $perso_id);
 
+// Prevent non manager to access other agents request.
+if (!$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
+    echo "<h3 style='text-align:center;'>Accès refusé</h3>\n";
+    echo "<p style='text-align:center;' >\n";
+    echo "<a href='javascript:history.back();'>Retour</a></p>\n";
+    include(__DIR__ . '/../include/footer.php');
+}
+
 
 // Initialisation des variables (suite)
 $agent=nom($recup['perso_id'], "prenom nom");
