@@ -745,6 +745,7 @@ class absences
 
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
+        $entityManager = $GLOBALS['entityManager'];
 
         $filter="";
         //	DB prefix
@@ -771,7 +772,6 @@ class absences
 
         // Don't look for teleworking absences if the position is compatible with
         if ($this->teleworking == false ) {
-            $entityManager = $GLOBALS['entityManager'];
             $absence_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
             $teleworking_reasons = array();
             foreach ($absence_reasons as $reason) {
@@ -788,6 +788,10 @@ class absences
 
         // Sort
         $sort=$sort?$sort:"`debut`,`fin`,`nom`,`prenom`";
+
+	if (is_numeric($agent) and $agent !=0) {
+            $filter.=" AND `{$dbprefix}personnel`.`id` = '$agent' ";
+	}
 
         //	Select All
         $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
