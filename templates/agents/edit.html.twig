@@ -264,7 +264,7 @@
           {% if id and ics %}
             <tr>
               <td style='padding-top: 20px;'>Agenda ICS Planning Biblio</td>
-              <td style='padding-top: 20px;' id='url-ics'><a href="{{ config('URL') }}{{ ics }}">{{ config('URL') }}{{ ics }}</a></td>
+              <td style='padding-top: 20px;' id='url-ics'><a href="{{ config('URL') }}{{ ics | raw }}">{{ config('URL') }}{{ ics | raw }}</a></td>
             </tr>
 
             {% if ICS_Code %}

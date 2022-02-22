@@ -536,7 +536,7 @@ function resetICSURL(id, CSRFToken, nom){
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       success: function(result){
-        $("#url-ics").text(result.url);
+        $("#url-ics").html("<a href='"+result.url+"'>"+result.url+"</a>");
         CJInfo("L'URL du calendrier a été réinitialisée avec succès","success");
       },
       error: function(result){
