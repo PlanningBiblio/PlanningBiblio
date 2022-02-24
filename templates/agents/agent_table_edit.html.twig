@@ -81,7 +81,7 @@
       <select name='heuresHebdo' style='width:405px'  title='Choisissez un nombre d&apos;heures ou un pourcentage. Si vous Choisissez un pourcentage, le nombre d&apos;heures sera calculé à partir des plannings de pr&eacute;sence'>
         <option value='0'>&nbsp;</option>
         {% for i in 1..100 %}
-          {% if i ~ '%' == heures_hebdo and '%' in heures_hebdo %}
+          {% if i == heures_hebdo and '%' in heures_hebdo %}
             <option selected="selected" value='{{ i }}%'>{{ i }}%</option>
           {% else %}
             <option value='{{ i }}%'>{{ i }}%</option>
