@@ -1057,6 +1057,104 @@ class AgentController extends BaseController
         }
     }
 
+    private function changeAgentPassword(Request $request, $agent_id, $password) {
+
+        $agent = $this->entityManager->find(Agent::class, $agent_id);
+
+        $response = new Response();
+        if (!$agent) {
+            $response->setContent('Agent not found');
+            $response->setStatusCode(404);
+
+            return $response;
+        }
+
+        if (!$password) {
+            $response->setContent('Missing password');
+            $response->setStatusCode(400);
+
+            return $response;
+        }
+
+        if (!$this->check_password_complexity($password)) {
+            $response->setContent('Password too weak');
+            $response->setStatusCode(400);
+
+            return $response;
+        }
+
+        $password = password_hash($password, PASSWORD_BCRYPT);
+        $agent->password($password);
+        $this->entityManager->persist($agent);
+        $this->entityManager->flush();
+
+        $response->setContent('Password successfully changed');
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/ajax/change-own-password", name="ajax.changeownpassword", methods={"POST"})
+     */
+    public function changeOwnPassword(Request $request)
+    {
+        $agent_id = $_SESSION['login_id'];
+        $password = $request->get('password');
+
+        return $this->changeAgentPassword($request, $agent_id, $password);
+    }
+
+    /**
+     * @Route("/ajax/change-password", name="ajax.changepassword", methods={"POST"})
+     */
+    public function changePassword(Request $request)
+    {
+        $agent_id = $request->get('id');
+        $password = $request->get('password');
+
+        return $this->changeAgentPassword($request, $agent_id, $password);
+    }
+
+   /**
+     * @Route("/ajax/check-password", name="ajax.checkpassword", methods={"POST"})
+     */
+    public function check_password(Request $request)
+    {
+        $password = $request->get('password');
+        $response = new Response();
+        $ok = $this->check_password_complexity($password);
+        $response->setContent($ok ? "ok" : "not ok");
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
+    // Returns true if the password is complex enough, and false otherwise
+    private function check_password_complexity($password)
+    {
+        if (strlen($password) < 8) {
+            return false;
+        }
+        if (!preg_match("#[0-9]+#", $password)) {
+            return false;
+        }
+        if (!preg_match("#[A-Z]+#", $password)) {
+            return false;
+        }
+        if (!preg_match("#[a-z]+#", $password)) {
+            return false;
+        }
+        # Special chars list come from this list: https://owasp.org/www-community/password-special-characters
+        $chars = array('!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~');
+        foreach($chars as $char) {
+            if (strpos($password, $char) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"})
      */

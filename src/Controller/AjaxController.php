@@ -140,41 +140,6 @@ class AjaxController extends BaseController
         return $this->json($data);
     }
 
-    /**
-     * @Route("/ajax/change-password", name="ajax.changepassword", methods={"POST"})
-     */
-    public function changePassword(Request $request)
-    {
-        $agent_id = $request->get('id');
-        $password = $request->get('password');
-
-        $agent = $this->entityManager->find(Agent::class, $agent_id);
-
-        $response = new Response();
-        if (!$agent) {
-            $response->setContent('Agent not found');
-            $response->setStatusCode(404);
-
-            return $response;
-        }
-
-        if (!$password) {
-            $response->setContent('Missing password');
-            $response->setStatusCode(400);
-
-            return $response;
-        }
-
-        $password = password_hash($password, PASSWORD_BCRYPT);
-        $agent->password($password);
-        $this->entityManager->persist($agent);
-        $this->entityManager->flush();
-
-        $response->setContent('Password successfully changed');
-        $response->setStatusCode(200);
-
-        return $response;
-    }
 
     /**
      * @Route("/ajax/holiday-absence-control", name="ajax.holiday.absence.control", methods={"GET"})
