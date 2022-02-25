@@ -207,7 +207,7 @@ class Agent extends PLBEntity
         $config = $GLOBALS['config'];
 
         if (!$config['PlanningHebdo']) {
-            return array('temps' => json_decode($this->temps()));
+            return array('temps' => json_decode($this->temps(), true));
         }
 
         $working_hours = new \planningHebdo();
