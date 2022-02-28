@@ -194,12 +194,25 @@ class AbsenceController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('absence')
+            ->getManagedFor($_SESSION['login_id']);
+
+        // If logged in agent has the permission
+        // to "create absences for other agents",
+        // add all agents.
+        if (in_array(9, $this->droits)) {
+            $managed = $this->entityManager->getRepository(Agent::class)
+            ->getAgentsList();
+        }
+
         $this->setCommonTemplateParams();
 
         $this->templateParams(array(
             'reasons'               => $this->availablesReasons(),
             'reason_types'          => $this->reasonTypes(),
-            'agents'                => $this->getAgents(),
+            'agents'                => $managed,
             'fullday_checked'       => $this->config('Absences-journeeEntiere'),
         ));
 
@@ -269,23 +282,6 @@ class AbsenceController extends BaseController
         $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
 
-        $adminN1 = false;
-        $adminN2 = false;
-
-        // Si droit de gestion des absences N1 ou N2 sur l'un des sites : accès à cette page autorisé
-        // Les droits d'administration des absences seront ajustés ensuite
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((200+$i), $this->droits)) {
-                $adminN1 = true;
-            }
-            if (in_array((500+$i), $this->droits)) {
-                $adminN2 = true;
-            }
-        }
-
-        $agents_multiples = ($adminN1 or $adminN2 or in_array(9, $this->droits));
-
-
         $a = new \absences();
         $a->fetchById($id);
 
@@ -297,8 +293,22 @@ class AbsenceController extends BaseController
         $absence['motif'] = html_entity_decode($a->elements['motif'], ENT_QUOTES);
         $absence['motif_autre'] = html_entity_decode($a->elements['motif_autre'], ENT_QUOTES);
         $absence['commentaires'] = html_entity_decode($a->elements['commentaires'], ENT_QUOTES);
-
         $agents=$a->elements['agents'];
+
+        $adminN1 = true;
+        $adminN2 = true;
+        foreach ($agents as $agent) {
+            list($N1, $N2) = $this->entityManager
+                ->getRepository(Agent::class)
+                ->setModule('absence')
+                ->getValidationLevelFor($_SESSION['login_id'], $agent['perso_id']);
+
+            $adminN1 = $N1 === false ? $N1 : $adminN1;
+            $adminN2 = $N2 === false ? $N2 : $adminN2;
+        }
+
+        $agents_multiples = ($adminN1 or $adminN2 or in_array(9, $this->droits));
+
         $debutSQL=filter_var($a->elements['debut'], FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
         $finSQL=filter_var($a->elements['fin'], FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
         $valide=filter_var($a->elements['valide_n2'], FILTER_SANITIZE_NUMBER_INT);
@@ -371,51 +381,21 @@ class AbsenceController extends BaseController
             $acces=false;
         }
 
-        // Multisites, ne pas afficher les absences des agents d'un site non géré
-        if ($this->config('Multisites-nombre') > 1) {
-            // $sites_agents comprend l'ensemble des sites en lien avec les agents concernés par cette modification d'absence
-            $sites_agents=array();
-            foreach ($agents as $elem) {
-                if (is_array($elem['sites'])) {
-                    foreach ($elem['sites'] as $site) {
-                        if (!in_array($site, $sites_agents)) {
-                            $sites_agents[]=$site;
-                        }
-                    }
-                }
-            }
-
-            if (!$this->config('Absences-notifications-agent-par-agent')) {
-                $adminN1 = false;
-            }
-            $adminN2 = false;
-
-            foreach ($sites_agents as $site) {
-                if (!$this->config('Absences-notifications-agent-par-agent')) {
-                    if (in_array((200+$site), $this->droits)) {
-                        $adminN1 = true;
-                    }
-                }
-                if (in_array((500+$site), $this->droits)) {
-                    $adminN2 = true;
-                }
-            }
-
-            if (!($adminN1 or $adminN2) and !$acces) {
-                $acces = false;
-            }
-        }
-
         if ($acces && $this->config('Absences-validation') == 0) {
             $absence['editable'] = true;
         }
 
-        // Liste des agents
-        $agents_tous = array();
-        if ($agents_multiples) {
-            $db_perso=new \db();
-            $db_perso->select2("personnel", "*", array("supprime"=>0,"id"=>"<>2"), "order by nom,prenom");
-            $agents_tous=$db_perso->result?$db_perso->result:array();
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('absence')
+            ->getManagedFor($_SESSION['login_id']);
+
+        // If logged in agent has the permission
+        // to "create absences for other agents",
+        // add all agents.
+        if (in_array(9, $this->droits)) {
+            $managed = $this->entityManager->getRepository(Agent::class)
+            ->getAgentsList();
         }
 
         $display_autre = in_array(strtolower($absence['motif']), array("autre","other")) ? 1 : 0;
@@ -429,7 +409,7 @@ class AbsenceController extends BaseController
             'adminN2'               => $adminN2 ? 1 : 0,
             'agents_multiples'      => $agents_multiples,
             'agents'                => $agents,
-            'agents_tous'           => $agents_tous,
+            'agents_tous'           => $managed,
             'absence'               => $absence,
             'debut'                 => $debut,
             'fin'                   => $fin,
@@ -964,29 +944,6 @@ class AbsenceController extends BaseController
                 break;
             }
         }
-    }
-
-    private function getAgents()
-    {
-        $agents = array();
-        if ($this->agents_multiples) {
-            $db = new \db();
-            $db->select2('personnel', 'id', array('supprime' => '0', 'id' => '<>2'));
-            $results = $db->result;
-            $perso_ids = array();
-            foreach ($results as $r) {
-                $perso_ids[] = $r['id'];
-            }
-            $perso_ids = $this->filterAgents($perso_ids);
-
-            $in = implode(',', $perso_ids);
-
-            $db_perso = new \db();
-            $db_perso->select2('personnel', null, array('supprime' => '0', 'id' => "IN$in"), 'ORDER BY nom,prenom');
-            $agents = $db_perso->result ? $db_perso->result : array();
-        }
-
-        return $agents;
     }
 
     private function availablesReasons()
