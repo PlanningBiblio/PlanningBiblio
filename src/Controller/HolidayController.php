@@ -706,6 +706,10 @@ class HolidayController extends BaseController
         $perso_id = $request->get('perso_id');
         $is_recover = $request->get('is_recover');
 
+        if (!$perso_id) {
+            return $this->json(array('error' => true));
+        }
+
         $c = new \conges();
         $recover = $c->calculCreditRecup($perso_id, $debut);
 
