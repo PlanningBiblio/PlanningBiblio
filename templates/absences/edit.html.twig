@@ -308,13 +308,13 @@
                     Demandée
                     <input type='hidden' name='valide' value='0' />
                   {% elseif absence.status == 'ACCEPTED_N1' %}
-                    Acceptée (En attente de validation hiérarchique)
+                    En attente de validation hiérarchique
                     <input type='hidden' name='valide' value='2' />
                   {% elseif absence.status == 'ACCEPTED_N2' %}
                     Acceptée
                     <input type='hidden' name='valide' value='1' />
                   {% elseif absence.status == 'REJECTED_N1' %}
-                    Refusée (En attente de validation hiérarchique)
+                    En attente de validation hiérarchique
                     <input type='hidden' name='valide' value='-2' />
                   {% elseif absence.status == 'REJECTED_N2' %}
                     Refusée
