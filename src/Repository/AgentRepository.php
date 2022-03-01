@@ -208,7 +208,11 @@ class AgentRepository extends EntityRepository
                 return $m->perso_id();
             }, $loggedin->getManaged());
 
-            $managed[] = $loggedin;
+            // Prevent adding logged in twice.
+            if (!$loggedin->isManagerOf(array($loggedin->id()))) {
+                $managed[] = $loggedin;
+            }
+
             usort($managed, function($a, $b) { return ($a->nom() < $b->nom()) ? -1 : 1; });
 
             return $managed;
