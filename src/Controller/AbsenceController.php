@@ -347,20 +347,14 @@ class AbsenceController extends BaseController
             $admin=false;
         }
 
-        // Si l'option "Absences-notifications-agent-par-agent" est cochée, adapte la variable $adminN1 en fonction des agents de l'absence. S'ils sont tous gérés, $adminN1 = true, sinon, $adminN1 = false
-        if ($this->config('Absences-notifications-agent-par-agent') and $adminN1) {
-            $agent_ids = array_map(function($a) { return $a['perso_id'];}, $agents);
-            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
-            $adminN1 = $logged_in->isManagerOf($agent_ids);
-        }
-
         // Sécurité
         // Droit 6 = modification de ses propres absences
         // Les admins ont toujours accès à cette page
         $acces = ($adminN1 or $adminN2);
         if (!$acces) {
             // Les non admin ayant le droits de modifier leurs absences ont accès si l'absence les concerne
-            $acces = (in_array(6, $this->droits) and $absence['perso_id'] == $_SESSION['login_id']) ? true : false;
+            $agent_ids = array_map(function($a) { return $a['perso_id'];}, $agents);
+            $acces = (in_array(6, $this->droits) and in_array($_SESSION['login_id'], $agent_ids)) ? true : false;
         }
         // Si config Absences-adminSeulement, seuls les admins ont accès à cette page
         if ($this->config('Absences-adminSeulement') and !($adminN1 or $adminN2)) {
