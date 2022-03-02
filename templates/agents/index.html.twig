@@ -90,7 +90,9 @@
   {% if rights21 %}
     <select name='action' id='action' style='width:200px;'>
       <option value=''></option>
-      <option value='edit'>Modifier la sélection</option>
+      {% if not config('Planook') %}
+        <option value='edit'>Modifier la sélection</option>
+      {% endif %}
       <option value='delete'>Supprimer la sélection</option>
     </select>
     <input type='button' value='Valider' class='ui-button' style='margin-left:20px;' onclick='agent_list()'/>

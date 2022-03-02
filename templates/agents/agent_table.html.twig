@@ -23,25 +23,27 @@
     </td>
   </tr>
 
-  <tr>
-    <td>Statut :</td>
-    <td style='white-space:nowrap'>{{ statut | striptags | raw }}</td>
-  </tr>
+  {% if not config('Planook') %}
+    <tr>
+      <td>Statut :</td>
+      <td style='white-space:nowrap'>{{ statut | striptags | raw }}</td>
+    </tr>
 
-  <tr>
-    <td>Contrat :</td>
-    <td>{{ categorie }}</td>
-  </tr>
+    <tr>
+      <td>Contrat :</td>
+      <td>{{ categorie }}</td>
+    </tr>
 
-  <tr>
-    <td>Service de rattachement:</td>
-    <td style='white-space:nowrap'>{{ service | striptags | raw }}</td>
-  </tr>
+    <tr>
+      <td>Service de rattachement:</td>
+      <td style='white-space:nowrap'>{{ service | striptags | raw }}</td>
+    </tr>
 
-  <tr>
-    <td>Heures de service public par semaine:</td>
-    <td>{{ heuresHebdo_label }}</td>
-  </tr>
+    <tr>
+      <td>Heures de service public par semaine:</td>
+      <td>{{ heuresHebdo_label }}</td>
+    </tr>
+  {% endif %}
 
   <tr>
     <td>Heures de travail par semaine:</td>
@@ -87,30 +89,32 @@
     <td>{{ depart }}</td>
   </tr>
 
-  <tr>
-    <td>Matricule :</td>
-    <td>{{ matricule }}</td>
-  </tr>
-
-  <tr>
-    <td>E-mails des responsables :</td>
-    <td>
-      {% for r in mailsResponsables %}
-        <a href='mailto:{{ r|trim }}'>{{ r|trim }}</a><br/>
-      {% endfor %}
-    </td>
-  </tr>
-
-  <tr style='vertical-align:top;'>
-    <td>Informations :</td>
-    <td>{{ informations_str }}</td>
-  </tr>
-
-  {% if recup_agent > 1 %}
-    <tr style='vertical-align:top;'>
-      <td>Récupération :</td>
-      <td>{{ recup_str }}</td>
+  {% if not config('Planook') %}
+    <tr>
+      <td>Matricule :</td>
+      <td>{{ matricule }}</td>
     </tr>
+
+    <tr>
+      <td>E-mails des responsables :</td>
+      <td>
+        {% for r in mailsResponsables %}
+          <a href='mailto:{{ r|trim }}'>{{ r|trim }}</a><br/>
+        {% endfor %}
+      </td>
+    </tr>
+
+    <tr style='vertical-align:top;'>
+      <td>Informations :</td>
+      <td>{{ informations_str }}</td>
+    </tr>
+
+    {% if recup_agent > 1 %}
+      <tr style='vertical-align:top;'>
+        <td>Récupération :</td>
+        <td>{{ recup_str }}</td>
+      </tr>
+    {% endif %}
   {% endif %}
 
   {% if id %}

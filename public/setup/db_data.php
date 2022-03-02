@@ -232,6 +232,9 @@ $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES
   ('CAS-Debug', 'boolean', '0', 'CAS','50', 'Activer le débogage pour CAS. Créé un fichier \"cas_debug.txt\" dans le dossier \"[TEMP]\"');";
 
+// Planook configuration is made to hide some information in order to propose a light version of Planno
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Planook', 'hidden', '0', 'Version Lite Planook',' Divers','','0');";
+
 //	Planning Hebdo
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES
   ('PlanningHebdo', 'boolean', '0', 'Heures de présence','40', 'Utiliser le module \“Planning Hebdo\”. Ce module permet d\'enregistrer plusieurs horaires de présence par agent en définissant des périodes d\'utilisation. (Incompatible avec l\'option EDTSamedi)');";
@@ -383,7 +386,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('10','0','Absences','/absence',NULL),
   ('10','10','Voir les absences','/absence',NULL),
   ('10','20','Ajouter une absence','/absence/add',NULL),
-  ('10','30','Informations','/absences/info',NULL),
+  ('10','30','Informations','/absences/info', 'config!=Plannok'),
   ('15','0','Congés','/holiday/index','config=Conges-Enable'),
   ('15','10','Liste des cong&eacute;s','/holiday/index','config=Conges-Enable'),
   ('15','15','Liste des r&eacute;cup&eacute;rations','/holiday/index?recup=1','config=Conges-Enable;Conges-Recuperations'),
@@ -395,25 +398,25 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('20','0','Agenda','/calendar',NULL),
   ('30','0','Planning','/index',NULL),
   ('30','90','Agents volants','planning/volants/index.php','config=Planning-agents-volants'),
-  ('40','0','Statistiques','/statistics',NULL),
-  ('40','10','Feuille de temps','/statistics/time',NULL),
-  ('40','20','Par agent','/statistics/agent',NULL),
-  ('40','30','Par poste','statistiques/postes.php',NULL),
-  ('40','40','Par poste (Synth&egrave;se)','/statistics/positionsummary',NULL),
-  ('40','50','Postes de renfort','/statistics/supportposition',NULL),
-  ('40','24','Par service','/statistics/service',NULL),
-  ('40','60','Samedis','/statistics/saturday',NULL),
-  ('40','70','Absences','/statistics/absence',NULL),
-  ('40','80','Pr&eacute;sents / absents','/statistics/attendeesmissing',NULL),
-  ('40','26','Par statut','/statistics/status',NULL),
+  ('40','0','Statistiques','/statistics', 'config!=Planook'),
+  ('40','10','Feuille de temps','/statistics/time', 'config!=Planook'),
+  ('40','20','Par agent','/statistics/agent', 'config!=Planook'),
+  ('40','30','Par poste','statistiques/postes.php', 'config!=Planook'),
+  ('40','40','Par poste (Synth&egrave;se)','/statistics/positionsummary', 'config!=Planook'),
+  ('40','50','Postes de renfort','/statistics/supportposition', 'config!=Planook'),
+  ('40','24','Par service','/statistics/service', 'config!=Planook'),
+  ('40','60','Samedis','/statistics/saturday', 'config!=Planook'),
+  ('40','70','Absences','/statistics/absence', 'config!=Planook'),
+  ('40','80','Présents / absents','/statistics/attendeesmissing', 'config!=Planook'),
+  ('40','26','Par statut','/statistics/status', 'config!=Planook'),
   ('50','0','Administration','/admin',NULL),
-  ('50','10','Informations','/admin/info',NULL),
-  ('50','20','Les activit&eacute;s','/skill',NULL),
+  ('50','10','Informations','/admin/info', 'config!=Planook'),
+  ('50','20','Les activités','/skill', 'config!=Planook'),
   ('50','30','Les agents','/agent',NULL),
   ('50','40','Les postes','/position',NULL),
   ('50','50','Les mod&egrave;les','/model',NULL),
   ('50','60','Les tableaux','/framework',NULL),
-  ('50','70','Jours de fermeture','/closingday',NULL),
+  ('50','70','Jours de fermeture','/closingday', 'config!=Planook'),
   ('50','75','Heures de présence','/workinghour','config=PlanningHebdo'),
   ('50','77','Notifications / Validations','/notification','config=Absences-notifications-agent-par-agent'),
   ('50','80','Configuration','/config',NULL),
