@@ -11,4 +11,7 @@ $sql[] = "UPDATE `{$dbprefix}menu` SET `condition`='config!=Planook' where url='
 $sql[] = "UPDATE `{$dbprefix}menu` SET `condition`='config!=Planook' where url='/absences/info';";
 
 // Hide skills menu
-$sql[] = "UPDATE `{$dbprefix}menu` SET `condition`='config!=Planook' where url='/skill';";
+$sql[] = "UPDATE `{$dbprefix}menu` SET `titre`='Les activités', `condition`='config!=Planook' where url='/skill';";
+
+// Remove HTML entities
+$sql[] = "UPDATE `{$dbprefix}menu` SET `titre`='Présents / absents' where url='/statistics/attendeesmissing';";

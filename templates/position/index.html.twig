@@ -24,9 +24,9 @@
       <tr>
         <th class='dataTableNoSort tableSort'>&nbsp;</th>
         <th class="tableSort">Nom du poste</th>
-          {% if multisite > 1 %}
-            <th class="tableSort">Site</th>
-          {% endif %}
+        {% if multisite > 1 %}
+          <th class="tableSort">Site</th>
+        {% endif %}
         {% if not config('Planook') %}
           <th class="tableSort">Etage</th>
           <th class="tableSort">Activités</th>
