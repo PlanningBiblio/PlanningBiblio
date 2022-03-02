@@ -856,7 +856,7 @@ class AgentController extends BaseController
         }
 
         $droits = $droits ? $droits : array();
-        $postes = $postes ? json_encode(explode(",", $postes)) : null;
+        $postes = $postes ? json_encode(explode(",", $postes)) : '[]';
         $sites = $sites ? json_encode($sites) : null;
         $temps = $temps ? json_encode($temps) : null;
 
