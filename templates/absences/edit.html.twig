@@ -180,7 +180,7 @@
                         {% endif %}
                       {% endfor %}
                     </select>
-                  {% if admin %}
+                  {% if admin and not config('Planook') %}
                     <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer;' id='add-motif-button'/>
                   {% endif %}
                 </td>
