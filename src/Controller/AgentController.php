@@ -847,7 +847,7 @@ class AgentController extends BaseController
         $dernierLundi = array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
 
         $droits = $droits ? $droits : array();
-        $postes = $postes ? json_encode(explode(",", $postes)) : null;
+        $postes = $postes ? json_encode(explode(",", $postes)) : '[]';
         $sites = $sites ? json_encode($sites) : null;
         $temps = $temps ? json_encode($temps) : null;
 
