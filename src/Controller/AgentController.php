@@ -615,7 +615,11 @@ class AgentController extends BaseController
             }
         }
 
+        // List of excluded rights with Planook configuration
+        $planook_excluded_rights = array(6, 9, 701, 3, 17, 1301, 23, 1001, 901, 801);
+
         $rights = array();
+
         foreach ($groupes as $elem) {
             // N'affiche pas les droits d'accès à la configuration (réservée au compte admin)
             if ($elem['groupe_id'] == 20) {
@@ -623,12 +627,23 @@ class AgentController extends BaseController
             }
 
             // N'affiche pas les droits de gérer les congés si le module n'est pas activé
-            if (!$this->config('Conges-Enable') and in_array($elem['groupe_id'], array(401, 601))) {
+            if (!$this->config('Conges-Enable') and in_array($elem['groupe_id'], array(25, 401, 601))) {
                 continue;
             }
 
             // N'affiche pas les droits de gérer les plannings de présence si le module n'est pas activé
-            if (!$this->config('PlanningHebdo') and $elem['groupe_id'] == 24) {
+            if (!$this->config('PlanningHebdo') and in_array($elem['groupe_id'], array(1101, 1201))) {
+                continue;
+            }
+
+            // N'affiche pas le droit gestion des absences niveau 2 si la config Abences-validation est désactivé
+            // on doit garder le niveau 1 pour permettre aux administrateurs la saisie d'asbences pour d'autres agents)
+            if (!$this->config('Absences-validation') and $elem['groupe_id'] == 501 ) {
+                continue;
+            }
+
+            // With Planook configuration, some rights are not displayed
+            if ($this->config('Planook') and in_array($elem['groupe_id'], $planook_excluded_rights)) {
                 continue;
             }
 
@@ -652,7 +667,18 @@ class AgentController extends BaseController
             $rights_sites = array();
             foreach ($groupes_sites as $elem) {
                 // N'affiche pas les droits de gérer les congés si le module n'est pas activé
-                if (!$this->config('Conges-Enable') and in_array($elem['groupe_id'], array(401, 601))) {
+                if (!$this->config('Conges-Enable') and in_array($elem['groupe_id'], array(25, 401, 601))) {
+                    continue;
+                }
+
+                // N'affiche pas le droit gestion des absences niveau 2 si la config Abences-validation est désactivé
+                // on doit garder le niveau 1 pour permettre aux administrateurs la saisie d'asbences pour d'autres agents)
+                if (!$this->config('Absences-validation') and $elem['groupe_id'] == 501 ) {
+                    continue;
+                }
+
+                // With Planook configuration, some rights are not displayed
+                if ($this->config('Planook') and in_array($elem['groupe_id'], $planook_excluded_rights)) {
                     continue;
                 }
 
