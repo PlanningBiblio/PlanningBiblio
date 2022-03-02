@@ -47,6 +47,17 @@ class menu
                         }
                     }
                 }
+
+                if (substr($elem['condition'], 0, 8)=="config!=") {
+                    $tmp = substr($elem['condition'], 8);
+                    $values = explode(";", $tmp);
+                    foreach ($values as $value) {
+                        if (!empty($GLOBALS['config'][$value])) {
+                            continue 2;
+                        }
+                    }
+                }
+
             }
             if (substr($elem['url'], 0, 1) == '/') {
                 $url = substr($elem['url'], 1);

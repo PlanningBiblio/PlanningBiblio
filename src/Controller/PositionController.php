@@ -207,6 +207,8 @@ class PositionController extends BaseController
 
         $nbSites = $this->config('Multisites-nombre');
         $multisite = array();
+        $selectedSites = array();
+
         if ($nbSites>1){
             for ($i = 1; $i<= $nbSites; $i++) {
                 $selected = $site==$i?"selected='selected'":null;
@@ -267,14 +269,14 @@ class PositionController extends BaseController
 
             $activites = $request->get('activites', []);
             $categories = $request->get('categories', []);
-            $site = $request->get('site');
-            $bloquant = $request->get('bloquant');
-            $statistiques = $request->get('statistiques');
-            $teleworking = $request->get('teleworking') ?? 0;
+            $site = $request->get('site', 1);
+            $bloquant = $request->get('bloquant', 1);
+            $statistiques = $request->get('statistiques', 1);
+            $teleworking = $request->get('teleworking', 0);
             $etage = $request->get('etage',"");
             $groupe = $request->get('groupe', "");
             $groupe_id = $request->get('group_id', "");
-            $obligatoire = $request->get('obligatoire');
+            $obligatoire = $request->get('obligatoire', 'Obligatoire');
             $site = $request->get('site', "");
 
             if (!$id){
