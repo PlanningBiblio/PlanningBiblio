@@ -25,55 +25,57 @@
     </td>
   </tr>
 
-  <tr>
-    <td>Statut :</td>
-    <td style='white-space:nowrap'>
-      <select name='statut' id='statut' style='width:405px'>
-        <option value=''>Aucun</option>
-          {%for elem in statuts %}
-            {% if elem.valeur == statut %}
-              <option selected="selected" value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
+  {% if not config('Planook') %}
+    <tr>
+      <td>Statut :</td>
+      <td style='white-space:nowrap'>
+        <select name='statut' id='statut' style='width:405px'>
+          <option value=''>Aucun</option>
+            {%for elem in statuts %}
+              {% if elem.valeur == statut %}
+                <option selected="selected" value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
+              {% else %}
+                <option value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
+              {% endif %}
+            {% endfor %}
+        </select>
+        <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer; margin-left:4px;' id='add-statut-button'></span>
+      </td>
+    </tr>
+
+    <tr>
+      <td>Contrat :</td>
+      <td>
+        <select name='categorie' id='categorie' style='width:405px'>
+          <option value=''>Aucun</option>
+          {%for elem in contrats %}
+            {% if elem == categorie %}
+              <option selected="selected" value='{{ elem }}'>{{ elem }}</option>
             {% else %}
-              <option value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
+              <option value='{{ elem }}'>{{ elem }}</option>
             {% endif %}
           {% endfor %}
-      </select>
-      <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer; margin-left:4px;' id='add-statut-button'></span>
-    </td>
-  </tr>
+        </select>
+      <td>
+    </tr>
 
-  <tr>
-    <td>Contrat :</td>
-    <td>
-      <select name='categorie' id='categorie' style='width:405px'>
-        <option value=''>Aucun</option>
-        {%for elem in contrats %}
-          {% if elem == categorie %}
-            <option selected="selected" value='{{ elem }}'>{{ elem }}</option>
-          {% else %}
-            <option value='{{ elem }}'>{{ elem }}</option>
-          {% endif %}
-        {% endfor %}
-      </select>
-    <td>
-  </tr>
-
-  <tr>
-    <td>Service de rattachement:</td>
-    <td style='white-space:nowrap'>
-      <select name='service' id='service' style='width:405px'>
-        <option value=''>Aucun</option>
-        {%for elem in services %}
-          {% if elem.valeur == service %}
-            <option selected="selected" value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
-          {% else %}
-            <option value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
-          {% endif %}
-        {% endfor %}
-      </select>
-      <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer; margin-left:4px;' id='add-service-button'></span>
-    </td>
-  </tr>
+    <tr>
+      <td>Service de rattachement:</td>
+      <td style='white-space:nowrap'>
+        <select name='service' id='service' style='width:405px'>
+          <option value=''>Aucun</option>
+          {%for elem in services %}
+            {% if elem.valeur == service %}
+              <option selected="selected" value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
+            {% else %}
+              <option value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer; margin-left:4px;' id='add-service-button'></span>
+      </td>
+    </tr>
+  {% endif %}
 
   <tr>
     <td>Heures de service public par semaine:</td>
@@ -169,49 +171,51 @@
     </td>
   </tr>
 
-  <tr>
-    <td>Matricule :</td>
-    <td><input type='text' value='{{ matricule }}' name='matricule' style='width:400px' /></td>
-  </tr>
+  {% if not config('Planook') %}
+    <tr>
+      <td>Matricule :</td>
+      <td><input type='text' value='{{ matricule }}' name='matricule' style='width:400px' /></td>
+    </tr>
 
-  <tr>
-    <td>E-mails des responsables :
-      {% for r in mailsResponsables %}
-        <br/><a href='mailto:{{ r|trim }}' style='margin-left:30px;'>{{ r|trim }}</a>
-      {% endfor %}
-    </td>
-    <td>
-      <textarea name='mailsResponsables' style='width:400px' cols='10' rows='4'>{{ mailsResp_joined }}</textarea>
-    </td>
-  </tr>
-
-  <tr style='vertical-align:top;'>
-    <td>Informations :</td>
-    <td>
-      <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ informations|raw }}</textarea>
-    </td>
-  </tr>
-
-  {% if recup_agent > 1 %}
-    <tr style='vertical-align:top;'>
-      <td>Récupération :</td>
+    <tr>
+      <td>E-mails des responsables :
+        {% for r in mailsResponsables %}
+          <br/><a href='mailto:{{ r|trim }}' style='margin-left:30px;'>{{ r|trim }}</a>
+        {% endfor %}
+      </td>
       <td>
-        {% if recup_agent == 1 %}
-          <textarea name='recup' style='width:400px' cols='10' rows='4'>{{ recup }}</textarea>
-        {% elseif recup_agent == 2 %}
-          <select name='recup' style='width:400px'>
-            <option value=''>&nbsp;</option>
-            {% for elem in recupAgents %}
-              {% if elem == recup %}
-                <option selected="selected" value='{{ elem }}' $selected>{{ elem }}</option>
-              {% else %}
-                <option value='{{ elem }}' $selected>{{ elem }}</option>
-              {% endif %}
-            {% endfor %}
-          </select>
-        {% endif %}
+        <textarea name='mailsResponsables' style='width:400px' cols='10' rows='4'>{{ mailsResp_joined }}</textarea>
       </td>
     </tr>
+
+    <tr style='vertical-align:top;'>
+      <td>Informations :</td>
+      <td>
+        <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ informations|raw }}</textarea>
+      </td>
+    </tr>
+
+    {% if recup_agent > 1 %}
+      <tr style='vertical-align:top;'>
+        <td>Récupération :</td>
+        <td>
+          {% if recup_agent == 1 %}
+            <textarea name='recup' style='width:400px' cols='10' rows='4'>{{ recup }}</textarea>
+          {% elseif recup_agent == 2 %}
+            <select name='recup' style='width:400px'>
+              <option value=''>&nbsp;</option>
+              {% for elem in recupAgents %}
+                {% if elem == recup %}
+                  <option selected="selected" value='{{ elem }}' $selected>{{ elem }}</option>
+                {% else %}
+                  <option value='{{ elem }}' $selected>{{ elem }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          {% endif %}
+        </td>
+      </tr>
+    {% endif %}
   {% endif %}
 
   {% if id %}
