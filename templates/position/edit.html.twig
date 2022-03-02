@@ -61,81 +61,86 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>Groupe:</td>
-                  <td style='white-space: nowrap;'>
-                    <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
-                      <option value=''>&nbsp;</option>
-                      {% for group in groups %}
-                        {% if groupe == group.id %}
-                          <option value='{{ group.id }}' selected=selected  >{{ group.valeur }}</option>
-                        {% else %}
-                          <option value='{{ group.id }}'>{{ group.valeur }}</option>
-                        {% endif %}
-                      {% endfor %}
-                    </select>
-                    <span class='pl-icon pl-icon-add' title='Ajouter' id='add-group-button' style='cursor:pointer; margin-left:4px;'></span>
-                  </td>
-                </tr>
-                <tr>
-                  <td style='padding-top:20px;'>Obligatoire / renfort :</td>
-                  <td style='padding-top:20px;'>
-                    <input type='radio' name='obligatoire' value='Obligatoire' {{ obligatoire }}/> Obligatoire
-                    <input type='radio' name='obligatoire' value='Renfort' {{ renfort }}/> Renfort
-                  </td>
-                </tr>
-                <tr>
-                  <td>Bloquant :</td>
-                  <td>
-                    <input type='radio' name='bloquant' value='1' {{ bloq1 }}/> Oui
-                    <input type='radio' name='bloquant' value='0' {{ bloq2 }}/> Non
-                  </td>
-                </tr>
-                <tr>
-                  <td>Statistiques :</td>
-                  <td>
-                    <input type='radio' name='statistiques' value='1' {{ stat1 }}/> Oui
-                    <input type='radio' name='statistiques' value='0' {{ stat2 }}/> Non
-                  </td>
-                </tr>
-                <tr>
-                  <td>Compatible télétravail :</td>
-                  <td>
-                    <input type='radio' name='teleworking' value='1' {{ teleworking1 }}/> Oui
-                    <input type='radio' name='teleworking' value='0' {{ teleworking2 }}/> Non
-                  </td>
+                  {% if not config('Planook') %}
+                    <td>Groupe:</td>
+                    <td style='white-space: nowrap;'>
+                      <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
+                        <option value=''>&nbsp;</option>
+                        {% for group in groups %}
+                          {% if groupe == group.id %}
+                            <option value='{{ group.id }}' selected=selected  >{{ group.valeur }}</option>
+                          {% else %}
+                            <option value='{{ group.id }}'>{{ group.valeur }}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
+                      <span class='pl-icon pl-icon-add' title='Ajouter' id='add-group-button' style='cursor:pointer; margin-left:4px;'></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style='padding-top:20px;'>Obligatoire / renfort :</td>
+                    <td style='padding-top:20px;'>
+                      <input type='radio' name='obligatoire' value='Obligatoire' {{ obligatoire }}/> Obligatoire
+                      <input type='radio' name='obligatoire' value='Renfort' {{ renfort }}/> Renfort
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Bloquant :</td>
+                    <td>
+                      <input type='radio' name='bloquant' value='1' {{ bloq1 }}/> Oui
+                      <input type='radio' name='bloquant' value='0' {{ bloq2 }}/> Non
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Statistiques :</td>
+                    <td>
+                      <input type='radio' name='statistiques' value='1' {{ stat1 }}/> Oui
+                      <input type='radio' name='statistiques' value='0' {{ stat2 }}/> Non
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Compatible télétravail :</td>
+                    <td>
+                      <input type='radio' name='teleworking' value='1' {{ teleworking1 }}/> Oui
+                      <input type='radio' name='teleworking' value='0' {{ teleworking2 }}/> Non
+                    </td>
+                  {% endif %}
                 </tr>
               </table>
             </td>
-            <td>
-              <table>
-                <tr style='vertical-align:top;'>
-                  <td>Activités :</td>
-                  <td>
-                    {% for s in skillList %}
-                      {% if s.id in activites %}
-                        <input type='checkbox' name='activites[]' value='{{ s.id }}' checked=checked /> {{ s.nom | raw }}<br/>
-                      {% else %}
-                        <input type='checkbox' name='activites[]' value='{{ s.id }}' /> {{ s.nom | raw }}<br/>
-                      {% endif %}
-                    {% endfor %}
-                  </td>
-                </tr>
-                {% if categoriesList is iterable and not categoriesList is empty %}
+
+            {% if not config('Planook') %}
+              <td>
+                <table>
                   <tr style='vertical-align:top;'>
-                    <td style='padding-top:20px;'> Cat&eacute;gories<sup>*</sup> :</td>
-                    <td style='padding-top:26px;'>
-                      {% for c in categoriesList %}
-                        {% if c.id in categories %}
-                          <input type='checkbox' name='categories[]' value='{{ c.id }}' checked=checked /> {{ c.valeur | raw }}<br/>
+                    <td>Activités :</td>
+                    <td>
+                      {% for s in skillList %}
+                        {% if s.id in activites %}
+                          <input type='checkbox' name='activites[]' value='{{ s.id }}' checked=checked /> {{ s.nom | raw }}<br/>
                         {% else %}
-                          <input type='checkbox' name='categories[]' value='{{ c.id }}' /> {{ c.valeur | raw }}<br/>
+                          <input type='checkbox' name='activites[]' value='{{ s.id }}' /> {{ s.nom | raw }}<br/>
                         {% endif %}
                       {% endfor %}
                     </td>
                   </tr>
-                {% endif %}
-              </table>
-            </td>
+                  {% if categoriesList is iterable and not categoriesList is empty %}
+                    <tr style='vertical-align:top;'>
+                      <td style='padding-top:20px;'> Cat&eacute;gories<sup>*</sup> :</td>
+                      <td style='padding-top:26px;'>
+                        {% for c in categoriesList %}
+                          {% if c.id in categories %}
+                            <input type='checkbox' name='categories[]' value='{{ c.id }}' checked=checked /> {{ c.valeur | raw }}<br/>
+                          {% else %}
+                            <input type='checkbox' name='categories[]' value='{{ c.id }}' /> {{ c.valeur | raw }}<br/>
+                          {% endif %}
+                        {% endfor %}
+                      </td>
+                    </tr>
+                  {% endif %}
+                </table>
+              </td>
+            {% endif %}
           </tr>
           <tr>
             <td colspan='2' style='text-align:center;'><br/><br/>

@@ -126,7 +126,11 @@
   <div class='ui-tabs'>
     <ul>
       <li id="admin"><a href='#main'>Infos générales</a></li>
-      <li id="admin"><a href='#qualif'>Activités</a></li>
+
+      {% if not config('Planook') %}
+        <li id="admin"><a href='#qualif'>Activités</a></li>
+      {% endif %}
+
       <li id="admin"><a href='#temps' id='personnel-a-li3'>Heures de présence</a></li>
 
       {% if agendas_and_sync is defined %}
@@ -161,13 +165,15 @@
         {% endif %}
       </div>
 
-      <div id='qualif' style='margin-left:70px;display:none;padding-top:30px;'>
-        {% if can_manage_agent %}
-          {% include 'agents/skills_edit.html.twig' %}
-        {% else %}
-          {% include 'agents/skills.html.twig' %}
-        {% endif %}
-      </div>
+      {% if not config('Planook') %}
+        <div id='qualif' style='margin-left:70px;display:none;padding-top:30px;'>
+          {% if can_manage_agent %}
+            {% include 'agents/skills_edit.html.twig' %}
+          {% else %}
+            {% include 'agents/skills.html.twig' %}
+          {% endif %}
+        </div>
+      {% endif %}
 
       <div id='temps' style='display:none;padding-top:30px;'>
         {{ hours_tab | raw }}
