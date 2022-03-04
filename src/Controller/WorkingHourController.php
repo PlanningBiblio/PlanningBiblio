@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\PlanningBiblio\Helper\HourHelper;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -619,6 +621,12 @@ class WorkingHourController extends BaseController
         $post = $request->request->all();
         $msg = null;
         $msgType = null;
+
+        foreach ($post['temps'] as $day => $hours) {
+            foreach ($hours as $i => $hour) {
+                $post['temps'][$day][$i] = HourHelper::toHis($hour);
+            }
+        }
 
         if ($this->config('PlanningHebdo-PauseLibre')) {
             foreach ($post['breaktime'] as $index => $time) {
