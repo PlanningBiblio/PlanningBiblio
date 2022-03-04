@@ -1,7 +1,54 @@
 *** Unreleased ***
 - Enhancements
+Display disabled planno-break-timepickers in black
+Holiday: dynamically get current holiday credits (multi-agents form)
+Restrict absences list interval to a year maximum
+Allow edition of imported working hours
+Data purge capabilities
+Add a div with class=attendance to isolate attendance information on calendars
+Ability to change login in agent's form
+
 - Fixes
+Force json_decode to return array in getWorkingHoursOn
+Avoid comparison between H:i:s and H:i when checking the presence of an agent
+Don't get breaktime from personnel table when planning_hebdo is disabled
+Check if free breaktime is not empty in agent form
+Remove PHP Notice when fetching positions
+Remove HTML entities in column comment of absences list
+Correctly show percentage values in agents form
+Fix ICS link in agent profile
+Correctly set #selected_agent_id if only one agent selected
+Don't reload holiday form for multiple selection
+Use dependency injection instead of service container to get Notifeir into controllers
+rename working hours ACL
+Typo : Change "no model" message
+Check if free break is enable into workinghours controller
+Check defined array keys in workinghour table
+Remove html entities in read-only agents page
+Show sites on the read-only agents page
+Adjust JS function plHebdoMemePlanning to new timepicker widget
+Take halfday into account in holiday controller
+Fix the "Call For Help" mail function
+Absence documents: look for documents in all grouped absences
+Followup, don't reload holiday edition when changing agent
+Fix retrieving agent's credits in holiday form
+Relaod page when changing agent in holiday form (Not for mutliple agent)
+Fix redirection loop where CAS-ServiceURL is defined
+Always set absence hours like h:m:s
+Fix HTML entities in floors and groups dropdown menus
+Restore "All sites" option in working hours
+Fix display of html entities on information and absence information messages
+Initialize the widget calendar with the asked date when using the week view
+Don't apply compensatory time on... compensatory time
+
 - Plumbing
+Add tests on [GET] /ajax/holiday-credit (halfday enabled)
+Add unit tests on [POST] /holiday (halfday enabled)
+Add unit tests on [POST] /holiday (Hours and days)
+Set production environement
+Update Symfony version to 4.4
+Use url function for js calls/redirects
+Add a Planno notifier as available service container
 
 *** Version 21.10.00       (2021-11-19)   ***
 - Enhancements
