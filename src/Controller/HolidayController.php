@@ -8,6 +8,8 @@ use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\WeekPlanningHelper;
 use App\Model\AbsenceReason;
 
+use App\PlanningBiblio\Helper\HourHelper;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -299,10 +301,6 @@ class HolidayController extends BaseController
         $id = $request->get('id');
         $commentaires = $request->get('commentaires');
         $confirm = $request->get('confirm');
-        $debut = $request->get('debut');
-        $fin = $request->get('fin');
-        $hre_debut = $request->get('hre_debut');
-        $hre_fin = $request->get('hre_fin');
         $dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
 
@@ -758,12 +756,12 @@ class HolidayController extends BaseController
         // Initilisation des variables
         $debut =dateSQL($request->get('debut'));
         $fin =dateSQL($request->get('fin'));
-        $hre_debut = $request->get('hre_debut');
-        $hre_fin = $request->get('hre_fin');
         $start_halfday= $request->get('start_halfday');
         $end_halfday= $request->get('end_halfday');
         $perso_id = $request->get('perso_id');
         $is_recover = $request->get('is_recover');
+
+        list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
 
         $c = new \conges();
         $recover = $c->calculCreditRecup($perso_id, $debut);
@@ -836,8 +834,7 @@ class HolidayController extends BaseController
         $debutSQL = dateSQL($request->get('debut'));
         $finSQL = dateSQL($request->get('fin'));
         $is_recover = $request->get('is_recover');
-        $hre_debut = $request->get('hre_debut') ? $request->get('hre_debut') :"00:00:00";
-        $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
+        list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
         $refus = $request->get('refus');
         $valide = $request->get('valide');
@@ -990,8 +987,7 @@ class HolidayController extends BaseController
         $id = $request->get('id');
         $debut = $request->get('debut');
         $fin = $request->get('fin');
-        $hre_debut = $request->get('hre_debut');
-        $hre_fin = $request->get('hre_fin');
+        list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
         $fin = $fin ? $fin : $debut;
         $debutSQL=dateSQL($debut);
         $finSQL=dateSQL($fin);
