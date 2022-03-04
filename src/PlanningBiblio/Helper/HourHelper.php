@@ -28,16 +28,23 @@ class HourHelper extends BaseHelper
             $end = self::$end_default;
         }
 
-        if (!\DateTime::createFromFormat('H:i:s', $start)) {
-            $start_dt = \DateTime::createFromFormat('H:i', $start);
-            $start = $start_dt->format('H:i:s');
-        }
-
-        if (!\DateTime::createFromFormat('H:i:s', $end)) {
-            $end_dt = \DateTime::createFromFormat('H:i', $end);
-            $end = $end_dt->format('H:i:s');
-        }
+        $start = self::toHis($start);
+        $end = self::toHis($end);
 
         return array($start, $end);
+    }
+
+    public static function toHis($time)
+    {
+        if (!$time) {
+            return '';
+        }
+
+        if (!\DateTime::createFromFormat('H:i:s', $time)) {
+            $time_dt = \DateTime::createFromFormat('H:i', $time);
+            $time = $time_dt->format('H:i:s');
+        }
+
+        return $time;
     }
 }
