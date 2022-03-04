@@ -23,13 +23,15 @@ require_once "personnel/class.personnel.php";
 use App\Model\Agent;
 use App\Model\AbsenceReason;
 
+use App\PlanningBiblio\Helper\HourHelper;
+
+$request = $GLOBALS['request'];
+
 // Initialisation des variables
 $commentaires=trim(filter_input(INPUT_GET, "commentaires", FILTER_SANITIZE_STRING));
 $CSRFToken=trim(filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING));
 $debut=filter_input(INPUT_GET, "debut", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
 $fin=filter_input(INPUT_GET, "fin", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-$hre_debut=filter_input(INPUT_GET, 'hre_debut');
-$hre_fin=filter_input(INPUT_GET, 'hre_fin');
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 $motif=filter_input(INPUT_GET, "motif", FILTER_SANITIZE_STRING);
 $motif_autre=trim(filter_input(INPUT_GET, "motif_autre", FILTER_SANITIZE_STRING));
@@ -39,8 +41,7 @@ $rrule=filter_input(INPUT_GET, "rrule", FILTER_SANITIZE_STRING);
 $recurrenceModif=filter_input(INPUT_GET, "recurrence-modif", FILTER_SANITIZE_STRING);
 $baseurl = $config['URL'];
 
-$hre_debut = $hre_debut ? $hre_debut : '00:00:00';
-$hre_fin = $hre_fin ? $hre_fin : '23:59:59';
+list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
 
 // perso_ids est un tableau de 1 ou plusieurs ID d'agent. Complété même si l'absence ne concerne qu'une personne
 $perso_ids=$_GET['perso_ids'];

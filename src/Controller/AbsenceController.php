@@ -7,6 +7,8 @@ use App\Model\AbsenceDocument;
 use App\Model\Absence;
 use App\Model\Agent;
 
+use App\PlanningBiblio\Helper\HourHelper;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Response;
@@ -850,8 +852,6 @@ class AbsenceController extends BaseController
 
         $debut = $request->get('debut');
         $fin = $request->get('fin');
-        $hre_debut = $request->get('hre_debut');
-        $hre_fin = $request->get('hre_fin');
         $motif = $request->get('motif');
         $motif_autre = trim($request->get('motif_autre'));
         $commentaires = $request->get('commentaires');
@@ -859,14 +859,8 @@ class AbsenceController extends BaseController
         $rrule = $request->get('recurrence-hidden');
         $rcheckbox = $request->get('recurrence-checkbox');
         $valide = $request->get('valide');
-        $allday = $request->get('allday');
 
-        $hre_debut = !empty($hre_debut) ? $hre_debut : '00:00:00';
-        $hre_fin = !empty($hre_fin) ? $hre_fin : '23:59:59';
-
-        if (preg_match('/^(\d+):(\d+)$/', $hre_debut)) {
-            $hre_debut .= ':00';
-        }
+        list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
 
         if (preg_match('/^(\d+):(\d+)$/', $hre_fin)) {
             $hre_fin .= ':00';
