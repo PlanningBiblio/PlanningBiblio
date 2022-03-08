@@ -874,6 +874,8 @@ class HolidayController extends BaseController
 
         // Enregistrement du congés
         $data = $request->request->all();
+        $data['hre_debut'] = $hre_debut;
+        $data['hre_fin'] = $hre_fin;
 
         foreach ($perso_ids as $perso_id) {
 
