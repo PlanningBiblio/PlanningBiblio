@@ -273,7 +273,7 @@ class absences
             $a = new absences();
             $a->debut = $debut_sql;
             $a->fin = $fin_sql;
-            $a->perso_ids = $perso_ids;
+            $a->perso_ids = array($agent->id());
             $a->infoPlannings();
             $infosPlanning = $a->message;
 
