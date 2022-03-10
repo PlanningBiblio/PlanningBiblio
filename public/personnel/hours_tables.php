@@ -92,8 +92,10 @@ for ($j = 0; $j < $this->config('nb_semaine'); $j++) {
                 if (isset($temps[$i-1][4])) {
                     $site="Multisites-site".$temps[$i-1][4];
                     $site = isset($config[$site]) ? $config[$site] : null;
+
+                    $site = $temps[$i-1][4] == -1 ? 'Tout site' : $site;
                 }
-                $hours_tab .= "<td>$site</td>";
+                $hours_tab .= "<td>&nbsp;$site&nbsp;</td>";
             }
             $hours_tab .= "<td id='heures_{$j}_$i'></td>\n";
             $hours_tab .= "</tr>\n";
