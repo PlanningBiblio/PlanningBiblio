@@ -113,8 +113,8 @@ if ($db->result) {
             $tmp['nom'] = $staff_member->nom();
             $tmp['prenom'] = $staff_member->prenom();
             $tmp['mail'] = $staff_member->mail();
-            $tmp['mails_responsables'] = explode(';', $staff_member->mails_responsables());
-      
+            $tmp['mails_responsables'] = $staff_member->get_manager_emails();
+
             // Ajoute les destinaires pour les congés n'étant pas validés en N2 en fonction du paramètre $config['Conges-Rappels-N2']
             $tmp['destinaires'] = array();
       
