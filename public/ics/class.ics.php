@@ -169,6 +169,11 @@ class CJICS
 
         // Ne garde que les événements confirmés et occupés et rempli le tableau $iCalKeys
         $tmp=array();
+
+        // Isolate events that contain RECURRENCE-ID
+        // These events are exceptions to recurring events that have the same UID
+        $events_with_recurrence_id = array();
+
         foreach ($events as $elem) {
             // Add LAST-MODIFIED = Now, if this attribute doesn't exist (missing in Hamac)
             if (empty($elem['LAST-MODIFIED'])) {
@@ -177,6 +182,16 @@ class CJICS
             // Add STATUS = "CONFIRMED", if this attribute doesn't exist (missing in Hamac)
             if (empty($elem['STATUS'])) {
                 $elem['STATUS'] = "CONFIRMED";
+            }
+
+            // Isolate events that contain RECURRENCE-ID
+            if (!empty($elem['RECURRENCE-ID'])) {
+
+                // Store the dates for which we will create exceptions
+                $events_with_recurrence_id[$elem['UID']]['DATES'][] = $elem['RECURRENCE-ID'];
+
+                // Change the UID of the current event to differentiate it from the original event. If not, it will be ignored.
+                $elem['UID'] = $elem['UID'] . '_' . $elem['DTSTART'];
             }
 
             $key=$elem['UID']."_".$elem['DTSTART']."_".$elem['LAST-MODIFIED'];
@@ -188,6 +203,18 @@ class CJICS
             // Ne traite pas les événéments ayant le status X-MICROSOFT-CDO-INTENDEDSTATUS différent de BUSY (si le paramètre X-MICROSOFT-CDO-INTENDEDSTATUS existe)
             if (isset($elem['X-MICROSOFT-CDO-INTENDEDSTATUS']) and $elem['X-MICROSOFT-CDO-INTENDEDSTATUS'] != "BUSY") {
                 continue;
+            }
+
+            // Add exceptions to this event for dates referenced in the RECURRENCE-ID attribute of other events that have the same UID
+            if (!isset($elem['RECURRENCE-ID']) and array_key_exists($elem['UID'], $events_with_recurrence_id)) {
+
+                $dates = implode(',', $events_with_recurrence_id[$elem['UID']]['DATES']);
+
+                if (isset($elem['EXDATE'])) {
+                    $elem['EXDATE'] .= ',' . $dates;
+                } else {
+                    $elem['EXDATE'] = $dates;
+                }
             }
 
             // Exclusion des dates EXDATE (ics-parser ne le gère pas correctement)
