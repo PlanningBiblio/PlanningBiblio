@@ -1,7 +1,9 @@
 <?php
 
+    $version = '21.11.00.001';
+
     $file = __DIR__ . '/../public' . $_SERVER['REQUEST_URI'];
-    $file = str_replace('?version=21.10.00.000', '', $file);
+    $file = str_replace("?version=$version", '', $file);
 
     if (is_file($file)) {
         header('Content-Type: '.mime_content_type($file));
