@@ -205,15 +205,13 @@ class CJICS
                 continue;
             }
 
-            // Add exceptions to this event for dates referenced in the RECURRENCE-ID attribute of other events that have the same UID
+            // Ignore dates referenced in the RECURRENCE-ID attribute of other events that have the same UID
             if (!isset($elem['RECURRENCE-ID']) and array_key_exists($elem['UID'], $events_with_recurrence_id)) {
-
-                $dates = implode(',', $events_with_recurrence_id[$elem['UID']]['DATES']);
-
-                if (isset($elem['EXDATE'])) {
-                    $elem['EXDATE'] .= ',' . $dates;
-                } else {
-                    $elem['EXDATE'] = $dates;
+	        foreach ($events_with_recurrence_id[$elem['UID']]['DATES'] as $date) {
+                    $d = date("Ymd\THis", strtotime($date));
+                    if ($d == $elem['DTSTART_tz']) {
+                        continue 2;
+                    }
                 }
             }
 
