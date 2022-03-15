@@ -66,7 +66,6 @@ if (!$db->result) {
 if ($exception) {
     $db = new db();
     $db->select('planning_hebdo', 'debut, fin', "id = $exception");
-    $result = $db->result;
 
     $parent_start = $db->result[0]['debut'];
     $parent_end = $db->result[0]['fin'];
