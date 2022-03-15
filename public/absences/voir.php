@@ -31,8 +31,14 @@ $debut=filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
 $fin=filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
 
 
-$debut=$debut?$debut:(isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
-$fin=$fin?$fin:(isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);
+if (!$debut && !$fin) {
+    $debut = isset($_SESSION['oups']['absences_debut'])
+        ? $_SESSION['oups']['absences_debut']
+        : null;
+    $fin = isset($_SESSION['oups']['absences_fin'])
+        ? $_SESSION['oups']['absences_fin']
+        : null;
+}
 
 $p = new personnel();
 $p->supprime=array(0,1,2);
@@ -78,6 +84,12 @@ if ($reset) {
     $agents_supprimes=false;
 }
 
+// Default start & end
+if (!$debut) {
+    $debut = date('d/m/Y');
+    $fin = date('d/m/Y', strtotime('+1 year'));
+}
+
 $_SESSION['oups']['absences_debut']=$debut;
 $_SESSION['oups']['absences_fin']=$fin;
 $_SESSION['oups']['absences_perso_id']=$perso_id;
@@ -111,12 +123,12 @@ if ($admin or (!$config['Absences-adminSeulement'] and in_array(6, $droits))) {
     $sort="[[1],[2]]";
 }
 
-echo "<form name='form' method='get' action='index.php'>\n";
+echo "<form name='form' id='absencesListForm' method='get' action='index.php'>\n";
 echo "<input type='hidden' name='page' value='absences/voir.php' />\n";
 echo "<span style='float:left; vertical-align:top; margin-bottom:20px;'>\n";
 echo "<table class='tableauStandard'><tbody><tr>\n";
-echo "<td style='vertical-align:middle;'><label class='intitule'>Début :</label> <input type='text' name='debut' value='$debut' class='datepicker'/></td>\n";
-echo "<td style='vertical-align:middle;'><label class='intitule'>Fin :</label> <input type='text' name='fin' value='$fin'  class='datepicker'/></td>\n";
+echo "<td style='vertical-align:middle;'><label class='intitule'>Début :</label> <input type='text' name='debut' id='debut' value='$debut' class='datepicker'/></td>\n";
+echo "<td style='vertical-align:middle;'><label class='intitule'>Fin :</label> <input type='text' name='fin' id='fin' value='$fin'  class='datepicker'/></td>\n";
 
 if ($admin) {
     $p = new personnel();
