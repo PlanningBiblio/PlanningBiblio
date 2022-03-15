@@ -305,6 +305,9 @@ function plHebdoVerifForm(){
             message="Un planning est enregistré pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
           }
           message += "\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
+        } else if (result['out_of_range']) {
+          message = "Les dates de l'exception sont en dehors de la période du planning d'origine";
+          retour = 'false';
         } else {
           message="Vous avez déjà enregistré un planning pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
           +"\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
