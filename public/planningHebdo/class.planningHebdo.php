@@ -55,6 +55,19 @@ class planningHebdo
 
         $perso_id=array_key_exists("perso_id", $data)?$data["perso_id"]:$_SESSION['login_id'];
 
+        if ($data['exception']) {
+            $db = new db();
+            $db->select('planning_hebdo', 'debut, fin', "id = {$data['exception']}");
+
+            $parent_start = $db->result[0]['debut'];
+            $parent_end = $db->result[0]['fin'];
+
+            if ($data['debut'] < $parent_start or $data['fin'] > $parent_end) {
+                $this->error = true;
+                return;
+            }
+        }
+
         // Validation
         // Par défaut = 0, si $data['validation'] valide = login de l'agent logué, validation = date courante
 
