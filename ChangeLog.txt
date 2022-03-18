@@ -3,6 +3,63 @@
 - Fixes
 - Plumbing
 
+*** Version 21.10.01       (2022-03-18)   ***
+- Enhancements
+Ability to change login in agent's form
+Add a div with class=attendance to isolate attendance information on calendars
+Allow edition of imported working hours
+Restrict absences list interval to a year maximum
+Display disabled planno-break-timepickers in black
+
+- Fixes
+Don't apply compensatory time on... compensatory time
+Initialize the widget calendar with the asked date when using the week view
+Fix display of html entities on information and absence information messages
+Restore "All sites" option in working hours
+Fix HTML entities in floors and groups dropdown menus (position's form)
+Always set absence hours like h:m:s
+Fix redirection loop where CAS-ServiceURL is defined
+Relaod page when changing agent in holiday form (Not for mutliple agent)
+Fix retrieving agent's credits in holiday form
+Absence documents: look for documents in all grouped absences
+Fix the "Call For Help" mail function
+Take halfday into account in holiday controller
+Adjust JS function plHebdoMemePlanning to new timepicker widget
+Defined variables on WorkingHoursControlle
+Show sites on the read-only agents page
+Remove html entities in read-only agents page
+Check defined array keys in workinghour table
+Check if free break is enable into workinghours controller
+Typo : Change "no model" message
+rename working hours ACL
+Don't reload holiday form for multiple selection
+Correctly set #selected_agent_id if only one agent selected
+Holiday: dynamically get current holiday credits (multi-agents form)
+Fix ICS link in agent profile
+Remove HTML entities in column comment of absences list
+Remove PHP Notice when fetching positions
+Check if free breaktime is not empty in agent form
+Don't get breaktime from personnel table when planning_hebdo is disabled
+Avoid comparison between H:i:s and H:i when checking the presence of an agent
+Force json_decode to return array in getWorkingHoursOn
+convert serialized strings to json on personnel's table
+fix encoding issues on agents' name in calendar's dropdown menu
+Fix sending notifications of non-validated holidays
+Show all site in ready-only agents working hours tab
+Don't show all agents plannings on absence add notification
+Handle blocked ip address (lost on 21.10.xx)
+Fix error on free break calculation
+Agent account: show a range of 5 minutes when granularity if free
+Don't submit Times and lines forms for used framework
+ICS import: handle exception on recurring events with the recurrence-id attribute
+Prevent adding exception out of parent's date range
+
+- Plumbing
+Use url function for js calls/redirects
+Set production environement
+Add unit tests on [POST] /holiday (halfday enabled)
+Add tests on [GET] /ajax/holiday-credit (halfday enabled)
+
 *** Version 21.10.00       (2021-11-19)   ***
 - Enhancements
 Allow holiday for a few hours
