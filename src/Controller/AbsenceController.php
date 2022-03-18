@@ -27,8 +27,13 @@ class AbsenceController extends BaseController
         $reset = $request->get('reset');
         $droits = $GLOBALS['droits'];
 
-        $debut = $debut ? $debut : (isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
-        $fin = $fin ? $fin : (isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);
+        if (!$debut) {
+            $debut = $_SESSION['oups']['absences_debut'] ?? null;
+        }
+
+        if (!$fin) {
+            $fin = $_SESSION['oups']['absences_fin'] ?? null;
+        }
 
         $p = new \personnel();
         $p->supprime = array(0,1,2);
@@ -71,6 +76,15 @@ class AbsenceController extends BaseController
             $debut = null;
             $fin = null;
             $agents_supprimes = false;
+        }
+
+        // Default start & end
+        if (!$debut) {
+            $debut = date('d/m/Y');
+        }
+
+        if (!$fin) {
+            $fin = date('d/m/Y', strtotime(dateFr($debut) . ' +1 year'));
         }
 
         $_SESSION['oups']['absences_debut'] = $debut;
