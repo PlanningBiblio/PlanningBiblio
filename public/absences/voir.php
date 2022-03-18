@@ -31,13 +31,12 @@ $debut=filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
 $fin=filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
 
 
-if (!$debut && !$fin) {
-    $debut = isset($_SESSION['oups']['absences_debut'])
-        ? $_SESSION['oups']['absences_debut']
-        : null;
-    $fin = isset($_SESSION['oups']['absences_fin'])
-        ? $_SESSION['oups']['absences_fin']
-        : null;
+if (!$debut) {
+    $debut = $_SESSION['oups']['absences_debut'] ?? null;
+}
+
+if (!$fin) {
+    $fin = $_SESSION['oups']['absences_fin'] ?? null;
 }
 
 $p = new personnel();
@@ -87,7 +86,10 @@ if ($reset) {
 // Default start & end
 if (!$debut) {
     $debut = date('d/m/Y');
-    $fin = date('d/m/Y', strtotime('+1 year'));
+}
+
+if (!$fin) {
+    $fin = date('d/m/Y', strtotime(dateFr($debut) . ' +1 year'));
 }
 
 $_SESSION['oups']['absences_debut']=$debut;
