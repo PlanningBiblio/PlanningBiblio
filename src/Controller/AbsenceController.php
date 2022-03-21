@@ -188,9 +188,9 @@ class AbsenceController extends BaseController
             ->setModule('absence', false)
             ->getValidationLevelFor($_SESSION['login_id']);
 
-        $this->agents_multiples = ($this->admin or in_array(9, $this->droits));
+        $this->agents_multiples = (($this->admin or $this->adminN2) or in_array(9, $this->droits));
 
-        if ($this->config('Absences-adminSeulement') and !$this->admin) {
+        if ($this->config('Absences-adminSeulement') and !($this->admin or $this->adminN2)) {
             return $this->output('access-denied.html.twig');
         }
 
