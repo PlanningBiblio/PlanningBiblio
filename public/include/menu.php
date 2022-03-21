@@ -82,7 +82,8 @@ echo "<tr id='topmenu'>\n";
 echo "<td style='text-align:center;' class='menu_td'>\n";
 echo "<ul class='menu_ul'>\n";
 foreach ($keys as $key) {
-    $active = (in_array($page, ['planning/poste/index.php', 'planning/poste/semaine.php']) and $menu[$key][0]['titre'] == 'Planning') ? 'active' : null;
+    $active = (in_array($page, ['planning/poste/index.php', 'planning/poste/semaine.php', 'planning/volants/index.php']) and $menu[$key][0]['titre'] == 'Planning') ? 'active' : null;
+    $active = (in_array($page, ['conges/recup_pose.php', 'conges/infos.php', 'conges/credits.php']) and $menu[$key][0]['titre'] == 'Congés') ? 'active' : $active;
     $active = (strstr($page, 'statistiques') and $menu[$key][0]['titre'] == 'Statistiques') ? 'active' : $active;
     echo "<li onmousemove='pop(zlien[$key],$(this))' class='menu_li'><a href='{$menu[$key][0]['url']}' class='ejsmenu2 $active'>{$menu[$key][0]['titre']}</a></li>\n";
 }

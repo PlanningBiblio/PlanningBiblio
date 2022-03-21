@@ -51,7 +51,7 @@
             <ul class='menu_ul'>
                 {% for entry in menu_entries %}
                     <li onmousemove='pop(zlien[{{ entry.key }}],$(this))' class='menu_li'>
-                    <a href='{{ asset(entry.url) }}' class='ejsmenu2 {% if entry.url in app.request.uri %} active {% endif %}'>{{ entry.title|raw}}</a></li>
+                    <a href='{{ asset(entry.url) }}' class='ejsmenu2 {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %}'>{{ entry.title|raw}}</a></li>
                 {% endfor %}
             </ul>
           </td>
