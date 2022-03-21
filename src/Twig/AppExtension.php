@@ -25,6 +25,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('config', [$this, 'getConfig']),
             new TwigFunction('siteName', [$this, 'siteName']),
             new TwigFunction('userCan', [$this, 'userCan']),
+            new TwigFunction('menuIsActive', [$this, 'menuIsActive']),
         ];
     }
 
@@ -78,5 +79,37 @@ class AppExtension extends AbstractExtension
         }
 
         return $config[$key];
+    }
+
+    public function menuIsActive($menu, $requested_url)
+    {
+        if(strpos($requested_url, $menu) !== false){
+            return true;
+        }
+
+        // Handle specfic admin menu
+        if ($menu == 'admin') {
+            $admin_pages = array(
+                'skill', 'agent', 'position',
+                'model', 'framework', 'closingday',
+                'workinghour', 'config', 'notification');
+
+            foreach ($admin_pages as $page) {
+                if(strpos($requested_url, $page) !== false){
+                    return true;
+                }
+            }
+        }
+
+        if ($menu == 'holiday/index') {
+            if (strpos($requested_url, 'holiday') !== false) {
+                return true;
+            }
+            if (strpos($requested_url, 'comp-time') !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
