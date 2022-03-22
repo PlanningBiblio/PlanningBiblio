@@ -330,6 +330,12 @@ class AbsenceController extends BaseController
             $absence['editable'] = true;
         }
 
+        // Prevent non admin to edit
+        // own absence wit other agents
+        if (!$admin and count($agents) > 1 and !in_array(9, $this->droits)) {
+            $absence['editable'] = false;
+        }
+
         $absence['status'] = 'ASKED';
         $absence['status_editable'] = ($adminN1 or $adminN2) ? true : false;
         if ($valide == 0 && $valideN1 > 0) {
