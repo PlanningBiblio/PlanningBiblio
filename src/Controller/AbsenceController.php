@@ -688,6 +688,10 @@ class AbsenceController extends BaseController
         $module = $request->get('module');
         $absence_id = $request->get('id');
 
+        if (!$agent_ids) {
+            return $this->json(array('adminN1' => false, 'adminN2' => false));
+        }
+
         $absence_valide_n1 = 0;
         if ($absence_id) {
             if ($module == 'absence') {
