@@ -192,6 +192,14 @@ class AbsenceController extends BaseController
             ->getAgentsList();
         }
 
+        $agent_preselection = $this->config('Absences-agent-preselection');
+
+        // If logged is not admin,
+        // force him to be pre-selected.
+        if (!$this->admin and !$this->adminN2) {
+            $agent_preselection = 1;
+        }
+
         $this->setCommonTemplateParams();
 
         $this->templateParams(array(
@@ -199,6 +207,7 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'agents'                => $managed,
             'fullday_checked'       => $this->config('Absences-journeeEntiere'),
+            'agent_preselection'    => $agent_preselection,
         ));
 
         return $this->output('absences/add.html.twig');
@@ -996,7 +1005,6 @@ class AbsenceController extends BaseController
     private function setCommonTemplateParams()
     {
         $this->templateParams(array(
-            'agent_preselection'    => $this->config('Absences-agent-preselection'),
             'absences_tous'         => $this->config('Absences-tous'),
             'absences_validation'   => $this->config('Absences-validation'),
             'CSRFToken'             => $GLOBALS['CSRFSession'],
