@@ -780,6 +780,7 @@ class absences
         //	Select All
         $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
       ."`{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`sites` AS `sites`, "
+      ."`{$dbprefix}personnel`.`service` AS `service`, "
       ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
       ."`{$dbprefix}absences`.`fin` AS `fin`, "
       ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
@@ -837,6 +838,8 @@ class absences
                     continue;
                 }
 
+                $services = array();
+
                 // Ajoute des infos sur les autres agents
                 if ($groupe) {
                     // Pour ne plus afficher les membres du groupe par la suite
@@ -855,6 +858,10 @@ class absences
                             if ($absdocs) {
                                 $elem['absdocs'] = array_merge($absdocs, $elem['absdocs']);
                             }
+
+                            if (!empty($elem2['service'])) {
+                                $services[] = html_entity_decode($elem2['service']);
+                            }
                         }
                     }
                     $elem['perso_ids']=$perso_ids;
@@ -863,7 +870,14 @@ class absences
                 } else {
                     $elem['perso_ids'][]=$elem['perso_id'];
                     $elem['agents'][]=$elem['nom']." ".$elem['prenom'];
+                    
+                    if (!empty($elem['service'])) {
+                        $services[] = html_entity_decode($elem['service']);
+                    }
                 }
+
+                $services = array_unique($services);
+                $elem['services'] = implode(', ', $services);
 
                 // Le champ commentaires peut comporter des <br/> ou équivalents HTML lorsqu'il est importé depuis un fichier ICS. On les remplace par \n
                 $elem['commentaires'] = str_replace(array('<br/>','&lt;br/&gt;'), "\n", $elem['commentaires']);

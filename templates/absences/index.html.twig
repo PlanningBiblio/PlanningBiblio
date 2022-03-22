@@ -75,6 +75,7 @@
         <th class='dataTableDateFR' >Début</th>
         <th class='dataTableDateFR-fin' >Fin</th>
         <th id='thNom'>Agents</th>
+        <th id='thService'>Service</th>
         {% if config('Absences-validation') %}
           <th id='thValidation'>État</th>
         {% endif %}
@@ -120,6 +121,7 @@
             {% endif %}
           </td>
           <td>{{ abs.agents | join(', ') }}</td>
+          <td>{{ abs.services }}</td>
 
           {% if config('Absences-validation') %}
             <td style="{{ abs.status_style }}">{{ abs.status }}</td>
