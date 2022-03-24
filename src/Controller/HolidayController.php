@@ -39,7 +39,7 @@ class HolidayController extends BaseController
         // Initialisation des variables
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
-            ->setModule('holiday', false)
+            ->setModule('holiday')
             ->getValidationLevelFor($_SESSION['login_id']);
 
         if ($admin and $perso_id==null) {
@@ -329,7 +329,8 @@ class HolidayController extends BaseController
         list($adminN1, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getValidationLevelFor($_SESSION['login_id'], $perso_id);
+            ->forAgent($perso_id)
+            ->getValidationLevelFor($_SESSION['login_id']);
 
         if (!$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
             return $this->output('access-denied.html.twig');
@@ -526,10 +527,14 @@ class HolidayController extends BaseController
         $perso_id = $request->get('perso_id');
         $dbprefix = $GLOBALS['dbprefix'];
 
-        list($admin, $adminN2) = $this->entityManager
+        $agentRepository = $this->entityManager
             ->getRepository(Agent::class)
-            ->setModule('holiday', $perso_id ? true : false)
-            ->getValidationLevelFor($_SESSION['login_id'], $perso_id);
+            ->setModule('holiday');
+
+        if ($perso_id) {
+            $agentRepository->forAgent($perso_id);
+        }
+        list($admin, $adminN2) = $agentRepository->getValidationLevelFor($_SESSION['login_id']);
 
         if (!$perso_id) {
             $perso_id = $_SESSION['login_id'];

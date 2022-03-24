@@ -32,7 +32,7 @@ class AgentRepository extends EntityRepository
 
     private $by_agent_param = 'Absences-notifications-agent-par-agent';
 
-    private $check_by_agent = true;
+    private $agent_id = null;
 
     private $check_by_site = true;
 
@@ -109,14 +109,14 @@ class AgentRepository extends EntityRepository
         return $deleted_agents;
     }
 
-    public function setModule($name = 'absence', $check_by_agent = true)
+    public function setModule($name = 'absence')
     {
         if (!in_array($name, array('absence', 'holiday', 'workinghour'))) {
             throw new \Exception("AgentRepository::setModule: Unsupported module $name");
         }
 
+        $this->agent_id = null;
         $this->module = $name;
-        $this->check_by_agent = $check_by_agent;
 
         if ($name == 'workinghour') {
             $this->needed_level1 = 1100;
@@ -137,6 +137,15 @@ class AgentRepository extends EntityRepository
             $this->needed_level2 = 600;
             $this->by_agent_param = 'Absences-notifications-agent-par-agent';
             $this->check_by_site = true;
+        }
+
+        return $this;
+    }
+
+    public function forAgent($id)
+    {
+        if ($id) {
+            $this->agent_id = $id;
         }
 
         return $this;
@@ -248,7 +257,7 @@ class AgentRepository extends EntityRepository
         return array($loggedin);
     }
 
-    public function getValidationLevelFor($loggedin_id, $agent_id = null)
+    public function getValidationLevelFor($loggedin_id)
     {
 
         $entityManager = $this->getEntityManager();
@@ -267,8 +276,8 @@ class AgentRepository extends EntityRepository
             }
 
             // will only check for agent sites
-            if ($agent_id) {
-                $agent = $entityManager->find(Agent::class, $agent_id);
+            if ($this->agent_id) {
+                $agent = $entityManager->find(Agent::class, $this->agent_id);
                 $sites = json_decode($agent->sites()) ?? array();
             }
         }
@@ -278,14 +287,33 @@ class AgentRepository extends EntityRepository
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
-        // is enabled.
-        if ($by_agent_param->valeur() and $this->check_by_agent) {
-            if ($loggedin->isManagerOf(array($agent_id), 'level1')) {
+        // is enabled and we ask for a specific agent.
+        if ($by_agent_param->valeur() and $this->agent_id) {
+            if ($loggedin->isManagerOf(array($this->agent_id), 'level1')) {
                 $l1 = true;
             }
 
-            if ($loggedin->isManagerOf(array($agent_id), 'level2')) {
+            if ($loggedin->isManagerOf(array($this->agent_id), 'level2')) {
                 $l2 = true;
+            }
+
+            return array($l1, $l2);
+        }
+
+        // Param Absences-notifications-agent-par-agent
+        // or PlanningHebdo-notifications-agent-par-agent
+        // is enabled but no agent is specified.
+        // So look for max admin level on managed agents.
+        if ($by_agent_param->valeur()) {
+            $managed = $this->getManagedFor($loggedin_id);
+            foreach ($managed as $m) {
+                if ($loggedin->isManagerOf(array($m->id()), 'level1')) {
+                    $l1 = true;
+                }
+
+                if ($loggedin->isManagerOf(array($m->id()), 'level2')) {
+                    $l2 = true;
+                }
             }
 
             return array($l1, $l2);

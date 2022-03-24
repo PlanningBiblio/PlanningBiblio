@@ -102,7 +102,8 @@ class AgentValidationLevelTest extends TestCase
 
         list($adminN1, $adminN2) = $this->entityManager->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getValidationLevelFor($agent_manager->id(), $agent1->id());
+            ->forAgent($agent1->id())
+            ->getValidationLevelFor($agent_manager->id());
 
         $this->assertTrue($adminN1, 'Manager is admin L1 for agent 1');
         $this->assertFalse($adminN2, 'Manager is not admin L2 for agent 1');
@@ -119,7 +120,8 @@ class AgentValidationLevelTest extends TestCase
 
         list($adminN1, $adminN2) = $this->entityManager->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getValidationLevelFor($agent_manager->id(), $agent2->id());
+            ->forAgent($agent2->id())
+            ->getValidationLevelFor($agent_manager->id());
 
         $this->assertFalse($adminN1, 'Manager is not admin L1 for agent 2');
         $this->assertTrue($adminN2, 'Manager is admin L2 for agent 2');
@@ -136,7 +138,8 @@ class AgentValidationLevelTest extends TestCase
 
         list($adminN1, $adminN2) = $this->entityManager->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getValidationLevelFor($agent_manager->id(), $agent3->id());
+            ->forAgent($agent3->id())
+            ->getValidationLevelFor($agent_manager->id());
 
         $this->assertFalse($adminN1, 'Manager is not admin L1 for agent 3');
         $this->assertFalse($adminN2, 'Manager is not admin L2 for agent 3');
@@ -259,7 +262,8 @@ class AgentValidationLevelTest extends TestCase
 
         list($adminN1, $adminN2) = $this->entityManager->getRepository(Agent::class)
             ->setModule('absence')
-            ->getValidationLevelFor($agent_manager->id(), $agent1->id());
+            ->forAgent($agent1->id())
+            ->getValidationLevelFor($agent_manager->id());
 
         $this->assertTrue($adminN1, 'Manager is admin L1 for agent 1');
         $this->assertFalse($adminN2, 'Manager is not admin L2 for agent 1');
@@ -276,7 +280,8 @@ class AgentValidationLevelTest extends TestCase
 
         list($adminN1, $adminN2) = $this->entityManager->getRepository(Agent::class)
             ->setModule('absence')
-            ->getValidationLevelFor($agent_manager->id(), $agent2->id());
+            ->forAgent($agent2->id())
+            ->getValidationLevelFor($agent_manager->id());
 
         $this->assertFalse($adminN1, 'Manager is not admin L1 for agent 2');
         $this->assertTrue($adminN2, 'Manager is admin L2 for agent 2');
@@ -293,6 +298,7 @@ class AgentValidationLevelTest extends TestCase
 
         list($adminN1, $adminN2) = $this->entityManager->getRepository(Agent::class)
             ->setModule('absence')
+            ->forAgent($agent3->id())
             ->getValidationLevelFor($agent_manager->id(), $agent3->id());
 
         $this->assertFalse($adminN1, 'Manager is not admin L1 for agent 3');

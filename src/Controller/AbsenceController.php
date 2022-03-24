@@ -46,7 +46,7 @@ class AbsenceController extends BaseController
         // Initialisation des variables
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
-            ->setModule('absence', false)
+            ->setModule('absence')
             ->getValidationLevelFor($_SESSION['login_id']);
 
         if ($admin) {
@@ -185,7 +185,7 @@ class AbsenceController extends BaseController
 
         list($this->admin, $this->adminN2) = $this->entityManager
             ->getRepository(Agent::class)
-            ->setModule('absence', false)
+            ->setModule('absence')
             ->getValidationLevelFor($_SESSION['login_id']);
 
         $this->agents_multiples = (($this->admin or $this->adminN2) or in_array(9, $this->droits));
@@ -310,7 +310,8 @@ class AbsenceController extends BaseController
             list($N1, $N2) = $this->entityManager
                 ->getRepository(Agent::class)
                 ->setModule('absence')
-                ->getValidationLevelFor($_SESSION['login_id'], $agent['perso_id']);
+                ->forAgent($agent['perso_id'])
+                ->getValidationLevelFor($_SESSION['login_id']);
 
             $adminN1 = $N1 === false ? $N1 : $adminN1;
             $adminN2 = $N2 === false ? $N2 : $adminN2;
@@ -718,7 +719,8 @@ class AbsenceController extends BaseController
             list($N1, $N2) = $this->entityManager
                 ->getRepository(Agent::class)
                 ->setModule($module)
-                ->getValidationLevelFor($_SESSION['login_id'], $id);
+                ->forAgent($id)
+                ->getValidationLevelFor($_SESSION['login_id']);
 
             $adminN1 = $N1 ? $adminN1 : false;
             $adminN2 = $N2 ? $adminN2 : false;
