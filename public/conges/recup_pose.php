@@ -52,7 +52,7 @@ if ($perso_id) {
 list($admin, $adminN2) = $agentRepository->getValidationLevelFor($_SESSION['login_id']);
 
 // Si pas de droits de gestion des congés, on force $perso_id = son propre ID
-if (!$admin) {
+if (!$admin and !$adminN2) {
     $perso_id=$_SESSION['login_id'];
 }
 
