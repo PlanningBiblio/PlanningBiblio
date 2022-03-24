@@ -868,6 +868,8 @@ function updateAgentsListBySites() {
         selected_sites = "[1]";
     }
 
+    agents_multiples = $('#agents-multiples').val();
+
     managed_sites_agents = getAgentsBySites(managed_sites);
     selected_sites_agents = getAgentsBySites(selected_sites);
     selected_sites_agents = selected_sites_agents.map(x => x.id);
@@ -887,7 +889,7 @@ function updateAgentsListBySites() {
     selected_agent_id = $('#selected_agent_id').val();
     $.each(managed_sites_agents, function(index, value) {
         style = value.id == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
-        selected = value.id == selected_agent_id ? ' selected="selected"' : '';
+        selected = value.id == selected_agent_id && !agents_multiples ? ' selected="selected"' : '';
         options += '<option' + style + selected + ' value="' + value.id + '" id="option' + value.id;
         options += '">' + value.nom + ' ' + value.prenom + '</option>';
     });
@@ -900,7 +902,7 @@ function updateAgentsListBySites() {
 
     $.each(managed_sites_agents, function(index, value) {
         // Check if not selected or not already added
-        if ($.inArray(value.id, selected_sites_agents) == -1 || $.inArray(value.id, selected_agents) !== -1) {
+        if ($.inArray(value.id, selected_sites_agents) == -1 || $.inArray(String(value.id), selected_agents) !== -1) {
             $("#option" + value.id).hide();
         }
     });
