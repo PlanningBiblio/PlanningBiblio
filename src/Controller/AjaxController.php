@@ -31,16 +31,17 @@ class AjaxController extends BaseController
 
         $agents = array();
         foreach ($managed as $m) {
-            if (!$m->inOneOfSites($sites) && $m->id() != $_SESSION['login_id']) {
-                continue;
-            }
+            if ($m->id() == $_SESSION['login_id'] ||
+                $this->config('Multisites-nombre') == 1 ||
+                ($sites && $m->inOneOfSites($sites))) {
 
-            $agents[] = array(
-                'id'        => $m->id(),
-                'nom'       => $m->nom(),
-                'prenom'    => $m->prenom(),
-                'sites'     => $m->sites(),
-            );
+                $agents[] = array(
+                    'id'        => $m->id(),
+                    'nom'       => $m->nom(),
+                    'prenom'    => $m->prenom(),
+                    'sites'     => $m->sites(),
+                );
+            }
         }
         return $this->json($agents);
     }

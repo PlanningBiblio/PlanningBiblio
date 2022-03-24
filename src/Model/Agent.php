@@ -342,7 +342,7 @@ class Agent extends PLBEntity
 
     public function inOneOfSites($sites)
     {
-        $agent_sites = json_decode($this->sites());
+        $agent_sites = json_decode($this->sites(), true);
 
         if (!is_array($agent_sites)) {
             return false;
