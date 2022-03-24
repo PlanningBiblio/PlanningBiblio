@@ -265,11 +265,12 @@ class AgentRepository extends EntityRepository
         $by_agent_param = $entityManager->getRepository(ConfigParam::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
+        $sites_number = $entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+
         $sites = array(1);
-        if ($this->check_by_site) {
+        if ($this->check_by_site && $sites_number > 1) {
             $sites = array();
-            $sites_number = $entityManager->getRepository(ConfigParam::class)
-                ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
 
             for ($i = 1; $i <= $sites_number; $i++) {
                 $sites[] = $i;
