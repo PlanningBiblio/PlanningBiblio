@@ -42,7 +42,7 @@ if (!$fin) {
 // Gestion des droits d'administration
 $entityManager = $GLOBALS['entityManager'];
 
-$agentRepository = $this->entityManager
+$agentRepository = $entityManager
     ->getRepository(Agent::class)
     ->setModule('holiday');
 

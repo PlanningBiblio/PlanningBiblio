@@ -42,7 +42,7 @@ class HolidayController extends BaseController
             ->setModule('holiday')
             ->getValidationLevelFor($_SESSION['login_id']);
 
-        if ($admin and $perso_id==null) {
+        if (($admin or $adminN2) and $perso_id==null) {
             $perso_id=isset($_SESSION['oups']['conges_perso_id'])?$_SESSION['oups']['conges_perso_id']:$_SESSION['login_id'];
         } elseif ($perso_id==null) {
             $perso_id=$_SESSION['login_id'];
@@ -123,7 +123,7 @@ class HolidayController extends BaseController
         $holiday_helper = new HolidayHelper();
 
         $templateParams = array(
-            'admin'                 => $admin,
+            'admin'                 => $admin || $adminN2,
             'perso_id'              => $perso_id,
             'managed'               => $managed,
             'deleted_agents'        => $agents_supprimes ? 1 : 0,
@@ -548,7 +548,7 @@ class HolidayController extends BaseController
         $agents_multiples = (($admin || $adminN2) && $this->config('Conges-Recuperations') == 1);
 
         // Si pas de droits de gestion des congés, on force $perso_id = son propre ID
-        if (!$admin) {
+        if (!$admin && !$adminN2) {
             $perso_id=$_SESSION['login_id'];
         }
 
@@ -596,7 +596,8 @@ class HolidayController extends BaseController
 
         $lang = $GLOBALS['lang'];
         $templateParams = array(
-            'admin'                 => $admin,
+            'admin'                 => $admin || $adminN2,
+            'adminN1'               => $admin,
             'adminN2'               => $adminN2,
             'agents_multiples'      => $agents_multiples,
             'perso_id'              => $perso_id,
