@@ -41,10 +41,15 @@ if (!$fin) {
 
 // Gestion des droits d'administration
 $entityManager = $GLOBALS['entityManager'];
-list($admin, $adminN2) = $entityManager
+
+$agentRepository = $this->entityManager
     ->getRepository(Agent::class)
-    ->setModule('holiday', $perso_id ? true : false)
-    ->getValidationLevelFor($_SESSION['login_id'], $perso_id);
+    ->setModule('holiday');
+
+if ($perso_id) {
+    $agentRepository->forAgent($perso_id);
+}
+list($admin, $adminN2) = $agentRepository->getValidationLevelFor($_SESSION['login_id']);
 
 // Si pas de droits de gestion des congés, on force $perso_id = son propre ID
 if (!$admin) {

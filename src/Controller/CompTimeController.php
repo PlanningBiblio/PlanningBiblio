@@ -32,7 +32,7 @@ class CompTimeController extends BaseController
 
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
-            ->setModule('holiday', false)
+            ->setModule('holiday')
             ->getValidationLevelFor($_SESSION['login_id']);
 
         if ($admin and $perso_id === null) {

@@ -322,7 +322,9 @@ class AjaxController extends BaseController
       list($adminN1, $adminN2) = $this->entityManager
           ->getRepository(Agent::class)
           ->setModule($type == 'absence' ? 'absence' : 'holiday')
-          ->getValidationLevelFor($_SESSION['login_id'], $perso_ids[0]);
+          ->forAgent($perso_ids[0])
+          ->getValidationLevelFor($_SESSION['login_id']);
+
       $result['admin'] = ($adminN1 or $adminN2);
 
       $result = json_encode($result);

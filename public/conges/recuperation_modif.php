@@ -33,7 +33,8 @@ $perso_id=$recup['perso_id'];
 list($adminN1, $adminN2) = $entityManager
     ->getRepository(Agent::class)
     ->setModule('holiday')
-    ->getValidationLevelFor($_SESSION['login_id'], $perso_id);
+    ->forAgent($perso_id)
+    ->getValidationLevelFor($_SESSION['login_id']);
 
 // Prevent non manager to access other agents request.
 if (!$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {

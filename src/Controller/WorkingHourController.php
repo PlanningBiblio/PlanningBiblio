@@ -155,7 +155,7 @@ class WorkingHourController extends BaseController
         // Seront utilisés pour n'afficher que les agents gérés si l'option "PlanningHebdo-notifications-agent-par-agent" est cochée
         list($adminN1, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
-            ->setModule('workinghour', false)
+            ->setModule('workinghour')
             ->getValidationLevelFor($_SESSION['login_id']);
 
         $notAdmin = !($adminN1 or $adminN2);
@@ -275,7 +275,8 @@ class WorkingHourController extends BaseController
         list($adminN1, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getValidationLevelFor($_SESSION['login_id'], $perso_id);
+            ->forAgent($perso_id)
+            ->getValidationLevelFor($_SESSION['login_id']);
 
         $notAdmin = !($adminN1 or $adminN2);
         $admin = ($adminN1 or $adminN2);
@@ -419,7 +420,8 @@ class WorkingHourController extends BaseController
         list($this->adminN1, $this->adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getValidationLevelFor($_SESSION['login_id'], $perso_id);
+            ->forAgent($perso_id)
+            ->getValidationLevelFor($_SESSION['login_id']);
         $admin = ($this->adminN1 or $this->adminN2);
 
         if (!$admin && $perso_id != $_SESSION['login_id']) {
