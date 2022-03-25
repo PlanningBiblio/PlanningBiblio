@@ -46,6 +46,10 @@ class ValidationAwareEntity
         if ($entity_type == 'absence') {
             $this->entity = self::load_absence($entity_id);
         }
+
+        if ($entity_type == 'holiday') {
+            $this->entity = self::load_holiday($entity_id);
+        }
     }
 
     public function needsValidationL1()
@@ -73,8 +77,18 @@ class ValidationAwareEntity
             return array(0, $this->status_desc[$mode][0]);
         }
 
-        $valide_n2 = $this->entity['valide_n2'];
-        $valide_n1 = $this->entity['valide_n1'];
+        $valide_n1 = null;
+        $valide_n2 = null;
+
+        if ($this->type == 'absence') {
+            $valide_n2 = $this->entity['valide_n2'];
+            $valide_n1 = $this->entity['valide_n1'];
+        }
+
+        if ($this->type == 'holiday') {
+            $valide_n2 = $this->entity['valide'];
+            $valide_n1 = $this->entity['valide_n1'];
+        }
 
         // Accepted level 2.
         if ($valide_n2 > 0) {

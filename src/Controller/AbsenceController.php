@@ -725,6 +725,11 @@ class AbsenceController extends BaseController
             $show_select = 0;
         }
 
+        // Accepted N2 hildays cannot be changed.
+        if ($entity_state == 1 && $module == 'holiday') {
+            $show_select = 0;
+        }
+
         $this->templateParams(array(
             'entity_state_desc' => $entity_state_desc,
             'entity_state'      => $entity_state,
