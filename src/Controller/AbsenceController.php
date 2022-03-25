@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\PlanningBiblio\ValidationAwareEntity;
+
 use App\Controller\BaseController;
 use App\Model\AbsenceDocument;
 use App\Model\Absence;
@@ -13,7 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
-require_once(__DIR__ . '/../../public/conges/class.conges.php');
 
 class AbsenceController extends BaseController
 {
@@ -685,25 +686,16 @@ class AbsenceController extends BaseController
     {
         $agent_ids = $request->get('ids');
         $module = $request->get('module');
-        $absence_id = $request->get('id');
+        $entity_id = $request->get('id');
 
         if (!$agent_ids) {
-            return $this->json(array('adminN1' => false, 'adminN2' => false));
+            return $this->output('/common/validation-statuses.html.twig');
         }
 
-        $absence_valide_n1 = 0;
-        if ($absence_id) {
-            if ($module == 'absence') {
-                $absence = new \absences();
-                $absence->fetchById($absence_id);
-                $absence_valide_n1 = $absence->elements['valide_n1'];
-            } else {
-                $c = new \conges();
-                $c->id = $absence_id;
-                $c->fetch();
-                $absence_valide_n1 = $c->elements[0]['valide_n1'];
-            }
-        }
+        $show_select = false;
+
+        $entity = new ValidationAwareEntity($module, $entity_id);
+        list($entity_state, $entity_state_desc) = $entity->status();
 
         $adminN1 = true;
         $adminN2 = true;
@@ -718,15 +710,30 @@ class AbsenceController extends BaseController
             $adminN2 = $N2 ? $adminN2 : false;
         }
 
-        $vaidation_N2_option = ($module == 'absence') ? 'Absences-Validation-N2' : 'Conges-Validation-N2';
+        $show_select = $adminN1 || $adminN2;
+        $show_n1 = $adminN1 || $adminN2;
+        $show_n2 = $adminN2;
 
-        // Prevent logged in to directly validate l2
-        // if Validation-N2 needs Validation-N1 before.
-        if ($this->config($vaidation_N2_option) && $absence_valide_n1 == 0) {
-            $adminN2 = false;
+        // Only adminN2 can change statuses of
+        // validated N2 entities.
+        if (in_array($entity_state, [1, -1]) && !$adminN2) {
+            $show_select = 0;
         }
 
-        return $this->json(array('adminN1' => $adminN1, 'adminN2' => $adminN2));
+        // Prevent user without right L1 to directly validate l2
+        if (!$adminN1 && $entity_state == 0 && $entity->needsValidationL1()) {
+            $show_select = 0;
+        }
+
+        $this->templateParams(array(
+            'entity_state_desc' => $entity_state_desc,
+            'entity_state'      => $entity_state,
+            'show_select'       => $show_select,
+            'show_n1'           => $show_n1,
+            'show_n2'           => $show_n2,
+        ));
+
+        return $this->output('/common/validation-statuses.html.twig');
     }
 
     private function getDocuments($absence) {

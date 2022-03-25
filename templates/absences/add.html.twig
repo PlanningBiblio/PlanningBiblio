@@ -247,21 +247,7 @@
                   <label class='intitule'>État </label>
                 </td>
 
-                <td>
-                  {% if admin %}
-                    <select name='valide' class='ui-widget-content ui-corner-all'>
-                      <option value='0'>Demandée</option>
-                      <option value='2'>Acceptée (En attente de validation hiérarchique)</option>\
-                      <option value='-2' >Refusée (En attente de validation hiérarchique)</option>
-                      {% if adminN2 %}
-                        <option value='1' >Acceptée</option>
-                        <option value='-1' >Refusée</option>
-                      {% endif %}
-                    </select>
-                  {% else %}
-                    Demandée
-                  {% endif %}
-                </td>
+                <td id="validation-statuses"></td>
               </tr>
             {% endif %}
 
