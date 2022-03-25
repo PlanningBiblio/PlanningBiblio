@@ -316,23 +316,7 @@
                   <label class='intitule'>État </label>
                 </td>
 
-                <td colspan='2'>
-                  {% if admin %}
-                    <select name='valide' id='validation' onchange="afficheRefus(this);">
-                      <option value='0'>Demandé</option>
-                      {% if adminN1 %}
-                        <option value='2'>{{ accepted_pending_str }}</option>
-                        <option value='-2' >{{ refused_pending_str }}</option>
-                      {% endif %}
-                      {% if adminN2 %}
-                        <option value='1' >Accepté</option>
-                        <option value='-1' >Refusé</option>
-                      {% endif %}
-                    </select>
-                  {% else %}
-                    Demandée
-                  {% endif %}
-                </td>
+                <td id="validation-statuses" colspan='2'></td>
               </tr>
 
               <tr id='tr_refus' style='vertical-align:top; display:none;'>

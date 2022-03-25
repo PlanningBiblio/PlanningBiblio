@@ -1210,7 +1210,7 @@ class conges
             'is_recover' => $data['debit'] == 'recuperation' ? true : false
         ));
         $result = $holidayHlper->getCountedHours();
-        $regul = $result['rest'];
+        $regul = isset($result['rest']) ? $result['rest'] : 0;
 
         if ($regul != 0) {
             $regul_id = $this->applyRegularization($data, $regul);

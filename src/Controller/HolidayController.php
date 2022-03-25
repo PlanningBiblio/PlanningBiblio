@@ -474,16 +474,7 @@ class HolidayController extends BaseController
             'accepted_pending_str' => $lang['leave_dropdown_accepted_pending'],
             'refused_pending_str' => $lang['leave_dropdown_refused_pending']
         ));
-        $select_valide_others = 0;
-        if ($adminN2 and ($data['valide_n1'] > 0 or $this->config('Conges-Validation-N2') == 0)) {
-            $select_valide_others = 1;
-        }
-        $this->templateParams(array('select_valide_others' => $select_valide_others));
-        $select_valide = 0;
-        if (($adminN2 and !$valide) or ($adminN1 and $data['valide']==0)) {
-            $select_valide = 1;
-        }
-        $this->templateParams(array('select_valide' => $select_valide));
+
         $save_button = 0;
         if ((!$valide and ($adminN1 or $adminN2)) or ($data['valide']==0 and $data['valide_n1']==0)) {
             $save_button = 1;

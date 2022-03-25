@@ -618,12 +618,6 @@ function update_validation_statuses() {
 
   absence_id = $('input[name="id"]').val();
 
-  $('select[name="valide"] option[value="2"]').remove();
-  $('select[name="valide"] option[value="-2"]').remove();
-  $('select[name="valide"] option[value="1"]').remove();
-  $('select[name="valide"] option[value="-1"]').remove();
-
-
   $.ajax({
     url: url('absence-statuses'),
     data: { ids: perso_ids, module: 'absence', id: absence_id },
