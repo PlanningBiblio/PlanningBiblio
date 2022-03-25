@@ -49,7 +49,7 @@ class AbsenceController extends BaseController
             ->setModule('absence')
             ->getValidationLevelFor($_SESSION['login_id']);
 
-        if ($admin) {
+        if ($admin or $adminN2) {
             $perso_id = $request->get('perso_id');
             if ($perso_id === null) {
                 $perso_id = isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id'];
@@ -98,7 +98,7 @@ class AbsenceController extends BaseController
 
         // Tri par défaut du tableau
         $sort="[[0],[1]]";
-        if ($admin or (!$this->config('Absences-adminSeulement') and in_array(6, $droits))) {
+        if ($admin or $adminN2 or (!$this->config('Absences-adminSeulement') and in_array(6, $droits))) {
             $sort="[[1],[2]]";
         }
 
@@ -106,7 +106,6 @@ class AbsenceController extends BaseController
             'debut'     => $debut,
             'fin'       => $fin,
             'perso_id'  => $perso_id,
-            'admin'     => $admin,
             'sort'      => $sort,
         ));
 
@@ -128,7 +127,7 @@ class AbsenceController extends BaseController
         if ($absences) {
             foreach ($absences as $elem) {
 
-                if ($admin) {
+                if ($admin or $adminN2) {
                     $continue = true;
                     foreach ($elem['perso_ids'] as $perso) {
                         if (in_array($perso, $perso_ids)) {
@@ -159,7 +158,7 @@ class AbsenceController extends BaseController
                 $elem['status_style'] = $etatStyle;
 
                 $elem['view_details'] = 0;
-                if ($admin or (!$this->config('Absences-adminSeulement') and in_array(6, $droits))) {
+                if ($admin or $adminN2 or (!$this->config('Absences-adminSeulement') and in_array(6, $droits))) {
                     $elem['view_details'] = 1;
                 }
                 $elem['commentaires'] = html_entity_decode($elem['commentaires'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
@@ -215,14 +214,22 @@ class AbsenceController extends BaseController
             $agent_preselection = 1;
         }
 
-        $this->setCommonTemplateParams();
-
         $this->templateParams(array(
-            'reasons'               => $this->availablesReasons(),
-            'reason_types'          => $this->reasonTypes(),
-            'agents'                => $managed,
-            'fullday_checked'       => $this->config('Absences-journeeEntiere'),
+            'abences_infos'         => $this->absenceInfos(),
+            'admin'                 => $this->admin || $this->adminN2,
+            'adminN1'               => $this->admin ? 1 : 0,
+            'adminN2'               => $this->adminN2 ? 1 : 0,
             'agent_preselection'    => $agent_preselection,
+            'agents'                => $managed,
+            'agents_multiples'      => $this->agents_multiples,
+            'CSRFToken'             => $GLOBALS['CSRFSession'],
+            'fullday_checked'       => $this->config('Absences-journeeEntiere'),
+            'loggedin_id'           => $_SESSION['login_id'],
+            'loggedin_name'         => $_SESSION['login_nom'],
+            'loggedin_firstname'    => $_SESSION['login_prenom'],
+            'reason_types'          => $this->reasonTypes(),
+            'reasons'               => $this->availablesReasons(),
+            'right701'              => in_array(701, $this->droits) ? 1 : 0,
         ));
 
         return $this->output('absences/add.html.twig');
@@ -237,9 +244,9 @@ class AbsenceController extends BaseController
 
         $this->setAdminPermissions();
 
-        $this->agents_multiples = ($this->admin or in_array(9, $this->droits));
+        $this->agents_multiples = ($this->admin or $this->adminN2 or in_array(9, $this->droits));
 
-        if ($this->config('Absences-adminSeulement') and !$this->admin) {
+        if ($this->config('Absences-adminSeulement') and !$this->admin and !$this->adminN2) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -1027,22 +1034,5 @@ class AbsenceController extends BaseController
         }
 
         return $absences_infos;
-    }
-
-    private function setCommonTemplateParams()
-    {
-        $this->templateParams(array(
-            'absences_tous'         => $this->config('Absences-tous'),
-            'absences_validation'   => $this->config('Absences-validation'),
-            'CSRFToken'             => $GLOBALS['CSRFSession'],
-            'admin'                 => $this->admin ? 1 : 0,
-            'adminN2'               => $this->adminN2 ? 1 : 0,
-            'loggedin_id'           => $_SESSION['login_id'],
-            'loggedin_name'         => $_SESSION['login_nom'],
-            'loggedin_firstname'    => $_SESSION['login_prenom'],
-            'agents_multiples'      => $this->agents_multiples,
-            'right701'              => in_array(701, $this->droits) ? 1 : 0,
-            'abences_infos'         => $this->absenceInfos(),
-        ));
     }
 }
