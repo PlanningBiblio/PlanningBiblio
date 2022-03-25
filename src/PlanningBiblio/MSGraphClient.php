@@ -113,14 +113,26 @@ class MSGraphClient
             }
         }
         foreach ($response->body->value as $event) {
+//            if ($event->subject == "Réunion de direction") {
+            //$this->log(print_r($event, 1));
+/*            if ($event->start->dateTime >= $from . 'T00:00:00.0000000' && $event->end->dateTime <= $to . 'T00:00:00.0000000' ) {
+                $this->log("dates ok");
+            }
+            if ($event->isOrganizer == true || $event->responseStatus->response == "accepted") {
+                $this->log("2 ok");
+            }
+            if (!$this->isEventEmpty($user->login(), $event->id)) {
+                $this->log("3 ok");
+            }*/
             if (($event->start->dateTime >= $from . 'T00:00:00.0000000' && $event->end->dateTime <= $to . 'T00:00:00.0000000' ) &&
                 ($event->isOrganizer == true || $event->responseStatus->response == "accepted") &&
-                 !$this->isEventEmpty($user->login(), $event->iCalUId)) {
+                 !$this->isEventEmpty($user->login(), $event->id)) {
                 $this->incomingEvents[$user->id() . $event->iCalUId]['plb_id'] = $user->id();
                 $this->incomingEvents[$user->id() . $event->iCalUId]['plb_login'] = $user->login();
                 $this->incomingEvents[$user->id() . $event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
                 $this->incomingEvents[$user->id() . $event->iCalUId]['event'] = $event;
             }
+//            }
         }
 
         if (property_exists($response->body, '@odata.nextLink')) {
@@ -129,11 +141,16 @@ class MSGraphClient
         }
     }
 
-    private function isEventEmpty($login, $iCalUId) {
-        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/events/?$filter=iCalUId eq \'' . $iCalUId . '\'');
-        if ($response && $response->code == 200 && !empty($response->body->value)) {
+    private function isEventEmpty($login, $id) {
+//        $this->log("iCalUId: $iCalUId");
+        //$response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/events/?$filter=iCalUId eq \'' . $iCalUId . '\'');
+        $query = "/users/$login" . $this->login_suffix . '/events/' . $id;
+//        $this->log($query);
+        $response = $this->sendGet($query);
+        if ($response && $response->code == 200 && !empty($response->body->body->content)) {
             return false;
         }
+//        $this->log(print_r($response), 1);
         return true;
     }
 
