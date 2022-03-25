@@ -67,7 +67,7 @@
               <td>
                 <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
                   <option value='0' selected='selected'>-- Ajoutez un agent --</option>
-                  {% if absences_tous %}
+                  {% if config('Absences-tous') %}
                     <option value='tous'>Tous les agents</option>
                   {% endif %}
 
@@ -241,7 +241,7 @@
               <td><input type="file" name="documentFile" id="documentFile" /></td>
             </tr>
 
-            {% if absences_validation %}
+            {% if config('Absences-validation') %}
               <tr id="validation-line">
                 <td>
                   <label class='intitule'>État </label>
