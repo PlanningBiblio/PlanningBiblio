@@ -19,6 +19,9 @@ $(function() {
       affiche_perso_ul();
     }
 
+    // Mise à jour des status disponible.
+    update_validation_statuses();
+
     // Affichage des récurrences lors de la modification d'une absence
     if($('#rrule').val()){
       var text = recurrenceRRuleText2($('#rrule').val());
@@ -548,6 +551,9 @@ function change_select_perso_ids(id){
   
   // Affichage des agents sélectionnés avec tri alphabétique
   affiche_perso_ul();
+
+  // Mise à jour des status disponible.
+  update_validation_statuses();
 }
 
 /**
@@ -594,8 +600,6 @@ function affiche_perso_ul(){
       $("#perso_ul5").append(li);
     }
   }
-
-  update_validation_statuses();
 }
 
 function update_validation_statuses() {
@@ -604,6 +608,13 @@ function update_validation_statuses() {
   $('.perso_ids_li').each(function() {
     perso_ids.push($(this).data('id'));
   });
+
+  // Agent with no right.
+  // So only the logged in
+  // is in the form.
+  if (perso_ids.length == 0) {
+    perso_ids.push($('#login_id').val());
+  }
 
   absence_id = $('input[name="id"]').val();
 
@@ -616,32 +627,9 @@ function update_validation_statuses() {
   $.ajax({
     url: url('absence-statuses'),
     data: { ids: perso_ids, module: 'absence', id: absence_id },
-    dataType: "json",
+    dataType: 'html',
     success: function(result){
-      if (result.adminN1) {
-        $('select[name="valide"]').append('<option value="2">Acceptée (En attente de validation hiérarchique)</option>');
-        $('select[name="valide"]').append('<option value="-2">Refusée (En attente de validation hiérarchique)</option>');
-      }
-
-      if (result.adminN2) {
-        $('select[name="valide"]').append('<option value="1">Acceptée</option>');
-        $('select[name="valide"]').append('<option value="-1">Refusée</option>');
-      }
-
-      state = $('input[name="absence_status"]').val()
-      selected = 0;
-      if (state == 'ACCEPTED_N1') {
-        $('select[name="valide"] option[value="2"]').prop('selected', true);
-      }
-      if (state == 'REJECTED_N1') {
-        $('select[name="valide"] option[value="-2"]').prop('selected', true);
-      }
-      if (state == 'ACCEPTED_N2') {
-        $('select[name="valide"] option[value="1"]').prop('selected', true);
-      }
-      if (state == 'REJECTED_N2') {
-        $('select[name="valide"] option[value="-1"]').prop('selected', true);
-      }
+      $("#validation-statuses").html(result);
 
       $('tr#validation').effect("highlight",null,2000);
     },
@@ -1060,4 +1048,7 @@ function supprimeAgent(id){
   $("#li"+id).remove();
   $("#hidden"+id).remove();
   affiche_perso_ul();
+
+  // Mise à jour des status disponible.
+  update_validation_statuses();
 }

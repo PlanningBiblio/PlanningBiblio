@@ -1,0 +1,41 @@
+{# common/validation-statuses.html.twig #}
+
+{% if show_select %}
+  <select name='valide' class='ui-widget-content ui-corner-all'>
+    {% if entity_state == 0 %}
+      <option value='0' selected>Demandée</option>
+    {% else %}
+      <option value='0'>Demandée</option>
+    {% endif %}
+
+    {% if show_n1 %}
+      {% if entity_state == 2 %}
+        <option value='2' selected>Acceptée (En attente de validation hiérarchique)</option>
+      {% else %}
+        <option value='2' >Acceptée (En attente de validation hiérarchique)</option>
+      {% endif %}
+
+      {% if entity_state == -2 %}
+        <option value='-2' selected>Refusée (En attente de validation hiérarchique)</option>
+      {% else %}
+        <option value='-2' >Refusée (En attente de validation hiérarchique)</option>
+      {% endif %}
+    {% endif %}
+
+    {% if show_n2 %}
+      {% if entity_state == 1 %}
+        <option value='1' selected>Acceptée</option>
+      {% else %}
+        <option value='1' >Acceptée</option>
+      {% endif %}
+
+      {% if entity_state == -1 %}
+        <option value='-1' selected>Refusée</option>
+      {% else %}
+        <option value='-1' >Refusée</option>
+      {% endif %}
+    {% endif %}
+  </select>
+{% else %}
+  <span>{{ entity_state_desc }}</span>
+{% endif %}
