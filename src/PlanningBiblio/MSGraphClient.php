@@ -115,7 +115,7 @@ class MSGraphClient
         foreach ($response->body->value as $event) {
             if (($event->start->dateTime >= $from . 'T00:00:00.0000000' && $event->end->dateTime <= $to . 'T00:00:00.0000000' ) &&
                 ($event->isOrganizer == true || $event->responseStatus->response == "accepted") &&
-                 !$this->isEventEmpty($user->login(), $event->iCalUId)) {
+                 !$this->isEventEmpty($user->login(), $event->id)) {
                 $this->incomingEvents[$user->id() . $event->iCalUId]['plb_id'] = $user->id();
                 $this->incomingEvents[$user->id() . $event->iCalUId]['plb_login'] = $user->login();
                 $this->incomingEvents[$user->id() . $event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
@@ -129,9 +129,10 @@ class MSGraphClient
         }
     }
 
-    private function isEventEmpty($login, $iCalUId) {
-        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/events/?$filter=iCalUId eq \'' . $iCalUId . '\'');
-        if ($response && $response->code == 200 && !empty($response->body->value)) {
+    private function isEventEmpty($login, $id) {
+        $query = "/users/$login" . $this->login_suffix . '/events/' . $id;
+        $response = $this->sendGet($query);
+        if ($response && $response->code == 200 && !empty($response->body->body->content)) {
             return false;
         }
         return true;
