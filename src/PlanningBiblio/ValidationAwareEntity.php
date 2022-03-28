@@ -4,6 +4,7 @@ namespace App\PlanningBiblio;
 
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class ValidationAwareEntity
 {
@@ -50,6 +51,10 @@ class ValidationAwareEntity
         if ($entity_type == 'holiday') {
             $this->entity = self::load_holiday($entity_id);
         }
+
+        if ($entity_type == 'workinghour') {
+            $this->entity = self::load_workinghours($entity_id);
+        }
     }
 
     public function needsValidationL1()
@@ -60,6 +65,10 @@ class ValidationAwareEntity
 
         if ($this->type == 'holiday') {
             return $this->config['Conges-Validation-N2'];
+        }
+
+        if ($this->type == 'workinghour') {
+            return $this->config['PlanningHebdo-Validation-N2'];
         }
 
         return 0;
@@ -85,7 +94,7 @@ class ValidationAwareEntity
             $valide_n1 = $this->entity['valide_n1'];
         }
 
-        if ($this->type == 'holiday') {
+        if ($this->type == 'holiday' or $this->type == 'workinghour') {
             $valide_n2 = $this->entity['valide'];
             $valide_n1 = $this->entity['valide_n1'];
         }
@@ -128,5 +137,14 @@ class ValidationAwareEntity
         $c->fetch();
 
         return $c->elements[0];
+    }
+
+    private static function load_workinghours($id)
+    {
+        $p = new \planningHebdo();
+        $p->id = $id;
+        $p->fetch();
+
+        return $p->elements[0];
     }
 }
