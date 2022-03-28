@@ -110,23 +110,37 @@
           {% endif %}
         </div> <!-- id=informations -->
         {% if cle is null or cle == "" %}
-          {% if modifAutorisee == true %}
+          {% if show_select == true %}
             <p>
               <label for='validation'>Validation</label>
               <select name='validation' id='validation' style='position:absolute; left:200px; width:200px;' >
-                {% if adminN1 == true or (valide_n1 == 0) %}
-                  <option value='0'>Demandé</option>
-                  {% if adminN1 == true or (valide_n1 > 0 and valide_n2 == 0) %}
-                    <option value='1' {{ (selected1 == true) ? "selected='selected'" : "" }} >{{ lang.work_hours_dropdown_accepted_pending }}</option>
+                <option value='0'>Demandé</option>
+
+                {% if show_n1 %}
+                  {% if entity_state == 2 %}
+                    <option value='1' selected>Accepté (En attente de validation hiérarchique)</option>
+                  {% else %}
+                    <option value='1' >Accepté (En attente de validation hiérarchique)</option>
                   {% endif %}
-                  {% if adminN1 == true  or (valide_n1 < 0 and valide_n2 == 0) %}
-                    <option value='-1' {{ (selected2 == true) ? "selected = 'selected'" : " " }}>{{ lang.work_hours_dropdown_refused_pending }}</option>
+
+                  {% if entity_state == -2 %}
+                    <option value='-1' selected>Refusé (En attente de validation hiérarchique)</option>
+                  {% else %}
+                    <option value='-1' >Refusé (En attente de validation hiérarchique)</option>
                   {% endif %}
-                  {% if (adminN2 == true  and (valide_n1 > 0 or config('PlanningHebdo-Validation-N2') == 0)) or valide_n2 > 0 %}
-                    <option value='2' {{ (selected3 == true) ? "selected = 'selected'" : " " }}>{{ lang.work_hours_dropdown_accepted }}</option>
+                {% endif %}
+
+                {% if show_n2 %}
+                  {% if entity_state == 1 %}
+                    <option value='1' selected>Accepté</option>
+                  {% else %}
+                    <option value='1' >Accepté</option>
                   {% endif %}
-                  {% if (adminN2 == true  and (valide_n1 > 0 or config('PlanningHebdo-Validation-N2') == 0)) or valide_n2 < 0 %}
-                    <option value='-2' {{ (selected4==true) ? "selected = 'selected'" : " " }} >{{ lang.work_hours_dropdown_refused }}</option>
+
+                  {% if entity_state == -1 %}
+                    <option value='-1' selected>Refusé</option>
+                  {% else %}
+                    <option value='-1' >Refusé</option>
                   {% endif %}
                 {% endif %}
               </select>
@@ -134,7 +148,7 @@
           {% else %}
             <p>
               <label>Validation</label>
-              <span style='position:absolute; left:200px;'>{{ validation }}</span>
+              <span id="validation" style='position:absolute; left:200px;'>{{ entity_state_desc }}</span>
             </p>
           {% endif %}
         {% endif %}

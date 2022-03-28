@@ -14,6 +14,7 @@ require_once(__DIR__. '/../../public/personnel/class.personnel.php');
 
 class WorkingHourController extends BaseController
 {
+    use \App\Controller\Traits\EntityValidationStatuses;
 
     private $imported = false;
     private $adminN1 = false;
@@ -278,6 +279,8 @@ class WorkingHourController extends BaseController
             ->forAgent($perso_id)
             ->getValidationLevelFor($_SESSION['login_id']);
 
+        $this->setStatusesParams(array($perso_id), 'workinghour');
+
         $notAdmin = !($adminN1 or $adminN2);
         $admin = ($adminN1 or $adminN2);
         $modifAutorisee = true;
@@ -307,10 +310,6 @@ class WorkingHourController extends BaseController
 
         $nomAgent = nom($perso_id, "prenom nom");
 
-        if (!($adminN1 or $adminN2) and $valide_n2 > 0) {
-            $action = "copie";
-        }
-
         $this->templateParams(
             array(
                 "action"             => $action,
@@ -318,7 +317,7 @@ class WorkingHourController extends BaseController
                 "adminN1"            => $adminN1,
                 "adminN2"            => $adminN2,
                 "cle"                => null,
-                "copy"               => $copy,
+                "copy"               => null,
                 "debut1"             => $debut1,
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => null,
@@ -343,10 +342,6 @@ class WorkingHourController extends BaseController
                 "remplace"           => null,
                 "retour"             => $retour,
                 "request_exception"  => null,
-                "selected1"          => null,
-                "selected2"          => null,
-                "selected3"          => null,
-                "selected4"          => null,
                 "sites"              => $sites,
                 "valide_n1"          => 0,
                 "valide_n2"          => 0,
@@ -423,6 +418,8 @@ class WorkingHourController extends BaseController
             ->forAgent($perso_id)
             ->getValidationLevelFor($_SESSION['login_id']);
         $admin = ($this->adminN1 or $this->adminN2);
+
+        $this->setStatusesParams(array($perso_id), 'workinghour', $id);
 
         if (!$admin && $perso_id != $_SESSION['login_id']) {
             return $this->redirectToRoute('access-denied');
