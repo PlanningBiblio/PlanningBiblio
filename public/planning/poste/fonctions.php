@@ -20,12 +20,27 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
-function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
+function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site, $json_format = false)
 {
     $resultats=array();
     $classe=array();
     $i=0;
-  
+
+//    $position = $entityManager->getRepository(Position::class)->find($poste);
+    $db = new db();
+    $db->select2('postes', 'nom', ['id' => $poste]);
+    $position = $db->result[0]['nom'] ?? '';
+
+    $json_tab = [
+        'date' => $date,
+        'start' => $debut,
+        'end' => $fin,
+        'position' => $position,
+        'agents' => [],
+    ];
+
+    $json_line = [];
+
     if ($GLOBALS['cellules']) {
   
     // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
@@ -33,6 +48,15 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
         $sansRepas = $p->sansRepas($date, $debut, $fin);
 
         foreach ($GLOBALS['cellules'] as $elem) {
+
+            $json_line = [
+                'name' => '',
+                'absent' => false,
+//                 'sr' => false,
+//                 'grey' => false,
+//                 'out-of-work' => false,
+            ];
+
             $title=null;
       
             if ($elem['poste']==$poste and $elem['debut']==$debut and $elem['fin']==$fin) {
@@ -45,23 +69,27 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                 }
 
                 $resultat = $nom_affiche;
+                $json_line['name'] = $nom_affiche;
         
                 //		Affichage des sans repas
                 if ($elem['nom'] and ($sansRepas === true or in_array($elem['perso_id'], $sansRepas))) {
                     $resultat.="<font class='sansRepas'>&nbsp;(SR)</font>";
+//                     $json_line['sr'] = true;
                 }
-
+                
                 $class_tmp=array();
     
                 // Cellule grisée depuis le menudiv
                 if (isset($elem['grise']) and $elem['grise'] == 1) {
                     $class_tmp[]= 'cellule_grise';
+//                     $json_line['grey'] = true;
                 }
 
                 //		On barre les absents (agents barrés directement dans le plannings, table pl_poste)
                 if ($elem['absent'] == 1 or $elem['supprime']) {
                     $class_tmp[]="red";
                     $class_tmp[]="striped";
+                    $json_line['absent'] = true;
                 }
 
                 if (isset($elem['depart'])
@@ -71,11 +99,13 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                     $class_tmp[]="red";
                     $class_tmp[]="striped";
                     $title = 'Date de départ dépassée';
+                    $json_line['absent'] = true;
                 }
 
                 if ($elem['absent'] == 2) {
                     $class_tmp[] = "out-of-work-time";
                     $title = 'En dehors de ses heures de présences';
+//                     $json_line['out-of-work'] = true;
                 }
 
                 // On marque les absents (absences enregistrées dans la table absences)
@@ -97,6 +127,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                             $class_tmp[]="red";
                             $class_tmp[]="striped";
                             $absence_valide = true;
+                            $json_line['absent'] = true;
                             break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
                         }
                         // Absence non-validée : rouge
@@ -138,6 +169,11 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                 $resultats[$i]=array("text"=>$span, "perso_id"=>$elem['perso_id']);
                 $i++;
             }
+
+            if (!empty($json_line['name']) and !$json_line['absent']) {
+                $json_tab['agents'][] = $json_line;
+            }
+
         }
     }
     $GLOBALS['idCellule']++;
@@ -150,6 +186,11 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
 
     $cellule .= '<a class="pl-icon arrow-right" href="#"></a>';
     $cellule.="</td>\n";
+
+    if ($json_format) {
+        return $json_tab;
+    }
+
     return $cellule;
 }
 

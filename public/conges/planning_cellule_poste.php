@@ -25,6 +25,7 @@ foreach ($GLOBALS['conges'] as $conge) {
             $class_tmp[]="orange";
             $class_tmp[]="striped";
             $conge_valide=true;
+            $json_line['absent'] = true;
             break;  // Garder le break à cet endroit pour que les congés validées prennent le dessus sur les non-validés
         }
         // congé non-validée : orange, sauf si une absence validée existe
