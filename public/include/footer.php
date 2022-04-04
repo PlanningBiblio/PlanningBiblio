@@ -22,6 +22,8 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
 <div class='footer'>
 Planno (<?php echo $GLOBALS['displayed_version']; ?>) - 
 <a href='https://www.planno.fr' target='_blank' style='font-size:9pt;'>www.planno.fr</a>
+<!-- FIXME : ceci ne devrait pas être dans le footer -->
+<script type='text/JavaScript' src='js/bootstrap-5.1.3-dist/bootstrap.js'></script>
 </div>
 </body>
 </html>

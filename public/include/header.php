@@ -53,6 +53,7 @@ if (!file_exists("themes/$theme/favicon.png")) {
 getJSFiles($page, $version);
 ?>
 
+<link rel='StyleSheet' href='css/media/css/bootstrap-5.1.3-dist/bootstrap.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='js/DataTables/datatables.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/jquery.timepicker.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>

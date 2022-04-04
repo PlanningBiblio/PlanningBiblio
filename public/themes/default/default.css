@@ -57,11 +57,10 @@ h3{
 }
 
 #h3-Multisites{
-  position: absolute;
-  top: 62px;
-  left: 690px;
   font-size: 20px;
   font-weight: bold;
+  color: #FFF;
+  margin-right: 20px;
 }
 
 #acces_refuse {
@@ -91,13 +90,54 @@ h3{
   display:none;
 }
 
+.logo-favicon{
+  width: 48px;
+  height: 36px;
+  background:url("images/favicon.svg") no-repeat center;
+}
+
 #logo {
-	position: absolute;
-  left:10px;
-	top: 12px;
-  width: 280px;
-  height: 75px;
-	background:url("images/logo-planno.svg") no-repeat left top;
+  width: 239px;
+  height: 43px;
+  background:url("images/logo-planno.svg") no-repeat left top;
+}
+
+@media only screen and (max-width: 1550px){
+  #logo {
+    width: 48px;
+    height: 36px;
+    background:url("images/favicon.svg") no-repeat center;
+  }
+}
+
+#username{
+  display: block;
+}
+
+@media only screen and (max-width: 1550px){
+  #username {
+    display: none;
+  }
+}
+
+#div_account {
+  display: block;
+}
+
+@media only screen and (max-width: 1200px){
+  #div_account {
+    display: none;
+  }
+}
+
+#div_account_reverse {
+  display: none;
+}
+
+@media only screen and (max-width: 1200px){
+  #div_account_reverse {
+    display: block;
+  }
 }
 
 #logo2 {
@@ -110,7 +150,6 @@ h3{
 
 #logout_img{
   text-align:right;
-  width:42px;
 }
 
 #logout_text a{
@@ -141,7 +180,6 @@ h3{
 }
 
 #content-planning{
-  margin-top: 10px;
   padding: 0 0 0 0;
 }
 
@@ -447,7 +485,7 @@ li .agent-acces-checked2{
 
 .navigation { 
   position:relative;
-  height:30px;
+  background: #FFF;
 }
 
 .popper { 
@@ -495,6 +533,17 @@ a:hover.ejsmenu2 {
   list-style: none;
 }
 
+@media only screen and (max-width: 1200px){
+  .menu_ul{
+    text-align: right;
+    width: 100%;
+    padding: 0;
+    margin:0px;
+    white-space: nowrap;
+    list-style: none;
+  }
+}
+
 .menu_li{
   display: inline;
   padding: 5px 15px;
@@ -502,6 +551,11 @@ a:hover.ejsmenu2 {
 
 .menu_li a, .menu_li a:hover{
   font-size:13pt;
+}
+
+.days_li{
+  display: inline;
+  padding: 5px 0px;
 }
 
 /* TD du menu top */
@@ -627,9 +681,6 @@ select
 
 /*		Plannings				*/
 /* Calendrier, titre (Semaine ...), Boutons de droite */
-#divcalendrier {
-  margin : 10px 0 0 0;
-}
 
 .pl-validation {
   margin: 0px 0 10px 0;
@@ -1015,10 +1066,8 @@ div#tabsemaine1{
 #pl-calendar{
   border:0;
   background: rgba(255, 255, 255, 0);
-  margin: 50px 0 0px 12px;
+  margin: 5px 0 5px 10px;
   width: 165.75px;
-  position: absolute;
-  top: 30px;
 }
 
 #pl-calendar .calendar-datepicker {
@@ -1030,7 +1079,7 @@ div#tabsemaine1{
 }
 
 .pl-highlight {
-  background: #f0e68c;
+  background: #ffffff;
 }
 
 /* Notes affichées en bas des plannings */
@@ -1147,7 +1196,9 @@ a:hover.menuRed, a:hover.menu {
   font-weight: normal;
   width:50%;
   text-align:left;
-  padding: 50px 0 20px 220px;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  padding-left: 30px;
 }
 
 .top-button-div {
@@ -1251,9 +1302,8 @@ img{
 }
 
 #td_boutons{
-  width:25%;
   text-align:right;
-  padding:50px 20px 0 0;
+  padding:20px 20px 0 0;
 }
 
 #td_boutons .ui-state-error{
@@ -1316,8 +1366,23 @@ img{
   padding-right: 5px;
 }
 
+#tableAbsencesVoir_length label, #tableConges_length label, #tableAgents_length label, #tablePostes_length label, #tableModeles_length label, #table-list_length label, #table-groups_length label, #table-separations_length label, #tablePlanningHebdo_length label{
+  margin-top: 3px;
+  margin-left: 3px;
+}
+
+#tableAbsencesVoir_filter label, #tableConges_filter label, #tableAgents_filter label, #tablePostes_filter label, #tableModeles_filter label, #tablePlanningHebdo_filter label{
+  margin-top: 3px;
+  margin-right: 3px;
+}
+
+#table-list_filter label, #table-groups_filter label, #table-separations_filter label{
+  margin-bottom: 3px;
+  margin-right: 3px;
+}
+
 /*text of table header when background is blue*/
-#tablePresenceMonCompte_length label, #tablePresenceMonCompte_filter label, #tableConges_wrapper label, #tableAbsencesVoir_wrapper label, #tableStatAbsences_wrapper label, #DataTables_Table_0_wrapper label, #AbsenceInfoTable_wrapper label, #tableAgents_wrapper label, #tableAgents_wrapper label, #tablePostes_wrapper label, #tableModeles_wrapper label, #table-groups_wrapper label, #table-separations_wrapper label, #table-list_wrapper label, #table-list_length label, #table-list_filter label, #tablePlanningHebdo_wrapper label, #tablePlanningAbsences_wrapper label{
+#tableRecup_wrapper label, #tablePresenceMonCompte_length label, #tablePresenceMonCompte_filter label, #tableConges_wrapper label, #tableAbsencesVoir_wrapper label, #tableStatAbsences_wrapper label, #DataTables_Table_0_wrapper label, #AbsenceInfoTable_wrapper label, #tableAgents_wrapper label, #tableAgents_wrapper label, #tablePostes_wrapper label, #tableModeles_wrapper label, #table-groups_wrapper label, #table-separations_wrapper label, #table-list_wrapper label, #table-list_length label, #table-list_filter label, #tablePlanningHebdo_wrapper label, #tablePlanningAbsences_wrapper label{
   color: #FFF;
 }
 
@@ -1424,6 +1489,7 @@ div.presents-absents {
 
 .fg-toolbar {
     color: inherit;
+    min-height: 40px;
 }
 
 .dataTables_wrapper .dataTables_filter input,
@@ -1457,7 +1523,7 @@ div.presents-absents {
 /*	Agenda	*/
 #div_agenda{
   min-height:400px;
-  width: 72%;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -1639,6 +1705,11 @@ div.presents-absents {
 .ui-button{
   min-width: 85px;
 }
+
+.ui-button.fg-button{
+  min-width: 40px;
+}
+
 /*main button style*/
 .ui-button-type1{
   border: 1px solid #FFD700;
@@ -1798,6 +1869,9 @@ table.dataTable th{
   padding: 10px;
 }
 
+.info-align{
+  display: inline-block;
+}
 
 #admin .ui-state-default, .ui-widget-header .ui-state-default {
     border: 2px solid #FFF;

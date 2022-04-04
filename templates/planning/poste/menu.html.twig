@@ -6,18 +6,18 @@
 {% endblock %}
 
 <!-- Show title and calendar widgets -->
-<div>
-  <div id='divcalendrier' class='text'>
+<div class='noprint'>
+  <div id='divcalendrier' class='navabar-expand-custom text'>
     <form name='form' method='get' action='#'>
       <input type='hidden' id='date' name='date' value='{{ date }}' data-set-calendar='{{ date }}' />
       <input type='hidden' id='site' name='date' value='{{ site }}' />
     </form>
 
-    <table id='tab_titre'>
-      <tr>
-
-        <td class='titreSemFixe'>
-          <div id='week_planning'>
+    <div id='tab_titre' class="container-fluid">
+      <div class="row justify-content-between">
+        <div id='pl-calendar' class="datepicker {{ week_view ? 'datepickerSemaine' }}"></div>
+        <div class='col-xxl titreSemFixe'>
+          <div id='week_planning' class='noprint'>
             <b>Semaine {{ affSem }}</b>
           </div>
 
@@ -34,32 +34,27 @@
             </div>
           {% endif %}
 
-          <table class='noprint' id='tab_jours'>
-            <tr valign='top'>
-              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[0] }}"  class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </td>
-              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[1] }}"  class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </td>
-              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[2] }}"  class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </td>
-              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[3] }}"  class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </td>
-              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[4] }}"  class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </td>
-              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[5] }}"  class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></td>
+          <div class='noprint' id='tab_jours'>
+            <ul valign='top' style="padding-left: 0px;">
+              <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[0] }}" class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </li>
+              <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[1] }}" class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </li>
+              <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[2] }}" class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </li>
+              <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[3] }}" class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </li>
+              <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[4] }}" class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </li>
+              <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[5] }}" class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></li>
               {% if config('Dimanche') %}
-                <td align='center' style="font-size: 13pt;"> / <a href="{{ asset('index') }}?date={{ dates[6] }}" class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </td>
+                <li align='center' style="font-size: 13pt;" class="days_li"> / <a href="{{ asset('index') }}?date={{ dates[6] }}"  class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </li>
               {% endif %}
-                <td style="font-size: 13pt;"> / <a href="{{ asset('week') }}" class="{{ week_view ? 'menuRed' : 'menu' }}" >Semaine</a></td>
-            </tr>
-          </table>
-
-          {% if config('Multisites-nombre') > 1 %}
-            <h3 id='h3-Multisites'>{{ siteName(site) }}</h3>
-          {% endif %}
+              <li style="font-size: 13pt;" class="days_li"> / <a href="{{ asset('week') }}" class="{{ week_view ?'menuRed' : 'menu' }}" >Semaine</a></li>
+            </ul>
+          </div>
 
           <!-- Show informations -->
-          
 
-        </td>
+        </div>
 
         <!-- Show action icons -->
-        <td id='td_boutons'>
+        <div id='td_boutons' class="col-2">
           {% if week_view %}
             <a href='javascript:print();' title='Imprimer le planning'>
               <span class='pl-icon pl-icon-printer'></span>
@@ -128,11 +123,15 @@
               </div>
             {% endif %}
           {% endif %}
-        </td>
-      </tr>
-    </table>
-  </div>
-  <div id='pl-calendar' class="noprint datepicker {{ week_view ? 'datepickerSemaine' }}"></div>
+          {% if config('Multisites-nombre') > 1 %}
+            <div>
+              <h3 id='h3-Multisites'>{{ siteName(site) }}</h3>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>  
+  </div>  
 </div>
 
 <div id='messages_infos' >
