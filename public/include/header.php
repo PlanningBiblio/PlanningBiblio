@@ -48,11 +48,13 @@ if (!file_exists("themes/$theme/favicon.png")) {
 <script type='text/JavaScript' src='js/CJScript.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/datePickerFr.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/dataTables.sort.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/bootstrap-5.1.3-dist/bootstrap.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/script.js?version=<?php echo $version; ?>'></script>
 <?php
 getJSFiles($page, $version);
 ?>
 
+<link rel='StyleSheet' href='css/media/css/bootstrap-5.1.3-dist/bootstrap.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='js/DataTables/datatables.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/jquery.timepicker.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>

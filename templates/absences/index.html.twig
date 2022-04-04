@@ -8,63 +8,64 @@
 
 {% block page %}
   <h3>Liste des absences</h3>
-  <form name='form' id='absencesListForm' method='get' action='/absence'>
-    <span style='float:left; vertical-align:top; margin-bottom:20px;'>
-      <table class='tableauStandard'>
-        <tbody>
-          <tr>
-            <td style='vertical-align:middle;'>
-              <label for="debut" >Début :</label>
-              <input type='text' id="debut" name='debut' value='{{ debut }}' class='datepicker'/>
-            </td>
-            <td style='vertical-align:middle;'>
-              <label>Fin :</label>
-              <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker'/>
-            </td>
-            {% if managed | length > 1 %}
-              <td style='vertical-align:middle;text-align:left;'>
-                <span style='padding:5px;'>
-                  <label>Agent :</label>
-                  <select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>
-                    {% if perso_id == 0 %}
-                      <option value='0' selected >Tous</option>
-                    {% else %}
-                      <option value='0' >Tous</option>
-                    {% endif %}
+  <form name="form" id="absencesListForm" method="get" action="{{ asset('absence') }}">
+    <div class="container top-buttons">
+      <div class="row">
+        <div class="col">
+          <label for="debut" >Début :</label>
+          <input type="text" id="debut" name="debut" value="{{ debut }}" class="datepicker"/>
+        </div>
+        <div class="col" style='vertical-align:middle;'>
+          <label>Fin :</label>
+          <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker'/>
+        </div>
+        {% if managed | length > 1 %}
+          <div class="col">
+            <span style='padding:5px;'>
+              <label>Agent :</label>
+              <select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>
+                {% if perso_id == 0 %}
+                  <option value='0' selected >Tous</option>
+                {% else %}
+                  <option value='0' >Tous</option>
+                {% endif %}
 
-                    {% for a in managed %}
-                      {% if a.id == perso_id %}
-                        <option value="{{ a.id }}" selected>{{ a.nom }} {{ a.prenom }}</option>
-                      {% else %}
-                        <option value="{{ a.id }}">{{ a.nom }} {{ a.prenom }}</option>
-                      {% endif %}
-                    {% endfor %}
-
-                  </select>
-                </span>
-                <br/>
-                <span style='padding:5px;'>Agents supprimés : 
-                  {% if agents_deleted %}
-                    <input type='checkbox' checked name='supprimes' onclick="updateAgentsList(this,'perso_id');"/>
+                {% for a in managed %}
+                  {% if a.id == perso_id %}
+                    <option value="{{ a.id }}" selected>{{ a.nom }} {{ a.prenom }}</option>
                   {% else %}
-                    <input type='checkbox' name='supprimes' onclick="updateAgentsList(this,'perso_id');"/>
+                    <option value="{{ a.id }}">{{ a.nom }} {{ a.prenom }}</option>
                   {% endif %}
-                </span>
-              </td>
-            {% endif %}
+                {% endfor %}
 
-            <td>
-              <input type='submit' value='Rechercher' class='ui-button ui-button-type1' style='margin-right:20px;' />
-              <input type='button' value='Réinitialiser' onclick="absences_reinit();"  class='ui-button ui-button-type2' />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </span>
+              </select>
+            </span>
+            <br/>
+            <span style='padding:5px;'>Agents supprimés : 
+              {% if agents_deleted %}
+                <input type='checkbox' checked name='supprimes' onclick="updateAgentsList(this,'perso_id');"/>
+              {% else %}
+                <input type='checkbox' name='supprimes' onclick="updateAgentsList(this,'perso_id');"/>
+              {% endif %}
+            </span>
+          </div>
+        {% endif %}
 
-    <span style='float:right; vertical-align:top; margin:10px 5px;'>
-      <a href='{{ asset("absence/add") }}' class='ui-button ui-button-type2'>Ajouter</a>
-    </span>
+        <div class="col">
+          <input type='submit' value='Rechercher' class='ui-button ui-button-type1' style='margin-right:20px;' />
+        </div>
+
+        <div class="col-3">
+          <input type='button' value='Réinitialiser' onclick="absences_reinit();"  class='ui-button ui-button-type2' />
+        </div>
+
+        <div class="col">
+          <div class="ml-auto">
+            <a href='{{ asset("absence/add") }}' class='ui-button ui-button-type2'>Ajouter</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </form>
   
   <table id='tableAbsencesVoir' class='CJDataTable' data-sort="{{ sort }}">
