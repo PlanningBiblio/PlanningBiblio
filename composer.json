@@ -31,7 +31,7 @@
         "symfony/console": "*",
         "symfony/dotenv": "*",
         "symfony/expression-language": "*",
-        "symfony/flex": "*",
+        "symfony/flex": "^1.9.8",
         "symfony/form": "*",
         "symfony/framework-bundle": "*",
         "symfony/http-foundation": "^3.4",
