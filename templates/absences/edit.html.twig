@@ -38,7 +38,7 @@
 
             {% if agents_multiples %}
               <tr>
-                <td class="textAlignRight"><label >Agent(s)</label></td>
+                <td class="textAlignRight"><label>Agent(s)</label></td>
                 <td colspan='2'>
                   <ul id='perso_ul1' class='perso_ul'></ul>
                   <ul id='perso_ul2' class='perso_ul'></ul>
@@ -69,7 +69,7 @@
             {% else %}
               {% if agents | length > 1 %}
                 <tr>
-                  <td class="textAlignRight"><label >Agents</label></td>
+                  <td class="textAlignRight"><label>Agents</label></td>
                   <td>
                     <ul>
                       {% for a in agents %}
@@ -80,13 +80,13 @@
                 </tr>
               {% else %}
                 <tr>
-                  <td class="textAlignRight"><label >Agent</label></td>
+                  <td class="textAlignRight"><label>Agent</label></td>
                   <td>{{ absence.nom }} {{ absence.prenom }}</td>
                 </tr>
               {% endif %}
             {% endif %}
               <tr>
-                <td class="textAlignRight"><label >Journée(s) entière(s)</label></td>
+                <td class="textAlignRight"><label>Journée(s) entière(s)</label></td>
                 <td>
                   {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
                     <input type='checkbox' name='allday' checked="checked" onclick='all_day();'/>
@@ -96,7 +96,7 @@
                 </td>
               </tr>
               <tr>
-                <td class="textAlignRight"><label >Date de début</label> </td>
+                <td class="textAlignRight"><label>Date de début</label> </td>
                 <td style='white-space:nowrap;'>
                   <input type='text' name='debut' value='{{ debut }}' style='width:100%;' class='datepicker'/>
                 </td>
@@ -126,7 +126,7 @@
                 {% else %}
                   <tr id='hre_fin'>
                 {% endif %}
-                  <td class="textAlignRight"><label >Heure de fin</label></td>
+                  <td class="textAlignRight"><label>Heure de fin</label></td>
                   <td>
                     <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value="{{ hre_fin | date('H:i') }}" style='width:100%;'/>
                 </td>
@@ -134,7 +134,7 @@
 
               <tr>
                 <td  class="textAlignRight" style='padding-bottom:30px;'>
-                  <label >Récurrence</label>
+                  <label>Récurrence</label>
                 </td>
                 <td style='padding-bottom:30px;'>
                   <input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1' disabled='disabled' />
@@ -147,7 +147,8 @@
               </tr>
 
               <tr>
-                <td class="textAlignRight"><label >Motif</label></td>
+                <td class="textAlignRight"><label>Motif</label></td>
+
                 <td style='white-space:nowrap;'>
                   <select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>
                     <option value=''></option>
@@ -187,7 +188,7 @@
               {% else %}
                 <tr style="display:none;" id='tr_motif_autre'>
               {% endif %}
-                <td><label >Motif (autre)</label></td>
+                <td><label>Motif (autre)</label></td>
                 <td>
                   <input type='text' name='motif_autre' style='width:100%;' value='{{ absence.motif_autre }}' class='ui-widget-content ui-corner-all'/>
                 </td>
@@ -195,7 +196,7 @@
 
               <tr style='vertical-align:top;'>
                 <td class="textAlignRight">
-                  <label >Commentaires</label>
+                  <label>Commentaires</label>
                 </td>
                 <td>
                   <textarea name='commentaires' cols='25' rows='5' class='ui-widget-content ui-corner-all'>{{ absence.commentaires }}</textarea>
@@ -204,7 +205,7 @@
 
               {% if right701 %}
                 <tr style='vertical-align:top;'>
-                  <td class="textAlignRight"><label >Pièces justificatives</label></td>
+                  <td class="textAlignRight"><label>Pièces justificatives</label></td>
                   <td>
                     {% if absence.pj1 %}
                       <div class='absences-pj-fiche'>
@@ -246,7 +247,7 @@
               {% endif %}
 
                 <tr style='vertical-align:top;'>
-                  <td class="textAlignRight"><label >Documents attachés</label></td>
+                  <td class="textAlignRight"><label>Documents attachés</label></td>
                   <td>
                     <ul id='documentsList'>
                       {% for document in documents %}
@@ -263,7 +264,7 @@
                 {% if absence.editable %}
                     <tr style='vertical-align:top;'>
                     <td class="textAlignRight">
-                        <label >Attacher un document</label>
+                        <label>Attacher un document</label>
                     </td>
                     <td><input type="file" name="documentFile" id="documentFile" /> <a href="javascript:addAbsenceDocument({{ id }})">Ajouter</a></td>
                     </tr>
@@ -271,7 +272,7 @@
 
               {% if absences_validation %}
                 <tr>
-                  <td class="textAlignRight"><label >Validation</label></td>
+                  <td class="textAlignRight"><label>Validation</label></td>
                   <td>
                     {% if absence.status_editable %}
                       <select name='valide' class='ui-widget-content ui-corner-all'>
@@ -326,7 +327,7 @@
               {% endif %}
 
               <tr>
-                <td class="textAlignRight"><label >Demande</label></td>
+                <td class="textAlignRight"><label>Demande</label></td>
                 <td>{{ absence.demande }}</td>
               </tr>
 

@@ -43,7 +43,7 @@ input,select,textarea {
 
 /* fond de tous le site avec image par transparance */
 body {
-  background:url("new_UI/background.png") repeat-y top rgba(240, 240, 240, 1);
+  background:url("images/background.png") repeat-y top rgba(240, 240, 240, 1);
 	margin: 0px 0px 0px 0px;
 }
 
@@ -75,7 +75,7 @@ h3{
   margin:15px auto 0 auto;
   width:260px;
   height:50px;
-  background:url("new_UI/logo-planno.svg") no-repeat right top;
+  background:url("images/logo-planno.svg") no-repeat right top;
 }
 
 #h2-authentification, #h2-planning-authentification {
@@ -93,7 +93,7 @@ h3{
 	top: 12px;
   width: 280px;
   height: 75px;
-	background:url("new_UI/logo-planno.svg") no-repeat left top;
+	background:url("images/logo-planno.svg") no-repeat left top;
 }
 
 #logo2 {
@@ -151,6 +151,10 @@ h3{
   color: #BA1800;
 }
 
+.calendar-absence{
+  margin-bottom: 0px;
+}
+
 .absences-pj{
   display:inline;
   padding:0 8px;
@@ -169,6 +173,26 @@ h3{
   background: #29495C;
   color:#FFF;
 }
+
+.absences-motif-div span {
+  position: absolute;
+  }
+  
+  .absences-motif-div span:nth-child(1) {
+  left: 60px;
+  }
+  
+  .absences-motif-div span:nth-child(2) {
+  left: 415px;
+  }
+  
+  .absences-motif-div span:nth-child(3) {
+  left: 590px;
+  }
+  
+  .absences-motif-div span:nth-child(4) {
+  left: 750px;
+  }
 
 /* Absences récurrentes */
 #recurrence-summary, #recurrence-summary-form {
@@ -196,75 +220,75 @@ h3{
 }
 
 .pl-icon-add {
-  background:url("new_UI/icon/add_black_18dp.svg") no-repeat center;
+  background:url("images/icon/add_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-copy {
-  background:url("new_UI/icon/content_copy_black_18dp.svg") no-repeat center;
+  background:url("images/icon/content_copy_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-drop {
-  background:url("new_UI/icon/close_white_24dp.svg") no-repeat center;
+  background:url("images/icon/close_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-dropblack {
-  background:url("new_UI/icon/close_black_24dp.svg") no-repeat center;
+  background:url("images/icon/close_black_24dp.svg") no-repeat center;
 }
 
 .pl-icon-edit {
-  background:url("new_UI/icon/edit_black_18dp.svg") no-repeat center;
+  background:url("images/icon/edit_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-google-calendar {
-  background:url("new_UI/icon/calendar_month_black_18dp.svg") no-repeat center;
+  background:url("images/icon/calendar_month_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-hide {
-  background:url("new_UI/icon/visibility_off_white_18dp.svg") no-repeat center;
+  background:url("images/icon/visibility_off_white_18dp.svg") no-repeat center;
 }
 
 .pl-icon-lock {
-  background:url("new_UI/icon/lock_white_24dp.svg") no-repeat center;
+  background:url("images/icon/lock_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-logout {
-  background:url("new_UI/icon/logout_black_24dp.svg") no-repeat center;
+  background:url("images/icon/logout_black_24dp.svg") no-repeat center;
 }
 
 .pl-icon-open {
-  background:url("new_UI/icon/folder_white_24dp.svg") no-repeat center;
+  background:url("images/icon/folder_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-printer {
-  background:url("new_UI/icon/print_white_24dp.svg") no-repeat center;
+  background:url("images/icon/print_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-recurring {
-  background:url("new_UI/icon/restart_alt_black_18dp.svg") no-repeat center;
+  background:url("images/icon/restart_alt_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-refresh {
-  background:url("new_UI/icon/refresh_white_24dp.svg") no-repeat center;
+  background:url("images/icon/refresh_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-save {
-  background:url("new_UI/icon/save_white_24dp.svg") no-repeat center;
+  background:url("images/icon/save_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-unlock {
-  background:url("new_UI/icon/lock_open_white_24dp.svg") no-repeat center;
+  background:url("images/icon/lock_open_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-valid {
-  background:url("new_UI/icon/done_black_18dp.svg") no-repeat center/70%;
+  background:url("images/icon/done_black_18dp.svg") no-repeat center/70%;
 }
 
 .pl-icon-trash {
-  background:url("new_UI/icon/delete_black_18dp.svg") no-repeat center;
+  background:url("images/icon/delete_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-arrowupdown{
-  background:url("new_UI/icon/import_export_black_18dp.svg") no-repeat center;
+  background:url("images/icon/import_export_black_18dp.svg") no-repeat center;
   margin-top: 3px;
 }
 
@@ -908,7 +932,7 @@ div#tabsemaine1{
 }
 
 .arrow-right {
-  background:url("new_UI/icon/arrow_forward_black_36dp.svg") no-repeat center;
+  background:url("images/icon/arrow_forward_black_36dp.svg") no-repeat center;
   z-index:7;
   display: none;
   position:absolute;
@@ -1233,7 +1257,7 @@ img{
 }
 
 /*text of table header when background is blue*/
-#tableConges_wrapper label, #tableAbsencesVoir_wrapper label, #tableStatAbsences_wrapper label, #DataTables_Table_0_wrapper label, #AbsenceInfoTable_wrapper label, #tableAgents_wrapper label, #tableAgents_wrapper label, #tablePostes_wrapper label, #tableModeles_wrapper label, #table-groups_wrapper label, #table-separations_wrapper label, #table-list_wrapper label, #table-list_length label, #table-list_filter label, #tablePlanningHebdo_wrapper label, #tablePlanningAbsences_wrapper label{
+#tablePresenceMonCompte_length label, #tablePresenceMonCompte_filter label, #tableConges_wrapper label, #tableAbsencesVoir_wrapper label, #tableStatAbsences_wrapper label, #DataTables_Table_0_wrapper label, #AbsenceInfoTable_wrapper label, #tableAgents_wrapper label, #tableAgents_wrapper label, #tablePostes_wrapper label, #tableModeles_wrapper label, #table-groups_wrapper label, #table-separations_wrapper label, #table-list_wrapper label, #table-list_length label, #table-list_filter label, #tablePlanningHebdo_wrapper label, #tablePlanningAbsences_wrapper label{
   color: #FFF;
 }
 
@@ -1921,7 +1945,7 @@ div.presents-absents {
   background-color: #456578;
   border: 1px solid #456578;
   border-right-color: #000;
-  color: #FFFFFF;
+  color: #29495C;
 }
 
 #account .ui-widget-content .ui-state-default{
@@ -2269,27 +2293,27 @@ div.presents-absents {
 }
 
 .calendar-icon,.calendar-widget-content .calendar-icon{
-  background-image:url("new_UI/ui-icons_29495C_256x240.png")
+  background-image:url("images/ui-icons_29495C_256x240.png")
 }
 
 .calendar-widget-header .calendar-icon{
-  background-image:url("new_UI/ui-icons_29495C_256x240.png")
+  background-image:url("images/ui-icons_29495C_256x240.png")
 }
 
 .calendar-state-hover .calendar-icon,.calendar-state-focus .calendar-icon,.calendar-button:hover .calendar-icon,.calendar-button:focus .calendar-icon{
-  background-image:url("new_UI/ui-icons_FFFFFF_256x240.png")
+  background-image:url("images/ui-icons_FFFFFF_256x240.png")
 }
 
 .calendar-state-active .calendar-icon,.calendar-button:active .calendar-icon{
-  background-image:url("new_UI/ui-icons_ffffff_256x240.png")
+  background-image:url("images/ui-icons_ffffff_256x240.png")
 }
 
 .calendar-state-highlight .calendar-icon,.calendar-button .calendar-state-highlight.calendar-icon{
-  background-image:url("new_UI/ui-icons_29495C_256x240.png")
+  background-image:url("images/ui-icons_29495C_256x240.png")
 }
 
 .calendar-button .calendar-icon{
-  background-image:url("new_UI/ui-icons_29495C_256x240.png")
+  background-image:url("images/ui-icons_29495C_256x240.png")
 }
 
 .calendar-icon-blank.calendar-icon-blank.calendar-icon-blank{

@@ -29,7 +29,7 @@ if (!file_exists("themes/$theme/$theme.css")) {
 
 $favicon = null;
 if (!file_exists("themes/$theme/favicon.png")) {
-    $favicon = "<link rel='icon' type='image/svg' href='themes/$theme/new_UI/favicon.ico' />\n";
+    $favicon = "<link rel='icon' type='image/svg' href='themes/$theme/images/favicon.ico' />\n";
 }
 
 ?>

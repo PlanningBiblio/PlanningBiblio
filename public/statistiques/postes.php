@@ -270,7 +270,7 @@ $_SESSION['stat_tab']=$tab;
 echo "<div id='content-form'>\n";
 echo "<h3>Statistiques par poste</h3>\n";
 echo "<div id='statistiques'>\n";
-echo "<table class='satistics-div' style='background: #FFF; border-radius: 5px; padding: 10px; width: 100%;'><tr style='vertical-align:top;'><td id='stat-col1'>\n";
+echo "<table class='statistics-div'><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les postes		-------------
 echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='statistiques/postes.php' />\n";

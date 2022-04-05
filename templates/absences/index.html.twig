@@ -18,13 +18,13 @@
               <input type='text' id="debut" name='debut' value='{{ debut }}' class='datepicker'/>
             </td>
             <td style='vertical-align:middle;'>
-              <label >Fin :</label>
+              <label>Fin :</label>
               <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker'/>
             </td>
             {% if admin %}
               <td style='vertical-align:middle;text-align:left;'>
                 <span style='padding:5px;'>
-                  <label >Agent :</label>
+                  <label>Agent :</label>
                   <select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>
                     {% if perso_id == 0 %}
                       <option value='0' selected >Tous</option>
@@ -69,27 +69,27 @@
   
   <table id='tableAbsencesVoir' class='CJDataTable' data-sort="{{ sort }}">
     <thead>
-        <tr>
-          <th class='dataTableNoSort tableSort' >&nbsp;</th>
-          <th class='dataTableDateFR tableSort' >Début</th>
-          <th class='dataTableDateFR-fin tableSort' >Fin</th>
-          <th id='thNom' class="tableSort">Agents</th>
-          {% if config('Absences-validation') %}
-            <th id='thValidation' class="tableSort">État</th>
-          {% endif %}
-          <th class="tableSort">Motif</th>
-          <th class="tableSort">Commentaires</th>
-          <th class='dataTableDateFR tableSort' >Demande</th>
-          {% if can_manage_sup_doc %}
-            <th id='thPiecesJustif' class='dataTableNoSort tableSort' >
-              <label style='white-space:nowrap'>Pièces justificatives</label><br/>
-              <div class='absences-pj'>PJ 1</div>
-              <div class='absences-pj'>PJ 2</div>
-              <div class='absences-pj'>SO</div>
-            </th>
-          {% endif %}
-          <th class="tableSort">Documents</th>
-        </tr>
+       <tr>
+         <th class='dataTableNoSort tableSort' >&nbsp;</th>
+         <th class='dataTableDateFR tableSort' >Début</th>
+         <th class='dataTableDateFR-fin tableSort' >Fin</th>
+         <th id='thNom' class="tableSort">Agents</th>
+         {% if config('Absences-validation') %}
+           <th id='thValidation' class="tableSort">État</th>
+         {% endif %}
+         <th class="tableSort">Motif</th>
+         <th class="tableSort">Commentaires</th>
+         <th class='dataTableDateFR tableSort' >Demande</th>
+         {% if can_manage_sup_doc %}
+           <th id='thPiecesJustif' class='dataTableNoSort tableSort' >
+             <label style='white-space:nowrap'>Pièces justificatives</label><br/>
+             <div class='absences-pj'>PJ 1</div>
+             <div class='absences-pj'>PJ 2</div>
+             <div class='absences-pj'>SO</div>
+           </th>
+         {% endif %}
+         <th class="tableSort">Documents</th>
+       </tr>
     </thead>
     <tbody>
       {% for abs in visibles_absences %}

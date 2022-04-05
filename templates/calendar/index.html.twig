@@ -109,9 +109,9 @@
                   {% if d.absence is not empty %}
                     <div class ='important'>
                       {% if d.absence | length == 1 %}
-                        <p style="margin-bottom: 0px;"> Absence : </p>
+                        <p class="calendar-absence"> Absence : </p>
                       {% elseif d.absence | length > 1 %}
-                        <p style="margin-bottom: 0px;"> Absences : </p>
+                        <p class="calendar-absence"> Absences : </p>
                       {% endif %}
                       <ul>
                       {% for a in d.absence %}

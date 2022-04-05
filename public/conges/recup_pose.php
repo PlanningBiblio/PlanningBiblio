@@ -308,7 +308,7 @@ EOD;
     echo "</form>\n";
 }
 
-echo "</td><td style='color:#cd1b19;'>\n";
+echo "</td><td class='red'>\n";
 
 $date=date("Y-m-d");
 $db=new db();
