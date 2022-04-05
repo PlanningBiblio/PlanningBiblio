@@ -20,12 +20,13 @@ if ($_SERVER['APP_DEBUG']) {
 
 $request = Request::createFromGlobals();
 $path = $request->getPathInfo();
+global $base_url;
+$base_url = plannoBaseUrl($request);
 
 // Session has expired. Redirect to authentication page.
 if (empty($_SESSION['login_id']) && $path != '/login' && $path != 'logout') {
 
     $redirect = ltrim($path, '/');
-    $base_url = plannoBaseUrl($request);
     header("Location: $base_url/login?redirURL=$redirect");
     exit();
 }
