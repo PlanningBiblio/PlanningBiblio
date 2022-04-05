@@ -88,7 +88,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
         $this->logInAgent($greg, array(100));
         $crawler = $client->request('GET', "/workinghour/$greg_wh_id");
         $status = $crawler
-            ->filterXPath('//div[@id="content"]/div[@id="working_hours"]/form/p/span')
+            ->filterXPath('//div[@id="content"]/div[@id="workhours"]/div[@class="admin-div"]/div[@id="working_hours"]/form/p/span')
             ->text();
         $this->assertEquals('Demandé', $status, 'User with right can see the status but cannot change it');
 
