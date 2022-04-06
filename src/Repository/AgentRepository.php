@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Criteria;
 
 use App\Model\Absence;
 use App\Model\Agent;
-use App\Model\CompTime;
+use App\Model\OverTime;
 use App\Model\Detached;
 use App\Model\HiddenTables;
 use App\Model\Holiday;
@@ -63,7 +63,7 @@ class AgentRepository extends EntityRepository
             $perso_id = $agent->id();
             $classes = [
                 Absence::class,
-                CompTime::class,
+                OverTime::class,
                 Detached::class,
                 HiddenTables::class,
                 Holiday::class,
