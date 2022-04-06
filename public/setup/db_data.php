@@ -50,7 +50,6 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong�
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Poste', 301, 'Création / modification des plannings, utilisation et gestion des modèles', '', 'Planning', 110);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe`,`groupe_id`,`categorie`,`ordre`) VALUES ('Gestion des congés, validation niveau 2','Gestion des congés, validation niveau 2',601,'Congés','76');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES ('Gestion des congés, validation niveau 1','401','Gestion des congés, validation niveau 1','Congés','75');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Poser des récupérations','100','conges/recup_pose.php');";
 
 //	Insertion des activités
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('1', 'Assistance audiovisuel');";
@@ -385,7 +384,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('15','10','Liste des cong&eacute;s','/holiday/index','config=Conges-Enable'),
   ('15','15','Liste des r&eacute;cup&eacute;rations','/holiday/index?recup=1','config=Conges-Enable;Conges-Recuperations'),
   ('15','20','Poser des cong&eacute;s','/holiday/new','config=Conges-Enable'),
-  ('15','24','Poser des r&eacute;cup&eacute;rations','conges/recup_pose.php','config=Conges-Enable;Conges-Recuperations'),
+  ('15','24','Poser des r&eacute;cup&eacute;rations','/comptime/add','config=Conges-Enable;Conges-Recuperations'),
   ('15','26','Heures supplémentaires','/overtime','config=Conges-Enable'),
   ('15','30','Informations','/holiday-info','config=Conges-Enable'),
   ('15','40','Crédits','/holiday/accounts','config=Conges-Enable'),
