@@ -1326,7 +1326,7 @@ class StatisticController extends BaseController
             $absences = new \absences();
             $absences->valide = false;
             $absent_ids = array(2);
-            $absences->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, array(1));
+            $absences->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
             $absents = $absences->elements;
 
             foreach ($conges as $elem) {
