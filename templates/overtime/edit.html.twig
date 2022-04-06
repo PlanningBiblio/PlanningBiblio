@@ -26,7 +26,7 @@
   <div id="content admin">
     <h3>Récupération</h3>
     <div class="admin-div">
-      <form method="post" action="{{ asset('comp-time') }}">
+      <form method="post" action="{{ asset('overtime') }}">
         <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
         <input type="hidden" name="id" value="{{ id }}" />
 
@@ -39,46 +39,46 @@
           {% if config('Recup-DeuxSamedis') %}
             <tr>
               <td class="textAlignRight">Date(s) concernée(s) : </td>
-              <td>{{ comptime.date | datefull }}</td>
+              <td>{{ overtime.date | datefull }}</td>
             </tr>
 
             <tr>
               <td>&nbsp;</td>
-              <td>{{ comptime.date2 | datefull }}</td>
+              <td>{{ overtime.date2 | datefull }}</td>
             </tr>
           {% else %}
             <tr>
               <td class="textAlignRight">Date concernée : </td>
-              <td>{{ comptime.date | datefull }}</td>
+              <td>{{ overtime.date | datefull }}</td>
             </tr>
           {% endif %}
 
           <tr>
             <td class="textAlignRight">Date de la demande : </td>
             <td>
-              {{ comptime.saisie }} {% if comptime.saisie_par and comptime.saisie_par == comptime.perso_id %} par comptime.saisie_par_nom {% endif %}
+              {{ overtime.saisie }} {% if overtime.saisie_par and overtime.saisie_par == overtime.perso_id %} par overtime.saisie_par_nom {% endif %}
             <td>
           </tr>
 
           <tr>
             <td class="textAlignRight">Heures demandées : </td>
-            {% if comptime.editable %}
+            {% if overtime.editable %}
               <td>
-                <input id="heures" name="heures" class="comptime-timepicker ui-widget-content ui-corner-all" value="{{ comptime.time }}" style="text-align: center;"/>
+                <input id="heures" name="heures" class="overtime-timepicker ui-widget-content ui-corner-all" value="{{ overtime.time }}" style="text-align: center;"/>
               </td>
             {% else %}
-              <td>{{ comptime.heures | hours }}</td>
+              <td>{{ overtime.heures | hours }}</td>
             {% endif %}
           </tr>
 
           <tr>
             <td class="textAlignRight">Commentaires : </td>
-            {% if comptime.editable %}
+            {% if overtime.editable %}
               <td>
-                <textarea name="commentaires">{{ comptime.commentaires }}</textarea>
+                <textarea name="commentaires">{{ overtime.commentaires }}</textarea>
               </td>
             {% else %}
-              <td>{{ comptime.commentaires | nl2br }}</td>
+              <td>{{ overtime.commentaires | nl2br }}</td>
             {% endif %}
           </tr>
 
@@ -127,17 +127,17 @@
             <td class="textAlignRight">Motif du refus : </td>
             {% if show_select == true %}
               <td>
-                <textarea name="refus">{{ comptime.refus }}</textarea>
+                <textarea name="refus">{{ overtime.refus }}</textarea>
               </td>
             {% else %}
-              <td>{{ comptime.refus }}</td>
+              <td>{{ overtime.refus }}</td>
             {% endif %}
           </tr>
 
           <tr>
             <td colspan="2" class="td_validation">
-              <input type="button" class="ui-button ui-button-type2" value="Retour" onclick='location.href="/comp-time";' />
-              {% if comptime.save %}
+              <input type="button" class="ui-button ui-button-type2" value="Retour" onclick='location.href="/overtime";' />
+              {% if overtime.save %}
                 <input type="submit" class="ui-button" value="Enregistrer"/>
               {% endif %}
             </td>

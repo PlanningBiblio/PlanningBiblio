@@ -946,7 +946,7 @@ $(function(){
       });
     });
 
-    $('.comptime-timepicker').plannoTimepicker({
+    $('.overtime-timepicker').plannoTimepicker({
       zindex: 9999999,
       interval: step,
       granularity: granularity,
