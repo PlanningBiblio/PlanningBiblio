@@ -18,6 +18,11 @@ trait EntityValidationStatuses
         $entity = new ValidationAwareEntity($module, $entity_id);
         list($entity_state, $entity_state_desc) = $entity->status();
 
+        // At this point, comptime entities
+        // and holiday are treated the same.
+        // This was not the cas in ValidationAwareEntity.
+        $module = $module == 'comptime' ? 'holiday' : $module;
+
         $adminN1 = true;
         $adminN2 = true;
         foreach ($agent_ids as $id) {

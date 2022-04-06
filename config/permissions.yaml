@@ -53,7 +53,11 @@
     - 100
 "ajax.update_agent_login":
     - 21
+"comp-time.edit":
+    - 100
 "comp-time.index":
+    - 100
+"comp-time.save":
     - 100
 "ajax.workinghourtables":
     - 100

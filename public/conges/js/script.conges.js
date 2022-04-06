@@ -773,8 +773,12 @@ function update_validation_statuses() {
     perso_ids.push($(this).data('id'));
   });
 
-  if (perso_ids.length == 0) {
+  if (perso_ids.length == 0 && $('#selected_agent_id').val()) {
     perso_ids.push($('#selected_agent_id').val());
+  }
+
+  if (perso_ids.length == 0) {
+    return;
   }
 
   holiday_id = $('input[name="id"]').val();

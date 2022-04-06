@@ -33,7 +33,7 @@ class ValidationAwareEntity
 
     public function __construct($entity_type, $entity_id)
     {
-        if (!in_array($entity_type, array('absence', 'holiday', 'workinghour'))) {
+        if (!in_array($entity_type, array('absence', 'holiday', 'comptime', 'workinghour'))) {
             throw new \Exception("ValidationAwareEntity::new: Unsupported entity $entity_type");
         }
 
@@ -52,6 +52,10 @@ class ValidationAwareEntity
             $this->entity = self::load_holiday($entity_id);
         }
 
+        if ($entity_type == 'comptime') {
+            $this->entity = self::load_comptime($entity_id);
+        }
+
         if ($entity_type == 'workinghour') {
             $this->entity = self::load_workinghours($entity_id);
         }
@@ -63,7 +67,7 @@ class ValidationAwareEntity
             return $this->config['Absences-Validation-N2'];
         }
 
-        if ($this->type == 'holiday') {
+        if ($this->type == 'holiday' or $this->type == 'comptime') {
             return $this->config['Conges-Validation-N2'];
         }
 
@@ -94,7 +98,10 @@ class ValidationAwareEntity
             $valide_n1 = $this->entity['valide_n1'];
         }
 
-        if ($this->type == 'holiday' or $this->type == 'workinghour') {
+        if ($this->type == 'holiday'
+            or $this->type == 'workinghour'
+            or $this->type == 'comptime') {
+
             $valide_n2 = $this->entity['valide'];
             $valide_n1 = $this->entity['valide_n1'];
         }
@@ -135,6 +142,15 @@ class ValidationAwareEntity
         $c = new \conges();
         $c->id = $id;
         $c->fetch();
+
+        return $c->elements[0];
+    }
+
+    private static function load_comptime($id)
+    {
+        $c = new \conges();
+        $c->recupId = $id;
+        $c->getRecup();
 
         return $c->elements[0];
     }
