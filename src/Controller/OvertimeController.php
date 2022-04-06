@@ -14,11 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 include_once(__DIR__ . '/../../public/conges/class.conges.php');
 include_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 
-class CompTimeController extends BaseController
+class OvertimeController extends BaseController
 {
     use \App\Controller\Traits\EntityValidationStatuses;
     /**
-     * @Route("/comp-time", name="comp-time.index", methods={"GET"})
+     * @Route("/overtime", name="overtime.index", methods={"GET"})
      */
     public function index(Request $request)
     {
@@ -63,7 +63,7 @@ class CompTimeController extends BaseController
         $fin = ($annee + 1) . '-08-31';
         $message = null;
 
-        // Search for existing comp-times
+        // Search for existing overtimes
         $c = new \conges();
         $c->admin = ($admin or $adminN2);
         $c->debut = $debut;
@@ -95,7 +95,7 @@ class CompTimeController extends BaseController
             'admin'     => ($admin or $adminN2),
         ));
 
-        $comptimes = array();
+        $overtimes = array();
         foreach ($recup as $elem) {
 
           // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
@@ -137,7 +137,7 @@ class CompTimeController extends BaseController
 
             $date2 = ($elem['date2'] and $elem['date2']!="0000-00-00") ? " & ".dateFr($elem['date2']) : null;
 
-            $comptime = array(
+            $overtime = array(
                 'id'                => $elem['id'],
                 'date'              => dateFr($elem['date']),
                 'date2'             => $date2,
@@ -150,16 +150,16 @@ class CompTimeController extends BaseController
                 'commentaires'      => html_entity_decode($elem['commentaires'], ENT_QUOTES|ENT_HTML5),
             );
 
-            $comptime['hourstodays'] = null;
+            $overtime['hourstodays'] = null;
             if ($this->config('Conges-Recuperations') == 0 && $holiday_helper->showHoursToDays()) {
-                $comptime['hourstodays'] = $holiday_helper->hoursToDays($elem['heures'], $elem['perso_id']);
+                $overtime['hourstodays'] = $holiday_helper->hoursToDays($elem['heures'], $elem['perso_id']);
             }
 
-            $comptimes[]= $comptime;
+            $overtimes[]= $overtime;
         }
 
         $this->templateParams(array(
-            'comptimes' => $comptimes,
+            'overtimes' => $overtimes,
         ));
 
         $categories = array();
@@ -184,11 +184,11 @@ class CompTimeController extends BaseController
             'saturday'                  => "Date (2<sup>ème</sup> samedi) (optionel)",
         ));
 
-        return $this->output('comp_time/index.html.twig');
+        return $this->output('overtime/index.html.twig');
     }
 
     /**
-     * @Route("/comp-time/{id}", name="comp-time.edit", methods={"GET"})
+     * @Route("/overtime/{id}", name="overtime.edit", methods={"GET"})
      */
     public function edit(Request $request)
     {
@@ -213,7 +213,7 @@ class CompTimeController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        $this->setStatusesParams(array($perso_id), 'comptime', $id);
+        $this->setStatusesParams(array($perso_id), 'overtime', $id);
 
 
         // Initialisation des variables (suite)
@@ -227,16 +227,16 @@ class CompTimeController extends BaseController
 
         $this->templateParams(array(
             'agent'     => $agent,
-            'comptime'  => $recup,
+            'overtime'  => $recup,
             'CSRFToken' => $GLOBALS['CSRFSession'],
             'id'        => $id,
         ));
 
-        return $this->output('comp_time/edit.html.twig');
+        return $this->output('overtime/edit.html.twig');
     }
 
     /**
-     * @Route("/comp-time", name="comp-time.save", methods={"POST"})
+     * @Route("/overtime", name="overtime.save", methods={"POST"})
      */
     public function save(Request $request, Session $session)
     {
@@ -306,7 +306,7 @@ class CompTimeController extends BaseController
                 $result['message'] = 'Une erreur est survenue lors de la validation de vos modifications.';
             }
 
-            // Update comp-time credit if it is validated
+            // Update overtime credit if it is validated
             if (isset($update['valide']) and $update['valide'] > 0) {
                 $db = new \db();
                 $db->select('personnel', 'comp_time', "id='$perso_id'");
@@ -327,16 +327,16 @@ class CompTimeController extends BaseController
             $prenom = $agent->prenom();
 
             if (isset($update['valide']) and $update['valide'] > 0) {
-                $sujet = $lang['comp_time_subject_accepted'];
+                $sujet = $lang['overtime_subject_accepted'];
                 $notifications = 4;
             } elseif (isset($update['valide']) and $update['valide'] < 0) {
-                $sujet = $lang['comp_time_subject_refused'];
+                $sujet = $lang['overtime_subject_refused'];
                 $notifications = 4;
             } elseif (isset($update['valide_n1']) and $update['valide_n1'] > 0) {
-                $sujet = $lang['comp_time_subject_accepted_pending'];
+                $sujet = $lang['overtime_subject_accepted_pending'];
                 $notifications = 3;
             } elseif (isset($update['valide_n1']) and $update['valide_n1'] < 0) {
-                $sujet = $lang['comp_time_subject_refused_pending'];
+                $sujet = $lang['overtime_subject_refused_pending'];
                 $notifications = 3;
             } else {
                 $sujet="Demande de récupération modifiée";
@@ -387,6 +387,6 @@ class CompTimeController extends BaseController
 
         $session->getFlashBag()->add($result['type'], $result['message']);
 
-        return $this->redirectToRoute('comp-time.index');
+        return $this->redirectToRoute('overtime.index');
     }
 }

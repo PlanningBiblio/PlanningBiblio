@@ -7,7 +7,7 @@ use App\Model\AbsenceInfo;
 use App\Model\AdminInfo;
 use App\Model\Agent;
 use App\Model\CallForHelp;
-use App\Model\CompTime;
+use App\Model\OverTime;
 use App\Model\Detached;
 use App\Model\Holiday;
 use App\Model\HolidayInfo;
@@ -69,7 +69,7 @@ class DataPurger
         $this->simplePurge(AbsenceInfo::class,                    'fin',       '<', $limit_date);
         $this->simplePurge(AdminInfo::class,                      'fin',       '<', $limit_date);
         $this->simplePurge(CallForHelp::class,                    'timestamp', '<', $limit_date);
-        $this->simplePurge(CompTime::class,                       'date',      '<', $limit_date);
+        $this->simplePurge(OverTime::class,                       'date',      '<', $limit_date);
         $this->simplePurge(Detached::class,                       'date',      '<', $limit_date);
         $this->simplePurge(Holiday::class,                        'fin',       '<', $limit_date);
         $this->simplePurge(HolidayInfo::class,                    'fin',       '<', $limit_date);

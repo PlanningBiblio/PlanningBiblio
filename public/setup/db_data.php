@@ -397,7 +397,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('15','15','Liste des r&eacute;cup&eacute;rations','/holiday/index?recup=1','config=Conges-Enable;Conges-Recuperations'),
   ('15','20','Poser des cong&eacute;s','/holiday/new','config=Conges-Enable'),
   ('15','24','Poser des r&eacute;cup&eacute;rations','conges/recup_pose.php','config=Conges-Enable;Conges-Recuperations'),
-  ('15','26','R&eacute;cup&eacute;rations','/comp-time','config=Conges-Enable'),
+  ('15','26','Heures supplémentaires','/overtime','config=Conges-Enable'),
   ('15','30','Informations','conges/infos.php','config=Conges-Enable'),
   ('15','40','Cr&eacute;dits','conges/credits.php','config=Conges-Enable'),
   ('20','0','Agenda','/calendar',NULL),

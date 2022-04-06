@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 /**
  * @Entity @Table(name="recuperations")
  **/
-class CompTime extends PLBEntity
+class OverTime extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
