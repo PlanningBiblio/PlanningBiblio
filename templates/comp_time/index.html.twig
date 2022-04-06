@@ -228,7 +228,7 @@
           {% for elem in comptimes %}
             <tr>
               <td>
-                <a href='index.php?page=conges/recuperation_modif.php&amp;id={{ elem.id }}'>
+                <a href='{{ asset('comp-time') }}/{{ elem.id }}'>
                   <span class='pl-icon pl-icon-edit' title='Modifier'></span>
                 </a>
               </td>
