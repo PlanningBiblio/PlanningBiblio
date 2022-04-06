@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('conges/js/script.conges.js') }}"></script>
+{% endblock %}
+
+{% block page %}
+  <h3>Poser des récupérations</h3>
+  <table border='0'>
+    <tr style='vertical-align:top'>
+      <td>
+        <form name="form" action="{{ asset('comptime') }}" method="post" id="form">
+          <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
+          <input type="hidden" name="reliquat" value="{{ reliquat }}" />
+          <input type="hidden" name="recuperation" id="recuperation" value="{{ recuperation }}" />
+          <input type="hidden" name="recuperation_prev" id="recuperation_prev" value="{{ recuperation_prev }}" />
+          <input type="hidden" name="credit" value="{{ credit }}" />
+          <input type="hidden" name="anticipation" value="{{ anticipation }}" />
+          <input type="hidden" id="agent" value="{{ loggedin_name }} {{ loggedin_firstname }}" />
+          <input type="hidden" id="selected_agent_id" value="{{ perso_id }}" />
+          <input type="hidden" id="conges-recup" value="1" />
+          <input type="hidden" id="is-recover" value="1" />
+
+          <table border='0'>
+            <tr>
+              <td style='width:350px;'>
+                Nom, prénom :
+              </td>
+              <td>
+                {% if managed | length > 1 %}
+                  <select name="perso_id" id="perso_id" onchange='document.location.href="/comptime/add?perso_id="+this.value;' style='width:98%;'>
+                    <option value='0'></option>
+                    {% for m in managed %}
+                      {% if perso_id == m.id %}
+                        <option value="{{ m.id }}" selected='selected'>
+                          {{ m.nom }} {{ m.prenom }}
+                        </option>
+                      {% else %}
+                      <option value="{{ m.id }}">{{ m.nom }} {{ m.prenom }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                {% else %}
+                  <input type="hidden" name="perso_id" id="perso_id" value="{{ managed[0].id }}" />
+                  {{ managed[0].nom }} {{ managed[0].prenom }}
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding-top:15px;">Journée(s) entière(s) : </td>
+              <td style="padding-top:15px;">
+                <input type="checkbox" name="allday" class="checkdate" onclick="all_day();"/>
+              </td>
+            </tr>
+
+            <tr>
+              <td>Date de début : </td>
+              <td>
+                <input type="text" name="debut" id="debut" class="datepicker googleCalendarTrigger checkdate" style="width:97%;"/>
+              </td>
+            </tr>
+
+            <tr id="hre_debut">
+              <td>Heure de début : </td>
+              <td>
+                <input name="hre_debut" id="hre_debut_select" class="planno-timepicker center ui-widget-content ui-corner-all checkdate" style="width:97%;"/>
+              </td>
+            </tr>
+
+            <tr>
+              <td>Date de fin : </td>
+              <td>
+                <input type="text" name="fin" id="fin" class="datepicker googleCalendarTrigger checkdate" style="width:97%;"/>
+              </td>
+            </tr>
+
+            <tr id='hre_fin'>
+              <td>Heure de fin : </td>
+              <td>
+                <input name="hre_fin" id="hre_fin_select" class="planno-timepicker center ui-widget-content ui-corner-all checkdate" style="width:97%;"/>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding-top:15px;">Nombre d'heures : </td>
+              <td style="padding-top:15px;">
+                <div id="nbHeures" style="padding:0 5px; width:50px;"></div>
+                <input type="hidden" name="heures" value="0" />
+                <input type="hidden" name="minutes" value="0" />
+                <input type="hidden" id="erreurCalcul" value="false" />
+              </td>
+            </tr>
+
+            {% if hours_per_day %}
+              <tr>
+                <td>
+                  Nombre de jours ({{ hours_per_day }}h/jour) :
+                  <input type="hidden" name="hours_per_day" id="hours_per_day" value="{{ hours_per_day }}" />
+                </td>
+
+                <td><div id='nbJours' style='padding:0 5px; width:50px;'></div></td>
+              </tr>
+            {% endif %}
+
+            <tr>
+              <td colspan="2" style="padding-top:20px;">
+                Ces heures seront débitées sur les crédits de récupérations.
+                <input type="hidden" name="debit" value="recuperation" />
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="2">
+                <table border="0">
+                  <tr class="balance_tr">
+                    <td style="width:348px;">Solde disponible au <span class="balance_date">{{ balance_date }}</span> : </td>
+                    <td id="balance_before">{{ balance_before }} {{ balance_before_days }}</td>
+                    <td>(après débit : <span id="recup4">{{ balance_before }} {{ balance_before_days }}</span>)</td>
+                  </tr>
+
+                  <tr class="balance_tr">
+                    <td>Solde prévisionnel<sup>*</sup> au <span class="balance_date">{{ balance_date }}</span> : </td>
+                    <td id="balance2_before">{{ balance2_before }} {{ balance2_before_days }}</td>
+                    <td>(après débit : <span id='balance2_after'>{{ balance2_before }} {{ balance2_before_days }}</span>)</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr valign="top">
+              <td style="padding-top:15px;">Commentaires : </td>
+              <td style="padding-top:15px;">
+                <textarea name="commentaires" cols="16" rows="5" style="width:97%;"></textarea>
+              </td>
+            </tr>
+
+            <tr>
+              <td>&nbsp;</td>
+            </tr>
+
+            <tr>
+              <td colspan="2" style="text-align:center;">
+                <input type="button" value="Annuler" onclick='document.location.href="/holiday/index?recup=1";' class="ui-button ui-button-type2"/>
+              &nbsp;&nbsp;
+                <input type="button" value="Valider" class="ui-button" onclick="verifConges();" style="margin-left:20px;" id="submit-button"/>
+                <div id="google-calendar-div" class="inline"></div>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="2" style="padding-top:30px; font-style:italic;"><sup>*</sup> Le solde prévisionnel tient compte des demandes des récupérations non validées (crédits et utilisations).</td>
+            </tr>
+
+          </table>
+        </form>
+      </td>
+
+      {% if information is not empty %}
+        <td class="red">
+          <b>Informations sur les congés :</b><br/><br/>
+          {% for i in information %}
+            {{ i | raw }}
+          {% endfor %}
+        </td>
+      {% endif %}
+    </tr>
+  </table>
+{% endblock %}

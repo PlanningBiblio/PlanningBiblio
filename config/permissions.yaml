@@ -53,11 +53,9 @@
     - 100
 "ajax.update_agent_login":
     - 21
-"overtime.edit":
+"comptime.add":
     - 100
-"overtime.index":
-    - 100
-"overtime.save":
+"comptime.save":
     - 100
 "ajax.workinghourtables":
     - 100
@@ -109,6 +107,12 @@
     - 301
 "model.delete":
     - 301
+"overtime.edit":
+    - 100
+"overtime.index":
+    - 100
+"overtime.save":
+    - 100
 "planningjob.contextmenu":
     - 100
 "statistics.absence":
