@@ -2512,6 +2512,53 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="21.10.01.001";
+if (version_compare($config['Version'], $v) === -1) {
+    $db = new db();
+    $db->select2('planning_hebdo');
+    if($db->result){
+        foreach ($db->result as $workinghours) {
+            $hours = json_decode(html_entity_decode(
+                $workinghours['temps'],
+                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+
+            foreach ($hours as $day => $times) {
+                foreach ($times as $i => $time) {
+                    $hours[$day][$i] =  App\PlanningBiblio\Helper\HourHelper::toHis($time);
+                }
+            }
+            $hours = json_encode($hours);
+            $id = $workinghours['id'];
+            $sql[] = "UPDATE `{$dbprefix}planning_hebdo` SET `temps` = '$hours' WHERE `id` = $id;";
+        }
+    }
+
+    $db = new db();
+    $db->select2('personnel');
+    if($db->result){
+        foreach ($db->result as $agent) {
+            $hours = json_decode(html_entity_decode(
+                $agent['temps'],
+                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+
+            if (!$hours) {
+                continue;
+            }
+
+            foreach ($hours as $day => $times) {
+                foreach ($times as $i => $time) {
+                    $hours[$day][$i] =  App\PlanningBiblio\Helper\HourHelper::toHis($time);
+                }
+            }
+            $hours = json_encode($hours);
+            $id = $agent['id'];
+            $sql[] = "UPDATE `{$dbprefix}personnel` SET `temps` = '$hours' WHERE `id` = $id;";
+        }
+    }
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
