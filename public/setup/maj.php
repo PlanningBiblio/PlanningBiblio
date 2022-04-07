@@ -2492,6 +2492,81 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="21.11.00.002";
+if (version_compare($config['Version'], $v) === -1) {
+    // MT 35801
+    $db = new db();
+    $db->select2('planning_hebdo');
+    if($db->result){
+        foreach ($db->result as $workinghours) {
+            $hours = json_decode(html_entity_decode(
+                $workinghours['temps'],
+                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+
+            foreach ($hours as $day => $times) {
+                foreach ($times as $i => $time) {
+                    $hours[$day][$i] =  App\PlanningBiblio\Helper\HourHelper::toHis($time);
+                }
+            }
+            $hours = json_encode($hours);
+            $id = $workinghours['id'];
+            $sql[] = "UPDATE `{$dbprefix}planning_hebdo` SET `temps` = '$hours' WHERE `id` = $id;";
+        }
+    }
+
+    $db = new db();
+    $db->select2('personnel');
+    if($db->result){
+        foreach ($db->result as $agent) {
+            $hours = json_decode(html_entity_decode(
+                $agent['temps'],
+                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+
+            if (!$hours) {
+                continue;
+            }
+
+            foreach ($hours as $day => $times) {
+                foreach ($times as $i => $time) {
+                    $hours[$day][$i] =  App\PlanningBiblio\Helper\HourHelper::toHis($time);
+                }
+            }
+            $hours = json_encode($hours);
+            $id = $agent['id'];
+            $sql[] = "UPDATE `{$dbprefix}personnel` SET `temps` = '$hours' WHERE `id` = $id;";
+        }
+    }
+
+    // MT 35862
+    $db = new db();
+    $db->query("SELECT `id`, `droits` FROM `{$dbprefix}personnel` WHERE `droits` LIKE 'a%';");
+
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $access = json_encode(unserialize($elem['droits']));
+            if ($access == 'false') {
+                $access = '';
+            }
+            $sql[] = "UPDATE `{$dbprefix}personnel` SET `droits` = '$access' WHERE `id` = '{$elem['id']}';";
+        }
+    }
+
+    $db = new db();
+    $db->query("SELECT `id`, `postes` FROM `{$dbprefix}personnel` WHERE `postes` LIKE 'a%';");
+
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $skill = json_encode(unserialize($elem['postes']));
+            if ($skill == 'false') {
+                $skill = '';
+            }
+            $sql[] = "UPDATE `{$dbprefix}personnel` SET `postes` = '$skill' WHERE `id` = '{$elem['id']}';";
+        }
+    }
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();

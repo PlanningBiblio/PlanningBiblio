@@ -11,7 +11,7 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
-$version="21.11.00.001"; // xx.xx.xx.xxx
+$version="21.11.00.002"; // xx.xx.xx.xxx
 $GLOBALS['version'] = $version;
 $displayed_version="21.11.00"; // xx.xx.xx
 
