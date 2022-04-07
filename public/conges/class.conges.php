@@ -551,7 +551,7 @@ class conges
         // Crédits actuels
         // Sélection des derniers congés validés
         $db=new db();
-        $db->select("conges", null, array("valide>0", "validation>$debut"), "ORDER BY `validation` desc");
+        $db->select2("conges", null, array("valide>0", "validation>$debut"), "ORDER BY `validation` desc");
 
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -572,7 +572,7 @@ class conges
         // Crédits actuels
         // Sélection des dernières mises à jour de crédits
         $db=new db();
-        $db->select("conges", null, array("information>0", "info_date>$debut"), "ORDER BY `info_date` desc");
+        $db->select2("conges", null, array("information>0", "info_date>$debut"), "ORDER BY `info_date` desc");
 
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -597,7 +597,7 @@ class conges
         // Crédits actuels
         // Sélection des dernières mises à jour de récup
         $db=new db();
-        $db->select("recuperations", null, array("valide>0", "validation>$debut"), "ORDER BY `validation` desc");
+        $db->select2("recuperations", null, array("valide>0", "validation>$debut"), "ORDER BY `validation` desc");
 
         if ($db->result) {
             foreach ($db->result as $elem) {
