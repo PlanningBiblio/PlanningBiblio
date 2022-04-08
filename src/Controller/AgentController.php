@@ -318,11 +318,11 @@ class AgentController extends BaseController
             $nom = $db->result[0]['nom'];
             $prenom = $db->result[0]['prenom'];
             $mail = $db->result[0]['mail'];
-            $statut = $db->result[0]['statut'];
+            $statut = html_entity_decode($db->result[0]['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $categorie = $db->result[0]['categorie'];
             $check_hamac = $db->result[0]['check_hamac'];
             $check_ics = json_decode($db->result[0]['check_ics'], true);
-            $service = $db->result[0]['service'];
+            $service = html_entity_decode($db->result[0]['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $heuresHebdo = $db->result[0]['heures_hebdo'];
             $heuresTravail = $db->result[0]['heures_travail'];
             $arrivee = dateFr($db->result[0]['arrivee']);
