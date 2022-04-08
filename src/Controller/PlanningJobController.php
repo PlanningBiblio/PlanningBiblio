@@ -232,6 +232,7 @@ class PlanningJobController extends BaseController
 
             $a = new \absences();
             $a->valide = true;
+            $a->documents = false;
             $a->fetch(null, null, $start_with_journey, $end_with_journey, null);
             $absences = $a->elements;
 

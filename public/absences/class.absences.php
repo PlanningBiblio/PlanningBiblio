@@ -43,6 +43,7 @@ class absences
     public $cal_name;
     public $commentaires=null;
     public $debut=null;
+    public $documents = true;
     public $dtstamp=null;
     public $edt=array();
     public $elements=array();
@@ -839,7 +840,14 @@ class absences
                     }
                 }
 
-                $elem['absdocs'] = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $elem['id']]);
+                $elem['absdocs'] = null;
+
+                // Set $absence->documents to false
+                // to prevent loading documents
+                if ($this->documents) {
+                    $elem['absdocs'] = $entityManager->getRepository(AbsenceDocument::class)
+                        ->findBy(['absence_id' => $elem['id']]);
+                }
 
                 // Gestion des groupes : ajout des infos sur les autres agents et affichage d'une seule ligne si $this->groupe=true
                 $groupe = null;
@@ -867,9 +875,16 @@ class absences
                         if ($groupe2 == $groupe) {
                             $perso_ids[]=$elem2['perso_id'];
                             $agents[]=$elem2['nom']." ".$elem2['prenom'];
-                            $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $elem2['id']]);
-                            if ($absdocs) {
-                                $elem['absdocs'] = array_merge($absdocs, $elem['absdocs']);
+
+                            // Set $absence->documents to false
+                            // to prevent loading documents
+                            if ($this->documents) {
+                                $absdocs = $entityManager->getRepository(AbsenceDocument::class)
+                                    ->findBy(['absence_id' => $elem2['id']]);
+
+                                if ($absdocs) {
+                                    $elem['absdocs'] = array_merge($absdocs, $elem['absdocs']);
+                                }
                             }
                         }
                     }
