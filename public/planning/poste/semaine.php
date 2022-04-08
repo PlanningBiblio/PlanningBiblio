@@ -245,10 +245,10 @@ for ($j=0;$j<=$fin;$j++) {
         //--------------	Recherche des infos cellules	------------//
         // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes
         $db=new db();
-        $db->selectInnerJoin(
+        $db->selectLeftJoin(
         array("pl_poste","perso_id"),
         array("personnel","id"),
-      array("perso_id","debut","fin","poste","absent","supprime"),
+      array("perso_id","debut","fin","poste","absent","supprime", "grise"),
       array("nom","prenom","statut","service","postes"),
       array("date"=>$date, "site"=>$site),
       array(),
