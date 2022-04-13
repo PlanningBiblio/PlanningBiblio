@@ -36,9 +36,11 @@
     <thead>
       <tr>
         <th class='dataTableNoSort tableSort aLeft' >
-          {% if rights21 %}
-            <input type='checkbox' class='CJCheckAll'/>
-          {% endif %}
+          <div class="icon-div">
+            {% if rights21 %}
+              <input type='checkbox' class='CJCheckAll'/>
+            {% endif %}
+          </div>
         </th>
         <th class="clear-string tableSort">Nom</th>
         <th class="clear-string tableSort">Prénom</th>
@@ -56,17 +58,19 @@
       {% for a in agents %}
         <tr>
           <td style='white-space:nowrap;'>
-            {% if rights21 %}
-            <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ a.id }}' class='checkbox' />
-            {% endif %}
-            <a href="{{ asset ('/agent/')}}{{ a.id }}">
-              <span class='pl-icon pl-icon-edit' title='Modifier'></span>
-            </a>
-            {% if rights21 and a.id != login_id and a.id > 1 %}
-              <a href='javascript:popup("personnel/suppression.php&amp;id={{ a.id }}",450,240);'>
-                <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
+            <div class="icon-div">
+              {% if rights21 %}
+              <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ a.id }}' class='checkbox' />
+              {% endif %}
+              <a href="{{ asset ('/agent/')}}{{ a.id }}">
+                <span class='pl-icon pl-icon-edit' title='Modifier'></span>
               </a>
-            {% endif %}
+              {% if rights21 and a.id != login_id and a.id > 1 %}
+                <a href='javascript:popup("personnel/suppression.php&amp;id={{ a.id }}",450,240);'>
+                  <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
+                </a>
+              {% endif %}
+            </div>
           </td>
           <td>{{ a.name | raw }}</td>
           <td>{{ a.surname | raw}} </td>

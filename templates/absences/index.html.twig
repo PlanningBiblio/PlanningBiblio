@@ -95,14 +95,16 @@
       {% for abs in visibles_absences %}
         <tr>
           <td style='white-space: nowrap;'>
-            {% if abs.view_details %}
-              <a href='absence/{{ abs.id }}'>
-                <span class='pl-icon pl-icon-edit' title='Voir'></span>
-              </a>
-            {% endif %}
-            {% if abs.rrule %}
-              <span class='pl-icon pl-icon-recurring' title='Récurrence'></span>
-            {% endif %}
+            <div class="icon-div">
+              {% if abs.view_details %}
+                <a href='absence/{{ abs.id }}'>
+                  <span class='pl-icon pl-icon-edit' title='Voir'></span>
+                </a>
+              {% endif %}
+              {% if abs.rrule %}
+                <span class='pl-icon pl-icon-recurring' title='Récurrence'></span>
+              {% endif %}
+            </div>
           </td>
           <td>
             {% if abs.debut | date('H:i:s') == '00:00:00' %}

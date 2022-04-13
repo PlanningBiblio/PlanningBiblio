@@ -1838,6 +1838,12 @@ div.presents-absents {
   margin: 10px auto auto auto;
 }
 
+.icon-div{
+  width: 80px;
+  margin: auto;
+  text-align: left;
+}
+
 /*Admin END*/
 
 /*Statistics START*/
