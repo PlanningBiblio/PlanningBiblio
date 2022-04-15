@@ -44,6 +44,7 @@ for ($i=0;$i<$nb;$i++) {
 <head>
 <title>Planning</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/default.css' type='text/css' media='all'/>
 </head>
 

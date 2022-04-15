@@ -37,9 +37,9 @@ for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
 if (!$admin) {
     require __DIR__.'/../include/accessDenied.php';
 }
-
+echo "<div id='content-form'>";
 echo "<h3>Informations sur les congés</h3>\n";
-
+echo "<div class='admin-div'>";
 // Initialisation des variables
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
@@ -99,9 +99,9 @@ elseif ($debut) {
     echo "<input type='hidden' name='texte' value='$texte'/>\n";
     echo "<input type='hidden' name='id' value='$id'/>\n";
     echo "<input type='hidden' name='validation' value='1'/>\n";
-    echo "<input type='button' value='Annuler' onclick='history.back();' class='ui-button'/>";
+    echo "<input type='button' value='Annuler' onclick='history.back();' class='ui-button ui-button-type2 ui-corner-all'/>";
     echo "&nbsp;&nbsp;&nbsp;\n";
-    echo "<input type='submit' value='Valider' class='ui-button'/>\n";
+    echo "<input type='submit' value='Valider' class='ui-button ui-button-type1 ui-corner-all'/>\n";
     echo "</form>";
 }
 // FIN Validation du formulaire
@@ -144,10 +144,12 @@ EOD;
         echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
     }
     echo <<<EOD
-  <input type='button' value='Annuler' onclick='document.location.href=index.php?page=conges/index.php;' class='ui-button'/>
+  <input type='button' value='Annuler' onclick='document.location.href=index.php?page=conges/index.php;' class='ui-button ui-button-type2 ui-corner-all'/>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <input type='submit' value='Valider' class='ui-button'/>
+  <input type='submit' value='Valider' class='ui-button ui-button-type1 ui-corner-all'/>
   </td></tr></table>
   </form>
+  </div>
+  </div>
 EOD;
 }

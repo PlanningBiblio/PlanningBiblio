@@ -22,52 +22,54 @@
   <table id='tablePostes' class='CJDataTable' data-sort='[[1, "asc"],[2, "asc"]]'>
     <thead>
       <tr>
-        <th class='dataTableNoSort'>&nbsp;</th>
-        <th>Nom du poste</th>
+        <th class='dataTableNoSort tableSort'>&nbsp;</th>
+        <th class="tableSort">Nom du poste</th>
           {% if multisite > 1 %}
-            <th>Site</th>
+            <th class="tableSort">Site</th>
           {% endif %}
-        <th>Etage</th>
-        <th>Activités</th>
-        <th>Groupe</th>
-        <th>Obligatoire/renfort</th>
-        <th>Bloquant</th>
-        <th>Statistiques</th>
+        <th class="tableSort">Etage</th>
+        <th class="tableSort">Activités</th>
+        <th class="tableSort">Groupe</th>
+        <th class="tableSort">Obligatoire/renfort</th>
+        <th class="tableSort">Bloquant</th>
+        <th class="tableSort">Statistiques</th>
       </tr>
     </thead>
     <tbody>
       {% for j in positions %}
         <tr>
           <td style='white-space:nowrap;'>
-            <a href='{{ asset("position/") }}{{ j.id }}'>
-              <span class='pl-icon pl-icon-edit' title='Modifier' ></span>
-            </a>
-            {% if j.id in usedPositions == false %}
-              &nbsp;
-              <a href='#'>
-                <span id='{{ j.id }}' class='pl-icon pl-icon-drop' title='Supprimer' onclick="confirmDel(this.id)"></span>
-                <script>
-                  function confirmDel(id){
-                    if (window.confirm("Voulez-vous vraiment supprimer ce poste ?")){
-                      CSRFToken = $('#CSRFSession').val();
-                      $.ajax({
-                        url : '{{ asset("position") }}',
-                        type : 'DELETE',
-                        data : {id: id, CSRFToken: CSRFToken},
-                        success: function(response){
-                          if (response == "Ok"){
-                            window.location.reload('/position');
-                          }
-                        },
-                        error: function(){
-                          CJInfo("Une erreur est survenue lors de la suppression","error")
-                        }
-                      });
-                    }
-                  }
-                </script>
+            <div class="icon-div">
+              <a href='{{ asset("position/") }}{{ j.id }}'>
+                <span class='pl-icon pl-icon-edit' title='Modifier' ></span>
               </a>
-            {% endif %}
+              {% if j.id in usedPositions == false %}
+                &nbsp;
+                <a href='#'>
+                  <span id='{{ j.id }}' class='pl-icon pl-icon-dropblack' title='Supprimer' onclick="confirmDel(this.id)"></span>
+                  <script>
+                    function confirmDel(id){
+                      if (window.confirm("Voulez-vous vraiment supprimer ce poste ?")){
+                        CSRFToken = $('#CSRFSession').val();
+                        $.ajax({
+                          url : '{{ asset("position") }}',
+                          type : 'DELETE',
+                          data : {id: id, CSRFToken: CSRFToken},
+                          success: function(response){
+                            if (response == "Ok"){
+                              window.location.reload('/position');
+                            }
+                          },
+                          error: function(){
+                            CJInfo("Une erreur est survenue lors de la suppression","error")
+                          }
+                        });
+                      }
+                    }
+                  </script>
+                </a>
+              {% endif %}
+            </div>
           </td>
           <td>{{j.nom}}</td>
 

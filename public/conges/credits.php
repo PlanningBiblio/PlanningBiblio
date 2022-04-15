@@ -133,26 +133,26 @@ echo <<<EOD
 <table id='tableCredits' class='CJDataTable' data-sort='[[0]]'>
 <thead>
   <tr>
-    <th rowspan='2'>Agent</th>
-    <th rowspan='2' class='dataTableHeureFR' >Cong&eacute;s / an</th>
-    <th colspan='3'>Cr&eacute;dit cong&eacute;s</th>
-    <th colspan='3'>Cr&eacute;dit reliquat</th>
-    <th colspan='3'>Cr&eacute;dit r&eacute;cup&eacute;rations</th>
-    <th colspan='3'>Solde d&eacute;biteur</th>
+    <th rowspan='2' class='tableSort'>Agent</th>
+    <th rowspan='2' class='dataTableHeureFR tableSort' >Cong&eacute;s / an</th>
+    <th colspan='3' class='tableSort'>Cr&eacute;dit cong&eacute;s</th>
+    <th colspan='3' class='tableSort'>Cr&eacute;dit reliquat</th>
+    <th colspan='3' class='tableSort'>Cr&eacute;dit r&eacute;cup&eacute;rations</th>
+    <th colspan='3' class='tableSort'>Solde d&eacute;biteur</th>
   </tr>
   <tr>
-    <th class='dataTableHeureFR' >Initial</th>
-    <th class='dataTableHeureFR' >Utilis&eacute;</th>
-    <th class='dataTableHeureFR' >Restant</th>
-    <th class='dataTableHeureFR' >Initial</th>
-    <th class='dataTableHeureFR' >Utilis&eacute;</th>
-    <th class='dataTableHeureFR' >Restant</th>
-    <th class='dataTableHeureFR' >Initial</th>
-    <th class='dataTableHeureFR' >Utilis&eacute;</th>
-    <th class='dataTableHeureFR' >Restant</th>
-    <th class='dataTableHeureFR' >Initial</th>
-    <th class='dataTableHeureFR' >Utilis&eacute;</th>
-    <th class='dataTableHeureFR' >Restant</th>
+    <th class='dataTableHeureFR tableSort' >Initial</th>
+    <th class='dataTableHeureFR tableSort' >Utilis&eacute;</th>
+    <th class='dataTableHeureFR tableSort' >Restant</th>
+    <th class='dataTableHeureFR tableSort' >Initial</th>
+    <th class='dataTableHeureFR tableSort' >Utilis&eacute;</th>
+    <th class='dataTableHeureFR tableSort' >Restant</th>
+    <th class='dataTableHeureFR tableSort' >Initial</th>
+    <th class='dataTableHeureFR tableSort' >Utilis&eacute;</th>
+    <th class='dataTableHeureFR tableSort' >Restant</th>
+    <th class='dataTableHeureFR tableSort' >Initial</th>
+    <th class='dataTableHeureFR tableSort' >Utilis&eacute;</th>
+    <th class='dataTableHeureFR tableSort' >Restant</th>
   </tr>
 </thead>
 <tbody>

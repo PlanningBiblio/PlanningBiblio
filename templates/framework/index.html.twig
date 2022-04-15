@@ -9,7 +9,7 @@
           autoOpen: false,
           modal: true,
           width: 400,
-          height: 260
+          height: 310
       });
 
       $('.copy-table').click(function(e){
@@ -36,21 +36,21 @@
   <div id='tableaux-listes' class='tableaux-cfg'>
     <h3>Liste des tableaux</h3>
     <p>
-      <a href="{{ asset('framework/add') }}" class='ui-button'>Nouveau tableau</a>
+      <a href="{{ asset('framework/add') }}" class='ui-button ui-button-type2'>Nouveau tableau</a>
     </p>
     <form name='form' method='get' action='{{ asset("framework")}}'>
       <input type="hidden" name="modification" value ="tableau"/>
       <table class='CJDataTable' id='table-list' data-noExport='1' data-sort='[[1,"asc"]]'>
         <thead>
           <tr>
-            <th class='dataTableNoSort'>
+            <th class='dataTableNoSort tableSort'>
               <input type='checkbox' class='CJCheckAll' />
             </th>
-            <th>Nom</th>
+            <th class="tableSort">Nom</th>
             {% if nbSites > 1 %}
-              <th>Site</th>
+              <th class="tableSort">Site</th>
             {% endif %}
-            <th class='dataTableDateFR'>Dernière utilisation</th>
+            <th class='dataTableDateFR tableSort'>Dernière utilisation</th>
           </tr>
         </thead>
         <tbody>
@@ -66,7 +66,7 @@
                   <span class='pl-icon pl-icon-copy' id="copy-tab-link{{ elem.tableau }}" title='Copier' style="border: none;"></span>
                 </a>
                 <a href='javascript:supprimeTableau({{ elem.tableau }});'>
-                  <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                  <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
                 </a>
               </td>
               <td id='td-tableau-{{ elem.tableau }}-nom'>{{ elem.nom | raw }}</td>
@@ -80,7 +80,7 @@
       </table>
     </form>
     <p>
-      <input type='button' value='Supprimer la sélection' class='ui-button' onclick="supprime_select('chk1','{{ asset("framework-batch_delete") }}');">
+      <input type='button' value='Supprimer la sélection' class='ui-button ui-button-type3' onclick="supprime_select('chk1','{{ asset("framework-batch_delete") }}');">
     </p>
     {% if tableauxSupprimes is not empty %}
       <p style='margin-top:30px;'>
@@ -97,15 +97,15 @@
   <div id='tableaux-groupes' class='tableaux-cfg' >
     <h3>Groupes</h3>
     <p>
-      <input type='button' value='Nouveau groupe' class='ui-button' onclick="location.href='{{ asset("framework-group/add") }}';" />
+      <input type='button' value='Nouveau groupe' class='ui-button ui-button-type2' onclick="location.href='{{ asset("framework-group/add") }}';" />
     </p>
     <table class='CJDataTable' id='table-groups' data-noExport='1' data-sort='[[1,"asc"]]'>
       <thead>
         <tr>
-          <th class='dataTableNoSort'>&nbsp;</th>
-          <th>Nom</th>
+          <th class='dataTableNoSort tableSort'>&nbsp;</th>
+          <th class="tableSort">Nom</th>
           {% if nbSites > 1 %}
-            <th>Site</th>
+            <th class="tableSort">Site</th>
           {% endif %}
         </tr>
       </thead>
@@ -118,7 +118,7 @@
                   <span class='pl-icon pl-icon-edit' title='Modifier'></span>
                 </a>
                 <a href='javascript:supprimeGroupe({{ groupe.id }});'>
-                  <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                  <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
                 </a>
               </td>
               <td id='td-groupe-{{ groupe.id }}-nom'>{{ groupe.nom | raw }}</td>
@@ -134,13 +134,13 @@
   <div id='tableaux-separations' class='tableaux-cfg'>
     <h3>Lignes de séparation</h3>
     <p>
-      <input type='submit' value='Nouvelle ligne' class='ui-button' onclick='location.href="{{ asset('framework-line/add') }}";'/>
+      <input type='submit' value='Nouvelle ligne' class='ui-button ui-button-type2' onclick='location.href="{{ asset('framework-line/add') }}";'/>
     </p>
     <table class='CJDataTable' id='table-separations' data-noExport='1'  data-sort='[[1, "asc"]]'>
       <thead>
         <tr>
-          <th class='dataTableNoSort'>&nbsp;</th>
-          <th>Nom</th>
+          <th class='dataTableNoSort tableSort'>&nbsp;</th>
+          <th class="tableSort">Nom</th>
         </tr>
       </thead>
       <tbody>
@@ -153,7 +153,7 @@
                 </a>
                 {% if elem.delete == true %}
                   <a href='javascript:supprimeLigne({{ elem.id }});'>
-                    <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                    <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
                   </a>
                 {% endif %}
               </td>
@@ -175,8 +175,8 @@
       Nom du nouveau tableau<br/>
       <input type='text' name='nom' />
       <br/><br/><br/>
-      <input type='button' id="Cancel" value='Annuler' onclick="$('#copy-div').dialog('close');"/>
-      &nbsp;&nbsp;<input type='button' id="Copy" value='Copier'/>
+      <input type='button' id="Cancel" value='Annuler' onclick="$('#copy-div').dialog('close');" class="ui-button ui-button-type2"/>
+      &nbsp;&nbsp;<input type='button' id="Copy" value='Copier' class="ui-button ui-button-type1"/>
     </form>
   </div>
 {% endblock %}

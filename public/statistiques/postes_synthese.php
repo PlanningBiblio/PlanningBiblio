@@ -241,13 +241,13 @@ echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='statistiques/postes_synthese.php' />\n";
 echo "<table>\n";
-echo "<tr><td><label class='intitule'>Début</label></td>\n";
+echo "<tr><td><label >Début</label></td>\n";
 echo "<td><input type='text' name='debut' value='$debut' class='datepicker' />\n";
 echo "</td></tr>\n";
-echo "<tr><td><label class='intitule'>Fin</label></td>\n";
+echo "<tr><td><label >Fin</label></td>\n";
 echo "<td><input type='text' name='fin' value='$fin' class='datepicker' />\n";
 echo "</td></tr>\n";
-echo "<tr><td><label class='intitule'>Tri</label></td>\n";
+echo "<tr><td><label >Tri</label></td>\n";
 echo "<td>\n";
 echo "<select name='tri' class='ui-widget-content ui-corner-all' >\n";
 echo "<option value='cmp_01'>Nom du poste</option>\n";
@@ -258,7 +258,7 @@ echo "<option value='cmp_2'>Heures du - au +</option>\n";
 echo "<option value='cmp_2desc'>Heures du + au -</option>\n";
 echo "</select>\n";
 echo "</td></tr>\n";
-echo "<tr style='vertical-align:top'><td><label class='intitule'>Postes</label></td>\n";
+echo "<tr style='vertical-align:top'><td><label >Postes</label></td>\n";
 echo "<td><select name='postes[]' multiple='multiple' size='20' onchange='verif_select(\"postes\");'class='ui-widget-content ui-corner-all' >\n";
 if (is_array($postes_list)) {
     echo "<option value='Tous'>Tous</option>\n";
@@ -275,7 +275,7 @@ echo "</select></td></tr>\n";
 
 if ($config['Multisites-nombre']>1) {
     $nbSites=$config['Multisites-nombre'];
-    echo "<tr style='vertical-align:top'><td><label class='intitule'>Sites</label></td>\n";
+    echo "<tr style='vertical-align:top'><td><label >Sites</label></td>\n";
     echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");' class='ui-widget-content ui-corner-all' >\n";
     echo "<option value='Tous'>Tous</option>\n";
     for ($i=1;$i<=$nbSites;$i++) {

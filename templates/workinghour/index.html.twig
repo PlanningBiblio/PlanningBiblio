@@ -10,29 +10,29 @@
       Début : <input type='text' name='debut' class='datepicker' value='{{ debut }}' />
       &nbsp;&nbsp;Fin : <input type='text' name='fin' class='datepicker' value='{{ fin }}' />
       &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
-      &nbsp;&nbsp;<input type='button' value='Effacer' onclick="location.href='{{ asset("workinghour") }}?reset=on'" class='ui-button' />
-     <a class='ui-button' href='{{ asset("workinghour") }}/add?retour={{ asset("workinghour") }}' style='position:absolute; right:10px;'>Entrer de nouveaux horaires</a>
+      &nbsp;&nbsp;<input type='button' value='Effacer' onclick="location.href='{{ asset("workinghour") }}?reset=on'" class='ui-button ui-button-type2' />
+     <a class='ui-button ui-button-type2' href='{{ asset("workinghour") }}/add?retour={{ asset("workinghour") }}' style='position:absolute; right:95px;'>Entrer de nouveaux horaires</a>
     </form>
   </div>
   <br/>
   <table id='tablePlanningHebdo' class='CJDataTable' data-sort='[[3],[4],[1]]'>
     <thead>
       <tr>
-        <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
-        <th colspan='2' >Agent</th>
-        <th rowspan='2' >Service</th>
-        <th rowspan='2' class='dataTableDateFR'>Début</th>
-        <th rowspan='2' class='dataTableDateFR'>Fin</th>
-        <th rowspan='2' class='dataTableDateFR'>Saisie</th>
-        <th colspan='2' >Validation</th>
-        <th rowspan='2' >Actuel</th>
-        <th rowspan='2' >Commentaires</th>
+        <th rowspan='2' class='dataTableNoSort tableSort'>&nbsp;</th>
+        <th colspan='2' class='tableSort'>Agent</th>
+        <th rowspan='2' class='tableSort'>Service</th>
+        <th rowspan='2' class='dataTableDateFR tableSort'>Début</th>
+        <th rowspan='2' class='dataTableDateFR tableSort'>Fin</th>
+        <th rowspan='2' class='dataTableDateFR tableSort'>Saisie</th>
+        <th colspan='2' class='tableSort'>Validation</th>
+        <th rowspan='2' class='tableSort'>Actuel</th>
+        <th rowspan='2' class='tableSort'>Commentaires</th>
       </tr>
       <tr>
-        <th>Nom</th>
-        <th>Prénom</th>
-        <th>État</th>
-        <th class='dataTableDateFR'>Date</th>
+        <th class='tableSort'>Nom</th>
+        <th class='tableSort'>Prénom</th>
+        <th class='tableSort'>État</th>
+        <th class='dataTableDateFR tableSort' style="border-right: 1px solid #000;">Date</th>
       </tr>
     </thead>
     <tbody>
@@ -48,7 +48,7 @@
                 <span class='pl-icon pl-icon-copy' title='Copier'></span>
               </a>
               <a href='javascript:plHebdoSupprime({{ elem.id }});' style='margin-left:6px;'/>
-                <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
               </a>
             {% endif %}
           </td>

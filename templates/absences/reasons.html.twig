@@ -5,27 +5,27 @@
   <form>
     <p>
       <input type='text' id='add-motif-text' style='width:300px;'/>
-      <input type='button' id='add-motif-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/>
+      <input type='button' id='add-motif-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
     </p>
 
     <fieldset>
-      <div style='margin-bottom:20px; font-weight:bold;'>
-        <span style='position:absolute;left:60px;'>Nom</span>
-        <span style='position:absolute;left:335px;' >Niveau</span>
-        <span style='position:absolute;left:515px;'>Circuit de notification</span>
-        <span style='position:absolute;left:700px;'>Télétravail</span>
+      <div class="absences-motif-div">
+        <span>Nom</span>
+        <span style='position:absolute;left:415px;' >Niveau</span>
+        <span style='position:absolute;left:590px;'>Circuit de notification</span>
+        <span style='position:absolute;left:750px;'>Télétravail</span>
       </div>
       <ul id="motifs-sortable">
         {% if reasons is iterable %}
           {% for r in reasons %}
             <li class='ui-state-default' id='li_{{ r.id }}'>
-              <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
+              <span class='ui-icon pl-icon-arrowupdown'></span>
               {% if r.type == 2 %}
                 <font class='padding20' id='valeur_{{ r.id}}'>{{ r.valeur }}</font>
               {% else %}
                 <font class='bold' id='valeur_{{ r.id}}'>{{ r.valeur }}</font>
               {% endif %}
-              <select id='type_{{ r.id }}' style='position:absolute;width:170px;left:330px;'>
+              <select id='type_{{ r.id }}' style='position:absolute;width:150px;left:410px;'>
                 <option value='0'>&nbsp;</option>
                 {% for t in reason_types %}
                   {% if t.id == r.type %}
@@ -36,7 +36,7 @@
                 {% endfor %}
               </select>
 
-                <select id="notification-workflow_{{ r.id }}" style="position:absolute;width:170px;left:510px;">
+                <select id="notification-workflow_{{ r.id }}" style="position:absolute;width:150px;left:590px;">
                   {% if r.notification_workflow == 'A' %}
                     <option value="A" selected="selected">Circuit A</option>
                   {% else %}
@@ -51,13 +51,13 @@
                 </select>
 
                 {% if r.teleworking %}
-                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:700px;' checked='checked' />
+                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:780px;' checked='checked' />
                 {% else %}
-                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:700px;' />
+                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:780px;' />
                 {% endif %}
 
               {% if r.unused %}
-                <span class='ui-icon ui-icon-trash' style='position:relative;left:750px;top:-20px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
+                <span class='ui-icon pl-icon-trash' style='position:absolute;left:840px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
               {% endif %}
             </li>
           {% endfor %}

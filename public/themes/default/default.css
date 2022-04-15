@@ -11,28 +11,53 @@ Feuille de style principale du programme.
 */
 
 body,a,input,select,textarea,button {
-	color:#7D3C25;
-	font-family:Verdana;
-	font-size:14px;
+	color: #29495C;
+	font-family: Poppins;
+	font-size:13px;
 	}
+
+b{
+  font-weight: normal;
+}
+
+.left-border{
+  padding: 10px 19px 6px 19px;
+  border-left:  1px solid #000;
+  border-bottom: 0px;
+  border-top: 0px;
+  border-right: 0px;
+}
 
 input:disabled {
 	color:grey;
 }
 
 input,select,textarea {
-	font-size:12px;
+	font-size:13px;
 	}
 
+.decalage-gauche{
+  width: 90%;
+  margin: auto;
+}
+
+/* fond de tous le site avec image par transparance */
 body {
-	background:url("images/bg_menu.gif") repeat-x top;
-	margin-top:0px;
-	margin-left:10px;
-	}
+  background:url("images/background.png") repeat-y top rgba(240, 240, 240, 1);
+	margin: 0px 0px 0px 0px;
+}
 
 h3{
   margin-top:25px;
-  font-size:13pt;
+  font-size:20pt;
+}
+
+#h3-Multisites{
+  position: absolute;
+  top: 62px;
+  left: 690px;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 #acces_refuse {
@@ -43,16 +68,14 @@ h3{
 }
 
 #auth, #auth input {
-  color:#7D3C25;
-  text-align: left;
-
+  color:#29485C;
 }
 
 #auth-logo{
   margin:15px auto 0 auto;
-  width:200px;
-  height:80px;
-  background:url("images/logo200.png") no-repeat right top;
+  width:260px;
+  height:50px;
+  background:url("images/logo-planno.svg") no-repeat right top;
 }
 
 #h2-authentification, #h2-planning-authentification {
@@ -66,11 +89,11 @@ h3{
 
 #logo {
 	position: absolute;
-	left: 15px;
+  left:10px;
 	top: 12px;
-	width:160px;
-	height:54px;
-	background:url("images/logo160.png") no-repeat right top;
+  width: 280px;
+  height: 75px;
+	background:url("images/logo-planno.svg") no-repeat left top;
 }
 
 #logo2 {
@@ -96,8 +119,16 @@ h3{
 }
 
 #content{
-  margin-top: 10px;
+  width: 90%;
+  margin: 10px auto auto auto;
   padding: 80px 5px 5px 5px;
+}
+
+.content-div{
+  width: 100%;
+  background: #FFF;
+  border-radius: 5px;
+  padding: 10px;
 }
 
 #content-auth{
@@ -108,11 +139,20 @@ h3{
 
 #content-planning{
   margin-top: 10px;
-  padding: 40px 0 0 0;
+  padding: 0 0 0 0;
 }
 
-#ferie,.ferie,.important {
-  color: #FF5E0E;
+#ferie,.ferie{
+  color: #BA1800;
+  margin: 15px 0 5px 0;
+}
+
+.important{
+  color: #BA1800;
+}
+
+.calendar-absence{
+  margin-bottom: 0px;
 }
 
 .absences-pj{
@@ -126,6 +166,33 @@ h3{
   display:inline;
   margin-right:40px;
 }
+
+.absences-motif-div{
+  height: 20px;
+  font-weight: bold;
+  background: #29495C;
+  color:#FFF;
+}
+
+.absences-motif-div span {
+  position: absolute;
+  }
+  
+  .absences-motif-div span:nth-child(1) {
+  left: 60px;
+  }
+  
+  .absences-motif-div span:nth-child(2) {
+  left: 415px;
+  }
+  
+  .absences-motif-div span:nth-child(3) {
+  left: 590px;
+  }
+  
+  .absences-motif-div span:nth-child(4) {
+  left: 750px;
+  }
 
 /* Absences récurrentes */
 #recurrence-summary, #recurrence-summary-form {
@@ -148,68 +215,81 @@ h3{
 
 /*	Icônes		*/
 .pl-icon{
-  padding: 5px 13px 5px 13px;
+  padding: 9px 13px 9px 13px;
   text-decoration:none;
 }
 
 .pl-icon-add {
-  background:url("images/add.png") no-repeat center;
+  background:url("images/icon/add_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-copy {
-  background:url("images/copy.png") no-repeat center;
+  background:url("images/icon/content_copy_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-drop {
-  background:url("images/drop.png") no-repeat center;
+  background:url("images/icon/close_white_24dp.svg") no-repeat center;
+}
+
+.pl-icon-dropblack {
+  background:url("images/icon/close_black_24dp.svg") no-repeat center;
 }
 
 .pl-icon-edit {
-  background:url("images/edit.png") no-repeat center;
+  background:url("images/icon/edit_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-google-calendar {
-  background:url("images/googlecalendar.png") no-repeat center;
+  background:url("images/icon/calendar_month_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-hide {
-  background:url("images/hide.png") no-repeat center;
+  background:url("images/icon/visibility_off_white_18dp.svg") no-repeat center;
 }
 
 .pl-icon-lock {
-  background:url("images/lock.png") no-repeat center;
+  background:url("images/icon/lock_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-logout {
-  background:url("images/logout.png") no-repeat center;
+  background:url("images/icon/logout_black_24dp.svg") no-repeat center;
 }
 
 .pl-icon-open {
-  background:url("images/open.png") no-repeat center;
+  background:url("images/icon/folder_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-printer {
-  background:url("images/printer.png") no-repeat center;
+  background:url("images/icon/print_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-recurring {
-  background:url("images/recurring.png") no-repeat center;
+  background:url("images/icon/restart_alt_black_18dp.svg") no-repeat center;
 }
 
 .pl-icon-refresh {
-  background:url("images/refresh.png") no-repeat center;
+  background:url("images/icon/refresh_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-save {
-  background:url("images/save.png") no-repeat center;
+  background:url("images/icon/save_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-unlock {
-  background:url("images/unlock.png") no-repeat center;
+  background:url("images/icon/lock_open_white_24dp.svg") no-repeat center;
 }
 
 .pl-icon-valid {
-  background:url("images/valid.png") no-repeat center/70%;
+  background:url("images/icon/done_black_18dp.svg") no-repeat center/70%;
+}
+
+.pl-icon-trash {
+  background:url("images/icon/delete_black_18dp.svg") no-repeat center;
+}
+
+.pl-icon-arrowupdown{
+  background:url("images/icon/import_export_black_18dp.svg") no-repeat center;
+  margin-top: 3px;
 }
 
 /* Info-bulles */
@@ -234,17 +314,21 @@ li .agent-acces-checked2{
 .tableauStandard,.tableauFiches{
   border-spacing: 0px;
   border-collapse: collapse;
-  margin-top:10px;
+  margin-top:10px;  
+}
+
+.tableauStandard{
+  width: 100%;
+  margin: 10px 0;
 }
 
 .tableauStandard td{
   text-align: center;
   vertical-align:top;
-  padding: 0 20px 0 20px;
+  padding-right: 20px;
 }
 
 .tableauFiches td{
-  text-align: left;
   vertical-align:top;
   padding: 0 60px 10px 10px;
   white-space: nowrap;
@@ -268,10 +352,6 @@ li .agent-acces-checked2{
   text-align:center;
 }
 
-.tableauFiches select, .tableauFiches input[type=text].ui-widget-content{
-  width: 100%;
-}
-
 .tableauFiches textarea{
   width: 100%;
   height: 100px;
@@ -287,41 +367,85 @@ li .agent-acces-checked2{
 } 
 
 /* Menu Principal */
+/* solution temp, il faudrait peut être une class spécifique pour la div top gauche*/
+/* solution provoque des bugss dans les tableaux */
+
 /* .logo_td : permet de positionner le menu principal, 1ere cellule avant le 1er item du menu */
 .logo_td{
-  width:260px;
+  width:15%;
 }
 
 /*		Menu JavaScript		*/
 .menu_table{
   position: absolute;
   min-width:200px;
-/*  border: 1px solid #7D3C25;*/
 }
 
 .menu_table td{
   padding : 1px 10px;
-  border: 1px outset #7D3C25;
-  border-top: 0px;
 }
 
 .menu_table tr:first-child td{
-  border-top: 1px outset #7D3C25;
+  border-top: 1px outset #29495C;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.menu_table tr:last-child td{
+  border-bottom: 1px outset #29495C;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 .ejsmenu2{
   padding : 5px;
 }
 
-.navigation { position:relative;height:30px;}
-.popper { position: absolute; visibility: hidden; z-index:20; }
-a.ejsmenu, a:hover.ejsmenu {font-size:16px; text-decoration:none; display:inline-block; width:100%;}
-a.ejsmenu2, a:hover.ejsmenu2 {font-size:16px; text-decoration:none;font-weight:bold;}
+.navigation { 
+  position:relative;
+  height:30px;
+}
+
+.popper { 
+  position: absolute; 
+  visibility: hidden; 
+  z-index:20; 
+}
+
+a.ejsmenu, a:hover.ejsmenu {
+  font-size:16px; 
+  text-decoration:none; 
+  display:inline-block; 
+  width:100%;
+}
+
+a.ejsmenu2 {
+  font-size:16px; 
+  text-decoration:none;
+  font-weight:bold;
+}
+
+a:hover.ejsmenu2 {
+  font-size:16px; 
+  text-decoration:none;
+  font-weight:bold; 
+  color: #FFD700;
+  border-bottom: 5px solid #FFD700;
+}
 
 
+.ejsmenu2.active {
+  color: #FFD700;
+  border-bottom: 5px solid #FFD700;
+}
 
 /* Menu top */
+.topgauche{
+  background-color: #FFFFFF;
+}
 .menu_ul{
+  width: 70%;
+  padding: 0;
   margin:0px;
   white-space: nowrap;
   list-style: none;
@@ -337,23 +461,32 @@ a.ejsmenu2, a:hover.ejsmenu2 {font-size:16px; text-decoration:none;font-weight:b
 }
 
 /* TD du menu top */
+/* maintenant directement le texte qui change de couleur
 li.menu_li:hover {
-  background:#FF5E0E;
+    background: #FFD700;
 }
+*/
 
 /* TD des sous menu top */
 .menu_table{
   margin-top: 15px;
   z-index: 20;
 }
+.menu_td{
+  padding-left: 30px;
+}
 
 td.menu_td2{
 	background:#FFFFFF;
 	height:20px;
-	text-align:center;
+	text-align:left;
+  border-left: 1px outset #29495C;
+  border-right: 1px outset #29495C;
+  border-bottom: none;
+  border-top: none;
 }
 td.menu_td2:hover{
-	background:#FF5E0E;
+	background:#FFD700;
 }
 
 .myAccountLink{
@@ -361,7 +494,7 @@ td.menu_td2:hover{
 }
 
 .myAccountLink:hover{
-  color: #FF5E0E;
+  color: #FFD700;
 }
 
 input[type=text],input[type=password]
@@ -380,6 +513,14 @@ select
 	z-index:10;
 	}
 
+.select-popup{
+  width: auto;
+  height: 20px;
+  font-size: 1em;
+  position: absolute;
+  left: 350px;
+}
+
 #opac {
 	opacity: 0.5;
 	filter: alpha(opacity=50);		/*	Pour IE */
@@ -393,17 +534,17 @@ select
 	}
 
 .th{
-  background-color:#FF7F3F;	/*FF5E0E;*/
+  background-color:#FFD700;	
   font-weight:bold;
   white-space: nowrap;
 }
 
 .tr1{
-  background-color:#FFD8C4;
+  background-color:#DFDFDF;
 }
 
 .tr2{
-  background-color:#FFFFFF;
+  background-color:#999999;
 }
 
 .striped{
@@ -424,12 +565,12 @@ select
 
 /* .out-of-work-time avant .red dans le CSS : permet de donner la priorité au red (absences) par rapport au out-of-work-time (heures de présence) dans le marquage des absences et congés dans le planning */
 .out-of-work-time {
-  color: #6D2C15;
+  color: #34295c;
 }
 
 /* .red avant .orange dans le CSS : permet de donner la priorité au orange (congés) par rapport au red (absences) dans le marquage des absences et congés dans le planning */
 .red{
-  color:red;
+  color:#cd1b19;
 }
 
 .orange{
@@ -447,41 +588,49 @@ select
 }
 
 .pl-validation {
-  margin: 0 0 10px 0;
+  margin: 0px 0 10px 0;
+  color: #FFFFFF;
+  position: absolute;
+  right: 175px;
 }
 
 #planning-semaine #td_boutons{
   padding:30px;
 }
 
-}
+
+
 .pl-semaine-header{
   text-align: left;
-  margin: 50px 0 5px 0;
-  width: 100%;
+  margin: 25px auto 5px auto;
+  width: 90%;
 }
 
 .pl-semaine-date{
   font-size: 16pt;
-  font-family: bold;
+  font-weight: bold;
+  background-color:#FFD700;	/*FF5E0E;*/
 }
 
+
 .pl-semaine-validation{
-  margin: 10px 0 0 0;
+  margin: 10px auto 0 auto;
   position: absolute;
-  right:10px;
+  right: 5%;
 }
 
 #planningTips {
   margin: 20px 0px;
-  color: #FF5E0E;
   font-weight: bold;
   display: none;
 }
 
+#planningTips .ui-icon-alert{
+  margin-top: 0.3em;
+}
+
 #date_planning, #semaine_planning {
-  margin-top: 6px;
-  font-weight:bold;
+  margin-top: 5px;
 }
 
 #semaine_planning{
@@ -547,19 +696,37 @@ class cellule = cellule par défaut
   background:yellow;
 }
 */
+#tabsemaine1 tr:first-child td:first-child{
+  border-top-left-radius: 5px;
+  -moz-border-top-left-radius: 5px;
+}
 
+#tabsemaine1 tr:first-child td:last-child{
+  border-top-right-radius: 5px;
+  -moz-border-top-right-radius: 5px;
+}
+
+.arrondi_tabsemaine_topLeft{
+  border-top-left-radius: 5px;
+}
+.arrondi_tabsemaine_topRight{
+  border-top-right-radius: 5px;
+}
+.arrondi_tabsemaine_bottomLeft{
+  border-bottom-left-radius: 5px;
+}
+.arrondi_tabsemaine_bottomRight{
+  border-bottom-right-radius: 5px;
+}
 
 #tabsemaine1, .tabsemaine1 {
-  width:100%;
+  width:90%;
+  margin: auto;
   empty-cells:show;
 }
 
-#tabsemaine1 tr{
-}
-
 #tabsemaine1 td, .tabsemaine1 td{
-  border-width : 1px;
-  border-style : outset;
+  height: 30px;
 }
 
 /* tabsemaine1 est un div sur la page semaine.php : permet l'affichage des tableaux masqués */
@@ -568,10 +735,38 @@ div#tabsemaine1{
 }
 
 .tr_horaires, .tr_separation, .tr_horaires a{
-  background: #7D3C25;
+  background: #29495C;
   color:#FFFFFF;
-  font-size:12pt;
+  font-size:11pt;
   font-weight:bold;
+}
+
+.tr_horaires td:first-child{
+  border-top-left-radius: 5px;
+}
+
+.tr_horaires td:last-child{
+  border-top-right-radius: 5px;
+}
+
+.roundup-tab tr:last-child td:first-child{
+  border-bottom-left-radius: 5px;
+}
+
+.roundup-tab tr:last-child td:first-child{
+  border-bottom-right-radius: 5px;
+}
+
+.roundup-tab-left {
+  border-bottom-left-radius: 5px;
+}
+
+.roundup-tab-right{
+  border-bottom-right-radius: 5px;
+}
+
+.tr_separation {
+  color: #FFD700;
 }
 .sticky {
   position: -webkit-sticky;
@@ -586,6 +781,7 @@ div#tabsemaine1{
   position: sticky;
   top: 0px;
   z-index: 1;
+  border: #29495C;
 }
 .sticky-col {
   position: -webkit-sticky;
@@ -599,7 +795,7 @@ div#tabsemaine1{
 
 /* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
 .tr_espace{
-  display: none;
+  display: block;
   height:20px; 
 }
 
@@ -610,20 +806,32 @@ div#tabsemaine1{
 
 .td_postes {
   width:192px;
-  font-size:12pt;
+  font-size:11pt;
   font-weight: bold;
   white-space: nowrap;
+  color: #FFD700;
 }
 
 .td_obligatoire{
-  background:#00FA92;
+  background:#0A8754;
+  color: #29495C;
+  border-right: 1px solid #999999;
+  border-bottom: 1px solid #999999;
+  border-left: 1px solid #999999;
+
 }
 
 .td_renfort{
   background:#FFFFFF;
+  color: #29495C;
+  border-right: 1px solid #999999;
+  border-bottom: 1px solid #999999;
+  border-left: 1px solid #999999;
 }
 
-.cellDiv{
+.td_postes tr:last-child td{
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
 .cellSpan{
@@ -633,8 +841,9 @@ div#tabsemaine1{
 }
 
 #afficheTableaux{
+  width: 90%;
   text-align: left;
-  margin: 2px 0 10px 0;
+  margin: auto;
 }
 
 .noteBasDePage{
@@ -650,7 +859,7 @@ div#tabsemaine1{
   text-align:center;
   text-decoration:none;
   font-size:11.0pt;
-  font-family:Verdana;
+  font-family:Poppins;
   font-weight: bold
 }
 
@@ -716,11 +925,14 @@ div#tabsemaine1{
 }
 
 .menuTrigger {
+  background-color: #FFFFFF;
   position: relative;
+  border-right: 1px solid #999999;
+  border-bottom: 1px solid #999999;
 }
 
 .arrow-right {
-  background:url("images/arrow-right-16.png") no-repeat center;
+  background:url("images/icon/arrow_forward_black_36dp.svg") no-repeat center;
   z-index:7;
   display: none;
   position:absolute;
@@ -732,7 +944,7 @@ div#tabsemaine1{
 .tableaux-cfg {
   display: inline-block;
   min-width:500px;
-  width: 30%;
+  width: 31%;
   vertical-align:top;
   padding: 0 15px;
 }
@@ -741,21 +953,25 @@ div#tabsemaine1{
 #tab_titre{	/* planning/poste/index.php */
   width:100%;
   border: none;
+  background-color: #29495C;
+  margin-bottom: 60px;
 }
 
 /* Calendrier affiché en haut des plannings */
 #pl-calendar{
   border:0;
-  background: #FFFFFF;
-  margin: 0 0 10px 12px;
+  background: rgba(255, 255, 255, 0);
+  margin: 50px 0 0px 12px;
+  width: 165.75px;
+  position: absolute;
+  top: 30px;
 }
 
-#pl-calendar .ui-datepicker {
-  font-size:75%;
+#pl-calendar .calendar-datepicker {
+  font-size:65%;
 }
 
-
-#pl-calendar .ui-datepicker a{
+#pl-calendar .calendar-datepicker a{
   font-size:110%;
 }
 
@@ -765,23 +981,26 @@ div#tabsemaine1{
 
 /* Notes affichées en bas des plannings */
 #pl-notes-div1, .pl-notes-div1{
-  margin: 20px 0 0 0;
-  border : 1px solid #7D3C25;
+  width: 90%;
+  margin: 20px auto 0 auto;
+  text-align: left;
+  border: 1px solid #29495C;
   border-radius: 5px;
-  padding: 10px;
+  padding: 5px;
+  background: #FFF;
 }
 
 #pl-notes-div2{
-  position: absolute;
-  left: 10px;
+  position: relative;
+  left: 5%;
   display: inline-block;
-  margin: 5px 0 0 0;
+  margin: 15px 10px 0 0;
   text-align: left;
 }
 
 #pl-notes-div1-validation{
-  display: inline-block;
-  width: 100%;
+  width: 90%;
+  margin: auto;
   text-align: right;
   padding: 5px 0;
 }
@@ -819,66 +1038,41 @@ div#tabsemaine1{
 
 .menu
 	{
-	background:white;
+	background:#29495C;
+  color: #FFFFFF;
 	text-decoration:none;
-	font-size:10.0pt;
-	font-family:Verdana;
+	font-size:13.0pt;
+	font-family: Poppins;
 	font-weight: bold;
 	z-index:3;
 	}
 	
 .menuRed
 	{
-	color:#FF5E0E;
-	background:white;
+	color:#FFD700;
+	background:#29495C;
 	text-decoration:none;
-	font-size:10.0pt;
-	font-family:Verdana;
+	font-size:13.0pt;
+	font-family:Poppins;
 	font-weight: bold;
 	z-index:3;
 	}
 
 a:hover.menuRed, a:hover.menu {
-	color:#FF5E0E;
-	font-size:10.0pt;
+	color:#FFD700;
+	font-size:13.0pt;
+  border-top: #FFD700;
+  border-top-width: 5px;
+  border-top-style: solid;
 }
-
-.menu2
-	{
-	color:#7D3C25;
-	background:white;
-	text-decoration:none;
-	font-size:8.0pt;
-	font-family:Verdana;
-	font-weight: bold
-	}
-	
-.menu2Red
-	{
-	color:red;
-	background:white;
-	text-decoration:none;
-	font-size:8.0pt;
-	font-family:Verdana;
-	font-weight: bold
-	}
-
-.right
-	{
-	color:#7D3C25;
-	text-decoration:none;
-	text-align:right;
-	font-size:10.0pt;
-	font-family:Verdana;
-	font-weight:normal;
-	}
 
 .text,.text_clic
 	{
-	color:#000000;
+	color:#29495C;
 	text-decoration:none;
-	font-size:9.0pt;
-	font-family:Verdana;
+  font-weight: bolder;
+	font-size:10.0pt;
+	font-family: Poppins;
 	}
 
 .titre
@@ -888,16 +1082,20 @@ a:hover.menuRed, a:hover.menu {
 	left:380px;
 	color:white; 
 	font-size:32.0pt;
-	font-family:Verdana;
+	font-family:Poppins;
 	}
 
 .titreSemFixe{
-  color:#7D3C25;
+  color:#FFFFFF;
   text-decoration:none;
-  font-size:10.5pt;
-  font-family:Verdana;
+  font-size:15pt;
+  font-family: Poppins;
+  font-weight: normal;
   width:50%;
-  text-align:center;
+  text-align:left;
+  padding-top: 50px;
+  padding-bottom: 20px;
+  padding-left: 220px;
 }
 
 .top-button-div {
@@ -906,8 +1104,8 @@ a:hover.menuRed, a:hover.menu {
 }
 
 #tab_jours{	/*	planning/poste/index.php	*/
-  margin : 5px auto 0px auto;
-  text-align:center;
+  margin : 10px 0px 0px 0px;
+  text-align:left;
 }
 
 .tr
@@ -915,13 +1113,15 @@ a:hover.menuRed, a:hover.menu {
 	color:#FFF;
 	text-decoration:none;
 	font-size:11.0pt;
-	font-family:Verdana;
+	font-family:Poppins;
 	font-weight: bold
 	}
 
 .cellule_grise {
 	text-align:center;
-	background:#FFCCB3;
+	background: #dfdfdf;
+  border-right: 1px solid #999999;
+  border-bottom: 1px solid #999999;
 	}
 
 /*																				*/
@@ -944,7 +1144,6 @@ a:hover.menuRed, a:hover.menu {
 	width:640px;
 	padding: 20px;
 	}
-
 	
 #aide {
 	margin:0px 80px 0px 30px;
@@ -975,9 +1174,12 @@ a:hover.menuRed, a:hover.menu {
 
 /*	Messages d'informations		*/
 #messages_infos {
-	color:#FF5E0E;	
+	width: 90%;
+  margin: auto;
+	color:#cd1b19;	
 	font-weight:bold;
 	font-size:13pt;
+  padding: 5px 10px;
 }
 
 img{
@@ -996,11 +1198,16 @@ img{
 #td_boutons{
   width:25%;
   text-align:right;
+  padding:50px 20px 0 0;
+}
+
+#td_boutons .ui-state-error{
+    text-align: left;
 }
 
 #validation{
   font-size:13px;
-  margin:10px 20px 0 0;
+  margin:0 20px 0 0;
 }
 
 #imprimante{
@@ -1041,11 +1248,22 @@ img{
 .intitule, label{
   font-weight: bold;
   white-space: nowrap;
+  color: #29495C;
+}
+
+.textAlignRight{
+  text-align: right;
+  padding-right: 5px;
+}
+
+/*text of table header when background is blue*/
+#tablePresenceMonCompte_length label, #tablePresenceMonCompte_filter label, #tableConges_wrapper label, #tableAbsencesVoir_wrapper label, #tableStatAbsences_wrapper label, #DataTables_Table_0_wrapper label, #AbsenceInfoTable_wrapper label, #tableAgents_wrapper label, #tableAgents_wrapper label, #tablePostes_wrapper label, #tableModeles_wrapper label, #table-groups_wrapper label, #table-separations_wrapper label, #table-list_wrapper label, #table-list_length label, #table-list_filter label, #tablePlanningHebdo_wrapper label, #tablePlanningAbsences_wrapper label{
+  color: #FFF;
 }
 
 /* Elements "sortable" (gestion des motifs d'absences, des statuts des agents */
 ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
-ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 18px; }
+ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 30px; }
 ul[id$="-sortable"] li span { position: absolute; margin-left: -1.3em; }
 
 .bold{
@@ -1099,7 +1317,7 @@ option.bold{
 }
 
 div.presents-absents {
-  width: 1000px;
+  width: 97%;
   margin-left: 25px;
 }
 
@@ -1109,24 +1327,39 @@ div.presents-absents {
 }
 
 .bg-yellow{
-  background:yellow;
+  background:#FFD700;
 }
 
 /*	DataTables */
 .dataTable tbody tr.odd {
-  background-color:#FFD8C4;
+  background-color:#F0F0F0;
 }
 
-.dataTable tbody tr.odd td.sorting_1,
-.dataTable tbody tr.odd td.sorting_2,
-.dataTable tbody tr.odd td.sorting_3{
-  background-color:#FFBE9D;
+.dataTable tbody tr:hover{
+  background-color: #FFD700;
 }
 
-.dataTable tbody tr.even td.sorting_1,
-.dataTable tbody tr.even td.sorting_2,
-.dataTable tbody tr.even td.sorting_3{
-  background-color:#FEE7DC;
+.dataTable tbody td{
+  border-right: 1px solid #000;
+}
+
+.dataTable tbody tr.odd td:last-child{
+  border-right: 1px solid #F0F0F0;
+}
+.dataTable tbody tr.even td:last-child{
+  border-right: 1px solid #FFFFFF;
+}
+
+.dataTable tbody tr.odd:hover td.sorting_1,
+.dataTable tbody tr.odd:hover td.sorting_2,
+.dataTable tbody tr.odd:hover td.sorting_3{
+  background-color:#FFD700;
+}
+
+.dataTable tbody tr.even:hover td.sorting_1,
+.dataTable tbody tr.even:hover td.sorting_2,
+.dataTable tbody tr.even:hover td.sorting_3{
+  background-color:#FFD700;
 }
 
 .fg-toolbar {
@@ -1135,12 +1368,25 @@ div.presents-absents {
 
 .dataTables_wrapper .dataTables_filter input,
 .dataTables_wrapper .dataTables_length select {
-    background-color: #fff;
+    background-color: #29485C;
+    color: #FFFFFF
 }
 
 .dt-buttons {
+    background-color: #FFFFFF;
     width: 100%;
+    padding: 11px 0 11px 0;
     text-align: right;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.ellipsis{
+  color:#FFF;
+}
+
+.dataTables_wrapper .dataTables_info{
+  color: #fff;
 }
 
 /*	JQuery-UI Accordion	*/
@@ -1151,6 +1397,15 @@ div.presents-absents {
 /*	Agenda	*/
 #div_agenda{
   min-height:400px;
+  width: 72%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#div_agenda_content{
+  background-color: #FFF;
+  padding:25px 25px 25px 25px;
+  border-radius: 5px;
 }
 
 #div_agenda table {
@@ -1161,21 +1416,41 @@ div.presents-absents {
   display: inline-block;
 }
 
+#tab_agenda tr:last-child td:first-child{
+  border-bottom-left-radius: 5px;
+}
+
+#tab_agenda tr:last-child td:last-child{
+  border-bottom-right-radius: 5px;
+}
+
 #tab_agenda td{
   vertical-align: top;
 }
 
+#tab_agenda tr td:first-child{
+  border-left: 1px solid #999999;
+}
+
 #tab_agenda td{
-  border-right : 1px outset;
-  border-bottom : 1px outset;
-  border-radius : 0 0 5px 0;
+  border-right : 1px solid #999999;
+  border-bottom : 1px solid #999999;
+}
+
+.calendar-border{
+  border-right : 1px solid #999999;
+  border-bottom : 1px solid #999999;
+  border-top :  1px solid #999999;
+}
+
+.calendar-border td:first-child{
+  border-left: 1px solid #999999;
 }
 
 #div_agenda .div_date{
   font-weight:bold;
-  text-decoration:underline;
   margin-bottom:10px;
-  text-align:center;
+  text-align:right;
 }
 
 #div_agenda ul{
@@ -1190,18 +1465,35 @@ div.presents-absents {
 /* Agents volants */
 #date_planning.volants-title{
   width: 600px;
-  margin: 0 auto 80px;
+  margin: 0 auto 8  0px;
   text-align: center;
+}
+
+.volants-header{
+  position:absolute;
+  left: 200px;
+  top: 70px;
+}
+
+.volants-h2{
+  text-align: left;
+  padding-left: 10px;
+}
+
+.volants-a{
+  position: absolute;
+  left: 0px;
 }
 
 .volants-calendar{
   z-index: 10;
   position: absolute;
   top: 100px;
+  left: 10px
 }
 
 #volants-content{
-  margin: 100px auto;
+  margin: 200px auto;
   width: 1080px;
 }
 
@@ -1263,7 +1555,7 @@ div.presents-absents {
 }
 
 .selectSite:disabled {
-  color: black;
+  color: #29495C;
   appearance: none;
   background-color: inherit;
   border: white;
@@ -1272,11 +1564,7 @@ div.presents-absents {
 
 .planno-timepicker:disabled,
 .planno-break-timepicker:disabled {
-    color: black;
-}
-
-.abs-timepicker, .comptime-timepicker {
-  width: 100%;
+    color: #29495C;
 }
 
 .wh-timepicker {
@@ -1287,6 +1575,835 @@ div.presents-absents {
   width: 85px;
 }
 
-.ejsmenu2.active {
-    color: #ffca20;
+/*Buttons START*/
+.ui-button{
+  min-width: 85px;
+}
+/*main button style*/
+.ui-button-type1{
+  border: 1px solid #FFD700;
+  background-color: #FFD700;
+  color: #29495C;
+}
+
+.ui-button-type1:hover{
+  border: 1px solid #d5ba2B;
+  background-color: #d5ba2B;
+  color: #29495C;
+}
+.ui-button-type1:active{
+  border: 1px solid #d5ba2B;
+  background-color: #d5ba2B;
+  color: #29495C;
+}
+
+.ui-button-type1.ui-state-active:hover{
+  border: 1px solid #d5ba2B;
+  background-color: #d5ba2B;
+  color: #29495C;
+}
+
+.ui-button-type1:focus{
+  border: 1px solid #d5ba2B;
+  background-color: #d5ba2B;
+  color: #29495C;
+}
+
+/*secondary button style*/
+.ui-button-type2{
+  border: 1px solid #29495C;
+  color: #29495C;
+  background-color: #FFFFFF;
+}
+
+.ui-button-type2:hover{
+  border: 1px solid #29495C;
+  color: #FFFFFF;
+  background-color: #29495C;
+}
+
+.ui-button-type2 .ui-state-hover{
+  border: 1px solid #29495C;
+  color: #FFFFFF;
+  background-color: #29495C;
+}
+
+.ui-button-type2:active{
+  border: 1px solid #29495C;
+  color: #FFFFFF;
+  background-color: #29495C;
+}
+
+.ui-button-type2:focus{
+  border: 1px solid #29495C;
+  color: #FFFFFF;
+  background-color: #29495C;
+}
+
+.ui-button-type2.ui-state-active:hover{
+  border: 1px solid #29495C;
+  color: #FFFFFF;
+  background-color: #29495C;
+}
+
+/*delete button style*/
+.ui-button-type3{
+  border: 1px solid #cd1b19;
+  color: #cd1b19;
+  background-color: #FFFFFF;
+}
+
+.ui-button-type3:hover{
+  border: 1px solid #cd1b19;
+  color: #FFFFFF;
+  background-color: #cd1b19;
+}
+
+.ui-button-type3:active{
+  border: 1px solid #cd1b19;
+  color: #FFFFFF;
+  background-color: #cd1b19;
+}
+
+.ui-button-type3:focus{
+  border: 1px solid #cd1b19;
+  color: #FFFFFF;
+  background-color: #cd1b19;
+}
+
+.ui-button-type3.ui-state-active:hover{
+  border: 1px solid #cd1b19;
+  color: #FFFFFF;
+  background-color: #cd1b19;
+}
+
+/*Buttons END*/
+
+/*Popup START*/
+
+.popup-background{
+  background: #FFFFFF;
+  border: 1px solid #999999;
+  color: #29495C;
+  padding: 0 0 0 0;
+}
+
+.popup-header{
+  background: #FFD700;
+  border: 1px solid #FFD700;
+  color: #29495C;
+}
+
+.popup-button{
+  background: #FFD700;
+  border: 1px solid #FFD700;
+  color: #29495C;
+}
+
+/*Popup END*/
+
+/*Table START*/
+
+.tableSort{
+  background-color: #456578;
+  border: 1px solid #456578;
+  border-right-color: #000;
+  color: #FFFFFF;
+}
+
+.tableSort-bis{
+  background-color: #456578;
+  border: 1px solid #456578;
+  border-right-color: #000;
+  color: #FFFFFF;
+}
+
+.tableSort:last-child{
+  border-color: #456578;
+}
+
+.ui-button-table{
+  background: #29495C;
+  border: 1px solid #FFFFFF;
+
+}
+
+#tablePlanningAbsences_wrapper{
+  width: 90%;
+  margin: auto;
+}
+
+/*Table END*/
+
+/*Admin START*/
+#content-admin{
+  width: 90%;
+  margin: 10px auto auto auto;
+}
+
+.admin-div{
+  width: 100%;
+  background: #FFF;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+
+#admin .ui-state-default, .ui-widget-header .ui-state-default {
+    border: 2px solid #FFF;
+    background: #29495C;
+    font-weight: bold;
+    color: #FFF;
+}
+
+#admin .ui-state-active, .ui-widget-header .ui-state-active{
+  border: 2px solid #FFF;
+  background: #FFF;
+  font-weight: bold;
+  color: #29485C;
+}
+
+#admin .ui-state-hover, .ui-widget-header .ui-state-hover{
+  border: 2px solid #FFF;
+  background: #FFF;
+  font-weight: bold;
+  color: #29485C;
+}
+
+.ui-widget-header .ui-state-hover a {
+  color: #29495C;
+}
+
+#workhours{
+  width: 100%;
+  margin: 10px auto auto auto;
+}
+
+.workhours-header, .workhours-body{
+  border: 0px solid #000;
+  border-left: 1px solid #000;
+  border-top: 1px solid #000;
+}
+
+.workhours-header td:last-child, .workhours-body td:last-child{
+  border-right: 1px solid #000;
+}
+
+.workhours-body tr:last-child td{
+  border-bottom: 1px solid #000;
+}
+
+.workhours-header {
+  background: #29495C;
+  color: #fff;
+}
+
+#closingday{
+  width: 90%;
+  margin: 10px auto auto auto;
+}
+
+#closingday td{
+  border-left: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+
+#closingday tr:first-child td{
+  border-top: 1px solid #000;
+}
+
+#closingday tr td:last-child{
+  border-right: 1px solid #000;
+}
+
+.closingday-header{
+  background: #29495C;
+  color: #fff;
+}
+
+#content-skill {
+  width: 90%;
+  margin: 10px auto auto auto;
+}
+
+.skill{
+  width: 100%;
+  background: #FFF;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+#content-holyday{
+  width: 90%;
+  margin: 10px auto auto auto;
+}
+
+.icon-div{
+  width: 80px;
+  margin: auto;
+  text-align: left;
+}
+
+/*Admin END*/
+
+/*Statistics START*/
+
+#content-form, .content-form{
+  width: 90%;
+  margin: 10px auto auto auto;
+}
+
+.statistics-div{
+  width: 100%;
+  background: #FFF;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+#content-form .th{
+  background: #29495C;
+  color: #fff;
+}
+
+.statistics-table{
+  border-width: 0px;
+  box-sizing: content-box;
+  width: 100%;
+}
+
+.statistics-td{
+  border-right: 1px solid #999999;
+  border-bottom: 1px solid #999999; 
+  border-top: 0px solid red;
+  border-left: 0px solid red;
+}
+
+.statistics-td-topleft{
+  border-top: 1px solid #999999;
+  border-left: 1px solid #999999;
+}
+
+.statistics-td-top{
+  border-top: 1px solid #999999;
+}
+
+.statistics-td-left{
+  border-left: 1px solid #999999;
+}
+
+.statistics-table tr:first-child td:first-child{
+  border-top-left-radius: 5px;
+}
+
+.statistics-table tr:first-child td:last-child{
+  border-top-right-radius: 5px;
+}
+
+.statistics-table tr:last-child td:first-child{
+  border-bottom-left-radius: 5px;
+}
+
+.statistics-table tr:last-child td:last-child{
+  border-bottom-right-radius: 5px;
+}
+
+.dataTable tbody tr.odd td.no-hover:hover{
+  background: #F0F0F0;
+}
+
+.dataTable tbody tr.even td.no-hover:hover{
+  background: #FFFFFF;
+}
+
+.dataTable tbody tr.odd:hover td.no-hover{
+  background: #F0F0F0;
+}
+
+.dataTable tbody tr.even:hover td.no-hover{
+  background: #FFFFFF;
+}
+
+.dataTable tbody tr.odd th.no-hover:hover{
+  background: #F0F0F0;
+}
+
+.dataTable tbody tr.even th.no-hover:hover{
+  background: #FFFFFF;
+}
+
+.dataTable tbody tr.odd:hover th.no-hover{
+  background: #F0F0F0;
+}
+
+.dataTable tbody tr.even:hover th.no-hover{
+  background: #FFFFFF;
+}
+
+/*Statistics END*/
+
+/*Account START*/
+
+#account .ui-widget-content a{
+  color: #29495C;
+}
+
+#account .ui-state-default{
+  background-color: #456578;
+  border: 1px solid #456578;
+  border-right-color: #000;
+  color: #29495C;
+}
+
+#account .ui-widget-content .ui-state-default{
+  background-color: #456578;
+  border: 1px solid #456578;
+  border-right-color: #000;
+  color: #FFFFFF;
+}
+
+/*Account END*/
+
+/*CSS Datepicker START*/
+/* This CSS overrides the Jquery-ui.min.css to set the datepicker style*/
+
+.calendar-helper-clearfix:before, .calendar-helper-clearfix:after{
+  content:"";
+  display:table;
+  border-collapse:collapse
+}
+
+.calendar-helper-clearfix:after{
+  clear:both
+}
+
+.calendar-state-disabled{
+  cursor:default!important;
+  pointer-events:none
+}
+
+.calendar-icon{
+  display:inline-block;
+  vertical-align:middle;
+  margin-top:-.25em;
+  position:relative;
+  text-indent:-99999px;
+  overflow:hidden;
+  background-repeat:no-repeat
+}
+
+.calendar-datepicker{
+  width:17em;
+  padding:.2em .2em 0;
+  display:none
+}
+
+.calendar-datepicker .calendar-datepicker-header{
+  position:relative;
+  padding:.2em 0
+}
+
+.calendar-datepicker .calendar-datepicker-prev,.calendar-datepicker .calendar-datepicker-next{
+  position:absolute;
+  top:2px;width:1.8em;
+  height:1.8em
+}
+
+.calendar-datepicker .calendar-datepicker-prev-hover,.calendar-datepicker .calendar-datepicker-next-hover{
+  top:1px
+}
+
+.calendar-datepicker .calendar-datepicker-prev{
+  left:2px
+}
+
+.calendar-datepicker .calendar-datepicker-next{
+  right:2px
+}
+
+.calendar-datepicker .calendar-datepicker-prev-hover{
+  left:1px
+}
+
+.calendar-datepicker .calendar-datepicker-next-hover{
+  right:1px
+}
+
+.calendar-datepicker .calendar-datepicker-prev span,.calendar-datepicker .calendar-datepicker-next span{
+  display:block;
+  position:absolute;
+  left:50%;
+  margin-left:-8px;
+  top:50%;
+  margin-top:-8px
+}
+
+.calendar-datepicker .calendar-datepicker-title{
+  margin:0 2.3em;
+  line-height:1.8em;
+  text-align:center
+}
+
+.calendar-datepicker .calendar-datepicker-title select{
+  font-size:1em;
+  margin:1px 0
+}
+
+.calendar-datepicker select.calendar-datepicker-month,.calendar-datepicker select.calendar-datepicker-year{
+  width:45%
+}
+
+.calendar-datepicker table{
+  width:100%;
+  font-size:.9em;
+  border-collapse:collapse;
+  margin:0 0 .4em
+}
+
+.calendar-datepicker th{
+  padding:.7em .3em;
+  text-align:center;
+  font-weight:bold;
+  border:0
+}
+
+.calendar-datepicker td{
+  border:0;padding:1px
+}
+
+.calendar-datepicker td span,.calendar-datepicker td a{
+  display:block;
+  padding:.2em;
+  text-align:right;
+  text-decoration:none
+}
+
+.calendar-datepicker .calendar-datepicker-buttonpane{
+  background-image:none;
+  margin:.7em 0 0 0;
+  padding:0 .2em;
+  border-left:0;
+  border-right:0;
+  border-bottom:0
+}
+
+.calendar-datepicker .calendar-datepicker-buttonpane button{
+  float:right;
+  margin:.5em .2em .4em;
+  cursor:pointer;
+  padding:.2em .6em .3em .6em;
+  width:auto;
+  overflow:visible
+}
+
+.calendar-datepicker .calendar-datepicker-buttonpane button.calendar-datepicker-current{
+  float:left
+}
+
+.calendar-datepicker.calendar-datepicker-multi{
+  width:auto
+}
+
+.calendar-datepicker-multi .calendar-datepicker-group{
+  float:left
+}
+
+.calendar-datepicker-multi .calendar-datepicker-group table{
+  width:95%;
+  margin:0 auto .4em
+}
+
+.calendar-datepicker-multi-2 .calendar-datepicker-group{
+  width:50%
+}
+
+.calendar-datepicker-multi-3 .calendar-datepicker-group{
+  width:33.3%
+}
+
+.calendar-datepicker-multi-4 .calendar-datepicker-group{
+  width:25%
+}
+
+.calendar-datepicker-multi .calendar-datepicker-group-last .calendar-datepicker-header,.calendar-datepicker-multi .calendar-datepicker-group-middle .calendar-datepicker-header{border-left-width:0}
+.calendar-datepicker-multi .calendar-datepicker-buttonpane{
+  clear:left
+}
+
+.calendar-datepicker-row-break{
+  clear:both;
+  width:100%;
+  font-size:0
+}
+
+.calendar-datepicker-rtl{
+  direction:rtl
+}
+
+.calendar-datepicker-rtl .calendar-datepicker-prev{
+  right:2px;
+  left:auto
+}
+
+.calendar-datepicker-rtl .calendar-datepicker-next{
+  left:2px;
+  right:auto
+}
+
+.calendar-datepicker-rtl .calendar-datepicker-prev:hover{
+  right:1px;
+  left:auto
+}
+
+.calendar-datepicker-rtl .calendar-datepicker-next:hover{
+  left:1px;
+  right:auto
+}
+
+.calendar-datepicker-rtl .calendar-datepicker-buttonpane{
+  clear:right
+}
+
+.calendar-datepicker-rtl .calendar-datepicker-buttonpane button{
+  float:left
+}
+
+.calendar-datepicker-rtl .calendar-datepicker-buttonpane button.calendar-datepicker-current,.calendar-datepicker-rtl .calendar-datepicker-group{
+  float:right
+}
+
+.calendar-datepicker-rtl .calendar-datepicker-group-last .calendar-datepicker-header,.calendar-datepicker-rtl .calendar-datepicker-group-middle .calendar-datepicker-header{
+  border-right-width:0;
+  border-left-width:1px
+}
+
+.calendar-datepicker .calendar-icon{
+  display:block;
+  text-indent:-99999px;
+  overflow:hidden;
+  background-repeat:no-repeat;
+  left:.5em;top:.3em
+}
+
+.calendar-widget{
+  font-family:Poppins;
+  font-size:1em
+}
+
+.calendar-widget .calendar-widget{
+  font-size:1em
+}
+
+.calendar-widget input,.calendar-widget select,.calendar-widget textarea,.calendar-widget button{
+  font-family:Poppins;
+  font-size:1em
+}
+
+.calendar-widget.calendar-widget-content{
+  border:1px solid #999
+}
+
+.calendar-widget-content{
+  border:1px solid #FFF;
+  background:#fff;
+  color:#29495C
+}
+
+.calendar-widget-content a{
+  color:#29495C
+}
+
+.calendar-widget-header{
+  border:1px solid #FFD700;
+  background:#FFD700;
+  color:#29495C;
+  font-weight:bold
+}
+
+.calendar-widget-header a{
+  color:#29495C
+}
+
+.calendar-state-default,.calendar-widget-content .calendar-state-default,.calendar-widget-header .calendar-state-default,.calendar-button,html .calendar-button.calendar-state-disabled:hover,html .calendar-button.calendar-state-disabled:active{
+  border:1px solid #999;
+  background:#999;
+  font-weight:bold;
+  color:#29495C
+}
+
+.calendar-state-default a,.calendar-state-default a:link,.calendar-state-default a:visited,a.calendar-button,a:link.calendar-button,a:visited.calendar-button,.calendar-button{
+  color:#29495C;
+  text-decoration:none
+}
+.calendar-state-hover,.calendar-widget-content .calendar-state-hover,.calendar-widget-header .calendar-state-hover,.calendar-state-focus,.calendar-widget-content .calendar-state-focus,.calendar-widget-header .calendar-state-focus,.calendar-button:hover,.calendar-button:focus{
+  border:1px solid #29495C;
+  background:#29495C;
+  font-weight:bold;
+  color:#FFF
+}
+
+.calendar-state-hover a,.calendar-state-hover a:hover,.calendar-state-hover a:link,.calendar-state-hover a:visited,.calendar-state-focus a,.calendar-state-focus a:hover,.calendar-state-focus a:link,.calendar-state-focus a:visited,a.calendar-button:hover,a.calendar-button:focus{
+  color:#FFF;
+  text-decoration:none
+}
+
+.calendar-state-active,.calendar-widget-content .calendar-state-active,.calendar-widget-header .calendar-state-active,a.calendar-button:active,.calendar-button:active,.calendar-button.calendar-state-active:hover{
+  border:1px solid #29495C;
+  background:#29495C;
+  font-weight:bold;
+  color:#fff
+}
+
+.calendar-icon-background,.calendar-state-active .calendar-icon-background{
+  border:#29495C;
+  background-color:#fff
+}
+
+.calendar-state-active a,.calendar-state-active a:link,.calendar-state-active a:visited{
+  color:#fff;
+  text-decoration:none
+}
+
+.calendar-state-highlight,.calendar-widget-content .calendar-state-highlight,.calendar-widget-header .calendar-state-highlight{
+  border:1px solid #FFD700;
+  background:#FFD700;
+  color:#29495C
+}
+
+.calendar-state-highlight a,.calendar-widget-content .calendar-state-highlight a,.calendar-widget-header .calendar-state-highlight a{
+  color:#29495C
+}
+
+.calendar-priority-primary,.calendar-widget-content .calendar-priority-primary,.calendar-widget-header .calendar-priority-primary{
+  font-weight:bold
+}
+
+.calendar-priority-secondary,.calendar-widget-content .calendar-priority-secondary,.calendar-widget-header .calendar-priority-secondary{
+  opacity:.7;
+  -ms-filter:"alpha(opacity=70)";
+  font-weight:normal
+}
+
+.calendar-state-disabled,.calendar-widget-content .calendar-state-disabled,.calendar-widget-header .calendar-state-disabled{
+  opacity:.35;
+  -ms-filter:"alpha(opacity=35)";
+  background-image:none
+}
+
+.calendar-state-disabled .calendar-icon{
+  -ms-filter:"alpha(opacity=35)"
+}
+
+.calendar-icon{
+  width:16px;
+  height:16px
+}
+
+.calendar-icon,.calendar-widget-content .calendar-icon{
+  background-image:url("images/ui-icons_29495C_256x240.png")
+}
+
+.calendar-widget-header .calendar-icon{
+  background-image:url("images/ui-icons_29495C_256x240.png")
+}
+
+.calendar-state-hover .calendar-icon,.calendar-state-focus .calendar-icon,.calendar-button:hover .calendar-icon,.calendar-button:focus .calendar-icon{
+  background-image:url("images/ui-icons_FFFFFF_256x240.png")
+}
+
+.calendar-state-active .calendar-icon,.calendar-button:active .calendar-icon{
+  background-image:url("images/ui-icons_ffffff_256x240.png")
+}
+
+.calendar-state-highlight .calendar-icon,.calendar-button .calendar-state-highlight.calendar-icon{
+  background-image:url("images/ui-icons_29495C_256x240.png")
+}
+
+.calendar-button .calendar-icon{
+  background-image:url("images/ui-icons_29495C_256x240.png")
+}
+
+.calendar-icon-blank.calendar-icon-blank.calendar-icon-blank{
+  background-image:none
+}
+
+.calendar-icon-circle-triangle-w{
+  background-position:-80px -192px
+}
+
+.calendar-icon-circle-triangle-e{
+  background-position:-48px -192px
+}
+
+.calendar-corner-all,.calendar-corner-top,.calendar-corner-left,.calendar-corner-tl{
+  border-top-left-radius:4px
+}
+
+.calendar-corner-all,.calendar-corner-top,.calendar-corner-right,.calendar-corner-tr{
+  border-top-right-radius:4px
+}
+
+.calendar-corner-all,.calendar-corner-bottom,.calendar-corner-left,.calendar-corner-bl{
+  border-bottom-left-radius:4px
+}
+
+.calendar-corner-all,.calendar-corner-bottom,.calendar-corner-right,.calendar-corner-br{
+  border-bottom-right-radius:4px
+}
+
+/*CSS Datepicker END*/
+
+/*Personnalisation couleur tableau*/
+/* Bleu */
+.bleu.tr_horaires, .bleu.tr_separation, .bleu.tr_horaires td.td_postes, .blue.tr_horaires, .blue.tr_separation, .blue.tr_horaires td.td_postes{
+  background: #04133b;
+  color: #FFF;
+}
+
+.bleu td.td_postes, .blue td.td_postes{
+  background: #CCECF8; 
+  color: #000;
+}
+
+/* Jaune */
+.jaune.tr_horaires, .jaune.tr_separation, .jaune.tr_horaires td.td_postes, .yellow.tr_horaires, .yellow.tr_separation, .yellow.tr_horaires td.td_postes{
+  background: #d1ac07;
+  color: #000;
+}
+
+.jaune td.td_postes, .yellow td.td_postes{
+  background: #efe0a3; 
+  color: #000;
+}
+
+/* Rouge */
+.rouge.tr_horaires, .rouge.tr_separation, .rouge.tr_horaires td.td_postes, .red.tr_horaires, .red.tr_separation, .red.tr_horaires td.td_postes {
+  background: #720a05;
+  color: #FFF;
+}
+
+.rouge td.td_postes, .red td.td_postes{
+  background: #eacac9; 
+  color: #000;
+}
+
+/* Violet */
+.violet.tr_horaires, .violet.tr_separation, .violet.tr_horaires td.td_postes, .purple.tr_horaires, .purple.tr_separation, .purple.tr_horaires td.td_postes{
+  background: rgb(68, 0, 68);
+  color: #FFF;
+}
+
+.violet td.td_postes, .purple td.td_postes{
+  background: #E3D8F7; 
+  color: #000;
+}
+
+/* Vert */
+.vert.tr_horaires, .vert.tr_separation, .vert.tr_horaires td.td_postes, .green.tr_horaires, .green.tr_separation, .green.tr_horaires td.td_postes{
+  background: #06360f;
+  color: #FFF;
+}
+
+.vert td.td_postes, .green td.td_postes{
+  background: #BFEEC8; 
+  color: #000;
 }

@@ -54,11 +54,11 @@ $tous = $v->tous;
 ?>
 
 <!-- Affichage du titre -->
-<div id='date_planning' class='volants-title'>
-  <h2>Sélection des agents volants</h2>
-  <?php echo "<h2 class='important'>semaine $w, du $week</h2>"; ?>
+<div id='date_planning' class='volants-title volants-header'>
+  <h2 class='volants-h2'>Sélection des agents volants</h2>
+  <?php echo "<h2 class='volants-h2'>Semaine $w, du $week</h2>"; ?>
   <br/>
-  <?php echo "<a href='?page=planning/volants/index.php&amp;date=$date1' > Semaine précédente </a>"; ?>
+  <?php echo "<a href='?page=planning/volants/index.php&amp;date=$date1' style='margin-left:10px' class='volants-a'> Semaine précédente </a>"; ?>
   <?php echo "<a href='?page=planning/volants/index.php&amp;date=$date2' style='margin-left:200px;'> Semaine suivante </a>"; ?>
 </div>
 
@@ -84,10 +84,10 @@ foreach ($tous as $elem) {
 
 <!-- Affichage des bouttons -->
 <div id='volants-buttons-div'>
-<input type='button' class='ui-button' id='volants-add' value='Ajouter >>' /><br/><br/>
-<input type='button' class='ui-button' id='volants-add-all' value='Ajouter Tout >>' /><br/><br/>
-<input type='button' class='ui-button' id='volants-remove' value='<< Supprimer' /><br/><br/>
-<input type='button' class='ui-button' id='volants-remove-all' value='<< Supprimer Tout' /><br/><br/>
+<input type='button' class='ui-button ui-button-type2' id='volants-add' value='Ajouter >>' /><br/><br/>
+<input type='button' class='ui-button ui-button-type2' id='volants-add-all' value='Ajouter Tout >>' /><br/><br/>
+<input type='button' class='ui-button ui-button-type3' id='volants-remove' value='<< Supprimer' /><br/><br/>
+<input type='button' class='ui-button ui-button-type3' id='volants-remove-all' value='<< Supprimer Tout' /><br/><br/>
 </div>
 
 <!-- Affichage des agents sélectionnés -->

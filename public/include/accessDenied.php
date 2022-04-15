@@ -47,6 +47,7 @@ $link="<a href='{$path}index.php'>Retour à l'application</a>";
 <head>
 <title>Planning</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/default.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/print.css' type='text/css' media='print'/>
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/<?php echo "$theme/$theme"; ?>.css' type='text/css' media='all'/>

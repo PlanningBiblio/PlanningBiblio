@@ -1,4 +1,4 @@
-<?php
+    <?php
 /**
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
@@ -387,7 +387,7 @@ for ($j=0;$j<=$fin;$j++) {
                     // Classe de la ligne en fonction des activités et des catégories
                     $classTR .= ' ' . $postes[$ligne['poste']]['classes'];
 
-                    echo "<tr class='pl-line tableau$l $classTR {$tab['classe']} $emptyLine'>\n";
+                    echo "<tr class='pl-line roundup-tab tableau$l $classTR {$tab['classe']} $emptyLine'>\n";
                     echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
                     if ($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']) {
                         echo " ({$postes[$ligne['poste']]['etage']})";

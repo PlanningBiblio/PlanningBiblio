@@ -120,7 +120,7 @@ if (!file_exists("themes/$themeJQuery/jquery-ui.min.css")) {
 
 $favicon = null;
 if (!file_exists("themes/$theme/favicon.png")) {
-    $favicon = "themes/$theme/images/favicon.png";
+    $favicon = "themes/$theme/images/favicon.ico";
 }
 
 function CSRFTokenOK($token, $session) {
