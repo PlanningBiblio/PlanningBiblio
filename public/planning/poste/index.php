@@ -366,7 +366,8 @@ if (!$verrou and !$autorisationN1) {
     // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
     // $absences will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
     $a=new absences();
-    $a->valide=false;
+    $a->valide = false;
+    $a->documents = false;
     $a->rejected = false;
     $a->agents_supprimes = array(0,1,2);    // required for history
     $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
@@ -391,7 +392,8 @@ if (!$verrou and !$autorisationN1) {
   
     // Affichage des absences en bas du planning : absences concernant le site choisi
     $a=new absences();
-    $a->valide=false;
+    $a->valide = false;
+    $a->documents = false;
     $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, array($site));
     $absences_planning = $a->elements;
 
