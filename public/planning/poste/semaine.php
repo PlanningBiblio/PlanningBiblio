@@ -264,7 +264,8 @@ for ($j=0;$j<=$fin;$j++) {
         // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
         // $cellules will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
         $a=new absences();
-        $a->valide=true;
+        $a->valide = true;
+        $a->documents = false;
         $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
         $absences=$a->elements;
         global $absences;
