@@ -3,6 +3,17 @@
 - Fixes
 - Plumbing
 
+*** Version 21.10.02       (2022-04-15)   ***
+- Enhancements
+Optimize DB queries for holiday/credits
+Allow to load absences without documents for performance improvement
+
+- Fixes
+Prevent Hours helper to convert non H:i values
+get disabled cells in public/planning/poste/semaine.php
+
+- Plumbing
+
 *** Version 21.10.01       (2022-03-18)   ***
 - Enhancements
 Ability to change login in agent's form
