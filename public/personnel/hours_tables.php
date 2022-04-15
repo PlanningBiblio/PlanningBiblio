@@ -51,7 +51,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<br/><b>{$table_name[$j]}</b>";
     }
     $hours_tab .= "<table border='1' cellspacing='0'>\n";
-    $hours_tab .= "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td '>Heure d'arrivée</td>";
+    $hours_tab .= "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td'>Heure d'arrivée</td>";
     if ($config['PlanningHebdo-Pause2']) {
         $hours_tab .= "<td'>Début de pause 1</td><td'>Fin de pause 1</td>";
         $hours_tab .= "<td'>Début de pause 2</td><td'>Fin de pause 2</td>";
