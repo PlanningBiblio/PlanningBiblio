@@ -51,6 +51,7 @@ jobs:
 
       - run: cp .circleci/.env.test.local .env.test.local
       - run: cp .circleci/.env.local .env.local
+      - run: rm -rf vendor
       - run: composer install -n --prefer-dist
       - run: vendor/bin/bdi detect drivers
 
