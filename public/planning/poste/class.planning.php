@@ -170,7 +170,8 @@ class planning
 
             // Recherche des absences dans la table absences pour les déduire des heures faites
             $a=new absences();
-            $a->valide=true;
+            $a->valide = true;
+            $a->documents = false;
             $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date1." 00:00:00", $date2." 23:59:59");
             $absencesDB=$a->elements;
 
