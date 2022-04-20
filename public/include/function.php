@@ -580,7 +580,7 @@ function calculSiPresent($debut, $fin, $temps, $jour)
 
     // If workinghour are on 2 digits
     // convert start and end on 2 digits.
-    if (!\DateTime::createFromFormat('H:i:s', $tab[0][0])) {
+    if (!empty($tab[0][0]) and !\DateTime::createFromFormat('H:i:s', $tab[0][0])) {
         // convert variable from H:i:s to H:i
         // to avoid comparison between 13:00:00 and 13:00
         $start_dt = DateTime::createFromFormat('H:i:s', $debut);
