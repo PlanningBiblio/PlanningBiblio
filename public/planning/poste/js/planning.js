@@ -174,6 +174,7 @@ $(function() {
           $("#icon-lock").hide();
           $(".pl-validation").hide();
           $('#planning-drop').show();
+          $('#planning-import').show();
           $("#icon-unlock").show();
           // data-verrou : pour activer le menudiv
           $("#planning-data").attr("data-verrou",0);
@@ -207,6 +208,7 @@ $(function() {
           $(".pl-validation").html(result[2]);
           $(".pl-validation").show();
           $('#planning-drop').hide();
+          $('#planning-import').hide();
           // data-verrou : pour désactiver le menudiv
           $("#planning-data").attr("data-verrou",1);
           // data-validation : actualise la date de validation pour éviter un refresh_poste inutile
