@@ -1120,9 +1120,12 @@ a:hover.menuRed, a:hover.menu {
 .cellule_grise {
 	text-align:center;
 	background: #dfdfdf;
+	}
+
+td.cellule_grise {
   border-right: 1px solid #999999;
   border-bottom: 1px solid #999999;
-	}
+}
 
 /*																				*/
 /*	Setup																		*/
