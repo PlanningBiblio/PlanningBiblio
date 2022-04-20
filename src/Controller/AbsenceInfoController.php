@@ -23,7 +23,7 @@ class AbsenceInfoController extends BaseController
 
         $query = $queryBuilder->select(array('a'))
             ->from(AbsenceInfo::class, 'a')
-            ->where('a.fin > :today')
+            ->where('a.fin >= :today')
             ->setParameter('today', $today)
             ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
             ->getQuery();
