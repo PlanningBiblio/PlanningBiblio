@@ -87,15 +87,16 @@
                   <span class='pl-icon pl-icon-save'></span>
                 </a>
 
-                {% if not locked %}
-                  <a href='javascript:popup("planning/poste/importer.php&date={{ date }}&site={{ site }}",500,270);' title='Importer un modèle'>
-                    <span class='pl-icon pl-icon-open'></span>
-                  </a>
+                <a id="planning-import" href='javascript:popup("planning/poste/importer.php&date={{ date }}&site={{ site }}",500,270);' title='Importer un modèle' style="{{ locked ? 'display:none;' }}">
+                  <span class='pl-icon pl-icon-open'></span>
+                </a>
 
-                  <a id="planning-drop" href='javascript:popup("planning/poste/supprimer.php&date={{ date }}&site={{ site }}",500,200);' title='Supprimer le planning'>
-                    <span class='pl-icon pl-icon-drop'></span>
-                  </a>
-                {% endif %}
+                <a id="planning-drop" href='javascript:popup("planning/poste/supprimer.php&date={{ date }}&site={{ site }}",500,200);' title='Supprimer le planning' style="{{ locked ? 'display:none;' }}">
+                  <span class='pl-icon pl-icon-drop'></span>
+                </a>
+                <a href='javascript:print();' title='Imprimer le planning'>
+                  <span class='pl-icon pl-icon-printer'></span>
+                </a>
               {% endif %}
 
               {% if locked %}
@@ -105,9 +106,6 @@
                     {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}
                   </div>
                 {% endif %}
-                <a href='javascript:print();' title='Imprimer le planning'>
-                  <span class='pl-icon pl-icon-printer'></span>
-                </a>
               {% endif %}
 
               <a href='index.php?date={{ date }}&amp;site={{ site }}' title='Actualiser'>
