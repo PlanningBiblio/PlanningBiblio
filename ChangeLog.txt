@@ -3,6 +3,10 @@
 - Fixes
 - Plumbing
 
+*** Version 21.10.03       (2022-04-21)   ***
+- Fixes
+Disable setting EDTSamedi if PlanningHebdo is enabled
+
 *** Version 21.10.02       (2022-04-15)   ***
 - Enhancements
 Optimize DB queries for holiday/credits

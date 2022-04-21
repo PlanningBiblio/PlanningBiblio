@@ -2564,6 +2564,18 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="21.10.03.000";
+if (version_compare($config['Version'], $v) === -1) {
+    $db = new db();
+    $db->query("SELECT `valeur` FROM `{$dbprefix}config` WHERE `nom` = 'PlanningHebdo';");
+
+    if ( $db->result and $db->result[0]['valeur'] == '1' ) {
+        $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = '0' WHERE `nom` = 'EDTSamedi';";
+    }
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
