@@ -25,8 +25,8 @@ function calculCredit(){
 
   debut=document.form.elements["debut"].value;
   fin=document.form.elements["fin"].value;
-  hre_debut=document.form.elements["hre_debut"].value;
-  hre_fin=document.form.elements["hre_fin"].value;
+  hre_debut = document.form.elements["hre_debut"] ? document.form.elements["hre_debut"].value : '';
+  hre_fin = document.form.elements["hre_fin"] ? document.form.elements["hre_fin"].value : '';
   perso_id=document.form.elements["perso_id"].value;
   halfday = $('input[name="halfday"]').is(':checked') ? 1 : 0;
   conges_mode = $('#conges-mode').val();
