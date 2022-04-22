@@ -108,7 +108,7 @@ while ($current < $end) {
 
     // Si utilisation de 2 plannings hebdo (semaine paire et semaine impaire)
     // Si semaine paire, position +=7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
-    if (!$config['EDTSamedi']) {
+    if (!$config['EDTSamedi'] or $config['PlanningHebdo']) {
         $jour += ($->semaine3 - 1) * 7;
     }
 

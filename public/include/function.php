@@ -156,7 +156,7 @@ class datePl
         }
 
         // Using a schedule with Saturday and one without.
-        if ($config['EDTSamedi']) {
+        if ($config['EDTSamedi'] and !$config['PlanningHebdo']) {
             // Check if the current week has Saturday.
             $p=new personnel();
             $p->fetchEDTSamedi($agent_id, $this->dates[0], $this->dates[0]);
