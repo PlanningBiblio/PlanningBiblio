@@ -649,7 +649,7 @@ function verifRecup(o){
 // Dialog, récupérations
 
 function checkLength( o, n, min, max ) {
-  if ( o.val().length > max || o.val().length < min ) {
+  if ( o.val().length > max || o.val().length < min || o.val() == '00:00' ) {
     o.addClass( "ui-state-error" );
     updateTips( "Veuillez sélectionner le nombre d'heures.", "error");
   return false;
