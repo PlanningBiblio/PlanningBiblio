@@ -36,18 +36,21 @@ switch ($nb_semaine) {
 $fin = $config['Dimanche'] ? array(7, 14, 21, 28, 36, 42, 49, 56, 63, 70) : array(6, 13, 20, 27, 35, 41, 48, 55, 62, 69);
 $debut = array(1, 8, 15, 22, 29, 36, 43, 50, 57, 64);
 
-if ($config['EDTSamedi'] == 1) {
+// EDTSamedi works only if PlanningHebdo is disabled.
+$EDTSamedi = $this->config('PlanningHebdo') ? 0 : $this->config('EDTSamedi');
+
+if ($EDTSamedi == 1) {
     $config['nb_semaine'] = 2;
     $cellule = array("Semaine standard", "Semaine<br/>avec samedi");
     $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé');
-} elseif ($config['EDTSamedi'] == 2) {
+} elseif ($EDTSamedi == 2) {
     $this->config('nb_semaine', 3);
     $cellule=array("Semaine standard", "Semaine<br/>avec samedi", "Semaine<br/>ouverture restreinte");
     $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé', 'Emploi du temps en ouverture restreinte');
 }
 
 for ($j = 0; $j < $nb_semaine; $j++) {
-    if ($config['EDTSamedi']) {
+    if ($EDTSamedi) {
         $hours_tab .= "<br/><b>{$table_name[$j]}</b>";
     }
     $hours_tab .= "<table border='1' cellspacing='0'>\n";
@@ -184,7 +187,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
 
 // EDTSamedi : emploi du temps différents les semaines avec samedi travaillé
 // Choix des semaines avec samedi travaillé
-if ($this->config('EDTSamedi')) {
+if ($EDTSamedi) {
     // Recherche des semaines avec samedi travaillé entre le 1er septembre de N-1 et le 31 août de N+3
     $d = new datePl( (date("Y") -1) . "-09-01");
     $premierLundi = $d->dates[0];
@@ -201,9 +204,9 @@ if ($this->config('EDTSamedi')) {
     $hours_tab .= "<div id='EDTChoix'>\n";
     $hours_tab .= "<h3>Choix des emplois du temps</h3>\n";
 
-    if ($this->config('EDTSamedi') == 1) {
+    if ($EDTSamedi == 1) {
         $hours_tab .= "<p>Cochez les semaines avec le samedi travaill&eacute;</p>\n";
-    } elseif ($config['EDTSamedi'] == 2) {
+    } elseif ($EDTSamedi == 2) {
         $hours_tab .= "<p>Pour chaque semaine, cochez s'il s'agit d'une semaine : standard (STD) / avec samedi travaill&eacute; (SAM) / ouverture restreinte (RES)</p>\n";
     }
 
@@ -244,13 +247,13 @@ if ($this->config('EDTSamedi')) {
             $hours_tab .= "S$semaine : $lundi &rarr; $dimanche";
 
             // Si config['EDTSamedi'] == 1 (Emploi du temps différent les semaines avec samedi travaillé)
-            if ($config['EDTSamedi'] == 1) {
+            if ($EDTSamedi == 1) {
                 $checked = array_key_exists($current, $edt) ? "checked='checked'" : null ;
                 $hours_tab .= "<input type='checkbox' value='$current' name='EDTSamedi[]' $checked /><br/>\n";
             }
 
             // Si config['EDTSamedi'] == 2 (Emploi du temps différent les semaines avec samedi travaillé et en ouverture restreinte)
-            elseif ($config['EDTSamedi'] == 2) {
+            elseif ($EDTSamedi == 2) {
                 $checked1 = "checked='checked'";
                 $checked2 = null;
                 $checked3 = null;
