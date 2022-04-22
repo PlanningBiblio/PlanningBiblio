@@ -83,6 +83,10 @@ function roundTimePiker(obj) {
     rounded = 0;
   }
 
+  if (hours + rounded == 0) {
+    return '';
+  }
+
   $(obj).val(formatHHmm(hours, rounded));
 }
 

@@ -105,11 +105,13 @@
             {% else %}
               <tr id='hre_debut'>
             {% endif %}
+
             <td>
               <label class='intitule'>Heure de début</label>
             </td>
             <td>
-              <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value="{{ hre_debut | date('H:i') }}"/>
+              <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
+                value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}"/>
             </td>
           </tr>
           <tr>
@@ -127,7 +129,8 @@
             {% endif %}
               <td><label class='intitule'>Heure de fin</label></td>
               <td>
-                <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value="{{ hre_fin | date('H:i') }}"/>
+                <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
+                  value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
             </td>
           </tr>
 
