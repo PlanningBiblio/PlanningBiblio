@@ -206,6 +206,10 @@ if (isset($planning)) {
             }
         }
     
+        if ($elem['absent'] == 1) {
+            continue;
+        }
+
         // Regroupe les plages de SP qui se suivent sur le même poste
         if (isset($tab[$i-1])
             and $tab[$i-1]['date'] == $elem['date']
