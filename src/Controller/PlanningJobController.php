@@ -68,6 +68,7 @@ class PlanningJobController extends BaseController
         // PlanningHebdo is enabled
         if ($this->config('PlanningHebdo')) {
             $this->config('EDTSamedi', 0);
+            $GLOBALS['config']['EDTSamedi'] = 0;
         }
 
         // Check logged-in rights.
