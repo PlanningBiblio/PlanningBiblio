@@ -578,17 +578,6 @@ function calculSiPresent($debut, $fin, $temps, $jour)
     $wh = new WorkingHours($temps);
     $tab = $wh->hoursOf($jour);
 
-    // If workinghour are on 2 digits
-    // convert start and end on 2 digits.
-    if (!empty($tab[0][0]) and !\DateTime::createFromFormat('H:i:s', $tab[0][0])) {
-        // convert variable from H:i:s to H:i
-        // to avoid comparison between 13:00:00 and 13:00
-        $start_dt = DateTime::createFromFormat('H:i:s', $debut);
-        $debut = $start_dt->format('H:i');
-        $end_dt = DateTime::createFromFormat('H:i:s', $fin);
-        $fin = $end_dt->format('H:i');
-    }
-
     // Confrontation du créneau de service public aux tableaux
     foreach ($tab as $elem) {
         if (($elem[0] <= $debut) and ($elem[1] >= $fin)) {
