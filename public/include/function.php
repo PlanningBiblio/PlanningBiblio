@@ -14,6 +14,7 @@ Page appelée par les fichiers index.php, setup/index.php et planning/poste/menu
 */
 
 use App\Model\Agent;
+use App\Model\NotificationsHistory;
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\NotificationTransporter\NotificationTransporterInterface;
 
@@ -263,6 +264,27 @@ class CJMail implements NotificationTransporterInterface
   
     public function send()
     {
+        $entityManager = $GLOBALS['entityManager'];
+
+        $notification = new NotificationsHistory();
+        $notification->subject($this->subject);
+        $notification->message($this->message);
+        $notification->status('prepared');
+        $notification->date(new \DateTime);
+
+        $mails = is_array($this->to) ? $this->to : array($this->to);
+        foreach ($mails as $mail) {
+            $agent = $entityManager->getRepository(Agent::class)
+                ->findOneby(array('mail' => $mail));
+
+            if ($agent) {
+                $notification->getAgents()->add($agent);
+            }
+        }
+
+        $entityManager->persist($notification);
+        $entityManager->flush();
+
         if ($this->prepare()===false) {
             return false;
         }
@@ -302,6 +324,7 @@ class CJMail implements NotificationTransporterInterface
 
         if (!$mail->Send()) {
             $this->error.=$mail->ErrorInfo ."\n";
+            $notification->status($this->error);
       
             // error_CJInfo: pour affichage dans CJInfo (JS)
             $this->error_CJInfo=str_replace("\n", "#BR#", $this->error);
@@ -328,9 +351,13 @@ class CJMail implements NotificationTransporterInterface
                 }
             }
         } else {
+            $notification->status('sent');
             // Liste des destinataires pour qui l'envoi a fonctionné (en cas de succès total)
             $this->successAddresses=$this->to;
         }
+
+        $entityManager->persist($notification);
+        $entityManager->flush();
     
         return true;
     }
