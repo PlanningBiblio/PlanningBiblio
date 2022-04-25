@@ -4,6 +4,7 @@ namespace App\Model;
 
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
+require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/include/db.php');
 
 /**
