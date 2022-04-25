@@ -20,6 +20,7 @@ Page appelée en ajax lors du click sur les cadenas de la page planning/poste/in
 session_start();
 require_once "../../include/config.php";
 require_once "class.planning.php";
+require_once(__DIR__ . '/../../init_ajax.php');
 
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
