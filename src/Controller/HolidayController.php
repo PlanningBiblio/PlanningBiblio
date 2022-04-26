@@ -1156,10 +1156,10 @@ class HolidayController extends BaseController
                 'end_halfday' => $post['end_halfday'],
             ));
             list($hre_debut, $hre_fin) = $holidayHelper->halfDayStartEndHours();
-            $post['hre_debut']= $hre_debut;
-            $post['hre_fin']= $hre_fin;
-
         }
+
+        $post['hre_debut']= $hre_debut;
+        $post['hre_fin']= $hre_fin;
 
         // Enregistre la modification du congés
         $c=new \conges();

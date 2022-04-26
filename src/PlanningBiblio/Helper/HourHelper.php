@@ -24,7 +24,7 @@ class HourHelper extends BaseHelper
             $start = self::$start_default;
         }
 
-        if (!$end) {
+        if (!$end || $end == '23:59') {
             $end = self::$end_default;
         }
 

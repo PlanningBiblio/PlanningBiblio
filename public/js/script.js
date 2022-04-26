@@ -781,16 +781,19 @@ function url(path) {
 //	---------------------------		FIN Fonctions communes		------------------------	//
 //	--------------------------------	Absences		---------------------------------	//
 function all_day(){
-  if(!document.form.allday.checked){
-    document.getElementById("hre_debut").style.display="";
-    document.getElementById("hre_fin").style.display="";
+
+  if ($('input[name="allday"]').is(':checked')) {
+    $('#hre_debut').hide();
+    $('#hre_fin').hide();
+
+    return false;
   }
-  else{
-    document.getElementById("hre_debut").style.display="none";
-    document.getElementById("hre_fin").style.display="none";
-    document.form.hre_debut.value="";
-    document.form.hre_fin.value="";
-  }
+
+  $('#hre_debut').show();
+  $('#hre_fin').show();
+
+  $('input[name="hre_debut"]').val('');
+  $('input[name="hre_fin"]').val('');
 }
 //	--------------------------------	FIN Absences		---------------------------------	//
 //	--------------------------------	Aide			---------------------------------	//
