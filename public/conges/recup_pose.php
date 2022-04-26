@@ -179,6 +179,7 @@ else {
     echo "<input type='hidden' name='credit' value='$credit' />\n";
     echo "<input type='hidden' name='anticipation' value='$anticipation' />\n";
     echo "<input type='hidden' id='agent' value='{$_SESSION['login_nom']} {$_SESSION['login_prenom']}' />\n";
+    echo "<input type='hidden' id='selected_agent_id' value='{$perso_id}' />\n";
     echo "<input type='hidden' id='conges-recup' value='1' />\n";
     echo "<input type='hidden' id='is-recover' value='1' />\n";
     echo "<table border='0'>\n";
