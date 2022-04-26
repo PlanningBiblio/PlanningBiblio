@@ -185,6 +185,7 @@ sed -i "s/APP_SECRET=.*/APP_DEBUG=0\nAPP_SECRET=${planningbsecret}/" .env.local
 
 sed -i "s/DATABASE_URL=.*/DATABASE_URL=mysql:\/\/$planningbdbuser:$planningbdbpass@$planningdbhost:$planningdbport\/$planningbdbname/" .env.local
 sed -i "s/DATABASE_PREFIX=.*/DATABASE_PREFIX=$planningbdbprefix/" .env.local
+sed -i "s/APP_ENV=dev/APP_ENV=prod/g" .env.local
 
 # Set the default theme
 mysql -h $planningdbhost -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbname.\`config\` SET \`valeur\` = 'default' WHERE \`nom\` = 'Affichage-theme';"
