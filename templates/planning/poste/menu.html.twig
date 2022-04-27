@@ -94,10 +94,11 @@
                 <a id="planning-drop" href='javascript:popup("planning/poste/supprimer.php&date={{ date }}&site={{ site }}",500,200);' title='Supprimer le planning' style="{{ locked ? 'display:none;' }}">
                   <span class='pl-icon pl-icon-drop'></span>
                 </a>
-                <a href='javascript:print();' title='Imprimer le planning'>
-                  <span class='pl-icon pl-icon-printer'></span>
-                </a>
               {% endif %}
+
+              <a href='javascript:print();' title='Imprimer le planning'>
+                <span class='pl-icon pl-icon-printer'></span>
+              </a>
 
               {% if locked %}
                 {% if userCan('300', site) == false and userCan('1000', site) == false %}
