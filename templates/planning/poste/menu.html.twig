@@ -71,12 +71,12 @@
             {% endif %}
 
             <div id='validation'>
-              {% if userCan('300', site) or userCan('1000', site) %}
-                <div class='pl-validation' style="{{ locked ?: 'display:none'}}">
-                    <u>Validation</u><br/>
-                    {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}
-                </div>
+              <div class='pl-validation' style="{{ locked ?: 'display:none'}}">
+                <u>Validation</u><br/>
+                {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}
+              </div>
 
+              {% if userCan('300', site) or userCan('1000', site) %}
                 <span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning' style="{{ locked ?: 'display:none'}}"></span></a>
 
                 <span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning' style="{{ locked ? 'display:none'}}"></span></a>
@@ -100,18 +100,10 @@
                 <span class='pl-icon pl-icon-printer'></span>
               </a>
 
-              {% if locked %}
-                {% if userCan('300', site) == false and userCan('1000', site) == false %}
-                  <div class='pl-validation'>
-                    <u>Validation</u><br/>
-                    {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}
-                  </div>
-                {% endif %}
-              {% endif %}
-
               <a href='index.php?date={{ date }}&amp;site={{ site }}' title='Actualiser'>
                 <span class='pl-icon pl-icon-refresh'>
               </a>
+
             </div>
 
             <div id='planningTips'>&nbsp;</div>
