@@ -72,6 +72,8 @@ if ($suppression and $validation) {
 
 // Validation du formulaire
 elseif ($validation) {
+    $texte = html_entity_decode($texte);
+    $texte = str_replace('&#39;', "'", $texte);
     echo "<b>Votre demande a été enregistrée</b>\n";
     echo "<br/><br/><a href='index.php?page=conges/index.php'>Retour</a>\n";
     $db=new db();
@@ -79,13 +81,11 @@ elseif ($validation) {
     if ($id) {
         $db->update("conges_infos", array("debut"=>dateSQL($debut),"fin"=>dateSQL($fin),"texte"=>$texte), array("id"=>$id));
     } else {
-        $db->CSRFToken = $CSRFToken;
         $db->insert("conges_infos", array("debut"=>dateSQL($debut),"fin"=>dateSQL($fin),"texte"=>$texte));
     }
 }
 // Vérification
 elseif ($debut) {
-    $texte=htmlentities($texte, ENT_QUOTES|ENT_IGNORE, "UTF-8");
     $fin=$fin?$fin:$debut;
     echo "<h4>Confirmation</h4>";
     echo "Du $debut au $fin<br/>";

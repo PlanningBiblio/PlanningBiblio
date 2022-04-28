@@ -13,7 +13,7 @@
 
   <table border='0'>
     <tr style='vertical-align:top'>
-      <td style='width:1200px;'>
+      <td>
         <form name='form' action='/holiday' method='post' id='form'>
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <input type='hidden' name='confirm' value='confirm' />
@@ -76,7 +76,7 @@
                      <br /><br />
                   {% endif %}
 
-                  <select name='perso_id' id='perso_ids' class='{% if agents_multiples %}agents_multiples{% endif %} ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
+                  <select name='perso_id' id='perso_ids' class='{% if agents_multiples %}agents_multiples{% endif %} ui-widget-content ui-corner-all' style='margin-bottom:20px; width:100%;'>
                   {% if agents_multiples %}
                     <option value='0' selected='selected'> -- Ajoutez un agent --</option>
                       {% if conges_tous %}
@@ -207,7 +207,7 @@
                 <tr class="hideWhenMultipleAgents">
                   <td>&nbsp;</td>
                   <td>
-                    <select name='debit'>
+                    <select name="debit" style="width:100%;">
                       <option value='recuperation'>Le crédit de récupérations</option>
                       <option value='credit'>Le crédit de congés de l'année en cours</option>
                     </select>
@@ -318,7 +318,7 @@
 
                 <td colspan='2'>
                   {% if admin %}
-                    <select name='valide' id='validation' onchange="afficheRefus(this);">
+                    <select name='valide' id='validation' onchange="afficheRefus(this);" style="width:100%;">
                       <option value='0'>Demandé</option>
                       <option value='2'>{{ accepted_pending_str }}</option>
                       <option value='-2' >{{ refused_pending_str }}</option>
@@ -366,9 +366,9 @@
       </form>
     </td>
     <td style='color:#FF5E0E;'>
-      {% if holifay_info %}
+      {% if holiday_info %}
         <b>Informations sur les congés :</b><br/><br/>
-        {% for i in holifay_info %}
+        {% for i in holiday_info %}
           Du {{ i.start }} au {{ i.end }} :<br/>{{ i.texte|nl2br }}<br/><br/>
         {% endfor %}
       {% endif %}
