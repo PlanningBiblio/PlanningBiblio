@@ -690,6 +690,7 @@ class HolidayController extends BaseController
 
         $date = date("Y-m-d");
         $db = new \db();
+        $db->sanitize_string = false;
         $db->query("SELECT * FROM `{$dbprefix}conges_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
 
         $holiday_info = array();
@@ -697,11 +698,11 @@ class HolidayController extends BaseController
             foreach ($db->result as $elem) {
                 $elem['start'] = dateFr($elem['debut']);
                 $elem['end'] = dateFr($elem['fin']);
-                $holifay_info[] = $elem;
+                $holiday_info[] = $elem;
             }
         }
 
-        $this->templateParams(array('holifay_info' => $db->result));
+        $this->templateParams(array('holiday_info' => $holiday_info));
 
         return $this->output('conges/add.html.twig');
     }
