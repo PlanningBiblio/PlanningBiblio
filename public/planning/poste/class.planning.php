@@ -416,11 +416,11 @@ class planning
             $start = $elem['date'] . ' ' . $elem["debut"];
             $end = $elem['date'] . ' ' . $elem["fin"];
             if ($agent->isAbsentOn($start, $end)) {
-                continue;
+                $elem["absent"] = 1;
             }
 
             if ($agent->isOnVacationOn($start, $end)) {
-                continue;
+                $elem["absent"] = 1;
             }
 
             // Création d'un tableau par agent, avec nom, prénom et email
