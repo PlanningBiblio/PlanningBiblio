@@ -318,11 +318,11 @@ class AgentController extends BaseController
             $nom = $db->result[0]['nom'];
             $prenom = $db->result[0]['prenom'];
             $mail = $db->result[0]['mail'];
-            $statut = html_entity_decode($db->result[0]['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $statut = $db->result[0]['statut'];
             $categorie = $db->result[0]['categorie'];
             $check_hamac = $db->result[0]['check_hamac'];
             $check_ics = json_decode($db->result[0]['check_ics'], true);
-            $service = html_entity_decode($db->result[0]['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $service = $db->result[0]['service'];
             $heuresHebdo = $db->result[0]['heures_hebdo'];
             $heuresTravail = $db->result[0]['heures_travail'];
             $arrivee = dateFr($db->result[0]['arrivee']);
@@ -799,9 +799,9 @@ class AgentController extends BaseController
         $postes = $params['postes'];
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
-        $service = htmlentities($params['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $service = $params['service'];
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
-        $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $statut = $params['statut'];
         $temps = array_key_exists("temps", $params) ? $params['temps'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
