@@ -56,6 +56,76 @@ class CJICS
     public $src=null;
     public $table="absences";
 
+    /** 
+     * @method createIcsEvent
+     * @param $params array
+     * @return $event array
+     */
+
+    public static function createIcsEvent($params) {
+    
+        /* 
+        For absences, params are $id, $start, $end, $reason, $comment, $status, $createdAt, $lastModified
+        For planning, params are $id, $start, $end, $position, $positionId, $site, $siteId, $floor, $organizer, $lastModified
+        */
+    
+        extract($params);
+    
+        $comment = isset($comment) ? ' ' . $comment : null;
+        $createdAt = isset($createdAt) ? gmdate('Ymd\THis\Z', $createdAt) : null;
+        $floor = $floor ?? null;
+        $organizer = $organizer ?? null;
+        $positionId = $positionId ?? null;
+        $positionOrReason = $position ?? $reason;
+        $site = $site ?? null;
+        $siteId = $siteId ?? null;
+        $status = $status ?? 'CONFIRMED';
+    
+        $tz = date_default_timezone_get();
+        $url = $_SERVER['SERVER_NAME'];
+    
+        $start = date('Ymd\THis', $start);
+        $end = date('Ymd\THis', $end);
+        $lastModified = gmdate('Ymd\THis\Z', $lastModified);
+    
+        // If the site is not provide, this is an absence
+        $location = $siteId ? $site . $floor : 'INDISPO';
+
+        $event = [];
+    
+        $event[] = "BEGIN:VEVENT";
+        $event[] = "UID:$id-$siteId-$positionId-$start-$end@$url";
+        $event[] = 'DTSTAMP:' . gmdate('Ymd\THis\Z');
+        $event[] = "DTSTART;TZID=$tz:$start";
+        $event[] = "DTEND;TZID=$tz:$end";
+        $event[] = "SUMMARY:$positionOrReason" . $comment;
+    
+        if($organizer){
+          $event[] = "ORGANIZER;CN=$organizer";
+        }
+    
+        $event[] = "LOCATION:$location";
+        $event[] = "STATUS:$status";
+        $event[] = 'CLASS:PUBLIC';
+        $event[] = 'X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY';
+        $event[] = 'TRANSP:OPAQUE';
+
+        if ($createdAT) {
+            $event[] = "CREATED:$createdAt";
+        }
+
+        $event[] = "LAST-MODIFIED:$lastModified";
+        $event[] = "DTSTAMP:$lastModified";
+        $event[] = 'BEGIN:VALARM';
+        $event[] = 'ACTION:DISPLAY';
+        $event[] = 'DESCRIPTION:This is an event reminder';
+        $event[] = 'TRIGGER:-P0DT0H10M0S';
+        $event[] = 'END:VALARM';
+        $event[] = 'END:VEVENT';
+    
+        return $event;
+    }
+
     /**
      * purge
      * @param string $this->table

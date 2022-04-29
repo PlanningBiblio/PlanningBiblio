@@ -182,12 +182,14 @@ function sendICSURL(){
     var mail = $('#mail').text();
   }
 
-  var url = $('#url-ics').text();
+  var urlIcs = $('#urlIcs').text();
+  var urlIcsWithAbsences = urlIcs + '&absences=1';
 
   var message = $('#ics-url-text').val();
   message = message.replace('[lastname]', nom);
   message = message.replace('[firstname]', prenom);
-  message = message.replace('[url]', url);
+  message = message.replace('[urlIcs]', urlIcs);
+  message = message.replace('[urlIcsWithAbsences]', urlIcsWithAbsences);
 
   $( "#ics-url-recipient" ).text(mail);
   $( "#ics-url-text" ).val(message);
@@ -469,7 +471,7 @@ $(function() {
               updateTips(result.error, "error");
             }
             else{
-              CJInfo("L'appel à disponibilité a bien été envoyé","success");
+              CJInfo("L'e-mail a bien été envoyé","success");
               $( "#ics-url-form" ).dialog( "close" );
             }
 
@@ -486,7 +488,7 @@ $(function() {
     },
 
     close: function() {
-      $(".validateTips").text("Envoyez à l'agent l'URL de son agenda Planning Biblio.");
+      $(".validateTips").text("Envoyez à l'agent les URL de ses agendas Planno.");
     }
   });
   

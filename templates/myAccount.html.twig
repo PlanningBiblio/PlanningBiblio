@@ -17,7 +17,7 @@
           <li><a href='#credits'>Mes crédits</a></li>
         {% endif %}
         {% if ics %}
-          <li><a href='#ics'>Calendrier ICS</a></li>
+          <li><a href='#ics'>Agendas ICS</a></li>
         {% endif %}
         <li><a href='#motDePasse'>Mon mot de passe</a></li>
       </ul>
@@ -139,15 +139,22 @@
         <h3>Changement de mot de passe</h3>
         {% include 'agents/elements/change_password_div.html.twig' %}
       </div> <!-- motDePasse -->
-      <!-- Calendrier ICS -->
+      <!-- Agendas ICS -->
       <div id='ics' style='margin-left:80px;display:none;'>
-        <h3>URL de votre calendrier ICS</h3>
+        <h3>Agendas ICS</h3>
         <p>
-          <span id='url-ics'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics | raw }}'>{{ config('URL') }}{{ ics | raw }}</a></span>
+          <ul>
+            <li>Agenda des plages de service public : 
+              <span id='urlIcs'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics | raw }}'>{{ config('URL') }}{{ ics | raw }}</a></span>
+            </li>
+            <li>Agenda des plages de service public et des absences : 
+              <span id='urlIcsWithAbsences'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics | raw }}&absences=1'>{{ config('URL') }}{{ ics | raw }}&absences=1</a></span>
+            </li>
+          </ul>
           {% if config('ICS-Code') %}
-          <br/><a style="font-size: 15px;margin-top: 30px; color:#29495C;" href="javascript:resetICSURL({{ login.id }}, '{{ CSRFSession }}' );"> Réinitialiser l'URL</a>
+          <br/><a style="font-size: 15px;margin-top: 30px; color:#29495C;" href="javascript:resetICSURL({{ login.id }}, '{{ CSRFSession }}' );"> Réinitialiser les URL</a>
           {% endif %}
         </p>
-      </div> <!-- Calendrier ICS -->
+      </div> <!-- Agendas ICS -->
     </div> <!-- ui-tabs -->
 {% endblock %}
