@@ -328,6 +328,12 @@ li .agent-acces-checked2{
   padding-right: 20px;
 }
 
+#EDTTabs .tableauStandard td{
+  text-align: right;
+  vertical-align:top;
+  padding-right: 20px;
+}
+
 .tableauFiches td{
   vertical-align:top;
   padding: 0 60px 10px 10px;
