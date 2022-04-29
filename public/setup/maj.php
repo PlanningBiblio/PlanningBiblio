@@ -2576,6 +2576,129 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="21.10.04.000";
+if (version_compare($config['Version'], $v) === -1) {
+    // Decode holiday information.
+    $db = new db();
+    $db->select('conges_infos');
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $new = html_entity_decode($elem['texte'], ENT_QUOTES|ENT_IGNORE, "UTF-8");
+            $new = addslashes($new);
+            $sql[] = "UPDATE `{$dbprefix}conges_infos` SET `texte` = '$new' where `id` = '{$elem['id']}';";
+        }
+    }
+
+    // MT 35788.
+    $sql[] = "UPDATE `{$dbprefix}conges` SET `fin` = REPLACE(`fin`, '23:59:00', '23:59:59') WHERE fin like '%23:59:00';";
+    $sql[] = "UPDATE `{$dbprefix}absences` SET `fin` = REPLACE(`fin`, '23:59:00', '23:59:59') WHERE fin like '%23:59:00';";
+    $db = new db();
+    $db->select2('planning_hebdo');
+    if($db->result){
+        foreach ($db->result as $workinghours) {
+            $hours = json_decode(html_entity_decode(
+                $workinghours['temps'],
+                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+
+            foreach ($hours as $day => $times) {
+                foreach ($times as $i => $time) {
+                    if ($time == '00:00:00') {
+                        $hours[$day][$i] = '';
+                    }
+                }
+            }
+            $hours = json_encode($hours);
+            $id = $workinghours['id'];
+            $sql[] = "UPDATE `{$dbprefix}planning_hebdo` SET `temps` = '$hours' WHERE `id` = $id;";
+        }
+    }
+
+    $db = new db();
+    $db->select2('personnel');
+    if($db->result){
+        foreach ($db->result as $agent) {
+            $hours = json_decode(html_entity_decode(
+                $agent['temps'],
+                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+
+            if (!$hours) {
+                continue;
+            }
+
+            foreach ($hours as $day => $times) {
+                foreach ($times as $i => $time) {
+                    if ($time == '00:00:00') {
+                        $hours[$day][$i] = '';
+                    }
+                }
+            }
+            $hours = json_encode($hours);
+            $id = $agent['id'];
+            $sql[] = "UPDATE `{$dbprefix}personnel` SET `temps` = '$hours' WHERE `id` = $id;";
+        }
+    }
+
+    // MT 36405
+    $db = new db();
+    $db->select2('select_services', array('id', 'valeur'));
+    if($db->result){
+        foreach ($db->result as $elem) {
+            $id = $elem['id'];
+            $old = $elem['valeur'];
+            $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = str_replace(array('"', "'"), ' ', $new);
+            if ($new != $old) {
+                $sql[] = "UPDATE `{$dbprefix}select_services` SET `valeur` = '$new' WHERE `id` = '$id';";
+            }
+        }
+    }
+
+    $db = new db();
+    $db->select2('select_statuts', array('id', 'valeur'));
+    if($db->result){
+        foreach ($db->result as $elem) {
+            $id = $elem['id'];
+            $old = $elem['valeur'];
+            $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = str_replace(array('"', "'"), ' ', $new);
+            if ($new != $old) {
+                $sql[] = "UPDATE `{$dbprefix}select_statuts` SET `valeur` = '$new' WHERE `id` = '$id';";
+            }
+        }
+    }
+
+    $db = new db();
+    $db->select2('personnel', array('id', 'service', 'statut'));
+    if($db->result){
+        foreach ($db->result as $elem) {
+            $id = $elem['id'];
+            $oldservice = $elem['service'];
+            $oldstatut = $elem['statut'];
+            $newservice = html_entity_decode($oldservice, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $newservice = str_replace(array('"', "'"), ' ', $newservice);
+            $newstatut = html_entity_decode($oldstatut, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $newstatut = str_replace(array('"', "'"), ' ', $newstatut);
+
+            if ($newservice != $oldservice) {
+                $sql[] = "UPDATE `{$dbprefix}personnel` SET `service` = '$newservice' WHERE `id` = '$id';";
+            }
+
+            if ($newstatut != $oldstatut) {
+                $sql[] = "UPDATE `{$dbprefix}personnel` SET `statut` = '$newstatut' WHERE `id` = '$id';";
+            }
+        }
+    }
+
+    // Remove duplicate.
+    $sql[] = "DELETE s1 FROM select_services s1 INNER JOIN select_services s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
+    $sql[] = "DELETE s1 FROM select_statuts s1 INNER JOIN select_statuts s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
+
+    // MT 36590
+    $sql[]="UPDATE `{$dbprefix}config` SET `commentaires` = 'Horaires différents les semaines avec samedi travaillé et semaines à ouverture restreinte. Ce paramètre est ignoré si PlanningHebdo est activé.' WHERE `nom`='EDTSamedi';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
