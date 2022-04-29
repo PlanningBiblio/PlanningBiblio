@@ -268,6 +268,46 @@ if (isset($planning)) {
     }
 }
 
+if(isset($absences)){
+  // Complète le tableau $ical
+  foreach($absences as $elem){
+    $debut = date("Ymd\THis", strtotime($elem['debut']));
+    $fin = date("Ymd\THis", strtotime($elem['fin']));
+    // Nom du poste pour SUMMARY
+    $motif = html_entity_decode($elem['motif'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
+    $commentaires = html_entity_decode($elem['commentaires'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
+    // Validation pour LAST-MODIFIED et DSTAMP
+    $validation = date("Ymd\THis", strtotime($elem['validation']));
+    // Demande pour CREATED
+    $demande = date("Ymd\THis", strtotime($elem['demande']));
+    // ORGANIZER
+    $organizer = null;
+    $ical[]="BEGIN:VEVENT";
+    $ical[]="UID: $id---$debut-$fin@$url";
+    $ical[]="DTSTAMP:" . gmdate('Ymd').'T'. gmdate('His') . "Z";
+    $ical[]="DTSTART;TZID=$tz:$debut";
+    $ical[]="DTEND;TZID=$tz:$fin";
+    $ical[]="SUMMARY:$motif".($commentaires?" - $commentaires":"");
+    if($organizer){
+      $ical[]="ORGANIZER;CN=$organizer";
+    }
+    $ical[]="LOCATION:INDISPO";
+    $ical[]="STATUS:".($elem['valide']?"CONFIRMED":"TENTATIVE");
+    $ical[]="CLASS:PUBLIC";
+    $ical[]="X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY";
+    $ical[]="TRANSP:OPAQUE";
+    $ical[]="CREATED:$demande";
+    $ical[]="LAST-MODIFIED:$validation";
+    $ical[]="DTSTAMP:$validation";
+    $ical[]="BEGIN:VALARM";
+    $ical[]="ACTION:DISPLAY";
+    $ical[]="DESCRIPTION:This is an event reminder";
+    $ical[]="TRIGGER:-P0DT0H10M0S";
+    $ical[]="END:VALARM";
+    $ical[]="END:VEVENT";
+  }
+}
+
 $ical[]="END:VCALENDAR";
 
 $ical=implode("\n", $ical);
