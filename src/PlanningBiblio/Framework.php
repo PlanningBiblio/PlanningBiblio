@@ -254,7 +254,13 @@ class Framework
         $db = new \db();
         $db->select('pl_poste_tab_affect', null, "tableau = $this->id");
         if ($db->result) {
-            return true;
+            foreach ($db->result as $elem) {
+                $db2 = new \db();
+                $db2->select2('pl_poste', null, ['date' => $elem['date'], 'site' => $elem['site'], 'perso_id' => '>0']);
+                if ($db2->result) {
+                    return true;
+                }
+            }
         }
 
         return false;
