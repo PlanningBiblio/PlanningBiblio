@@ -34,6 +34,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 class datePl
 {
     public $dates = null;
+    public $date = null;
     public $jour = null;
     public $jour_complet = null;
     public $sam = null;
@@ -45,6 +46,7 @@ class datePl
   
     public function __construct($date, $nb_semaine = null)
     {
+        $this->date = $date;
         $yyyy = (int) substr($date, 0, 4);
         $mm = (int) substr($date, 5, 2);
         $dd = (int) substr($date, 8, 2);
@@ -75,43 +77,40 @@ class datePl
     
         $this->dates=array($j1,$j2,$j3,$j4,$j5,$j6,$j7);
 
+        $this->semaine3 = $this->weekId($this->nb_semaine);
+    }
 
-        switch ($this->nb_semaine) {
-            // Calcul du numéro de la semaine pour l'utilisation d'un seul planning hebdomadaire : toujours 1
-            case 1:
-                $this->semaine3 = 1;
-                break;
+    private function weekId($nb_semaine) {
 
-            // Calcul du numéro de la semaine pour l'utilisation de 2 plannings hebdomadaires
-            case 2:
-                $this->semaine3 = $this->semaine % 2 ? 1 : 2;
-                break;
-
-            // Calcul du numéro de la semaine pour l'utilisation de 3 plannings hebdomadaires
-            case 3:
-                $interval = $this->getNumberOfWeeksSinceStartDate($date);
-                if (!($interval%3)) {
-                    $this->semaine3=1;
-                }
-                if (!(($interval+2)%3)) {
-                    $this->semaine3=2;
-                }
-                if (!(($interval+1)%3)) {
-                    $this->semaine3=3;
-                }
-                # Or: $this->semaine3 = $this->getCycleNumber($interval, 3);
-                # (can be moved in default case then)
-                break;
-
-            // Calcul du numéro de la semaine pour l'utilisation de 4 plannings hebdomadaires
-            case 4:
-               $this->semaine3 = $this->getCycleNumber($this->semaine, 4);
-
-            default:
-                $interval = $this->getNumberOfWeeksSinceStartDate($date);
-                $this->semaine3 = $this->getCycleNumber($this->semaine, $this->nb_semaine);
-                break;
+        if ($nb_semaine == 1) {
+            return 1;
         }
+
+        if ($nb_semaine == 2) {
+            return $this->semaine % 2 ? 1 : 2;
+        }
+
+        $interval = $this->getNumberOfWeeksSinceStartDate($this->date);
+        if ($nb_semaine == 3) {
+            $week_id = null
+            if (!($interval % 3)) {
+                $week_id = 1;
+            }
+            if (!(($interval + 2) % 3)) {
+                $week_id = 2;
+            }
+            if (!(($interval + 1) % 3)) {
+                $week_id = 3;
+            }
+
+            return $week_id;
+        }
+
+        if ($nb_semaine == 4) {
+           return $this->getCycleNumber($this->semaine, 4);
+        }
+
+        return $this->getCycleNumber($this->semaine, $nb_semaine);
     }
 
     private function getCycleNumber($weeknumber, $cycles) {
@@ -147,7 +146,6 @@ class datePl
     public function planning_day_index_for($agent_id)
     {
         $config = $GLOBALS['config'];
-        $semaine = $this->semaine;
         $semaine3 = $this->semaine3;
 
         // Day of week. Mon = 0 ,Sun = 6
