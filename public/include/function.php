@@ -92,7 +92,7 @@ class datePl
 
         $interval = $this->getNumberOfWeeksSinceStartDate($this->date);
         if ($nb_semaine == 3) {
-            $week_id = null
+            $week_id = null;
             if (!($interval % 3)) {
                 $week_id = 1;
             }
@@ -143,10 +143,10 @@ class datePl
         return $interval;
     }
 
-    public function planning_day_index_for($agent_id)
+    public function planning_day_index_for($agent_id, $week_number)
     {
         $config = $GLOBALS['config'];
-        $semaine3 = $this->semaine3;
+        $semaine3 = $week_number ? $this->weekId($week_number) : $this->semaine3;
 
         // Day of week. Mon = 0 ,Sun = 6
         $day = $this->position - 1;
