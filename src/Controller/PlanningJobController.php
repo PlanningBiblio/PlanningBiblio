@@ -343,7 +343,7 @@ class PlanningJobController extends BaseController
 
             if (!empty($p->elements)) {
                 foreach ($p->elements as $elem) {
-                    $tempsPlanningHebdo[$elem["perso_id"]]=$elem["temps"];
+                    $tempsPlanningHebdo[$elem["perso_id"]] = $elem;
                     $breaktimes[$elem["perso_id"]] = $elem["breaktime"];
                 }
             }
@@ -352,19 +352,21 @@ class PlanningJobController extends BaseController
         if ($db->result and $verif) {
             foreach ($db->result as $elem) {
                 $temps = array();
+                $week_number = null;
 
                 // If PlanningHebdo module is enabled,
                 // Get working hour from PlanningHebdo.
                 if ($this->config('PlanningHebdo')) {
                     if (array_key_exists($elem['id'], $tempsPlanningHebdo)) {
-                        $temps = $tempsPlanningHebdo[$elem['id']];
+                        $temps = $tempsPlanningHebdo[$elem['id']]['temps'];
+                        $week_number = $tempsPlanningHebdo[$elem['id']]['nb_semaine'];
                     }
                 } else {
                     // Get working hours from agent's table.
                     $temps = json_decode(html_entity_decode($elem['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                 }
 
-                $jour = $d->planning_day_index_for($elem['id']);
+                $jour = $d->planning_day_index_for($elem['id'], $week_number);
 
                 // Handle exclusions.
                 $exclusion[$elem['id']] = array();
