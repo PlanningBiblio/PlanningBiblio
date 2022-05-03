@@ -1,40 +1,27 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planno
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : planningHebdo/cron.importCSV.php
-Création : 1er juillet 2016
-Dernière modification : 29 août 2017
-@author Jérôme Combes <jerome@planningbiblio.fr>
+@file src/Cron/Legacy/cron.importCSV.php
+@author Jérôme Combes <jerome.combes@biblibre.com>
 
 Description :
 Import les heures de présences depuis un fichier CSV
 
 @note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
-# Planning Biblio : Importation des heures de présence tous les jours à minuit
-0 0 * * * /usr/bin/php5 -f /var/www/html/planning/planningHebdo/cron.importCSV.php
+# Planno : Importation des heures de présence tous les jours à minuit
+0 0 * * * php /var/www/planno/src/Cron/Legacy/cron.importCSV.php
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
-@note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
-
-$path="/planning";
 
 session_start();
 
-/** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
- *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas
- *  $version prend la valeur de $argv[0] qui ne peut être fournie que en CLI ($argv[0] = chemin du script appelé en CLI)
- */
-$version=$argv[0];
+$version = 'cron';
 
-// chdir($path) : important pour l'execution via le cron
-chdir($path);
-
-require_once "$path/include/config.php";
-require_once "$path/personnel/class.personnel.php";
+require_once __DIR__ . '/../../../public/include/config.php';
+require_once __DIR__ . '/../../../public/personnel/class.personnel.php';
 
 $CSRFToken = CSRFToken();
 
@@ -182,8 +169,6 @@ foreach ($lines as $line) {
     // Mise en forme du champ "temps"
     // Le champ "temps" contient un tableau contenant les emplois du temps de chaque jour : index ($jour) de 0 à 6 (du lundi au dimanche)
     $jour=date("N", strtotime($cells[1])) -1;
-    $p = new datePl($lundi);
-    $jour = $jour +  7 * ($p->semaine3 - 1);
     $temps[$perso_id][$lundi]['temps'][$jour] = array($cells[2],$cells[3],$cells[4],$cells[5],$site,$cells[6],$cells[7]);
 
     // Clé identifiant les infos de la ligne (pour comparaison avec la DB)
@@ -244,7 +229,7 @@ $nb = count($insert);
 if ($nb > 0) {
     $db=new dbh();
     $db->CSRFToken = $CSRFToken;
-    $db->prepare("INSERT INTO `{$dbprefix}planning_hebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `cle`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :cle);");
+    $db->prepare("INSERT INTO `{$dbprefix}planning_hebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `cle`, `nb_semaine`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :cle, 1);");
     foreach ($insert as $elem) {
         $db->execute($elem);
     }
