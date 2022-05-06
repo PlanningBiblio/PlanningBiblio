@@ -11,9 +11,9 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
-$version="21.11.00.002"; // xx.xx.xx.xxx
+$version="22.04.00.000"; // xx.xx.xx.xxx
 $GLOBALS['version'] = $version;
-$displayed_version="21.11.00"; // xx.xx.xx
+$displayed_version="22.04.00"; // xx.xx.xx
 
 require_once __DIR__.'/../vendor/autoload.php';
 
