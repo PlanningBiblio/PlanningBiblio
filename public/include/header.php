@@ -36,7 +36,7 @@ if (!file_exists("themes/$theme/favicon.png")) {
 <!DOCTYPE html>
 <html>
 <head>
-<title>Planning</title>
+<title>Planno</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
 <script type='text/JavaScript' src='js/jquery-1.11.1.min.js'></script>
