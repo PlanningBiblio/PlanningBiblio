@@ -43,7 +43,7 @@ class PresentSet
 
             if ($config['PlanningHebdo']) {
                 if (array_key_exists($elem['id'], $tempsPlanningHebdo)) {
-                    $temps = $tempsPlanningHebdo[$elem['id']];
+                    $temps = $tempsPlanningHebdo[$elem['id']]['temps'];
                 }
             } else {
                 $temps = json_decode(html_entity_decode($elem['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
