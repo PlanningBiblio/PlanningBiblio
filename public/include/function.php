@@ -143,7 +143,7 @@ class datePl
         return $interval;
     }
 
-    public function planning_day_index_for($agent_id, $week_number)
+    public function planning_day_index_for($agent_id, $week_number = 0)
     {
         $config = $GLOBALS['config'];
         $semaine3 = $week_number ? $this->weekId($week_number) : $this->semaine3;

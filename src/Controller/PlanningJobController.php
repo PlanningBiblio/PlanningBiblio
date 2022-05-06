@@ -352,7 +352,7 @@ class PlanningJobController extends BaseController
         if ($db->result and $verif) {
             foreach ($db->result as $elem) {
                 $temps = array();
-                $week_number = null;
+                $week_number = 0;
 
                 // If PlanningHebdo module is enabled,
                 // Get working hour from PlanningHebdo.
@@ -762,8 +762,8 @@ class PlanningJobController extends BaseController
 
                 if ($available) {
                     $d = new \datePl($date);
-                    $day = $d->planning_day_index_for($agent_id);
                     $working_hours = $agent->getWorkingHoursOn($date);
+                    $day = $d->planning_day_index_for($agent_id, $working_hours['nb_semaine']);
 
                     if (!calculSiPresent($start, $end, $working_hours['temps'], $day)) {
                         $available = false;
