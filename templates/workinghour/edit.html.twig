@@ -40,7 +40,7 @@
               <div id='plHebdo-perso-id'>
                 {% if admin == true and request_exception is null %}
                   <label for='perso_id'>Pour l'agent</label>
-                  <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:350px; width:200px; text-align:center;' >
+                  <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:400px; width:200px; text-align:center;' >
                     <option value=''>&nbsp;</option>
                     {% for elem in tab %}
                       <option value='{{ elem.id }}' {{ (perso_id == elem.id) ? "selected = 'selected'" : " " }} >{{ elem.nom }} {{ elem.prenom }}</option>
