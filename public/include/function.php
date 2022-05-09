@@ -208,7 +208,6 @@ class CJMail implements NotificationTransporterInterface
   
     /* arrête la procédure d'envoi de mail si désactivé dans la config */
         if (!$GLOBALS['config']['Mail-IsEnabled']) {
-            $this->error.="L'envoi des e-mails est désactivé dans la configuration\n";
             $this->successAddresses=array();
             $this->failedAddresses=$this->to;
             return false;
