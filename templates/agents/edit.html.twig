@@ -265,7 +265,7 @@
           {% if statuts is iterable %}
             {% for elem in statuts %}
               <li class='ui-state-default' id='li_{{ elem.id }}'>
-                <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
+                <span class='pl-icon pl-icon-arrowupdown'></span>
                 <font id='valeur_{{ elem.id }}'>{{ elem.valeur | raw }}</font>
                 <select id='categorie_{{ elem.id }}' class='select-popup'>
                   <option value='0'>&nbsp;</option>
@@ -278,7 +278,7 @@
                   {% endfor %}
                 </select>
                 {% if elem.valeur not in statuts_utilises %}
-                  <span class='ui-icon ui-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
+                  <span class='pl-icon pl-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>
             {% endfor %}
@@ -301,10 +301,10 @@
           {% if services is iterable %}
             {% for elem in services %}
               <li class='ui-state-default' id='li_{{ elem.id }}'>
-                <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
+                <span class='pl-icon pl-icon-arrowupdown'></span>
                 <font id='valeur_{{ elem.id }}'>{{ elem.valeur | raw }}</font>
                 {% if elem.valeur not in services_utilises %}
-                  <span class='ui-icon ui-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
+                  <span class='pl-icon pl-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>
             {% endfor %}
