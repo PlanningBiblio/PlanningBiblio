@@ -159,7 +159,7 @@ $(function() {
       +options_wf
       +"</select>"
       +"<input type='checkbox' id='teleworking_"+number+"' style='position:absolute; left:780px;' />"
-      +"<span class='ui-icon pl-icon-trash' style='position:absolute;left:840px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:840px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué

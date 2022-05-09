@@ -112,9 +112,9 @@ $(function() {
     while($('#li_'+number).length){
       number++;
     }
-    $("#etages-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+    $("#etages-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='pl-icon pl-icon-arrowupdown'></span>"
       +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:480px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué
@@ -226,9 +226,9 @@ $(function() {
     while($('#li_'+number).length){
       number++;
     }
-    $("#groups-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+    $("#groups-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='pl-icon pl-icon-arrowupdown'></span>"
       +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:480px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué

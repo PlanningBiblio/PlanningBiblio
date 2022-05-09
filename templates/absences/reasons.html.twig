@@ -19,7 +19,7 @@
         {% if reasons is iterable %}
           {% for r in reasons %}
             <li class='ui-state-default' id='li_{{ r.id }}'>
-              <span class='ui-icon pl-icon-arrowupdown'></span>
+              <span class='pl-icon pl-icon-arrowupdown'></span>
               {% if r.type == 2 %}
                 <font class='padding20' id='valeur_{{ r.id}}'>{{ r.valeur }}</font>
               {% else %}
@@ -57,7 +57,7 @@
                 {% endif %}
 
               {% if r.unused %}
-                <span class='ui-icon pl-icon-trash' style='position:absolute;left:840px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
+                <span class='pl-icon pl-icon-trash' style='position:absolute;left:840px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
               {% endif %}
             </li>
           {% endfor %}
