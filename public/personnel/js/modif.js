@@ -322,12 +322,12 @@ $(function() {
       number++;
     }
 
-    $("#statuts-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+    $("#statuts-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='pl-icon pl-icon-arrowupdown'></span>"
       +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<select id='categorie_"+number+"' style='position:absolute;left:330px;'>"
+      +"<select id='categorie_"+number+"' class='select-popup'>"
       +options
       +"</select>"
-      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:500px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué
@@ -434,9 +434,9 @@ $(function() {
     while($('#li_'+number).length){
       number++;
     }
-    $("#services-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+    $("#services-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='pl-icon pl-icon-arrowupdown'></span>"
       +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:500px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué
