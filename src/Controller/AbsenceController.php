@@ -317,7 +317,7 @@ class AbsenceController extends BaseController
 
         $session->getFlashBag()->add('notice', $msg);
 
-        if ($msg2 && $msg2 != '<li></li>') {
+        if ($msg2) {
             $session->getFlashBag()->add($msg2_type, $msg2);
         }
 
