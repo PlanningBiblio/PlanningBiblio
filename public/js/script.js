@@ -935,7 +935,7 @@ $(function(){
     $('body').on('focus',".planno-break-timepicker", function(){
       $('.planno-break-timepicker').plannoTimepicker({
         interval: 15,
-        granularity: 15,
+        granularity: granularity,
         minTime: '00:00',
         minHour: '0',
         maxTime: '02:00',
