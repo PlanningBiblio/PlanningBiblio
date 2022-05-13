@@ -3,7 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-{% include 'agents/elements/change_password.html.twig' with {'change_password_url': 'ajax/change-password', 'get_agent_id': true} %}
+{% include 'agents/elements/change_password.html.twig' %}
   <script type='text/JavaScript'>
     <!--
     complet = JSON.parse('{{ postes_completNoms_json | e('js') }}');

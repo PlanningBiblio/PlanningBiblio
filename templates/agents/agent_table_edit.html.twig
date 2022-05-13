@@ -227,6 +227,8 @@
     </tr>
 
     {% if not demo %}
+      {% include 'agents/elements/change_password_div.html.twig' %}
+      {% include 'agents/elements/change_password.html.twig' %}
       <tr>
         <td colspan='2'>
           <a id="change-password-link" href='javascript:void(0)'>Changer le mot de passe</a>
@@ -237,8 +239,6 @@
   {% endif %}
 
   {% if not demo %}
-    {% include 'agents/elements/change_password_div.html.twig' %}
-
     <div id="reset-login-form" title="Réinitialisation du login" class='noprint' style='display:none;'>
       <form>
         <div>

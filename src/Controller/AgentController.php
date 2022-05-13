@@ -1101,8 +1101,15 @@ class AgentController extends BaseController
     {
         $agent_id = $_SESSION['login_id'];
         $password = $request->get('password');
-
-        return $this->changeAgentPassword($request, $agent_id, $password);
+        $current_password = $request->get('current_password');
+        if ($this->checkCurrentPassword($agent_id, $current_password)) {
+            return $this->changeAgentPassword($request, $agent_id, $password);
+        } else {
+            $response = new Response();
+            $response->setContent('Current password is erroneous');
+            $response->setStatusCode(400);
+            return $response;
+        }
     }
 
     /**
@@ -1116,7 +1123,7 @@ class AgentController extends BaseController
         return $this->changeAgentPassword($request, $agent_id, $password);
     }
 
-   /**
+    /**
      * @Route("/ajax/check-password", name="ajax.checkpassword", methods={"POST"})
      */
     public function check_password(Request $request)
@@ -1154,6 +1161,34 @@ class AgentController extends BaseController
         }
         return false;
     }
+
+    /**
+     * @Route("/ajax/is-current-password", name="ajax.iscurrentpassword", methods={"POST"})
+     */
+    public function isCurrentPassword(Request $request)
+    {
+        $agent_id = $_SESSION['login_id'];
+        $password = $request->get('password');
+        $response = new Response();
+
+        $isCurrentPassword = $this->checkCurrentPassword($agent_id, $password);
+
+        $response->setContent($isCurrentPassword ? "1" : 0);
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
+    private function checkCurrentPassword($agent_id, $password) {
+        $isCurrentPassword = false;
+        $agent = $this->entityManager->find(Agent::class, $agent_id);
+        $hashedPassword = $agent->password();
+        if (password_verify($password, $hashedPassword)) {
+            $isCurrentPassword = true;
+        }
+        return $isCurrentPassword;
+    }
+
 
     /**
      * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"})

@@ -47,6 +47,8 @@
     - 21
 "ajax.changeownpassword":
     - 100
+"ajax.iscurrentpassword":
+    - 100
 "ajax.planningjobcheckcopy":
     - 100
 "ajax.mailtest":
