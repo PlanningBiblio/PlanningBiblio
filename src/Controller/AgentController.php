@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\PlanningBiblio\Event\OnTransformLeaveDays;
 use App\PlanningBiblio\Event\OnTransformLeaveHours;
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\PlanningBiblio\Helper\HourHelper;
 
 use App\Model\Agent;
 
@@ -819,6 +820,14 @@ class AgentController extends BaseController
 
         $premierLundi = array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
         $dernierLundi = array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
+
+        if (is_array($temps)) {
+            foreach ($temps as $day => $hours) {
+                foreach ($hours as $i => $hour) {
+                    $temps[$day][$i] = HourHelper::toHis($hour);
+                }
+            }
+        }
 
         $droits = $droits ? $droits : array();
         $postes = $postes ? json_encode(explode(",", $postes)) : null;
