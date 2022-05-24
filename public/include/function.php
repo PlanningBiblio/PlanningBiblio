@@ -240,29 +240,31 @@ class CJMail
   
     public function send()
     {
-        if ($this->prepare()===false) {
+        if ($this->prepare() === false) {
             return false;
         }
     
         $mail = new PHPMailer();
         $mail->setLanguage('fr');
+        $mail->CharSet="utf-8";
+        $mail->WordWrap = 50;
+        $mail->Hostname = $GLOBALS['config']['Mail-Hostname'];
+
         if ($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail") {
             $mail->IsMail();
         } else {
             $mail->IsSMTP();
+            $mail->Host = $GLOBALS['config']['Mail-Host'];
+            $mail->Port = $GLOBALS['config']['Mail-Port'];
+            $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
+            $mail->SMTPAuth = $GLOBALS['config']['Mail-SMTPAuth'];
+            $mail->Username = $GLOBALS['config']['Mail-Username'];
+            $mail->Password = decrypt($GLOBALS['config']['Mail-Password']);
         }
-        $mail->CharSet="utf-8";
-        $mail->WordWrap = 50;
-        $mail->Hostname =$GLOBALS['config']['Mail-Hostname'];
-        $mail->Host =$GLOBALS['config']['Mail-Host'];
-        $mail->Port =$GLOBALS['config']['Mail-Port'];
-        $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
-        $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
-        $mail->Username =$GLOBALS['config']['Mail-Username'];
-        $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
-        $mail->Sender =$GLOBALS['config']['Mail-From'];
-        $mail->From =$GLOBALS['config']['Mail-From'];
-        $mail->FromName =$GLOBALS['config']['Mail-FromName'];
+
+        $mail->Sender = $GLOBALS['config']['Mail-From'];
+        $mail->From = $GLOBALS['config']['Mail-From'];
+        $mail->FromName = $GLOBALS['config']['Mail-FromName'];
         $mail->IsHTML();
     
         $mail->Body = $this->message;
