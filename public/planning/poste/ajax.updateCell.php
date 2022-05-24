@@ -15,6 +15,7 @@ Cette page est appelée par la function JavaScript "bataille_navale" utilisé pa
 */
 
 use App\Model\Position;
+use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 
 ini_set("display_errors", 0);
 
@@ -53,6 +54,11 @@ $now=date("Y-m-d H:i:s");
 if (is_numeric($perso_id) and $perso_id == 0) {
     // Tout barrer
     if ($barrer and $tout) {
+
+        // History
+        $history = new PlanningPositionHistoryHelper();
+        $history->cross($date, $debut, $fin, $site, $poste, $login_id);
+
         $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
         $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
         $db=new db();
@@ -61,6 +67,11 @@ if (is_numeric($perso_id) and $perso_id == 0) {
 
     // Barrer l'agent sélectionné
     } elseif ($barrer) {
+
+        // History
+        $history = new PlanningPositionHistoryHelper();
+        $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
+
         $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
         $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
         $db=new db();
@@ -69,12 +80,22 @@ if (is_numeric($perso_id) and $perso_id == 0) {
     }
     // Tout supprimer
     elseif ($tout) {
+
+        // History
+        $history = new PlanningPositionHistoryHelper();
+        $history->delete($date, $debut, $fin, $site, $poste, $login_id);
+
         $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
         $db=new db();
         $db->CSRFToken = $CSRFToken;
         $db->delete("pl_poste", $where);
     // Supprimer l'agent sélectionné
     } else {
+
+        // History
+        $history = new PlanningPositionHistoryHelper();
+        $history->delete($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
+
         $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
         $db=new db();
         $db->CSRFToken = $CSRFToken;
