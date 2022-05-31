@@ -1,0 +1,58 @@
+{# agents/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3>Importation des agents à partir de l'annuaire LDAP</h3>
+  <div id='import-div' style='position:relative; margin:30px 0 0 0;'>
+    <div id='ldap' style='margin-left:80px;'>
+      <form method='get' action="{{ asset('agent/ldap') }}">
+        Importation de nouveaux agents à partir de l'annuaire LDAP<br/><br/>
+        <input type='text' name='recherche-ldap' value="{{ search_term }}" />
+        <input type='hidden' name='import-type' value='ldap' />
+        <input type='submit' value='Rechercher' class='ui-button' style='margin-left:30px;'/>
+      </form>
+      <br/>
+      <!-- Search results -->
+      {% if results |length > 0 %}
+        <form name='form' method='post' action="{{ asset('agent/ldap') }}">
+          <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+          <input type='hidden' name='import-type' value='ldap' />
+          <input type='hidden' name='recherche' value='{{ search_term }}' />
+          <table id='tableLdapImport' class='CJDataTable' data-sort='[[1,"asc"],[2,"asc"]]' data-length='50' >
+            <thead>
+              <tr>
+                <th class='dataTableNoSort aLeft'>
+                  <input type='checkbox' class='CJCheckAll' />
+                </th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>e-mail</th>
+                <th>Login</th>
+                <th>Matricule</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for result in results %}
+                <tr>
+                  <td>
+                    <input type='checkbox' name='chk[]' value='{{ result.id }}' />
+                  </td>
+                  <td>{{ result.sn }}</td>
+                  <td>{{ result.givenname }}</td>
+                  <td>{{ result.mail }}</td>
+                  <td>{{ result.login }}</td>
+                  <td>{{ result.matricule }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <br/>
+          <input type='submit' value='Importer' class='ui-button' />
+        </form>
+      {% endif %}
+      <br/>
+      <a href="{{ asset('agent') }}">Retour à la liste des agents</a><br/>
+    </div><!-- #ldap -->
+  </div><!-- #import-div -->
+{% endblock %}
