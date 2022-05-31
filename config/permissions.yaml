@@ -25,8 +25,12 @@
     - 100
 "admin.index":
     - 100
+"agent.import":
+    - 21
 "agent.index":
     - 4
+"agent.ldap":
+    - 21
 "ajax.agentsites":
     - 100
 "ajax.agentsbysites":

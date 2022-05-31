@@ -19,6 +19,7 @@ require_once(__DIR__ . "/../../public/personnel/class.personnel.php");
 require_once(__DIR__ . "/../../public/activites/class.activites.php");
 require_once(__DIR__ . "/../../public/planningHebdo/class.planningHebdo.php");
 require_once(__DIR__ . "/../../public/conges/class.conges.php");
+require_once(__DIR__ . "/../../public/ldap/class.ldap.php");
 
 class AgentController extends BaseController
 {
@@ -208,7 +209,7 @@ class AgentController extends BaseController
 
     /**
      * @Route("/agent/add", name="agent.add", methods={"GET"})
-     * @Route("/agent/{id}", name="agent.edit", methods={"GET"})
+     * @Route("/agent/{id<\d+>}", name="agent.edit", methods={"GET"})
      */
     public function add(Request $request)
     {
@@ -1095,6 +1096,252 @@ class AgentController extends BaseController
         $response->setStatusCode(200);
 
         return $response;
+    }
+
+    /**
+     * @Route("/agent/ldap", name="agent.ldap", methods={"GET"})
+     */
+    public function ldap_search(Request $request)
+    {
+        // FIXME use request object
+        $rechercheLdap = $request->get('recherche-ldap');
+
+        $results = array();
+        if ($rechercheLdap) {
+            $infos = array();
+            if (!$this->config('LDAP-Port')) {
+                // Default LDAP port.
+                $this->config('LDAP-Port', 389);
+            }
+            if (!$this->config('LDAP-Filter')) {
+                // Default LDAP filter.
+                $filter = '(objectclass=inetorgperson)';
+            } elseif ($this->config('LDAP-Filter')[0] != '(') {
+                $filter = '(' . $this->config('LDAP-Filter') . ')';
+            } else {
+                $filter = $this->config('LDAP-Filter');
+            }
+
+            $ldap_id_attribute = $this->config('LDAP-ID-Attribute');
+
+            // Add search values into filter.
+            $filter = "(&{$filter}(|({$ldap_id_attribute}=*$rechercheLdap*)(givenname=*$rechercheLdap*)(sn=*$rechercheLdap*)(mail=*$rechercheLdap*)))";
+
+            // Connect to LDAP server
+            $url = $this->config('LDAP-Protocol') .'://'
+                . $this->config('LDAP-Host') . ':'
+                . $this->config('LDAP-Port');
+
+            $ldapconn = ldap_connect($url)
+                or die("Impossible de joindre le serveur LDAP");
+
+            ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+            ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+
+            if ($ldapconn) {
+                $ldapbind = ldap_bind($ldapconn, $this->config('LDAP-RDN'), decrypt($this->config('LDAP-Password')))
+                    or die("Impossible de se connecter au serveur LDAP");
+            }
+
+            if ($ldapbind) {
+                $justthese = array('dn',
+                    $this->config('LDAP-ID-Attribute'),
+                    'sn', 'givenname', 'userpassword', 'mail');
+
+                if (!empty($this->config('LDAP-Matricule'))) {
+                    $justthese = array_merge($justthese, array($this->config('LDAP-Matricule')));
+                }
+
+                $sr = ldap_search($ldapconn, $this->config('LDAP-Suffix'), $filter, $justthese);
+                $infos = ldap_get_entries($ldapconn, $sr);
+            }
+
+            // Search existing agents.
+            $agents_existants = array();
+            $db = new \db();
+            $db->query("SELECT `login` FROM `{$GLOBALS['dbprefix']}personnel` WHERE `supprime`<>'2' ORDER BY `login`;");
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    $agents_existants[] = $elem['login'];
+                }
+            }
+
+            // Remove existing agents from LDAP results.
+            $tab = array();
+            if (!empty($infos)) {
+                foreach ($infos as $info) {
+                    if (!is_array($info)) {
+                        continue;
+                    }
+                    if (!in_array($info[$this->config('LDAP-ID-Attribute')][0], $agents_existants) and !empty($info)) {
+                        $tab[] = $info;
+                    }
+                }
+                $infos=$tab;
+            }
+
+            //	Affichage du tableau
+            if (!empty($infos)) {
+                usort($infos, "cmp_ldap");
+
+                foreach ($infos as $info) {
+                    $sn=array_key_exists('sn', $info)?$info['sn'][0]:null;
+                    $givenname=array_key_exists('givenname', $info)?$info['givenname'][0]:null;
+                    $mail=array_key_exists('mail', $info)?$info['mail'][0]:null;
+
+                    $matricule = null;
+                    if (!empty($this->config('LDAP-Matricule'))
+                        and !empty($info[$this->config('LDAP-Matricule')])) {
+                        $matricule = is_array($info[$this->config('LDAP-Matricule')])
+                            ? $info[$this->config('LDAP-Matricule')][0]
+                            : $info[$this->config('LDAP-Matricule')];
+                    }
+
+                    $result = array(
+                        'id'        => utf8_decode($info[$this->config('LDAP-ID-Attribute')][0]),
+                        'sn'        => $sn,
+                        'givenname' => $givenname,
+                        'mail'      => $mail,
+                        'login'     => $info[$this->config('LDAP-ID-Attribute')][0],
+                        'matricule' => $matricule
+                    );
+                    $results[] = $result;
+                }
+            }
+        }
+
+        $this->templateParams(array(
+            'search_term'   => $rechercheLdap,
+            'CSRFSession'   => $GLOBALS['CSRFSession'],
+            'results'       => $results
+        ));
+
+        return $this->output('agents/ldap-search.html.twig');
+    }
+
+    /**
+     * @Route("/agent/ldap", name="agent.import", methods={"POST"})
+     */
+    public function ldap_import(Request $request, Session $session)
+    {
+        $CSRFToken = $request->get('CSRFToken');
+        $actif = 'Actif';
+        $date = date("Y-m-d H:i:s");
+        $commentaires = "Importation LDAP $date";
+        $droits = json_encode(array(99, 100));
+        $password = "password_bidon_pas_importé_depuis_ldap";
+        $postes = json_encode(array());
+        $erreurs = false;
+
+        $post = $request->request->all();
+        $recherche = $post["recherche"];
+
+        // Get selected agents uid.
+        $uids = array();
+        if (array_key_exists("chk", $post)) {
+            foreach ($post["chk"] as $elem) {
+                $uids[] = ldap_escape($elem, '', LDAP_ESCAPE_FILTER);
+            }
+        } else {
+            $session->getFlashBag()->add('error', "Aucun agent n'est sélectionné");
+            return $this->redirectToRoute(
+                'agent.ldap',
+                array(
+                    'import-type' => 'ldap',
+                    'recherche-ldap' => $recherche
+                ),
+                //Response::HTTP_MOVED_PERMANENTLY // = 301
+            );
+        }
+
+        // Connect to LDAP server.
+        if (!$this->config('LDAP-Port')) {
+            $this->config('LDAP-Port', 389);
+        }
+
+        $url = $this->config('LDAP-Protocol') . '://'
+            . $this->config('LDAP-Host') . ':'
+            . $this->config('LDAP-Port');
+
+        $ldapconn = ldap_connect($url)
+          or die("Impossible de se connecter au serveur LDAP");
+
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+
+        if ($ldapconn) {
+            $ldapbind=ldap_bind($ldapconn, $this->config('LDAP-RDN'), decrypt($this->config('LDAP-Password')));
+        }
+
+        // Préparation de la requête pour insérer les données dans la base de données
+        $req = "INSERT INTO `{$GLOBALS['dbprefix']}personnel` (`login`,`nom`,`prenom`,`mail`,`matricule`,`password`,`droits`,`arrivee`,`postes`,`actif`,`commentaires`) ";
+        $req .= "VALUES (:login, :nom, :prenom, :mail, :matricule, :password, :droits, :arrivee, :postes, :actif, :commentaires);";
+        $db = new \dbh();
+        $db->CSRFToken = $CSRFToken;
+        $db->prepare($req);
+
+        // Recuperation des infos LDAP et insertion dans la base de données
+        if ($ldapbind) {
+            foreach ($uids as $uid) {
+                $filter='(' . $this->config('LDAP-ID-Attribute') . "=$uid)";
+                $justthese=array("dn",$this->config('LDAP-ID-Attribute'),"sn","givenname","userpassword","mail");
+
+                if (!empty($this->config('LDAP-Matricule'))) {
+                    $justthese = array_merge($justthese, array($this->config('LDAP-Matricule')));
+                }
+
+                $sr=ldap_search($ldapconn, $this->config('LDAP-Suffix'), $filter, $justthese);
+                $infos=ldap_get_entries($ldapconn, $sr);
+                if ($infos[0][$this->config('LDAP-ID-Attribute')]) {
+                    $login=$infos[0][$this->config('LDAP-ID-Attribute')][0];
+                    $nom=array_key_exists("sn", $infos[0])?htmlentities($infos[0]['sn'][0], ENT_QUOTES|ENT_IGNORE, "UTF-8", false):"";
+                    $prenom=array_key_exists("givenname", $infos[0])?htmlentities($infos[0]['givenname'][0], ENT_QUOTES|ENT_IGNORE, "UTF-8", false):"";
+                    $mail=array_key_exists("mail", $infos[0])?$infos[0]['mail'][0]:"";
+
+                    $matricule = '';
+                    if (!empty($this->config('LDAP-Matricule'))
+                        and !empty($infos[0][$this->config('LDAP-Matricule')])) {
+                        $matricule = is_array($infos[0][$this->config('LDAP-Matricule')])
+                            ? strval($infos[0][$this->config('LDAP-Matricule')][0])
+                            : strval($infos[0][$this->config('LDAP-Matricule')]);
+                    }
+
+                    $values = array(
+                        ':login'        => $login,
+                        ':nom'          => $nom,
+                        ':prenom'       => $prenom,
+                        ':mail'         => $mail,
+                        ':matricule'    => $matricule,
+                        ':password'     => $password,
+                        ':droits'       => $droits,
+                        ':arrivee'      => $date,
+                        ':postes'       => $postes,
+                        ':actif'        => $actif,
+                        ':commentaires' => $commentaires
+                    );
+
+                    // Execution de la requête (insertion dans la base de données)
+                    $db->execute($values);
+                    if ($db->error) {
+                        $erreurs=true;
+                    }
+                }
+            }
+        }
+
+        if ($erreurs) {
+            $session->getFlashBag()->add('error', "Il y a eu des erreurs pendant l'importation.#BR#Veuillez vérifier la liste des agents");
+        } else {
+            $session->getFlashBag()->add('notice', 'Les agents ont été importés avec succès');
+        }
+        return $this->redirectToRoute(
+            'agent.ldap',
+            array(
+                'import-type' => 'ldap',
+                'recherche-ldap' => $recherche
+            ),
+            //Response::HTTP_MOVED_PERMANENTLY // = 301
+        );
     }
 
     private function save_holidays($params)
