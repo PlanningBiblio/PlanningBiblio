@@ -2362,8 +2362,8 @@ class StatisticController extends BaseController
 
         // Affichage des statistiques par groupe de postes
         $groupes = array();
-        $totauxGroupesHeures = null;
-        $totauxGroupesPerso = null;
+        $totauxGroupesHeures = array();
+        $totauxGroupesPerso = array();
 
         $p = new \postes();
         $p->fetch();
