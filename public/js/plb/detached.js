@@ -20,7 +20,7 @@ $(function() {
   // Calendar
   $("#pl-calendar").change(function(){
     var date=dateFr($(this).val());
-    window.location.href="?page=planning/volants/index.php&date="+date;
+    window.location.href= url('detached') + '?date=' + date;
   });
 
 
@@ -78,7 +78,7 @@ $(function() {
     ids = JSON.stringify(ids);
 
     $.ajax({
-      url: 'planning/volants/ajax.validation.php',
+      url: url('detached/add'),
       type: 'post',
       dataType: 'json',
       data: {ids: ids, date: $('#date').val(), CSRFToken: $('#CSRFSession').val(), },

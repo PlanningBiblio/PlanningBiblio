@@ -56,7 +56,6 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categ
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Hebdo - Admin N2','1201','Gestion des heures de présence, validation niveau 2','','Heures de présence','90');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES ('Modification des commentaires des plannings','801','Modification des commentaires des plannings', 'Planning', 130);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES ('Griser les cellules des plannings','901','Griser les cellules des plannings','Planning','125');";
-$sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Agents volants', 301, 'Création / modification des plannings, utilisation et gestion des modèles', 'planning/volants/index.php', 'Planning', 110);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Index','100','conges/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Liste','100','/holiday/index');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Nouveau','100','/holiday/new');";
@@ -397,7 +396,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('15','40','Crédits','/holiday/accounts','config=Conges-Enable'),
   ('20','0','Agenda','/calendar',NULL),
   ('30','0','Planning','/index',NULL),
-  ('30','90','Agents volants','planning/volants/index.php','config=Planning-agents-volants'),
+  ('30','90','Agents volants','/detached','config=Planning-agents-volants'),
   ('40','0','Statistiques','/statistics', 'config!=Planook'),
   ('40','10','Feuille de temps','/statistics/time', 'config!=Planook'),
   ('40','20','Par agent','/statistics/agent', 'config!=Planook'),

@@ -65,6 +65,10 @@
     - 100
 "ajax.workinghourtables":
     - 100
+"detached.index":
+    - 301
+"detached.add":
+    - 301
 "framework.index":
     - 22
 "framework.add_table":
