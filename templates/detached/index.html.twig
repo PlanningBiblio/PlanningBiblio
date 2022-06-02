@@ -1,0 +1,59 @@
+{# templates/detached/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript" src='{{ asset("js/plb/detached.js") }}'></script>
+{% endblock %}
+
+{% block page %}
+  <div id='date_planning' class='volants-title volants-header'>
+    <h2 class='volants-h2'>Sélection des agents volants</h2>
+    <h2 class='volants-h2'>Semaine {{ week_number }}, du {{ week }}</h2>
+    <br/>
+    <a href='{{ asset("detached") }}?date={{ previous_week }}' style='margin-left:10px' class='volants-a'> Semaine précédente </a>
+    <a href='{{ asset("detached") }}?date={{ next_week }}' style='margin-left:200px;'> Semaine suivante </a>
+  </div>
+
+  <div id='pl-calendar' class='datepicker volants-calendar'></div>
+    <input type='hidden' name='date' id='date' value='{{ date }}' />
+
+    <div id='volants-content'>
+      <div id='volants-dispo-div'>
+        <p><strong>Agents disponibles</strong></p>
+        <select id='volants-dispo' name='dispo' multiple='multiple'>
+          {% for a in all_agents %}
+            {% if a.id in detached_agents %}
+              <option value='{{ a.id }}' class='volants-dispo dispo_{{ a.id }}' data-id='{{ a.id }}' style="display:none;">{{ a.nom }} {{ a.prenom }}</option>
+            {% else %}
+              <option value='{{ a.id }}' class='volants-dispo dispo_{{ a.id }}' data-id='{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <div id='volants-buttons-div'>
+        <input type='button' class='ui-button ui-button-type2' id='volants-add' value='Ajouter >>' /><br/><br/>
+        <input type='button' class='ui-button ui-button-type2' id='volants-add-all' value='Ajouter Tout >>' /><br/><br/>
+        <input type='button' class='ui-button ui-button-type3' id='volants-remove' value='<< Supprimer' /><br/><br/>
+        <input type='button' class='ui-button ui-button-type3' id='volants-remove-all' value='<< Supprimer Tout' /><br/><br/>
+      </div>
+
+      <div id='volants-selectionnes-div'>
+        <p><strong>Agents sélectionnés</strong></p>
+        <select id='volants-selectionnes' name='selectionnes' multiple='multiple'>
+          {% for a in all_agents %}
+            {% if a.id in detached_agents %}
+              <option value='{{ a.id }}' class='volants-selectionnes selected_{{ a.id }}' data-id='{{ a.id }}' $style >{{ a.nom }} {{ a.prenom }}</option>
+            {% else %}
+              <option value='{{ a.id }}' class='volants-selectionnes selected_{{ a.id }}' data-id='{{ a.id }}' $style style="display:none;">{{ a.nom }} {{ a.prenom }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <div id='volants-validation'>
+        <input type='button' class='ui-button' id='submit' value='Valider' />
+      </div>
+    </div>
+{% endblock %}
