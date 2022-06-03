@@ -185,13 +185,10 @@ sed -i "s/APP_SECRET=.*/APP_DEBUG=0\nAPP_SECRET=${planningbsecret}/" .env.local
 
 sed -i "s/DATABASE_URL=.*/DATABASE_URL=mysql:\/\/$planningbdbuser:$planningbdbpass@$planningdbhost:$planningdbport\/$planningbdbname/" .env.local
 sed -i "s/DATABASE_PREFIX=.*/DATABASE_PREFIX=$planningbdbprefix/" .env.local
+sed -i "s/APP_ENV=dev/APP_ENV=prod/g" .env.local
 
-# Set the light_blue theme
-mysql -h $planningdbhost -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbname.\`config\` SET \`valeur\` = 'light_blue' WHERE \`nom\` = 'Affichage-theme';"
-
-if [[ ! -d public/themes/light_blue ]]; then
-    git clone https://github.com/planningbiblio/theme_light_blue public/themes/light_blue
-fi
+# Set the default theme
+mysql -h $planningdbhost -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbname.\`config\` SET \`valeur\` = 'default' WHERE \`nom\` = 'Affichage-theme';"
 
 # Download composer
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"

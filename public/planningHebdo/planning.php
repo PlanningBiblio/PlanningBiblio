@@ -31,6 +31,6 @@ $tempsPlanningHebdo=array();
 
 if (!empty($p->elements)) {
     foreach ($p->elements as $elem) {
-        $tempsPlanningHebdo[$elem["perso_id"]]=$elem["temps"];
+        $tempsPlanningHebdo[$elem["perso_id"]]=$elem;
     }
 }

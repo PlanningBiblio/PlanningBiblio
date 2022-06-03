@@ -649,7 +649,7 @@ function verifRecup(o){
 // Dialog, récupérations
 
 function checkLength( o, n, min, max ) {
-  if ( o.val().length > max || o.val().length < min ) {
+  if ( o.val().length > max || o.val().length < min || o.val() == '00:00' ) {
     o.addClass( "ui-state-error" );
     updateTips( "Veuillez sélectionner le nombre d'heures.", "error");
   return false;
@@ -746,7 +746,7 @@ function affiche_perso_ul(){
     var li="<li" + style + " id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
     if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
-      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
+      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-dropblack'></span></span>";
     }
 
     li+="</li>\n";

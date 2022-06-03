@@ -1,7 +1,97 @@
 *** Unreleased ***
 - Enhancements
+Display disabled planno-break-timepickers in black
+Holiday: dynamically get current holiday credits (multi-agents form)
+Restrict absences list interval to a year maximum
+Allow edition of imported working hours
+Data purge capabilities
+Add a div with class=attendance to isolate attendance information on calendars
+Ability to change login in agent's form
+Active class on selected menu: allow to highlight select menu
+Restrict absences list interval to a year maximum. Follow up
+ICS import: handle exception on recurring events with the recurrence-id attribute
+New Planno theme
+Prevent editing used frameworks only if someone is linked to them
+Planno title
+
 - Fixes
+Force json_decode to return array in getWorkingHoursOn
+Avoid comparison between H:i:s and H:i when checking the presence of an agent
+Don't get breaktime from personnel table when planning_hebdo is disabled
+Check if free breaktime is not empty in agent form
+Remove PHP Notice when fetching positions
+Remove HTML entities in column comment of absences list
+Correctly show percentage values in agents form
+Fix ICS link in agent profile
+Correctly set #selected_agent_id if only one agent selected
+Don't reload holiday form for multiple selection
+Use dependency injection instead of service container to get Notifeir into controllers
+rename working hours ACL
+Typo : Change "no model" message
+Check if free break is enable into workinghours controller
+Check defined array keys in workinghour table
+Remove html entities in read-only agents page
+Show sites on the read-only agents page
+Adjust JS function plHebdoMemePlanning to new timepicker widget
+Take halfday into account in holiday controller
+Fix the "Call For Help" mail function
+Absence documents: look for documents in all grouped absences
+Followup, don't reload holiday edition when changing agent
+Fix retrieving agent's credits in holiday form
+Relaod page when changing agent in holiday form (Not for mutliple agent)
+Fix redirection loop where CAS-ServiceURL is defined
+Always set absence hours like h:m:s
+Fix HTML entities in floors and groups dropdown menus
+Restore "All sites" option in working hours
+Fix display of html entities on information and absence information messages
+Initialize the widget calendar with the asked date when using the week view
+Don't apply compensatory time on... compensatory time
+Fix AbsenceInfoController to use DateTime
+convert serialized strings to json on personnel's table
+fix encoding issues on agents' name in calendar's dropdown menu
+Fix sending notifications of non-validated holidays
+Show all site in ready-only agents working hours tab
+Handle blocked ip address
+Fix error on free break calculation
+Agent account: show a range of 5 minutes when granularity if free
+Don't submit Times and lines forms for used framework
+Prevent adding exception out of parent's date range
+Use event id instead of iCalUId to check for empty events
+Do not filter on first site when gathering absents for statistics
+Update working hours on 3 digits
+Get disabled cells in public/planning/poste/semaine.php
+Show information that end today in absence information list
+Display all grey cells in the same way
+Set selected agent id in recup_pose.php
+force end hours to 23:59:59
+Allow empty values in planno timepicker
+DB update, tranform working hours like 00:00:00 to ''
+Show agent's name in absence form even if he is deleted
+Correctly hide and show drop, import and print icones in the Planning menu
+Disable EDTSamedi if PlanningHebdo is enabled
+Do not publish crossed-out agents on ICS calendars
+Decode statuses and services of agents
+Don't send planning's notification to unavailables agents
+Fix import working hours
+Use local (from agents working hours) number of weeks in planning_day_index_for
+
 - Plumbing
+Add tests on [GET] /ajax/holiday-credit (halfday enabled)
+Add unit tests on [POST] /holiday (halfday enabled)
+Add unit tests on [POST] /holiday (Hours and days)
+Set production environement
+Update Symfony version to 4.4
+Use url function for js calls/redirects
+Add a Planno notifier as available service container
+End to end testing capabilities (Symfony/Panther - Chrome driver)
+Allow symfony-flex plugin without confirmation
+Use of a hour helper StartEndFromRequest in absences and holidays
+Optimize DB queries for holiday/credits
+Allow to load absences without documents for performance improvement
+Symfonyze holidays accounts list
+CircleCI: rm -rf vendor to make CirculeCI succeed
+Symfonyze holidays information
+Make installer set APP_ENV=prod
 
 *** Version 21.10.00       (2021-11-19)   ***
 - Enhancements

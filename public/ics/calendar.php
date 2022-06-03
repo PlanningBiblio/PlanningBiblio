@@ -138,7 +138,8 @@ if ($db->result) {
 
 // Recherche des absences
 $a=new absences();
-$a->valide=true;
+$a->valide = true;
+$a->documents = false;
 $a->fetch("`debut`,`fin`", $id, '0000-00-00 00:00:00', date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
 $absences=$a->elements;
 
@@ -205,6 +206,10 @@ if (isset($planning)) {
             }
         }
     
+        if ($elem['absent'] == 1) {
+            continue;
+        }
+
         // Regroupe les plages de SP qui se suivent sur le même poste
         if (isset($tab[$i-1])
             and $tab[$i-1]['date'] == $elem['date']

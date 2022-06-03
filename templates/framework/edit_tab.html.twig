@@ -79,22 +79,23 @@
   {% if used %}
     <p class="ui-state-error-text" style="text-align:center">Ce tableau est utilisé sur un planning et ne peut être édité</p>
   {% endif %}
+  <input type='hidden' name='used' id='used' value="{{ used }}" />
 
   <div id='tabs' class='ui-tabs' data-active="{{ cfgType }}" {% if used %}data-disabled="[1, 2]"{% endif %}>
     <ul>
-      <li>
+      <li class="admin">
         <a href='#div_infos' id='infos'>Infos générales</a>
       </li>
-      <li>
+      <li class="admin">
         <a href='#div_horaires' id='horaires'>Horaires</a>
       </li>
-      <li>
+      <li class="admin">
         <a href='#div_lignes' id='lignes'>Lignes</a>
       </li>
-      <li class='ui-tab-cancel'>
+      <li class='ui-tab-cancel admin'>
         <a href='{{ asset("framework")}}' >Retour</a>
       </li>
-      <li class='ui-tab-submit'>
+      <li class='ui-tab-submit admin'>
         <a href='javascript:tableauxInfos();' class='tableaux-valide'>Valider</a>
       </li>
     </ul>
@@ -165,13 +166,15 @@
                       <td>
                         <input name="debut_{{tableau}}_{{i}}"
                            class="planno-timepicker framework-timepicker"
-                           value="{{ elem.debut ? elem.debut | date('H:i') : '' }}"/>
+                           value="{{ elem.debut ? elem.debut | date('H:i') : '' }}"
+                           style="text-align: center;"/>
                       </td>
-                      <td style='width:120px;'>
+                      <td>
                         <input name="fin_{{tableau}}_{{i}}"
                            class="planno-timepicker framework-timepicker"
-                           value="{{ elem.fin ? elem.fin | date('H:i') : '' }}"/>
-                        <span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{i}}').hide();"></span>
+                           value="{{ elem.fin ? elem.fin | date('H:i') : '' }}"
+                           style="text-align: center;"/>
+                        <span class='pl-icon pl-icon-dropblack' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{i}}').hide();"></span>
                       </td>
                     </tr>
                     {% set i = i + 1 %}
@@ -183,11 +186,11 @@
                            class="planno-timepicker framework-timepicker"
                            value=""/>
                       </td>
-                      <td style='width:120px;'>
+                      <td>
                         <input name="fin_{{tableau}}_{{i}}"
                            class="planno-timepicker framework-timepicker"
                            value=""/>
-                        <span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{j}}').hide();"></span>
+                        <span class='pl-icon pl-icon-dropblack' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{j}}').hide();"></span>
                       </td>
                     </tr>
                     {% set i = i + 1 %}
@@ -247,7 +250,7 @@
                         <span class='pl-icon pl-icon-add' title='Ajouter'></span>
                       </a>
                       <a href="javascript:supprime_tab('{{ tab.nom }}_',{{ i }});">
-                        <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                        <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
                       </a>
                     </td>
                     {% for horaire in tab.horaires %}

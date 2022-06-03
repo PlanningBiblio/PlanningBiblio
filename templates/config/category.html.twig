@@ -69,13 +69,13 @@
       {% if v.nom == 'Mail-Planning' %}
         <tr>
         <td>Tester</td>
-        <td><input type='button' value='Tester' onclick='mailtest();' id='Mail-Test' /></td>
+        <td><input type='button' value='Tester' onclick='mailtest();' id='Mail-Test' class="ui-button ui-button-type2" /></td>
         <td>Tester les paramètres de messagerie. Un e-mail sera envoy&eacute; aux adresses mention&eacute;es dans le champ Mail-Planning.</td>
         </tr>
       {% elseif v.nom == 'LDAP-Matricule' %}
         <tr>
           <td>Tester</td>
-            <td><input type='button' value='Tester' onclick='ldaptest();' id='LDAP-Test' /></td>
+            <td><input type='button' value='Tester' onclick='ldaptest();' id='LDAP-Test' class="ui-button ui-button-type2"/></td>
             <td>Tester les paramètres LDAP.</td>
         </tr>
       {% endif %}

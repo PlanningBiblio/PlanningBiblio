@@ -14,7 +14,7 @@ Description :
 Fichier permettant de modifier et valider les demandes de récupérations des samedis (validation du formulaire)
 */
 
-include "class.conges.php";
+include_once(__DIR__ . '/class.conges.php');
 
 use App\Model\Agent;
 

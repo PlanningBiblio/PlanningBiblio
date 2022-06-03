@@ -1,4 +1,4 @@
-<?php
+    <?php
 /**
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
@@ -245,10 +245,10 @@ for ($j=0;$j<=$fin;$j++) {
         //--------------	Recherche des infos cellules	------------//
         // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes
         $db=new db();
-        $db->selectInnerJoin(
+        $db->selectLeftJoin(
         array("pl_poste","perso_id"),
         array("personnel","id"),
-      array("perso_id","debut","fin","poste","absent","supprime"),
+      array("perso_id","debut","fin","poste","absent","supprime", "grise"),
       array("nom","prenom","statut","service","postes"),
       array("date"=>$date, "site"=>$site),
       array(),
@@ -264,7 +264,8 @@ for ($j=0;$j<=$fin;$j++) {
         // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
         // $cellules will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
         $a=new absences();
-        $a->valide=true;
+        $a->valide = true;
+        $a->documents = false;
         $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
         $absences=$a->elements;
         global $absences;
@@ -386,7 +387,7 @@ for ($j=0;$j<=$fin;$j++) {
                     // Classe de la ligne en fonction des activités et des catégories
                     $classTR .= ' ' . $postes[$ligne['poste']]['classes'];
 
-                    echo "<tr class='pl-line tableau$l $classTR {$tab['classe']} $emptyLine'>\n";
+                    echo "<tr class='pl-line roundup-tab tableau$l $classTR {$tab['classe']} $emptyLine'>\n";
                     echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
                     if ($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']) {
                         echo " ({$postes[$ligne['poste']]['etage']})";

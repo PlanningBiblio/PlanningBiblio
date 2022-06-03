@@ -38,12 +38,12 @@ $(function(){
     var end = $("#fin").datepicker("getDate");
     if (start || end) {
        if (!start) {
-         start = new Date(); 
+         start = new Date();
        }
        if (!end) {
          end = new Date();
        }
-       var number_of_days = (end - start) / (1000 * 60 * 60 * 24); 
+       var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
        if (number_of_days > 365) {
          alert('Veuillez sélectionner un intervalle inférieur à une année.');
          event.preventDefault();

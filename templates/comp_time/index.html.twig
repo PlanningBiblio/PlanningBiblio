@@ -23,7 +23,7 @@
 
       $( "#dialog-form" ).dialog({
         autoOpen: false,
-        height: 480,
+        height: 490,
         width: 650,
         modal: true,
         buttons: {
@@ -160,160 +160,163 @@
 {% endblock %}
 
 {% block page %}
-  {% if perso_id != 0 %}
-  <h3 class="print_only">Liste des congés de {{ perso_name }}, année {{ year_from }}-{{ year_to}}</h3>
-  {% endif %}
-    <div id='liste'>
-      <h3 class='noprint'>Récupérations</h3>
-      <h4 class='noprint'>Liste des demandes de récupération</h4>
-      <form name='form' method='get' action='{{ asset("comp-time") }}' class='noprint'>
-        <span style='float:left; vertical-align:top; margin-bottom:20px;'>
-          Année : <select name='annee'>
-            {% for elem in years %}
-              {% if elem[0] == year_from %}
-                <option value="{{ elem[0] }}" selected="selected">{{ elem[1] }}</option>
-              {% else %}
-                <option value="{{ elem[0] }}">{{ elem[1] }}</option>
-              {% endif %}
-            {% endfor %}
-          </select>
-
-          {% if admin %}
-            <span style='margin-left:30px;'>Agent : </span>
-            <select name='perso_id'>
-              {% if perso_id == 0 %}
-                <option value='0' selected="selected">Tous</option>
-              {% else %}
-                <option value='0'>Tous</option>
-              {% endif %}
-              {% for agent in agents %}
-                {% if agent.id == perso_id %}
-                  <option value="{{ agent.id }}" selected>{{ agent.nom }} {{ agent.prenom }}</option>
+  <div id="content-admin">
+    {% if perso_id != 0 %}
+    <h3 class="print_only">Liste des congés de {{ perso_name }}, année {{ year_from }}-{{ year_to}}</h3>
+    {% endif %}
+    <h3 class='noprint'>Récupérations</h3>
+    <div class="admin-div">
+      <div id='liste'>
+        <h4 class='noprint'>Liste des demandes de récupération</h4>
+        <form name='form' method='get' action='{{ asset("comp-time") }}' class='noprint'>
+          <span style='float:left; vertical-align:top; margin-bottom:20px;'>
+            Année : <select name='annee'>
+              {% for elem in years %}
+                {% if elem[0] == year_from %}
+                  <option value="{{ elem[0] }}" selected="selected">{{ elem[1] }}</option>
                 {% else %}
-                  <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                  <option value="{{ elem[0] }}">{{ elem[1] }}</option>
                 {% endif %}
               {% endfor %}
             </select>
-          {% endif %}
 
-          <span style='margin-left:30px;'><input type='submit' value='Rechercher' id='button-OK' class='ui-button'/></span>
-          <span style='margin-left:30px;'><input type='button' value='Réinitialiser' id='button-Effacer' class='ui-button' onclick='location.href="/comp-time?reset=on"'/></span>
-        </span>
-
-        <span style='float:right; vertical-align:top; margin:0px 5px;'>
-          <button id='dialog-button' class='ui-button'>Nouvelle demande</button>
-        </span>
-      </form>
-
-      <table id='tableRecup' class='CJDataTable' data-sort='[[1]]'>
-        <thead>
-          <tr>
-            <th rowspan='2' class='dataTableNoSort' >&nbsp;</th>
-            <th rowspan='2' class='dataTableDateFR'>Date</th>
             {% if admin %}
-              <th rowspan='2'>Agent</th>
+              <span style='margin-left:30px;'>Agent : </span>
+              <select name='perso_id'>
+                {% if perso_id == 0 %}
+                  <option value='0' selected="selected">Tous</option>
+                {% else %}
+                  <option value='0'>Tous</option>
+                {% endif %}
+                {% for agent in agents %}
+                  {% if agent.id == perso_id %}
+                    <option value="{{ agent.id }}" selected>{{ agent.nom }} {{ agent.prenom }}</option>
+                  {% else %}
+                    <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
             {% endif %}
-            <th rowspan='2'>Heures</th>
-            <th colspan='2' >Validation</th>
-            <th rowspan='2'>Crédits</th>
-            <th rowspan='2'>Commentaires</th>
-          </tr>
 
-          <tr>
-            <th>&Eacute;tat</th>
-            <th class='dataTableDateFR'>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for elem in comptimes %}
+            <span style='margin-left:30px;'><input type='submit' value='Rechercher' id='button-OK' class='ui-button'/></span>
+            <span style='margin-left:30px;'><input type='button' value='Réinitialiser' id='button-Effacer' class='ui-button ui-button-type2' onclick='location.href="/comp-time?reset=on"'/></span>
+          </span>
+
+          <span style='float:right; vertical-align:top; margin:0px 5px;'>
+            <button id='dialog-button' class='ui-button ui-button-type2'>Nouvelle demande</button>
+          </span>
+        </form>
+
+        <table id='tableRecup' class='CJDataTable' data-sort='[[1]]'>
+          <thead>
             <tr>
-              <td>
-                <a href='index.php?page=conges/recuperation_modif.php&amp;id={{ elem.id }}'>
-                  <span class='pl-icon pl-icon-edit' title='Modifier'></span>
-                </a>
-              </td>
-
-              <td>{{ elem.date }}{{ elem.date2 }}</td>
-
+              <th rowspan='2' class='dataTableNoSort tableSort' >&nbsp;</th>
+              <th rowspan='2' class='dataTableDateFR tableSort'>Date</th>
               {% if admin %}
-                <td>{{ elem.name }}</td>
+                <th rowspan='2' class="tableSort">Agent</th>
+              {% endif %}
+              <th rowspan='2' class="tableSort">Heures</th>
+              <th colspan='2' class="tableSort">Validation</th>
+              <th rowspan='2' class="tableSort">Crédits</th>
+              <th rowspan='2' class="tableSort">Commentaires</th>
+            </tr>
+
+            <tr>
+              <th class="tableSort">&Eacute;tat</th>
+              <th class='dataTableDateFR tableSort' style="border-right: 1px solid #000;">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for elem in comptimes %}
+              <tr>
+                <td>
+                  <a href='index.php?page=conges/recuperation_modif.php&amp;id={{ elem.id }}'>
+                    <span class='pl-icon pl-icon-edit' title='Modifier'></span>
+                  </a>
+                </td>
+
+                <td>{{ elem.date }}{{ elem.date2 }}</td>
+
+                {% if admin %}
+                  <td>{{ elem.name }}</td>
+                {% endif %}
+
+                <td>{{ elem.hours }}
+                  {% if elem.hourstodays %}
+                    <br />{{ elem.hourstodays }}j;
+                  {% endif %}
+                </td>
+
+                <td style="{{ elem.validation_style }}">{{ elem.validation }}</td>
+                <td>{{ elem.validation_date }}</td>
+                <td>{{ elem.credits }}</td>
+                <td>{{ elem.commentaires | nl2br }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div> <!-- liste -->
+
+      <div id="dialog-form" title="Nouvelle demande" class='noprint'>
+        <p class="validateTips">Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures à récuperer et un saisir un commentaire.</p>
+        <form>
+          <fieldset>
+            <table class='tableauFiches'>
+              {% if admin %}
+                <tr>
+                  <td><label for="agent">Agent</label></td>
+                  <td>
+                    <select id='agent' name='agent' style='text-align:center;'>
+                      <option value=''>&nbsp;</option>
+                      {% for elem in agents %}
+                        {% if elem.id == perso_id %}
+                          <option value="{{ elem.id }}" selected>{{ elem.name }}</option>
+                        {% else %}
+                          <option value="{{ elem.id }}">{{ elem.name }}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </td>
+                </tr>
               {% endif %}
 
-              <td>{{ elem.hours }}
-                {% if elem.hourstodays %}
-                  <br />{{ elem.hourstodays }}j;
-                {% endif %}
-              </td>
-
-              <td style="{{ elem.validation_style }}">{{ elem.validation }}</td>
-              <td>{{ elem.validation_date }}</td>
-              <td>{{ elem.credits }}</td>
-              <td>{{ elem.commentaires | nl2br }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div> <!-- liste -->
-
-    <div id="dialog-form" title="Nouvelle demande" class='noprint'>
-      <p class="validateTips">Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures à récuperer et un saisir un commentaire.</p>
-      <form>
-        <fieldset>
-          <table class='tableauFiches'>
-            {% if admin %}
-              <tr>
-                <td><label for="agent">Agent</label></td>
-                <td>
-                  <select id='agent' name='agent' style='text-align:center;'>
-                    <option value=''>&nbsp;</option>
-                    {% for elem in agents %}
-                      {% if elem.id == perso_id %}
-                        <option value="{{ elem.id }}" selected>{{ elem.name }}</option>
-                      {% else %}
-                        <option value="{{ elem.id }}">{{ elem.name }}</option>
-                      {% endif %}
-                    {% endfor %}
-                  </select>
-                </td>
-              </tr>
-            {% endif %}
-
-            <tr>
-              <td>
-                <label for="date">{{ label|raw }}</label>
-              </td>
-
-              <td>
-                <input type="text" name="date" id="date" class="text ui-widget-content ui-corner-all datepicker"/>
-              </td>
-            </tr>
-
-            {% if recup_deuxsamedis %}
               <tr>
                 <td>
-                  <label for="date2">{{ saturday|raw }}</label>
+                  <label for="date">{{ label|raw }}</label>
                 </td>
 
                 <td>
-                  <input type="text" name="date2" id="date2" class="text ui-widget-content ui-corner-all datepicker"/>
+                  <input type="text" name="date" id="date" class="text ui-widget-content ui-corner-all datepicker"/>
                 </td>
               </tr>
-            {% endif %}
 
-            <tr>
-              <td><label for="heures">Heures</label></td>
-              <td>
-                <input id="heures" name="heures" class="comptime-timepicker ui-widget-content ui-corner-all" value=""/>
-              </td>
-            </tr>
+              {% if recup_deuxsamedis %}
+                <tr>
+                  <td>
+                    <label  for="date2">{{ saturday|raw }}</label>
+                  </td>
 
-            <tr>
-              <td><label for="commentaires">Commentaire</label></td>
-              <td><textarea name="commentaires" id="commentaires" ></textarea></td>
-            </tr>
-          </table>
-        </fieldset>
-      </form>
+                  <td>
+                    <input type="text" name="date2" id="date2" class="text ui-widget-content ui-corner-all datepicker"/>
+                  </td>
+                </tr>
+              {% endif %}
+
+              <tr>
+                <td><label  for="heures">Heures</label></td>
+                <td>
+                  <input id="heures" name="heures" class="comptime-timepicker ui-widget-content ui-corner-all" value=""/>
+                </td>
+              </tr>
+
+              <tr>
+                <td><label  for="commentaires">Commentaire</label></td>
+                <td><textarea name="commentaires" id="commentaires" ></textarea></td>
+              </tr>
+            </table>
+          </fieldset>
+        </form>
+      </div>
     </div>
-
+  </div>
 {% endblock %}

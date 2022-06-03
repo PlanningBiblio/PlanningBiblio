@@ -17,13 +17,14 @@ class AbsenceInfoController extends BaseController
      */
     public function index(Request $request, Session $session)
     {
-        $today = date('Ymd');
+        $today = date('Y-m-d');
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
 
         $query = $queryBuilder->select(array('a'))
             ->from(AbsenceInfo::class, 'a')
-            ->where($queryBuilder->expr()->gte('a.fin', $today))
+            ->where('a.fin >= :today')
+            ->setParameter('today', $today)
             ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
             ->getQuery();
 
@@ -58,8 +59,8 @@ class AbsenceInfoController extends BaseController
 
         $this->templateParams(array(
             'id'    => $id,
-            'start' => date('d/m/Y', strtotime($info->debut())),
-            'end'   => date('d/m/Y', strtotime($info->fin())),
+            'start' => date_format($info->debut(), "d/m/Y"),
+            'end'   => date_format($info->fin(), "d/m/Y"),
             'text'  => $info->texte()
         ));
 
@@ -78,8 +79,8 @@ class AbsenceInfoController extends BaseController
         }
 
         $id = $request->get('id');
-        $start = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('start'));
-        $end = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('end'));
+        $start = \DateTime::createFromFormat("d/m/Y", $request->get('start'));
+        $end = \DateTime::createFromFormat("d/m/Y", $request->get('end'));
 
         if (empty($end)) {
           $end = $start;

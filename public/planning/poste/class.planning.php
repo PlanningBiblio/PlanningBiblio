@@ -15,6 +15,8 @@ Classe planning
 Utilisée par les fichiers du dossier "planning/poste"
 */
 
+use App\Model\Agent;
+
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
 
@@ -170,7 +172,8 @@ class planning
 
             // Recherche des absences dans la table absences pour les déduire des heures faites
             $a=new absences();
-            $a->valide=true;
+            $a->valide = true;
+            $a->documents = false;
             $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date1." 00:00:00", $date2." 23:59:59");
             $absencesDB=$a->elements;
 
@@ -379,9 +382,15 @@ class planning
         $config=$GLOBALS['config'];
     
         // Liste des agents actifs
-        $p=new personnel();
-        $p->fetch();
-        $agents=$p->elements;
+        $entityManager = $GLOBALS['entityManager'];
+        $queryBuilder = $entityManager->createQueryBuilder();
+        $agents = $queryBuilder->select(array('a'))
+            ->from(Agent::class, 'a')
+            ->where('a.supprime = :deleted')
+            ->setParameter('deleted', '0')
+            ->indexBy('a', 'a.id')
+            ->getQuery()
+            ->getResult();
 
         // Listes des postes
         $p=new postes();
@@ -402,9 +411,21 @@ class planning
             if (!array_key_exists($id, $agents)) {
                 continue;
             }
+
+            $agent = $agents[$id];
+            $start = $elem['date'] . ' ' . $elem["debut"];
+            $end = $elem['date'] . ' ' . $elem["fin"];
+            if ($agent->isAbsentOn($start, $end)) {
+                $elem["absent"] = 1;
+            }
+
+            if ($agent->isOnVacationOn($start, $end)) {
+                $elem["absent"] = 1;
+            }
+
             // Création d'un tableau par agent, avec nom, prénom et email
             if (!isset($tab[$id])) {
-                $tab[$id]=array("nom"=>$agents[$id]["nom"], "prenom"=>$agents[$id]["prenom"], "mail"=>$agents[$id]["mail"], "planning"=>array());
+                $tab[$id]=array("nom"=>$agent->nom(), "prenom"=>$agent->prenom(), "mail"=>$agent->mail(), "planning"=>array());
             }
             // Complète le tableau avec les postes, les sites, horaires et marquage "absent"
             $tab[$id]["planning"][]=array("debut"=> $elem["debut"], "fin"=> $elem["fin"], "absent"=> $elem["absent"], "site"=> $site, "poste"=> $elem['poste']);

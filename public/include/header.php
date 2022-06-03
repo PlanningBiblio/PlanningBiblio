@@ -29,16 +29,16 @@ if (!file_exists("themes/$theme/$theme.css")) {
 
 $favicon = null;
 if (!file_exists("themes/$theme/favicon.png")) {
-    $favicon = "<link rel='icon' type='image/png' href='themes/$theme/images/favicon.png' />\n";
+    $favicon = "<link rel='icon' type='image/svg' href='themes/$theme/images/favicon.ico' />\n";
 }
 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title>Planning</title>
+<title>Planno</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
 <script type='text/JavaScript' src='js/jquery-1.11.1.min.js'></script>
 <script type='text/JavaScript' src='js/jquery.timepicker.min.js'></script>
 <script type='text/JavaScript' src='js/plb/planno-timepicker.js'></script>

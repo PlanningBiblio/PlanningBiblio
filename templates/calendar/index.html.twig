@@ -13,6 +13,7 @@
     {% else %}
       <h3>Agenda</h3>
     {% endif %}
+    <div id="div_agenda_content">
     {% if agents is iterable %}
       <form name='form' method='get' action="{{ asset('calendar') }}">
         Début : <input type='text' name='debut' id='debut' value={{begin}} class='datepicker' />
@@ -40,20 +41,20 @@
     <p class='information'> La date de fin doit être supérieure à la date de début </p>
     {% elseif agent is not null and days %}
       <br/>
-      <table cellpadding='10' cellspacing='2' border='0' id='tab_agenda'>
+      <table cellpadding='10' cellspacing='0' border='0' id='tab_agenda'>
         <thead>
           <tr class='center'>
-            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Lundi </th>
-            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Mardi </th>
-            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Mercredi </th>
-            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Jeudi </th>
-            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Vendredi </th>
-            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Samedi </th>
-            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Dimanche </th>
-           </tr>
+            <th class='ui-widget-header calendar-border ui-corner-tl' style="width : 143px;"> Lundi </th>
+            <th class='ui-widget-header calendar-border' style="width : 143px;"> Mardi </th>
+            <th class='ui-widget-header calendar-border' style="width : 143px;"> Mercredi </th>
+            <th class='ui-widget-header calendar-border' style="width : 143px;"> Jeudi </th>
+            <th class='ui-widget-header calendar-border' style="width : 143px;"> Vendredi </th>
+            <th class='ui-widget-header calendar-border' style="width : 143px;"> Samedi </th>
+            <th class='ui-widget-header calendar-border ui-corner-tr' style="width : 143px;"> Dimanche </th>
+          </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr style="height: 180px;">
             {% if cellsBefore %}
               {% for c in 1..cellsBefore %}
                 <td class='cellule_grise'>&nbsp;</td>
@@ -62,8 +63,10 @@
 
             {% for d in days %}
               {% if d.nb is divisible by (7) %}
-                </tr>
-                <tr>
+                {% if d.nb/7 >= 1 %}
+                  </tr>
+                  <tr style="height: 180px;">
+                {% endif %}
               {% endif %}
               <td>
                 <div class='div_date'> {{ d.aff | raw }} </div>
@@ -106,9 +109,9 @@
                   {% if d.absence is not empty %}
                     <div class ='important'>
                       {% if d.absence | length == 1 %}
-                        <p> Absence : </p>
+                        <p class="calendar-absence"> Absence : </p>
                       {% elseif d.absence | length > 1 %}
-                        <p> Absences : </p>
+                        <p class="calendar-absence"> Absences : </p>
                       {% endif %}
                       <ul>
                       {% for a in d.absence %}
@@ -142,6 +145,7 @@
         </tbody>
       </table>
     {% endif %}
+    </div>
   </div>
 
 {% endblock %}

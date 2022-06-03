@@ -14,348 +14,354 @@
       });
     });
   </script>
+  <div id="content-admin">
+    <h3>Modification de l'absence</h3>
+    <div class="content-div">
+      {% if not access %}
+          Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>
+          <a href='{{ asset("absence") }}'>Retour à la liste des absences</a><br/><br/>
+      {% else %}
+        <form name='form' id='form' method='get' action='/index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
+          <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+          <input type='hidden' name='page' value='absences/modif2.php' />
+          <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />
+          <input type='hidden' id='admin' value='{{ admin }}' />
+          <input type='hidden' id='login_id' value='{{ loggedin_id }}' />
+          <input type='hidden' name='groupe' id='groupe' value='{{ absence.groupe }}' />
+          <input type='hidden' name='rrule' id='rrule' value='{{ absence.rrule }}' />
+          <input type='hidden' name='recurrence-modif' id='recurrence-modif' value='' />
 
-  <h3>Modification de l'absence</h3>
-  {% if not access %}
-      Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>
-      <a href='{{ asset("absence") }}'>Retour à la liste des absences</a><br/><br/>
-  {% else %}
-    <form name='form' id='form' method='get' action='/index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
-      <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
-      <input type='hidden' name='page' value='absences/modif2.php' />
-      <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />
-      <input type='hidden' id='admin' value='{{ admin }}' />
-      <input type='hidden' id='login_id' value='{{ loggedin_id }}' />
-      <input type='hidden' name='groupe' id='groupe' value='{{ absence.groupe }}' />
-      <input type='hidden' name='rrule' id='rrule' value='{{ absence.rrule }}' />
-      <input type='hidden' name='recurrence-modif' id='recurrence-modif' value='' />
+          <table class='tableauFiches'>
+            {% for agent in agents %}
+              <input type='hidden' name='perso_ids[]' value='{{ agent.perso_id}}' id='hidden{{ agent.perso_id}}' class='perso_ids_hidden'/>
+            {% endfor %}
 
-      <table class='tableauFiches'>
-        {% for agent in agents %}
-          <input type='hidden' name='perso_ids[]' value='{{ agent.perso_id}}' id='hidden{{ agent.perso_id}}' class='perso_ids_hidden'/>
-        {% endfor %}
-
-        {% if agents_multiples %}
-          <tr>
-            <td><label class='intitule'>Agent(s)</label></td>
-            <td colspan='2'>
-              <ul id='perso_ul1' class='perso_ul'></ul>
-              <ul id='perso_ul2' class='perso_ul'></ul>
-              <ul id='perso_ul3' class='perso_ul'></ul>
-              <ul id='perso_ul4' class='perso_ul'></ul>
-              <ul id='perso_ul5' class='perso_ul'></ul>
-            </td>
-          </tr>
-          <tr>
-            <td>&nbsp;</td>
-            <td>
-              <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
-                <option value='0' selected='selected'>-- Ajoutez un agent --</option>
-                {% if absences_tous %}
-                  <option value='tous'>Tous les agents</option>
-                {% endif %}
-
-                {% for a in agents_tous %}
-                  {% if a.id in absence.perso_id %}
-                    <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">{{ a.nom }} {{ a.prenom }}</option>
-                  {% else %}
-                    <option value='{{ a.id }}' id='option{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
-                  {% endif %}
-                {% endfor %}
-              </select>
-            </td>
-          </tr>
-        {% else %}
-          {% if agents | length > 1 %}
-            <tr>
-              <td><label class='intitule'>Agents</label></td>
-              <td>
-                <ul>
-                  {% for a in agents %}
-                    <li>{{ a.nom }} {{ a.prenom }}</li>
-                  {% endfor %}
-                </ul>
-              </td>
-            </tr>
-          {% else %}
-            <tr>
-              <td><label class='intitule'>Agent</label></td>
-              <td>{{ absence.nom }} {{ absence.prenom }}</td>
-            </tr>
-          {% endif %}
-        {% endif %}
-          <tr>
-            <td><label class='intitule'>Journée(s) entière(s)</label></td>
-            <td>
-              {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-                <input type='checkbox' name='allday' checked="checked" onclick='all_day();'/>
-              {% else %}
-                <input type='checkbox' name='allday' onclick='all_day();'/>
-              {% endif %}
-            </td>
-          </tr>
-          <tr>
-            <td><label class='intitule'>Date de début</label> </td>
-            <td style='white-space:nowrap;'>
-              <input type='text' name='debut' value='{{ debut }}' style='width:100%;' class='datepicker'/>
-            </td>
-          </tr>
-            {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-              <tr id='hre_debut' style="display:none;">
-            {% else %}
-              <tr id='hre_debut'>
-            {% endif %}
-            <td>
-              <label class='intitule'>Heure de début</label>
-            </td>
-            <td>
-              <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value="{{ hre_debut | date('H:i') }}"/>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label class='intitule'>Date de fin</label>
-            </td>
-            <td style='white-space:nowrap;'>
-              <input type='text' name='fin' value='{{ fin }}' style='width:100%;' class='datepicker'/>
-            </td>
-          </tr>
-            {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-              <tr id='hre_fin' style="display:none;" data-hr="{{ hre_fin }}">
-            {% else %}
-              <tr id='hre_fin'>
-            {% endif %}
-              <td><label class='intitule'>Heure de fin</label></td>
-              <td>
-                <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value="{{ hre_fin | date('H:i') }}"/>
-            </td>
-          </tr>
-
-          <tr>
-            <td style='padding-bottom:30px;'>
-              <label class='intitule'>Récurrence</label>
-            </td>
-            <td style='padding-bottom:30px;'>
-              <input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1' disabled='disabled' />
-              <span id='recurrence-info' style='display:none;'>
-                <span id='recurrence-summary'>&nbsp;</span>
-                <a href='#' id='recurrence-link' style='margin-left:10px; display:none;'>Modifier</a>
-              </span>
-              <input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />
-            </td>
-          </tr>
-
-          <tr>
-            <td><label class='intitule'>Motif</label></td>
-            <td style='white-space:nowrap;'>
-              <select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>
-                <option value=''></option>
-                  {% for r in reasons %}
-                    {% if r.type == 2 %}
-                      {% if r.valeur == absence.motif %}
-                      <option value="{{ r.valeur }}" class="padding20" selected="selected">
-                      {% else %}
-                      <option value="{{ r.valeur }}" class="padding20">
-                      {% endif %}
-                        &nbsp;&nbsp;&nbsp;{{ r.valeur }}
-                      </option>
-                    {% else %}
-                      {% if r.type == 1 %}
-                        <option value="{{ r.valeur }}" class="bold" disabled="disabled">
-                          {{ r.valeur }}
-                        </option>
-                      {% else %}
-                        {% if r.valeur == absence.motif %}
-                        <option value="{{ r.valeur }}" class="bold" selected="selected">
-                        {% else %}
-                        <option value="{{ r.valeur }}" class="bold">
-                        {% endif %}
-                          {{ r.valeur }}
-                        </option>
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
-                </select>
-              {% if admin %}
-                <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer;' id='add-motif-button'/>
-              {% endif %}
-            </td>
-          </tr>
-          {% if display_autre %}
-            <tr id='tr_motif_autre'>
-          {% else %}
-            <tr style="display:none;" id='tr_motif_autre'>
-          {% endif %}
-            <td><label class='intitule'>Motif (autre)</label></td>
-            <td>
-              <input type='text' name='motif_autre' style='width:100%;' value='{{ absence.motif_autre }}' class='ui-widget-content ui-corner-all'/>
-            </td>
-          </tr>
-
-          <tr style='vertical-align:top;'>
-            <td>
-              <label class='intitule'>Commentaires</label>
-            </td>
-            <td>
-              <textarea name='commentaires' cols='25' rows='5' class='ui-widget-content ui-corner-all'>{{ absence.commentaires }}</textarea>
-            </td>
-          </tr>
-
-          {% if right701 %}
-            <tr style='vertical-align:top;'>
-              <td><label class='intitule'>Pièces justificatives</label></td>
-              <td>
-                {% if absence.pj1 %}
-                  <div class='absences-pj-fiche'>
-                    PJ1 
-                    <input type='checkbox' name='pj1' id='pj1' checked="checked"/>
-                  </div>
-                {% else %}
-                  <div class='absences-pj-fiche'>
-                    PJ1 
-                    <input type='checkbox' name='pj1' id='pj1'/>
-                  </div>
-                {% endif %}
-
-                {% if absence.pj2 %}
-                  <div class='absences-pj-fiche'>
-                    PJ2 
-                    <input type='checkbox' name='pj2' id='pj2' checked="checked"/>
-                  </div>
-                {% else %}
-                  <div class='absences-pj-fiche'>
-                    PJ2 
-                    <input type='checkbox' name='pj2' id='pj2'/>
-                  </div>
-                {% endif %}
-
-                {% if absence.so %}
-                  <div class='absences-pj-fiche'>
-                    so 
-                    <input type='checkbox' name='so' id='so' checked="checked"/>
-                  </div>
-                {% else %}
-                  <div class='absences-pj-fiche'>
-                    SO 
-                    <input type='checkbox' name='so' id='so'/>
-                  </div>
-                {% endif %}
-              </td>
-            </tr>
-          {% endif %}
-
-            <tr style='vertical-align:top;'>
-              <td><label class='intitule'>Documents attachés</label></td>
-              <td>
-                <ul id='documentsList'>
-                  {% for document in documents %}
-                    <li id="document_{{ document.id}}"><a href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</a>
-                    {% if absence.editable %}
-                        <a href="javascript:deleteAbsenceDocument({{ document.id }});">supprimer</a></li>
-                    {% endif %}
-                  {% endfor %}
-                </ul>
-              </td>
-            </tr>
-
-            <input type="hidden" name="token" value="{{ csrf_token('upload') }}" />
-            {% if absence.editable %}
-                <tr style='vertical-align:top;'>
-                <td>
-                    <label class='intitule'>Attacher un document</label>
+            {% if agents_multiples %}
+              <tr>
+                <td class="textAlignRight"><label>Agent(s)</label></td>
+                <td colspan='2'>
+                  <ul id='perso_ul1' class='perso_ul'></ul>
+                  <ul id='perso_ul2' class='perso_ul'></ul>
+                  <ul id='perso_ul3' class='perso_ul'></ul>
+                  <ul id='perso_ul4' class='perso_ul'></ul>
+                  <ul id='perso_ul5' class='perso_ul'></ul>
                 </td>
-                <td><input type="file" name="documentFile" id="documentFile" /> <a href="javascript:addAbsenceDocument({{ id }})">Ajouter</a></td>
-                </tr>
-            {% endif %}
-
-          {% if absences_validation %}
-            <tr>
-              <td><label class='intitule'>Validation</label></td>
-              <td>
-                {% if absence.status_editable %}
-                  <select name='valide' class='ui-widget-content ui-corner-all'>
-                    <option value='0'>Demandée</option>
-
-                    {% if absence.status == 'ACCEPTED_N1' %}
-                      <option value='2' selected="selected">Acceptée (En attente de validation hiérarchique)</option>
-                    {% else %}
-                      <option value='2'>Acceptée (En attente de validation hiérarchique)</option>
+              </tr>
+              <tr>
+                <td>&nbsp;</td>
+                <td>
+                  <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
+                    <option value='0' selected='selected'>-- Ajoutez un agent --</option>
+                    {% if absences_tous %}
+                      <option value='tous'>Tous les agents</option>
                     {% endif %}
 
-                    {% if absence.status == 'REJECTED_N1' %}
-                      <option value='-2' selected="selected">Refusée (En attente de validation hiérarchique)</option>
-                    {% else %}
-                      <option value='-2'>Refusée (En attente de validation hiérarchique)</option>
-                    {% endif %}
-
-                    {% if adminN2 %}
-                      {% if absence.status == 'ACCEPTED_N2' %}
-                        <option value='1' selected="selected">Acceptée</option>
+                    {% for a in agents_tous %}
+                      {% if a.id in absence.perso_id %}
+                        <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">{{ a.nom }} {{ a.prenom }}</option>
                       {% else %}
-                        <option value='1'>Acceptée</option>
+                        <option value='{{ a.id }}' id='option{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
                       {% endif %}
-
-                      {% if absence.status == 'REJECTED_N2' %}
-                        <option value='-1' selected="selected">Refusée</option>
-                      {% else %}
-                        <option value='-1'>Refusée</option>
-                      {% endif %}
-                    {% endif %}
+                    {% endfor %}
                   </select>
-                {% else %}
-                  {% if absence.status == 'ASKED' %}
-                    Demandée
-                    <input type='hidden' name='valide' value='0' />
-                  {% elseif absence.status == 'ACCEPTED_N1' %}
-                    Acceptée (En attente de validation hiérarchique)
-                    <input type='hidden' name='valide' value='2' />
-                  {% elseif absence.status == 'ACCEPTED_N2' %}
-                    Acceptée
-                    <input type='hidden' name='valide' value='1' />
-                  {% elseif absence.status == 'REJECTED_N1' %}
-                    Refusée (En attente de validation hiérarchique)
-                    <input type='hidden' name='valide' value='-2' />
-                  {% elseif absence.status == 'REJECTED_N2' %}
-                    Refusée
-                    <input type='hidden' name='valide' value='-1' />
-                  {% endif %}
-                {% endif %}
-              </td>
-            </tr>
-          {% endif %}
-
-          <tr>
-            <td><label>Demande</label></td>
-            <td>{{ absence.demande }}</td>
-          </tr>
-
-          <tr>
-            <td colspan='2'><br/>
-              {% if absence.editable %}
-                <input type='button' class='ui-button' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/> 
-                <input type='button' class='ui-button' value='Annuler' onclick="annuler(1);"/> 
-                <input type='submit' class='ui-button' value='Valider'/>
+                </td>
+              </tr>
+            {% else %}
+              {% if agents | length > 1 %}
+                <tr>
+                  <td class="textAlignRight"><label>Agents</label></td>
+                  <td>
+                    <ul>
+                      {% for a in agents %}
+                        <li>{{ a.nom }} {{ a.prenom }}</li>
+                      {% endfor %}
+                    </ul>
+                  </td>
+                </tr>
               {% else %}
-                <a href='{{ asset("absence") }}' class='ui-button'>Retour</a>
+                <tr>
+                  <td class="textAlignRight"><label>Agent</label></td>
+                  <td>{{ absence.nom }} {{ absence.prenom }}</td>
+                </tr>
+              {% endif %}
+            {% endif %}
+              <tr>
+                <td class="textAlignRight"><label>Journée(s) entière(s)</label></td>
+                <td>
+                  {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
+                    <input type='checkbox' name='allday' checked="checked" onclick='all_day();'/>
+                  {% else %}
+                    <input type='checkbox' name='allday' onclick='all_day();'/>
+                  {% endif %}
+                </td>
+              </tr>
+              <tr>
+                <td class="textAlignRight"><label>Date de début</label> </td>
+                <td style='white-space:nowrap;'>
+                  <input type='text' name='debut' value='{{ debut }}' style='width:100%;' class='datepicker'/>
+                </td>
+              </tr>
+                {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
+                  <tr id='hre_debut' style="display:none;">
+                {% else %}
+                  <tr id='hre_debut'>
+                {% endif %}
+                <td class="textAlignRight">
+                  <label>Heure de début</label>
+                </td>
+                <td>
+                  <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
+                    value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}"/>
+                </td>
+              </tr>
+              <tr>
+                <td class="textAlignRight">
+                  <label>Date de fin</label>
+                </td>
+                <td style='white-space:nowrap;'>
+                  <input type='text' name='fin' value='{{ fin }}' style='width:100%;' class='datepicker'/>
+                </td>
+              </tr>
+                {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
+                  <tr id='hre_fin' style="display:none;" data-hr="{{ hre_fin }}">
+                {% else %}
+                  <tr id='hre_fin'>
+                {% endif %}
+                  <td class="textAlignRight"><label>Heure de fin</label></td>
+                  <td>
+                    <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
+                      value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
+                </td>
+              </tr>
+
+              <tr>
+                <td  class="textAlignRight" style='padding-bottom:30px;'>
+                  <label>Récurrence</label>
+                </td>
+                <td style='padding-bottom:30px;'>
+                  <input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1' disabled='disabled' />
+                  <span id='recurrence-info' style='display:none;'>
+                    <span id='recurrence-summary'>&nbsp;</span>
+                    <a href='#' id='recurrence-link' style='margin-left:10px; display:none;'>Modifier</a>
+                  </span>
+                  <input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />
+                </td>
+              </tr>
+
+              <tr>
+                <td class="textAlignRight"><label>Motif</label></td>
+
+                <td style='white-space:nowrap;'>
+                  <select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>
+                    <option value=''></option>
+                      {% for r in reasons %}
+                        {% if r.type == 2 %}
+                          {% if r.valeur == absence.motif %}
+                          <option value="{{ r.valeur }}" class="padding20" selected="selected">
+                          {% else %}
+                          <option value="{{ r.valeur }}" class="padding20">
+                          {% endif %}
+                            &nbsp;&nbsp;&nbsp;{{ r.valeur }}
+                          </option>
+                        {% else %}
+                          {% if r.type == 1 %}
+                            <option value="{{ r.valeur }}" class="bold" disabled="disabled">
+                              {{ r.valeur }}
+                            </option>
+                          {% else %}
+                            {% if r.valeur == absence.motif %}
+                            <option value="{{ r.valeur }}" class="bold" selected="selected">
+                            {% else %}
+                            <option value="{{ r.valeur }}" class="bold">
+                            {% endif %}
+                              {{ r.valeur }}
+                            </option>
+                          {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  {% if admin %}
+                    <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer;' id='add-motif-button'/>
+                  {% endif %}
+                </td>
+              </tr>
+              {% if display_autre %}
+                <tr id='tr_motif_autre'>
+              {% else %}
+                <tr style="display:none;" id='tr_motif_autre'>
+              {% endif %}
+                <td><label>Motif (autre)</label></td>
+                <td>
+                  <input type='text' name='motif_autre' style='width:100%;' value='{{ absence.motif_autre }}' class='ui-widget-content ui-corner-all'/>
+                </td>
+              </tr>
+
+              <tr style='vertical-align:top;'>
+                <td class="textAlignRight">
+                  <label>Commentaires</label>
+                </td>
+                <td>
+                  <textarea name='commentaires' cols='25' rows='5' class='ui-widget-content ui-corner-all'>{{ absence.commentaires }}</textarea>
+                </td>
+              </tr>
+
+              {% if right701 %}
+                <tr style='vertical-align:top;'>
+                  <td class="textAlignRight"><label>Pièces justificatives</label></td>
+                  <td>
+                    {% if absence.pj1 %}
+                      <div class='absences-pj-fiche'>
+                        PJ1 
+                        <input type='checkbox' name='pj1' id='pj1' checked="checked"/>
+                      </div>
+                    {% else %}
+                      <div class='absences-pj-fiche'>
+                        PJ1 
+                        <input type='checkbox' name='pj1' id='pj1'/>
+                      </div>
+                    {% endif %}
+
+                    {% if absence.pj2 %}
+                      <div class='absences-pj-fiche'>
+                        PJ2 
+                        <input type='checkbox' name='pj2' id='pj2' checked="checked"/>
+                      </div>
+                    {% else %}
+                      <div class='absences-pj-fiche'>
+                        PJ2 
+                        <input type='checkbox' name='pj2' id='pj2'/>
+                      </div>
+                    {% endif %}
+
+                    {% if absence.so %}
+                      <div class='absences-pj-fiche'>
+                        so 
+                        <input type='checkbox' name='so' id='so' checked="checked"/>
+                      </div>
+                    {% else %}
+                      <div class='absences-pj-fiche'>
+                        SO 
+                        <input type='checkbox' name='so' id='so'/>
+                      </div>
+                    {% endif %}
+                  </td>
+                </tr>
               {% endif %}
 
-            </td>
-          </tr>
-      </table>
-      <input type='hidden' name='id' value='{{ id }}'/>
-    </form>
+                <tr style='vertical-align:top;'>
+                  <td class="textAlignRight"><label>Documents attachés</label></td>
+                  <td>
+                    <ul id='documentsList'>
+                      {% for document in documents %}
+                        <li id="document_{{ document.id}}"><a href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</a>
+                        {% if absence.editable %}
+                            <a href="javascript:deleteAbsenceDocument({{ document.id }});">supprimer</a></li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </td>
+                </tr>
 
-    <div id="recurrence-form-tmp" title="Récurrence" class='noprint' style='display:none;'>
-      <p>La modification des règles de récurrence n'est pas possible pour le moment.<br/>Cette fonctionnalité sera disponible dans les prochaines versions de Planning Biblio.</p>
-    </div>
+                <input type="hidden" name="token" value="{{ csrf_token('upload') }}" />
+                {% if absence.editable %}
+                    <tr style='vertical-align:top;'>
+                    <td class="textAlignRight">
+                        <label>Attacher un document</label>
+                    </td>
+                    <td><input type="file" name="documentFile" id="documentFile" /> <a href="javascript:addAbsenceDocument({{ id }})">Ajouter</a></td>
+                    </tr>
+                {% endif %}
 
-    <div id="recurrence-alert" title="Modification d'une absence récurrente" class='noprint' style='display:none;'>
-      <p>Souhaitez-vous modifier uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
-    </div>
+              {% if absences_validation %}
+                <tr>
+                  <td class="textAlignRight"><label>Validation</label></td>
+                  <td>
+                    {% if absence.status_editable %}
+                      <select name='valide' class='ui-widget-content ui-corner-all'>
+                        <option value='0'>Demandée</option>
 
-    <div id="recurrence-alert-suppression" title="Suppression d'une absence récurrente" class='noprint' style="display:none;">
-      <p>Souhaitez-vous supprimer uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+                        {% if absence.status == 'ACCEPTED_N1' %}
+                          <option value='2' selected="selected">Acceptée (En attente de validation hiérarchique)</option>
+                        {% else %}
+                          <option value='2'>Acceptée (En attente de validation hiérarchique)</option>
+                        {% endif %}
+
+                        {% if absence.status == 'REJECTED_N1' %}
+                          <option value='-2' selected="selected">Refusée (En attente de validation hiérarchique)</option>
+                        {% else %}
+                          <option value='-2'>Refusée (En attente de validation hiérarchique)</option>
+                        {% endif %}
+
+                        {% if adminN2 %}
+                          {% if absence.status == 'ACCEPTED_N2' %}
+                            <option value='1' selected="selected">Acceptée</option>
+                          {% else %}
+                            <option value='1'>Acceptée</option>
+                          {% endif %}
+
+                          {% if absence.status == 'REJECTED_N2' %}
+                            <option value='-1' selected="selected">Refusée</option>
+                          {% else %}
+                            <option value='-1'>Refusée</option>
+                          {% endif %}
+                        {% endif %}
+                      </select>
+                    {% else %}
+                      {% if absence.status == 'ASKED' %}
+                        Demandée
+                        <input type='hidden' name='valide' value='0' />
+                      {% elseif absence.status == 'ACCEPTED_N1' %}
+                        Acceptée (En attente de validation hiérarchique)
+                        <input type='hidden' name='valide' value='2' />
+                      {% elseif absence.status == 'ACCEPTED_N2' %}
+                        Acceptée
+                        <input type='hidden' name='valide' value='1' />
+                      {% elseif absence.status == 'REJECTED_N1' %}
+                        Refusée (En attente de validation hiérarchique)
+                        <input type='hidden' name='valide' value='-2' />
+                      {% elseif absence.status == 'REJECTED_N2' %}
+                        Refusée
+                        <input type='hidden' name='valide' value='-1' />
+                      {% endif %}
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endif %}
+
+              <tr>
+                <td class="textAlignRight"><label>Demande</label></td>
+                <td>{{ absence.demande }}</td>
+              </tr>
+
+              <tr>
+                <td colspan='2'><br/>
+                  {% if absence.editable %}
+                    <input type='button' class='ui-button ui-button-type3' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/> 
+                    <input type='button' class='ui-button ui-button-type2' value='Annuler' onclick="annuler(1);"/> 
+                    <input type='submit' class='ui-button' value='Valider'/>
+                  {% else %}
+                    <a href='{{ asset("absence") }}' class='ui-button'>Retour</a>
+                  {% endif %}
+
+                </td>
+              </tr>
+          </table>
+          <input type='hidden' name='id' value='{{ id }}'/>
+        </form>
+
+        <div id="recurrence-form-tmp" title="Récurrence" class='noprint' style='display:none;'>
+          <p>La modification des règles de récurrence n'est pas possible pour le moment.<br/>Cette fonctionnalité sera disponible dans les prochaines versions de Planning Biblio.</p>
+        </div>
+
+        <div id="recurrence-alert" title="Modification d'une absence récurrente" class='noprint' style='display:none;'>
+          <p>Souhaitez-vous modifier uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+        </div>
+
+        <div id="recurrence-alert-suppression" title="Suppression d'une absence récurrente" class='noprint' style="display:none;">
+          <p>Souhaitez-vous supprimer uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+        </div>
+      {% endif %}
+      {% include 'absences/reasons.html.twig' %}
     </div>
-  {% endif %}
-  {% include 'absences/reasons.html.twig' %}
+  </div>
 {% endblock %}

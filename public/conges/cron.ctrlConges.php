@@ -42,6 +42,8 @@ require_once __DIR__ . '/../include/function.php';
 require_once __DIR__ . '/class.conges.php';
 require_once __DIR__ . '/../personnel/class.personnel.php';
 
+use App\Model\Agent;
+
 $CSRFToken = CSRFToken();
 
 if (!$config['Conges-Rappels']) {
@@ -106,13 +108,13 @@ $db->select2('conges', null, array('debut' => "<$fin 23:59:59", 'fin' => ">$debu
 if ($db->result) {
     foreach ($db->result as $elem) {
         if ($elem['valide'] == '0' or $elem['valide_n1'] == '0') {
-            $staff_member = $entityManager->find(Personnel::class, $elem['perso_id']);
+            $staff_member = $entityManager->find(Agent::class, $elem['perso_id']);
             $tmp = $elem;
             $tmp['nom'] = $staff_member->nom();
             $tmp['prenom'] = $staff_member->prenom();
             $tmp['mail'] = $staff_member->mail();
-            $tmp['mails_responsables'] = $staff_member->mails_responsables();
-      
+            $tmp['mails_responsables'] = $staff_member->get_manager_emails();
+
             // Ajoute les destinaires pour les congés n'étant pas validés en N2 en fonction du paramètre $config['Conges-Rappels-N2']
             $tmp['destinaires'] = array();
       

@@ -1,0 +1,292 @@
+{# conges/accounts.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type='text/JavaScript'>
+    $( document ).ready(function() {
+      $('.check_submit').on('click', function() {
+        $("#form").submit();
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block page %}
+  <h3>Crédits de congés</h3>
+
+  <form name='form' id='form' method='get' action='/holiday/accounts' class='noprint'>
+    <input type='hidden' name='get' value='yes' />
+
+    <table class='tableauStandard'>
+      <tbody>
+        <tr>
+          <td style='text-align:left;'>
+            <span style='padding:5px 40px 5px 0;'>
+              {% if deleted_agents %}
+                <input type="checkbox" checked="checked" name='supprimes' class="check_submit"/>
+              {% else %}
+                <input type="checkbox" name='supprimes' class="check_submit"/>
+              {% endif %}
+              Agents supprimés
+            </span>
+
+            <span style='padding:5px 40px 5px 0;'>
+              {% if effective_account %}
+                <input type="checkbox" checked="checked" name='effectifs' class="check_submit"/>
+              {% else %}
+                <input type="checkbox" name='effectifs' class="check_submit"/>
+              {% endif %}
+              Crédits effectifs
+            </span>
+
+            <span style='padding:5px 40px 5px 0;' class='orange'>
+              {% if waiting_credits %}
+                <input type="checkbox" checked="checked" name='attente' class="check_submit"/>
+              {% else %}
+                <input type="checkbox" name='attente' class="check_submit"/>
+              {% endif %}
+              Crédits en attente
+            </span>
+
+            {% if show_hours_to_days %}
+              <span style='padding:5px 40px 5px 0;'>
+                {% if hours_to_days %}
+                  <input type="checkbox" checked="checked" name='hours_to_days' class="check_submit"/>
+                {% else %}
+                  <input type="checkbox" name='hours_to_days' class="check_submit"/>
+                {% endif %}
+                Afficher les équivalences en jours
+              </span>
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+  <br />
+
+  <table id='tableCredits' class='CJDataTable' data-sort='[[0]]'>
+    <thead>
+      <tr>
+        <th rowspan='2'>Agent</th>
+        <th rowspan='2' class='dataTableHeureFR' >Congés / an</th>
+        <th colspan='3'>Crédit congés</th>
+        <th colspan='3'>Crédit reliquat</th>
+        <th colspan='3'>Crédit récupérations</th>
+        <th colspan='3'>Solde débiteur</th>
+      </tr>
+
+      <tr>
+        <th class='dataTableHeureFR' >Initial</th>
+        <th class='dataTableHeureFR' >Utilisé</th>
+        <th class='dataTableHeureFR' >Restant</th>
+        <th class='dataTableHeureFR' >Initial</th>
+        <th class='dataTableHeureFR' >Utilisé</th>
+        <th class='dataTableHeureFR' >Restant</th>
+        <th class='dataTableHeureFR' >Initial</th>
+        <th class='dataTableHeureFR' >Utilisé</th>
+        <th class='dataTableHeureFR' >Restant</th>
+        <th class='dataTableHeureFR' >Initial</th>
+        <th class='dataTableHeureFR' >Utilisé</th>
+        <th class='dataTableHeureFR' >Restant</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for a in accounts %}
+        {% if effective_account %}
+          <tr style='vertical-align:top;'>
+            <td>{{ a.agent }}</td>
+            <td class='aRight nowrap'>
+              {{ a.conge_annuel | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.conge_annuel | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.conge_initial | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.conge_initial | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.conge_utilise | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.conge_utilise | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.conge_restant | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.conge_restant | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.reliquat_initial | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.reliquat_initial | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.reliquat_utilise | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.reliquat_utilise | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.reliquat_restant | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.reliquat_restant | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.recup_initial | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.recup_initial | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.recup_utilise | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.recup_utilise | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.recup_restant | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.recup_restant | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.anticipation_initial | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.anticipation_initial | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.anticipation_utilise | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.anticipation_utilise | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.anticipation_restant | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.anticipation_restant | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+
+        {% if waiting_credits %}
+          <tr style='vertical-align:top;' class='orange'>
+            <td>{{ a.agent }}</td>
+            <td class='aRight nowrap'>
+              {{ a.conge_annuel | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.conge_annuel | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.conge_initial | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.conge_initial | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap {$elem['conge_classe']}'>
+              {{ a.conge_demande | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.conge_demande | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap {$elem['conge_classe']}'>
+              {{ a.conge_en_attente | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.conge_en_attente | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.reliquat_initial | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.reliquat_initial | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap {$elem['reliquat_classe']}'>
+              {{ a.reliquat_demande | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.reliquat_demande | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap {$elem['reliquat_classe']}'>
+              {{ a.reliquat_en_attente | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.reliquat_en_attente | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.recup_initial | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.recup_initial | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap {$elem['recup_classe']}'>
+              {{ a.recup_demande | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.recup_demande | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap {$elem['recup_classe']}'>
+              {{ a.recup_en_attente | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.recup_en_attente | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap'>
+              {{ a.anticipation_initial | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.anticipation_initial | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap {$elem['anticipation_classe']}'>
+              {{ a.anticipation_demande | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.anticipation_demande | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+
+            <td class='aRight nowrap {$elem['anticipation_classe']}'>
+              {{ a.anticipation_en_attente | hours }}
+              {% if hours_to_days %}
+                <br />{{ a.anticipation_en_attente | hoursToDays(a.id) }}
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

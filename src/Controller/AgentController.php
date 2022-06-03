@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\PlanningBiblio\Event\OnTransformLeaveDays;
 use App\PlanningBiblio\Event\OnTransformLeaveHours;
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\PlanningBiblio\Helper\HourHelper;
 
 use App\Model\Agent;
 
@@ -328,6 +329,7 @@ class AgentController extends BaseController
             $arrivee = dateFr($db->result[0]['arrivee']);
             $depart = dateFr($db->result[0]['depart']);
             $login = $db->result[0]['login'];
+            $breaktimes = array();
             if ($this->config('PlanningHebdo')) {
                 $p = new \planningHebdo();
                 $p->perso_id = $id;
@@ -337,13 +339,12 @@ class AgentController extends BaseController
                 $p->fetch();
                 if (!empty($p->elements)) {
                     $temps = $p->elements[0]['temps'];
-                    $breaktimes = $p->elements[0]['breaktime'];
+                    $breaktimes = $p->elements[0]['breaktime'] ?? array();
                 } else {
                     $temps = array();
                 }
             } else {
                 $temps = json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                $breaktimes = $db->result[0]['breaktime'];
                 if (!is_array($temps)) {
                     $temps = array();
                 }
@@ -527,34 +528,24 @@ class AgentController extends BaseController
         }
 
         if (in_array(21, $droits)) {
-            $h = array();
-            for ($i = 1; $i<40; $i++) {
-                if ($this->config('Granularite') == 5) {
-                    $h[] = array($i,$i."h00");
-                    $h[] = array($i.".08",$i."h05");
-                    $h[] = array($i.".17",$i."h10");
-                    $h[] = array($i.".25",$i."h15");
-                    $h[] = array($i.".33",$i."h20");
-                    $h[] = array($i.".42",$i."h25");
-                    $h[] = array($i.".5",$i."h30");
-                    $h[] = array($i.".58",$i."h35");
-                    $h[] = array($i.".67",$i."h40");
-                    $h[] = array($i.".75",$i."h45");
-                    $h[] = array($i.".83",$i."h50");
-                    $h[] = array($i.".92",$i."h55");
-                } elseif ($this->config('Granularite')  == 15) {
-                    $h[] = array($i,$i."h00");
-                    $h[] = array($i.".25",$i."h15");
-                    $h[] = array($i.".5",$i."h30");
-                    $h[] = array($i.".75",$i."h45");
-                } elseif ($this->config('Granularite') == 30) {
-                    $h[] = array($i,$i."h00");
-                    $h[] = array($i.".5",$i."h30");
-                } else {
-                    $h[] = array($i,$i."h00");
+            $granularite = $this->config('Granularite') == 1
+                ? 5 : $this->config('Granularite');
+
+            $nb_interval = 60 / $granularite;
+            $end = 40;
+            $times = array();
+            for ($i = 1; $i < $end; $i++) {
+                $times[] = array($i + 0, $i . 'h00');
+                $minute = 0;
+                for ($y = 1; $y < $nb_interval; $y++) {
+                    $minute = sprintf("%02d", $minute + $granularite);
+                    $decimal = round($minute / 60, 2);
+                    $times[] = array($i + $decimal, $i . "h$minute");
                 }
             }
-            $this->templateParams(array( 'times' => $h ));
+            $times[] = array($end, $end . "h00");
+            $this->templateParams(array( 'times' => $times ));
+
         } else {
             $heuresHebdo_label = $heuresHebdo;
             if (!stripos($heuresHebdo, "%")) {
@@ -809,9 +800,9 @@ class AgentController extends BaseController
         $postes = $params['postes'];
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
-        $service = htmlentities($params['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $service = $params['service'];
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
-        $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $statut = $params['statut'];
         $temps = array_key_exists("temps", $params) ? $params['temps'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
@@ -829,6 +820,14 @@ class AgentController extends BaseController
 
         $premierLundi = array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
         $dernierLundi = array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
+
+        if (is_array($temps)) {
+            foreach ($temps as $day => $hours) {
+                foreach ($hours as $i => $hour) {
+                    $temps[$day][$i] = HourHelper::toHis($hour);
+                }
+            }
+        }
 
         $droits = $droits ? $droits : array();
         $postes = $postes ? json_encode(explode(",", $postes)) : null;

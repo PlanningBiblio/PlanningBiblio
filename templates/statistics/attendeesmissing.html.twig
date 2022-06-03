@@ -3,65 +3,68 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <h3>Liste des agents présents et absents</h3>
-
-  <div>
-    <form name="form" method="post" action="{{ asset('statistics/attendeesmissing') }}">
-      <table class='tableauStandard' style='margin-top:35px;'>
-        <tr>
-          <td>
-            <label class='intitule'>Début :</label>
-            <input type='text' name='from' value='{{ from }}' class='datepicker'/>
-          </td>
-          <td>
-            <label class='intitule'>Fin :</label>
-            <input type='text' name='to' value='{{ to }}' class='datepicker'/>
-          </td>
-          <td>
-            <input type='submit' value='Rechercher' class='ui-button' />
-          </td>
-          <td>
-            <a href='{{ asset('statistics/attendeesmissing') }}?reset=1' class='ui-button'>Réinitialiser</a>
-          </td>
-        </tr>
-      </table>
-    </form>
-  </div>
-
-  <div class="presents-absents">
-    {% for day in by_date %}
-      {% if day.tab %}
-      <h3 class="day">Le {{ day.date }}</h3>
-        <table class="CJDataTable">
-          <thead>
+  <div id="content-form">
+    <h3>Liste des agents présents et absents</h3>
+    <div class="statistics-div">
+      <div>
+        <form name="form" method="post" action="{{ asset('statistics/attendeesmissing') }}">
+          <table class='tableauStandard' style='margin-top:35px;'>
             <tr>
-              <th>Agent</th>
-              <th>Présence</th>
-              <th>Absences</th>
+              <td>
+                <label >Début :</label>
+                <input type='text' name='from' value='{{ from }}' class='datepicker'/>
+              </td>
+              <td>
+                <label >Fin :</label>
+                <input type='text' name='to' value='{{ to }}' class='datepicker'/>
+              </td>
+              <td>
+                <input type='submit' value='Rechercher' class='ui-button ui-button-type2' />
+              </td>
+              <td>
+                <a href='{{ asset('statistics/attendeesmissing') }}?reset=1' class='ui-button ui-button-type2'>Réinitialiser</a>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {% for agent in day.tab %}
-            <tr>
-                <td>{{ agent.nom }} {{ agent.prenom }}</td>
-                <td>
-		{% if agent.presence is defined %}
-		    {{ agent.presence.site }}{{ agent.presence.heures|e('html') }}
-		{% endif %}
-                </td>
-                <td>
-		{% if agent.absences is defined %}
-		    {% for absence in agent.absences %}
-			{{ absence.motif }}{% if not absence.all_the_day %}, {{ absence.from }} - {{ absence.to }}{% endif %} {% if absence.valide == 0 %} <b>(non-validée)</b> {% endif %}
-			<br/>
-		    {% endfor %}
-		{% endif %}
-                </td>
-            </tr>
+          </table>
+        </form>
+      </div>
+
+      <div class="presents-absents">
+        {% for day in by_date %}
+          {% if day.tab %}
+          <h3 class="day">Le {{ day.date }}</h3>
+            <table class="CJDataTable">
+              <thead>
+                <tr>
+                  <th class="tableSort">Agent</th>
+                  <th class="tableSort">Présence</th>
+                  <th class="tableSort">Absences</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for agent in day.tab %}
+                <tr>
+                    <td class="no-hover">{{ agent.nom }} {{ agent.prenom }}</td>
+                    <td class="no-hover">
+        {% if agent.presence is defined %}
+            {{ agent.presence.site }}{{ agent.presence.heures|e('html') }}
+        {% endif %}
+                    </td>
+                    <td class="no-hover">
+        {% if agent.absences is defined %}
+            {% for absence in agent.absences %}
+          {{ absence.motif }}{% if not absence.all_the_day %}, {{ absence.from }} - {{ absence.to }}{% endif %} {% if absence.valide == 0 %} <b>(non-validée)</b> {% endif %}
+          <br/>
             {% endfor %}
-          </tbody>
-        </table>
-      {% endif %}
-    {% endfor %}
+        {% endif %}
+                  </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
   </div>
 {% endblock %}

@@ -28,11 +28,11 @@
       <table id='tableModeles' class='CJDataTable' data-sort='[[1]]'>
         <thead>
           <tr>
-            <th class='dataTableNoSort'>&nbsp;</th>
-            <th>Nom</th>
-            <th>Type</th>
+            <th class='dataTableNoSort tableSort'>&nbsp;</th>
+            <th class="tableSort">Nom</th>
+            <th class="tableSort">Type</th>
             {% if multi_sites %}
-                <th>Site</th>
+                <th class="tableSort">Site</th>
             {% endif %}
           </tr>
         </thead>
@@ -41,7 +41,7 @@
             <tr>
               <td>
                 <a href='{{ asset("/model/") }}{{ model.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
-                <a href='javascript:delete_template({{ model.id }});'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
+                <a href='javascript:delete_template({{ model.id }});'><span class='pl-icon pl-icon-dropblack' title='Supprimer'></span></a>
               </td>
 
               <td>

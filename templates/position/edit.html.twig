@@ -6,198 +6,202 @@
   <script type='text/JavaScript' src='{{ asset("js/plb/position.js") }}?version={{ version }}'></script>
 {% endblock %}
 {% block page %}
-  {% if id is defined %}
-    <h3>Modification du poste</h3>
-  {% else %}
-    <h3>Ajout d'un poste</h3>
-  {% endif %}
-  <form method='post' action="{{ asset('/position') }}" name='form'>
-    <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}"/>
-    <input type='hidden' name='group_id' value='{{ group_id }}'/>
+  <div id="content-form">
     {% if id is defined %}
-        <input type='hidden' name='id' value='{{ id }}'/>
+      <h3>Modification du poste</h3>
     {% else %}
-        <input type='hidden' name='id' value=''/>
+      <h3>Ajout d'un poste</h3>
     {% endif %}
-    <table style='width:100%'>
-     <tr style='vertical-align:top;'>
-      <td style='width:50%'>
-          <table>
-            <tr>
-              <td style='width:160px'>Nom du poste :</td>
-              <td>
-                <input type='text' value='{{ nom }}' name='nom' style='width:250px' class='ui-widget-content ui-corner-all'/>
-              </td>
-            </tr>
-            {% if nbSites > 1 %}
-              <tr>
-                <td>Site</td>
-                <td>
-                  <select name='site' style='width:255px' class='ui-widget-content ui-corner-all'>
-                    <option value='0'>&nbsp;</option>
-                    {% for i in 0..nbSites-1 %}
-                      <option value='{{i+1}}' {{ selectedSites[i] }}> {{ multisite[i] }} </option>
+    <div class="admin-div">
+      <form method='post' action="{{ asset('/position') }}" name='form'>
+        <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}"/>
+        <input type='hidden' name='group_id' value='{{ group_id }}'/>
+        {% if id is defined %}
+            <input type='hidden' name='id' value='{{ id }}'/>
+        {% else %}
+            <input type='hidden' name='id' value=''/>
+        {% endif %}
+        <table style='width:100%'>
+        <tr style='vertical-align:top;'>
+          <td style='width:50%'>
+              <table>
+                <tr>
+                  <td style='width:160px'>Nom du poste :</td>
+                  <td>
+                    <input type='text' value='{{ nom }}' name='nom' style='width:250px' class='ui-widget-content ui-corner-all'/>
+                  </td>
+                </tr>
+                {% if nbSites > 1 %}
+                  <tr>
+                    <td>Site</td>
+                    <td>
+                      <select name='site' style='width:255px' class='ui-widget-content ui-corner-all'>
+                        <option value='0'>&nbsp;</option>
+                        {% for i in 0..nbSites-1 %}
+                          <option value='{{i+1}}' {{ selectedSites[i] }}> {{ multisite[i] }} </option>
+                        {% endfor %}
+                      </select>
+                    </td>
+                  </tr>
+                {% endif %}
+                <tr>
+                  <td>Etage :</td>
+                  <td style='white-space: nowrap;'>
+                    <select name='etage' id='etage' style='width:255px' class='ui-widget-content ui-corner-all'>
+                      <option value=''>&nbsp;</option>
+                      {% for floor in floors %}
+                        {% if etage == floor.id %}
+                          <option value='{{floor.id}}' selected=selected>{{ floor.valeur }}</option>
+                        {% else %}
+                          <option value='{{floor.id}}' >{{ floor.valeur }}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                    <span class='pl-icon pl-icon-add' title='Ajouter' id='add-etage-button' style='cursor:pointer; margin-left:4px;'></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Groupe:</td>
+                  <td style='white-space: nowrap;'>
+                    <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
+                      <option value=''>&nbsp;</option>
+                      {% for group in groups %}
+                        {% if groupe == group.id %}
+                          <option value='{{ group.id }}' selected=selected  >{{ group.valeur }}</option>
+                        {% else %}
+                          <option value='{{ group.id }}'>{{ group.valeur }}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                    <span class='pl-icon pl-icon-add' title='Ajouter' id='add-group-button' style='cursor:pointer; margin-left:4px;'></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style='padding-top:20px;'>Obligatoire / renfort :</td>
+                  <td style='padding-top:20px;'>
+                    <input type='radio' name='obligatoire' value='Obligatoire' {{ obligatoire }}/> Obligatoire
+                    <input type='radio' name='obligatoire' value='Renfort' {{ renfort }}/> Renfort
+                  </td>
+                </tr>
+                <tr>
+                  <td>Bloquant :</td>
+                  <td>
+                    <input type='radio' name='bloquant' value='1' {{ bloq1 }}/> Oui
+                    <input type='radio' name='bloquant' value='0' {{ bloq2 }}/> Non
+                  </td>
+                </tr>
+                <tr>
+                  <td>Statistiques :</td>
+                  <td>
+                    <input type='radio' name='statistiques' value='1' {{ stat1 }}/> Oui
+                    <input type='radio' name='statistiques' value='0' {{ stat2 }}/> Non
+                  </td>
+                </tr>
+                <tr>
+                  <td>Compatible télétravail :</td>
+                  <td>
+                    <input type='radio' name='teleworking' value='1' {{ teleworking1 }}/> Oui
+                    <input type='radio' name='teleworking' value='0' {{ teleworking2 }}/> Non
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td>
+              <table>
+                <tr style='vertical-align:top;'>
+                  <td>Activités :</td>
+                  <td>
+                    {% for s in skillList %}
+                      {% if s.id in activites %}
+                        <input type='checkbox' name='activites[]' value='{{ s.id }}' checked=checked /> {{ s.nom | raw }}<br/>
+                      {% else %}
+                        <input type='checkbox' name='activites[]' value='{{ s.id }}' /> {{ s.nom | raw }}<br/>
+                      {% endif %}
                     {% endfor %}
-                  </select>
-                </td>
-              </tr>
-            {% endif %}
-            <tr>
-              <td>Etage :</td>
-              <td style='white-space: nowrap;'>
-                <select name='etage' id='etage' style='width:255px' class='ui-widget-content ui-corner-all'>
-                  <option value=''>&nbsp;</option>
-                  {% for floor in floors %}
-                    {% if etage == floor.id %}
-                      <option value='{{floor.id}}' selected=selected>{{ floor.valeur }}</option>
-                    {% else %}
-                      <option value='{{floor.id}}' >{{ floor.valeur }}</option>
+                  </td>
+                </tr>
+                {% if categoriesList is iterable and not categoriesList is empty %}
+                  <tr style='vertical-align:top;'>
+                    <td style='padding-top:20px;'> Cat&eacute;gories<sup>*</sup> :</td>
+                    <td style='padding-top:26px;'>
+                      {% for c in categoriesList %}
+                        {% if c.id in categories %}
+                          <input type='checkbox' name='categories[]' value='{{ c.id }}' checked=checked /> {{ c.valeur | raw }}<br/>
+                        {% else %}
+                          <input type='checkbox' name='categories[]' value='{{ c.id }}' /> {{ c.valeur | raw }}<br/>
+                        {% endif %}
+                      {% endfor %}
+                    </td>
+                  </tr>
+                {% endif %}
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' style='text-align:center;'><br/><br/>
+              <input type='hidden' value={{id}} name='id'/>
+              <a href='{{ asset("position") }}'class='ui-button ui-button-type2'>Annuler</a>
+                  &nbsp;&nbsp;&nbsp;
+              <input type='submit' value='Valider' class='ui-button'/>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' class='noteBasDePage'>* Si aucune cat&eacute;gorie n&apos;est s&eacute;lectionn&eacute;e, les agents de toutes les cat&eacute;gories pourront &ecirc;tre plac&eacute;s sur ce poste.
+            </td>
+          </tr>
+        </table>
+      </form>
+
+      <!--  Modification de la liste des étages (Dialog Box) -->
+      <div id="add-etage-form" title="Liste des étages" class='noprint' style='display:none;' >
+        <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des étages dans le menu déroulant.</p>
+        <form>
+          <p>
+            <input type='text' id='add-etage-text' style='width:300px;'/>
+            <input type='button' id='add-etage-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
+          </p>
+          <fieldset>
+            <ul id="etages-sortable">
+              {% if floors is iterable %}
+                {% for f in floors %}
+                  <li class='ui-state-default' id='li_{{ f.id }}'>
+                    <span class='pl-icon pl-icon-arrowupdown'></span>
+                    <font id='valeur_{{ f.id }}'>{{ f.valeur }}</font>
+                    {% if f.id in usedFloors == false %}
+                      <span class='pl-icon pl-icon-trash' style='position:absolute;left:480px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                     {% endif %}
-                  {% endfor %}
-                </select>
-                <span class='pl-icon pl-icon-add' title='Ajouter' id='add-etage-button' style='cursor:pointer; margin-left:4px;'></span>
-              </td>
-            </tr>
-            <tr>
-              <td>Groupe:</td>
-              <td style='white-space: nowrap;'>
-                <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
-                  <option value=''>&nbsp;</option>
-                  {% for group in groups %}
-                    {% if groupe == group.id %}
-                      <option value='{{ group.id }}' selected=selected  >{{ group.valeur }}</option>
-                    {% else %}
-                      <option value='{{ group.id }}'>{{ group.valeur }}</option>
-                    {% endif %}
-                  {% endfor %}
-                </select>
-                <span class='pl-icon pl-icon-add' title='Ajouter' id='add-group-button' style='cursor:pointer; margin-left:4px;'></span>
-              </td>
-            </tr>
-            <tr>
-              <td style='padding-top:20px;'>Obligatoire / renfort :</td>
-              <td style='padding-top:20px;'>
-                <input type='radio' name='obligatoire' value='Obligatoire' {{ obligatoire }}/> Obligatoire
-                <input type='radio' name='obligatoire' value='Renfort' {{ renfort }}/> Renfort
-              </td>
-            </tr>
-            <tr>
-              <td>Bloquant :</td>
-              <td>
-                <input type='radio' name='bloquant' value='1' {{ bloq1 }}/> Oui
-                <input type='radio' name='bloquant' value='0' {{ bloq2 }}/> Non
-              </td>
-            </tr>
-            <tr>
-              <td>Statistiques :</td>
-              <td>
-                <input type='radio' name='statistiques' value='1' {{ stat1 }}/> Oui
-                <input type='radio' name='statistiques' value='0' {{ stat2 }}/> Non
-              </td>
-            </tr>
-            <tr>
-              <td>Compatible télétravail :</td>
-              <td>
-                <input type='radio' name='teleworking' value='1' {{ teleworking1 }}/> Oui
-                <input type='radio' name='teleworking' value='0' {{ teleworking2 }}/> Non
-              </td>
-            </tr>
-          </table>
-        </td>
-        <td>
-          <table>
-            <tr style='vertical-align:top;'>
-              <td>Activités :</td>
-              <td>
-                {% for s in skillList %}
-                  {% if s.id in activites %}
-                    <input type='checkbox' name='activites[]' value='{{ s.id }}' checked=checked /> {{ s.nom | raw }}<br/>
-                  {% else %}
-                    <input type='checkbox' name='activites[]' value='{{ s.id }}' /> {{ s.nom | raw }}<br/>
-                  {% endif %}
+                  </li>
                 {% endfor %}
-              </td>
-            </tr>
-            {% if categoriesList is iterable and not categoriesList is empty %}
-              <tr style='vertical-align:top;'>
-                <td style='padding-top:20px;'> Cat&eacute;gories<sup>*</sup> :</td>
-                <td style='padding-top:26px;'>
-                  {% for c in categoriesList %}
-                    {% if c.id in categories %}
-                      <input type='checkbox' name='categories[]' value='{{ c.id }}' checked=checked /> {{ c.valeur | raw }}<br/>
-                    {% else %}
-                      <input type='checkbox' name='categories[]' value='{{ c.id }}' /> {{ c.valeur | raw }}<br/>
+              {% endif %}
+            </ul>
+          </fieldset>
+        </form>
+      </div>
+
+      <!--  Modification de la liste des groupes (Dialog Box) -->
+      <div id="add-group-form" title="Liste des groupes de postes" class='noprint' style='display:none;' >
+        <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des groupes dans le menu déroulant.</p>
+        <form>
+          <p>
+            <input type='text' id='add-group-text' style='width:300px;'/>
+            <input type='button' id='add-group-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
+          </p>
+          <fieldset>
+            <ul id="groups-sortable">
+              {% if groups is iterable %}
+                {% for g in groups %}
+                  <li class='ui-state-default' id='li_{{ g.id }}'><span class='pl-icon pl-icon-arrowupdown'></span>
+                    <font id='valeur_{{ g.id }}'>{{ g.valeur }}</font>
+                    {% if g.id in usedGroups == false %}
+                      <span class='pl-icon pl-icon-trash' style='position:absolute;left:480px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                     {% endif %}
-                  {% endfor %}
-                </td>
-              </tr>
-            {% endif %}
-          </table>
-        </td>
-      </tr>
-      <tr>
-        <td colspan='2' style='text-align:center;'><br/><br/>
-          <input type='hidden' value={{id}} name='id'/>
-          <a href='{{ asset("position") }}'class='ui-button'>Annuler</a>
-              &nbsp;&nbsp;&nbsp;
-          <input type='submit' value='Valider' class='ui-button'/>
-        </td>
-      </tr>
-      <tr>
-        <td colspan='2' class='noteBasDePage'>* Si aucune cat&eacute;gorie n&apos;est s&eacute;lectionn&eacute;e, les agents de toutes les cat&eacute;gories pourront &ecirc;tre plac&eacute;s sur ce poste.
-        </td>
-      </tr>
-    </table>
-  </form>
-
-  <!--  Modification de la liste des étages (Dialog Box) -->
-  <div id="add-etage-form" title="Liste des étages" class='noprint' style='display:none;' >
-    <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des étages dans le menu déroulant.</p>
-    <form>
-      <p>
-        <input type='text' id='add-etage-text' style='width:300px;'/>
-        <input type='button' id='add-etage-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/>
-      </p>
-      <fieldset>
-        <ul id="etages-sortable">
-          {% if floors is iterable %}
-            {% for f in floors %}
-              <li class='ui-state-default' id='li_{{ f.id }}'>
-                <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
-                <font id='valeur_{{ f.id }}'>{{ f.valeur }}</font>
-                {% if f.id in usedFloors == false %}
-                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
-                {% endif %}
-              </li>
-            {% endfor %}
-          {% endif %}
-        </ul>
-      </fieldset>
-    </form>
-  </div>
-
-  <!--  Modification de la liste des groupes (Dialog Box) -->
-  <div id="add-group-form" title="Liste des groupes de postes" class='noprint' style='display:none;' >
-    <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des groupes dans le menu déroulant.</p>
-    <form>
-      <p>
-        <input type='text' id='add-group-text' style='width:300px;'/>
-        <input type='button' id='add-group-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/>
-      </p>
-      <fieldset>
-        <ul id="groups-sortable">
-          {% if groups is iterable %}
-            {% for g in groups %}
-              <li class='ui-state-default' id='li_{{ g.id }}'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
-                <font id='valeur_{{ g.id }}'>{{ g.valeur }}</font>
-                {% if g.id in usedGroups == false %}
-                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
-                {% endif %}
-              </li>
-            {% endfor %}
-          {% endif %}
-        </ul>
-      </fieldset>
-    </form>
+                  </li>
+                {% endfor %}
+              {% endif %}
+            </ul>
+          </fieldset>
+        </form>
+      </div>
+    </div>
   </div>
 {% endblock %}

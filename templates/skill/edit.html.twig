@@ -6,29 +6,33 @@
 {% endblock %}
 
 {% block page %}
-  {% if id is defined %}
-    <h3>Modification de l'activité</h3>
-  {% else %}
-    <h3>Ajout d'une activité</h3>
-  {% endif %}
-  <form method="post" name="form" action='{{ asset("skill") }}'>
-    <input type="hidden" name='CSRFToken' value='{{ CSRFSession }}' />
-    <table class='tableauFiches'>
-      <tr>
-        <td> Nom :</td>
-        <td>
-          <input type='text' value='{{ skill_name }}' name = 'nom' style='width:250px' class='ui-widget-content ui-corner-all' />
-        </td>
-      </tr>
-      <tr>
-        <td colspan='2' style='text-align :center; padding-top: 40px;'>
-          {% if id is defined %}
-            <input type='hidden' value='{{ id }}' name = 'id' />
-           {% endif %}
-          <input type='button' value='Annuler' onclick='history.go(-1);' class='ui-button'/>
-          <input type='submit' value='Valider' class='ui-button' :>
-        </td>
-      </tr>
-    </table>
-  </form>
+  <div id="content-skill">
+    {% if id is defined %}
+      <h3>Modification de l'activité</h3>
+    {% else %}
+      <h3>Ajout d'une activité</h3>
+    {% endif %}
+    <div class="skill">
+      <form method="post" name="form" action='{{ asset("skill") }}'>
+        <input type="hidden" name='CSRFToken' value='{{ CSRFSession }}' />
+        <table class='tableauFiches'>
+          <tr>
+            <td> Nom :</td>
+            <td>
+              <input type='text' value='{{ skill_name }}' name = 'nom' style='width:250px' class='ui-widget-content ui-corner-all' />
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' style='text-align :center; padding-top: 40px;'>
+              {% if id is defined %}
+                <input type='hidden' value='{{ id }}' name = 'id' />
+              {% endif %}
+              <input type='button' value='Annuler' onclick='history.go(-1);' class='ui-button ui-button-type2'/>
+              <input type='submit' value='Valider' class='ui-button' :>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
+  </div>
 {% endblock %}

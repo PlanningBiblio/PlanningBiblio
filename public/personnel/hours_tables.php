@@ -36,29 +36,32 @@ switch ($nb_semaine) {
 $fin = $config['Dimanche'] ? array(7, 14, 21, 28, 36, 42, 49, 56, 63, 70) : array(6, 13, 20, 27, 35, 41, 48, 55, 62, 69);
 $debut = array(1, 8, 15, 22, 29, 36, 43, 50, 57, 64);
 
-if ($config['EDTSamedi'] == 1) {
+// EDTSamedi works only if PlanningHebdo is disabled.
+$EDTSamedi = $this->config('PlanningHebdo') ? 0 : $this->config('EDTSamedi');
+
+if ($EDTSamedi == 1) {
     $config['nb_semaine'] = 2;
     $cellule = array("Semaine standard", "Semaine<br/>avec samedi");
     $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé');
-} elseif ($config['EDTSamedi'] == 2) {
+} elseif ($EDTSamedi == 2) {
     $this->config('nb_semaine', 3);
     $cellule=array("Semaine standard", "Semaine<br/>avec samedi", "Semaine<br/>ouverture restreinte");
     $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé', 'Emploi du temps en ouverture restreinte');
 }
 
 for ($j = 0; $j < $nb_semaine; $j++) {
-    if ($config['EDTSamedi']) {
+    if ($EDTSamedi) {
         $hours_tab .= "<br/><b>{$table_name[$j]}</b>";
     }
     $hours_tab .= "<table border='1' cellspacing='0'>\n";
-    $hours_tab .= "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td style='width:135px;'>Heure d'arrivée</td>";
+    $hours_tab .= "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td>Heure d'arrivée</td>";
     if ($config['PlanningHebdo-Pause2']) {
-        $hours_tab .= "<td style='width:135px;'>Début de pause 1</td><td style='width:135px;'>Fin de pause 1</td>";
-        $hours_tab .= "<td style='width:135px;'>Début de pause 2</td><td style='width:135px;'>Fin de pause 2</td>";
+        $hours_tab .= "<td>Début de pause 1</td><td>Fin de pause 1</td>";
+        $hours_tab .= "<td>Début de pause 2</td><td>Fin de pause 2</td>";
     } else {
-        $hours_tab .= "<td style='width:135px;'>Début de pause</td><td style='width:135px;'>Fin de pause</td>";
+        $hours_tab .= "<td>Début de pause</td><td>Fin de pause</td>";
     }
-    $hours_tab .= "<td style='width:135px;'>Heure de départ</td>";
+    $hours_tab .= "<td>Heure de départ</td>";
 
     if ($config['PlanningHebdo-PauseLibre'] && $config['PlanningHebdo']) {
         $hours_tab .= "<td>Temps de pause</td>";
@@ -68,7 +71,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<td>Site</td>";
     }
   
-    $hours_tab .= "<td style='width:135px;'>Temps</td>";
+    $hours_tab .= "<td>Temps</td>";
     $hours_tab .= "</tr>\n";
 
     $disabled = "disabled";
@@ -145,10 +148,11 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "</td>\n";
 
         if ($config['PlanningHebdo-PauseLibre'] && $config['PlanningHebdo']) {
-            $hours_tab .= '<td id="break_' . ($i-1) . '" data-break="' . $breaktimes[$i -1] . '">';
+            $breaktime = isset($breaktimes[$i -1]) ? $breaktimes[$i -1] : '';
+            $hours_tab .= '<td id="break_' . ($i-1) . '" data-break="' . $breaktime . '">';
             $hours_tab .= "<input name='break_{$t}' $disabled ";
-            $hours_tab .= "class='planno-break-timepicker'";
-            $hours_tab .= "value='{$breaktimes[$i -1]}'/>";
+            $hours_tab .= "class='planno-break-timepicker wh-timepicker'";
+            $hours_tab .= "value='$breaktime'/>";
             $hours_tab .= '</td>';
         }
 
@@ -158,10 +162,12 @@ for ($j = 0; $j < $nb_semaine; $j++) {
                 if (isset($temps[$i-1][4])) {
                     $site="Multisites-site".$temps[$i-1][4];
                     $site = isset($config[$site]) ? $config[$site] : null;
+
+                    $site = $temps[$i-1][4] == -1 ? 'Tout site' : $site;
                 }
-                $hours_tab .= "<td>$site</td>";
+                $hours_tab .= "<td class='wh-timepicker'>&nbsp;$site&nbsp;</td>";
             } else {
-                $hours_tab .= "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
+                $hours_tab .= "<td class='wh-timepicker'><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
                 $hours_tab .= "<option value='' class='edt-site-0'>&nbsp;</option>\n";
                 for ($l=1;$l<=$config['Multisites-nombre'];$l++) {
                     $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$l) ? "selected='selected'" : null;
@@ -181,7 +187,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
 
 // EDTSamedi : emploi du temps différents les semaines avec samedi travaillé
 // Choix des semaines avec samedi travaillé
-if ($this->config('EDTSamedi')) {
+if ($EDTSamedi) {
     // Recherche des semaines avec samedi travaillé entre le 1er septembre de N-1 et le 31 août de N+3
     $d = new datePl( (date("Y") -1) . "-09-01");
     $premierLundi = $d->dates[0];
@@ -198,9 +204,9 @@ if ($this->config('EDTSamedi')) {
     $hours_tab .= "<div id='EDTChoix'>\n";
     $hours_tab .= "<h3>Choix des emplois du temps</h3>\n";
 
-    if ($this->config('EDTSamedi') == 1) {
+    if ($EDTSamedi == 1) {
         $hours_tab .= "<p>Cochez les semaines avec le samedi travaill&eacute;</p>\n";
-    } elseif ($config['EDTSamedi'] == 2) {
+    } elseif ($EDTSamedi == 2) {
         $hours_tab .= "<p>Pour chaque semaine, cochez s'il s'agit d'une semaine : standard (STD) / avec samedi travaill&eacute; (SAM) / ouverture restreinte (RES)</p>\n";
     }
 
@@ -241,13 +247,13 @@ if ($this->config('EDTSamedi')) {
             $hours_tab .= "S$semaine : $lundi &rarr; $dimanche";
 
             // Si config['EDTSamedi'] == 1 (Emploi du temps différent les semaines avec samedi travaillé)
-            if ($config['EDTSamedi'] == 1) {
+            if ($EDTSamedi == 1) {
                 $checked = array_key_exists($current, $edt) ? "checked='checked'" : null ;
                 $hours_tab .= "<input type='checkbox' value='$current' name='EDTSamedi[]' $checked /><br/>\n";
             }
 
             // Si config['EDTSamedi'] == 2 (Emploi du temps différent les semaines avec samedi travaillé et en ouverture restreinte)
-            elseif ($config['EDTSamedi'] == 2) {
+            elseif ($EDTSamedi == 2) {
                 $checked1 = "checked='checked'";
                 $checked2 = null;
                 $checked3 = null;

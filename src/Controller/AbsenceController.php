@@ -7,6 +7,8 @@ use App\Model\AbsenceDocument;
 use App\Model\Absence;
 use App\Model\Agent;
 
+use App\PlanningBiblio\Helper\HourHelper;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,8 +30,13 @@ class AbsenceController extends BaseController
         $reset = $request->get('reset');
         $droits = $GLOBALS['droits'];
 
-        $debut = $debut ? $debut : (isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
-        $fin = $fin ? $fin : (isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);
+        if (!$debut) {
+            $debut = $_SESSION['oups']['absences_debut'] ?? null;
+        }
+
+        if (!$fin) {
+            $fin = $_SESSION['oups']['absences_fin'] ?? null;
+        }
 
         $p = new \personnel();
         $p->supprime = array(0,1,2);
@@ -72,6 +79,15 @@ class AbsenceController extends BaseController
             $debut = null;
             $fin = null;
             $agents_supprimes = false;
+        }
+
+        // Default start & end
+        if (!$debut) {
+            $debut = date('d/m/Y');
+        }
+
+        if (!$fin) {
+            $fin = date('d/m/Y', strtotime(dateFr($debut) . ' +1 year'));
         }
 
         $_SESSION['oups']['absences_debut'] = $debut;
@@ -477,7 +493,7 @@ class AbsenceController extends BaseController
         $agents_tous = array();
         if ($agents_multiples) {
             $db_perso=new \db();
-            $db_perso->select2("personnel", "*", array("supprime"=>0,"id"=>"<>2"), "order by nom,prenom");
+            $db_perso->select2("personnel", "*", array("id"=>"<>2"), "order by nom,prenom");
             $agents_tous=$db_perso->result?$db_perso->result:array();
         }
 
@@ -836,8 +852,6 @@ class AbsenceController extends BaseController
 
         $debut = $request->get('debut');
         $fin = $request->get('fin');
-        $hre_debut = $request->get('hre_debut');
-        $hre_fin = $request->get('hre_fin');
         $motif = $request->get('motif');
         $motif_autre = trim($request->get('motif_autre'));
         $commentaires = $request->get('commentaires');
@@ -845,14 +859,8 @@ class AbsenceController extends BaseController
         $rrule = $request->get('recurrence-hidden');
         $rcheckbox = $request->get('recurrence-checkbox');
         $valide = $request->get('valide');
-        $allday = $request->get('allday');
 
-        $hre_debut = !empty($hre_debut) ? $hre_debut : '00:00:00';
-        $hre_fin = !empty($hre_fin) ? $hre_fin : '23:59:59';
-
-        if (preg_match('/^(\d+):(\d+)$/', $hre_debut)) {
-            $hre_debut .= ':00';
-        }
+        list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
 
         if (preg_match('/^(\d+):(\d+)$/', $hre_fin)) {
             $hre_fin .= ':00';

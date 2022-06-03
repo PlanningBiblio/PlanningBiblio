@@ -267,20 +267,21 @@ usort($tab, $tri);
 $_SESSION['stat_tab']=$tab;
 
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
+echo "<div id='content-form'>\n";
 echo "<h3>Statistiques par poste</h3>\n";
 echo "<div id='statistiques'>\n";
-echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
+echo "<table class='statistics-div'><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les postes		-------------
 echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='statistiques/postes.php' />\n";
 echo "<table>\n";
-echo "<tr><td><label class='intitule'>D&eacute;but</label></td>\n";
+echo "<tr><td><label>D&eacute;but</label></td>\n";
 echo "<td><input type='text' name='debut' value='$debut' class='datepicker'/>\n";
 echo "</td></tr>\n";
-echo "<tr><td><label class='intitule'>Fin</label></td>\n";
+echo "<tr><td><label>Fin</label></td>\n";
 echo "<td><input type='text' name='fin' value='$fin' class='datepicker'/>\n";
 echo "</td></tr>\n";
-echo "<tr><td><label class='intitule'>Tri</label></td>\n";
+echo "<tr><td><label>Tri</label></td>\n";
 echo "<td>\n";
 echo "<select name='tri' class='ui-widget-content ui-corner-all' >\n";
 echo "<option value='cmp_01'>Nom du poste</option>\n";
@@ -291,7 +292,7 @@ echo "<option value='cmp_2'>Heures du - au +</option>\n";
 echo "<option value='cmp_2desc'>Heures du + au -</option>\n";
 echo "</select>\n";
 echo "</td></tr>\n";
-echo "<tr style='vertical-align:top'><td><label class='intitule'>Postes</label></td>\n";
+echo "<tr style='vertical-align:top'><td><label>Postes</label></td>\n";
 echo "<td><select name='postes[]' multiple='multiple' size='20' onchange='verif_select(\"postes\");' class='ui-widget-content ui-corner-all' >\n";
 if (is_array($postes_list)) {
     echo "<option value='Tous'>Tous</option>\n";
@@ -301,14 +302,14 @@ if (is_array($postes_list)) {
             $selected=in_array($elem['id'], $postes)?"selected='selected'":null;
         }
         $class=$elem['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-        echo "<option value='{$elem['id']}' $selected class='$class' >{$elem['nom']} ({$elem['etage']})</option>\n";
+        echo "<option value='{$elem['id']}' $selected>{$elem['nom']} ({$elem['etage']})</option>\n";
     }
 }
 echo "</select></td></tr>\n";
 
 if ($config['Multisites-nombre']>1) {
     $nbSites=$config['Multisites-nombre'];
-    echo "<tr style='vertical-align:top'><td><label class='intitule'>Sites</label></td>\n";
+    echo "<tr style='vertical-align:top'><td><label>Sites</label></td>\n";
     echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");' class='ui-widget-content ui-corner-all' >\n";
     echo "<option value='Tous'>Tous</option>\n";
     for ($i=1;$i<=$nbSites;$i++) {
@@ -319,8 +320,8 @@ if ($config['Multisites-nombre']>1) {
 }
 
 echo "<tr><td colspan='2' style='text-align:center;padding:10px;'>\n";
-echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/postes.php&amp;debut=&amp;fin=&amp;postes=\"' class='ui-button' />\n";
-echo "&nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />\n";
+echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/postes.php&amp;debut=&amp;fin=&amp;postes=\"' class='ui-button ui-button-type2' />\n";
+echo "&nbsp;&nbsp;<input type='submit' value='OK' class='ui-button ui-button-type1' />\n";
 echo "</td></tr>\n";
 echo "<tr><td colspan='2'><hr/></td></tr>\n";
 echo "<tr><td>Exporter </td>\n";
@@ -336,15 +337,15 @@ echo "</td><td>\n";
 if ($tab) {
     echo "<b>Statistiques par poste du $debut au $fin</b>\n";
     echo $ouverture;
-    echo "<table border='1' cellspacing='0' cellpadding='0'>\n";
+    echo "<table border='1' cellspacing='0' cellpadding='0' class='statistics-table'>\n";
     echo "<tr class='th'>\n";
-    echo "<td style='width:200px; padding-left:8px;'>Postes</td>\n";
-    echo "<td style='width:300px; padding-left:8px;'>Agents</td>\n";
-    echo "<td style='width:300px; padding-left:8px;'>Services</td>\n";
-    echo "<td style='width:300px; padding-left:8px;'>Statuts</td></tr>\n";
+    echo "<td class='statistics-td statistics-td-topleft' style='width:200px; padding-left:8px;'>Postes</td>\n";
+    echo "<td class='statistics-td statistics-td-top' style='width:300px; padding-left:8px;'>Agents</td>\n";
+    echo "<td class='statistics-td statistics-td-top' style='width:300px; padding-left:8px;'>Services</td>\n";
+    echo "<td class='statistics-td statistics-td-top' style='width:300px; padding-left:8px;'>Statuts</td></tr>\n";
     foreach ($tab as $elem) {
         $class=$elem[0][3]=="Obligatoire"?"td_obligatoire":"td_renfort";
-        echo "<tr style='vertical-align:top;' class='$class'>\n";
+        echo "<tr style='vertical-align:top;'>\n";
         //	Affichage du nom du poste dans la 1ère colonne
         // Sites
         $siteEtage=array();
@@ -365,7 +366,7 @@ if ($tab) {
         } else {
             $siteEtage=null;
         }
-        echo "<td style='padding-left:8px;'>";
+        echo "<td class='statistics-td statistics-td-left' style='padding-left:8px;'>";
         echo "<table><tr><td colspan='2'><b>{$elem[0][1]}</b></td></tr>";
         echo "<tr><td colspan='2'><i>$siteEtage</i></td></tr>\n";
         echo "<tr><td>Total</td>";
@@ -394,7 +395,7 @@ if ($tab) {
         echo "</table>\n";
         echo "</td>\n";
         //	Affichage du noms des agents dans la 2eme colonne
-        echo "<td style='padding-left:8px;'>";
+        echo "<td class='statistics-td' style='padding-left:8px;'>";
         echo "<table style='width:100%;'>";
         foreach ($elem[1] as $agent) {
             echo "<tr><td>{$agent[1]} {$agent[2]}</td>";
@@ -402,8 +403,7 @@ if ($tab) {
         }
         echo "</table>\n";
         echo "</td>\n";
-        // Services
-        echo "<td>";
+        echo "<td class='statistics-td'>";
         sort($elem['services']);
         echo "<table style='width:100%;'>\n";
         foreach ($elem['services'] as $service) {
@@ -413,7 +413,7 @@ if ($tab) {
         echo "</table>\n";
         echo "</td>\n";
         // Statuts
-        echo "<td>";
+        echo "<td class='statistics-td'>";
         sort($elem['statuts']);
         echo "<table style='width:100%;'>\n";
         foreach ($elem['statuts'] as $statut) {
@@ -428,4 +428,5 @@ if ($tab) {
 //		----------------------			Fin d'affichage		----------------------------
 echo "</td></tr></table>\n";
 echo "</div> <!-- Statistiques -->\n";
+echo "</div>";
 echo "<script type='text/JavaScript'>document.form.tri.value='$tri';</script>\n";

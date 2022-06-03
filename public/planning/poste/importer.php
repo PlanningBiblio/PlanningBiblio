@@ -270,8 +270,11 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
                 }
 
                 // Check if the agent is out of his schedule (schedule has been changed).
+                $week_number = 0;
+
                 if ($config['PlanningHebdo']) {
-                    $temps = !empty($tempsPlanningHebdo[$elem2['perso_id']]) ? $tempsPlanningHebdo[$elem2['perso_id']] : array();
+                    $temps = !empty($tempsPlanningHebdo[$elem2['perso_id']]['temps']) ? $tempsPlanningHebdo[$elem2['perso_id']]['temps'] : array();
+                    $week_number = !empty($tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine']) ? $tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine'] : 0 ;
                 } else {
                     $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
                     if (!empty($agent)) {
@@ -282,7 +285,7 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
                 }
 
                 $d = new datePl($elem);
-                $day_index = $d->planning_day_index_for($elem2['perso_id']);
+                $day_index = $d->planning_day_index_for($elem2['perso_id'], $week_number);
                 if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
                     $value[':absent'] = 2;
                 }

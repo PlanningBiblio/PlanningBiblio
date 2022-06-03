@@ -59,4 +59,23 @@ if (!$db->result) {
 } else {
     $result=array("retour"=>"NO","debut"=>$db->result[0]['debut'],"fin"=>$db->result[0]['fin'], "autre_agent"=>$autre_agent);
 }
+
+// Its an exception.
+// Check that exception dates are
+// not out of the parent range.
+if ($exception) {
+    $db = new db();
+    $db->select('planning_hebdo', 'debut, fin', "id = $exception");
+
+    $parent_start = $db->result[0]['debut'];
+    $parent_end = $db->result[0]['fin'];
+
+    if ($debut < $parent_start or $fin > $parent_end) {
+        $result=array(
+            'retour' => 'NO',
+            'out_of_range' => 1
+        );
+    }
+}
+
 echo json_encode($result);

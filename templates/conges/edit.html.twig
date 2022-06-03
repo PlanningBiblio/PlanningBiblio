@@ -121,7 +121,8 @@
       {% endif %}
         <td>Heure de début : </td>
         <td>
-          <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" value="{{ hre_debut | date('H:i') }}" style="width:40%"/>
+          <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:40%"
+            value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}"/>
         </td>
       </tr>
 
@@ -166,7 +167,8 @@
       {% endif %}
         <td>Heure de fin : </td>
         <td>
-          <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" value="{{ hre_fin | date('H:i') }}" style="width:40%"/>
+          <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:40%"
+            value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
         </td>
       </tr>
 
@@ -431,9 +433,9 @@
         <tr>
           <td colspan='2' style='text-align:center;'>
             {% if conges_recuperations and debit == 'recuperation' %}
-              <a href='{{ asset("holiday/index?recup=1") }}' class='ui-button' >Annuler</a>
+              <a href='{{ asset("holiday/index?recup=1") }}' class='ui-button ui-button-type2' >Annuler</a>
             {% else %}
-              <a href='{{ asset("holiday/index") }}' class='ui-button' >Annuler</a>
+              <a href='{{ asset("holiday/index") }}' class='ui-button ui-button-type2' >Annuler</a>
             {% endif %}
 
             {% if save_button %}
@@ -442,9 +444,9 @@
 
             {% if delete_button %}
               {% if conges_recuperations and debit == 'recuperation' %}
-                <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday/index?recup=1')" class='ui-button'/>
+                <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday/index?recup=1')" class='ui-button ui-button-type2'/>
               {% else %}
-                <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday/index')" class='ui-button'/>
+                <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday/index')" class='ui-button ui-button-type2'/>
               {% endif %}
             {% endif %}
             <div id='google-calendar-div' class='inline'></div>

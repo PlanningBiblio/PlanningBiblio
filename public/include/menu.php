@@ -71,7 +71,7 @@ $(document).click(function(){
 </script>
 
 <?php
-echo "<div id='topgauche'>\n";
+echo "<div id='topgauche' class='topgauche'>\n";
 echo "<table cellpadding='0' cellspacing='0' border='0' style='width:100%;'><tr>\n";
 echo "<td class='logo_td' rowspan='4'><font class='noprint'>\n";
 echo "<a href='index.php'><div id='logo'></div></a>\n";
@@ -82,7 +82,10 @@ echo "<tr id='topmenu'>\n";
 echo "<td style='text-align:center;' class='menu_td'>\n";
 echo "<ul class='menu_ul'>\n";
 foreach ($keys as $key) {
-    echo "<li onmousemove='pop(zlien[$key],$(this))' class='menu_li'><a href='{$menu[$key][0]['url']}' class='ejsmenu2'>{$menu[$key][0]['titre']}</a></li>\n";
+    $active = (in_array($page, ['planning/poste/index.php', 'planning/poste/semaine.php', 'planning/volants/index.php']) and $menu[$key][0]['titre'] == 'Planning') ? 'active' : null;
+    $active = (in_array($page, ['conges/recup_pose.php', 'conges/infos.php', 'conges/credits.php']) and $menu[$key][0]['titre'] == 'Congés') ? 'active' : $active;
+    $active = (strstr($page, 'statistiques') and $menu[$key][0]['titre'] == 'Statistiques') ? 'active' : $active;
+    echo "<li onmousemove='pop(zlien[$key],$(this))' class='menu_li'><a href='{$menu[$key][0]['url']}' class='ejsmenu2 $active'>{$menu[$key][0]['titre']}</a></li>\n";
 }
 echo "</ul>\n";
 

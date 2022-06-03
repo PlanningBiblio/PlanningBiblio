@@ -36,6 +36,7 @@ $(function() {
     modal: true,
     resizable: false,
     draggable: false,
+    dialogClass: 'popup-background',
     buttons: {
       Enregistrer: function() {
 	// Supprime les lignes cachées lors du clic sur la corbeille
@@ -89,9 +90,13 @@ $(function() {
 	  }
 	});
       },
-      Annuler: function() {
-	$(this).dialog( "close" );
-      },
+      Annuler: {
+        click: function() {
+          $( this ).dialog( "close" );
+              },
+        text: "Annuler",
+        class: "ui-button-type2"
+            },
     },
     close: function() {
       $("#motifs-sortable li:hidden").each(function(){
@@ -145,16 +150,16 @@ $(function() {
       number++;
     }
 
-    $("#motifs-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+    $("#motifs-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon pl-icon-arrowupdown'></span>"
       +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<select id='type_"+number+"' style='position:absolute;width:170px;left:330px;'>"
+      +"<select id='type_"+number+"' style='position:absolute;width:150px;left:410px;'>"
       +options
       +"</select>"
-      +"<select id='notification-workflow_"+number+"' style='position:absolute;width:170px;left:510px;'>"
+      +"<select id='notification-workflow_"+number+"' style='position:absolute;width:150px;left:590px;'>"
       +options_wf
       +"</select>"
-      +"<input type='checkbox' id='teleworking_"+number+"' style='position:absolute; left:700px;' />"
-      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:750px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"<input type='checkbox' id='teleworking_"+number+"' style='position:absolute; left:780px;' />"
+      +"<span class='ui-icon pl-icon-trash' style='position:absolute;left:840px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué
@@ -269,6 +274,7 @@ $(function() {
     height: 480,
     width: 650,
     modal: true,
+    dialogClass: 'popup-background',
     buttons: {
       "Enregistrer": function() {
 
@@ -283,12 +289,16 @@ $(function() {
         $( this ).dialog( "close" );
       },
 
-      Annuler: function() {
-        if(!$('#recurrence-hidden').val()){
-          $('#recurrence-checkbox').prop('checked', false);
-        }
-	$( this ).dialog( "close" );
-      }
+      Annuler: {
+        click: function() {
+          if(!$('#recurrence-hidden').val()){
+            $('#recurrence-checkbox').prop('checked', false);
+          }
+          $( this ).dialog( "close" );
+              },
+        text: "Annuler",
+        class: "ui-button-type2"
+            },
     },
 
     close: function() {
@@ -483,9 +493,13 @@ $(function() {
         $( this ).dialog( "close" );
       },
 
-      Annuler: function() {
-	$( this ).dialog( "close" );
-      }
+      Annuler: {
+        click: function() {
+          $( this ).dialog( "close" );
+              },
+        text: "Annuler",
+        class: "ui-button-type2"
+            },
     },
     close: function() {
       $('.recurrence').removeClass( "ui-state-error" );
@@ -522,9 +536,13 @@ $(function() {
         delete_absence(CSRFToken, id, 'all');
       },
 
-      Annuler: function() {
-	$( this ).dialog( "close" );
-      }
+      Annuler: {
+        click: function() {
+          $( this ).dialog( "close" );
+              },
+        text: "Annuler",
+        class: "ui-button-type2"
+            },
     },
     close: function() {
       $('.recurrence').removeClass( "ui-state-error" );
@@ -577,7 +595,7 @@ function affiche_perso_ul(){
     var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
     if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
-      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
+      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-dropblack'></span></span>";
     }
 
     li+="</li>\n";

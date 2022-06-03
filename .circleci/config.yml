@@ -27,10 +27,19 @@ jobs:
     steps:
       - checkout
 
+      # For google chrome.
+      - run: sudo sh -c 'echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
+      - run: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
       - run: sudo docker-php-ext-install zip
       - run: sudo docker-php-ext-install mysqli
       - run: sudo docker-php-ext-install pdo_mysql
+      - run: sudo apt install -y google-chrome-stable
+
+      # Chrome driver.
+      - run: wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+      - run: sudo unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
 
       # Download and cache dependencies
       - restore_cache:
@@ -42,7 +51,9 @@ jobs:
 
       - run: cp .circleci/.env.test.local .env.test.local
       - run: cp .circleci/.env.local .env.local
+      - run: rm -rf vendor
       - run: composer install -n --prefer-dist
+      - run: vendor/bin/bdi detect drivers
 
       - save_cache:
           key: v1-dependencies-{{ checksum "composer.json" }}

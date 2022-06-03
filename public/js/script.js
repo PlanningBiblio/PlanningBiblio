@@ -616,7 +616,7 @@ function updateAgentsList(me,select_id){
       index=in_array?index:0;
       $("#"+select_id).val(index);
 
-      $("#"+select_id).closest("span").effect("highlight",null,2000);
+      $("#"+select_id).closest("span").effect("highlight",{color: "#FFD700"},2000);
     },
     error: function(){
       information("Une erreur est survenue lors de la mise à jour de la liste des agents.","error");
@@ -781,16 +781,19 @@ function url(path) {
 //	---------------------------		FIN Fonctions communes		------------------------	//
 //	--------------------------------	Absences		---------------------------------	//
 function all_day(){
-  if(!document.form.allday.checked){
-    document.getElementById("hre_debut").style.display="";
-    document.getElementById("hre_fin").style.display="";
+
+  if ($('input[name="allday"]').is(':checked')) {
+    $('#hre_debut').hide();
+    $('#hre_fin').hide();
+
+    return false;
   }
-  else{
-    document.getElementById("hre_debut").style.display="none";
-    document.getElementById("hre_fin").style.display="none";
-    document.form.hre_debut.value="";
-    document.form.hre_fin.value="";
-  }
+
+  $('#hre_debut').show();
+  $('#hre_fin').show();
+
+  $('input[name="hre_debut"]').val('');
+  $('input[name="hre_fin"]').val('');
 }
 //	--------------------------------	FIN Absences		---------------------------------	//
 //	--------------------------------	Aide			---------------------------------	//
@@ -833,7 +836,9 @@ function verif_select(nom){
 $(function(){
   $(document).ready(function() {
     $(".ui-accordion").accordion({
-      heightStyle: "content"
+      heightStyle: "content",
+      collapsible: "true",
+      active: "false"
     });
 
     $(".ui-button").button();
@@ -932,7 +937,7 @@ $(function(){
     $('body').on('focus',".planno-break-timepicker", function(){
       $('.planno-break-timepicker').plannoTimepicker({
         interval: 15,
-        granularity: 15,
+        granularity: granularity,
         minTime: '00:00',
         minHour: '0',
         maxTime: '02:00',

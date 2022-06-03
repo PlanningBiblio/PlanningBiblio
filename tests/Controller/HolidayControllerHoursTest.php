@@ -148,6 +148,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
             'perso_id' => $jdevoe->id(),
             'hre_debut' => '09:00:00',
             'hre_fin' => '10:00:00',
+            'allday' => '',
         ));
 
         $client->request('POST', '/holiday', $data);

@@ -15,12 +15,18 @@
   $notes
   </div>
 EOD;
+    echo <<<EOD
+  <div id='pl-notes-div1-validation'>
+  $notesSuppression$notesValidation
+  </div>
+EOD;
+
 
     // Notes : Modifications
     if ($autorisationNotes) {
         echo <<<EOD
     <div id='pl-notes-div2' class='noprint'>
-    <input type='button' class='ui-button noprint' id='pl-notes-button' value='Ajouter un commentaire' />
+    <input type='button' class='ui-button ui-button-type2 noprint' id='pl-notes-button' value='Ajouter un commentaire' />
     </div>
 
     <div id="pl-notes-form" title="Commentaire" class='noprint' style='display:none;'>
@@ -32,10 +38,6 @@ EOD;
 EOD;
     }
 
-    echo <<<EOD
-  <div id='pl-notes-div1-validation'>
-  $notesSuppression$notesValidation
-  </div>
-EOD;
+    
 
 
