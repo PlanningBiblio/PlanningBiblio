@@ -8,6 +8,7 @@
 -- 
 -- -- Activation du mode Planook
 -- UPDATE `config` SET `valeur` = '1' WHERE `nom` = 'Planook';
+-- UPDATE `config` SET `valeur` = 'planook' WHERE `nom` = 'Affichage-theme';
 -- -- Désactivation du dimanche
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Dimanche';
 -- -- Granularité forcée sur 30 minutes :
