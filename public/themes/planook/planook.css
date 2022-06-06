@@ -1,0 +1,11 @@
+#auth-logo{
+  width: 250px;
+  height: 78px;
+  border-radius: 5px;
+  background: url("images/planook-auth.png") no-repeat right top;
+}
+
+#logo {
+  top: 8px;
+  background:url("images/planook.png") no-repeat left top;
+}
