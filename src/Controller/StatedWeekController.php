@@ -144,6 +144,7 @@ class StatedWeekController extends BaseController
         $templates = $this->entityManager->getRepository(StatedWeekTemplate::class)->findAll();
 
         $this->templateParams(array(
+            'content_planning' => true,
             'planning'      => $planning,
             'templates'     => $templates,
             'absences'      => $absences,
