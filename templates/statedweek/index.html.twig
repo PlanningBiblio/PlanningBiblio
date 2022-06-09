@@ -86,7 +86,7 @@
         </div>
       </div>
 
-      <div style='display:inline-block; min-width:400px; width:25%; vertical-align:top;' class='actions' >
+      <div style='display:inline-block; min-width:400px; width:25%; vertical-align:top; margin-top:50px;' class='actions' >
         <div>
         {% if planning.locked %}
           <div id="validation">
@@ -106,6 +106,7 @@
           {% endif %}
         {% endif %}
         {% if canEdit %}
+          <div style='background-color: #29495C; width: 80px; padding:6px; border-radius:5px;'> <!-- FIXIT temp -->
           {% if planning.locked %}
             <a id="unlock"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
             <a id="lock" style="display:none;"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
@@ -115,6 +116,7 @@
           {% endif %}
             <a id="save-template" href="#" title="Enregistrer comme modèle"><span class="pl-icon pl-icon-save"></span></a>
             <a id="open-template" href="#" title="Importer un modèle"><span class="pl-icon pl-icon-open"></span></a>
+          </div> <!-- FIXIT temp -->
           </div>
         {% endif %}
       </div>
