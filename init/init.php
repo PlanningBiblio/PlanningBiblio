@@ -77,7 +77,7 @@ if ($page=="planning/poste/index.php" and !$date and $_SESSION['oups']['week']) 
 }
 
 $content_planning = 0;
-if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php' or !$show_menu) {
+if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php' or $page == '/statedweek' or !$show_menu) {
     $content_planning = 1;
 }
 
