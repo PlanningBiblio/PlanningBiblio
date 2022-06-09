@@ -195,7 +195,7 @@ class HolidayHelper extends BaseHelper
             // If this is a closing day, don't check for
             // "normal" hours. Only take into account regularization.
             if (!$closingday) {
-                $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
+                $per_week[$week_id]['times'] += $today / 3600;
             }
 
             $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
