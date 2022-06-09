@@ -1204,6 +1204,11 @@ a:hover.menuRed, a:hover.menu {
   padding: 20px 0 10px 50px;
 }
 
+#tab_titre .titreSemFixe{
+  color:#FFFFFF;
+  padding-left: 220px;
+}
+
 .top-button-div {
     text-align:right;
     margin: 0 10px 30px 0;
