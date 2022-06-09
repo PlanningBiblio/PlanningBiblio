@@ -1123,7 +1123,6 @@ a:hover.menuRed, a:hover.menu {
 	}
 
 .titreSemFixe{
-  color:#FFFFFF;
   text-decoration:none;
   font-size:15pt;
   font-family: Poppins;
@@ -1132,6 +1131,10 @@ a:hover.menuRed, a:hover.menu {
   text-align:left;
   padding-top: 50px;
   padding-bottom: 20px;
+}
+
+#tab_titre .titreSemFixe{
+  color:#FFFFFF;
   padding-left: 220px;
 }
 
