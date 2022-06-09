@@ -699,7 +699,7 @@ class AbsenceController extends BaseController
      */
     public function absence_validation_statuses(Request $request)
     {
-        $agent_ids = $request->get('ids');
+        $agent_ids = $request->get('ids') ?? array();
         $module = $request->get('module');
         $entity_id = $request->get('id');
 
