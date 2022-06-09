@@ -168,7 +168,8 @@ class AgentRepository extends EntityRepository
             $managed_sites = array();
 
             foreach ($loggedin->getManaged() as $m) {
-                $managed_sites = array_merge($managed_sites, json_decode($m->perso_id()->sites()));
+                $sites = json_decode($m->perso_id()->sites(), true) ?? array();
+                $managed_sites = array_merge($managed_sites, $sites);
             }
 
             $managed_sites = array_unique($managed_sites);
