@@ -2535,7 +2535,7 @@ class StatisticController extends BaseController
 
                 // Totaux par groupe de postes
                 foreach ($groups as $g) {
-                    if (in_array($elem['poste'], $groupes[$g->id()])) {
+                    if ($g->id() >= 0 and in_array($elem['poste'], $groupes[$g->id()])) {
                         $tab[$elem['perso_id']]['groupe'][$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
                         $tab[$elem['perso_id']][$elem['date']]['groupe'][$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
                         $totauxGroupesHeures[$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
