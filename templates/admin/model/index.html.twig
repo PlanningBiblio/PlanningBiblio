@@ -29,40 +29,21 @@
     <h3>Modèles</h3>
 
     {% if models or statedweek_templates %}
-      <table id='tableModeles' class='CJDataTable' data-sort='[[1]]'>
-        <thead>
-          <tr>
-            <th class='dataTableNoSort tableSort'>&nbsp;</th>
-            <th class="tableSort">Nom</th>
-            <th class="tableSort">Type</th>
-            {% if multi_sites %}
-                <th class="tableSort">Site</th>
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for model in models %}
-            <tr>
-              <td>
-                <a href='{{ asset("/model/") }}{{ model.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
-                <a href='javascript:delete_template({{ model.id }});'><span class='pl-icon pl-icon-dropblack' title='Supprimer'></span></a>
-              </td>
-
         <div class="tableaux-cfg">
           <h3>Modèles de planning</h3>
           <table id='tableModeles' class='CJDataTable' data-sort='[[1]]'>
               <thead>
                 <tr>
-                  <th class='dataTableNoSort'>&nbsp;</th>
-                  <th>Nom</th>
-                  <th>Type</th>
+                  <th class='dataTableNoSort tableSort'>&nbsp;</th>
+                  <th class="tableSort">Nom</th>
+                  <th class="tableSort">Type</th>
                   {% if multi_sites %}
-                    <th>Site</th>
+                    <th class="tableSort">Site</th>
                   {% endif %}
                 </tr>
               </thead>
               <tbody>
-                {% for name,model in models %}
+                {% for model in models %}
                   <tr>
                     <td>
                       <a href='{{ asset("/model/") }}{{ model.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
@@ -70,7 +51,7 @@
                     </td>
 
                     <td>
-                      {{ name }}
+                      {{ model.name }}
                     </td>
                     <td>
                     {% if model.week %}
