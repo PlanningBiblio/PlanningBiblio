@@ -66,6 +66,8 @@ class PlanningJobController extends BaseController
             && $this->config('PlanningHebdo-PauseLibre')
         ) ? 1 : 0;
 
+        $lunch_positions = $config['Position-Lunch'] ?? array();
+
         // PlanningHebdo and EDTSamedi are not compliant.
         // So, we disable EDTSamedi if
         // PlanningHebdo is enabled
@@ -251,9 +253,15 @@ class PlanningJobController extends BaseController
             $db = new \db();
             $dateSQL = $db->escapeString($date);
 
-            $db->query("SELECT perso_id, debut, fin FROM `{$dbprefix}pl_poste` WHERE date = '$dateSQL' AND supprime = '0';");
+            $db->query("SELECT perso_id, poste, debut, fin FROM `{$dbprefix}pl_poste` WHERE date = '$dateSQL' AND supprime = '0';");
             if ($db->result) {
                 foreach ($db->result as $elem) {
+                    // If the current position is a lunch, don't add it to duration
+                    // cause this a not worked position
+                    if (in_array($elem['poste'], $lunch_positions)) {
+                        continue;
+                    }
+
                     // Get day duration as timestamp
                     // for an easier comparison.
                     $elem_duration = strtotime($elem['fin']) - strtotime($elem['debut']);
@@ -382,7 +390,9 @@ class PlanningJobController extends BaseController
 
                 if ($break_countdown) {
                     $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
-                    $requested_hours = strtotime($fin) - strtotime($debut);
+
+                    $is_a_break = in_array($poste, $lunch_positions) ? 1 : 0;
+                    $requested_hours = $is_a_break ? 0 : strtotime($fin) - strtotime($debut);
 
                     $wh = new WorkingHours($temps);
                     $tab = $wh->hoursOf($jour);
