@@ -2397,7 +2397,7 @@ div.presents-absents {
 
 /*Personnalisation couleur tableau*/
 /* Bleu */
-.bleu.tr_horaires, .bleu.tr_separation, .bleu.tr_horaires td.td_postes, .blue.tr_horaires, .blue.tr_separation, .blue.tr_horaires td.td_postes{
+.bleu.tr_horaires, .bleu.tr_horaires a, .bleu.tr_separation, .bleu.tr_horaires td.td_postes, .blue.tr_horaires, .blue.tr_horaires a, .blue.tr_separation, .blue.tr_horaires td.td_postes{
   background: #04133b;
   color: #FFF;
 }
@@ -2408,7 +2408,7 @@ div.presents-absents {
 }
 
 /* Jaune */
-.jaune.tr_horaires, .jaune.tr_separation, .jaune.tr_horaires td.td_postes, .yellow.tr_horaires, .yellow.tr_separation, .yellow.tr_horaires td.td_postes{
+.jaune.tr_horaires, .jaune.tr_horaires a, .jaune.tr_separation, .jaune.tr_horaires td.td_postes, .yellow.tr_horaires, .yellow.tr_horaires a, .yellow.tr_separation, .yellow.tr_horaires td.td_postes{
   background: #d1ac07;
   color: #000;
 }
@@ -2419,7 +2419,7 @@ div.presents-absents {
 }
 
 /* Rouge */
-.rouge.tr_horaires, .rouge.tr_separation, .rouge.tr_horaires td.td_postes, .red.tr_horaires, .red.tr_separation, .red.tr_horaires td.td_postes {
+.rouge.tr_horaires, .rouge.tr_horaires a, .rouge.tr_separation, .rouge.tr_horaires td.td_postes, .red.tr_horaires, .red.tr_horaires a, .red.tr_separation, .red.tr_horaires td.td_postes {
   background: #720a05;
   color: #FFF;
 }
@@ -2430,7 +2430,7 @@ div.presents-absents {
 }
 
 /* Violet */
-.violet.tr_horaires, .violet.tr_separation, .violet.tr_horaires td.td_postes, .purple.tr_horaires, .purple.tr_separation, .purple.tr_horaires td.td_postes{
+.violet.tr_horaires, .violet.tr_horaires a, .violet.tr_separation, .violet.tr_horaires td.td_postes, .purple.tr_horaires, .purple.tr_horaires a,  .purple.tr_separation, .purple.tr_horaires td.td_postes{
   background: rgb(68, 0, 68);
   color: #FFF;
 }
@@ -2441,7 +2441,7 @@ div.presents-absents {
 }
 
 /* Vert */
-.vert.tr_horaires, .vert.tr_separation, .vert.tr_horaires td.td_postes, .green.tr_horaires, .green.tr_separation, .green.tr_horaires td.td_postes{
+.vert.tr_horaires, .vert.tr_horaires a, .vert.tr_separation, .vert.tr_horaires td.td_postes, .green.tr_horaires, .grenn.tr_horaires a, .green.tr_separation, .green.tr_horaires td.td_postes{
   background: #06360f;
   color: #FFF;
 }
