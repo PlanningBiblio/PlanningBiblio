@@ -66,7 +66,7 @@ class PlanningJobController extends BaseController
             && $this->config('PlanningHebdo-PauseLibre')
         ) ? 1 : 0;
 
-        $lunch_positions = $config['Position-Lunch'] ?? array();
+        $lunch_positions = $this->config('Position-Lunch') ?? array();
 
         // PlanningHebdo and EDTSamedi are not compliant.
         // So, we disable EDTSamedi if
