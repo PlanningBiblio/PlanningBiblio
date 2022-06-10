@@ -77,38 +77,47 @@
           </tr>
           <tr>
             <td>Crédit annuel</td>
-            <td style='text-align:right;'>
-              {{ credits.annuel }}
-            </td>
+            {% if config('Conges-Mode') == 'heures' %}
+              <td style='text-align:right;'>
+                {{ credits.annuel }}
+              </td>
+            {% endif %}
             <td style='text-align:right;'>
               {{ credits.joursAnnuel }} jours
             </td>
           </tr>
           <tr>
             <td>Crédit restant</td>
-            <td style='text-align:right;'>
-              {{ credits.conges }}
-            </td>
+            {% if config('Conges-Mode') == 'heures' %}
+              <td style='text-align:right;'>
+                {{ credits.conges }}
+              </td>
+            {% endif %}
             <td style='text-align:right;'>
               {{ credits.joursConges }} jours
             </td>
           </tr>
           <tr>
             <td>Reliquat</td>
-            <td style='text-align:right;'>
-              {{ credits.reliquat }}
-            </td>
+            {% if config('Conges-Mode') == 'heures' %}
+              <td style='text-align:right;'>
+                {{ credits.reliquat }}
+              </td>
+            {% endif %}
             <td style='text-align:right;'>
               {{ credits.joursReliquat}} jours
             </td>
           </tr>
           <tr>
             <td>Solde débiteur</td>
-            <td style='text-align:right;'>
-              {{ credits.anticipation }}</td>
+            {% if config('Conges-Mode') == 'heures' %}
               <td style='text-align:right;'>
-                {{ credits.joursAnticipation }} jours
+                {{ credits.anticipation }}
               </td>
+             {% endif %}
+             <td style='text-align:right;'>
+               {{ credits.joursAnticipation }} jours
+             </td>
           </tr>
           <tr>
             <td style='font-weight:bold;padding-top:20px;' colspan='2'>Récupérations</td>
@@ -117,9 +126,6 @@
             <td>Crédit</td>
             <td style='text-align:right;'>
               {{ credits.recuperation }}
-            </td>
-            <td style='text-align:right;'>
-              {{ credits.joursRecuperation }} jours
             </td>
           </tr>
         </table>
