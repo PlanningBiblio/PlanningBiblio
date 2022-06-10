@@ -54,16 +54,25 @@ class AccountController extends BaseController
 
         // Crédits (congés, récupérations)
         if ($this->config('Conges-Enable')) {
+
+            // @note : $fulldayReferenceTime may change depending on param Conges-fullday-reference-time.
+            // Its default value is 7 hours
+            // Its value is always 7 hours if credits are managed in days (Conges-Mode=jours)
+
+            $fulldayReferenceTime = $this->config('Conges-fullday-reference-time') ?? 7;
+            if ($this->config('Conges-Mode') == 'jours') {
+                $fulldayReferenceTime = 7;
+            }
+
             $credits['annuel'] = heure4($p->elements[0]['conges_annuel']);
             $credits['conges'] = heure4($p->elements[0]['conges_credit']);
             $credits['reliquat'] = heure4($p->elements[0]['conges_reliquat']);
             $credits['anticipation'] = heure4($p->elements[0]['conges_anticipation']);
             $credits['recuperation'] = heure4($p->elements[0]['comp_time']);
-            $credits['joursAnnuel'] = number_format($credits['annuel']/7, 2, ",", " ");
-            $credits['joursConges'] = number_format($credits['conges']/7, 2, ",", " ");
-            $credits['joursReliquat'] = number_format($credits['reliquat']/7, 2, ",", " ");
-            $credits['joursAnticipation'] = number_format($credits['anticipation']/7, 2, ",", " ");
-            $credits['joursRecuperation'] = number_format($credits['recuperation']/7, 2, ",", " ");
+            $credits['joursAnnuel'] = number_format($p->elements[0]['conges_annuel']/$fulldayReferenceTime, 2, ",", " ");
+            $credits['joursConges'] = number_format($p->elements[0]['conges_credit']/$fulldayReferenceTime, 2, ",", " ");
+            $credits['joursReliquat'] = number_format($p->elements[0]['conges_reliquat']/$fulldayReferenceTime, 2, ",", " ");
+            $credits['joursAnticipation'] = number_format($p->elements[0]['conges_anticipation']/$fulldayReferenceTime, 2, ",", " ");
         }
 
         // Liste de tous les agents (pour la fonction nom()
