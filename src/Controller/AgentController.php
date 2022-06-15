@@ -1220,9 +1220,9 @@ class AgentController extends BaseController
         $actif = 'Actif';
         $date = date("Y-m-d H:i:s");
         $commentaires = "Importation LDAP $date";
-        $droits = "a:2:{i:0;i:99;i:1;i:100;}";
+        $droits = json_encode(array(99, 100));
         $password = "password_bidon_pas_importé_depuis_ldap";
-        $postes = 'a:1:{i:0;s:0:"";}';
+        $postes = json_encode(array());
         $erreurs = false;
 
         $post = $request->request->all();
