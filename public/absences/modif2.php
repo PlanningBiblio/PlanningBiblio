@@ -542,7 +542,6 @@ $reason = $entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeu
 if ($reason) {
     $workflow = $reason->notification_workflow();
 }
-$notifications = "-$workflow$notifications";
 
 // Liste des responsables
 // Pour chaque agent, recherche des responsables absences
@@ -571,7 +570,7 @@ if ($config['Absences-notifications-agent-par-agent']) {
     $destinataires=array();
     foreach ($staff_members as $member) {
         $a=new absences();
-        $a->getRecipients($notifications, $responsables, $member);
+        $a->getRecipients("-$workflow$notifications", $responsables, $member);
         $destinataires=array_merge($destinataires, $a->recipients);
     }
 
