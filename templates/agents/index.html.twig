@@ -45,8 +45,10 @@
         <th class="clear-string tableSort">Nom</th>
         <th class="clear-string tableSort">Prénom</th>
         <th class='dataTableHeureFR tableSort'>Heures</th>
-        <th class="tableSort">Statut</th>
-        <th class="tableSort">Service</th>
+        {% if not config('Planook') %}
+          <th class="tableSort">Statut</th>
+          <th class="tableSort">Service</th>
+        {% endif %}
         {% if nbSites > 1 %}
           <th class="tableSort">Sites</th>
         {% endif %}
@@ -75,8 +77,10 @@
           <td>{{ a.name | raw }}</td>
           <td>{{ a.surname | raw}} </td>
           <td>{{ a.hours }}</td>
-          <td>{{ a.status | raw }}</td>
-          <td>{{ a.service | raw }}</td>
+          {% if not config('Planook') %}
+            <td>{{ a.status | raw }}</td>
+            <td>{{ a.service | raw }}</td>
+          {% endif %}
           {% if nbSites > 1 %}
             <td>{{ a.sites | raw }}</td>
           {% endif %}
