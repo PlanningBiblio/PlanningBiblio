@@ -925,25 +925,25 @@ class HolidayController extends BaseController
             // Modification sans validation
             case 0:
               $sujet="Demande de congés";
-              $notifications='-A2';
+              $notifications='2';
               break;
             // Validations Niveau 2
             case 1:
               $sujet="Validation de congés";
-              $notifications='-A4';
+              $notifications='4';
               break;
             case -1:
               $sujet="Refus de congés";
-              $notifications='-A4';
+              $notifications='4';
               break;
             // Validations Niveau 1
             case 2:
               $sujet = $lang['leave_subject_accepted_pending'];
-              $notifications='-A3';
+              $notifications='3';
               break;
             case -2:
               $sujet = $lang['leave_subject_refused_pending'];
-              $notifications='-A3';
+              $notifications='3';
               break;
             }
 
@@ -957,7 +957,7 @@ class HolidayController extends BaseController
                 $c->getResponsables($debutSQL, $finSQL, $perso_id);
                 $responsables = $c->responsables;
                 $a = new \absences();
-                $a->getRecipients($notifications, $responsables, $agent);
+                $a->getRecipients("-A$notifications", $responsables, $agent);
                 $destinataires = $a->recipients;
             }
 
@@ -1033,25 +1033,25 @@ class HolidayController extends BaseController
         // Modification sans validation
         case 0:
           $sujet="Modification de congés";
-          $notifications='-A2';
+          $notifications='2';
           break;
         // Validations Niveau 2
         case 1:
           $sujet="Validation de congés";
-          $notifications='-A4';
+          $notifications='4';
           break;
         case -1:
           $sujet="Refus de congés";
-          $notifications='-A4';
+          $notifications='4';
           break;
         // Validations Niveau 1
         case 2:
           $sujet = $lang['leave_subject_accepted_pending'];
-          $notifications='-A3';
+          $notifications='3';
           break;
         case -2:
           $sujet = $lang['leave_subject_refused_pending'];
-          $notifications='-A3';
+          $notifications='3';
           break;
         }
 
@@ -1065,7 +1065,7 @@ class HolidayController extends BaseController
             $c->getResponsables($debutSQL, $finSQL, $perso_id);
             $responsables = $c->responsables;
             $a = new \absences();
-            $a->getRecipients($notifications, $responsables, $agent);
+            $a->getRecipients("-A$notifications", $responsables, $agent);
             $destinataires = $a->recipients;
         }
 

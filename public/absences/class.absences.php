@@ -163,7 +163,6 @@ class absences
                 $workflow = 'A';
             }
         }
-        $notifications = "-$workflow$notifications";
 
         // Formatage des dates/heures de début/fin pour les requêtes SQL
         $debut_sql = $debutSQL.' '.$hre_debut;
@@ -259,7 +258,7 @@ class absences
                 $destinataires = $a->recipients;
             } else {
                 $a = new absences();
-                $a->getRecipients($notifications, $responsables, $agent);
+                $a->getRecipients("-$workflow$notifications", $responsables, $agent);
                 $destinataires = $a->recipients;
             }
 
