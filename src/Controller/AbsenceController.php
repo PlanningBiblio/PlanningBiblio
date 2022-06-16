@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Model\AbsenceDocument;
 use App\Model\Absence;
+use App\Model\AbsenceReason;
 use App\Model\Agent;
 
 use App\PlanningBiblio\Helper\HourHelper;
@@ -552,6 +553,13 @@ class AbsenceController extends BaseController
             $a->getRecipients2(null, $agents, 2, 500, $debut, $fin);
             $destinataires = $a->recipients;
         } else {
+            // Get the selected notification workflow in absence reason.
+            $workflow = 'A';
+            $reason = $this->entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
+            if ($reason) {
+                $workflow = $reason->notification_workflow();
+            }
+
             // Foreach agent, search for agents in charge of absences.
             $responsables=array();
             foreach ($agents as $agent) {
@@ -567,7 +575,7 @@ class AbsenceController extends BaseController
             $destinataires=array();
             foreach ($staff_members as $member) {
                 $a=new \absences();
-                $a->getRecipients('-A2', $responsables, $member);
+                $a->getRecipients("-$workflow" . 2, $responsables, $member);
                 $destinataires=array_merge($destinataires, $a->recipients);
             }
 
