@@ -317,9 +317,13 @@ class HolidayHelper extends BaseHelper
         // For the last day
         // If the 2nd period doesn't exist and if the first period starts after 12:00,
         // we suppose that this period is an afternoon and use the first hour to define morning_end
+        // If the 2nd period doesn't exist and the first start before 12:00,
+        // morning_end is 12:00
         if (empty($hours_last_day[1][0])) {
             if ($hours_last_day[0][0] >= '12:00:00') {
                 $morning_end = $hours_last_day[0][0];
+            } else {
+                $morning_end = '12:00:00';
             }
         }
 
