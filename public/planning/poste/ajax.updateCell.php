@@ -32,7 +32,7 @@ require_once __DIR__."/../../init_ajax.php";
 
 //	Initialisation des variables
 $ajouter=filter_input(INPUT_POST, "ajouter", FILTER_CALLBACK, array("options"=>"sanitize_on"));
-$barrer=filter_input(INPUT_POST, "barrer", FILTER_CALLBACK, array("options"=>"sanitize_on"));
+$barrer=filter_input(INPUT_POST, "barrer", FILTER_SANITIZE_NUMBER_INT);
 $CSRFToken=filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_POST, "date", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
 $debut=filter_input(INPUT_POST, "debut", FILTER_CALLBACK, array("options"=>"sanitize_time"));
@@ -52,7 +52,7 @@ $now=date("Y-m-d H:i:s");
 // Suppression ou marquage absent
 if (is_numeric($perso_id) and $perso_id == 0) {
     // Tout barrer
-    if ($barrer and $tout) {
+    if ($barrer == 1 and $tout) {
         $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
         $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
         $db=new db();
@@ -60,8 +60,14 @@ if (is_numeric($perso_id) and $perso_id == 0) {
         $db->update("pl_poste", $set, $where);
 
     // Barrer l'agent sélectionné
-    } elseif ($barrer) {
+    } elseif ($barrer == 1) {
         $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
+        $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
+        $db=new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->update("pl_poste", $set, $where);
+    } elseif ($barrer == -1) {
+        $set=array("absent"=>"0", "chgt_login"=>$login_id, "chgt_time"=>$now);
         $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
         $db=new db();
         $db->CSRFToken = $CSRFToken;
@@ -84,7 +90,7 @@ if (is_numeric($perso_id) and $perso_id == 0) {
 // Remplacement
 else {
     // si ni barrer, ni ajouter : on remplace
-    if (!$barrer and !$ajouter) {
+    if ($barrer == 0 and !$ajouter) {
         // Suppression des anciens éléments
         $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=> $perso_id_origine);
         $db=new db();
@@ -107,7 +113,7 @@ else {
         }
     }
     // Si barrer : on barre l'ancien et ajoute le nouveau
-    elseif ($barrer) {
+    elseif ($barrer == 1) {
         // On barre l'ancien
         $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
         $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
