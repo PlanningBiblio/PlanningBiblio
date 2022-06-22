@@ -1252,7 +1252,6 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
   });
 }
 
-
 /**
  * bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
  * Récupére en Ajax les id, noms, prénom, service, statut dans agents placés
@@ -1263,11 +1262,11 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
  * 
  * @param int perso_id : Si 0 = griser la cellule, si 2 = Tout le monde
  */
-function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,griser,cellid){
+function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,griser,cellid,logaction = 1){
   if(griser==undefined){
     griser=0;
   }
-  
+
   if(site==undefined || site==""){
     site=1;
   }
@@ -1288,8 +1287,15 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
     url: url('planning/poste/ajax.updateCell.php'),
     type: "post",
     dataType: "json",
-    data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout, griser: griser},
-    success: function(result){
+    data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout, griser: griser, logaction: logaction},
+    success: function(response){
+      if (response.undoable == 1) {
+        enableUndo();
+      }
+      if (response.redoable == 1) {
+        enableRedo();
+      }
+      result = response.tab;
       $("#td"+cellule).html("");
       
       // Suppression du sans repas sur les cellules ainsi marquée
@@ -1423,7 +1429,6 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
 
       // cacher le menudiv
       emptyContextMenu();
-
       },
       error: function(result){
         CJInfo("Une erreur est survenue lors de l'enregistrement du planning.","error");

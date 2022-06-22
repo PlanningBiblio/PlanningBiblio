@@ -14,6 +14,30 @@ class PlanningPositionHistoryHelper extends BaseHelper
         parent::__construct();
     }
 
+    public function disable($date, $beginning, $end, $site, $position, $login_id, $perso_id_origine)
+    {
+        $action = $this->save('disable', $date, $beginning, $end, $site, $position, $login_id, array($perso_id_origine));
+
+        // There was an agent in the disabled cell.
+        // So map this action with the previous (delete)
+        // built in ajax.updateCell.php.
+        if ($perso_id_origine) {
+            $action->play_before(1);
+            $this->entityManager->persist($action);
+            $this->entityManager->flush();
+        }
+    }
+
+    public function put($date, $beginning, $end, $site, $position, $login_id, $perso_id)
+    {
+        //FIXME check here if we add an agent
+        // in an empty cell or if replace an
+        // existing agent. If we replace, we
+        // must create a double action (play_before).
+
+        $this->save('put', $date, $beginning, $end, $site, $position, $login_id, array($perso_id));
+    }
+
     public function cross($date, $beginning, $end, $site, $position, $login_id, $perso_id = null)
     {
         // Select agents who are not crossed before
@@ -101,6 +125,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         $history->position($position);
         $history->action($action);
         $history->updated_by($login_id);
+        $history->updated_at(new \DateTime());
 
         try{
             $this->entityManager->persist($history);
@@ -109,5 +134,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         catch(Exception $e){
             $error = $e->getMessage();
         }
+
+        return $history;
     }
 }

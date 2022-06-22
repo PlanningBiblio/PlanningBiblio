@@ -627,6 +627,16 @@ select
   right: 175px;
 }
 
+.pl-undo {
+  color: #FFFFFF;
+  position: absolute;
+  right: 75px;
+}
+
+.pl-undo a {
+  color: #FFFFFF;
+}
+
 #planning-semaine #td_boutons{
   padding:30px;
 }
@@ -2437,4 +2447,15 @@ div.presents-absents {
 .vert td.td_postes, .green td.td_postes{
   background: #BFEEC8; 
   color: #000;
+}
+
+.isDisabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.isDisabled > a {
+  color: currentColor;
+  display: inline-block;  /* For IE11/ MS Edge bug */
+  pointer-events: none;
+  text-decoration: none;
 }

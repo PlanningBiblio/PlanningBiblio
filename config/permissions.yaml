@@ -143,6 +143,10 @@
     - 100
 "planningjob.contextmenu":
     - 100
+"planningjob.undo":
+    - 100
+"planningjob.redo":
+    - 100
 "statistics.absence":
     - 17
 "statistics.agent":

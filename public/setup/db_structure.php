@@ -265,20 +265,6 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_cellules` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
-$sql[] = "CREATE TABLE `pl_poste_history` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `perso_ids` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `date` date NOT NULL DEFAULT '0000-00-00',
-  `beginning` time NOT NULL DEFAULT '00:00:00',
-  `end` time NOT NULL DEFAULT '00:00:00',
-  `site` int(11) NOT NULL DEFAULT 1,
-  `position` int(11) NOT NULL DEFAULT 0,
-  `action` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `updated_by` int(11) NOT NULL DEFAULT 0,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
-
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_horaires` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `debut` time NOT NULL DEFAULT '00:00:00',
@@ -600,4 +586,20 @@ $sql[] = "CREATE TABLE `{$dbprefix}absences_documents` (
   absence_id int(11) NOT NULL,
   filename text NOT NULL,
   date DATETIME NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}pl_position_history` (
+  id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  perso_ids TEXT NOT NULL,
+  date DATE NULL,
+  beginning TIME NOT NULL,
+  end TIME NOT NULL,
+  site INT(11) NOT NULL DEFAULT '1',
+  position INT(11) NOT NULL,
+  action VARCHAR(20) NOT NULL,
+  undone TINYINT NOT NULL DEFAULT 0,
+  archive TINYINT NOT NULL DEFAULT 0,
+  play_before TINYINT NOT NULL DEFAULT 0,
+  updated_by INT(11) NOT NULL,
+  updated_at DATETIME NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";

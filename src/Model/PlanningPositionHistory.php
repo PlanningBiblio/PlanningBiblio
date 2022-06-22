@@ -5,7 +5,7 @@ namespace App\Model;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
 /**
- * @Entity @Table(name="pl_poste_history")
+ * @Entity @Entity(repositoryClass="App\Repository\PlanningPositionHistoryRepository") @Table(name="pl_position_history")
  **/
 class PlanningPositionHistory extends PLBEntity
 {
@@ -25,13 +25,22 @@ class PlanningPositionHistory extends PLBEntity
     protected $end;
 
     /** @Column(type="integer") **/
-    protected $site;
+    protected $site = 1;
 
     /** @Column(type="integer") **/
     protected $position;
 
     /** @Column(type="string") **/
     protected $action;
+
+    /** @Column(type="boolean") **/
+    protected $undone = 0;
+
+    /** @Column(type="boolean") **/
+    protected $archive = 0;
+
+    /** @Column(type="boolean") **/
+    protected $play_before = 0;
 
     /** @Column(type="integer") **/
     protected $updated_by;

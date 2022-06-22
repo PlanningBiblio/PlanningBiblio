@@ -1,5 +1,10 @@
 {# planning/poste/date-menu.html.twig #}
 
+{% block specificjs %}
+  <script type="text/JavaScript" src='js/plb/undo.js'></script>
+  <script type="text/JavaScript" src='js/plb/redo.js'></script>
+{% endblock %}
+
 <!-- Show title and calendar widgets -->
 <div>
   <div id='divcalendrier' class='text'>
@@ -109,6 +114,19 @@
             </div>
 
             <div id='planningTips'>&nbsp;</div>
+            <div id='undo-redo' class='pl-undo'>
+              {% if undoable %}
+                <a id="undo-action" href='javascript:void(0);'>Annuler</a> - 
+              {% else %}
+                <a id="undo-action" class="isDisabled" href='javascript:void(0);'>Annuler</a> - 
+              {% endif %}
+
+              {% if redoable %}
+                <a id="redo-action" href='javascript:void(0);'>Refaire</a>
+              {% else %}
+                <a id="redo-action" class="isDisabled" href='javascript:void(0);'>Refaire</a>
+              {% endif %}
+            </div>
           {% endif %}
         </td>
       </tr>
