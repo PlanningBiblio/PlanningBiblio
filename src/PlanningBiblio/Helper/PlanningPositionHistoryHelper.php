@@ -14,6 +14,18 @@ class PlanningPositionHistoryHelper extends BaseHelper
         parent::__construct();
     }
 
+    public function add($date, $beginning, $end, $site, $position, $login_id, $perso_id, $play_before = false)
+    {
+        $action = $this->save('add', $date, $beginning, $end, $site, $position, $login_id, array($perso_id));
+
+        // There was an action before (i.e cross)
+        if ($play_before) {
+            $action->play_before(1);
+            $this->entityManager->persist($action);
+            $this->entityManager->flush();
+        }
+    }
+
     public function disable($date, $beginning, $end, $site, $position, $login_id, $perso_id_origine)
     {
         $action = $this->save('disable', $date, $beginning, $end, $site, $position, $login_id, array($perso_id_origine));

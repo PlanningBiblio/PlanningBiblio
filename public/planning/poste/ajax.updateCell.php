@@ -154,6 +154,10 @@ else {
     // Si barrer : on barre l'ancien et ajoute le nouveau
     elseif ($barrer == 1) {
         // On barre l'ancien
+        if ($logaction) {
+            $history = new PlanningPositionHistoryHelper();
+            $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
+        }
         $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
         $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
         $db=new db();
@@ -161,6 +165,10 @@ else {
         $db->update("pl_poste", $set, $where);
     
         // On ajoute le nouveau
+        if ($logaction) {
+            $history = new PlanningPositionHistoryHelper();
+            $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id, true);
+        }
         $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
       "chgt_login"=>$login_id, "chgt_time"=>$now);
         $db=new db();
@@ -169,6 +177,11 @@ else {
     }
     // Si Ajouter, on garde l'ancien et ajoute le nouveau
     elseif ($ajouter) {
+        if ($logaction) {
+            $history = new PlanningPositionHistoryHelper();
+            $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id);
+        }
+
         $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
       "chgt_login"=>$login_id, "chgt_time"=>$now);
         $db=new db();

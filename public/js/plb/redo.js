@@ -20,7 +20,6 @@ function redo() {
     dataType: 'json',
     data: {date: datepl, site: site},
     success: function(result){
-      console.log(result);
       if (result.remaining_redo == 0) {
         disableRedo();
       }
@@ -39,11 +38,20 @@ function redo() {
         if (action.action == 'disable') {
           disable(action, cellid);
         }
+        if (action.action == 'add') {
+          addone(action, cellid);
+        }
       });
     },
     error: function(result){
       CJInfo('Impossible de répéter la dernière action. Une erreur s\'est produite','error');
     }
+  });
+}
+
+function addone(action, cellid) {
+  $.each(action.perso_ids, function( i, perso_id ) {
+    bataille_navale(action.position,action.date,action.beginning,action.end,perso_id,0,1,"1",null,null,cellid,0);
   });
 }
 

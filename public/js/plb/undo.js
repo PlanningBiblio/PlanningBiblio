@@ -38,6 +38,9 @@ function undo() {
         if (action.action == 'disable') {
           cancelDisable(action, cellid);
         }
+        if (action.action == 'add') {
+          cancelAdd(action, cellid);
+        }
       });
     },
     error: function(result){
@@ -46,13 +49,22 @@ function undo() {
   });
 }
 
+function cancelAdd(action, cellid) {
+  $.each(action.perso_ids, function( i, perso_id ) {
+    majPersoOrigine(perso_id);
+    bataille_navale(action.position,action.date,action.beginning,action.end,0,0,0,"1", null, null, cellid,0);
+  });
+}
+
 function cancelDisable(action, cellid) {
-    bataille_navale(action.position,action.date,action.beginning,action.end,0,0,0,"1",0,-1,cellid,0);
+  bataille_navale(action.position,action.date,action.beginning,action.end,0,0,0,"1",0,-1,cellid,0);
 }
 
 function cancelDelete(action, cellid) {
+  var added = 0;
   $.each(action.perso_ids, function( i, perso_id ) {
-    bataille_navale(action.position,action.date,action.beginning,action.end,perso_id,0,0,"1",null,null,cellid,0);
+    added = 1;
+    bataille_navale(action.position,action.date,action.beginning,action.end,perso_id,0,added,"1",null,null,cellid,0);
   });
 }
 

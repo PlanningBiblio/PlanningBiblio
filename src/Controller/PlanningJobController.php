@@ -905,7 +905,7 @@ class PlanningJobController extends BaseController
         // As we play redo in reverse order,
         // the second element history could
         // be an action to play after.
-        if ($history[0]['play_before'] == 1) {
+        if (isset($history[0]) && $history[0]['play_before'] == 1) {
             $action_after = array_shift($history);
         }
 
