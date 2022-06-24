@@ -1,7 +1,7 @@
 {# planning/poste/date-menu.html.twig #}
 
 <!-- Show title and calendar widgets -->
-<div class='noprint'>
+<div>
   <div id='divcalendrier' class='text'>
     <form name='form' method='get' action='#'>
       <input type='hidden' id='date' name='date' value='{{ date }}' data-set-calendar='{{ date }}' />
@@ -112,7 +112,7 @@
       </tr>
     </table>
   </div>
-  <div id='pl-calendar' class="datepicker {{ week_view ? 'datepickerSemaine' }}"></div>
+  <div id='pl-calendar' class="noprint datepicker {{ week_view ? 'datepickerSemaine' }}"></div>
 </div>
 
 <div id='messages_infos' >
