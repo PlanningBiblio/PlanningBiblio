@@ -59,7 +59,8 @@ class AccountController extends BaseController
             // Its default value is 7 hours
             // Its value is always 7 hours if credits are managed in days (Conges-Mode=jours)
 
-            $fulldayReferenceTime = $this->config('Conges-fullday-reference-time') ?? 7;
+            $fulldayReferenceTime = !empty(floatval($this->config('Conges-fullday-reference-time'))) ? floatval($this->config('Conges-fullday-reference-time')) : 7;
+
             if ($this->config('Conges-Mode') == 'jours') {
                 $fulldayReferenceTime = 7;
             }
