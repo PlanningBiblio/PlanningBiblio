@@ -16,7 +16,8 @@ Incluse dans les fichiers include/header.php et setup/header.php
 */
 
 body{
-  font-size:10pt;
+	color: #000;
+  	font-size:10pt;
 }
 
 body{
@@ -24,6 +25,7 @@ body{
 }
 
 #planning{
+	color: #000;
 	width:297mm;
 	height:210mm;
 	-webkit-transform:rotate(90deg);
@@ -34,33 +36,39 @@ body{
 	bottom:50mm;
 }
 #tabsemaine1 {
+	color: #000;
 	font-size:10pt;
 	white-space: nowrap;
 	}
 
 #tableau td {
+	color: #000;
 	padding-left:2mm;
 	padding-right:1mm;
 }
 
 #date_planning {
+	color: #000;
 	font-weight:bold;
 	font-size:18pt;
 	margin-bottom:5mm;
 	}
 
 #h3-Multisites{
-  font-size:16pt;
+	color: #000;
+  	font-size:16pt;
+	margin-bottom:5mm;
+	font-weight:bold;
 }
 
 #validation {
+	color: #000;
 	position:absolute;
 	right:10mm;
 	top:0mm;
 	white-space: nowrap;
 	}
-	
+
 a, img, .noprint, .popper, .footer, .navigation, .ui-widget-header, div.ui-state-error, .menu_table, #planningTips, .ui-button {
 	display:none;
 	}
-
