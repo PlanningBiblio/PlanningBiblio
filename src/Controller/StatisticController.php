@@ -3146,7 +3146,7 @@ class StatisticController extends BaseController
 
         // Filtre les sites dans les requêtes SQL
         if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL = "0,".join(",", $selectedSites);
+            $sitesSQL = "0,".implode(",", $selectedSites);
         } else {
             $sitesSQL = "0,1";
         }
@@ -3160,6 +3160,8 @@ class StatisticController extends BaseController
 
         $tab = array();
 
+        $floors = $entityManager->getRepository(SelectFloor::class);
+
         // Récupération des infos sur les agents
         $p = new \personnel();
         $p->fetch();
@@ -3169,6 +3171,10 @@ class StatisticController extends BaseController
         $db = new \db();
         $db->select2("postes", "*", array("statistiques"=>"1"), "ORDER BY `etage`,`nom`");
         $postes_list = $db->result;
+
+        foreach ($postes_list as $k => $v) {
+            $postes_list[$k]['etage'] = $floors->find($v['etage']) ? $floors->find($v['etage'])->valeur() : null;
+        }
 
         if (!empty($postes)) {
             //    Recherche du nombre de jours concernés
@@ -3184,7 +3190,7 @@ class StatisticController extends BaseController
 
             //    Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
             //    On stock le tout dans le tableau $resultat
-            $postes_select = join(",", $postes);
+            $postes_select = implode(",", $postes);
             $db = new \db();
 
             $db->selectInnerJoin(
@@ -3313,7 +3319,7 @@ class StatisticController extends BaseController
                     $siteEtage[] = $tab[$key][0][2];
                 }
                 if (!empty($siteEtage)) {
-                    $siteEtage="(".join(" ", $siteEtage).")";
+                    $siteEtage="(".implode(" ", $siteEtage).")";
                 } else {
                     $siteEtage=null;
                 }
