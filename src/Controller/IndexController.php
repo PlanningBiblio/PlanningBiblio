@@ -660,6 +660,9 @@ class IndexController extends BaseController
             $values = array();
             $absents = array();
 
+            $history = new PlanningPositionHistoryHelper();
+            $history->delete_plannings($elem, $elem, $site, 'import-model');
+
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->delete('pl_poste_tab_affect', array('date' => $elem, 'site' => $site));

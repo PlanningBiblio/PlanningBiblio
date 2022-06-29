@@ -121,16 +121,16 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
-    public function delete_plannings($start, $end, $site)
+    public function delete_plannings($start, $end, $site, $reason = 'delete-planning')
     {
         $from = \DateTime::createFromFormat('Y-m-d', $start);
         $to = \DateTime::createFromFormat('Y-m-d', $end);
 
         $interval = \DateInterval::createfromdatestring('+1 day');
 
-        while ($from->format('Y-m-d') != $to->format('Y-m-d')) {
+        while ($from->format('Y-m-d') <= $to->format('Y-m-d')) {
             $action = $this->save(
-                'delete-planning',
+                $reason,
                 $from->format('Y-m-d'),
                 '00:00:00',
                 '23:59:59',
