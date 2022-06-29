@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Model\AbsenceReason;
 use App\Model\SelectFloor;
 use App\Model\PlanningPositionHistory;
+use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 use App\Model\Agent;
 use App\Model\Model;
 use App\PlanningBiblio\PresentSet;
@@ -533,6 +534,9 @@ class IndexController extends BaseController
         }
 
         if ($week) {
+            $history = new PlanningPositionHistoryHelper();
+            $history->delete_plannings($debut, $fin, $site);
+
             // Table pl_poste (agents assignment)
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
@@ -551,6 +555,9 @@ class IndexController extends BaseController
 
             return $this->redirectToRoute('index');
         }
+
+        $history = new PlanningPositionHistoryHelper();
+        $history->delete_plannings($date, $date, $site);
 
         // Table pl_poste (agents assignment)
         $db = new \db();

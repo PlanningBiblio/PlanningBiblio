@@ -121,6 +121,32 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
+    public function delete_plannings($start, $end, $site)
+    {
+        $from = \DateTime::createFromFormat('Y-m-d', $start);
+        $to = \DateTime::createFromFormat('Y-m-d', $end);
+
+        $interval = \DateInterval::createfromdatestring('+1 day');
+
+        while ($from->format('Y-m-d') != $to->format('Y-m-d')) {
+            $action = $this->save(
+                'delete-planning',
+                $from->format('Y-m-d'),
+                '00:00:00',
+                '23:59:59',
+                $site,
+                0,
+                $_SESSION['login_id'],
+                array()
+            );
+
+            $this->entityManager->getRepository(PlanningPositionHistory::class)
+                 ->archive($from->format('Y-m-d'), $site);
+
+            $from->add($interval);
+        }
+    }
+
     private function save($action, $date, $beginning, $end, $site, $position, $login_id, $perso_ids) {
 
         // Format data

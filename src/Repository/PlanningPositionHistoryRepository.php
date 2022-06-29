@@ -8,6 +8,23 @@ use App\Model\PlanningPositionHistory;
 
 class PlanningPositionHistoryRepository extends EntityRepository
 {
+    public function archive($date, $site)
+    {
+        $date = \DateTime::createFromFormat('Y-m-d', $date);
+        $entityManager = $this->getEntityManager();
+        $history = $entityManager->getRepository(PlanningPositionHistory::class)
+            ->findBy(array('date' => $date, 'site' => $site, 'archive' => 0));
+
+        foreach ($history as $action) {
+            $action->archive(1);
+            $entityManager->persist($action);
+        }
+
+        $entityManager->flush();
+
+        return $history;
+    }
+
     public function undoable($date, $site)
     {
         if (!$date || !$site) {
