@@ -24,6 +24,10 @@ body{
   background:none;
 }
 
+#tab_titre{
+	background: none
+}
+
 #planning{
 	color: #000;
 	width:297mm;
@@ -32,19 +36,19 @@ body{
 	-moz-transform:rotate(-90deg);
 	rotation:90deg;
 	position:absolute;
-	left:-40mm;
-	bottom:50mm;
+	top:50mm;
 }
 #tabsemaine1 {
 	color: #000;
 	font-size:10pt;
 	white-space: nowrap;
-	}
+	background: none;
+}
 
 #tableau td {
-	color: #000;
 	padding-left:2mm;
 	padding-right:1mm;
+	background: none;
 }
 
 #date_planning {
@@ -72,3 +76,7 @@ body{
 a, img, .noprint, .popper, .footer, .navigation, .ui-widget-header, div.ui-state-error, .menu_table, #planningTips, .ui-button {
 	display:none;
 	}
+
+.tr_horaires{
+	color: #fff;
+}
