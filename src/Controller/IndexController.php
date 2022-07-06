@@ -219,7 +219,7 @@ class IndexController extends BaseController
                     $cellules_grises[]=$k;
                 }
 
-                $tabs[$index]['horaires'] = $tmp;
+                $tab['horaires'] = $tmp;
 
                 $tabs[$index]['titre2'] = $tab['titre'];
                 if (!$tab['titre']) {
