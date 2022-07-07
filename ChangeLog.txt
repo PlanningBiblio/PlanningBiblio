@@ -15,6 +15,7 @@ Prevent editing used frameworks only if someone is linked to them
 Planno title
 
 - Fixes
+Make getCountedHours takes week rotation into account
 Force json_decode to return array in getWorkingHoursOn
 Avoid comparison between H:i:s and H:i when checking the presence of an agent
 Don't get breaktime from personnel table when planning_hebdo is disabled
