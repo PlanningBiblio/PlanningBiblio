@@ -97,7 +97,7 @@ class CalendarController extends BaseController
         }
 
         $db = new \db();
-        $db->select2("absences", null, "`perso_id`=$perso_id' $filter");
+        $db->select2("absences", null, "`perso_id`='$perso_id' $filter");
         if ($db->result){
             foreach ($db->result as $elem){
                 $verrou[$elem('site')][] = $elem['date'];
