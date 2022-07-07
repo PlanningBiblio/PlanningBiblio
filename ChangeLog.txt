@@ -1,6 +1,7 @@
 *** Unreleased ***
 - Enhancements
 - Fixes
+Make getCountedHours takes week rotation into account
 - Plumbing
 
 *** Version 21.10.04       (2022-04-29)   ***
