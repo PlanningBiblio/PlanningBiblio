@@ -32,8 +32,8 @@
         </select><br/>
         Importer les absents ?&nbsp;&nbsp;
         <input type='checkbox' name='absents' checked='checked' /><br/><br/>
-        <input type="submit" value="Valider" />
         <input type="button" value="Annuler" onclick="$('#import-model-dialog').dialog('close');" />
+        <input type="submit" value="Valider" />
       </form>
     {% else %}
       {% set model = models | first  %}
