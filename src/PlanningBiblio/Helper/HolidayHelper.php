@@ -88,8 +88,6 @@ class HolidayHelper extends BaseHelper
         while ($current <= $fin) {
 
             $date_current = new \DateTime($current);
-            $week_id = $date_current->format("W");
-            $day_id = $date_current->format("N") - 1;
 
             // Check agent's planning.
             $planning = $this->getPlanning($current);
@@ -97,6 +95,12 @@ class HolidayHelper extends BaseHelper
                 $result['error'] = true;
                 return $result;
             }
+
+            $d = new \datePl($current, $planning['nb_semaine']);
+            $week_id = $d->semaine3;
+
+            $day = $d->position ? $d->position : 7;
+            $day_id = $day + (($week_id - 1) * 7) - 1;
 
             $week_helper = new WeekPlanningHelper($planning['times']);
             $per_week[$week_id]['worked_days'] = $week_helper->NumberWorkingDays();
