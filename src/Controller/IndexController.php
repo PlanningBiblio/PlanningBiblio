@@ -477,6 +477,7 @@ class IndexController extends BaseController
                                 }
                             }
 
+                            $absences_planning[$index]['bold'] = '';
                             $absences_planning[$index]['class'] = $class;
                             $absences_planning[$index]['heures'] = $heures;
                             $absences_planning[$index]['nonValidee'] = $nonValidee;
