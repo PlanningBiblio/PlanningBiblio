@@ -186,6 +186,9 @@ function emptyPlanning() {
     $(this).empty();
     $(this).removeAttr('data-agent');
     $(this).removeData('agent');
+    $(this).removeClass('absent');
+    $(this).removeClass('partially-absent');
+    initDroppable($(this));
   });
 };
 
@@ -323,7 +326,7 @@ $( document ).ready(function() {
       item = $('<span></span>');
       item = $('<span class="status_'+ agent.status + '"></span>');
       item.append('<span class="agent_name">' + agent.name + '</span>');
-      
+
       if (agent.custom_from && agent.custom_to) {
         item.append('<br/><i style="font-weight:normal;"> - de ' + agent.custom_from + ' à ' + agent.custom_to + '</i>');
       }
