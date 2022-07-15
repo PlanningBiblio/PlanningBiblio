@@ -32,27 +32,27 @@
     <table id='tableStatTemps' class='CJDataTable' data-fixedColumns='2'>
       <thead>
         <tr>
-          <th class=" tableSort">Agents</th>
-          <th class=" tableSort" style="border-right-color: #000;">Statut</th>
+          <th>Agents</th>
+          <th style="border-right-color: #000;">Statut</th>
           {% for d in dates %}
-            <th class='dataTableHeureFR tableSort'>{{ d[1] | raw }}</th>
+            <th class='dataTableHeureFR'>{{ d[1] | raw }}</th>
           {% endfor %}
           {% if nbSites > 1 %}
             {% for i in 1..nbSites %}
-              <th class="dataTableHeureFR tableSort">{{ multisites[i-1] | raw }}</th>
+              <th class="dataTableHeureFR">{{ multisites[i-1] | raw }}</th>
               {% if nbSemaines!= 1 %}
-                <th class="dataTableHeureFR tableSort">Moyenne Hebdo.</th>
+                <th class="dataTableHeureFR">Moyenne Hebdo.</th>
               {% endif %}
             {% endfor %}
           {% endif %}
           {% for g in groups %}
-            <th class='dataTableHeureFR tableSort'> {{ g.valeur }} </th>
+            <th class='dataTableHeureFR'> {{ g.valeur }} </th>
           {% endfor %}
-          <th class='dataTableHeureFR tableSort' > Total </th>
-          <th class='dataTableHeureFR tableSort' > Max. </th>
+          <th class='dataTableHeureFR' > Total </th>
+          <th class='dataTableHeureFR' > Max. </th>
           {% if nbSemaines != 1 %}
-            <th class='dataTableHeureFR tableSort' > Moyenne<br/>Hebdo. </th>
-            <th class='dataTableHeureFR tableSort' > Max. Hebdo. </th>
+            <th class='dataTableHeureFR' > Moyenne<br/>Hebdo. </th>
+            <th class='dataTableHeureFR' > Max. Hebdo. </th>
           {% endif %}
         </tr>
       </thead>

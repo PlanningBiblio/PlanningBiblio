@@ -1715,23 +1715,13 @@ div.presents-absents {
 
 /*Table START*/
 
-.tableSort{
+table.dataTable th{
   background-color: #456578;
   border: 1px solid #456578;
   border-right-color: #000;
   color: #FFFFFF;
 }
 
-.tableSort-bis{
-  background-color: #456578;
-  border: 1px solid #456578;
-  border-right-color: #000;
-  color: #FFFFFF;
-}
-
-.tableSort:last-child{
-  border-color: #456578;
-}
 
 .ui-button-table{
   background: #29495C;

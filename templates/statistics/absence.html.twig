@@ -37,26 +37,26 @@
         <thead>
           <tr>
             {% if afficheHeures == true %}
-              <th rowspan="2" class="tableSort">Agents</th>
-              <th rowspan="2" class="tableSort">Total<br/>d'absences</th>
-              <th rowspan="2" class='dataTableHeureFR tableSort'>Total<br/>d'heures</th>
+              <th rowspan="2">Agents</th>
+              <th rowspan="2">Total<br/>d'absences</th>
+              <th rowspan="2" class='dataTableHeureFR'>Total<br/>d'heures</th>
             {% else %}
-              <th rowspan="1" class="tableSort">Agents</th>
-              <th rowspan="1" class="tableSort">Total<br/>d'absences</th>
+              <th rowspan="1">Agents</th>
+              <th rowspan="1">Total<br/>d'absences</th>
             {% endif %}
             {% for elem in motifs %}
               {% if afficheHeures == true %}
-                <th colspan="2" class="tableSort">{{ elem }}</th>
+                <th colspan="2">{{ elem }}</th>
               {% else %}
-                <th colspan="1" class="tableSort">{{ elem }}</th>  
+                <th colspan="1">{{ elem }}</th>  
               {% endif %}
             {% endfor %}
             {% if afficheHeures == true %}
               </tr>
               <tr>
                 {% for elem in motifs %}
-                  <th class="tableSort">Nombre</th>
-                  <th class='dataTableHeureFR tableSort'>Heures</th>
+                  <th>Nombre</th>
+                  <th class='dataTableHeureFR'>Heures</th>
                 {% endfor %}
             {% endif %}
           </tr>

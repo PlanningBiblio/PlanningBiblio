@@ -113,19 +113,19 @@
             <table id='tableStatSamedis' class='CJDataTable'>
               <thead>
                 <tr>
-                  <th class="tableSort">Agents</th>
-                  <th class="tableSort">Prime / Temps</th>
-                  <th class="tableSort">Nombre</th>
-                  <th class='dataTableHeureFR tableSort'>Heures</th>
-                  <th class='dataTableDateFR tableSort'>Dates</th>
+                  <th>Agents</th>
+                  <th>Prime / Temps</th>
+                  <th>Nombre</th>
+                  <th class='dataTableHeureFR'>Heures</th>
+                  <th class='dataTableDateFR'>Dates</th>
                   {% if exists_JF == true %}
-                    <th class="tableSort">J. Feriés</th>
+                    <th>J. Feriés</th>
                   {% endif %}
                   {% if exists_absences == true %}
-                    <th class="tableSort">Absences</th>
+                    <th>Absences</th>
                   {% endif %}
                   {% for v in heures_tab_global %}
-                    <th class="tableSort">{{ v[2] }}</th>
+                    <th>{{ v[2] }}</th>
                   {% endfor %}
                 </tr>
               </thead>
