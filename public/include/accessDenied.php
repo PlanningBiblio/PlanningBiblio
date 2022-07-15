@@ -76,7 +76,7 @@ if (isset($IPBlocker)) {
 </center>
 <div class='footer'>
 Planno -
-<a href='http://www.plannino.fr' target='_blank' style='font-size:9pt;'>www.planno.fr</a>
+<a href='http://www.planno.fr' target='_blank' style='font-size:9pt;'>www.planno.fr</a>
 </div>
 </body>
 </html>
