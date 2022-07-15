@@ -53,9 +53,9 @@ if (!file_exists("themes/$theme/favicon.png")) {
 getJSFiles($page, $version);
 ?>
 
-<link rel='StyleSheet' href='js/DataTables/datatables.min.css<?php echo $version; ?>' type='text/css' media='all'/>
-<link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css<?php echo $version; ?>' type='text/css' media='all'/>
-<link rel='StyleSheet' href='themes/default/jquery.timepicker.min.css<?php echo $version; ?>' type='text/css' media='all'/>
+<link rel='StyleSheet' href='js/DataTables/datatables.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
+<link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
+<link rel='StyleSheet' href='themes/default/jquery.timepicker.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/default.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/print.css?version=<?php echo $version; ?>' type='text/css' media='print'/>
 <?php
