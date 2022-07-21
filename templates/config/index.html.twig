@@ -63,6 +63,23 @@
         previous_nb_semaine = nb_semaine;
       });
 
+      $( "#longueur_mot_de_passe_dialog" ).dialog({
+        autoOpen: false,
+        resizable: false,
+        width: 400,
+        modal: true,
+        buttons: {
+          "Valider": function() {
+            $( this ).dialog( "close" );
+          }
+        }
+      });
+      $('#Longueur-minimum-mot-de-passe').on('change', function() {
+        if ($('#Longueur-minimum-mot-de-passe').val() < 8) {
+            $("#Longueur-minimum-mot-de-passe").val('8');
+            $('#longueur_mot_de_passe_dialog').dialog('open');
+        }
+      });
       mail_config();
     });
   </script>
@@ -107,6 +124,10 @@
 
     <div id="nb_semaine_dialog" title="Modification du nombre de semaines">
      Sélectionner un nombre de semaines supérieur à trois implique de cocher le paramètre "PlanningHebdo". 
+    </div>
+
+    <div id="longueur_mot_de_passe_dialog" title="Modification de la longeur minimum du mot de passe">
+      Le nombre de caractères minimum d'un mot de passe ne peut pas être inférieur à 8.
     </div>
 
 {% endblock %}
