@@ -61,8 +61,10 @@ body{
 #h3-Multisites{
 	color: #000;
   	font-size:16pt;
+	margin-top:15mm;
 	margin-bottom:5mm;
 	font-weight:bold;
+	left: 222px;
 }
 
 #validation {
