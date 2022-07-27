@@ -59,6 +59,7 @@
 
     <form name='CSRFForm' action='#' method='get'>
       <input type='hidden' name='CSRFSession' id='CSRFSession' value='{{ CSRFSession }}' />
+      <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
     </form>
 
     <form name='baseURLForm' action='#' method='get'>

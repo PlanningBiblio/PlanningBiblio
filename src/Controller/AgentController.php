@@ -1100,6 +1100,8 @@ class AgentController extends BaseController
      */
     public function changeOwnPassword(Request $request)
     {
+        $this->csrf_protection($request);
+
         $agent_id = $_SESSION['login_id'];
         $password = $request->get('password');
         $current_password = $request->get('current_password');
@@ -1118,6 +1120,8 @@ class AgentController extends BaseController
      */
     public function changePassword(Request $request)
     {
+        $this->csrf_protection($request);
+
         $agent_id = $request->get('id');
         $password = $request->get('password');
 
