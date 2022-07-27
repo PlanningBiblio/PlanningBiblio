@@ -74,9 +74,9 @@
           }
         }
       });
-      $('#Longueur-minimum-mot-de-passe').on('change', function() {
-        if ($('#Longueur-minimum-mot-de-passe').val() < 8) {
-            $("#Longueur-minimum-mot-de-passe").val('8');
+      $('#Auth-PasswordLength').on('change', function() {
+        if ($('#Auth-PasswordLength').val() < 8) {
+            $("#Auth-PasswordLength").val('8');
             $('#longueur_mot_de_passe_dialog').dialog('open');
         }
       });

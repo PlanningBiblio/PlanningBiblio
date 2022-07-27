@@ -758,7 +758,7 @@ class AgentController extends BaseController
             $this->templateParams($templateParams);
         }
 
-        $minimum_password_length = $this->config('Longueur-minimum-mot-de-passe') ?? 8;
+        $minimum_password_length = $this->config('Auth-PasswordLength') ?? 8;
         $this->templateParams(array(
             'edt_samedi'    => $this->config('EDTSamedi'),
             'current_tab'   => $currentTab,
@@ -1141,7 +1141,7 @@ class AgentController extends BaseController
     // Returns true if the password is complex enough, and false otherwise
     private function check_password_complexity($password)
     {
-        $minimum_password_length = $this->config('Longueur-minimum-mot-de-passe') ?? 8;
+        $minimum_password_length = $this->config('Auth-PasswordLength') ?? 8;
         if (strlen($password) < $minimum_password_length) {
             return false;
         }

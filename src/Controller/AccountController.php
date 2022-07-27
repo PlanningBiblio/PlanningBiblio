@@ -99,7 +99,7 @@ class AccountController extends BaseController
         $auth_mode = $_SESSION['oups']['Auth-Mode'];
         $login = array("name" => $_SESSION['login_prenom'], "surname" => $_SESSION['login_nom'], "id" => $_SESSION['login_id']);
 
-        $minimum_password_length = $this->config('Longueur-minimum-mot-de-passe') ?? 8;
+        $minimum_password_length = $this->config('Auth-PasswordLength') ?? 8;
 
         $this->templateParams(
             array(
