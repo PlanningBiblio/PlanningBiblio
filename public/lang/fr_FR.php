@@ -24,6 +24,8 @@ $lang['do_not_change'] = "Ne pas modifier";
 $lang['edit_selected_users'] = "Modification des agents sélectionnés";
 
 // Congés
+/** @note the label "comp_time" is used for "Récupérations", the label "overtime" must be used for "Heures supplémentaires"
+*/
 $lang['leave_dropdown_accepted'] = 'Accepté';
 $lang['leave_dropdown_refused'] = 'Refusé';
 $lang['leave_dropdown_accepted_pending'] = 'Accepté (En attente de validation hiérarchique)';
@@ -34,7 +36,7 @@ $lang['leave_table_accepted'] = 'Validé';
 $lang['leave_table_refused'] = 'Refusé';
 $lang['leave_table_accepted_pending'] = 'En attente de validation hiérarchique';
 $lang['leave_table_refused_pending'] = 'En attente de validation hiérarchique';
-$lang['overtime'] = 'Récupération';
+$lang['comp_time'] = 'Récupérations';
 $lang['overtime_subject_accepted'] = 'Demande de récupération acceptée';
 $lang['overtime_subject_refused'] = 'Demande de récupération refusée';
 $lang['overtime_subject_accepted_pending'] = 'Demande de récupération en attente de validation hiérarchique';
