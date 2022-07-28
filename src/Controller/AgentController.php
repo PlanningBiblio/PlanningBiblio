@@ -181,6 +181,7 @@ class AgentController extends BaseController
         $a->fetch();
         $activites = $a->elements;
 
+        $postes_completNoms = array();
         foreach ($activites as $elem) {
             $postes_completNoms[] = array($elem['nom'],$elem['id']);
         }
