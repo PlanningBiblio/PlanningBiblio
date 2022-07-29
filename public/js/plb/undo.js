@@ -51,35 +51,40 @@ function undo() {
 }
 
 function cancelAdd(action, cellid) {
+  var site = $('#site').val();
   $.each(action.perso_ids, function( i, perso_id ) {
     majPersoOrigine(perso_id);
-    bataille_navale(action.position,action.date,action.beginning,action.end,0,0,0,"1", null, null, cellid,0);
+    bataille_navale(action.position,action.date,action.beginning,action.end,0,0,0, site, null, null, cellid,0);
   });
 }
 
 function cancelDisable(action, cellid) {
-  bataille_navale(action.position,action.date,action.beginning,action.end,0,0,0,"1",0,-1,cellid,0);
+  var site = $('#site').val();
+  bataille_navale(action.position,action.date,action.beginning,action.end,0,0,0, site,0,-1,cellid,0);
 }
 
 function cancelDelete(action, cellid) {
   var added = 0;
+  var site = $('#site').val();
   $.each(action.perso_ids, function( i, perso_id ) {
     added = 1;
-    bataille_navale(action.position,action.date,action.beginning,action.end,perso_id,0,added,"1",null,null,cellid,0);
+    bataille_navale(action.position,action.date,action.beginning,action.end,perso_id,0,added, site,null,null,cellid,0);
   });
 }
 
 function cancelPut(action, cellid) {
+  var site = $('#site').val();
   $.each(action.perso_ids, function( i, perso_id ) {
     majPersoOrigine(perso_id);
-    bataille_navale(action.position,action.date,action.beginning,action.end,0,0,0,"1",null,null,cellid,0);
+    bataille_navale(action.position,action.date,action.beginning,action.end,0,0,0, site,null,null,cellid,0);
   });
 }
 
 function cancelCross(action, cellid) {
+  var site = $('#site').val();
   $.each(action.perso_ids, function( i, perso_id ) {
     majPersoOrigine(perso_id);
-    bataille_navale(action.position,action.date,action.beginning,action.end,0,-1,0,"1",null,null,cellid,0);
+    bataille_navale(action.position,action.date,action.beginning,action.end,0,-1,0, site,null,null,cellid,0);
   });
 }
 
