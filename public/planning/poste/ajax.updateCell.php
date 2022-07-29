@@ -211,6 +211,12 @@ if ($griser == 1) {
 }
 
 
+// Disable redo actions
+if ($logaction) {
+    $entityManager->getRepository(PlanningPositionHistory::class)
+        ->archive($date, $site, true);
+}
+
 // Partie 2 : Récupération de l'ensemble des éléments
 // Et transmission à la fonction JS bataille_navale pour mise à jour de l'affichage de la cellule
 
