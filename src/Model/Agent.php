@@ -362,7 +362,8 @@ class Agent extends PLBEntity
 
     public function is_agent_status_in_category($category) {
         $db = new \db();
-        $db->select2("select_statuts", "categorie", array('valeur' => $this->statut()));
+        $db->sanitize_string = false;
+        $db->query("SELECT `categorie` FROM `select_statuts` WHERE `valeur` = '{$this->statut()}';");
         $results = $db->result;
         if (!$results) { return false; }
         $categorie_id = $results[0]['categorie'];
