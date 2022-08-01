@@ -61,7 +61,7 @@ $c = new conges();
 $balance = $c->calculCreditRecup($perso_id);
 
 echo <<<EOD
-<div id='content-holyday'>
+<div id='content-form'>
 <h3>Poser des récupérations</h3>
 <div class='admin-div'>
 <table border='0'>
