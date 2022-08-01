@@ -85,12 +85,12 @@
           }
         }
         bValid = bValid && checkLength( heures, "heures", 4, 5 );
-        if(admin && checkDateAge( date, limitJours, "La demande de récupération doit être effectuée dans les "+limitJours+" jours",false)==false){
-          res=confirm("Attention, la demande de récupération doit être effectuée dans les "+limitJours+" jours.\nEn tant qu'administrateur, vous pouvez outrepasser cette règle.\nVoulez-vous continuer ?");
+        if(admin && checkDateAge( date, limitJours, "La demande d'heures supplémentaires doit être effectuée dans les "+limitJours+" jours",false)==false){
+          res=confirm("Attention, la demande d'heures supplémentaires doit être effectuée dans les "+limitJours+" jours.\nEn tant qu'administrateur, vous pouvez outrepasser cette règle.\nVoulez-vous continuer ?");
           bValid = bValid && res;
         }
         else{
-          bValid = bValid && checkDateAge( date, limitJours, "La demande de récupération doit être effectuée dans les "+limitJours+" jours");
+          bValid = bValid && checkDateAge( date, limitJours, "La demande d'heures supplémentaires doit être effectuée dans les "+limitJours+" jours");
         }
 
         {% if recup_deuxsamedis and recup_uneparjour %}
@@ -123,11 +123,11 @@
             // Ferme le dialog
             $( this ).dialog( "close" );
               }else{
-            updateTips("Erreur lors de l'enregistrement de la récupération", "error");
+            updateTips("Erreur lors de l'enregistrement de la demande d'heures supplémentaires", "error");
               }
             },
             error: function (result){
-              updateTips("Erreur lors de l'enregistrement de la récupération", "error");
+              updateTips("Erreur lors de l'enregistrement de la demande d'heures supplémentaires", "error");
             },
           });
         }
@@ -140,7 +140,7 @@
 
         close: function() {
           allFields.val( "" ).removeClass( "ui-state-error" );
-          $('.validateTips').text("Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures à récuperer et un saisir un commentaire.");
+          $('.validateTips').text("Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires et un saisir un commentaire.");
         }
       });
 
@@ -164,10 +164,10 @@
     {% if perso_id != 0 %}
     <h3 class="print_only">Liste des congés de {{ perso_name }}, année {{ year_from }}-{{ year_to}}</h3>
     {% endif %}
-    <h3 class='noprint'>Récupérations</h3>
+    <h3 class='noprint'>Heures supplémentaires</h3>
     <div class="admin-div">
       <div id='liste'>
-        <h4 class='noprint'>Liste des demandes de récupération</h4>
+        <h4 class='noprint'>Liste des demandes d'heures supplémentaires</h4>
         <form name='form' method='get' action='{{ asset("overtime") }}' class='noprint'>
           <span style='float:left; vertical-align:top; margin-bottom:20px;'>
             Année : <select name='annee'>
@@ -258,7 +258,7 @@
       </div> <!-- liste -->
 
       <div id="dialog-form" title="Nouvelle demande" class='noprint'>
-        <p class="validateTips">Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures à récuperer et un saisir un commentaire.</p>
+        <p class="validateTips">Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires et un saisir un commentaire.</p>
         <form>
           <fieldset>
             <table class='tableauFiches'>
