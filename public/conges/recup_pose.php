@@ -104,7 +104,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
     }
 
     // Message qui sera envoyé par email
-    $message="Nouveau congés: <br/>$prenom $nom<br/>Début : $debut";
+    $message="Nouvelle demande de récupération: <br/>$prenom $nom<br/>Début : $debut";
     if ($hre_debut!="00:00:00") {
         $message.=" ".heure3($hre_debut);
     }
@@ -118,11 +118,11 @@ if (isset($_GET['confirm'])) {	// Confirmation
 
     // ajout d'un lien permettant de rebondir sur la demande
     $url = $config['URL'] . "/holiday/edit/$id";
-    $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
+    $message.="<br/><br/>Lien vers la demande de récupération :<br/><a href='$url'>$url</a><br/><br/>";
 
     // Envoi du mail
     $m=new CJMail();
-    $m->subject="Nouveau congés";
+    $m->subject="Nouvelle demande de récupération";
     $m->message=$message;
     $m->to=$destinataires;
     $m->send();
@@ -135,7 +135,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
         $msg2Type="error";
     }
 
-    $msg=urlencode("La demande de congé a été enregistrée");
+    $msg=urlencode("La demande de récupération a été enregistrée");
     echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/holiday/index?recup=1&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 }
 
