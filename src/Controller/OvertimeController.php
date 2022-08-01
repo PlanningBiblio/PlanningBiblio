@@ -339,7 +339,7 @@ class OvertimeController extends BaseController
                 $sujet = $lang['overtime_subject_refused_pending'];
                 $notifications = 3;
             } else {
-                $sujet="Demande de récupération modifiée";
+                $sujet="Demande d'heures supplémentaires modifiée";
                 $notifications = 2;
             }
 

@@ -1120,7 +1120,7 @@ class HolidayController extends BaseController
         $nom = $agent->nom();
         $prenom = $agent->prenom();
 
-        $recover = $post['debit'] == 'recuperation' ? 1 : 0;
+        $recover = ($post['debit'] == 'recuperation' && $this->config('Conges-Recuperations') == '1') ? 1 : 0;
 
         // Choix du sujet et des destinataires en fonction du degré de validation
         switch ($valide) {
@@ -1164,7 +1164,7 @@ class HolidayController extends BaseController
         }
 
         // Message qui sera envoyé par email
-        $message = $this->makeMail($sujet, "$prenom $nom", $debut, $fin, $hre_debut, $hre_fin, $commentaires, $refus, $valide, $id);
+        $message = $this->makeMail($sujet, "$prenom $nom", $debut, $fin, $hre_debut, $hre_fin, $commentaires, $refus, $valide, $id, $recover);
 
         // Envoi du mail
         $m=new \CJMail();
@@ -1199,7 +1199,7 @@ class HolidayController extends BaseController
     /**
      * Make mail message
      */
-    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id) {
+    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id, $recover = 0) {
         $message  = "<b><u>$subject :</u></b><br/>";
         $message .= "<ul><li>Agent : <strong>$name</strong></li>";
         $message .= "<li>Début : <strong>$begin";
@@ -1222,7 +1222,7 @@ class HolidayController extends BaseController
 
         // ajout d'un lien permettant de rebondir sur la demande
         $url = $this->config('URL') . "/holiday/edit/$id";
-        $message.="<p>Lien vers la demande de congé :<br/><a href='$url'>$url</a></p>";
+        $message.="<p>Lien vers la demande de " . ($recover ? "récupération" : "congé") . " :<br/><a href='$url'>$url</a></p>";
 
         return $message;
     }
