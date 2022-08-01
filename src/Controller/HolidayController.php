@@ -1120,7 +1120,7 @@ class HolidayController extends BaseController
         $nom = $agent->nom();
         $prenom = $agent->prenom();
 
-        $recover = $post['debit'] == 'recuperation' ? 1 : 0;
+        $recover = ($post['debit'] == 'recuperation' && $this->config('Conges-Recuperations') == '1') ? 1 : 0;
 
         // Choix du sujet et des destinataires en fonction du degré de validation
         switch ($valide) {
