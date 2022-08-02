@@ -1,6 +1,7 @@
 *** Unreleased ***
 - Enhancements
 - Fixes
+Fix error 500 on the calendar view
 Make getCountedHours takes week rotation into account
 - Plumbing
 
