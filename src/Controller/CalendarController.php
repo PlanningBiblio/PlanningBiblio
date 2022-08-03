@@ -168,6 +168,8 @@ class CalendarController extends BaseController
                     $temps = array();
                 } else {
                     $temps = $p->elements[0]['temps'];
+                    $week_number = $p->elements[0]['nb_semaine'];
+                    $jour = $d->planning_day_index_for($perso_id, $week_number);
                 }
             }
             $horaires = null;
