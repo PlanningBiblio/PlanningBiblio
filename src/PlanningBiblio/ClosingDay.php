@@ -74,7 +74,7 @@ class ClosingDay
                 }
             }
         }
-        @usort($tab, "cmp_jour", true);
+        uasort($tab, "cmp_jour");
         $this->elements=$tab;
     }
 

@@ -57,7 +57,11 @@ if (empty($_SESSION['login_id'])) {
         }
 
         $login_params = array();
-        $login_params['redirURL'] = 'index.php?' . http_build_query($get);
+        if (is_array($get)) {
+            $login_params['redirURL'] = 'index.php?' . http_build_query($get);
+        } else {
+            $login_params['redirURL'] = 'index.php';
+        }
 
         if (isset($ticket)) {
             $login_params['ticket'] = $ticket;

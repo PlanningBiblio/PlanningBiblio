@@ -178,4 +178,5 @@ class ModelController extends BaseController
         $session->getFlashBag()->add('notice', 'Modèle supprimé');
         return $this->json(array('id' => $id));
     }
+
 }
