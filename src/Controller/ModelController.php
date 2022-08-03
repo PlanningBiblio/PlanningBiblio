@@ -222,7 +222,7 @@ class ModelController extends BaseController
           $db = new \db();
           $db->query('select MAX(`model_id`) AS `model` FROM `pl_poste_modeles_tab`;');
 
-          $last_id = $db->result[0]['model'] ? $db->result[0]['model'] : 0;
+          $last_id = $db->result[0]['model'] ? intval($db->result[0]['model']) : 0;
           $model = $last_id + 1;
 
           $values = array();
