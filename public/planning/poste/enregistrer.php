@@ -128,7 +128,7 @@ function enregistre_modele($nom, $date, $semaine, $site, $CSRFToken)
         // Model_id
         $db = new db();
         $db->query('select MAX(`model_id`) AS `model` FROM `pl_poste_modeles_tab`;');
-        $model = $db->result ? $db->result[0]['model'] + 1 : 1;
+        $model = $db->result ? intval($db->result[0]['model']) + 1 : 1;
 
         $values=array();
         foreach ($select->result as $elem) {
