@@ -85,6 +85,7 @@ class IndexController extends BaseController
         $comments = $this->getComments($date, $site);
 
         $this->templateParams(array(
+            'content_planning' => true,
             'date' => $date, 'dates' => $dates, 'site' => $site,
             'start' => $d->dates[0],
             'startHr' => dateFr($d->dates[0]),
