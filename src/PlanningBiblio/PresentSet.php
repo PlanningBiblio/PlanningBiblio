@@ -44,17 +44,13 @@ class PresentSet
             if ($config['PlanningHebdo']) {
                 if (array_key_exists($elem['id'], $tempsPlanningHebdo)) {
                     $temps = $tempsPlanningHebdo[$elem['id']]['temps'];
+                    $week_number = $tempsPlanningHebdo[$elem['id']]['nb_semaine'];
                 }
             } else {
                 $temps = json_decode(html_entity_decode($elem['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             }
 
-            $jour = $date_planning->position - 1;
-            if ($jour == -1) {
-                $jour = 6;
-            }
-
-            $jour += ($semaine3 - 1) * 7;
+            $jour = $date_planning->planning_day_index_for($elem['id'], $week_number);
 
             // Si l'emploi du temps est renseigné
             if (!empty($temps) and array_key_exists($jour, $temps)) {
