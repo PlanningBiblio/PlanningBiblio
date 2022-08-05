@@ -26,13 +26,16 @@ cellules = new Array();
 
 // Chargement de la page
 $(document).ready(function(){
-  import_model = $( "#import-model-dialog" ).dialog({
+
+  import_model = $( '#import-model-dialog' ).dialog({
     autoOpen: false,
     modal: true,
     height: 300,
     width: 480,
+    open: function() {
+      setTimeout('getImportModelButtons()', 100);
+    },
   });
-
 
   delete_planning_week_confirm = $( "#delete-planning-dialog-confirm-week" ).dialog({
     autoOpen: false,
@@ -1447,6 +1450,26 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
     ...
   */
 }
+
+function getImportModelButtons() {
+  var myButtons = {
+    "Annuler": function() {
+      $(this).dialog('close');
+    }};
+
+  if ($('#model').length > 0) {
+    var myButtons = {
+      "Annuler": function() {
+        $(this).dialog('close');
+      },
+        "Valider": function() {
+          $('#form').submit();
+      }
+    };
+  }
+
+  $('#import-model-dialog').dialog('option', 'buttons', myButtons);
+} 
 
 //	groupe_tab : utiliser pour menudiv
 function groupe_tab(id,tab,hide,me){			// améliorer les variables (tableaux) pour plus d'évolution
