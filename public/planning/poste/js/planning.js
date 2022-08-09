@@ -9,7 +9,7 @@ Création : 2 juin 2014
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
-Fichier regroupant les scripts JS nécessaires à la page planning/poste/index.php (affichage et modification des plannings)
+Fichier regroupant les scripts JS nécessaires à la page /index (affichage et modification des plannings)
 Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 */
 
@@ -26,6 +26,157 @@ cellules = new Array();
 
 // Chargement de la page
 $(document).ready(function(){
+  import_model = $( "#import-model-dialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 300,
+    width: 480,
+  });
+
+
+  delete_planning_week_confirm = $( "#delete-planning-dialog-confirm-week" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 220,
+    width: 480,
+    buttons: {
+      "Oui": function() {
+        $('#delete-planning-week-form').submit();
+      },
+      "Non": function() {
+        delete_planning_week_confirm.dialog('close');
+      },
+    }
+  });
+
+  delete_planning_day_confirm = $( "#delete-planning-dialog-confirm-day" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 220,
+    width: 480,
+    buttons: {
+      "Oui": function() {
+        $('#delete-planning-day-form').submit();
+      },
+      "Non": function() {
+        delete_planning_day_confirm.dialog('close');
+      },
+    }
+  });
+
+  delete_planning = $( "#delete-planning-dialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 220,
+    width: 480,
+    buttons: {
+      "Jour": function() {
+        delete_planning.dialog('close');
+        delete_planning_day_confirm.dialog('open');
+      },
+      "Semaine": function() {
+        delete_planning.dialog('close');
+        delete_planning_week_confirm.dialog('open');
+      },
+      "Annuler": function() {
+        delete_planning.dialog('close');
+      },
+    }
+  });
+
+  model_finish = $( "#finish-model-dialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 250,
+    width: 550,
+    buttons: {
+      "Fermer": function() {
+        model_finish.dialog('close');
+      }
+    }
+  });
+
+  duplicate_model = $( "#duplicate-model-dialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 250,
+    width: 550,
+    buttons: {
+      "Oui": function() {
+        save_model(true);
+      },
+      "Non": function() {
+        duplicate_model.dialog('close');
+      }
+    },
+  });
+
+  model_form = $( "#save-model-dialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 250,
+    width: 550,
+    buttons: {
+      "Enregistrer": function() {
+        save_model();
+      },
+      Annuler: function() {
+        model_form.dialog('close');
+      }
+    },
+  });
+
+  function save_model(erase = 0) {
+    name = $('form[name="save-model-form"] input[name="name"]').val()
+    site = $('form[name="save-model-form"] input[name="site"]').val()
+    date = $('form[name="save-model-form"] input[name="date"]').val()
+    week = $('form[name="save-model-form"] input[name="semaine"]').is(':checked') ? 1 : 0;
+    csrftoken = $('#CSRFSession').val();
+
+    $.ajax({
+      url: '/model-add',
+      type: 'post',
+      //dataType: 'json',
+      data: {name: name, site: site, date: date, week: week, CSRFToken: csrftoken, erase: erase},
+      success: function(result){
+        if (result == 'model exists' && erase == false) {
+          model_form.dialog('close');
+          $('#duplicate-model-name').html(name);
+          duplicate_model.dialog('open');
+        }
+
+        if (result == 'ok') {
+          model_form.dialog('close');
+          duplicate_model.dialog('close');
+          $('#finish-model-name').html(name);
+          model_finish.dialog('open');
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        CJInfo(result.responseText,"error");
+      }
+    });
+  }
+
+  $('.pl-icon-open').on('click', function() {
+    date = $('input[name="date"]').val();
+    site = $('input[name="site"]').val();
+    CSRFSession = $('input[name="CSRFSession"]').val();
+    params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
+    $('#import-model-dialog').load('/modelform' + params);
+    import_model.dialog('open');
+    return false;
+  });
+
+  $('.pl-icon-save').on('click', function() {
+    model_form.dialog('open');
+    return false;
+  });
+
+  $('.pl-icon-drop').on('click', function() {
+    delete_planning.dialog('open');
+    return false;
+  });
   // Vérifions si un agent de catégorie A est placé en fin de service
   verif_categorieA();
 

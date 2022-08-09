@@ -1,24 +1,225 @@
 {# templates/planning/poste/index.html.twig #}
+
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-<script type="text/JavaScript" src="planning/poste/js/planning.js?version=2.7.11"></script>
+  <script type="text/JavaScript" src="{{ asset('planning/poste/js/planning.js') }}"></script>
+  <script type='text/JavaScript'>
+    $(document).ready(function(){
+      locked = $('#locked').val();
+      if (locked == 1) {
+        refresh_poste();
+      }
+    });
+  </script>
 {% endblock %}
 
-<div id='divcalendrier' class='text'>
-  <form name='form' method='get' action='#'>
-    <input type='hidden' id='date' name='date' value='{{ date }}' data-set-calendar=' {{ date }}' />
-    <input type='hidden' id='site' name='date' value='{{ site }}' />
-    </form>
+{% block page %}
+  <div id='planning'>
+    <input type="hidden" id="locked" value="{{ locked }}"/>
+    {% include 'planning/poste/menu.html.twig' %}
 
-      <table id='tab_titre'>
-        <tr>
-          <td>
-            <div class='noprint'>
-              <div id='pl-calendar' class='datepicker'></div>
-            </div>
-          </td>
+    {% if show_framework_select %}
+      {% include 'planning/poste/framework_select.html.twig' %}
 
-          <td class='titreSemFixe'>
-            <div class='noprint'>
+      {% if config('Planning-CommentairesToujoursActifs') %}
+        {% include 'planning/poste/comments.html.twig' %}
+      {% endif %}
+    {% endif %}
 
+    {% if no_tab is defined and no_tab %}
+      <p>Le planning n'est pas prêt.</p>
+      <div class='decalage-gauche'><p>Le planning n'est pas prêt.</p></div>
+
+      {% if config('Planning-CommentairesToujoursActifs') %}
+        {% include 'planning/poste/comments.html.twig' %}
+      {% endif %}
+    {% endif %}
+
+    {% if not locked and not autorisationN1 %}
+      <div class='decalage-gauche'>
+        <br/><br/>
+        <font color='red'>Le planning du {{ dateFr }} n'est pas validé !</font>
+        <br/>
+      </div>
+
+      {% if config('Planning-CommentairesToujoursActifs') %}
+        {% include 'planning/poste/comments.html.twig' %}
+      {% endif %}
+    {% endif %}
+
+    {% if tab is defined and tab %}
+      <div id="planning-data" data-verrou="{{ locked }}" data-autorisation="{{ autorisationN1 }}"
+           data-validation="{{ validation2 }}" data-lignesVides="{{ lignesVides }}"
+           data-sr-debut="{{ config('Planning-SR-debut') }}"
+           data-sr-fin="{{ config('Planning-SR-fin') }}"
+           data-CSRFToken='{{ CSRFSession }}' style='display:none;'>&nbsp;
+      </div>
+
+      <div id='tableau' data-tableId="{{ tab }}">
+        <table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>
+
+          {% for t in tabs %}
+            <tr class='tr_horaires tableau{{ t.j }} {{ t.classe }} {{ t.hiddenTable }}'>
+              <td class='td_postes sticky td_sep' data-id='{{ t.j }}' data-title='{{ t.titre2 }}'>
+                {{ t.titre }} {{ t.masqueTableaux | raw }}
+              </td>
+              {% for h in t.horaires %}
+              <td class='sticky-line' colspan="{{ h.start_nb30 }}">
+                {{ h.start_h3 }} - {{ h.end_h3 }}
+                </td>
+              {% endfor %}
+            </tr>
+
+            {% for l in t.lignes %}
+              <!-- Position lines -->
+              {% if l.is_position %}
+                <tr class='pl-line tableau{{ t.j }} {{ l.class_tr }} {{ t.classe }} {{ t.hiddenTable }} {{ l.emptyLine }}'>
+                  <td class='td_postes sticky-col {{ l.class_td }}'>
+                    {{ l.position_name }}
+                    {% if l.floor %}
+                      ({{ l.floor }})
+                    {% endif %}
+                  </td>
+
+                  {% for h in l.horaires %}
+                    {% if h.cell_off %}
+                      <td colspan="{{ h.colspan }}" class='cellule_grise'>&nbsp;</td>
+                    {% else %}
+                      {{ h.cell_html | raw }}
+                    {% endif %}
+                  {% endfor %}
+                </tr>
+              {% endif %}
+
+              <!-- Separation lines -->
+              {% if l.separation %}
+                <tr class="tr_separation tableau{{ t.j }} {{ t.classe }} {{ t.hiddenTable }}">
+                  <td class='sticky-col td_sep'>{{ l.separation }}</td>
+                  <td colspan="{{ t.colspan }}">&nbsp;</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+
+            <tr class="tr_espace tableau{{ t.j }} {{ t.classe }} {{ t.hiddenTable }}">
+              <td>&nbsp;</td>
+            </tr>
+          {% endfor %}
+
+        </table>
+      </div>
+
+      {% include 'planning/poste/comments.html.twig' %}
+
+      {% if config('Planning-AppelDispo') %}
+        <div id="pl-appelDispo-form" title="Appel à disponibilité" class='noprint' style='display:none;'>
+          <p class="validateTips" id='pl-appelDispo-tips'>
+            Envoyez un e-mail aux agents disponibles pour leur demander s'ils sont volontaires pour occuper le poste choisi.
+          </p>
+
+          <form>
+            <label for='pl-appelDispo-sujet'>Sujet</label><br/>
+            <input type='text' id='pl-appelDispo-sujet' name='pl-appelDispo-sujet' /><br/><br/>
+            <label for='pl-appelDispo-text'>Message</label><br/>
+            <textarea id='pl-appelDispo-text' name='pl-appelDispo-text'>&nbsp;</textarea>
+          </form>
+        </div>
+      {% endif %}
+
+      {% if config('Absences-planning') == 1 and absences_planning | length > 0 %}
+        <h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
+        <div class='decalage-gauche'>
+          <table>
+            {% for a in absences_planning %}
+              {% if a.valide %}
+                <tr class="{{ a.class }} {{ a.bold }}">
+                  <td style='text-align:left;'>
+                    {{ a.nom }} {{ a.prenom }}{{ a.heures }}{{ a.nonValidee }}
+                  </td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </table>
+        </div>
+      {% endif %}
+
+      {% if config('Absences-planning') == 2 and absences_planning | length > 0 %}
+        <h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
+
+        <table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'>
+          <thead>
+            <tr>
+              <th class='tableSort'>Nom</th>
+              <th class='tableSort'>Prénom</th>
+              <th class='dataTableDateFR tableSort'>Début</th>
+              <th class='dataTableDateFR tableSort'>Fin</th>
+              <th class='tableSort'>Motif</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in absences_planning %}
+              {% if a.valide %}
+                <tr class="{{ a.bold }}">
+                  <td>{{ a.nom }}</td>
+                  <td>{{ a.prenom }}</td>
+                  <td>{{ a.debutAff }}</td>
+                  <td>{{ a.finAff }}</td>
+                  <td>{{ a.motif }}{{ a.nonValidee }}</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
+      {% if config('Absences-planning') == 3 %}
+        <div class='decalage-gauche'>
+          <table class='tableauStandard' style='width:auto'>
+            <tr>
+              <td>
+                <h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3>
+              </td>
+              {% if absences_planning | length > 0 %}
+                <td>
+                  <h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>
+                </td>
+              {% endif %}
+            </tr>
+
+            <tr style='vertical-align:top;'>
+              <td>
+                <table cellspacing='0'>
+                  {% for p in presents %}
+                    <tr class="{{ p.class }}">
+                      <td>{{ p.nom }}</td>
+                      <td style='padding-left:15px;'>{{ p.site }}{{ p.heures }}</td>
+                    </tr>
+                  {% endfor %}
+                </table>
+              </td>
+
+              <td>
+                <table cellspacing='0'>
+                  {% for a in absences_planning %}
+                    {% if a.valide %}
+                      <tr class="{{ a.class }} {{ a.bold }}">
+                        <td>{{ a.nom }} {{ a.prenom }}</td>
+                        <td style='padding-left:15px;'>
+                          {{ a.motif }}{{ a.heures }}{{ a.nonValidee }}
+                        </td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  {% include 'planning/poste/save_model_form.html.twig' %}
+  {% include 'planning/poste/delete_form.html.twig' %}
+  {% include 'planning/poste/import_form.html.twig' %}
+{% endblock %}

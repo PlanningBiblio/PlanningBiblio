@@ -245,7 +245,7 @@ class planning
                             }
                         }
                     } else {
-                        $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d&apos;absences";
+                        $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d'absences";
                         $heuresHebdo="Erreur";
                     }
                 }
@@ -597,7 +597,7 @@ class planning
                 $message.="</ul>";
 
                 // On ajoute le lien vers le planning
-                $url = $config['URL'] . "/index.php?page=planning/poste/index.php&date=$date";
+                $url = $config['URL'] . "/index?date=$date";
                 $message.="Lien vers le planning du ".dateFr($date)." : $url";
 
                 // Envoi du mail
@@ -610,7 +610,7 @@ class planning
             // S'il n'y a pas d'éléments, on écrit "Vous n'êtes plus dans le planning ..."
             } else {
                 // On ajoute le lien bers le planning
-                $url = $config['URL'] . "/index.php?page=planning/poste/index.php&date=$date";
+                $url = $config['URL'] . "/index?date=$date";
                 $message.="<br/><br/>Vous n&apos;&ecirc;tes plus dans le planning du ".dateFr($date);
                 $message.="<br/><br/>Lien vers le planning du ".dateFr($date)." : $url";
 
@@ -630,6 +630,7 @@ class planning
     {
         $this->notes=null;
         $db=new db();
+        $db->sanitize_string = false;
         $db->select2("pl_notes", "*", array("date"=>$this->date, "site"=>$this->site), "ORDER BY `timestamp` DESC");
         if ($db->result) {
             $notes=$db->result[0]['text'];
