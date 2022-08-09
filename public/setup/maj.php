@@ -2754,6 +2754,41 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.05.00.000";
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT 36725 Symfonize LDAP.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='personnel/import.php';";
+
+    // Symfonize planning.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/index.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/index' WHERE `url`='planning/poste/index.php';";
+
+    $db = new db();
+    $db->select('pl_poste_tab');
+    if ($db->result) {
+        foreach ($db->result as $tab) {
+            $id = $tab['id'];
+            $old = $tab['nom'];
+            $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            if ($new != $old) {
+                $sql[] = "UPDATE `{$dbprefix}pl_poste_tab` SET `nom` = '$new' WHERE `id` = '$id';";
+            }
+        }
+    }
+
+    // Symfonize planning deletion.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/supprimer.php';";
+
+    // Symfonize planning model import.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/importer.php';";
+
+    // Symfonize planning model save.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/enregistrer.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
