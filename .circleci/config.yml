@@ -11,7 +11,7 @@ executors:
         default: '7.4'
     docker:
       - image: cimg/php:<< parameters.php >>
-      - image: circleci/mariadb:10.5-ram
+      - image: cimg/mariadb:10.6-ram
         environment:
           MYSQL_ROOT_PASSWORD: rootplb
           MYSQL_DATABASE: planningb
