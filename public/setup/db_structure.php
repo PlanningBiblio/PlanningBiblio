@@ -51,11 +51,11 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
 
 $sql[]="CREATE TABLE `{$dbprefix}absences_infos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `debut` date DATE',
-  `fin` date DATE,
-  `texte` text NOT NULL,
+  `debut` date NOT NULL DEFAULT '0000-00-00',
+  `fin` date NOT NULL DEFAULT '0000-00-00',
+  `texte` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
