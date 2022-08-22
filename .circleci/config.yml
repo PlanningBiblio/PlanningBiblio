@@ -10,7 +10,7 @@ executors:
         type: string
         default: '7.4'
     docker:
-      - image: circleci/php:<< parameters.php >>-cli
+      - image: cimg/php:<< parameters.php >>
       - image: circleci/mariadb:10.6-ram
         environment:
           MYSQL_ROOT_PASSWORD: rootplb
