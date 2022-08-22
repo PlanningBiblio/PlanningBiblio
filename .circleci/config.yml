@@ -32,9 +32,7 @@ jobs:
       - run: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
-      - run: sudo docker-php-ext-install zip
-      - run: sudo docker-php-ext-install mysqli
-      - run: sudo docker-php-ext-install pdo_mysql
+      - run: sudo -E install-php-extensions zip mysqli pdo_mysql
       - run: sudo apt install -y google-chrome-stable
 
       # Chrome driver.
