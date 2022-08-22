@@ -11,7 +11,7 @@ executors:
         default: '7.4'
     docker:
       - image: cimg/php:<< parameters.php >>
-      - image: circleci/mariadb:10.6-ram
+      - image: circleci/mariadb:10.5-ram
         environment:
           MYSQL_ROOT_PASSWORD: rootplb
           MYSQL_DATABASE: planningb
@@ -59,7 +59,6 @@ jobs:
             - ./vendor
 
       # run tests with phpunit or codecept
-      - run: sudo ls -l $PHP_INI_DIR/conf.d
       - run: sudo cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && echo 'xdebug.mode=coverage' | sudo tee -a $PHP_INI_DIR/php.ini
       - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
       - run: bash <(curl -s https://codecov.io/bash)
