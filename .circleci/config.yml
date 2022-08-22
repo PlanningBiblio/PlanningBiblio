@@ -48,7 +48,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: zcat .circleci/data.sql.gz | mysql -u root --password=rootplb planningb
+      - run: zcat .circleci/data.sql.gz | mysql --host=127.0.01 --port=3306 -u root --password=rootplb planningb
       - run: cp .circleci/.env.test.local .env.test.local
       - run: cp .circleci/.env.local .env.local
       - run: rm -rf vendor
