@@ -96,7 +96,7 @@ $tables = array (
     array(
         'name' => 'cron',
         'fields' => array(
-            'comand',
+            'command',
             'comments',
             'dom',
             'dow',
@@ -237,7 +237,6 @@ $tables = array (
         'fields' => array(
             'commentaire',
             'jour',
-            'nom',
             'tableau',
         ),
     ),
