@@ -11,7 +11,7 @@ executors:
         default: '7.4'
     docker:
       - image: circleci/php:<< parameters.php >>-cli
-      - image: circleci/mariadb:10.5-ram
+      - image: circleci/mariadb:10.6-ram
         environment:
           MYSQL_ROOT_PASSWORD: rootplb
           MYSQL_DATABASE: planningb
@@ -79,3 +79,8 @@ workflows:
           e:
             name: plb
             php: '8.0'
+      - install-and-test:
+          name: php:8.1
+          e:
+            name: plb
+            php: '8.1'
