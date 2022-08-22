@@ -34,6 +34,7 @@ jobs:
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
       - run: sudo -E install-php-extensions zip mysqli pdo_mysql
       - run: sudo apt install -y google-chrome-stable
+      - run: sudo apt install -y mariadb-client
 
       # Chrome driver.
       - run: wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
@@ -47,6 +48,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
+      - run: zcat data/planningb_2110.sql.gz | mysql --host=127.0.01 --port=3306 -u plb --password=plb planningb
       - run: cp .circleci/.env.test.local .env.test.local
       - run: cp .circleci/.env.local .env.local
       - run: rm -rf vendor
