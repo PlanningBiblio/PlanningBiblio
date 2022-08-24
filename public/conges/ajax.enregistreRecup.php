@@ -76,6 +76,9 @@ if ($db->error) {
         if ($commentaires) {
             $message.="Commentaires : ".str_replace("\n", "<br/>", $commentaires);
         }
+        // ajout d'un lien permettant de rebondir sur la demande
+        $url = $config['URL'] . "/comp-time";
+        $message.="<br/><br/>Lien vers la liste des récupérations; :<br/><a href='$url'>$url</a><br/><br/>";
 
         // Envoi du mail
         $m=new CJMail();
