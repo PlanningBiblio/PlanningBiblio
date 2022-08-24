@@ -654,12 +654,19 @@ class planningHebdo
         $nomAgent = nom($data['perso_id'], "prenom nom");
 
         if (!empty($destinataires)) {
-            if ($valide_n2 > 0) {
-                $sujet="Validation d'un planning de présence, ".html_entity_decode($nomAgent, ENT_QUOTES|ENT_IGNORE, "UTF-8");
+            if (($valide_n1 > 0) & ($valide_n2 == 0)){
+                $sujet="Validation niveau 1 d'un planning de présence, ".html_entity_decode($nomAgent, ENT_QUOTES|ENT_IGNORE, "UTF-8");
                 $message="Un planning de présence de ";
                 $message.=$nomAgent;
-                $message.=" a été validé dans l'application Planning Biblio<br/>";
-            } else {
+                $message.=" a été validé au niveau 1 dans l'application Planning Biblio<br/>";
+            } 
+            elseif ($valide_n2 > 0) {
+                $sujet="Validation niveau 2 d'un planning de présence, ".html_entity_decode($nomAgent, ENT_QUOTES|ENT_IGNORE, "UTF-8");
+                $message="Un planning de présence de ";
+                $message.=$nomAgent;
+                $message.=" a été validé au niveau 2 dans l'application Planning Biblio<br/>";
+            }
+            else {
                 $sujet="Modification d'un planning de présence, ".html_entity_decode($nomAgent, ENT_QUOTES|ENT_IGNORE, "UTF-8");
                 $message="Un planning de présence de ";
                 $message.=$nomAgent;
