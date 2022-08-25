@@ -71,8 +71,8 @@ if ($db->error) {
     }
 
     if (!empty($destinataires)) {
-        $sujet="Nouvelle demande de récupération";
-        $message="Demande de récupération du ".dateFr($date)." enregistrée pour $prenom $nom<br/><br/>";
+        $sujet="Nouvelle demande d'heures supplémentaires";
+        $message="Demande d'heures supplémentaires du ".dateFr($date)." enregistrée pour $prenom $nom<br/><br/>";
         if ($commentaires) {
             $message.="Commentaires : ".str_replace("\n", "<br/>", $commentaires);
         }
