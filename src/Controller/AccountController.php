@@ -90,6 +90,9 @@ class AccountController extends BaseController
 
         foreach ($planning as &$elem) {
             $validation = "N'est pas validé";
+            if ($elem['valide_n1']) {
+                $validation = "En attente de validation niveau 2";
+            }            
             if ($elem['valide']) {
                 $validation = nom($elem['valide'], "nom p", $agents).", ".dateFr($elem['validation'], true);
             }
