@@ -16,6 +16,7 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 
 require_once "class.planning.php";
 
+use App\Model\AbsenceReason;
 use App\Model\Agent;
 use App\Model\Model;
 
@@ -255,6 +256,11 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
                 $fin=$elem." ".$elem2['fin'];
 
                 // Look for absences
+                $teleworking_reasons = $entityManager->getRepository(AbsenceReason::class)
+                                                     ->getRemoteWorkingDescriptions();
+                $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
+                $filter .= " $teleworking_exception";
+
                 $db2 = new db();
                 $db2->select("absences", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
                 $absent = $db2->result ? true : false;
