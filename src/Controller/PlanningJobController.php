@@ -273,11 +273,8 @@ class PlanningJobController extends BaseController
         $teleworking_exception = null;
 
         if ($teleworking) {
-            $teleworking_reasons = array();
-            $absence_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
-            foreach ($absence_reasons as $reason) {
-                $teleworking_reasons[] = $reason->valeur();
-            }
+            $teleworking_reasons = $this->entityManager->getRepository(AbsenceReason::class)
+                                                       ->getRemoteWorkingDescriptions();
             $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
         }
 

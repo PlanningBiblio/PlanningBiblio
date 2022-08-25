@@ -5,7 +5,7 @@ namespace App\Model;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
 /**
- * @Entity @Table(name="select_abs")
+ * @Entity(repositoryClass="App\Repository\AbsenceReasonRepository") @Table(name="select_abs")
  **/
 class AbsenceReason extends PLBEntity
 {

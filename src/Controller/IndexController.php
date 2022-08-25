@@ -620,7 +620,7 @@ class IndexController extends BaseController
 
             if (!empty($p->elements)) {
                 foreach ($p->elements as $elem) {
-                    $tempsPlanningHebdo[$elem["perso_id"]]=$elem["temps"];
+                    $tempsPlanningHebdo[$elem["perso_id"]]=$elem;
                 }
             }
         }
@@ -684,7 +684,7 @@ class IndexController extends BaseController
             } else {
                 $db = new \db();
                 $db->select2('pl_poste_modeles', '*', array('model_id' => $model_id, 'site'=>$site));
-            }
+		}
 
             $filter = $this->config('Absences-validation') ? 'AND `valide`>0' : null;
             if ($db->result) {
@@ -724,6 +724,13 @@ class IndexController extends BaseController
                     $fin=$elem." ".$elem2['fin'];
 
                     // Look for absences
+
+                    // Exclude absence with remote working reason.
+                    $teleworking_reasons = $this->entityManager->getRepository(AbsenceReason::class)
+                                                               ->getRemoteWorkingDescriptions();
+                    $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
+                    $filter .= " $teleworking_exception";
+
                     $db2 = new \db();
                     $db2->select('absences', '*', "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
                     $absent = $db2->result ? true : false;
@@ -731,7 +738,7 @@ class IndexController extends BaseController
                     // Look for hollidays
                     $db2 = new \db();
                     $db2->select("conges", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
-                    $absent = $db2->result ? true : $absent ;
+                    $absent = $db2->result ? true : $absent;
 
                     // Don't import if absent and get_absents not checked
                     if (!$get_absents and $absent) {
