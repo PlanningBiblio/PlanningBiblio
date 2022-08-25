@@ -686,7 +686,6 @@ class IndexController extends BaseController
                 $db->select2('pl_poste_modeles', '*', array('model_id' => $model_id, 'site'=>$site));
 		}
 
-            $filter = $this->config('Absences-validation') ? 'AND `valide`>0' : null;
             if ($db->result) {
                 foreach ($db->result as $elem2) {
 
@@ -725,24 +724,28 @@ class IndexController extends BaseController
 
                     // Look for absences
 
-                    // Exclude absence with remote working reason.
-                    $teleworking_reasons = $this->entityManager->getRepository(AbsenceReason::class)
+                    if (!$get_absents) {
+                        $filter = $this->config('Absences-validation') ? 'AND `valide`>0' : null;
+
+                        // Exclude absence with remote working reason.
+                        $teleworking_reasons = $this->entityManager->getRepository(AbsenceReason::class)
                                                                ->getRemoteWorkingDescriptions();
-                    $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
-                    $filter .= " $teleworking_exception";
+                        $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
+                        $filter .= " $teleworking_exception";
 
-                    $db2 = new \db();
-                    $db2->select('absences', '*', "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
-                    $absent = $db2->result ? true : false;
+                        $db2 = new \db();
+                        $db2->select('absences', '*', "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
+                        $absent = $db2->result ? true : false;
 
-                    // Look for hollidays
-                    $db2 = new \db();
-                    $db2->select("conges", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
-                    $absent = $db2->result ? true : $absent;
+                        // Look for hollidays
+                        $db2 = new \db();
+                        $db2->select("conges", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
+                        $absent = $db2->result ? true : $absent;
 
-                    // Don't import if absent and get_absents not checked
-                    if (!$get_absents and $absent) {
-                        continue;
+                        // Don't import if absent and get_absents not checked
+                        if ($absent) {
+                            continue;
+                        }
                     }
 
                     // Check if the agent is out of his schedule (schedule has been changed).
