@@ -220,6 +220,7 @@ class FrameworkController extends BaseController
                 "tableauNumero" => $tableauNumero,
                 "tableaux"      => null,
                 "tabs"          => null,
+                "used"          => false,
             )
         );
 
