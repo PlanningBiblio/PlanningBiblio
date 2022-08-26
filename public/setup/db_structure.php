@@ -580,26 +580,6 @@ $sql[]="CREATE TABLE `{$dbprefix}recuperations` (
   `solde_actuel` FLOAT(10)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
-// Création de la table conges_cet
-$sql[]="CREATE TABLE `{$dbprefix}conges_cet` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `perso_id` INT(11) NOT NULL,
-  `jours` INT(11) NOT NULL DEFAULT '0',
-  `commentaires` TEXT,
-  `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `saisie_par` INT NOT NULL,
-  `modif` INT(11) NOT NULL DEFAULT '0',
-  `modification` TIMESTAMP,
-  `valide_n1` INT(11) NOT NULL DEFAULT '0',
-  `validation_n1` TIMESTAMP,
-  `valide_n2` INT(11) NOT NULL DEFAULT '0',
-  `validation_n2` TIMESTAMP,
-  `refus` TEXT,
-  `solde_prec` FLOAT(10),
-  `solde_actuel` FLOAT(10),
-  `annee` VARCHAR(10)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
-
 // Création de la table absences_documents
 $sql[] = "CREATE TABLE `{$dbprefix}absences_documents` (
   id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,

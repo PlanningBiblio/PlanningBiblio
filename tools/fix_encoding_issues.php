@@ -87,15 +87,6 @@ $tables = array (
             'end_halfday',
         ),
     ),
-
-    array(
-        'name' => 'conges_cet',
-        'fields' => array(
-            'annee',
-            'commentaires',
-            'refus',
-        ),
-    ),
     array(
         'name' => 'conges_infos',
         'fields' => array(

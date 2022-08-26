@@ -11,7 +11,6 @@ use App\Model\OverTime;
 use App\Model\Detached;
 use App\Model\HiddenTables;
 use App\Model\Holiday;
-use App\Model\HolidayCET;
 use App\Model\PlanningNote;
 use App\Model\PlanningPosition;
 use App\Model\PlanningPositionLock;
@@ -67,7 +66,6 @@ class AgentRepository extends EntityRepository
                 Detached::class,
                 HiddenTables::class,
                 Holiday::class,
-                HolidayCET::class,
                 PlanningNote::class,
                 PlanningPosition::class,
                 PlanningPositionModel::class,

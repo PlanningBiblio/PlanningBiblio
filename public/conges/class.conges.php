@@ -805,25 +805,6 @@ class conges
         }
     }
 
-    public function getCET()
-    {
-        $where=$this->perso_id?"perso_id='{$this->perso_id}'":"1";
-
-        if ($this->annee) {
-            $where.=" AND `annee`='{$this->annee}'";
-        }
-
-        if ($this->id) {
-            $where="id='{$this->id}'";
-        }
-
-        $db=new db();
-        $db->select("conges_CET", null, $where);
-        if ($db->result) {
-            $this->elements=$db->result;
-        }
-    }
-
     public function getRecup()
     {
         $debut=$this->debut?$this->debut:date("Y-m-d", strtotime("-1 month", time()));
