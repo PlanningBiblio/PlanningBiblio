@@ -2633,8 +2633,8 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     // Remove duplicate.
-    $sql[] = "DELETE s1 FROM select_services s1 INNER JOIN select_services s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
-    $sql[] = "DELETE s1 FROM select_statuts s1 INNER JOIN select_statuts s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
+    $sql[] = "DELETE s1 FROM `{$dbprefix}select_services` s1 INNER JOIN `{$dbprefix}select_services` s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
+    $sql[] = "DELETE s1 FROM `{$dbprefix}select_statuts` s1 INNER JOIN `{$dbprefix}select_statuts` s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
 
     // MT 35788
     $sql[] = "UPDATE `{$dbprefix}conges` SET `fin` = REPLACE(`fin`, '23:59:00', '23:59:59') WHERE fin like '%23:59:00';";
