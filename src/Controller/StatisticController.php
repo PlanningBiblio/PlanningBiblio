@@ -316,23 +316,23 @@ class StatisticController extends BaseController
         // 		--------------------------		Affichage du tableau de résultat		--------------------
         if ($tab) {
            
-            foreach ($heures_tab_global as &$v) {
+            foreach ($heures_tab_global as $v) {
                 $v[2] = heure3($v[0]).'-'.heure3($v[1]);
             }
 
-            foreach ($tab as &$elem) {
+            foreach ($tab as $elem) {
                 // Calcul des moyennes
                 $jour = $elem[2]/$nbJours;
 
                 $heures = 0;
-                foreach ($elem[3] as &$samedi) {
+                foreach ($elem[3] as $samedi) {
                     $heures += $samedi[1];
                 }
                 sort($elem[3]);				//	tri les samedis par dates croissantes
 
                 $elem["heures"] = heure4($heures);
                 
-                foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
+                foreach ($elem[3] as $samedi) {			//	Affiche les dates et heures des samedis
                     $samedi[0] = dateFr($samedi[0]);			//	date
                     $samedi[1] = heure4($samedi[1]);	// heures
                 }
@@ -340,7 +340,7 @@ class StatisticController extends BaseController
                 // Jours feriés
                 if ($exists_JF) {
                     sort($elem[8]);				//	tri les dimanches par dates croissantes
-                    foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des dimanches
+                    foreach ($elem[8] as $ferie) {		// 	Affiche les dates et heures des dimanches
                         $ferie[0] = dateFr($ferie[0]);			//	date
                         $ferie[1] = heure4($ferie[1]);	//	heures
                     }
@@ -352,17 +352,17 @@ class StatisticController extends BaseController
                         $elem[5] = heure4($elem[5]);
                     }
                     sort($elem[4]);				//	tri les absences par dates croissantes
-                    foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
+                    foreach ($elem[4] as $absences) {		//	Affiche les dates et heures des absences
                         $absences[0] = dateFr($absences[0]);			//	date
                         $absences[1] = heure4($absences[1]);
                     }
                 }
             
                 // Statistiques-Heures
-                foreach ($heures_tab_global as &$v) {
+                foreach ($heures_tab_global as $v) {
                     if (!empty($elem[7][$v])) {
                         sort($elem[7][$v]);
-                        foreach ($elem[7][$v] as &$h) {
+                        foreach ($elem[7][$v] as $h) {
                             $h = dateFr($h);
                         }
                     }
@@ -727,7 +727,7 @@ class StatisticController extends BaseController
             }
         }
 
-        foreach ($tab as &$elem) {
+        foreach ($tab as $elem) {
             $jour = $elem[2]/$nbJours;
             $hebdo = $jour*$joursParSemaine;
             $elem[2] = heure4($elem[2]);
@@ -743,7 +743,7 @@ class StatisticController extends BaseController
                     }
                 }
             }
-            foreach ($elem[1] as &$poste) {
+            foreach ($elem[1] as $poste) {
                 $site = null;
                 if ($poste["site"] > 0 and $nbSites > 1) {
                     $site = $this->config("Multisites-site{$poste['site']}")." ";
@@ -754,14 +754,14 @@ class StatisticController extends BaseController
                 $poste["siteEtage"] = $siteEtage;
             }
             sort($elem[3]);
-            foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
+            foreach ($elem[3] as $samedi) {			//	Affiche les dates et heures des samedis
                 $samedi[0] = dateFr($samedi[0]);			//	date
                 $samedi[1] = heure4($samedi[1]);	// heures
             }
 
             if ($this->config('Dimanche')) {
                 sort($elem[6]);
-                foreach ($elem[6] as &$dimanche) {		//	Affiche les dates et heures des dimanches
+                foreach ($elem[6] as $dimanche) {		//	Affiche les dates et heures des dimanches
                     $dimanche[0] = dateFr($dimanche[0]);		//	date
                     $dimanche[1] = heure4($dimanche[1]);	//	heures
                 }
@@ -769,7 +769,7 @@ class StatisticController extends BaseController
 
             if ($exists_JF) {
                 sort($elem[8]);
-                foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des jours fériés
+                foreach ($elem[8] as $ferie) {		// 	Affiche les dates et heures des jours fériés
                     $ferie[0] = dateFr($ferie[0]);			//	date
                     $ferie[1] = heure4($ferie[1]);	//	heures
                 }
@@ -780,7 +780,7 @@ class StatisticController extends BaseController
                     $elem[5] = heure4($elem[5]);
                 }
                 sort($elem[4]);
-                foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
+                foreach ($elem[4] as $absences) {		//	Affiche les dates et heures des absences
                     $absences[0] = dateFr($absences[0]);	//	date
                     $absences[1] = heure4($absences[1]);	// heures
                 }
@@ -1181,7 +1181,7 @@ class StatisticController extends BaseController
         }
 
         if($tab){
-            foreach ($tab as &$elem) {
+            foreach ($tab as $elem) {
                 $jour = $elem[2]/$nbJours;
                 $hebdo = $jour*$joursParSemaine;
                 $elem[2] = heure4($elem[2]);
@@ -1200,7 +1200,7 @@ class StatisticController extends BaseController
                     }
                 }
                 //	Affichage du noms des postes et des heures dans la 2eme colonne
-                foreach ($elem[1] as &$poste) {
+                foreach ($elem[1] as $poste) {
                     $site = null;
                     if ($poste["site"]>0 and $nbSites > 1) {
                         $site = $this->config("Multisites-site{$poste['site']}")." ";
@@ -1212,14 +1212,14 @@ class StatisticController extends BaseController
                 }
 
                 sort($elem[3]);				//	tri les samedis par dates croissantes
-                foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
+                foreach ($elem[3] as $samedi) {			//	Affiche les dates et heures des samedis
                     $samedi[0] = dateFr($samedi[0]);			//	date
                     $samedi[1] = heure4($samedi[1]);	        // heures
                 }
                 
                 if ($this->config('Dimanche')) {
                     sort($elem[6]);				//	tri les dimanches par dates croissantes
-                    foreach ($elem[6] as &$dimanche) {		//	Affiche les dates et heures des dimanches
+                    foreach ($elem[6] as $dimanche) {		//	Affiche les dates et heures des dimanches
                         $dimanche[0] = dateFr($dimanche[0]);		//	date
                         $dimanche[1] = heure4($dimanche[1]);	//	heures
                     }
@@ -1227,7 +1227,7 @@ class StatisticController extends BaseController
         
                 if ($exists_JF) {
                     sort($elem[8]);				//	tri les jours fériés par dates croissantes
-                    foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des jours fériés
+                    foreach ($elem[8] as $ferie) {		// 	Affiche les dates et heures des jours fériés
                         $ferie[0] = dateFr($ferie[0]);			//	date
                         $ferie[1] = heure4($ferie[1]);	//	heures
                     }
@@ -1239,7 +1239,7 @@ class StatisticController extends BaseController
                         $elem[5] = heure4($elem[5]);
                     }
                     sort($elem[4]);				//	tri les absences par dates croissantes
-                    foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
+                    foreach ($elem[4] as $absences) {		//	Affiche les dates et heures des absences
                         $absences[0] = dateFr($absences[0]);		//	date
                         $absences[1] = heure4($absences[1]);	// heures
                     }
@@ -1542,7 +1542,7 @@ class StatisticController extends BaseController
             }
         }
 
-        foreach ($tab as &$elem) {
+        foreach ($tab as $elem) {
             foreach ($motifs as $motif) {
                 if (in_array($motif, $elem)){
                     $elem[$motif]['heures'] = is_numeric($elem[$motif]['heures']) ? heure4($elem[$motif]['heures']) : "Erreur";
@@ -1811,7 +1811,7 @@ class StatisticController extends BaseController
             $db->select("pl_poste", "`date`", "`date` BETWEEN '$debutREQ' AND '$finREQ' AND `site` IN ($sitesREQ)", "GROUP BY `date`;");
             $nbJours = $db->nb;
 
-            foreach ($tab as &$elem) {
+            foreach ($tab as $elem) {
                 $jour=$elem[2]/$nbJours;
                 $hebdo=$jour*$joursParSemaine;
                 $total_heures+=$elem[2];
@@ -2057,7 +2057,7 @@ class StatisticController extends BaseController
                 }
                 $postes = array();
                 if (is_array($resultat)) {
-                    foreach ($resultat as &$elem) {
+                    foreach ($resultat as $elem) {
                         if ($agent == $elem['perso_id']) {
                             // Vérifie à partir de la table absences si l'agent est absent
                             // S'il est absent, on met à 1 la variable $elem['absent']
@@ -2215,7 +2215,7 @@ class StatisticController extends BaseController
             $tab[$key][2] = heure4($tab[$key][2]);
             $tab[$key]['hebdo'] = heure4($hebdo);
 
-            foreach ($tab[$key][1] as &$poste) {
+            foreach ($tab[$key][1] as $poste) {
                 $site=null;
                 if ($poste["site"]>0 and $nbSites>1) {
                     $site = $this->config("Multisites-site{$poste['site']}")." ";
@@ -2228,14 +2228,14 @@ class StatisticController extends BaseController
             }
 
             if ($exists_samedi) {
-                foreach ($tab[$key][3] as &$samedi) {
+                foreach ($tab[$key][3] as $samedi) {
                     $samedi[0] = dateFr($samedi[0]);
                     $samedi[1] = heure4($samedi[1]);
                 }
             }
 
             if ($exists_dimanche) {
-                foreach ($tab[$key][6] as &$dimanche) {
+                foreach ($tab[$key][6] as $dimanche) {
                     $dimanche[0] = dateFr($dimanche[0]);
                     $dimanche[1] = heure4($dimanche[1]);
                 }
@@ -2244,7 +2244,7 @@ class StatisticController extends BaseController
 
             if ($exists_JF) {
                 sort($tab[$key][8]);
-                foreach ($tab[$key][8] as &$ferie) {
+                foreach ($tab[$key][8] as $ferie) {
                     $ferie[0] = dateFr($ferie[0]);
                     $ferie[1] = heure4($ferie[1]);
                 }
@@ -2253,7 +2253,7 @@ class StatisticController extends BaseController
             if ($exists_absences) {
                 $tab[$key][5] = heure4($tab[$key][5]);
                 sort($tab[$key][4]);
-                foreach ($tab[$key][4] as &$absence) {
+                foreach ($tab[$key][4] as $absence) {
                     $absence[0] = dateFr($absence[0]);
                     $absence[1] = heure4($absence[1]);
                 }
@@ -2263,7 +2263,7 @@ class StatisticController extends BaseController
                 $tmp = $v[0].'-'.$v[1];
                 if (!empty($tab[$key][7][$tmp])) {
                     sort($tab[$key][7][$tmp]);
-                    foreach ($tab[$key][7][$tmp] as &$h) {
+                    foreach ($tab[$key][7][$tmp] as $h) {
                         $h = dateFr($h);
                     }
                 }
@@ -2979,7 +2979,7 @@ class StatisticController extends BaseController
                 $multisites[$i] = $this->config("Multisites-site{$i}");
             }
         }
-        foreach ($tab as &$elem) {
+        foreach ($tab as $elem) {
             $siteEtage=array();
             if ($nbSites>1) {
                 for ($i = 1; $i <= $nbSites; $i++) {
@@ -3017,9 +3017,9 @@ class StatisticController extends BaseController
                     }
                 }
             }
-            foreach ($elem[1] as &$date) {
+            foreach ($elem[1] as $date) {
                 $date[3] = dateAlpha($date[0])." : ".heure4($date[2]);
-                foreach ($date[1] as &$horaires) {
+                foreach ($date[1] as $horaires) {
                     $horaires[3] = heure2($horaires[0])." - ".heure2($horaires[1])." : ".heure4($horaires[2]);
                 }
             }
