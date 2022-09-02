@@ -94,6 +94,16 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
       $lignes[]=implode($separateur, $cellules);
         }
     }
+
+    if ($nom == 'agent' and !empty ($tab['neverSelected'])) {
+        $lignes[]=null;
+        $lignes[]="Agents jamais postés";
+        $lignes[]=implode($separateur, array("Nom","Prénom"));
+        foreach ($tab['neverSelected'] as $elem) {
+            $lignes[]=implode($separateur, array($elem[1], $elem[2]));
+        }
+    }
+  
     $lignes[]=null;
     $lignes[]="Samedis";
   
