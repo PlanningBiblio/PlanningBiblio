@@ -2033,6 +2033,8 @@ class StatisticController extends BaseController
             //    Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
             //    pour chaques agents sélectionnés
             foreach ($agents as $agent) {
+
+                // If $tab already contains information for the current agent, we retrieve this information to complete it.
                 if (array_key_exists($agent, $tab)) {
                     $heures = $tab[$agent][2];
                     $total_absences = $tab[$agent][5];
@@ -2042,18 +2044,30 @@ class StatisticController extends BaseController
                     $absences = $tab[$agent][4];
                     $feries = $tab[$agent][8];
                     $sites = $tab[$agent]["sites"];
+
+                // If $tab does not contains information for the current agent, we create an entry with default values.
+                // These entry is now created even if the agent is not found on schedules.
                 } else {
-                    $heures = 0;
-                    $total_absences = 0;
-                    $samedi = array();
-                    $dimanche = array();
-                    $absences = array();
-                    $heures_tab = array();
-                    $feries = array();
+                    foreach ($agents_list as $elem) {
+                        if ($elem['id'] == $agent) {    // on créé un tableau avec le nom et le prénom de l'agent.
+                            $agent_tab = array($agent, $elem['nom'], $elem['prenom']);
+                            break;
+                        }
+                    }
+                    $tab[$agent][0] = $agent_tab;
+                    $tab[$agent][1] = array();
+                    $heures = $tab[$agent][2] = 0;
+                    $total_absences = $tab[$agent][5] = 0;
+                    $samedi = $tab[$agent][3] = array();
+                    $dimanche = $tab[$agent][6] = array();
+                    $heures_tab = $tab[$agent][7] = array();
+                    $absences = $tab[$agent][4] = array();
+                    $feries = $tab[$agent][8] = array();
                     $sites = array();
                     for ($i = 1; $i <= $nbSites; $i++) {
                         $sites[$i] = 0;
                     }
+                    $tab[$agent]["sites"] = $sites;
                 }
                 $postes = array();
                 if (is_array($resultat)) {
@@ -2151,12 +2165,6 @@ class StatisticController extends BaseController
                                 $exists_absences = true;
                             }
 
-                            foreach ($agents_list as $elem2) {
-                                if ($elem2['id'] == $agent) {    // on créé un tableau avec le nom et le prénom de l'agent.
-                                    $agent_tab = array($agent, $elem2['nom'], $elem2['prenom']);
-                                    break;
-                                }
-                            }
                             // On met dans tab tous les éléments (infos postes + agents + heures)
                             $tab[$agent] = array(
                                 $agent_tab,
@@ -2186,8 +2194,16 @@ class StatisticController extends BaseController
 
         sort($heures_tab_global);
 
+        // Agents who are never selected (for export)
+        $neverSelected = array();
+        foreach ($tab as $elem) {
+           if (empty($elem[1])) {
+             $neverSelected[] = $elem[0];
+           }
+        }
+
         //passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $_SESSION['stat_tab'] = array_merge($tab, array('neverSelected' => $neverSelected));
 
         $selectedAgents = array();
         $multisites = array();
