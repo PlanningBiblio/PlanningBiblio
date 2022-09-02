@@ -30,108 +30,108 @@
             <a href="{{ asset ('workinghour/add') }}?retour=/myaccount" class='ui-button'>Entrer de nouveaux horaires</a>
           </div>
         {% endif %}
+        <!-- Working hours history -->
+        <div id='historique'>
+        <br/>
+          <table id='tablePresenceMonCompte' class='CJDataTable' data-sort='[[1],[2],[3]]'>
+            <thead>
+              <tr>
+                <th class='dataTableNoSort'>&nbsp;</th>
+                <th class='dataTableDateFR'>Début</th>
+                <th class='dataTableDateFR'>Fin</th>
+                <th class='dataTableDateFR'>Saisie</th>
+                <th>Validation</th>
+                <th>Actuel</th>
+                <th>Commentaires</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for elem in planning %}
+                <tr>
+                  <td style='white-space:nowrap;'>{{ elem.remplace ? "<font style='font-size:20pt;'>&rdsh;</font>": "" }}
+                    <a href='/workinghour/{{ elem.id }}?retour=/myaccount'/>
+                      <span class='pl-icon pl-icon-edit' title='Voir'></span>
+                    </a>
+                  </td>
+                  <td>{{ elem.debut }}</td>
+                  <td>{{ elem.fin }}</td>
+                  <td>{{ elem.saisie }}</td>
+                  <td>{{ elem.validation }}</td>
+                  <td>{{ elem.actuel ? "Oui" : ""}}</td>
+                  <td>{{ elem.commentaires }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div> <!-- Historique' -->
+      </div> <!-- working_hours -->
     {% endif %}
-     <!-- Working hours history -->
-    <div id='historique'>
-    <br/>
-      <table id='tablePresenceMonCompte' class='CJDataTable' data-sort='[[1],[2],[3]]'>
-        <thead>
+    {% if config('Conges-Enable') %}
+      <!-- Crédits -->
+      <div id='credits' style='margin-left:80px;display:none;'>
+        <h3>Crédits</h3>
+        <table class='tableauFiches'>
           <tr>
-            <th class='dataTableNoSort'>&nbsp;</th>
-            <th class='dataTableDateFR'>Début</th>
-            <th class='dataTableDateFR'>Fin</th>
-            <th class='dataTableDateFR'>Saisie</th>
-            <th>Validation</th>
-            <th>Actuel</th>
-            <th>Commentaires</th>
+            <td style='font-weight:bold;' colspan='2'>Congés</td>
           </tr>
-        </thead>
-        <tbody>
-          {% for elem in planning %}
-            <tr>
-              <td style='white-space:nowrap;'>{{ elem.remplace ? "<font style='font-size:20pt;'>&rdsh;</font>": "" }}
-                <a href='/workinghour/{{ elem.id }}?retour=/myaccount'/>
-                  <span class='pl-icon pl-icon-edit' title='Voir'></span>
-                </a>
+          <tr>
+            <td>Crédit annuel</td>
+            {% if config('Conges-Mode') == 'heures' %}
+              <td style='text-align:right;'>
+                {{ credits.annuel }}
               </td>
-              <td>{{ elem.debut }}</td>
-              <td>{{ elem.fin }}</td>
-              <td>{{ elem.saisie }}</td>
-              <td>{{ elem.validation }}</td>
-              <td>{{ elem.actuel ? "Oui" : ""}}</td>
-              <td>{{ elem.commentaires }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div> <!-- Historique' -->
-  </div> <!-- working_hours -->
-  {% if config('Conges-Enable') %}
-    <!-- Crédits -->
-    <div id='credits' style='margin-left:80px;display:none;'>
-      <h3>Crédits</h3>
-      <table class='tableauFiches'>
-        <tr>
-          <td style='font-weight:bold;' colspan='2'>Congés</td>
-        </tr>
-        <tr>
-          <td>Crédit annuel</td>
-          {% if config('Conges-Mode') == 'heures' %}
+            {% endif %}
             <td style='text-align:right;'>
-              {{ credits.annuel }}
+              {{ credits.joursAnnuel }} jours
             </td>
-          {% endif %}
-          <td style='text-align:right;'>
-            {{ credits.joursAnnuel }} jours
-          </td>
-        </tr>
-        <tr>
-          <td>Crédit restant</td>
-          {% if config('Conges-Mode') == 'heures' %}
+          </tr>
+          <tr>
+            <td>Crédit restant</td>
+            {% if config('Conges-Mode') == 'heures' %}
+              <td style='text-align:right;'>
+                {{ credits.conges }}
+              </td>
+            {% endif %}
             <td style='text-align:right;'>
-              {{ credits.conges }}
+              {{ credits.joursConges }} jours
             </td>
-          {% endif %}
-          <td style='text-align:right;'>
-            {{ credits.joursConges }} jours
-          </td>
-        </tr>
-        <tr>
-          <td>Reliquat</td>
-          {% if config('Conges-Mode') == 'heures' %}
+          </tr>
+          <tr>
+            <td>Reliquat</td>
+            {% if config('Conges-Mode') == 'heures' %}
+              <td style='text-align:right;'>
+                {{ credits.reliquat }}
+              </td>
+            {% endif %}
             <td style='text-align:right;'>
-              {{ credits.reliquat }}
+              {{ credits.joursReliquat}} jours
             </td>
-          {% endif %}
-          <td style='text-align:right;'>
-            {{ credits.joursReliquat}} jours
-          </td>
-        </tr>
-        <tr>
-          <td>Solde débiteur</td>
-          {% if config('Conges-Mode') == 'heures' %}
+          </tr>
+          <tr>
+            <td>Solde débiteur</td>
+            {% if config('Conges-Mode') == 'heures' %}
+              <td style='text-align:right;'>
+                {{ credits.anticipation }}
+              </td>
+            {% endif %}
             <td style='text-align:right;'>
-              {{ credits.anticipation }}
+              {{ credits.joursAnticipation }} jours
             </td>
-          {% endif %}
-          <td style='text-align:right;'>
-            {{ credits.joursAnticipation }} jours
-          </td>
-        </tr>
-        <tr>
-          <td style='font-weight:bold;padding-top:20px;' colspan='2'>Récupérations</td>
-        </tr>
-        <tr>
-          <td>Crédit</td>
-          <td style='text-align:right;'>
-            {{ credits.recuperation }}
-          </td>
-        </tr>
-      </table>
-      <p style='font-style:italic;margin:30px 0 0 10px;'>Le nombre de jours est calculé sur la base de 7 heures par jour.</p>
-    </div>
-  <!-- Crédits-->
-  {% endif %}
+          </tr>
+          <tr>
+            <td style='font-weight:bold;padding-top:20px;' colspan='2'>Récupérations</td>
+          </tr>
+          <tr>
+            <td>Crédit</td>
+            <td style='text-align:right;'>
+              {{ credits.recuperation }}
+            </td>
+          </tr>
+        </table>
+        <p style='font-style:italic;margin:30px 0 0 10px;'>Le nombre de jours est calculé sur la base de 7 heures par jour.</p>
+      </div>
+    <!-- Crédits-->
+    {% endif %}
     <!-- Mot de Passe -->
     <div id='motDePasse' style='margin-left:80px;display:none;'>
       {% if config('demo') %}
