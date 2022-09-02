@@ -8,6 +8,7 @@
     <!--
     complet = JSON.parse('{{ postes_completNoms_json | e('js') }}');
     -->
+    $( document ).ready(function() {
       $("#reset-login-form").dialog({
         autoOpen: false,
         height: 180,
@@ -64,8 +65,8 @@
         $('#new_login').val('');
         $("#reset-login-form").dialog( "open" );
       });
+    });
   </script>
-
   <h3>{{ titre }}</h3>
 
   <div class='ui-tabs'>
