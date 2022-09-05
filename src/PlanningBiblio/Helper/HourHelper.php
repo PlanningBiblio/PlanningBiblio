@@ -40,8 +40,12 @@ class HourHelper extends BaseHelper
             return '';
         }
 
-        if (!\DateTime::createFromFormat('H:i', $time)) {
+        if(\DateTime::createFromFormat('H:i:s', $time)){
             return $time;
+        }
+
+        if (!\DateTime::createFromFormat('H:i', $time)) {
+            return '';
         }
 
         if (!\DateTime::createFromFormat('H:i:s', $time)) {
