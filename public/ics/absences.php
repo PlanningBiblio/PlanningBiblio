@@ -30,14 +30,15 @@ Vous devez activier le paramètre ICS-Export dans le menu Administration / Confi
 $version="ics";
 require_once "../include/config.php";
 require_once "../include/function.php";
-require_once "../plugins/plugins.php";
 require_once "../absences/class.absences.php";
 require_once "../personnel/class.personnel.php";
 require_once "../postes/class.postes.php";
+require_once __DIR__ . '/../init_entitymanager.php';
 
+$CSRFToken = CSRFToken();
 
 if(!$config['ICS-Export']){
-  logs("L'exportation ICS est désactivée","ICS Export");
+  logs("L'exportation ICS est désactivée","ICS Export Absences", $CSRFToken);
   exit;
 }
 
@@ -55,7 +56,7 @@ if(!$id and $login){
     $id = $db->result[0]['id'];
   }
   else{
-    logs("Impossible de trouver l'id associé au login $login","ICS Export");
+    logs("Impossible de trouver l'id associé au login $login","ICS Export Absences", $CSRFToken);
     exit;
   }
 }
@@ -68,17 +69,17 @@ if(!$id and $mail){
     $id = $db->result[0]['id'];
   }
   else{
-    logs("Impossible de trouver l'id associé au mail $mail","ICS Export");
+    logs("Impossible de trouver l'id associé au mail $mail","ICS Export Absences", $CSRFToken);
     exit;
   }
 }
 
 if(!$id){
-  logs("L'id de l'agent n'est pas fourni","ICS Export");
+  logs("L'id de l'agent n'est pas fourni","ICS Export Absences", $CSRFToken);
   exit;
 }
 
-logs("Exportation des plages de SP pour l'agent #$id","ICS Export");
+logs("Exportation des absences de l'agent #$id","ICS Export Absences", $CSRFToken);
 
 
 // N'affiche pas les calendriers des agents supprimés
@@ -98,9 +99,9 @@ $a->valide=true;
 $a->fetch("`debut`,`fin`",null,$id,'0000-00-00 00:00:00', date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
 $absences=$a->elements;
 
-// Recherche des congés (si le plugin est installé)
-if(in_array('conges', $plugins)){
-  require_once "../plugins/conges/class.conges.php";
+// Recherche des congés (si le module est activé)
+if ($config['Conges-Enable']) {
+  require_once "../conges/class.conges.php";
   $c = new conges();
   $c->perso_id = $id;
   $c->debut = '0000-00-00 00:00:00';
