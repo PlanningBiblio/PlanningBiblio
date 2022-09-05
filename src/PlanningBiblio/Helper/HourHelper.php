@@ -39,9 +39,13 @@ class HourHelper extends BaseHelper
         if (!$time) {
             return '';
         }
+        
+        if(\DateTime::createFromFormat('H:i:s', $time)){
+            return $time;
+        }
 
         if (!\DateTime::createFromFormat('H:i', $time)) {
-            return $time;
+            return '';
         }
 
         if (!\DateTime::createFromFormat('H:i:s', $time)) {
