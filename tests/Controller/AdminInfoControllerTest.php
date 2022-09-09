@@ -55,15 +55,11 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $client = static::createClient();
         
         
-        $client->request('GET', '/admin/info/add');
+        $crawler = $client->request('GET', '/admin/info/add');
 
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
 
         $this->assertSelectorTextContains('h4', 'Ajout d\'une information');
- 
-        
-        $crawler = new Crawler();
-        $crawler = $client->request('GET', '/admin/info/add');
 
         $result=$crawler->filter('label')->eq(0);
         $this->assertEquals($result->text(),'Date de début','label 1 is Date de début');
@@ -90,6 +86,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('name'),'text','textarea name is texte');
     }
 
+
     public function testFormEdit()
     {
         global $entityManager;
@@ -114,15 +111,20 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $id = $info->id();
         
-        $crawler = $client->request('GET', "/admin/info/$id");
+        $client->request('GET', "/admin/info/$id");
 
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
 
 
         $this->assertSelectorTextContains('h4', 'Modifications des messages d\'informations');
 
+
         $this->assertSelectorTextContains('textarea', 'salut');
  
+        
+        $crawler = new Crawler();
+        $crawler = $client->request('GET', "/admin/info/$id");
+
         $result=$crawler->filter('label')->eq(0);
         $this->assertEquals($result->text(),'Date de début','label 1 is Date de début');
 
@@ -143,6 +145,71 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type3"]');
         $this->assertEquals($class->attr('href'),"javascript:deleteAdminInfo($id);",'href a>span>Annuler is admin/info');
-
     }
-}
+
+    public function testAdminInfoList()
+    {
+        global $entityManager;
+        date_default_timezone_set('UTC');
+
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+        $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
+        $builder->delete(AdminInfo::class);
+        $this->logInAgent($agent, array(23));
+
+	$client = static::createClient();
+	$crawler = $client->request('GET', "/admin/info");
+	
+	$this->assertSelectorTextContains('h3', 'Messages d\'information');
+	
+	$result = $crawler->filterXPath('//div');
+        $this->assertStringContainsString('Ajouter', $result->eq(8)->text(),'a>span>Ajouter is admin/info/add');
+	$this->assertStringContainsString('Aucune information enregistrée.', $result->eq(7)->text(),  'text no info is Aucune information enregistrée.');	
+
+        $d = date("d")+1;
+        $m_1 = date("m");
+        $m_2 = date("m")+1;
+        $y = date("Y");
+
+        $info = new AdminInfo();
+        $info->debut("$y$m_1$d\n");
+        $info->fin("$y$m_2$d\n");
+        $info->texte('hello');
+
+        $entityManager->persist($info);
+        $entityManager->flush();
+
+    
+        $crawler = $client->request('GET', "/admin/info");
+
+        $this->assertSelectorTextContains('h3', 'Messages d\'information');
+
+	$result = $crawler->filterXPath('//div');
+        $this->assertStringContainsString('Ajouter', $result->eq(8)->text(),'a>span>Ajouter is admin/info/add');
+
+        $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type1"]');
+        $this->assertEquals($result->attr('href'),'/admin/info/add','a>span>Ajouter is admin/info/add');
+        
+        $result = $crawler->filterXPath('//th[@class="tableSort"]');
+        $this->assertEquals($result->eq(0)->text(),'Début','table title id Début');
+
+        $result = $crawler->filterXPath('//th[@class="tableSort"]');
+        $this->assertEquals($result->eq(1)->text(),'Fin','table title is Fin');
+        $this->assertEquals($result->eq(2)->text(),'Texte','table title is Texte');
+	
+	$result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
+	$this->assertEquals($result->attr('title'),'Edit','span logo edit title is Edit');
+
+        $result = $crawler->filterXPath('//tbody/tr/td');
+	$this->assertEquals($result->eq(1)->text(),"$d/$m_1/$y",'date début is ok');
+        $this->assertEquals($result->eq(2)->text(),"$d/$m_2/$y",'date fin is ok');
+	$this->assertEquals($result->eq(3)->text(),'hello','text info is ok');
+	
+    }
+}  
+
+
+
+
+
