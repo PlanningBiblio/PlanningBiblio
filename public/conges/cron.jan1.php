@@ -29,7 +29,7 @@ if ($p->elements) {
     foreach ($p->elements as $elem) {
         $credits=array();
         $credits['conges_credit'] = floatval($elem['conges_annuel']) - floatval($elem['conges_anticipation']);
-        //$credits['comp_time'] = 0;
+        $credits['comp_time'] = $elem['comp_time'];
         $credits['conges_anticipation'] = 0;
         $credits['conges_reliquat'] = $elem['conges_credit'];
 
