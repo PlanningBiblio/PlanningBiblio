@@ -1140,11 +1140,11 @@ class HolidayController extends BaseController
           break;
         // Validations Niveau 1
         case 2:
-          $sujet = $recover ? $lang['leave_subject_accepted_pending_recover'] : $lang['leave_subject_accepted_pending'];
+          $sujet = $recover ? $lang['comp_time_subject_accepted_pending'] : $lang['leave_subject_accepted_pending'];
           $notifications='3';
           break;
         case -2:
-          $sujet = $recover ? $lang['leave_subject_refused_pending_recover'] : $lang['leave_subject_refused_pending'];
+          $sujet = $recover ? $lang['comp_time_subject_refused_pending'] : $lang['leave_subject_refused_pending'];
           $notifications='3';
           break;
         }
