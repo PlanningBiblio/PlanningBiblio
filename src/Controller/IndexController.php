@@ -79,6 +79,10 @@ class IndexController extends BaseController
         if(!$currentFramework and !$tableau and !$groupe and $autorisationN2) {
             $show_framework_select = 1;
         }
+        $not_ready = 0;
+        if(!$currentFramework and !$tableau and !$groupe and !$autorisationN2) {
+            $not_ready = 1;
+        }
 
 
         // Planning's comments
@@ -95,6 +99,7 @@ class IndexController extends BaseController
             'affSem' => $affSem, 'day' => $jour,
             'public_holiday' => jour_ferie($date),
             'messages_infos' => $messages_infos,
+            'not_ready'      => $not_ready,
             'locked' => $verrou, 'perso2' => $perso2,
             'date_validation2' => $date_validation2,
             'heure_validation2' => $heure_validation2,

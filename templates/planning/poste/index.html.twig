@@ -27,8 +27,7 @@
       {% endif %}
     {% endif %}
 
-    {% if no_tab is defined and no_tab %}
-      <p>Le planning n'est pas prêt.</p>
+    {% if not_ready is defined and not_ready %}
       <div class='decalage-gauche'><p>Le planning n'est pas prêt.</p></div>
 
       {% if config('Planning-CommentairesToujoursActifs') %}
@@ -36,7 +35,7 @@
       {% endif %}
     {% endif %}
 
-    {% if not locked and not autorisationN1 %}
+    {% if tab and not locked and not autorisationN1 %}
       <div class='decalage-gauche'>
         <br/><br/>
         <font color='red'>Le planning du {{ dateFr }} n'est pas validé !</font>
