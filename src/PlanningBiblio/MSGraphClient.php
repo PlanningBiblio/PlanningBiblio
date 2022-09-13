@@ -211,12 +211,11 @@ class MSGraphClient
                 // Event modification
                 $localEvent = $this->localEvents[$eventArray['plb_id'] . $incomingEvent->iCalUId];
                 if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
-                    $this->log("updating user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
                     if ($incomingEvent->type == "occurrence") {
                         $response = $this->sendGet("/users/" . $eventArray['plb_login'] . $this->login_suffix . '/calendar/events/' . $incomingEvent->seriesMasterId);
                         $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
                     }
-                    $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified, rrule=:rrule WHERE ical_key=:ical_key LIMIT 1";
+                    $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified, rrule=:rrule WHERE ical_key=:ical_key AND perso_id=:perso_id LIMIT 1";
                     $statement = $this->entityManager->getConnection()->prepare($query);
                     $statement->execute(array(
                         'debut'             => $this->formatDate($incomingEvent->start),
@@ -224,13 +223,15 @@ class MSGraphClient
                         'motif'             => $this->reason_name,
                         'commentaires'      => $incomingEvent->subject,
                         'last_modified'     => $incomingEvent->lastModifiedDateTime,
+                        'rrule'             => $rrule,
                         'ical_key'          => $incomingEvent->iCalUId,
-                        'rrule'             => $rrule
+                        'perso_id'          => $eventArray['plb_id']
                     ));
+                    $count = $statement->rowCount();
+                    $this->log("updating event '" . $incomingEvent->subject . "' from " . $this->formatDate($incomingEvent->start) . " to " . $this->formatDate($incomingEvent->end) ." for user " . $eventArray['plb_id'] . " (" . $eventArray['plb_login'] . "), ical_key: " . $incomingEvent->iCalUId . ", updated rows: $count");
                 }
             } else {
                 // Event insertion
-                $this->log("inserting user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
                 if ($incomingEvent->type == "occurrence") {
                     $response = $this->sendGet("/users/" . $eventArray['plb_login'] . $this->login_suffix . '/calendar/events/' . $incomingEvent->seriesMasterId);
                     $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
@@ -250,6 +251,8 @@ class MSGraphClient
                     'last_modified' => $incomingEvent->lastModifiedDateTime,
                     'rrule'         => $rrule
                 ));
+                $count = $statement->rowCount();
+                $this->log("inserting event '" . $incomingEvent->subject . "' from " . $this->formatDate($incomingEvent->start) . " to " . $this->formatDate($incomingEvent->end) ." for user " . $eventArray['plb_id'] . " (" . $eventArray['plb_login'] . "), ical_key: " . $incomingEvent->iCalUId . ", inserted rows: $count");
             }
         }
     }
