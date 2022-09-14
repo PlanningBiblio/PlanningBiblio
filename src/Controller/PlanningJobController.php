@@ -805,7 +805,9 @@ class PlanningJobController extends BaseController
         $date = $request->get('date');
         $site = $request->get('site');
 
-        //TODO Handle rights here.
+        if (!$this->canManagePlanning($site)) {
+            return $this->json('forbiden');
+        }
 
         if (!$date || !$site) {
             $response = new Response();
@@ -872,7 +874,9 @@ class PlanningJobController extends BaseController
         $date = $request->get('date');
         $site = $request->get('site');
 
-        //TODO Handle rights here.
+        if (!$this->canManagePlanning($site)) {
+            return $this->json('forbiden');
+        }
 
         if (!$date || !$site) {
             $response = new Response();
