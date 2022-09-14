@@ -87,10 +87,10 @@ class IndexController extends BaseController
         $comments = $this->getComments($date, $site);
 
         // Check if an action is undoable or redoable.
-        $undoables = $entityManager
+        $undoables = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)
             ->undoable($date, $site);
-        $redoables = $entityManager
+        $redoables = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)
             ->redoable($date, $site);
 
