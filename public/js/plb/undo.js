@@ -13,12 +13,13 @@ $(document).ready(function(){
 function undo() {
   datepl = $('#date').val();
   site = $('#site').val();
+  CSRFToken = $('#CSRFSession').val();
 
   $.ajax({
     url: url('ajax/planningjob/undo'),
-    type: 'get',
+    type: 'post',
     dataType: 'json',
-    data: {date: datepl, site: site},
+    data: {date: datepl, site: site, CSRFToken: CSRFToken},
     success: function(result){
       if (result.remaining_undo == 0) {
         disableUndo();

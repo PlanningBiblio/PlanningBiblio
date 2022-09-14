@@ -13,12 +13,13 @@ $(document).ready(function(){
 function redo() {
   datepl = $('#date').val();
   site = $('#site').val();
+  CSRFToken = $('#CSRFSession').val();
 
   $.ajax({
     url: url('ajax/planningjob/redo'),
-    type: 'get',
+    type: 'post',
     dataType: 'json',
-    data: {date: datepl, site: site},
+    data: {date: datepl, site: site, CSRFToken: CSRFToken},
     success: function(result){
       if (result.remaining_redo == 0) {
         disableRedo();

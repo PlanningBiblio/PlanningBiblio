@@ -798,15 +798,21 @@ class PlanningJobController extends BaseController
     }
 
     /**
-     * @Route("/ajax/planningjob/undo", name="planningjob.undo", methods={"GET"})
+     * @Route("/ajax/planningjob/undo", name="planningjob.undo", methods={"POST"})
      */
     public function undo(Request $request)
     {
         $date = $request->get('date');
         $site = $request->get('site');
+        $CSRFToken = $request->get('CSRFToken');
 
         if (!$this->canManagePlanning($site)) {
             return $this->json('forbiden');
+        }
+
+        if (!$CSRFToken or !isset($_SESSION['oups']['CSRFToken'])
+            or $CSRFToken !== $_SESSION['oups']['CSRFToken']) {
+            return $this->json('Bad CSRF token');
         }
 
         if (!$date || !$site) {
@@ -867,15 +873,21 @@ class PlanningJobController extends BaseController
     }
 
     /**
-     * @Route("/ajax/planningjob/redo", name="planningjob.redo", methods={"GET"})
+     * @Route("/ajax/planningjob/redo", name="planningjob.redo", methods={"POST"})
      */
     public function redo(Request $request)
     {
         $date = $request->get('date');
         $site = $request->get('site');
+        $CSRFToken = $request->get('CSRFToken');
 
         if (!$this->canManagePlanning($site)) {
             return $this->json('forbiden');
+        }
+
+        if (!$CSRFToken or !isset($_SESSION['oups']['CSRFToken'])
+            or $CSRFToken !== $_SESSION['oups']['CSRFToken']) {
+            return $this->json('Bad CSRF token');
         }
 
         if (!$date || !$site) {
@@ -944,7 +956,9 @@ class PlanningJobController extends BaseController
             return false;
         }
 
-        if (!in_array((300 + $site), $this->droits) and !in_array((1000 + $site), $this->droits)) {
+        $droits = $GLOBALS['droits'];
+
+        if (!in_array((300 + $site), $droits) and !in_array((1000 + $site), $droits)) {
             return false;
         }
 
