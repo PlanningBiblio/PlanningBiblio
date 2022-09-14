@@ -332,6 +332,7 @@ $(function() {
           $("#icon-unlock").show();
           // data-verrou : pour activer le menudiv
           $("#planning-data").attr("data-verrou",0);
+          $("#undo-redo").show();
         }
 
         // Affichage des lignes vides
@@ -369,6 +370,7 @@ $(function() {
           $("#planning-data").attr("data-validation",result[3]);
           // refresh_poste : contrôle toute les 30 sec si le planning est validé depuis un autre poste
           setTimeout("refresh_poste()",30000);
+          $("#undo-redo").hide();
         }
 
         // Envoi des notifications
@@ -1263,8 +1265,6 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
  * @param int perso_id : Si 0 = griser la cellule, si 2 = Tout le monde
  */
 function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,griser,cellid,logaction = 1){
-  disableRedo();
-
   if(griser==undefined){
     griser=0;
   }

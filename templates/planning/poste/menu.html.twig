@@ -114,8 +114,8 @@
             </div>
 
             <div id='planningTips'>&nbsp;</div>
-            {% if userCan('300', site) or userCan('1000', site) %}
-              <div id='undo-redo' class='pl-undo'>
+            {% if (userCan('300', site) or userCan('1000', site)) and not locked %}
+              <div id='undo-redo' class='pl-undo' style="{{ locked ? 'display:none;' }}">
                 {% if undoable %}
                   <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
                 {% else %}
