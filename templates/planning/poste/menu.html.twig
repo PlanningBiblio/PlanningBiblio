@@ -114,19 +114,21 @@
             </div>
 
             <div id='planningTips'>&nbsp;</div>
-            <div id='undo-redo' class='pl-undo'>
-              {% if undoable %}
-                <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
-              {% else %}
-                <a id="undo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
-              {% endif %}
+            {% if userCan('300', site) or userCan('1000', site) %}
+              <div id='undo-redo' class='pl-undo'>
+                {% if undoable %}
+                  <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
+                {% else %}
+                  <a id="undo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
+                {% endif %}
 
-              {% if redoable %}
-                <a id="redo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-redo"></span></a>
-              {% else %}
-                <a id="redo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-redo"></span></a>
-              {% endif %}
-            </div>
+                {% if redoable %}
+                  <a id="redo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-redo"></span></a>
+                {% else %}
+                  <a id="redo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-redo"></span></a>
+                {% endif %}
+              </div>
+            {% endif %}
           {% endif %}
         </td>
       </tr>
