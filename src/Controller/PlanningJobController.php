@@ -351,6 +351,7 @@ class PlanningJobController extends BaseController
 
         if ($db->result and $verif) {
             foreach ($db->result as $elem) {
+                $agent = $this->entityManager->find(Agent::class, $elem['id']);
                 $temps = array();
                 $week_number = 0;
 
@@ -373,7 +374,7 @@ class PlanningJobController extends BaseController
 
                 // Check id agent is present on
                 // requested time slot.
-                if (!calculSiPresent($debut, $fin, $temps, $jour)) {
+                if (!$agent->isWorkingOn($date, $start, $end)) {
                     $exclusion[$elem['id']][]="horaires";
                 }
 
@@ -760,14 +761,8 @@ class PlanningJobController extends BaseController
                     $available = false;
                 }
 
-                if ($available) {
-                    $d = new \datePl($date);
-                    $working_hours = $agent->getWorkingHoursOn($date);
-                    $day = $d->planning_day_index_for($agent_id, $working_hours['nb_semaine']);
-
-                    if (!calculSiPresent($start, $end, $working_hours['temps'], $day)) {
-                        $available = false;
-                    }
+                if ($available and !$agent->isWorkingOn($date, $start, $end)) {
+                    $available = false;
                 }
 
                 if ($available and $agent->isBlockedOn($date, $start, $end)) {

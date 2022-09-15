@@ -587,29 +587,6 @@ function calculHeuresSP($date, $CSRFToken)
     return (array) $heuresSP;
 }
 
-/** @function calculSiPresent
- *  @param string $debut : heure de début, format 00:00:00
- *  @param string $fin : heure de fin, format 00:00:00
- *  @param array $temps : tableau emploi du temps de l'agent
- *  @param int $jour : jour de la semaine de 0 à 6 puis de 7 à 13 en semaines paires/impaires, etc.
- *  La fonction retourne true si l'agent est disponible pendant toute, false s'il la plage est en dehors de ses horaires de travail ou s'il est en pause
- */
-function calculSiPresent($debut, $fin, $temps, $jour)
-{
-    $wh = new WorkingHours($temps);
-    $tab = $wh->hoursOf($jour);
-
-    // Confrontation du créneau de service public aux tableaux
-    foreach ($tab as $elem) {
-        if (($elem[0] <= $debut) and ($elem[1] >= $fin)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
 /** @fonctions de comparaison
  */
 

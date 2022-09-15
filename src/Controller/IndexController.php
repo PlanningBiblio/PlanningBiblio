@@ -609,22 +609,6 @@ class IndexController extends BaseController
             }
         }
 
-        // if module PlanningHebdo: search related plannings.
-        $tempsPlanningHebdo = array();
-        if ($this->config('PlanningHebdo')) {
-            $p = new \planningHebdo();
-            $p->debut = $date;
-            $p->fin = $date;
-            $p->valide = true;
-            $p->fetch();
-
-            if (!empty($p->elements)) {
-                foreach ($p->elements as $elem) {
-                    $tempsPlanningHebdo[$elem["perso_id"]]=$elem["temps"];
-                }
-            }
-        }
-
         $i=0;
         foreach ($dates as $elem) {
             $i++; // Key of the day (1=Monday, 2=Tuesday ...) start with 1.
@@ -739,23 +723,8 @@ class IndexController extends BaseController
                     }
 
                     // Check if the agent is out of his schedule (schedule has been changed).
-                    $week_number = 0;
-
-                    if ($this->config('PlanningHebdo')) {
-                        $temps = !empty($tempsPlanningHebdo[$elem2['perso_id']]['temps']) ? $tempsPlanningHebdo[$elem2['perso_id']]['temps'] : array();
-                        $week_number = !empty($tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine']) ? $tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine'] : 0 ;
-                    } else {
-                        $agent = $this->entityManager->find(Agent::class, $elem2['perso_id']);
-                        if (!empty($agent)) {
-                            $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
-                        } else {
-                            $temps = array();
-                        }
-                    }
-
-                    $d = new \datePl($elem);
-                    $day_index = $d->planning_day_index_for($elem2['perso_id'], $week_number);
-                    if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
+                    $agent = $this->entityManager->find(Agent::class, $elem2['perso_id']);
+                    if (!$agent->isWorkingOn($date, $elem2['debut'], $elem2['fin'])) {
                         $value[':absent'] = 2;
                     }
 
