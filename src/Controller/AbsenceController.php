@@ -7,6 +7,7 @@ use App\Model\AbsenceDocument;
 use App\Model\Absence;
 use App\Model\AbsenceReason;
 use App\Model\Agent;
+use App\Model\PlanningPosition;
 
 use App\PlanningBiblio\Helper\HourHelper;
 
@@ -608,11 +609,34 @@ class AbsenceController extends BaseController
          * NB : le champ pl_poste.absent est également utilisé pour barrer les agents depuis le planning, donc on ne supprime pas toutes ses valeurs
          */
         foreach ($agents as $agent) {
-            $db=new \db();
-            $req="UPDATE `{$this->dbprefix}pl_poste` SET `absent`='0' WHERE
-            CONCAT(`date`,' ',`debut`) < '$fin' AND CONCAT(`date`,' ',`fin`) > '$debut'
-            AND `perso_id`='{$agent['perso_id']}'";
-            $db->query($req);
+
+            $agent = $this->entityManager->getRepository(Agent::class)
+                                         ->find($agent['perso_id']);
+
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $query = $queryBuilder->select(array('p'))
+                ->from(PlanningPosition::class, 'p')
+                ->where("CONCAT(p.date,' ',p.debut) < :fin AND CONCAT(p.date,' ',p.fin) > :debut")
+                ->andWhere("p.perso_id = :perso_id")
+                ->setParameter('debut', $debut)
+                ->setParameter('fin', $fin)
+                ->setParameter('perso_id', $agent->id())
+                ->getQuery();
+
+            $positions = $query->getResult();
+            foreach ($positions as $position) {
+                $date = $position->date()->format('Y-m-d');
+                $start = $position->debut()->format('H:i:s');
+                $end = $position->fin()->format('H:i:s');
+                $absent = 0;
+                if (!$agent->isWorkingOn($date, $start, $end)) {
+                    $absent = 2;
+                }
+
+                $position->absent($absent);
+                $this->entityManager->persist($position);
+            }
+            $this->entityManager->flush();
         }
 
         // If recurrence, delete or update ICS event and delete all occurences.

@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use App\PlanningBiblio\WorkingHours;
+
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -9,6 +11,7 @@ use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, OneToMany};
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/include/db.php');
+require_once(__DIR__ . '/../../public/include/function.php');
 
 /**
  * @Entity(repositoryClass="App\Repository\AgentRepository") @Table(name="personnel")
@@ -351,6 +354,24 @@ class Agent extends PLBEntity
 
         foreach ($agent_sites as $site) {
             if (in_array($site, $sites)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isWorkingOn($date, $start, $end)
+    {
+        $working_hours = $this->getWorkingHoursOn($date);
+        $d = new \datePl($date);
+        $day = $d->planning_day_index_for($this->id(), $working_hours['nb_semaine']);
+
+        $wh = new WorkingHours($working_hours['temps']);
+        $tab = $wh->hoursOf($day);
+
+        foreach ($tab as $elem) {
+            if (($elem[0] <= $start) and ($elem[1] >= $end)) {
                 return true;
             }
         }
