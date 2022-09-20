@@ -8,8 +8,6 @@ use Symfony\Component\DomCrawler\Crawler;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-
-
 class HolidayInfoControllerTest extends PLBWebTestCase
 {
     public function testAdd()
@@ -82,7 +80,6 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2 ui-widget ui-button-type1 ui-corner-all ui-button-text-only"]/span');
         $this->assertEquals($result->text(),'Annuler','a/span button is Annuler');
-        
     }
 
     public function testFormEdit()
@@ -203,7 +200,6 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(1)->text(),"$d/$m_1/$Y",'date début is ok');
         $this->assertEquals($result->eq(2)->text(),"$d/$m_2/$Y",'date fin is ok');
         $this->assertEquals($result->eq(3)->text(),'hello','text info is ok');
-
     }
 }
 
