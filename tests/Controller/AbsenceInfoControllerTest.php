@@ -83,7 +83,6 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
         $this->assertEquals($class->text(),'Annuler','a button is Annuler');
-        
     }
 
     public function testFormEdit()
@@ -165,7 +164,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//div');
         $this->assertStringContainsString('Aucune information enregistrée.', $result->eq(7)->text(),  'text no info is Aucune information enregistrée.');	
-        
+
         $d = date("d")+1;
         $m_1 = date("m");
         $m_2 = date("m")+1;
@@ -186,7 +185,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $crawler = $client->request('GET', "/absences/info");
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
-        
+
         $result = $crawler->filterXPath('//a[@class="ui-button"]');
         $this->assertEquals('Ajouter', $result->text(),'a is Ajouter');
 
@@ -204,7 +203,6 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(1)->text(),"$d/$m_1/$Y",'date début is ok');
         $this->assertEquals($result->eq(2)->text(),"$d/$m_2/$Y",'date fin is ok');
         $this->assertEquals($result->eq(3)->text(),'hello','text info is ok');
-
     }
 }
 
