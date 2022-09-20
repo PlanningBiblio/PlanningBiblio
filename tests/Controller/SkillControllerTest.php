@@ -56,13 +56,13 @@ class SkillControllerTest extends PLBWebTestCase
 
         $result=$crawler->filterXPath('//td');
         $this->assertEquals($result->eq(6)->text(),' Nom :','label is Nom');
-        
+
         $result=$crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
         $this->assertEquals($result->attr('name'),'nom','check input for name');
 
         $class = $crawler->filterXPath('//input[@class="ui-button"]');
         $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
-        
+
         $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type2"]');
         $this->assertEquals($class->attr('value'),'Annuler','input submit value is Annuler');
     }
@@ -95,13 +95,13 @@ class SkillControllerTest extends PLBWebTestCase
 
         $result=$crawler->filterXPath('//td');
         $this->assertEquals($result->eq(6)->text(),' Nom :','label is Nom');
-        
+
         $result=$crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
         $this->assertEquals($result->attr('value'),'security','check input for name');
 
         $class = $crawler->filterXPath('//input[@class="ui-button"]');
         $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
-        
+
         $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type2"]');
         $this->assertEquals($class->attr('value'),'Annuler','input submit value is Annuler');
     }
@@ -125,7 +125,7 @@ class SkillControllerTest extends PLBWebTestCase
 
         $entityManager->persist($skill);
         $entityManager->flush();
-        
+
         $crawler = $client->request('GET', "/skill");
 
         $this->assertSelectorTextContains('h3', 'Liste des activités');
@@ -141,10 +141,5 @@ class SkillControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//tbody/tr/td')->eq(1);
         $this->assertEquals($result->text(),'security','skill name');
-
-
     }
 }
-
-
-
