@@ -63,12 +63,14 @@ class PositionControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//td');
         $this->assertEquals($result->eq(7)->text(),'Nom du poste :','label is Nom du post');
-        $this->assertEquals($result->eq(9)->text(),'Etage :','label is Etage');
-        $this->assertStringContainsString('Mezzanine', $result->eq(10)->text(),'select contains Mezzanine');
-        $this->assertStringContainsString('RDC', $result->eq(10)->text(),'Select contains RDC');
-        $this->assertStringContainsString('RDJ', $result->eq(10)->text(),'Select contains RDJ');
-        $this->assertStringContainsString('Magasins', $result->eq(10)->text(),'Select contains Magasins');
-        $this->assertEquals($result->eq(11)->text(),'Groupe:','label is Groupe');
+
+        $result = $crawler->filterXPath('//tr/td/table');
+        $this->assertStringContainsString('Etage :', $result->text(), 'label is Etage');
+        $this->assertStringContainsString('Mezzanine', $result->text(),'select contains Mezzanine');
+        $this->assertStringContainsString('RDC', $result->text(),'Select contains RDC');
+        $this->assertStringContainsString('RDJ', $result->text(),'Select contains RDJ');
+        $this->assertStringContainsString('Magasins', $result->text(),'Select contains Magasins');
+        $this->assertStringContainsString('Groupe:', $result->text(), 'label is Groupe');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add"]');
         $this->assertEquals($result->attr('title'),'Ajouter','span is Ajouter');
@@ -171,12 +173,15 @@ class PositionControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//td');
         $this->assertEquals($result->eq(7)->text(),'Nom du poste :','label is Nom du post');
-        $this->assertEquals($result->eq(9)->text(),'Etage :','label is Etage');
-        $this->assertStringContainsString('Mezzanine', $result->eq(10)->text(),'select contains Mezzanine');
-        $this->assertStringContainsString('RDC', $result->eq(10)->text(),'Select contains RDC');
-        $this->assertStringContainsString('RDJ', $result->eq(10)->text(),'Select contains RDJ');
-        $this->assertStringContainsString('Magasins', $result->eq(10)->text(),'Select contains Magasins');
-        $this->assertEquals($result->eq(11)->text(),'Groupe:','label is Groupe');
+
+
+        $result = $crawler->filterXPath('//tr/td/table');
+        $this->assertStringContainsString('Etage :', $result->text(), 'label is Etage');
+        $this->assertStringContainsString('Mezzanine', $result->text(),'select contains Mezzanine');
+        $this->assertStringContainsString('RDC', $result->text(),'Select contains RDC');
+        $this->assertStringContainsString('RDJ', $result->text(),'Select contains RDJ');
+        $this->assertStringContainsString('Magasins', $result->text(),'Select contains Magasins');
+        $this->assertStringContainsString('Groupe:', $result->text(), 'label is Groupe');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add"]');
         $this->assertEquals($result->attr('title'),'Ajouter','span edit icon is Ajouter');
@@ -267,20 +272,20 @@ class PositionControllerTest extends PLBWebTestCase
 
         $entityManager->persist($position);
         $entityManager->flush();
-        
+
         $crawler = $client->request('GET', "/position");
 
         $this->assertSelectorTextContains('h3', 'Liste des postes');
 
-        $result = $crawler->filterXPath('//tbody/tr/td')->eq(2);
-        $this->assertStringContainsString($result->text(),'Nom du poste','check label for name');
-        $this->assertStringContainsString($result->text(),'Etage','check label for Etage');
-        $this->assertStringContainsString($result->text(),'Activités','check label for activités');
-        $this->assertStringContainsString($result->text(),'Groupe','check label for Group');
-        $this->assertStringContainsString($result->text(),'Obligatoire/renfort','check label for Obligatoire');
-        $this->assertStringContainsString($result->text(),'Bloquant','check label for Bloquant');
-        $this->assertStringContainsString($result->text(),'Statistiques','check label for Sttistiques');
-        
+        $result = $crawler->filterXPath('//thead/tr');
+        $this->assertStringContainsString('Nom du poste',$result->text(),'check label for name');
+        $this->assertStringContainsString('Etage',$result->text(),'check label for Etage');
+        $this->assertStringContainsString('Activités',$result->text(),'check label for activités');
+        $this->assertStringContainsString('Groupe',$result->text(),'check label for Group');
+        $this->assertStringContainsString('Obligatoire/renfort',$result->text(),'check label for Obligatoire');
+        $this->assertStringContainsString('Bloquant',$result->text(),'check label for Bloquant');
+        $this->assertStringContainsString('Statistiques',$result->text(),'check label for Sttistiques');
+
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Modifier','Edit Icons');
 
