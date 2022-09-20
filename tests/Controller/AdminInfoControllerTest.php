@@ -20,7 +20,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(AdminInfo::class);
-        
 
         $this->logInAgent($agent, array(23));
 
@@ -28,16 +27,14 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
 
         $client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'salut', '_token' => $token));
-        
 
         $info = $entityManager->getRepository(AdminInfo::class)->findOneBy(array('debut' => '20211005', 'fin' => '20211010'));
 
 
         $this->assertEquals('salut', $info->texte(), 'info texte is salut');
-        
+
         $this->assertEquals('20211005', $info->debut(), 'debut is 20211005');
         $this->assertEquals('20211010', $info->fin(), 'fin is 20211010');
-    
 
     }
 
@@ -48,13 +45,11 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
-        
 
         $this->logInAgent($agent, array(23));
 
         $client = static::createClient();
-        
-        
+
         $crawler = $client->request('GET', '/admin/info/add');
 
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
@@ -95,7 +90,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(AdminInfo::class);
-        
 
         $this->logInAgent($agent, array(23));
 
@@ -110,18 +104,14 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $entityManager->flush();
 
         $id = $info->id();
-        
         $client->request('GET', "/admin/info/$id");
 
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
 
-
         $this->assertSelectorTextContains('h4', 'Modifications des messages d\'informations');
 
-
         $this->assertSelectorTextContains('textarea', 'salut');
- 
-        
+
         $crawler = new Crawler();
         $crawler = $client->request('GET', "/admin/info/$id");
 
@@ -158,12 +148,12 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $builder->delete(AdminInfo::class);
         $this->logInAgent($agent, array(23));
 
-	$client = static::createClient();
-	$crawler = $client->request('GET', "/admin/info");
-	
+        $client = static::createClient();
+        $crawler = $client->request('GET', "/admin/info");
+
 	$this->assertSelectorTextContains('h3', 'Messages d\'information');
-	
-	$result = $crawler->filterXPath('//div');
+
+        $result = $crawler->filterXPath('//div');
         $this->assertStringContainsString('Ajouter', $result->eq(8)->text(),'a>span>Ajouter is admin/info/add');
 	$this->assertStringContainsString('Aucune information enregistrée.', $result->eq(7)->text(),  'text no info is Aucune information enregistrée.');	
 
@@ -180,7 +170,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $entityManager->persist($info);
         $entityManager->flush();
 
-    
         $crawler = $client->request('GET', "/admin/info");
 
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
@@ -190,14 +179,14 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type1"]');
         $this->assertEquals($result->attr('href'),'/admin/info/add','a>span>Ajouter is admin/info/add');
-        
+
         $result = $crawler->filterXPath('//th[@class="tableSort"]');
         $this->assertEquals($result->eq(0)->text(),'Début','table title id Début');
 
         $result = $crawler->filterXPath('//th[@class="tableSort"]');
         $this->assertEquals($result->eq(1)->text(),'Fin','table title is Fin');
         $this->assertEquals($result->eq(2)->text(),'Texte','table title is Texte');
-	
+
 	$result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
 	$this->assertEquals($result->attr('title'),'Edit','span logo edit title is Edit');
 
@@ -205,11 +194,5 @@ class AdminInfoControllerTest extends PLBWebTestCase
 	$this->assertEquals($result->eq(1)->text(),"$d/$m_1/$y",'date début is ok');
         $this->assertEquals($result->eq(2)->text(),"$d/$m_2/$y",'date fin is ok');
 	$this->assertEquals($result->eq(3)->text(),'hello','text info is ok');
-	
     }
-}  
-
-
-
-
-
+}
