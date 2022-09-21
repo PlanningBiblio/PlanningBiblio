@@ -10,6 +10,7 @@ use App\PlanningBiblio\Helper\HolidayHelper;
 
 include_once(__DIR__ . '/../../public/include/function.php');
 include_once(__DIR__ . '/../../public/include/feries.php');
+include_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 
 class AppExtension extends AbstractExtension
 {
@@ -20,7 +21,9 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('datefull', [$this, 'dateFull']),
+            new TwigFilter('datefr', [$this, 'dateFr']),
             new TwigFilter('hours', [$this, 'hours']),
+            new TwigFilter('hour_from_his', [$this, 'hourFromHis']),
             new TwigFilter('hoursToDays', [$this, 'hoursToDays']),
             new TwigFilter('raw_black_listed', [$this, 'htmlFilter'], ['is_safe' => ['html']]),
         ];
@@ -33,6 +36,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('siteName', [$this, 'siteName']),
             new TwigFunction('userCan', [$this, 'userCan']),
             new TwigFunction('menuIsActive', [$this, 'menuIsActive']),
+            new TwigFunction('colspan', [$this, 'colspan']),
         ];
     }
 
@@ -41,10 +45,24 @@ class AppExtension extends AbstractExtension
         return dateAlpha($date);
     }
 
+    public function dateFr($date)
+    {
+        return dateFr($date);
+    }
+
     public function hours($hours)
     {
         if ($hours) {
             return heure4($hours);
+        }
+
+        return '';
+    }
+
+    public function hourFromHis($hours)
+    {
+        if ($hours) {
+            return heure3($hours);
         }
 
         return '';
@@ -138,6 +156,12 @@ class AppExtension extends AbstractExtension
             }
         }
 
+        if ($menu == 'index') {
+            if (strpos($requested_url, 'week') !== false) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -148,6 +172,10 @@ class AppExtension extends AbstractExtension
         }
 
         return $html;
+    }
+
+    public function colspan($start, $end) {
+        return nb30($start, $end);
     }
 
 }

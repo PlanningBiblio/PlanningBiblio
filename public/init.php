@@ -81,11 +81,6 @@ if (!array_key_exists("oups", $_SESSION)) {
     $_SESSION['oups']=array("week" => false);
 }
 
-$content_planning = 0;
-if ($page == 'planning/poste/semaine.php' or !$show_menu) {
-    $content_planning = 1;
-}
-
 // Recupération des droits d'accès de l'agent
 
 $logged_in = $entityManager->find(Agent::class, $_SESSION['login_id']);

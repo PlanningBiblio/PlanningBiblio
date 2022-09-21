@@ -391,7 +391,7 @@ $(function() {
   $("#pl-calendar").change(function(){
     var date=dateFr($(this).val());
     if($(this).attr("class").search("datepickerSemaine")>0){
-      window.location.href="?page=planning/poste/semaine.php&date="+date;
+      window.location.href = url('week') + '?date=' + date;
     }else{
       window.location.href="?date="+date;
     }

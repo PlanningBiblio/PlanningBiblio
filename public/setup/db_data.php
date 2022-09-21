@@ -16,8 +16,6 @@ fichier setup/createdb.php
 */
 
 // Insertion des droits d'accés
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning - Index', 99, '', 'planning/index.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning par poste - Semaine', 99, '', 'planning/poste/semaine.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Aide', 99, '', '/help');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Personnel - Password', 100, '', 'personnel/password.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Agenda - index', 100, 'Agenda', '/calendar');";
