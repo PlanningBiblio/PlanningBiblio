@@ -61,67 +61,55 @@ class PositionControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
         $this->assertEquals($result->attr('name'),'nom','input for post name value is nom');
 
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(7)->text(),'Nom du poste :','label is Nom du post');
-
         $result = $crawler->filterXPath('//tr/td/table');
+        $this->assertStringContainsString('Nom du poste :', $result->text(), 'label is Nom du post');
         $this->assertStringContainsString('Etage :', $result->text(), 'label is Etage');
         $this->assertStringContainsString('Mezzanine', $result->text(),'select contains Mezzanine');
         $this->assertStringContainsString('RDC', $result->text(),'Select contains RDC');
         $this->assertStringContainsString('RDJ', $result->text(),'Select contains RDJ');
         $this->assertStringContainsString('Magasins', $result->text(),'Select contains Magasins');
         $this->assertStringContainsString('Groupe:', $result->text(), 'label is Groupe');
+        $this->assertStringContainsString('Obligatoire / renfort :',$result->text(),'label is Obligatoire / renfort : ');
+        $this->assertStringContainsString('Bloquant :',$result->text(),'label is Bloquant : ');
+        $this->assertStringContainsString('Statistiques :',$result->text(),'label is Statistiques: ');
+        $this->assertStringContainsString('Compatible télétravail :',$result->text(),'label is Compatible télétravail');
+
+        $this->assertStringContainsString('Activités :',$result->eq(1)->text(),'Activités :','label is Nom du post');
+        $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text(),'checkBox is Assistance audiovisuel');
+        $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text(),'checkBox is Assistance autoformation');
+        $this->assertStringContainsString(' Communication', $result->eq(1)->text(),'checkBox is Communication');
+        $this->assertStringContainsString(' Communication réserve', $result->eq(1)->text(),'checkBox is Communication réserve');
+        $this->assertStringContainsString(' Inscription', $result->eq(1)->text(),'checkBox is Inscription');
+        $this->assertStringContainsString(' Prêt/retour de document', $result->eq(1)->text(),'checkBox is Prêt/retour de document');
+        $this->assertStringContainsString(' Prêt de matériel', $result->eq(1)->text(),'checkBox is Prêt de matériel');
+        $this->assertStringContainsString(' Rangement', $result->eq(1)->text(),'checkBox is Rangement');
+        $this->assertStringContainsString(' Renseignement', $result->eq(1)->text(),'checkBox is Renseignement');
+        $this->assertStringContainsString(' Renseignement bibliographique', $result->eq(1)->text(),'checkBox is Renseignement bibliographique ');
+        $this->assertStringContainsString(' Renseignement réserve', $result->eq(1)->text(),'checkBox is Renseignement réserve');
+        $this->assertStringContainsString(' Renseignement spécialisé', $result->eq(1)->text(),'checkBox is Renseignement spécialisé');
+        $this->assertStringContainsString(' Catégories* :',$result->eq(1)->text(),'label is Nom du post');
+        $this->assertStringContainsString(' Catégorie A', $result->eq(1)->text(),'checkBox is Catégorie A ');
+        $this->assertStringContainsString(' Catégorie B', $result->eq(1)->text(),'checkBox is Catégorie B');
+        $this->assertStringContainsString(' Catégorie C', $result->eq(1)->text(),'checkBox is Catégorie C');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add"]');
         $this->assertEquals($result->attr('title'),'Ajouter','span is Ajouter');
-
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(13)->text(),'Obligatoire / renfort :','label is Obligatoire / renfort : ');
 
         $result = $crawler->filterXPath('//input[@name="obligatoire"]');
         $this->assertEquals($result->attr('value'),'Obligatoire','input submit value is Obligatoire');
         $this->assertEquals($result->eq(1)->attr('value'),'Renfort','input submit value is Renfort');
 
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(15)->text(),'Bloquant :','label is Bloquant : ');
-
         $result = $crawler->filterXPath('//input[@name="bloquant"]');
         $this->assertEquals($result->attr('value'),'1','input bloquant value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input bloquant value is Valider');
-
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(17)->text(),'Statistiques :','label is Statistiques: ');
 
         $result = $crawler->filterXPath('//input[@name="statistiques"]');
         $this->assertEquals($result->attr('value'),'1','input statistiques value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input statistiques value is Valider');
 
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(19)->text(),'Compatible télétravail :','label is Compatible télétravail');
-
         $result = $crawler->filterXPath('//input[@name="teleworking"]');
         $this->assertEquals($result->attr('value'),'1','input teleworking value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input teleworking value is 0');
-
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(22)->text(),'Activités :','label is Nom du post');
-        $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(23)->text(),'checkBox is Assistance audiovisuel');
-        $this->assertStringContainsString(' Assistance autoformation', $result->eq(23)->text(),'checkBox is Assistance autoformation');
-        $this->assertStringContainsString(' Communication', $result->eq(23)->text(),'checkBox is Communication');
-        $this->assertStringContainsString(' Communication réserve', $result->eq(23)->text(),'checkBox is Communication réserve');
-        $this->assertStringContainsString(' Inscription', $result->eq(23)->text(),'checkBox is Inscription');
-        $this->assertStringContainsString(' Prêt/retour de document', $result->eq(23)->text(),'checkBox is Prêt/retour de document');
-        $this->assertStringContainsString(' Prêt de matériel', $result->eq(23)->text(),'checkBox is Prêt de matériel');
-        $this->assertStringContainsString(' Rangement', $result->eq(23)->text(),'checkBox is Rangement');
-        $this->assertStringContainsString(' Renseignement', $result->eq(23)->text(),'checkBox is Renseignement');
-        $this->assertStringContainsString(' Renseignement bibliographique', $result->eq(23)->text(),'checkBox is Renseignement bibliographique ');
-        $this->assertStringContainsString(' Renseignement réserve', $result->eq(23)->text(),'checkBox is Renseignement réserve');
-        $this->assertStringContainsString(' Renseignement spécialisé', $result->eq(23)->text(),'checkBox is Renseignement spécialisé');
-
-        $this->assertEquals($result->eq(24)->text(),' Catégories* :','label is Nom du post');
-        $this->assertStringContainsString(' Catégorie A', $result->eq(25)->text(),'checkBox is Catégorie A ');
-        $this->assertStringContainsString(' Catégorie B', $result->eq(25)->text(),'checkBox is Catégorie B');
-        $this->assertStringContainsString(' Catégorie C', $result->eq(25)->text(),'checkBox is Catégorie C');
 
         $result = $crawler->filterXPath('//input[@class="ui-button"]');
         $this->assertEquals($result->attr('value'),'Valider','input submit value is Valider');
@@ -182,57 +170,51 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('RDJ', $result->text(),'Select contains RDJ');
         $this->assertStringContainsString('Magasins', $result->text(),'Select contains Magasins');
         $this->assertStringContainsString('Groupe:', $result->text(), 'label is Groupe');
+        $this->assertStringContainsString('Obligatoire / renfort :',$result->text(),'label is Obligatoire / renfort : ');
+        $this->assertStringContainsString('Bloquant :',$result->text(),'label is Bloquant : ');
+        $this->assertStringContainsString('Statistiques :',$result->text(),'label is Statistiques: ');
+        $this->assertStringContainsString('Compatible télétravail :',$result->text(),'label is Compatible télétravail');
+
+        $this->assertStringContainsString('Activités :',$result->eq(1)->text(),'Activités :','label is Nom du post');
+        $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text(),'checkBox is Assistance audiovisuel');
+        $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text(),'checkBox is Assistance autoformation');
+        $this->assertStringContainsString(' Communication', $result->eq(1)->text(),'checkBox is Communication');
+        $this->assertStringContainsString(' Communication réserve', $result->eq(1)->text(),'checkBox is Communication réserve');
+        $this->assertStringContainsString(' Inscription', $result->eq(1)->text(),'checkBox is Inscription');
+        $this->assertStringContainsString(' Prêt/retour de document', $result->eq(1)->text(),'checkBox is Prêt/retour de document');
+        $this->assertStringContainsString(' Prêt de matériel', $result->eq(1)->text(),'checkBox is Prêt de matériel');
+        $this->assertStringContainsString(' Rangement', $result->eq(1)->text(),'checkBox is Rangement');
+        $this->assertStringContainsString(' Renseignement', $result->eq(1)->text(),'checkBox is Renseignement');
+        $this->assertStringContainsString(' Renseignement bibliographique', $result->eq(1)->text(),'checkBox is Renseignement bibliographique ');
+        $this->assertStringContainsString(' Renseignement réserve', $result->eq(1)->text(),'checkBox is Renseignement réserve');
+        $this->assertStringContainsString(' Renseignement spécialisé', $result->eq(1)->text(),'checkBox is Renseignement spécialisé');
+        $this->assertStringContainsString(' Catégories* :',$result->eq(1)->text(),'label is Nom du post');
+        $this->assertStringContainsString(' Catégorie A', $result->eq(1)->text(),'checkBox is Catégorie A ');
+        $this->assertStringContainsString(' Catégorie B', $result->eq(1)->text(),'checkBox is Catégorie B');
+        $this->assertStringContainsString(' Catégorie C', $result->eq(1)->text(),'checkBox is Catégorie C');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add"]');
         $this->assertEquals($result->attr('title'),'Ajouter','span edit icon is Ajouter');
 
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(13)->text(),'Obligatoire / renfort :','label is Obligatoire / renfort : ');
 
         $result = $crawler->filterXPath('//input[@name="obligatoire"]');
         $this->assertEquals($result->attr('value'),'Obligatoire','input obligatoire value is Obligatoire');
         $this->assertEquals($result->eq(1)->attr('value'),'Renfort','input obligatoire value is Obligatoire Renfort');
 
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(15)->text(),'Bloquant :','label is Bloquant :');
 
         $result = $crawler->filterXPath('//input[@name="bloquant"]');
         $this->assertEquals($result->attr('value'),'1','input bloquant value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input bloquant value is 0');
 
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(17)->text(),'Statistiques :','label is Statistiques : ');
 
         $result = $crawler->filterXPath('//input[@name="statistiques"]');
         $this->assertEquals($result->attr('value'),'1','input statistiques value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input statistiques value is 0');
 
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(19)->text(),'Compatible télétravail :','label is Compatible télétravail');
 
         $result = $crawler->filterXPath('//input[@name="teleworking"]');
         $this->assertEquals($result->attr('value'),'1','input teleworking value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input teleworking value is 0');
-
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(22)->text(),'Activités :','label is Nom du post');
-        $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(23)->text(),'checkBox is Assistance audiovisuel');
-        $this->assertStringContainsString(' Assistance autoformation', $result->eq(23)->text(),'checkBox is Assistance autoformation');
-        $this->assertStringContainsString(' Communication', $result->eq(23)->text(),'checkBox is Communication');
-        $this->assertStringContainsString(' Communication réserve', $result->eq(23)->text(),'checkBox is Communication réserve');
-        $this->assertStringContainsString(' Inscription', $result->eq(23)->text(),'checkBox is Inscription');
-        $this->assertStringContainsString(' Prêt/retour de document', $result->eq(23)->text(),'checkBox is Prêt/retour de document');
-        $this->assertStringContainsString(' Prêt de matériel', $result->eq(23)->text(),'checkBox is Prêt de matériel');
-        $this->assertStringContainsString(' Rangement', $result->eq(23)->text(),'checkBox is Rangement');
-        $this->assertStringContainsString(' Renseignement', $result->eq(23)->text(),'checkBox is Renseignement');
-        $this->assertStringContainsString(' Renseignement bibliographique', $result->eq(23)->text(),'checkBox is Renseignement bibliographique ');
-        $this->assertStringContainsString(' Renseignement réserve', $result->eq(23)->text(),'checkBox is Renseignement réserve');
-        $this->assertStringContainsString(' Renseignement spécialisé', $result->eq(23)->text(),'checkBox is Renseignement spécialisé');
-
-        $this->assertEquals($result->eq(24)->text(),' Catégories* :','label is Nom du post');
-        $this->assertStringContainsString(' Catégorie A', $result->eq(25)->text(),'checkBox is Catégorie A ');
-        $this->assertStringContainsString(' Catégorie B', $result->eq(25)->text(),'checkBox is Catégorie B');
-        $this->assertStringContainsString(' Catégorie C', $result->eq(25)->text(),'checkBox is Catégorie C');
 
         $result = $crawler->filterXPath('//input[@class="ui-button"]');
         $this->assertEquals($result->attr('value'),'Valider','input submit value is Valider');
@@ -289,11 +271,6 @@ class PositionControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Modifier','Edit Icons');
 
-        $result = $crawler->filterXPath('//tbody/tr/td');
-        $this->assertEquals($result->eq(1)->text(),'bureau','post name');
-        $this->assertEquals($result->eq(5)->text(),'obligatoire','post obligatoire');
-        $this->assertEquals($result->eq(6)->text(),'Non','post bloquant');
-        $this->assertEquals($result->eq(7)->text(),'Oui','skill statistiques');
     }
 }
 
