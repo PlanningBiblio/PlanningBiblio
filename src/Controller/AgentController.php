@@ -758,11 +758,9 @@ class AgentController extends BaseController
             $this->templateParams($templateParams);
         }
 
-        $minimum_password_length = $this->config('Auth-PasswordLength') ?? 8;
         $this->templateParams(array(
             'edt_samedi'    => $this->config('EDTSamedi'),
             'current_tab'   => $currentTab,
-            'minimum_password_length' => $minimum_password_length,
             'nb_semaine'    => $this->config('nb_semaine'),
         ));
 
