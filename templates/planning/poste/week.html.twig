@@ -1,0 +1,91 @@
+{# templates/planning/poste/week.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ asset("planning/poste/js/planning.js") }}'></script>
+{% endblock %}
+
+{% block page %}
+  {% include 'planning/poste/menu.html.twig' %}
+
+  <div id="tabsemaine1" style="display:none;">&nbsp;</div>
+
+    {% for day in days %}
+      {% if day.tab %}
+        <div class="tableau">
+          <p class="pl-semaine-header">
+            <font class="pl-semaine-date">{{ day.date | datefull }}</font>
+            <font class="pl-semaine-validation">
+              {% if day.verrou and day.tab %}
+                  <u>Validation</u> : {{ day.perso2 }} {{ day.date_validation2 }} {{ day.heure_validation2 }}
+              {% else %}
+                {% if autorisationN1 %}
+                  <font class="important bold">
+                    Attention ! Le planning du {{ date | datefr }} n'est pas validé !
+                  </font>
+                {% else %}
+                  <font class="important bold">
+                    Le planning du {{ date | datefr }} n'est pas validé !
+                  </font>
+                {% endif %}
+              {% endif %}
+            </font>
+          </p>
+
+          {% if day.verrou or autorisationN1 %}
+            <div id="tableau" data-tableId="{{ day.tab }}" >
+              <table class="tabsemaine1" cellspacing="0" cellpadding="0" class="text">
+                {% for t in day.tabs %}
+                  <tr class="tr_horaires tableau{{ t.l }} {{ t.classe }}">
+                    <td class="td_postes" data-id="{{ t.l }}" data-title="{{ t.titre }}">
+                      {{ t.titre }} {% if config('Planning-TableauxMasques') %}<span title="Masquer" class="pl-icon pl-icon-hide masqueTableau pointer" data-id="{{ t.l }}" ></span> {% endif %}
+                    </td>
+                    {% for h in t.horaires %}
+                      <td colspan="{{ colspan(h.debut, h.fin) }}">
+                        {{ h.debut | hour_from_his }}-{{ h.fin | hour_from_his }}
+                      </td>
+                    {% endfor %}
+                  </tr>
+
+                  <!-- lines -->
+                  {% for l in t.lignes %}
+                    {% if l.type == 'poste' and l.poste %}
+                      <tr class="pl-line roundup-tab tableau{{ t.l }} {{ l.classTR }} {{ t.classe }} {{ l.emptyLine }}">
+                        <td class="td_postes {{ l.classTD }}">
+                          {{ l.position_name }}
+                          {% if config('Affichage-etages') and l.position_floor %}
+                            ({{ l.position_floor }})
+                          {% endif %}
+                        </td>
+                        {% for t in l.line_time %}
+                          {% if t.disabled %}
+                            <td colspan="{{ colspan(t.debut, t.fin) }}" class="cellule_grise" oncontextmenu='cellule="";' >&nbsp;</td>
+                          {% else %}
+                            {{ t.position_cell | raw }}
+                          {% endif %}
+                        {% endfor %}
+                      </tr>
+                    {% endif %}
+                    {% if l.type == 'ligne' %}
+                      <tr class="tr_separation tableau{{ t.l }} {{ t.classe }}">
+                        <td>{{ l.line_sep }}</td>
+                        <td colspan="{{ t.colspan }}">&nbsp;</td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                  <tr class="tr_espace tableau{{ t.l }} {{ t.classe }}">
+                    <td>&nbsp;</td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </div>
+          {% endif %}
+          <div class="pl-notes-div1" {{ day.notesDisplay | raw }}>
+            {{ day.notes }}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endblock %}

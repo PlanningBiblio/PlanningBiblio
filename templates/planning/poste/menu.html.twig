@@ -47,7 +47,7 @@
               {% if config('Dimanche') %}
                 <td align='center' style="font-size: 13pt;"> / <a href='{{ base_url }}/index?date={{ dates[6] }}' class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </td>
               {% endif %}
-              <td style="font-size: 13pt;"> / <a href='index.php?page=planning/poste/semaine.php' class="{{ week_view ?'menuRed' : 'menu' }}" >Semaine</a></td>
+                <td style="font-size: 13pt;"> / <a href='{{ base_url }}/week' class="{{ week_view ? 'menuRed' : 'menu' }}" >Semaine</a></td>
             </tr>
           </table>
 
