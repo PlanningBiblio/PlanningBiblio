@@ -227,8 +227,8 @@
     </tr>
 
     {% if not demo %}
-      {% include 'agents/elements/change_password_div.html.twig' %}
-      {% include 'agents/elements/change_password.html.twig' %}
+      {% include 'agents/elements/change_password_div.html.twig' with {'change_own_password': false } %}
+      {% include 'agents/elements/change_password.html.twig' with {'change_own_password': false } %}
       <tr>
         <td colspan='2'>
           <a id="change-password-link" href='javascript:void(0)'>Changer le mot de passe</a>
