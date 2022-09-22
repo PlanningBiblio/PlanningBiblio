@@ -273,6 +273,3 @@ class PositionControllerTest extends PLBWebTestCase
 
     }
 }
-
-
-
