@@ -3,7 +3,6 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-{% include 'agents/elements/change_password.html.twig' with {'change_own_password': false} %}
   <script type='text/JavaScript'>
     <!--
     complet = JSON.parse('{{ postes_completNoms_json | e('js') }}');
@@ -52,10 +51,6 @@
             $(this).dialog( "close" );
           },
         },
-      });
-
-      $('#change-password-link').on('click', function() {
-        $("#reset-password-form").dialog( "open" );
       });
 
       $('#change-login-link').on('click', function() {

@@ -3,7 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-{% include 'agents/elements/change_password.html.twig' with {'change_own_password': true} %}
+{% include 'agents/elements/change_password.html.twig' %}
 
     <!--	Menu	-->
     <h3>Mon Compte</h3>
@@ -136,7 +136,7 @@
           Votre mot de passe ne peut pas être modifié.<br/>
         {% elseif auth_mode == "SQL" %}
           <a id="change-password-link" href="javascript:void(0)">Changer mon mot de passe</a></td>
-          {% include 'agents/elements/change_password_div.html.twig' with {'change_own_password': true} %}
+          {% include 'agents/elements/change_password_div.html.twig' %}
         {% else %}
           Vous utilisez un système d'authentification centralisé.<br/>
           Votre mot de passe ne peut pas être modifié à partir du planning.<br/>
