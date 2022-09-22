@@ -1114,19 +1114,6 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/ajax/change-password", name="ajax.changepassword", methods={"POST"})
-     */
-    public function changePassword(Request $request)
-    {
-        $this->csrf_protection($request);
-
-        $agent_id = $request->get('id');
-        $password = $request->get('password');
-
-        return $this->changeAgentPassword($request, $agent_id, $password);
-    }
-
-    /**
      * @Route("/ajax/check-password", name="ajax.checkpassword", methods={"POST"})
      */
     public function check_password(Request $request)

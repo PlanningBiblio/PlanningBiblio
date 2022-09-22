@@ -71,9 +71,9 @@
           <td colspan='2' style='text-align:right;'>
             {% if planninghebdo or ics_export %}
               <a href='{{ asset("/myaccount") }}' class='myAccountLink'>Mon Compte</a>
-            {% elseif oups_auth_mode == 'SQL' and not (path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) matches '{^/agent/[0-9]+$}') %}
-                {% include 'agents/elements/change_password_div.html.twig' with {'change_own_password': true} %}
-                {% include 'agents/elements/change_password.html.twig' with {'change_own_password': true} %}
+            {% elseif oups_auth_mode == 'SQL' %}
+                {% include 'agents/elements/change_password_div.html.twig' %}
+                {% include 'agents/elements/change_password.html.twig' %}
               <a id="change-password-link" href='javascript:void(0)' class='myAccountLink'>Changer de mot de passe</a>
             {% endif %}
             <div id='logout_text'>
