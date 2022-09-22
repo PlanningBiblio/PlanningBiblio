@@ -20,7 +20,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(AdminInfo::class);
-        
 
         $this->logInAgent($agent, array(23));
 
@@ -28,16 +27,15 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
 
         $client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'salut', '_token' => $token));
-        
 
         $info = $entityManager->getRepository(AdminInfo::class)->findOneBy(array('debut' => '20211005', 'fin' => '20211010'));
 
 
         $this->assertEquals('salut', $info->texte(), 'info texte is salut');
-        
+
         $this->assertEquals('20211005', $info->debut(), 'debut is 20211005');
         $this->assertEquals('20211010', $info->fin(), 'fin is 20211010');
-    
+
 
     }
 
@@ -60,7 +58,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
 
         $this->assertSelectorTextContains('h4', 'Ajout d\'une information');
- 
+
         
         $crawler = new Crawler();
         $crawler = $client->request('GET', '/admin/info/add');
@@ -122,7 +120,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->assertSelectorTextContains('h4', 'Modifications des messages d\'informations');
 
         $this->assertSelectorTextContains('textarea', 'salut');
- 
+
         $result=$crawler->filter('label')->eq(0);
         $this->assertEquals($result->text(),'Date de début','label 1 is Date de début');
 
