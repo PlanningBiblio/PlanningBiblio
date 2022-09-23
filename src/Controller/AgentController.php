@@ -207,6 +207,14 @@ class AgentController extends BaseController
     }
 
     /**
+     * @Route("/agent/password", name="agent.password", methods={"GET"})
+     */
+    public function password(Request $request)
+    {
+        return $this->output('/agents/password.html.twig');
+    }
+
+    /**
      * @Route("/agent/add", name="agent.add", methods={"GET"})
      * @Route("/agent/{id}", name="agent.edit", methods={"GET"})
      */

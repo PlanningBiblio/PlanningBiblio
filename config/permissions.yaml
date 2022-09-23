@@ -25,6 +25,8 @@
     - 100
 "agent.index":
     - 4
+"agent.password":
+    - 100
 "ajax.agentsites":
     - 100
 "ajax.agentsbysites":
