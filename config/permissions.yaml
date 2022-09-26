@@ -21,10 +21,34 @@
     - 100
 "absences.document.list":
     - 100
+"absences.info.add":
+    - 201
+"absences.info.delete":
+    - 201
+"absences.info.edit":
+    - 201
+"absences.info.index":
+    - 201
+"absences.info.update":
+    - 201
 "account.index":
     - 100
+"admin.info.addform":
+    - 23
+"admin.info.delete":
+    - 23
+"admin.info.editform":
+    - 23
+"admin.info.update":
+    - 23
+"admin.info.index":
+    - 23
 "admin.index":
     - 100
+"agent.add":
+    - 4
+"agent.edit":
+    - 4
 "agent.import":
     - 21
 "agent.index":
@@ -33,6 +57,8 @@
     - 100
 "agent.ldap":
     - 21
+"agent.save":
+    - 4
 "ajax.agentsites":
     - 100
 "ajax.agentsbysites":
@@ -63,6 +89,16 @@
     - 100
 "ajax.update_agent_login":
     - 21
+"calendar.index":
+    - 100
+"config.index":
+    - 20
+"config.update":
+    - 20
+"closingday.index":
+    - 25
+"closingday.save":
+    - 25
 "overtime.edit":
     - 100
 "overtime.index":
@@ -111,7 +147,21 @@
     - 22
 "framework.copy_table":
     - 22
+"help":
+    - 99
 "holiday.accounts":
+    - 100
+"holiday.edit":
+    - 100
+"holiday.index":
+    - 100
+"holiday.new":
+    - 100
+"holiday.new.new":
+    - 100
+"holiday.save":
+    - 100
+"holiday.update":
     - 100
 "holiday_info.index":
     - 100
@@ -153,10 +203,32 @@
     - 100
 "planningjob.redo":
     - 100
+"position.add":
+    - 5
+"position.delete":
+    - 5
+"position.edit":
+    - 5
+"position.index":
+    - 5
+"position.save":
+    - 5
+"skill.add":
+    - 5
+"skill.edit":
+    - 5
+"skill.delete":
+    - 5
+"skill.index":
+    - 5
+"skill.save":
+    - 5
 "statistics.absence":
     - 17
 "statistics.agent":
     - 17
+"statistics.attendeesmissing":
+    - 1301
 "statistics.index":
     - 17
 "statistics.position":
