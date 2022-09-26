@@ -9,7 +9,7 @@ class PLBEntity {
     public function __call($name, $arguments) {
 
         if (!property_exists($this, $name)) {
-            trigger_error("Unknown method $name");
+            throw new \Exception("Unknown method $name");
         }
 
         if (!isset($arguments[0])) {
@@ -23,14 +23,14 @@ class PLBEntity {
 
     public function disable() {
         if (!property_exists($this, 'supprime')) {
-            trigger_error("This entity cannot be disabled");
+            throw new \Exception("This entity cannot be disabled");
         }
             $this->supprime(new \DateTime());
     }
 
     public function enable() {
         if (!property_exists($this, 'supprime')) {
-            trigger_error("This entity cannot be enabled");
+            throw new \Exception("This entity cannot be enabled");
         }
 
         $this->supprime = null;
