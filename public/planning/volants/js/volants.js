@@ -78,7 +78,7 @@ $(function() {
     ids = JSON.stringify(ids);
 
     $.ajax({
-      url: 'planning/volants/ajax.validation.php',
+      url: url('planning/volants/ajax.validation.php'),
       type: 'post',
       dataType: 'json',
       data: {ids: ids, date: $('#date').val(), CSRFToken: $('#CSRFSession').val(), },

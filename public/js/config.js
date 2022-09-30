@@ -36,7 +36,7 @@ function ldaptest(){
   $(".CJInfo").remove();
 
   $.ajax({
-    url: 'ldap/ajax.ldaptest.php',
+    url: url('ldap/ajax.ldaptest.php'),
     type: 'post',
     dataType: 'json',
     data: {filter: filter, host: host, idAttribute: idAttribute, password : password, port: port, protocol: protocol, rdn: rdn, suffix: suffix},
@@ -109,7 +109,7 @@ function mailtest(){
   }
 
   $.ajax({
-    url: 'ajax/mail-test',
+    url: url('ajax/mail-test'),
     type: 'post',
     dataType: 'json',
     data: {mailSmtp: mailSmtp, hostanme: hostname, host: host, port: port, secure: secure, auth: auth, user: user, password: password, fromMail: fromMail, fromName: fromName, signature: signature, planning: planning},

@@ -5,7 +5,7 @@
 function getHours(id, hours) {
     hours_per_year = parseFloat($("#conges_annuel").val()) + parseFloat($("#conges_annuel_min option:selected").val());
     $.ajax({
-        url: "/ajax/holidays-hours-to-days",
+        url: url('ajax/holidays-hours-to-days'),
         data: {hours_to_convert: hours , hours_per_year: hours_per_year},
         dataType: "json",
         type: "get",

@@ -562,23 +562,6 @@ function setEndHour(){
   }
 }
 
-// supprime(page,id, CSRFToken)	Utilisée par postes et modeles
-function supprime(page, id, CSRFToken){
-  if(confirm("Etes vous sûr de vouloir supprimer cet élément ?")){
-    $.ajax({
-      url: page+"/ajax.delete.php",
-      type: "get",
-      data: "id="+ encodeURIComponent(id) +"&CSRFToken="+CSRFToken,
-      success: function(){
-	window.location.reload(false);
-      },
-      error: function(){
-	CJInfo("Une erreur est survenue lors de la suppression","error");
-      }
-    });
-  }
-}
-
 // Suppression des jours fériés
 function supprime_jourFerie(id){
   if(document.getElementById("jour"+id).value){

@@ -101,7 +101,7 @@
         if ( bValid ) {
           // Enregistre la demande
           $.ajax({
-            url: "conges/ajax.enregistreRecup.php",
+            url: url('conges/ajax.enregistreRecup.php'),
             dataType: "json",
             data: {date: date.val(), date2: date2.val(), heures: heures.val(), commentaires: commentaires.val(), perso_id: perso_id, CSRFToken: $('#CSRFSession').val()},
             type: "post",
