@@ -77,19 +77,19 @@ class AjaxController extends BaseController
 
         // Connexion au serveur de messagerie
         if ($fp=@fsockopen($host, $port, $errno, $errstr, 5)) {
-            $config['Mail-IsEnabled'] = 1;
-            $config['Mail-IsMail-IsSMTP'] = $mailSmtp;
-            $config['Mail-Hostname'] = $hostname;
-            $config['Mail-Host'] = $host;
-            $config['Mail-Port'] = $port;
-            $config['Mail-SMTPSecure'] = $secure;
-            $config['Mail-SMTPAuth'] = $auth;
-            $config['Mail-Username'] = $user;
-            $config['Mail-Password'] = encrypt($password);
-            $config['Mail-From'] = $fromMail;
-            $config['Mail-FromName'] = $fromName;
-            $config['Mail-Signature'] = $signature;
-            $config['Mail-Planning'] = $planning;
+            $GLOBALS['config']['Mail-IsEnabled'] = 1;
+            $GLOBALS['config']['Mail-IsMail-IsSMTP'] = $mailSmtp;
+            $GLOBALS['config']['Mail-Hostname'] = $hostname;
+            $GLOBALS['config']['Mail-Host'] = $host;
+            $GLOBALS['config']['Mail-Port'] = $port;
+            $GLOBALS['config']['Mail-SMTPSecure'] = $secure;
+            $GLOBALS['config']['Mail-SMTPAuth'] = $auth;
+            $GLOBALS['config']['Mail-Username'] = $user;
+            $GLOBALS['config']['Mail-Password'] = encrypt($password);
+            $GLOBALS['config']['Mail-From'] = $fromMail;
+            $GLOBALS['config']['Mail-FromName'] = $fromName;
+            $GLOBALS['config']['Mail-Signature'] = $signature;
+            $GLOBALS['config']['Mail-Planning'] = $planning;
 
             $m=new \CJMail();
             $m->subject="Message de test, Planning Biblio";
