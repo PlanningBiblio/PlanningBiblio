@@ -460,7 +460,7 @@ $(function() {
 
         $.ajax({
           dataType: "json",
-          url: "personnel/ajax.sendICSURL.php",
+          url: url('personnel/ajax.sendICSURL.php'),
           type: "post",
           data: {CSRFToken: CSRFToken, recipient: recipient, subject: subject, message: message},
           success: function(result){
