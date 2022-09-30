@@ -200,7 +200,7 @@
         </tr>
       {% endif %}
 
-      {% if conges_mode == 'heures' and hours_per_day is defined %}
+      {% if conges_mode == 'heures' and hours_per_day is not empty %}
         <tr>
           <td>
             Nombre de jours ({{ hours_per_day }}h/jour) :
