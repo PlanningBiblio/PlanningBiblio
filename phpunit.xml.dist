@@ -4,6 +4,9 @@
   <coverage>
     <include>
       <directory>src</directory>
+      <directory>public</directory>
+      <directory>templates</directory>
+      <directory>init</directory>
     </include>
   </coverage>
   <php>
