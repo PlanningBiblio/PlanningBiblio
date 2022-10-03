@@ -29,7 +29,6 @@ class CalendarController extends BaseController
 
         $debut = $debut ? $debut : $_SESSION['agenda_debut'];
         $fin = $fin ? $fin : $_SESSION['agenda_fin'];
-
         $admin = in_array(3, $GLOBALS['droits'])?true:false;
         if($admin){
             $perso_id = $request->get('perso_id');
@@ -94,14 +93,6 @@ class CalendarController extends BaseController
         $nbSites = $this->config('Multisites-nombre');
         for ($i = 1; $i <= $nbSites; $i++){
             $verrou[$i]=array();
-        }
-
-        $db = new \db();
-        $db->select2("absences", null, "`perso_id`='$perso_id' $filter");
-        if ($db->result){
-            foreach ($db->result as $elem){
-                $verrou[$elem['site']][] = $elem['date'];
-            }
         }
 
         $db = new \db();
@@ -200,10 +191,10 @@ class CalendarController extends BaseController
                 foreach ($absences as $elem) {
                     $abs_deb = substr($elem['debut'], 0, 10);
                     $abs_fin = substr($elem['fin'], 0, 10);
-                          if (($abs_deb < $current and $abs_fin>$current) or $abs_deb==$current or $abs_fin==$current) {
-                            $current_abs[] = $elem;
-                         }
+                    if (($abs_deb < $current and $abs_fin>$current) or $abs_deb==$current or $abs_fin==$current) {
+                        $current_abs[] = $elem;
                     }
+                }
             }
             $closed = false;
             $nom = null;
@@ -235,6 +226,7 @@ class CalendarController extends BaseController
                     $absences_affichage[] = "{$elem['debut']} &rarr; {$elem['fin']} : {$elem['motif']}";
                 }
             }
+
             // Intégration des congés
             if ($this->config('Conges-Enable')) {
                 include_once __DIR__."/../../public/conges/class.conges.php";
