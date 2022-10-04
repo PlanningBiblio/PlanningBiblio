@@ -22,13 +22,13 @@ class HourHelperTest extends TestCase
         $result = $hh->toHis('10:30:00');
         $this->assertEquals('10:30:00', $result, '10:30:00is transformed to 10:30:00');
 
-        $result = $hh->toHis('I am not a valid time');
-        $this->assertEquals('', $result, 'I am not a valid time return empty');
+        $result = $hh->toHis('Site number 3');
+        $this->assertEquals('Site number 3', $result, 'Site number 3 return Site number 3');
+
+        $result = $hh->toHis('3');
+        $this->assertEquals('3', $result, '3 return 3');
 
         $this->expectException('ArgumentCountError');
         $result = $hh->toHis();
-
-        $result = $hh->toHis('3');
-        $this->assertEquals('', $result, '3 return empty ');
     }
 }
