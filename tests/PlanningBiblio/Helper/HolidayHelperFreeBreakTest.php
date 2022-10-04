@@ -347,5 +347,57 @@ class HolidayHelperFreeBreakTest extends TestCase
         $this->assertEquals(00, $result['minutes'], 'special case 9');
         $this->assertEquals('0h00', $result['hr_hours'], 'special case 9');
 
+        // MT 32769: full day
+        $working_hours = array(
+            0 => array('0' => '08:15:00', '1' => '', '2' => '', '3' => '11:00:00'),
+            3 => array('0' => '13:00:00', '1' => '', '2' => '', '3' => '18:00:00'),
+        );
+
+        $_SESSION['oups']['CSRFToken'] = '00000';
+        $db = new \db();
+        $db->CSRFToken = '00000';
+        $db->delete('planning_hebdo');
+        $db->insert(
+            'planning_hebdo',
+            array(
+                'perso_id' => $agent->id(),
+                'debut' => '2021-01-01',
+                'fin' => '2021-12-31',
+                'temps' => json_encode($working_hours),
+                'breaktime' => json_encode(array(0,0,0,0,0,0)),
+                'valide' => 1,
+                'nb_semaine' => 1
+            )
+        );
+
+
+        $holidayHlper = new HolidayHelper(array(
+            'start' => '2021-08-12',
+            'hour_start' => '00:00:00',
+            'end' => '2021-08-12',
+            'hour_end' => '23:59:59',
+            'perso_id' => $agent->id(),
+            'is_recover' => 0,
+        ));
+        $result = $holidayHlper->getCountedHours();
+        $this->assertEquals(5, $result['hours'], 'full day');
+        $this->assertEquals(00, $result['minutes'], 'full day');
+        $this->assertEquals('5h00', $result['hr_hours'], 'full day');
+
+        $holidayHlper = new HolidayHelper(array(
+            'start' => '2021-08-09',
+            'hour_start' => '00:00:00',
+            'end' => '2021-08-09',
+            'hour_end' => '23:59:59',
+            'perso_id' => $agent->id(),
+            'is_recover' => 0,
+        ));
+        $result = $holidayHlper->getCountedHours();
+        $this->assertEquals(2, $result['hours'], 'full day');
+        $this->assertEquals(75, $result['minutes'], 'full day');
+        $this->assertEquals('2h45', $result['hr_hours'], 'full day');
+
+
+
     }
 }
