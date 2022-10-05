@@ -32,6 +32,10 @@ services:
         calls:
             - setNotifier: ['@notifier']
 
+    App\Listener\CSRFListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 33 }
+
     App\Listener\ControllerAuthorizationListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request }

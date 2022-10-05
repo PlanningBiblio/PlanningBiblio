@@ -87,6 +87,7 @@
     <form name='form' action='config' method='post'>
       <input type='hidden' name='page' value='admin/config.php' />
       <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+      <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
       <div id='accordion' class='ui-accordion'>
         {% for key,val in elements %}
             <h3><span>{{ key }}</span></h3>
