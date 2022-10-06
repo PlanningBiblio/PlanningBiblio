@@ -252,7 +252,7 @@ class AbsenceController extends BaseController
         $this->agents_multiples = ($this->admin or $this->adminN2 or in_array(9, $this->droits));
         $this->edit_own_absences = ($this->admin or $this->adminN2 or in_array(6, $this->droits));
 
-        $id = $request->get('id');
+	$id = $request->get('id');
 
         if ($id) {
             return $this->update($request);
@@ -1345,7 +1345,6 @@ class AbsenceController extends BaseController
         if ($reason) {
             $workflow = $reason->notification_workflow();
         }
-        $notifications = "-$workflow$notifications";
 
         // Liste des responsables
         // Pour chaque agent, recherche des responsables absences
