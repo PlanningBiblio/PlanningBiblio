@@ -131,7 +131,7 @@ class HolidayHelper extends BaseHelper
             $free_break_already_removed = false;
             $has_fixed_break = !empty($planning['times'][$day_id][1]) || !empty($planning['times'][$day_id][5]);
 
-            if (isset($planning['breaktimes'][$day_id]) && $planning['breaktimes'][$day_id] != 0 && !$has_fixed_break) {
+            if (!empty($planning['breaktimes'][$day_id]) && !$has_fixed_break) {
 
                 $free_break_already_removed = true;
                 $free_break_start = $this->config('PlanningHebdo-DebutPauseLibre');
