@@ -1,0 +1,12 @@
+{# legalNotices/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <div id='legal_notices'>
+    <h3>Mentions légales</h3>
+    {% if legal_notices_gdpr %}
+      {{ legal_notices_gdpr | markdown_to_html }}
+    {% endif %}
+  </div>
+{% endblock %}

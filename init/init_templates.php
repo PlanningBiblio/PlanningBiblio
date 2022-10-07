@@ -18,4 +18,5 @@ $templates_params = array(
     'ics_export'          => $config['ICS-Export'],
     'oups_auth_mode'      => $_SESSION['oups']['Auth-Mode'],
     'CSRFSession'         => $CSRFSession,
+    'show_legal_notices'  => $show_legal_notices,
 );
