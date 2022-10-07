@@ -42,4 +42,5 @@ $templates_params = array(
     'content_planning'    => $content_planning,
     'authorized'          => $authorized,
     'CSRFSession'         => $CSRFSession,
+    'show_legal_notices'  => $show_legal_notices,
 );

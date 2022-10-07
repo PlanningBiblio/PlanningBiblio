@@ -61,6 +61,7 @@ $request = Request::createFromGlobals();
 
 $date = $request->get('date');
 $show_menu = $request->get('menu') == 'off' ? false : true;
+$show_legal_notices = $config['legalNotices-GDPR'] ? true : false;
 $page = $request->get('page');
 $path = $request->getPathInfo();
 $login = $request->get('login');

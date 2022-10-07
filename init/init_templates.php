@@ -19,4 +19,5 @@ $templates_params = array(
     'oups_auth_mode'      => $_SESSION['oups']['Auth-Mode'],
     'content_planning'    => $content_planning,
     'CSRFSession'         => $CSRFSession,
+    'show_legal_notices'  => $show_legal_notices,
 );

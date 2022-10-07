@@ -76,6 +76,9 @@
     <div class='footer'>
       Planno ({{ displayed_version }}) - 
       <a href='https://www.planno.fr' target='_blank' style='font-size:9pt;'>www.planno.fr</a>
+      {% if show_legal_notices %}
+        - <a href='{{ asset("legalNotices") }}' target='_blank' style='font-size:9pt;'>Mentions légales</a>
+      {% endif %}
     </div>
   </body>
 </html>
