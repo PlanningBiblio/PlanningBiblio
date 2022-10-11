@@ -142,8 +142,10 @@ class IndexController extends BaseController
         }
 
         if (!$tab) {
-            $this->templateParams(array('no_tab' => 1));
-
+            $this->templateParams(array(
+                'no_tab' => 1,
+                'tab'    => $tab,
+            ));
             return $this->output('planning/poste/index.html.twig');
         }
 
@@ -156,6 +158,11 @@ class IndexController extends BaseController
         ));
 
         if (!$verrou and !$autorisationN1) {
+            $this->templateParams(array(
+                'absences_planning'   => 0,
+                'presents'            => 0,
+                'tabs'                => 0,
+            ));
             return $this->output('planning/poste/index.html.twig');
         } else {
             // Looking for info cells.
