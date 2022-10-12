@@ -647,6 +647,8 @@ class IndexController extends BaseController
                 $db->select2('pl_poste_modeles_tab', '*', array('model_id'=>$model_id, 'site'=>$site));
             }
 
+            $postes = array();
+            $horaires = array();
             if ($db->result) {
                 $tableau=$db->result[0]['tableau'];
                 $db=new \db();
@@ -654,7 +656,6 @@ class IndexController extends BaseController
                 $db->insert("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
 
                 // N'importe pas les agents placés sur des postes supprimés (si tableau modifié)
-                $postes = array();
                 $db = new \db();
                 $db->select2('pl_poste_lignes', 'poste', array('type'=>'poste', 'numero'=>$tableau));
                 if ($db->result) {
@@ -665,7 +666,6 @@ class IndexController extends BaseController
 
                 // Do not import agents that are
                 // on deleted time renges.
-                $horaires = array();
                 $db = new \db();
                 $db->select2('pl_poste_horaires', array('debut','fin'), array('numero'=>$tableau));
                 if ($db->result) {
@@ -732,6 +732,10 @@ class IndexController extends BaseController
                     $db2 = new \db();
                     $db2->select("conges", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
                     $absent = $db2->result ? true : $absent ;
+
+                    if (!$this->positionExists($elem2, $postes, $horaires)) {
+                        continue;
+                    }
 
                     // Don't import if absent and get_absents not checked
                     if (!$get_absents and $absent) {
@@ -1263,5 +1267,20 @@ class IndexController extends BaseController
         }
 
         return $hiddenTables;
+    }
+
+    private function positionExists($agent, $postes, $horaires)
+    {
+        if (!in_array($agent['poste'], $postes)) {
+            return false;
+        }
+
+        foreach ($horaires as $h) {
+            if ($h['debut'] == $agent['debut'] and $h['fin'] == $agent['fin']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
