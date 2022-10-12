@@ -264,6 +264,10 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
                 $db2->select("conges", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
                 $absent = $db2->result ? true : $absent ;
 
+                if (!PositionExists($elem2, $postes, $horaires)) {
+                    continue;
+                }
+
                 // Don't import if absent and get_absents not checked
                 if (!$get_absents and $absent) {
                     continue;
@@ -315,4 +319,18 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
         }
     }
     echo "<script type='text/JavaScript'>top.document.location.href=\"index.php?date=$date\";</script>\n";
+}
+
+function PositionExists($agent, $postes, $horaires) {
+    if (!in_array($agent['poste'], $postes)) {
+        return false;
+    }
+
+    foreach ($horaires as $h) {
+        if ($h['debut'] == $agent['debut'] and $h['fin'] == $agent['fin']) {
+            return true;
+        }
+    }
+
+    return false;
 }
