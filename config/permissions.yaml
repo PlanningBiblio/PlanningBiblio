@@ -11,6 +11,8 @@
     - 100
 "absence.save":
     - 100
+"absence.statuses":
+    - 100
 "absences.document.index":
     - 100
 "absences.document.delete":
@@ -23,10 +25,14 @@
     - 100
 "admin.index":
     - 100
+"agent.import":
+    - 21
 "agent.index":
     - 4
 "agent.password":
     - 100
+"agent.ldap":
+    - 21
 "ajax.agentsites":
     - 100
 "ajax.agentsbysites":
@@ -57,7 +63,11 @@
     - 100
 "ajax.update_agent_login":
     - 21
-"comp-time.index":
+"overtime.edit":
+    - 100
+"overtime.index":
+    - 100
+"overtime.save":
     - 100
 "ajax.workinghourtables":
     - 100
@@ -109,10 +119,16 @@
     - 100
 "holiday_info.delete":
     - 100
+"index":
+    - 100
 "notification.index":
     - 21
 "notification.save":
     - 21
+"model.add":
+    - 301
+"model.import":
+    - 100
 "model.index":
     - 301
 "model.save":
@@ -121,6 +137,10 @@
     - 301
 "model.delete":
     - 301
+"model.form":
+    - 100
+"planning.delete":
+    - 100
 "planningjob.contextmenu":
     - 100
 "statistics.absence":
@@ -142,8 +162,7 @@
 "statistics.time":
     - 17
 "workinghour.index":
-    - 1101
-    - 1201
+    - 100
 "workinghour.add":
     - 100
 "workinghour.edit":

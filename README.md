@@ -2,7 +2,7 @@
 
 Planning Biblio est un logiciel libre développé en PHP-MySQL permettant de réaliser les plannings de service public
 
-- Site web : http://www.planningbiblio.fr
+- Site web : https://www.planno.fr
 - Twitter : @jeromecombes , #PlanningBiblio
 - Facebook : facebook.com/PlanningBiblio
 - Groupe Facebook : Les faiseurs de planning : https://www.facebook.com/groups/350347521813310

@@ -334,6 +334,33 @@ li .agent-acces-checked2{
   padding-right: 20px;
 }
 
+.table-validation-notification {
+  border-spacing: 0px;
+}
+
+.table-validation-notification td{
+  text-align: left;
+  vertical-align:top;
+  padding: 0 60px 10px 10px;
+  white-space: nowrap;
+}
+
+.table-validation-notification td:nth-child(2) {
+  width: 60px;
+}
+
+.table-validation-notification th {
+  padding-bottom: 10px;
+  padding-left: 10px;
+}
+
+.table-validation-notification .border-right {
+  border-right: 1px solid black;
+}
+
+
+
+
 .tableauFiches td{
   vertical-align:top;
   padding: 0 60px 10px 10px;
@@ -956,7 +983,7 @@ div#tabsemaine1{
 }
 
 
-#tab_titre{	/* planning/poste/index.php */
+#tab_titre{	/* /index */
   width:100%;
   border: none;
   background-color: #29495C;
@@ -1109,7 +1136,7 @@ a:hover.menuRed, a:hover.menu {
     margin: 0 10px 30px 0;
 }
 
-#tab_jours{	/*	planning/poste/index.php	*/
+#tab_jours{ /* /index */
   margin : 10px 0px 0px 0px;
   text-align:left;
 }
@@ -1840,11 +1867,6 @@ div.presents-absents {
   background: #FFF;
   border-radius: 5px;
   padding: 10px;
-}
-
-#content-holyday{
-  width: 90%;
-  margin: 10px auto auto auto;
 }
 
 .icon-div{

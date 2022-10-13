@@ -20,5 +20,8 @@ Install composer (needed to run the tests): https://getcomposer.org/doc/00-intro
 run tests like the following:
 ./vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/
 
+You can filter by method:
+./vendor/bin/phpunit --bootstrap tests/bootstrap.php --filter testMethod tests/YourTest.php
+
 bootstrap.php create a database (named like choosen in .env.test.local)
 and init the ORM.

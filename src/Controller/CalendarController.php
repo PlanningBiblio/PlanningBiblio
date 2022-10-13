@@ -97,10 +97,10 @@ class CalendarController extends BaseController
         }
 
         $db = new \db();
-        $db->select2("absences", null, "`perso_id`=$perso_id' $filter");
+        $db->select2("absences", null, "`perso_id`='$perso_id' $filter");
         if ($db->result){
             foreach ($db->result as $elem){
-                $verrou[$elem('site')][] = $elem['date'];
+                $verrou[$elem['site']][] = $elem['date'];
             }
         }
 
@@ -168,6 +168,8 @@ class CalendarController extends BaseController
                     $temps = array();
                 } else {
                     $temps = $p->elements[0]['temps'];
+                    $week_number = $p->elements[0]['nb_semaine'];
+                    $jour = $d->planning_day_index_for($perso_id, $week_number);
                 }
             }
             $horaires = null;

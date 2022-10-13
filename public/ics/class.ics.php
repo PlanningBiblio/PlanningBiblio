@@ -200,6 +200,14 @@ class CJICS
 
         $events=array();
         foreach ($tmp as $elem) {
+
+            // Run custom exclusions
+            if (!empty($config['ICS-custom-exclusion'])) {
+                if ($config['ICS-custom-exclusion']($elem)) {
+                    continue;
+                }
+            }
+
             // Ne traite pas les événéments ayant le status X-MICROSOFT-CDO-INTENDEDSTATUS différent de BUSY (si le paramètre X-MICROSOFT-CDO-INTENDEDSTATUS existe)
             if (isset($elem['X-MICROSOFT-CDO-INTENDEDSTATUS']) and $elem['X-MICROSOFT-CDO-INTENDEDSTATUS'] != "BUSY") {
                 continue;

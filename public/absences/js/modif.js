@@ -19,6 +19,9 @@ $(function() {
       affiche_perso_ul();
     }
 
+    // Mise à jour des status disponible.
+    update_validation_statuses();
+
     // Affichage des récurrences lors de la modification d'une absence
     if($('#rrule').val()){
       var text = recurrenceRRuleText2($('#rrule').val());
@@ -566,6 +569,9 @@ function change_select_perso_ids(id){
   
   // Affichage des agents sélectionnés avec tri alphabétique
   affiche_perso_ul();
+
+  // Mise à jour des status disponible.
+  update_validation_statuses();
 }
 
 /**
@@ -612,6 +618,37 @@ function affiche_perso_ul(){
       $("#perso_ul5").append(li);
     }
   }
+}
+
+function update_validation_statuses() {
+
+  perso_ids = [];
+  $('.perso_ids_li').each(function() {
+    perso_ids.push($(this).data('id'));
+  });
+
+  // Agent with no right.
+  // So only the logged in
+  // is in the form.
+  if (perso_ids.length == 0) {
+    perso_ids.push($('#login_id').val());
+  }
+
+  absence_id = $('input[name="id"]').val();
+
+  $.ajax({
+    url: url('absence-statuses'),
+    data: { ids: perso_ids, module: 'absence', id: absence_id },
+    dataType: 'html',
+    success: function(result){
+      $("#validation-statuses").html(result);
+
+      $('tr#validation').effect("highlight",null,2000);
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
+    }
+  });
 }
 
 function delete_absence(CSRFToken, id, recurrence) {
@@ -1023,4 +1060,7 @@ function supprimeAgent(id){
   $("#li"+id).remove();
   $("#hidden"+id).remove();
   affiche_perso_ul();
+
+  // Mise à jour des status disponible.
+  update_validation_statuses();
 }

@@ -51,11 +51,11 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
 
 $sql[]="CREATE TABLE `{$dbprefix}absences_infos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `debut` date DATE',
-  `fin` date DATE,
-  `texte` text NOT NULL,
+  `debut` date NOT NULL DEFAULT '0000-00-00',
+  `fin` date NOT NULL DEFAULT '0000-00-00',
+  `texte` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
@@ -373,10 +373,13 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}responsables` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT, 
-  `perso_id` INT(11) NOT NULL DEFAULT '0', 
-  `responsable` INT(11) NOT NULL DEFAULT '0', 
-  `notification` INT(1) NOT NULL DEFAULT '0', 
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `perso_id` INT(11) NOT NULL DEFAULT '0',
+  `responsable` INT(11) NOT NULL DEFAULT '0',
+  `level1` INT(1) NOT NULL DEFAULT '1',
+  `level2` INT(1) NOT NULL DEFAULT '0',
+  `notification_level1` INT(1) NOT NULL DEFAULT '0',
+  `notification_level2` INT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`))
   ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
@@ -575,26 +578,6 @@ $sql[]="CREATE TABLE `{$dbprefix}recuperations` (
   `refus` TEXT,
   `solde_prec` FLOAT(10),
   `solde_actuel` FLOAT(10)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
-
-// Création de la table conges_cet
-$sql[]="CREATE TABLE `{$dbprefix}conges_cet` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `perso_id` INT(11) NOT NULL,
-  `jours` INT(11) NOT NULL DEFAULT '0',
-  `commentaires` TEXT,
-  `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `saisie_par` INT NOT NULL,
-  `modif` INT(11) NOT NULL DEFAULT '0',
-  `modification` TIMESTAMP,
-  `valide_n1` INT(11) NOT NULL DEFAULT '0',
-  `validation_n1` TIMESTAMP,
-  `valide_n2` INT(11) NOT NULL DEFAULT '0',
-  `validation_n2` TIMESTAMP,
-  `refus` TEXT,
-  `solde_prec` FLOAT(10),
-  `solde_actuel` FLOAT(10),
-  `annee` VARCHAR(10)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 // Création de la table absences_documents

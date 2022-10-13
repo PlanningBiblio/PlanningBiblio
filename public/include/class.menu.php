@@ -47,6 +47,17 @@ class menu
                         }
                     }
                 }
+
+                if (substr($elem['condition'], 0, 8)=="config!=") {
+                    $tmp = substr($elem['condition'], 8);
+                    $values = explode(";", $tmp);
+                    foreach ($values as $value) {
+                        if (!empty($GLOBALS['config'][$value])) {
+                            continue 2;
+                        }
+                    }
+                }
+
             }
             if (substr($elem['url'], 0, 1) == '/') {
                 $url = substr($elem['url'], 1);
@@ -61,7 +72,7 @@ class menu
             for ($i=0;$i<$GLOBALS['config']['Multisites-nombre'];$i++) {
                 $j=$i+1;
                 $menu[30][$j]['titre']=$GLOBALS['config']["Multisites-site".$j];
-                $menu[30][$j]['url']="index.php?page=planning/poste/index.php&site=$j";
+                $menu[30][$j]['url']="index?site=$j";
             }
         }
 

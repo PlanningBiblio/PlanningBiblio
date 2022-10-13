@@ -11,9 +11,9 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
-$version="22.04.00.000"; // xx.xx.xx.xxx
+$version="22.05.00.000"; // xx.xx.xx.xxx
 $GLOBALS['version'] = $version;
-$displayed_version="22.04.00"; // xx.xx.xx
+$displayed_version="22.05.00"; // xx.xx.xx
 
 require_once __DIR__.'/../vendor/autoload.php';
 
@@ -72,12 +72,12 @@ if (!array_key_exists("oups", $_SESSION)) {
 }
 
 // Affichage de tous les plannings de la semaine
-if ($page=="planning/poste/index.php" and !$date and $_SESSION['oups']['week']) {
+if ($page=='/index' and !$date and $_SESSION['oups']['week']) {
     $page="planning/poste/semaine.php";
 }
 
 $content_planning = 0;
-if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php' or !$show_menu) {
+if ($page == 'planning/poste/semaine.php' or !$show_menu) {
     $content_planning = 1;
 }
 

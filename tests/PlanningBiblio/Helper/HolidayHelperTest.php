@@ -9,83 +9,6 @@ use Tests\FixtureBuilder;
 
 class HolidayHelperTest extends TestCase
 {
-    public function testgetManagedAgentMultiSitesNonAdmin() {
-        $GLOBALS['config']['Multisites-nombre'] = 2;
-
-        // Logged in user can't manage holidays on any site.
-        $GLOBALS['droits'] = array(
-            23,6,9,701,3,4,21,1101,
-            1201,22,5,17,1301,25,201,
-            202,501,502,301,302,
-            1001,1002,901,801,802,6,9,99,100,20
-        );
-
-        $builder = new FixtureBuilder();
-        $luc_site1 = $builder->build(Agent::class, array('login' => 'luc', 'sites' => '["1"]'));
-        $eric_site2 = $builder->build(Agent::class, array('login' => 'eric', 'sites' => '["2"]'));
-
-        $helper = new HolidayHelper();
-        $managed_agents = $helper->getManagedAgent(true, false);
-
-        $this->assertArrayNotHasKey($luc_site1->id(), $managed_agents);
-        $this->assertArrayNotHasKey($eric_site2->id(), $managed_agents);
-    }
-
-    public function testgetManagedAgentMonoSitesNonAdmin() {
-        $GLOBALS['config']['Multisites-nombre'] = 1;
-
-        // Logged in user can't manage holidays.
-        $GLOBALS['droits'] = array(
-            23,6,9,701,3,4,21,1101,
-            1201,22,5,17,1301,25,201,
-            202,501,502,301,302,
-            1001,1002,901,801,802,6,9,99,100,20
-        );
-
-        $builder = new FixtureBuilder();
-        $dupont = $builder->build(Agent::class, array('login' => 'a.dupont', 'sites' => ''));
-
-        $helper = new HolidayHelper();
-        $managed_agents = $helper->getManagedAgent(true, false);
-
-        $this->assertArrayNotHasKey($dupont->id(), $managed_agents, 'Dupont is not a managed agent');
-    }
-
-    public function testgetManagedAgentMultiSites() {
-        $GLOBALS['config']['Multisites-nombre'] = 2;
-
-        // Logged in user can manage holidays for agent in site 1.
-        $GLOBALS['droits'] = array(
-            23,6,9,701,3,4,21,1101,
-            1201,22,5,17,1301,25,201,
-            202,501,502,401,601,301,302,
-            1001,1002,901,801,802,6,9,99,100,20
-        );
-
-        $builder = new FixtureBuilder();
-        $builder->delete(Agent::class);
-        $bob_site1 = $builder->build(Agent::class, array('login' => 'bob', 'sites' => '["1"]'));
-        $john_site2 = $builder->build(Agent::class, array('login' => 'john', 'sites' => '["2"]'));
-        $olivia_all_site = $builder->build(Agent::class, array('login' => 'olivia', 'sites' => '["1","2"]'));
-        $deleted_agent = $builder->build(Agent::class, array('login' => 'foo', 'sites' => '["1","2"]', 'supprime' => 1));
-
-        $helper = new HolidayHelper();
-        $managed_agents = $helper->getManagedAgent(true, false);
-
-        $this->assertArrayHasKey($bob_site1->id(), $managed_agents, 'Bob is on site 1: managed');
-        $this->assertArrayNotHasKey($john_site2->id(), $managed_agents, 'John is on site 2: not managed');
-        $this->assertArrayHasKey($olivia_all_site->id(), $managed_agents, 'Olivia is on all site: managed');
-        $this->assertArrayNotHasKey($deleted_agent->id(), $managed_agents, 'Agent deleted: not managed');
-
-        // Call again getManagedAgent with deleted agents
-        $managed_agents = $helper->getManagedAgent(true, true);
-        $this->assertArrayHasKey($bob_site1->id(), $managed_agents, 'Bob is on site 1: managed');
-        $this->assertArrayNotHasKey($john_site2->id(), $managed_agents, 'John is on site 2: not managed');
-        $this->assertArrayHasKey($olivia_all_site->id(), $managed_agents, 'Olivia is on all sites: managed');
-        $this->assertArrayHasKey($deleted_agent->id(), $managed_agents, 'Agent on all sites: managed');
-
-    }
-
     public function testgetCountedHoursWithCongesFulldayReferenceTime() {
         $GLOBALS['config']['Conges-Mode'] = 'jours';
         $GLOBALS['config']['Conges-fullday-switching-time'] = 4.25;
@@ -301,4 +224,55 @@ class HolidayHelperTest extends TestCase
         $this->assertEquals(1, $result['days'], 'request 9h on 1 day (default reference time)');
 
     }
+
+    public function testgetCountedHoursHolidayModeHours() {
+        $GLOBALS['config']['Conges-Mode'] = 'heures';
+        $GLOBALS['config']['Conges-Recuperations'] = 0;
+        $GLOBALS['config']['Conges-demi-journees'] = 0;
+        $GLOBALS['config']['Conges-fullday-switching-time'] = '4';
+        $GLOBALS['config']['Conges-fullday-reference-time'] = '';
+
+        $builder = new FixtureBuilder();
+        $agent = $builder->build(Agent::class, array('login' => 'e.sosson'));
+
+        // No model for workinghours yet. Use db function.
+        $working_hours = array(
+            0 => array('0' => '09:10:00', '1' => '12:00:00', '2' => '12:40:00', '3' => '17:00:00'),
+            1 => array('0' => '09:10:00', '1' => '12:00:00', '2' => '12:40:00', '3' => '17:00:00'),
+            2 => array('0' => '', '1' => '', '2' => '', '3' => ''),
+            3 => array('0' => '09:10:00', '1' => '12:00:00', '2' => '12:40:00', '3' => '17:00:00'),
+            4 => array('0' => '09:10:00', '1' => '12:00:00', '2' => '12:40:00', '3' => '16:40:00'),
+            5 => array('0' => '', '1' => '', '2' => '', '3' => ''),
+        );
+
+        $_SESSION['oups']['CSRFToken'] = '00000';
+        $db = new \db();
+        $db->CSRFToken = '00000';
+        $db->delete('planning_hebdo');
+        $db->insert(
+            'planning_hebdo',
+            array(
+                'perso_id' => $agent->id(),
+                'debut' => '2021-01-01',
+                'fin' => '2035-12-31',
+                'temps' => json_encode($working_hours),
+                'valide' => 1,
+                'nb_semaine' => 1
+            )
+        );
+
+        $holidayHlper = new HolidayHelper(array(
+            'start' => '2022-08-01',
+            'hour_start' => '00:00:00',
+            'end' => '2022-08-12',
+            'hour_end' => '23:59:59',
+            'perso_id' => $agent->id(),
+            'is_recover' => 0,
+        ));
+        $result = $holidayHlper->getCountedHours();
+
+        $this->assertEquals(56, $result['hours']);
+        $this->assertEquals('56h40', $result['hr_hours']);
+    }
 }
+

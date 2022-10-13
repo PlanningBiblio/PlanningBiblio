@@ -2633,8 +2633,8 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     // Remove duplicate.
-    $sql[] = "DELETE s1 FROM select_services s1 INNER JOIN select_services s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
-    $sql[] = "DELETE s1 FROM select_statuts s1 INNER JOIN select_statuts s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
+    $sql[] = "DELETE s1 FROM `{$dbprefix}select_services` s1 INNER JOIN `{$dbprefix}select_services` s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
+    $sql[] = "DELETE s1 FROM `{$dbprefix}select_statuts` s1 INNER JOIN `{$dbprefix}select_statuts` s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
 
     // MT 35788
     $sql[] = "UPDATE `{$dbprefix}conges` SET `fin` = REPLACE(`fin`, '23:59:00', '23:59:59') WHERE fin like '%23:59:00';";
@@ -2706,6 +2706,85 @@ if (version_compare($config['Version'], $v) === -1) {
     // Symfonize holiday information.
     $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page`='conges/infos.php';";
     $sql[] = "UPDATE `{$dbprefix}menu` SET `url`='/holiday-info' WHERE `url`='conges/infos.php';"; 
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="22.04.00.001";
+if (version_compare($config['Version'], $v) === -1) {
+    // MT 35062. New validation schema.
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` CHANGE `notification` `notification_level1` INT(1) NOT NULL DEFAULT '0'";
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN `notification_level2` INT(1) NOT NULL DEFAULT '0' AFTER `notification_level1`";
+
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN `level1` INT(1) NOT NULL DEFAULT '1' AFTER `responsable`";
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN `level2` INT(1) NOT NULL DEFAULT '0' AFTER `level1`";
+
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Absences-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"L\'absence doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Absences', 'La validation niveau 2 des absences peut se faire directement ou doit attendre la validation niveau 1', '31')";
+
+    // Symfonize recuperation (comp-time).
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'conges/recuperation_modif.php';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'conges/recuperation_valide.php';";
+
+    // Rename comp-time to overtime
+    $sql[]="UPDATE `{$dbprefix}menu` SET `titre` = 'Heures supplémentaires', `url` = '/overtime' WHERE `url`='/comp-time' LIMIT 1;";
+
+    $db = new db();
+    $db->select2('personnel');
+    if($db->result){
+        foreach ($db->result as $agent) {
+            $hours = json_decode(html_entity_decode(
+                $agent['temps'],
+                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+
+            if (!$hours) {
+                continue;
+            }
+
+            foreach ($hours as $day => $times) {
+                foreach ($times as $i => $time) {
+                    $hours[$day][$i] =  App\PlanningBiblio\Helper\HourHelper::toHis($time);
+                }
+            }
+            $hours = json_encode($hours);
+            $id = $agent['id'];
+            $sql[] = "UPDATE `{$dbprefix}personnel` SET `temps` = '$hours' WHERE `id` = $id;";
+        }
+    }
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="22.05.00.000";
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT 36725 Symfonize LDAP.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='personnel/import.php';";
+
+    // Symfonize planning.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/index.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/index' WHERE `url`='planning/poste/index.php';";
+
+    $db = new db();
+    $db->select('pl_poste_tab');
+    if ($db->result) {
+        foreach ($db->result as $tab) {
+            $id = $tab['id'];
+            $old = $tab['nom'];
+            $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            if ($new != $old) {
+                $sql[] = "UPDATE `{$dbprefix}pl_poste_tab` SET `nom` = '$new' WHERE `id` = '$id';";
+            }
+        }
+    }
+
+    // Symfonize planning deletion.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/supprimer.php';";
+
+    // Symfonize planning model import.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/importer.php';";
+
+    // Symfonize planning model save.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/enregistrer.php';";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

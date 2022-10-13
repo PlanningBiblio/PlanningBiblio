@@ -25,6 +25,8 @@ class BaseController extends AbstractController
 
     protected $notifier;
 
+    protected $permissions;
+
     public function __construct(RequestStack $requestStack, LoggerInterface $logger)
     {
         $request = $requestStack->getCurrentRequest();
@@ -38,6 +40,9 @@ class BaseController extends AbstractController
         $this->config = $GLOBALS['config'];
 
         $this->logger = $logger;
+
+        $this->permissions = $GLOBALS['droits'];
+
     }
 
     public function setNotifier(Notifier $notifier) {

@@ -38,20 +38,13 @@ class HolidayController extends BaseController
         // Gestion des droits d'administration
         // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
         // NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
-        // TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
-        $admin = false;
-        $adminN2 = false;
-        $droits = $GLOBALS['droits'];
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
-                $admin = true;
-            }
-            if (in_array((600+$i), $droits)) {
-                $adminN2 = true;
-            }
-        }
+        // Initialisation des variables
+        list($admin, $adminN2) = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('holiday')
+            ->getValidationLevelFor($_SESSION['login_id']);
 
-        if ($admin and $perso_id==null) {
+        if (($admin or $adminN2) and $perso_id==null) {
             $perso_id=isset($_SESSION['oups']['conges_perso_id'])?$_SESSION['oups']['conges_perso_id']:$_SESSION['login_id'];
         } elseif ($perso_id==null) {
             $perso_id=$_SESSION['login_id'];
@@ -111,17 +104,11 @@ class HolidayController extends BaseController
         $c->fetch();
 
         // Recherche des agents pour le menu
-        if ($admin) {
-            $helper = new HolidayHelper();
-            $agents_menu = $helper->getManagedAgent($adminN2, $agents_supprimes);
-
-            // Liste des agents à conserver :
-            $perso_ids = array_keys($agents_menu);
-            $perso_ids = array_merge($perso_ids, array($_SESSION['login_id']));
-        } else {
-            $agents_menu = null;
-            $perso_ids = array($_SESSION['login_id']);
-        }
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('holiday')
+            ->getManagedFor($_SESSION['login_id'], $agents_supprimes);
+        $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
 
         // Recherche des agents pour la fonction nom()
         $p = new \personnel();
@@ -138,10 +125,9 @@ class HolidayController extends BaseController
         $holiday_helper = new HolidayHelper();
 
         $templateParams = array(
-            'admin'                 => $admin,
-            'agents'                => $holiday_helper->getManagedAgent($adminN2),
+            'admin'                 => $admin || $adminN2,
             'perso_id'              => $perso_id,
-            'agents_menu'           => $agents_menu,
+            'managed'               => $managed,
             'deleted_agents'        => $agents_supprimes ? 1 : 0,
             'conges_recuperation'   => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
@@ -299,17 +285,9 @@ class HolidayController extends BaseController
     public function edit(Request $request, Session $session)
     {
         $id = $request->get('id');
-        $commentaires = $request->get('commentaires');
         $confirm = $request->get('confirm');
         $dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
-
-        $adminN1 = false;
-        $adminN2 = false;
-
-        $this->setAdminPermissions();
-
-        $agents_multiples = (($this->admin or $this->adminN2) && $this->config('Conges-Recuperations') == 1);
 
         // Elements du congé demandé
         $c = new \conges();
@@ -327,10 +305,6 @@ class HolidayController extends BaseController
         $c = new \conges();
         $balance = $c->calculCreditRecup($perso_id);
 
-        // Droits d'administration niveau 1 et niveau 2
-        $c = new \conges();
-        $roles = $c->roles($perso_id, true);
-        list($adminN1, $adminN2) = $roles;
         if ( $confirm ) {
             $result = $this->update($request);
             $msg = $result['msg'];
@@ -355,12 +329,24 @@ class HolidayController extends BaseController
             return $this->redirectToRoute("holiday.index", array('recup' => $recover));
         }
 
-        $admin = ($adminN1 or $adminN2);
+        list($adminN1, $adminN2) = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('holiday')
+            ->forAgent($perso_id)
+            ->getValidationLevelFor($_SESSION['login_id']);
+
+        if (!$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
+            return $this->output('access-denied.html.twig');
+        }
+
+        if ($this->config('Conges-Validation-N2') && $data['valide_n1'] == 0) {
+            $adminN2 = false;
+        }
+
         $this->templateParams(array('CSRFToken' => $GLOBALS['CSRFSession']));
         $valide=$data['valide']>0?true:false;
         $displayRefus = ($data['valide_n1'] < 0 and ($adminN1 or $adminN2)) ? null : "display:none;";
         $displayRefus = $data['valide'] > 0 ? "display:none;" : $displayRefus;
-        $perso_id=$data['perso_id'];
         $debut=dateFr(substr($data['debut'], 0, 10));
         $fin=dateFr(substr($data['fin'], 0, 10));
         $hre_debut=substr($data['debut'], -8);
@@ -373,6 +359,8 @@ class HolidayController extends BaseController
         // Crédits
         $p = new \personnel();
         $p->fetchById($perso_id);
+
+        $agent_name = $p->elements[0]['nom'] . ' ' . $p->elements[0]['prenom'];
 
         $conges_anticipation = $p->elements[0]['conges_anticipation'];
         $conges_credit = $p->elements[0]['conges_credit'];
@@ -420,12 +408,10 @@ class HolidayController extends BaseController
         }
 
         $templateParams = array(
-            'admin'                 => $admin,
             'id'                    => $id,
             'perso_id'              => $perso_id,
             'selected_agent_id'     => $perso_id,
-            'login_id'              => $_SESSION['login_id'],
-            'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
+            'agent_name'            => $agent_name,
             'halfday'               => $data['halfday'],
             'start_halfday'         => $data['start_halfday'],
             'end_halfday'           => $data['end_halfday'],
@@ -468,10 +454,6 @@ class HolidayController extends BaseController
 
         $this->templateParams($templateParams);
 
-        $helper = new HolidayHelper();
-        $agents = $helper->getManagedAgent($adminN2);
-        $this->templateParams(array('db_perso' => $agents));
-
         $saisie_par = '';
         if ($data['saisie_par'] and $data['saisie_par'] != $data['perso_id']) {
             $saisie_par = nom($data['saisie_par']);
@@ -495,16 +477,7 @@ class HolidayController extends BaseController
             'accepted_pending_str' => $lang['leave_dropdown_accepted_pending'],
             'refused_pending_str' => $lang['leave_dropdown_refused_pending']
         ));
-        $select_valide_others = 0;
-        if ($adminN2 and ($data['valide_n1'] > 0 or $this->config('Conges-Validation-N2') == 0)) {
-            $select_valide_others = 1;
-        }
-        $this->templateParams(array('select_valide_others' => $select_valide_others));
-        $select_valide = 0;
-        if (($adminN2 and !$valide) or ($adminN1 and $data['valide']==0)) {
-            $select_valide = 1;
-        }
-        $this->templateParams(array('select_valide' => $select_valide));
+
         $save_button = 0;
         if ((!$valide and ($adminN1 or $adminN2)) or ($data['valide']==0 and $data['valide_n1']==0)) {
             $save_button = 1;
@@ -545,55 +518,31 @@ class HolidayController extends BaseController
     public function add(Request $request)
     {
         // Initialisation des variables
-        $CSRFToken = $request->get('CSRFToken');
-        $CSRFSession = $GLOBALS['CSRFSession'];
         $perso_id = $request->get('perso_id');
-        $debut = $request->get('debut');
-        $fin = $request->get('fin');
-        $confirm = $request->get('confirm') ? 1 : 0;
-        $this->droits = $GLOBALS['droits'];
-        $droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
-        $this->setAdminPermissions();
+
+        $agentRepository = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('holiday');
+
+        if ($perso_id) {
+            $agentRepository->forAgent($perso_id);
+        }
+        list($admin, $adminN2) = $agentRepository->getValidationLevelFor($_SESSION['login_id']);
 
         if (!$perso_id) {
             $perso_id = $_SESSION['login_id'];
         }
-        if (!$fin) {
-            $fin = $debut;
-        }
 
-        $this->templateParams(array(
-            'debut' => $debut,
-            'fin'   => $fin,
-        ));
+        $sites_select = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('holiday')
+            ->getManagedSitesFor($_SESSION['login_id']);
 
-        // Gestion des droits d'administration
-        // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
-        // NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
-        // TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
-        $c = new \conges();
-        list($admin, $adminN2) = $c->roles($perso_id, true);
-
-        $multisites = false;
-        $sites_select = array();
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
-                $admin = true;
-                $sites_select[] = array( 'id' => $i, 'name' => $this->config("Multisites-site$i") );
-            }
-            if (in_array((600+$i), $droits)) {
-                $adminN2 = true;
-            }
-        }
-        if ($this->config('Multisites-nombre') > 1) {
-            $multisites = true;
-        }
-
-        $agents_multiples = (($this->admin || ($admin && $adminN2)) && $this->config('Conges-Recuperations') == 1);
+        $agents_multiples = (($admin || $adminN2) && $this->config('Conges-Recuperations') == 1);
 
         // Si pas de droits de gestion des congés, on force $perso_id = son propre ID
-        if (!$admin) {
+        if (!$admin && !$adminN2) {
             $perso_id=$_SESSION['login_id'];
         }
 
@@ -641,7 +590,8 @@ class HolidayController extends BaseController
 
         $lang = $GLOBALS['lang'];
         $templateParams = array(
-            'admin'                 => $admin,
+            'admin'                 => $admin || $adminN2,
+            'adminN1'               => $admin,
             'adminN2'               => $adminN2,
             'agents_multiples'      => $agents_multiples,
             'perso_id'              => $perso_id,
@@ -649,7 +599,7 @@ class HolidayController extends BaseController
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
             'conges_tous'           => $this->config('Conges-tous'),
-            'CSRFToken'             => $CSRFSession,
+            'CSRFToken'             => $GLOBALS['CSRFSession'],
             'hours_per_day'         => $hoursPerDay,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
@@ -674,19 +624,12 @@ class HolidayController extends BaseController
             'loggedin_id'           => $_SESSION['login_id'],
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
-            'multisites'            => $multisites,
             'selected_agent_id'     => $perso_id,
             'sites_select'          => $sites_select,
             'show_allday'           => $show_allday,
         );
 
         $this->templateParams($templateParams);
-
-        // Affichage du formulaire
-
-        $helper = new HolidayHelper();
-        $agents = $helper->getManagedAgent($adminN2);
-        $this->templateParams(array('db_perso' => $agents));
 
         $date = date("Y-m-d");
         $db = new \db();
@@ -907,6 +850,10 @@ class HolidayController extends BaseController
         $perso_id = $request->get('perso_id');
         $is_recover = $request->get('is_recover');
 
+        if (!$perso_id) {
+            return $this->json(array('error' => true));
+        }
+
         list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
 
         $c = new \conges();
@@ -1070,25 +1017,25 @@ class HolidayController extends BaseController
             // Modification sans validation
             case 0:
               $sujet="Demande de congés";
-              $notifications='-A2';
+              $notifications='2';
               break;
             // Validations Niveau 2
             case 1:
               $sujet="Validation de congés";
-              $notifications='-A4';
+              $notifications='4';
               break;
             case -1:
               $sujet="Refus de congés";
-              $notifications='-A4';
+              $notifications='4';
               break;
             // Validations Niveau 1
             case 2:
               $sujet = $lang['leave_subject_accepted_pending'];
-              $notifications='-A3';
+              $notifications='3';
               break;
             case -2:
               $sujet = $lang['leave_subject_refused_pending'];
-              $notifications='-A3';
+              $notifications='3';
               break;
             }
 
@@ -1102,7 +1049,7 @@ class HolidayController extends BaseController
                 $c->getResponsables($debutSQL, $finSQL, $perso_id);
                 $responsables = $c->responsables;
                 $a = new \absences();
-                $a->getRecipients($notifications, $responsables, $agent);
+                $a->getRecipients("-A$notifications", $responsables, $agent);
                 $destinataires = $a->recipients;
             }
 
@@ -1173,30 +1120,32 @@ class HolidayController extends BaseController
         $nom = $agent->nom();
         $prenom = $agent->prenom();
 
+        $recover = ($post['debit'] == 'recuperation' && $this->config('Conges-Recuperations') == '1') ? 1 : 0;
+
         // Choix du sujet et des destinataires en fonction du degré de validation
         switch ($valide) {
         // Modification sans validation
         case 0:
-          $sujet="Modification de congés";
-          $notifications='-A2';
+          $sujet = $recover ? "Modification d'une récupération" : "Modification de congés";
+          $notifications='2';
           break;
         // Validations Niveau 2
         case 1:
-          $sujet="Validation de congés";
-          $notifications='-A4';
+          $sujet = $recover ? "Validation d'une récupération" : "Validation de congés";
+          $notifications='4';
           break;
         case -1:
-          $sujet="Refus de congés";
-          $notifications='-A4';
+          $sujet = $recover ? "Refus d'une récupération" : "Refus de congés";
+          $notifications='4';
           break;
         // Validations Niveau 1
         case 2:
-          $sujet = $lang['leave_subject_accepted_pending'];
-          $notifications='-A3';
+          $sujet = $recover ? $lang['comp_time_subject_accepted_pending'] : $lang['leave_subject_accepted_pending'];
+          $notifications='3';
           break;
         case -2:
-          $sujet = $lang['leave_subject_refused_pending'];
-          $notifications='-A3';
+          $sujet = $recover ? $lang['comp_time_subject_refused_pending'] : $lang['leave_subject_refused_pending'];
+          $notifications='3';
           break;
         }
 
@@ -1210,12 +1159,12 @@ class HolidayController extends BaseController
             $c->getResponsables($debutSQL, $finSQL, $perso_id);
             $responsables = $c->responsables;
             $a = new \absences();
-            $a->getRecipients($notifications, $responsables, $agent);
+            $a->getRecipients("-A$notifications", $responsables, $agent);
             $destinataires = $a->recipients;
         }
 
         // Message qui sera envoyé par email
-        $message = $this->makeMail($sujet, "$prenom $nom", $debut, $fin, $hre_debut, $hre_fin, $commentaires, $refus, $valide, $id);
+        $message = $this->makeMail($sujet, "$prenom $nom", $debut, $fin, $hre_debut, $hre_fin, $commentaires, $refus, $valide, $id, $recover);
 
         // Envoi du mail
         $m=new \CJMail();
@@ -1247,29 +1196,10 @@ class HolidayController extends BaseController
         return $result;
     }
 
-    private function setAdminPermissions()
-    {
-        // If can validate level 1: admin = true.
-        // If can validate level 2: adminN2 = true.
-        $this->adminN2 = false;
-        $this->admin = false;
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((200+$i), $this->droits)) {
-                $this->admin = true;
-            }
-            if (in_array((500+$i), $this->droits)) {
-                $this->admin = true;
-                $this->adminN2 = true;
-                break;
-            }
-        }
-    }
-
-
     /**
      * Make mail message
      */
-    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id) {
+    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id, $recover = 0) {
         $message  = "<b><u>$subject :</u></b><br/>";
         $message .= "<ul><li>Agent : <strong>$name</strong></li>";
         $message .= "<li>Début : <strong>$begin";
@@ -1292,7 +1222,7 @@ class HolidayController extends BaseController
 
         // ajout d'un lien permettant de rebondir sur la demande
         $url = $this->config('URL') . "/holiday/edit/$id";
-        $message.="<p>Lien vers la demande de congé :<br/><a href='$url'>$url</a></p>";
+        $message.="<p>Lien vers la demande de " . ($recover ? "récupération" : "congé") . " :<br/><a href='$url'>$url</a></p>";
 
         return $message;
     }

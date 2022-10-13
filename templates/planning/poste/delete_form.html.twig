@@ -1,0 +1,36 @@
+{# planning/poste/delete_form.html.twig #}
+
+<div id="delete-planning-dialog" title="Suppression du planning">
+  <div style="text-align:center">
+    <p>Voulez vous supprimer le planning du jour ({{ dateFr }})</p>
+    <p>ou de la semaine (du {{ startHr }} au {{ endHr }}) ?</p>
+  </div>
+</div>
+
+<div id="delete-planning-dialog-confirm-day" title="Suppression du planning">
+    <div style="text-align:center">
+      <br />
+      Etes vous sûr de vouloir supprimer le planning du {{ dateFr }} ?
+      <form id="delete-planning-day-form" action="{{ asset('deleteplanning') }}" method="post">
+        <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+        <input type='hidden' name='week' value='0' />
+        <input type='hidden' name='site' value='{{ site }}' />
+        <input type='hidden' name='date' value='{{ date }}' />
+      </form>
+    </div>
+</div>
+
+<div id="delete-planning-dialog-confirm-week" title="Suppression du planning">
+    <div style="text-align:center">
+      <br />
+      Etes vous sûr de vouloir supprimer le planning de la semaine
+      (du {{ startHr }} au {{ endHr }}) ?
+      <form id="delete-planning-week-form" action="{{ asset('deleteplanning') }}" method="post">
+        <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+        <input type='hidden' name='week' value='1' />
+        <input type='hidden' name='site' value='{{ site }}' />
+        <input type='hidden' name='start' value='{{ start }}' />
+        <input type='hidden' name='end' value='{{ end }}' />
+      </form>
+    </div>
+</div>

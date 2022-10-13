@@ -88,8 +88,6 @@ class HolidayHelper extends BaseHelper
         while ($current <= $fin) {
 
             $date_current = new \DateTime($current);
-            $week_id = $date_current->format("W");
-            $day_id = $date_current->format("N") - 1;
 
             // Check agent's planning.
             $planning = $this->getPlanning($current);
@@ -97,6 +95,12 @@ class HolidayHelper extends BaseHelper
                 $result['error'] = true;
                 return $result;
             }
+
+            $d = new \datePl($current, $planning['nb_semaine']);
+            $week_id = $d->semaine3;
+
+            $day = $d->position ? $d->position : 7;
+            $day_id = $day + (($week_id - 1) * 7) - 1;
 
             $week_helper = new WeekPlanningHelper($planning['times']);
             $per_week[$week_id]['worked_days'] = $week_helper->NumberWorkingDays();
@@ -195,7 +199,7 @@ class HolidayHelper extends BaseHelper
             // If this is a closing day, don't check for
             // "normal" hours. Only take into account regularization.
             if (!$closingday) {
-                $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
+                $per_week[$week_id]['times'] += $today / 3600;
             }
 
             $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
@@ -276,63 +280,6 @@ class HolidayHelper extends BaseHelper
         return $this->config('conges-hours-per-day');
     }
 
-    public function getManagedAgent($adminN2, $deleted_agents = false)
-    {
-        $access_rights = $GLOBALS['droits'];
-
-        $agents = array();
-        $p=new \personnel();
-        $p->responsablesParAgent = true;
-        if ($deleted_agents) {
-            $p->supprime=array(0,1);
-        }
-        $p->fetch();
-        $agents=$p->elements;
-
-        $tmp = array();
-        foreach ($agents as $elem) {
-            if ($elem['id'] == $_SESSION['login_id']) {
-                $tmp[$elem['id']] = $elem;
-                continue;
-            }
-
-            if ($this->config('Multisites-nombre') == 1) {
-                $elem['sites'] = array(1);
-            }
-
-            if (is_array($elem['sites'])) {
-                foreach ($elem['sites'] as $site_agent) {
-                    if (in_array((400+$site_agent), $access_rights) or in_array((600+$site_agent), $access_rights)) {
-                        $tmp[$elem['id']] = $elem;
-                        continue 2;
-                    }
-                }
-            }
-        }
-        $agents = $tmp;
-
-        // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
-        if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
-            $tmp = array();
-
-            foreach ($agents as $elem) {
-                if ($elem['id'] == $_SESSION['login_id']) {
-                    $tmp[$elem['id']] = $elem;
-                } else {
-                    foreach ($elem['responsables'] as $resp) {
-                        if ($resp['responsable'] == $_SESSION['login_id']) {
-                            $tmp[$elem['id']] = $elem;
-                            break;
-                        }
-                    }
-                }
-            }
-            $agents = $tmp;
-        }
-
-        return $agents;
-    }
-
     public function halfDayStartEndHours()
     {
         $agent = $this->data['agent'];
@@ -374,9 +321,13 @@ class HolidayHelper extends BaseHelper
         // For the last day
         // If the 2nd period doesn't exist and if the first period starts after 12:00,
         // we suppose that this period is an afternoon and use the first hour to define morning_end
+        // If the 2nd period doesn't exist and the first start before 12:00,
+        // morning_end is 12:00
         if (empty($hours_last_day[1][0])) {
             if ($hours_last_day[0][0] >= '12:00:00') {
                 $morning_end = $hours_last_day[0][0];
+            } else {
+                $morning_end = '12:00:00';
             }
         }
 

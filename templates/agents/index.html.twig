@@ -25,7 +25,7 @@
           {% if rights21 %}
           <input type='button' value='Ajouter' onclick="location.href='{{ asset('agent/add') }}';" class='ui-button'/>
             {% if LDAP_host and LDAP_suf %}
-              <input type='button' value='Import LDAP' onclick='location.href="{{ asset('index.php?page=personnel/import.php') }}";' class='ui-button ui-button-type2' style='margin-left:21px;'/>
+              <input type='button' value='Import LDAP' onclick='location.href="{{ asset('agent/ldap') }}";' class='ui-button ui-button-type2' style='margin-left:21px;'/>
             {% endif %}
           {% endif %}
         </td>
@@ -45,8 +45,10 @@
         <th class="clear-string tableSort">Nom</th>
         <th class="clear-string tableSort">Prénom</th>
         <th class='dataTableHeureFR tableSort'>Heures</th>
-        <th class="tableSort">Statut</th>
-        <th class="tableSort">Service</th>
+        {% if not config('Planook') %}
+          <th class="tableSort">Statut</th>
+          <th class="tableSort">Service</th>
+        {% endif %}
         {% if nbSites > 1 %}
           <th class="tableSort">Sites</th>
         {% endif %}
@@ -75,8 +77,10 @@
           <td>{{ a.name | raw }}</td>
           <td>{{ a.surname | raw}} </td>
           <td>{{ a.hours }}</td>
-          <td>{{ a.status | raw }}</td>
-          <td>{{ a.service | raw }}</td>
+          {% if not config('Planook') %}
+            <td>{{ a.status | raw }}</td>
+            <td>{{ a.service | raw }}</td>
+          {% endif %}
           {% if nbSites > 1 %}
             <td>{{ a.sites | raw }}</td>
           {% endif %}
@@ -90,7 +94,9 @@
   {% if rights21 %}
     <select name='action' id='action' style='width:200px;'>
       <option value=''></option>
-      <option value='edit'>Modifier la sélection</option>
+      {% if not config('Planook') %}
+        <option value='edit'>Modifier la sélection</option>
+      {% endif %}
       <option value='delete'>Supprimer la sélection</option>
     </select>
     <input type='button' value='Valider' class='ui-button' style='margin-left:20px;' onclick='agent_list()'/>

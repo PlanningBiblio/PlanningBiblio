@@ -85,12 +85,12 @@
           }
         }
         bValid = bValid && checkLength( heures, "heures", 4, 5 );
-        if(admin && checkDateAge( date, limitJours, "La demande de récupération doit être effectuée dans les "+limitJours+" jours",false)==false){
-          res=confirm("Attention, la demande de récupération doit être effectuée dans les "+limitJours+" jours.\nEn tant qu'administrateur, vous pouvez outrepasser cette règle.\nVoulez-vous continuer ?");
+        if(admin && checkDateAge( date, limitJours, "La demande d'heures supplémentaires doit être effectuée dans les "+limitJours+" jours",false)==false){
+          res=confirm("Attention, la demande d'heures supplémentaires doit être effectuée dans les "+limitJours+" jours.\nEn tant qu'administrateur, vous pouvez outrepasser cette règle.\nVoulez-vous continuer ?");
           bValid = bValid && res;
         }
         else{
-          bValid = bValid && checkDateAge( date, limitJours, "La demande de récupération doit être effectuée dans les "+limitJours+" jours");
+          bValid = bValid && checkDateAge( date, limitJours, "La demande d'heures supplémentaires doit être effectuée dans les "+limitJours+" jours");
         }
 
         {% if recup_deuxsamedis and recup_uneparjour %}
@@ -107,27 +107,27 @@
             type: "post",
             success: function(result){
               if(result[0]=="Demande-OK"){
-              
+
             // Préparation de l'affichage des erreurs et confirmations
             var msg=encodeURIComponent("Votre demande a été enregistrée");
-            
+
             var msg2=null;
             var msg2Type=null;
             if(result[1]!=undefined){
               msg2=encodeURIComponent(result[1]);
               msg2Type="error";
             }
-            
+
             // Affiche la liste des demandes après enregistrement
-            document.location.href="/comp-time?msgType=success&msg="+msg+"&msg2Type="+msg2Type+"&msg2="+msg2;
+            document.location.href="/overtime?msgType=success&msg="+msg+"&msg2Type="+msg2Type+"&msg2="+msg2;
             // Ferme le dialog
             $( this ).dialog( "close" );
               }else{
-            updateTips("Erreur lors de l'enregistrement de la récupération", "error");
+            updateTips("Erreur lors de l'enregistrement de la demande d'heures supplémentaires", "error");
               }
             },
             error: function (result){
-              updateTips("Erreur lors de l'enregistrement de la récupération", "error");
+              updateTips("Erreur lors de l'enregistrement de la demande d'heures supplémentaires", "error");
             },
           });
         }
@@ -140,7 +140,7 @@
 
         close: function() {
           allFields.val( "" ).removeClass( "ui-state-error" );
-          $('.validateTips').text("Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures à récuperer et un saisir un commentaire.");
+          $('.validateTips').text("Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires et un saisir un commentaire.");
         }
       });
 
@@ -164,11 +164,11 @@
     {% if perso_id != 0 %}
     <h3 class="print_only">Liste des congés de {{ perso_name }}, année {{ year_from }}-{{ year_to}}</h3>
     {% endif %}
-    <h3 class='noprint'>Récupérations</h3>
+    <h3 class='noprint'>Heures supplémentaires</h3>
     <div class="admin-div">
       <div id='liste'>
-        <h4 class='noprint'>Liste des demandes de récupération</h4>
-        <form name='form' method='get' action='{{ asset("comp-time") }}' class='noprint'>
+        <h4 class='noprint'>Liste des demandes d'heures supplémentaires</h4>
+        <form name='form' method='get' action='{{ asset("overtime") }}' class='noprint'>
           <span style='float:left; vertical-align:top; margin-bottom:20px;'>
             Année : <select name='annee'>
               {% for elem in years %}
@@ -188,18 +188,18 @@
                 {% else %}
                   <option value='0'>Tous</option>
                 {% endif %}
-                {% for agent in agents %}
-                  {% if agent.id == perso_id %}
-                    <option value="{{ agent.id }}" selected>{{ agent.nom }} {{ agent.prenom }}</option>
+                {% for m in managed %}
+                  {% if m.id == perso_id %}
+                    <option value="{{ m.id }}" selected>{{ m.nom }} {{ m.prenom }}</option>
                   {% else %}
-                    <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                    <option value="{{ m.id }}">{{ m.nom }} {{ m.prenom }}</option>
                   {% endif %}
                 {% endfor %}
               </select>
             {% endif %}
 
             <span style='margin-left:30px;'><input type='submit' value='Rechercher' id='button-OK' class='ui-button'/></span>
-            <span style='margin-left:30px;'><input type='button' value='Réinitialiser' id='button-Effacer' class='ui-button ui-button-type2' onclick='location.href="/comp-time?reset=on"'/></span>
+            <span style='margin-left:30px;'><input type='button' value='Réinitialiser' id='button-Effacer' class='ui-button ui-button-type2' onclick='location.href="/overtime?reset=on"'/></span>
           </span>
 
           <span style='float:right; vertical-align:top; margin:0px 5px;'>
@@ -227,10 +227,10 @@
             </tr>
           </thead>
           <tbody>
-            {% for elem in comptimes %}
+            {% for elem in overtimes %}
               <tr>
                 <td>
-                  <a href='index.php?page=conges/recuperation_modif.php&amp;id={{ elem.id }}'>
+                  <a href="{{ asset('overtime') }}/{{ elem.id }}">
                     <span class='pl-icon pl-icon-edit' title='Modifier'></span>
                   </a>
                 </td>
@@ -258,7 +258,7 @@
       </div> <!-- liste -->
 
       <div id="dialog-form" title="Nouvelle demande" class='noprint'>
-        <p class="validateTips">Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures à récuperer et un saisir un commentaire.</p>
+        <p class="validateTips">Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires et un saisir un commentaire.</p>
         <form>
           <fieldset>
             <table class='tableauFiches'>
@@ -268,11 +268,11 @@
                   <td>
                     <select id='agent' name='agent' style='text-align:center;'>
                       <option value=''>&nbsp;</option>
-                      {% for elem in agents %}
-                        {% if elem.id == perso_id %}
-                          <option value="{{ elem.id }}" selected>{{ elem.name }}</option>
+                      {% for m in managed %}
+                        {% if m.id == perso_id %}
+                          <option value="{{ m.id }}" selected>{{ m.nom }} {{ m.prenom | first }}</option>
                         {% else %}
-                          <option value="{{ elem.id }}">{{ elem.name }}</option>
+                          <option value="{{ m.id }}">{{ m.nom }} {{ m.prenom | first }}</option>
                         {% endif %}
                       {% endfor %}
                     </select>
@@ -305,7 +305,7 @@
               <tr>
                 <td><label  for="heures">Heures</label></td>
                 <td>
-                  <input id="heures" name="heures" class="comptime-timepicker ui-widget-content ui-corner-all" value=""/>
+                  <input id="heures" name="heures" class="overtime-timepicker ui-widget-content ui-corner-all" value=""/>
                 </td>
               </tr>
 

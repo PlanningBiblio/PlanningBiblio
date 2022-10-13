@@ -27,6 +27,7 @@ require_once __DIR__."/../absences/class.absences.php";
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Model\Agent;
 
 class conges
 {
@@ -804,25 +805,6 @@ class conges
         }
     }
 
-    public function getCET()
-    {
-        $where=$this->perso_id?"perso_id='{$this->perso_id}'":"1";
-
-        if ($this->annee) {
-            $where.=" AND `annee`='{$this->annee}'";
-        }
-
-        if ($this->id) {
-            $where="id='{$this->id}'";
-        }
-
-        $db=new db();
-        $db->select("conges_CET", null, $where);
-        if ($db->result) {
-            $this->elements=$db->result;
-        }
-    }
-
     public function getRecup()
     {
         $debut=$this->debut?$this->debut:date("Y-m-d", strtotime("-1 month", time()));
@@ -872,7 +854,7 @@ class conges
         }
     }
 
-    public function getResponsables($debut=null, $fin=null, $perso_id)
+    public function getResponsables($debut=null, $fin=null, $perso_id=0)
     {
         $responsables=array();
         $droitsConges=array();
@@ -1046,83 +1028,6 @@ class conges
         }
     }
 
-    /** roles
-     * @param int $perso_id : ID de l'agent concerné par le congés ou la récupération
-     * @param boolean $accessDenied default false : afficher "accès refusé" si la page demandée ne concerne pas l'agent logué et s'il n'est pas admin
-     * @return Array($adminN1, $adminN2) : tableau ayant pour 1er valeur true si l'agent logué est adminN1, false sinon, pour 2ème valeur true s'il est adminN2, false sinon
-     * Affiche "accès refusé" si la page demandée ne concerne pas l'agent logué et s'il n'est pas admin
-     */
-    public function roles($perso_id, $accesDenied = false)
-    {
-
-    // Droits d'administration niveau 1 et niveau 2
-        // Droits nécessaires en mono-site
-        $droitsN1 = array(401);
-        $droitsN2 = array(601);
-
-        // Droits nécessaires en multisites avec vérification des sites attribués à l'agent concerné par le congé
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            $droitsN1 = array();
-            $droitsN2 = array();
-
-            $p=new personnel();
-            $p->fetchById($perso_id);
-
-            if (is_array($p->elements[0]['sites'])) {
-                foreach ($p->elements[0]['sites'] as $site) {
-                    $droitsN1[] = 400 + $site;
-                    $droitsN2[] = 600 + $site;
-                }
-            }
-        }
-
-        // Ai-je le droit d'administration niveau 1 pour le congé demandé
-        $adminN1 = false;
-
-        // Si le paramètre "Absences-notifications-agent-par-agent" est coché, vérification du droit N1 à partir de la table "responsables"
-        if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
-            $db = new db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    if ($elem['perso_id'] == $perso_id) {
-                        $adminN1 = true;
-                        break;
-                    }
-                }
-            }
-
-            // Si le paramètre "Absences-notifications-agent-par-agent" n'est pascoché, vérification du droit N1 à partir des droits cochés dans la fiche de l'agent logué ($_SESSION['droits']
-        } else {
-            foreach ($droitsN1 as $elem) {
-                if (in_array($elem, $_SESSION['droits'])) {
-                    $adminN1 = true;
-                    break;
-                }
-            }
-        }
-
-        // Ai-je le droit d'administration niveau 2 pour le congé demandé
-        $adminN2 = false;
-        foreach ($droitsN2 as $elem) {
-            if (in_array($elem, $_SESSION['droits'])) {
-                $adminN2 = true;
-                break;
-            }
-        }
-
-        // Affiche accès refusé si le congé ne concerne pas l'agent logué et qu'il n'est pas admin
-        if ($accesDenied and !$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
-            echo "<h3 style='text-align:center;'>Accès refusé</h3>\n";
-            echo "<p style='text-align:center;' >\n";
-            echo "<a href='javascript:history.back();'>Retour</a></p>\n";
-            include(__DIR__.'/../include/footer.php');
-        }
-
-        return array($adminN1, $adminN2);
-    }
-
-
     public function update($data)
     {
         $data['debit']=isset($data['debit'])?$data['debit']:"credit";
@@ -1286,7 +1191,7 @@ class conges
             'is_recover' => $data['debit'] == 'recuperation' ? true : false
         ));
         $result = $holidayHlper->getCountedHours();
-        $regul = $result['rest'];
+        $regul = isset($result['rest']) ? $result['rest'] : 0;
 
         if ($regul != 0) {
             $regul_id = $this->applyRegularization($data, $regul);

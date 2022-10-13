@@ -1,0 +1,52 @@
+{# planning/poste/model_form.html.twig #}
+
+<div style="text-align:center">
+  <form name="form" id="form" method="post" action="{{ asset('modelimport') }}" onsubmit="return ctrl_form('model');">
+    <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+    <input type='hidden' name='_token' value='{{ csrf_token('') }}' />
+    <input type='hidden' name='date' value='{{ date }}' />
+    <input type='hidden' name='site' value='{{ site }}' />
+
+    {% if models | length == 0 %}
+      <div style="margin: 20px auto;">
+        Aucun modèle enregistré
+      </div>
+
+    {% else %}
+      <div style="margin: 20px auto;" class="important">
+        Attention, le planning actuel sera remplacé par le modèle
+      </div>
+
+      {% if models | length > 1 %}
+
+        <div style="margin: 20px auto;">
+          Sélectionnez le modèle à importer
+          <br />
+          <br />
+          <select name='model' id='model'>
+            <option value=''>&nbsp;</option>
+            {% for m in models %}
+              <option value='{{ m.model_id }}'>{{ m.nom }}{% if m.isWeek %} (semaine){% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+      {% else %}
+
+        {% set model = models | first  %}
+        <input type='hidden' name='model' id='model' value='{{ model.model_id }}' />
+        <div style="margin: 20px auto;">
+          Importer le modèle "{{ model.nom }}"{%if model.isWeek %} (semaine){% endif %} ?
+        </div>
+
+    {% endif %}
+
+    <div style="margin: 20px auto;">
+      Importer les absents ?
+      <input type='checkbox' name='absents' checked='checked' />
+    </div>
+
+  {% endif %}
+
+  </form>
+</div>

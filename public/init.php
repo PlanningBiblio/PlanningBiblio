@@ -26,8 +26,8 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
-$version="22.04.00.000"; // xx.xx.xx.xxx
-$displayed_version="22.04.00"; // xx.xx.xx
+$version="22.05.00.000"; // xx.xx.xx.xxx
+$displayed_version="22.05.00"; // xx.xx.xx
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
@@ -61,7 +61,8 @@ $request = Request::createFromGlobals();
 
 $date = $request->get('date');
 $show_menu = $request->get('menu') == 'off' ? false : true;
-$page = $request->get('page', 'planning/poste/index.php');
+$page = $request->get('page');
+$path = $request->getPathInfo();
 $login = $request->get('login');
 
 // Login Anonyme
@@ -80,13 +81,8 @@ if (!array_key_exists("oups", $_SESSION)) {
     $_SESSION['oups']=array("week" => false);
 }
 
-// Affichage de tous les plannings de la semaine
-if ($page=="planning/poste/index.php" and !$date and $_SESSION['oups']['week']) {
-    $page="planning/poste/semaine.php";
-}
-
 $content_planning = 0;
-if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php' or !$show_menu) {
+if ($page == 'planning/poste/semaine.php' or !$show_menu) {
     $content_planning = 1;
 }
 

@@ -40,23 +40,19 @@ if (!$fin) {
 }
 
 // Gestion des droits d'administration
-// NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
-// NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
-// TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
+$entityManager = $GLOBALS['entityManager'];
 
-$admin = false;
-$adminN2 = false;
-for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
-    if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
-        $admin = true;
-    }
-    if (in_array((600+$i), $droits)) {
-        $adminN2 = true;
-    }
+$agentRepository = $entityManager
+    ->getRepository(Agent::class)
+    ->setModule('holiday');
+
+if ($perso_id) {
+    $agentRepository->forAgent($perso_id);
 }
+list($admin, $adminN2) = $agentRepository->getValidationLevelFor($_SESSION['login_id']);
 
 // Si pas de droits de gestion des congés, on force $perso_id = son propre ID
-if (!$admin) {
+if (!$admin and !$adminN2) {
     $perso_id=$_SESSION['login_id'];
 }
 
@@ -65,7 +61,9 @@ $c = new conges();
 $balance = $c->calculCreditRecup($perso_id);
 
 echo <<<EOD
+<div id='content-form'>
 <h3>Poser des récupérations</h3>
+<div class='admin-div'>
 <table border='0'>
 <tr style='vertical-align:top'>
 <td>
@@ -106,7 +104,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
     }
 
     // Message qui sera envoyé par email
-    $message="Nouveau congés: <br/>$prenom $nom<br/>Début : $debut";
+    $message="Nouvelle demande de récupération: <br/>$prenom $nom<br/>Début : $debut";
     if ($hre_debut!="00:00:00") {
         $message.=" ".heure3($hre_debut);
     }
@@ -120,11 +118,11 @@ if (isset($_GET['confirm'])) {	// Confirmation
 
     // ajout d'un lien permettant de rebondir sur la demande
     $url = $config['URL'] . "/holiday/edit/$id";
-    $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
+    $message.="<br/><br/>Lien vers la demande de récupération :<br/><a href='$url'>$url</a><br/><br/>";
 
     // Envoi du mail
     $m=new CJMail();
-    $m->subject="Nouveau congés";
+    $m->subject="Nouvelle demande de récupération";
     $m->message=$message;
     $m->to=$destinataires;
     $m->send();
@@ -137,7 +135,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
         $msg2Type="error";
     }
 
-    $msg=urlencode("La demande de congé a été enregistrée");
+    $msg=urlencode("La demande de récupération a été enregistrée");
     echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/holiday/index?recup=1&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 }
 
@@ -167,7 +165,7 @@ else {
         $balance_before_days = $holiday_helper->hoursToDays($balance[1], $perso_id, null, true);
         $balance2_before_days = $holiday_helper->hoursToDays($balance[4], $perso_id, null, true);
     }
-    
+
     // Affichage du formulaire
     echo "<form name='form' action='index.php' method='get' id='form'>\n";
     echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
@@ -187,44 +185,25 @@ else {
     echo "Nom, prénom : \n";
     echo "</td><td>\n";
 
-    if ($admin) {
-        // Si l'option "Absences-notifications-agent-par-agent" est cochée, filtrer les agents à afficher dans le menu déroulant pour permettre la sélection des seuls agents gérés
-        if ($config['Absences-notifications-agent-par-agent'] and !$adminN2) {
-            $perso_ids = array($_SESSION['login_id']);
+    $managed = $entityManager
+        ->getRepository(Agent::class)
+        ->setModule('holiday')
+        ->getManagedFor($_SESSION['login_id']);
 
-            $db = new db();
-            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $perso_ids[] = $elem['perso_id'];
-                }
-            }
-
-            $perso_ids = implode(',', $perso_ids);
-
-            $db_perso=new db();
-            $db_perso->select2('personnel', null, array('supprime' => '0', 'id' => "IN$perso_ids"), 'ORDER BY nom,prenom');
-        }
-
-        // Si l'option "Absences-notifications-agent-par-agent" n'est pas cochée, on affiche tous les agents dans le menu déroulant
-        else {
-            $db_perso=new db();
-            $db_perso->select2('personnel', null, array('supprime' => '0'), 'ORDER BY nom,prenom');
-        }
-
+    if (count($managed) > 1) {
         echo "<select name='perso_id' id='perso_id' onchange='document.location.href=\"index.php?page=conges/recup_pose.php&perso_id=\"+this.value;' style='width:98%;'>\n";
         echo "<option value='0'></option>\n";
-        foreach ($db_perso->result as $elem) {
-            if ($perso_id==$elem['id']) {
-                echo "<option value='".$elem['id']."' selected='selected'>".$elem['nom']." ".$elem['prenom']."</option>\n";
+        foreach ($managed as $m) {
+            if ($perso_id == $m->id()) {
+                echo "<option value='".$m->id()."' selected='selected'>".$m->nom()." ".$m->prenom() . "</option>\n";
             } else {
-                echo "<option value='".$elem['id']."'>".$elem['nom']." ".$elem['prenom']."</option>\n";
+                echo "<option value='".$m->id()."'>".$m->nom()." ".$m->prenom()."</option>\n";
             }
         }
         echo "</select>\n";
     } else {
-        echo "<input type='hidden' name='perso_id' id='perso_id' value='{$_SESSION['login_id']}' />\n";
-        echo $_SESSION['login_nom']." ".$_SESSION['login_prenom'];
+        echo "<input type='hidden' name='perso_id' id='perso_id' value='{$managed[0]->id()}' />\n";
+        echo $managed[0]->nom()." ".$managed[0]->prenom();
     }
     echo "</td></tr>\n";
     echo "<tr><td style='padding-top:15px;'>\n";
@@ -321,4 +300,4 @@ if ($db->result) {
     }
 }
 ?>
-</td></tr></table>
+</td></tr></table></div></div>

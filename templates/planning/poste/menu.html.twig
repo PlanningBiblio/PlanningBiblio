@@ -1,7 +1,7 @@
 {# planning/poste/date-menu.html.twig #}
 
 <!-- Show title and calendar widgets -->
-<div class='noprint'>
+<div>
   <div id='divcalendrier' class='text'>
     <form name='form' method='get' action='#'>
       <input type='hidden' id='date' name='date' value='{{ date }}' data-set-calendar='{{ date }}' />
@@ -31,14 +31,16 @@
 
           <table class='noprint' id='tab_jours'>
             <tr valign='top'>
-              <td style="font-size: 13pt;"><a href='index.php?date={{ dates[0] }}'  class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </td>
-              <td style="font-size: 13pt;"><a href='index.php?date={{ dates[1] }}'  class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </td>
-              <td style="font-size: 13pt;"><a href='index.php?date={{ dates[2] }}'  class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </td>
-              <td style="font-size: 13pt;"><a href='index.php?date={{ dates[3] }}'  class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </td>
-              <td style="font-size: 13pt;"><a href='index.php?date={{ dates[4] }}'  class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </td>
-              <td style="font-size: 13pt;"><a href='index.php?date={{ dates[5] }}'  class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></td>
+              <!-- We can't use asset function for the moment
+              because this menu is used in non-symfonyzed page (week view).-->
+              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[0] }}'  class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </td>
+              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[1] }}'  class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </td>
+              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[2] }}'  class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </td>
+              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[3] }}'  class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </td>
+              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[4] }}'  class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </td>
+              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[5] }}'  class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></td>
               {% if config('Dimanche') %}
-              <td align='center' style="font-size: 13pt;"> / <a href='index.php?date={{ dates[6] }}'  class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </td>
+                <td align='center' style="font-size: 13pt;"> / <a href='{{ base_url }}/index?date={{ dates[6] }}' class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </td>
               {% endif %}
               <td style="font-size: 13pt;"> / <a href='index.php?page=planning/poste/semaine.php' class="{{ week_view ?'menuRed' : 'menu' }}" >Semaine</a></td>
             </tr>
@@ -60,7 +62,7 @@
               <span class='pl-icon pl-icon-printer'></span>
             </a>
 
-            <a href='index.php' title='Actualiser'>
+            <a href='{{ base_url }}/index' title='Actualiser'>
               <span class='pl-icon pl-icon-refresh'>
             </a>
 
@@ -83,15 +85,15 @@
               {% endif %}
 
               {% if userCan('300', site) %}
-                <a href='javascript:popup("planning/poste/enregistrer.php&date={{ date }}&site={{ site }}&CSRFToken={{ CSRFSession}}",500,240);' title='Enregistrer comme modèle'>
+                <a href='#' title='Enregistrer comme modèle'>
                   <span class='pl-icon pl-icon-save'></span>
                 </a>
 
-                <a id="planning-import" href='javascript:popup("planning/poste/importer.php&date={{ date }}&site={{ site }}",500,270);' title='Importer un modèle' style="{{ locked ? 'display:none;' }}">
+                <a id="planning-import" href='#' title='Importer un modèle' style="{{ locked ? 'display:none;' }}">
                   <span class='pl-icon pl-icon-open'></span>
                 </a>
 
-                <a id="planning-drop" href='javascript:popup("planning/poste/supprimer.php&date={{ date }}&site={{ site }}",500,200);' title='Supprimer le planning' style="{{ locked ? 'display:none;' }}">
+                <a id="planning-drop" title='Supprimer le planning' style="{{ locked ? 'display:none;' }}">
                   <span class='pl-icon pl-icon-drop'></span>
                 </a>
               {% endif %}
@@ -100,7 +102,7 @@
                 <span class='pl-icon pl-icon-printer'></span>
               </a>
 
-              <a href='index.php?date={{ date }}&amp;site={{ site }}' title='Actualiser'>
+              <a href='{{ base_url }}/index?date={{ date }}&amp;site={{ site }}' title='Actualiser'>
                 <span class='pl-icon pl-icon-refresh'>
               </a>
 
@@ -112,7 +114,7 @@
       </tr>
     </table>
   </div>
-  <div id='pl-calendar' class="datepicker {{ week_view ? 'datepickerSemaine' }}"></div>
+  <div id='pl-calendar' class="noprint datepicker {{ week_view ? 'datepickerSemaine' }}"></div>
 </div>
 
 <div id='messages_infos' >

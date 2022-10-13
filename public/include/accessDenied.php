@@ -75,8 +75,8 @@ if (isset($IPBlocker)) {
 </p>
 </center>
 <div class='footer'>
-Planning Biblio -
-<a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
+Planno -
+<a href='https://www.planno.fr' target='_blank' style='font-size:9pt;'>www.planno.fr</a>
 </div>
 </body>
 </html>

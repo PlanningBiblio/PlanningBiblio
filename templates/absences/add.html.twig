@@ -68,7 +68,7 @@
                   <td>
                     <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
                       <option value='0' selected='selected'>-- Ajoutez un agent --</option>
-                      {% if absences_tous %}
+                      {% if config('Absences-tous') %}
                         <option value='tous'>Tous les agents</option>
                       {% endif %}
 
@@ -163,7 +163,7 @@
                   <td class="textAlignRight">
                     <label >Motif </label>
                   </td>
-                  
+
                   <td style='white-space:nowrap;'>
                     <select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>
                       <option value=''></option>
@@ -186,7 +186,7 @@
                       {% endfor %}
                     </select>
 
-                    {% if admin %}
+                    {% if admin and not config('Planook') %}
                       <span class='pl-icon pl-icon-add' title='Ajouter' id='add-motif-button' style='cursor:pointer'></span>
                     {% endif %}
                   </td>
@@ -242,27 +242,13 @@
                   <td><input type="file" name="documentFile" id="documentFile" /></td>
                 </tr>
 
-                {% if absences_validation %}
-                  <tr>
+                {% if config('Absences-validation') %}
+                  <tr id="validation-line">
                     <td class="textAlignRight">
                       <label >État </label>
                     </td>
 
-                    <td>
-                      {% if admin %}
-                        <select name='valide' class='ui-widget-content ui-corner-all'>
-                          <option value='0'>Demandée</option>
-                          <option value='2'>Acceptée (En attente de validation hiérarchique)</option>\
-                          <option value='-2' >Refusée (En attente de validation hiérarchique)</option>
-                          {% if adminN2 %}
-                            <option value='1' >Acceptée</option>
-                            <option value='-1' >Refusée</option>
-                          {% endif %}
-                        </select>
-                      {% else %}
-                        Demandée
-                      {% endif %}
-                    </td>
+                    <td id="validation-statuses"></td>
                   </tr>
                 {% endif %}
 

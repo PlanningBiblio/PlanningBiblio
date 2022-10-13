@@ -39,12 +39,12 @@ if (!file_exists("themes/$theme/favicon.png")) {
 <title>Planno</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
-<script type='text/JavaScript' src='js/jquery-1.11.1.min.js'></script>
-<script type='text/JavaScript' src='js/jquery.timepicker.min.js'></script>
-<script type='text/JavaScript' src='js/plb/planno-timepicker.js'></script>
-<script type='text/JavaScript' src='js/jquery-ui-1.11.2/jquery-ui.js'></script>
-<script type='text/JavaScript' src='js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
-<script type='text/JavaScript' src='js/DataTables/datatables.min.js'></script>
+<script type='text/JavaScript' src='js/jquery-1.11.1.min.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/jquery.timepicker.min.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/plb/planno-timepicker.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/jquery-ui-1.11.2/jquery-ui.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/carhartl-jquery-cookie-3caf209/jquery.cookie.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/DataTables/datatables.min.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/CJScript.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/datePickerFr.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/dataTables.sort.js?version=<?php echo $version; ?>'></script>
@@ -53,9 +53,9 @@ if (!file_exists("themes/$theme/favicon.png")) {
 getJSFiles($page, $version);
 ?>
 
-<link rel='StyleSheet' href='js/DataTables/datatables.min.css' type='text/css' media='all'/>
-<link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css' type='text/css' media='all'/>
-<link rel='StyleSheet' href='themes/default/jquery.timepicker.min.css' type='text/css' media='all'/>
+<link rel='StyleSheet' href='js/DataTables/datatables.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
+<link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
+<link rel='StyleSheet' href='themes/default/jquery.timepicker.min.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/default.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/print.css?version=<?php echo $version; ?>' type='text/css' media='print'/>
 <?php

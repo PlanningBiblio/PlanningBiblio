@@ -32,7 +32,13 @@ $(function(){
     });
 
     $("#perso_id").change(function() {
-        updateTables();
+        // Don't reload the form when
+        // changing the agent on copy mode.
+        if ($('input[name="copy"]').val()) {
+            return false;
+        }
+        const queryString = window.location.search;
+        document.location.href="/workinghour/add/" + this.value + queryString;
     });
 
     $("#select_number_of_weeks").change(function() {

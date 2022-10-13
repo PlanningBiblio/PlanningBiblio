@@ -42,7 +42,6 @@ function currentCredits() {
     type: 'get',
     async: false,
     success: function(credits){
-      console.log(credits)
       $('#holiday_balance').text(credits.holiday_balance);
       $('#reliquat4').text(credits.holiday_balance);
       $('input[name="reliquat"]').val(credits.holiday_balance_decimal);
@@ -708,6 +707,9 @@ function change_select_perso_ids(id){
 
   // Affichage des agents sélectionnés avec tri alphabétique
   affiche_perso_ul();
+
+  // Mise à jour des status disponible.
+  update_validation_statuses();
 }
 
 /**
@@ -724,7 +726,6 @@ function affiche_perso_ul(){
   // Only one agent selected. So set the
   // selected_agent_id to retrieve its
   // own data (workinghours, holiday credits...)
-  $('#selected_agent_id').val('');
   if (tab.length == 1) {
     $('#selected_agent_id').val(tab[0][1]);
   }
@@ -745,7 +746,7 @@ function affiche_perso_ul(){
     var style = tab[i][1] == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
     var li="<li" + style + " id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
-    if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
+    if( $('#admin').val() == 1 || tab[i][1] != $('#perso_id').val() ){
       li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-dropblack'></span></span>";
     }
 
@@ -763,6 +764,38 @@ function affiche_perso_ul(){
       $("#perso_ul5").append(li);
     }
   }
+}
+
+function update_validation_statuses() {
+
+  perso_ids = [];
+  $('.perso_ids_li').each(function() {
+    perso_ids.push($(this).data('id'));
+  });
+
+  if (perso_ids.length == 0 && $('#selected_agent_id').val()) {
+    perso_ids.push($('#selected_agent_id').val());
+  }
+
+  if (perso_ids.length == 0) {
+    return;
+  }
+
+  holiday_id = $('input[name="id"]').val();
+
+  $.ajax({
+    url: url('absence-statuses'),
+    data: { ids: perso_ids, module: 'holiday', id: holiday_id },
+    dataType: "html",
+    success: function(result){
+      $("#validation-statuses").html(result);
+
+      $('tr#validation-line').effect("highlight",null,2000);
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
+    }
+  });
 }
 
 function multipleAgentsSelected() {
@@ -785,6 +818,9 @@ function supprimeAgent(id){
   affiche_perso_ul();
   currentCredits();
   calculCredit();
+
+  // Mise à jour des status disponible.
+  update_validation_statuses();
 }
 
 function getAgentsBySites(sites) {
@@ -817,6 +853,8 @@ function updateAgentsListBySites() {
         selected_sites = "[1]";
     }
 
+    agents_multiples = $('#agents-multiples').val();
+
     managed_sites_agents = getAgentsBySites(managed_sites);
     selected_sites_agents = getAgentsBySites(selected_sites);
     selected_sites_agents = selected_sites_agents.map(x => x.id);
@@ -836,7 +874,7 @@ function updateAgentsListBySites() {
     selected_agent_id = $('#selected_agent_id').val();
     $.each(managed_sites_agents, function(index, value) {
         style = value.id == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
-        selected = value.id == selected_agent_id ? ' selected="selected"' : '';
+        selected = value.id == selected_agent_id && !agents_multiples ? ' selected="selected"' : '';
         options += '<option' + style + selected + ' value="' + value.id + '" id="option' + value.id;
         options += '">' + value.nom + ' ' + value.prenom + '</option>';
     });
@@ -849,7 +887,7 @@ function updateAgentsListBySites() {
 
     $.each(managed_sites_agents, function(index, value) {
         // Check if not selected or not already added
-        if ($.inArray(value.id, selected_sites_agents) == -1 || $.inArray(value.id, selected_agents) !== -1) {
+        if ($.inArray(value.id, selected_sites_agents) == -1 || $.inArray(String(value.id), selected_agents) !== -1) {
             $("#option" + value.id).hide();
         }
     });
@@ -907,4 +945,14 @@ $(function(){
 
 $(document).ready(function() {
     updateAgentsListBySites();
+
+    // Only check statuses dynamically
+    // at start for new holiday.
+    // Not for edition.
+    if ( $('input[name="id"]').length == 0) {
+        affiche_perso_ul();
+    }
+
+    // Mise à jour des status disponible.
+    update_validation_statuses();
 });

@@ -107,7 +107,7 @@ function authLDAP($login, $password)
 
 function cmp_ldap($a, $b)
 {	//tri par nom puis prenom (sn et givenname)
-    if ($a['sn'][0] == $b['sn'][0]) {
+    if ($a['sn'][0] == $b['sn'][0] && isset($a['givenname'])) {
         if ($a['givenname'][0] == $b['givenname'][0]) {
             return 0;
         }
