@@ -58,20 +58,6 @@ function CJErrorHighlight(e, type, icon) {
     });
 }
 
-function CJFileExists(url){
-  $.ajax({
-    url: url,
-    type:'HEAD',
-    async: false,
-    error: function(retour){
-        return false;
-    },
-    success: function(retour){
-        return true;
-    }
-  });
-}
-
 /**
  * @function CJInfo
  * Affiche des messages d'erreur ou d'information en haut de l'application
