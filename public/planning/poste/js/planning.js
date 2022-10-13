@@ -55,7 +55,7 @@ $(document).ready(function(){
   var tableId=$("#tableau").attr("data-tableId");
   if(tableId){
     $.ajax({
-      url: "planning/poste/ajax.getHiddenTables.php",
+      url: url('planning/poste/ajax.getHiddenTables.php'),
       type: "post",
       dataType: "json",
       data: {tableId: tableId},
@@ -165,7 +165,7 @@ $(function() {
     var CSRFToken = $("#planning-data").attr("data-CSRFToken");
 
     $.ajax({
-      url: "planning/poste/ajax.validation.php",
+      url: url('planning/poste/ajax.validation.php'),
       dataType: "json",
       data: {date: date, site: site, verrou: 0, CSRFToken: CSRFToken },
       type: "get",
@@ -197,7 +197,7 @@ $(function() {
     var CSRFToken = $("#planning-data").attr("data-CSRFToken");
 
     $.ajax({
-      url: "planning/poste/ajax.validation.php",
+      url: url('planning/poste/ajax.validation.php'),
       dataType: "json",
       data: {date: date, site: site, verrou: 1, CSRFToken: CSRFToken },
       type: "get",
@@ -272,7 +272,7 @@ $(function() {
             var text3=text.val().replace(/\n/g,"<br/>");
             $.ajax({
               dataType: "json",
-              url: "planning/poste/ajax.notes.php",
+              url: url('planning/poste/ajax.notes.php'),
               type: "post",
               data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2), CSRFToken: $('#CSRFSession').val()},
               success: function(result){
@@ -351,7 +351,7 @@ $(function() {
 	  
 	  $.ajax({
 	    dataType: "json",
-	    url: "planning/poste/ajax.appelDispoMail.php",
+	    url: url('planning/poste/ajax.appelDispoMail.php'),
 	    type: "post",
 	    data: appelDispoData,
 	    success: function(result){
@@ -1033,7 +1033,7 @@ function afficheTableauxDiv(){
   var tableId=$("#tableau").attr("data-tableId");
   hiddenTables=JSON.stringify(hiddenTables);
   $.ajax({
-    url: "planning/poste/ajax.hiddenTables.php",
+    url: url('planning/poste/ajax.hiddenTables.php'),
     type: "post",
     dataType: "json",
     data: {tableId: tableId, hiddenTables: hiddenTables, CSRFToken: $('#CSRFSession').val()},
@@ -1060,7 +1060,7 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
   
   // Récupération du message par défaut depuis la config.
   $.ajax({
-    url: "planning/poste/ajax.appelDispoMsg.php",
+    url: url('planning/poste/ajax.appelDispoMsg.php'),
     type: "post",
     dataType: "json",
     data: {},
@@ -1131,7 +1131,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
   var CSRFToken = $("#planning-data").attr("data-CSRFToken");
 
   $.ajax({
-    url: "planning/poste/ajax.updateCell.php",
+    url: url('planning/poste/ajax.updateCell.php'),
     type: "post",
     dataType: "json",
     data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout, griser: griser},
@@ -1445,7 +1445,7 @@ function plMouseOver(id){
  */
 function planningNotifications(date, site, CSRFToken){
   $.ajax({
-    url: "planning/poste/ajax.notifications.php",
+    url: url('planning/poste/ajax.notifications.php'),
     dataType: "json",
     data: {date: date, site: site, CSRFToken: CSRFToken},
     type: "get",
@@ -1464,7 +1464,7 @@ function refresh_poste(){
   }
   var validation=$("#planning-data").attr("data-validation");
     $.ajax({
-    url: "planning/poste/ajax.refresh.php",
+    url: url('planning/poste/ajax.refresh.php'),
     type: "post",
     dataType: "json",
     data: {"date": $("#date").val(), "site": $("#site").val()},
@@ -1493,7 +1493,7 @@ function verif_categorieA(){
   var site=$("#site").val();
 
   $.ajax({
-    url: "planning/poste/ajax.categorieA.php",
+    url: url('planning/poste/ajax.categorieA.php'),
     datatype: "json",
     type: "post",
     data: {"date": date, "site": site},

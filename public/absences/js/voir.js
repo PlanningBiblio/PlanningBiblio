@@ -22,7 +22,7 @@ $(function(){
     var CSRFToken=$('#CSRFSession').val();
 
     $.ajax({
-      url: "absences/ajax.piecesJustif.php",
+      url: url('absences/ajax.piecesJustif.php'),
       data: "id="+id+"&pj="+pj+"&checked="+checked+"&CSRFToken="+CSRFToken,
       success: function(){
 	information("Modification enregistr&eacute;e","highlight");
