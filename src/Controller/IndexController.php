@@ -697,6 +697,11 @@ class IndexController extends BaseController
 
                     $value = array();
 
+                    // Do not import agents if the cell does not exist
+                    if (!$this->positionExists($elem2, $postes, $horaires)) {
+                        continue;
+                    }
+
                     // Do not import agents placed on other site
                     if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
                         foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
@@ -732,10 +737,6 @@ class IndexController extends BaseController
                     $db2 = new \db();
                     $db2->select("conges", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
                     $absent = $db2->result ? true : $absent ;
-
-                    if (!$this->positionExists($elem2, $postes, $horaires)) {
-                        continue;
-                    }
 
                     // Don't import if absent and get_absents not checked
                     if (!$get_absents and $absent) {
