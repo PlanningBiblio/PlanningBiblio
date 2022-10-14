@@ -2710,6 +2710,59 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.04.01.000";
+if (version_compare($config['Version'], $v) === -1) {
+    // Planook configuration is made to hide some information in order to propose a light version of Planno
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Planook', 'hidden', '0', 'Version Lite Planook',' Divers','','0');";
+
+    // Hide statistics menu
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `condition` = 'config!=Planook' WHERE `niveau1` = '40';";
+
+    // Hide admin / information ; closing days ;  absences / informations
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `condition`='config!=Planook' where url='/admin/info';";
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `condition`='config!=Planook' where url='/closingday';";
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `condition`='config!=Planook' where url='/absences/info';";
+
+    // Hide skills menu
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `titre`='Les activités', `condition`='config!=Planook' where url='/skill';";
+
+    // Remove HTML entities
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `titre`='Présents / absents' where url='/statistics/attendeesmissing';";
+
+    // Set default theme
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='default' WHERE `nom`='Affichage-theme';";
+
+    // MT 35699
+    $db = new db();
+    $db->select2('personnel');
+    if($db->result){
+        foreach ($db->result as $agent) {
+            $hours = json_decode(html_entity_decode(
+                $agent['temps'],
+                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+
+            if (!$hours) {
+                continue;
+            }
+
+            foreach ($hours as $day => $times) {
+                foreach ($times as $i => $time) {
+                    $hours[$day][$i] =  App\PlanningBiblio\Helper\HourHelper::toHis($time);
+                }
+            }
+            $hours = json_encode($hours);
+            $id = $agent['id'];
+            $sql[] = "UPDATE `{$dbprefix}personnel` SET `temps` = '$hours' WHERE `id` = $id;";
+        }
+    }
+
+    // MT 37839
+    $sql[] = "DELETE s1 FROM `{$dbprefix}select_services` s1 INNER JOIN `{$dbprefix}select_services` s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
+    $sql[] = "DELETE s1 FROM `{$dbprefix}select_statuts` s1 INNER JOIN `{$dbprefix}select_statuts` s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
