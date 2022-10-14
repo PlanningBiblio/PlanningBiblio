@@ -151,15 +151,15 @@ class AgentTest extends TestCase
             )
         );
 
-        $this->assertEquals($agent1->getWorkingHoursOn($date1)['temps']['0']['0'], '09:00:00','les heures sont bien enregistrées');
-        $this->assertEquals($agent1->getWorkingHoursOn($date1)['temps']['0']['2'], '13:15:00','les heures sont bien enregistrées');
-        $this->assertEquals($agent1->getWorkingHoursOn($date1)['temps']['0']['1'], '12:30:00','les heures sont bien enregistrées');
-        $this->assertEquals($agent1->getWorkingHoursOn($date1)['temps']['0']['3'], '17:15:00','les heures sont bien enregistrées');
+        $this->assertEquals($agent1->getWorkingHoursOn($date1)['temps']['0']['0'], '09:00:00','check Working Hours of the agent without planningHebdo');
+        $this->assertEquals($agent1->getWorkingHoursOn($date1)['temps']['0']['2'], '13:15:00','check Working Hours of the agent without planningHebdo');
+        $this->assertEquals($agent1->getWorkingHoursOn($date1)['temps']['0']['1'], '12:30:00','check Working Hours of the agent without planningHebdo');
+        $this->assertEquals($agent1->getWorkingHoursOn($date1)['temps']['0']['3'], '17:15:00','check Working Hours of the agent without planningHebdo');
 
-        $this->assertEquals($agent1->getWorkingHoursOn($date2)['temps']['0']['0'], '09:00:00','les heures sont bien enregistrées');
-        $this->assertEquals($agent1->getWorkingHoursOn($date2)['temps']['0']['2'], '13:15:00','les heures sont bien enregistrées');
-        $this->assertEquals($agent1->getWorkingHoursOn($date2)['temps']['0']['1'], '12:30:00','les heures sont bien enregistrées');
-        $this->assertEquals($agent1->getWorkingHoursOn($date2)['temps']['0']['3'], '17:15:00','les heures sont bien enregistrées');
+        $this->assertEquals($agent1->getWorkingHoursOn($date2)['temps']['0']['0'], '09:00:00','check Working Hours of the agent without planningHebdo');
+        $this->assertEquals($agent1->getWorkingHoursOn($date2)['temps']['0']['2'], '13:15:00','check Working Hours of the agent without planningHebdo');
+        $this->assertEquals($agent1->getWorkingHoursOn($date2)['temps']['0']['1'], '12:30:00','check Working Hours of the agent without planningHebdo');
+        $this->assertEquals($agent1->getWorkingHoursOn($date2)['temps']['0']['3'], '17:15:00','check Working Hours of the agent without planningHebdo');
 
         //with planningHebdo
         $d = date("d")+4;
@@ -193,10 +193,10 @@ class AgentTest extends TestCase
                 )
             )
         );
-        $this->assertEquals($agent2->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][0][0], '09:00:00','les heures sont bien enregistrées');
-        $this->assertEquals($agent2->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][0], '08:00:00','les heures sont bien enregistrées');
-        $this->assertEquals($agent2->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][4][1], '12:30:00','les heures sont bien enregistrées');
-        $this->assertNotEquals($agent2->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][2], '12:30:00','les heures sont bien enregistrées');
+        $this->assertEquals($agent2->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][0][0], '09:00:00','check Working Hours of the agent with planningHebdo');
+        $this->assertEquals($agent2->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][0], '08:00:00','check Working Hours of the agent with planningHebdo');
+        $this->assertEquals($agent2->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][4][1], '12:30:00','check Working Hours of the agent with planningHebdo');
+        $this->assertNotEquals($agent2->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][2], '12:30:00','check Working Hours of the agent with planningHebdo');
 
         $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'depart' => $depart));
         $pl_post2 = $builder->build
@@ -220,10 +220,10 @@ class AgentTest extends TestCase
             )
         );
 
-        $this->assertEquals($agent3->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][0][0], '09:00:00','les heures sont bien enregistrées');
-        $this->assertEquals($agent3->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][0], '08:00:00','les heures sont bien enregistrées');
-        $this->assertEquals($agent3->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][4][1], '12:30:00','les heures sont bien enregistrées');
-        $this->assertNotEquals($agent3->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][2], '12:30:00','les heures sont bien enregistrées');
+        $this->assertEquals($agent3->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][0][0], '09:00:00','check Working Hours of the agent with planningHebdo');
+        $this->assertEquals($agent3->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][0], '08:00:00','check Working Hours of the agent with planningHebdo');
+        $this->assertEquals($agent3->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][4][1], '12:30:00','check Working Hours of the agent with planningHebdo');
+        $this->assertNotEquals($agent3->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][2], '12:30:00','check Working Hours of the agent with planningHebdo');
     }
 
     public function testSkills(){
