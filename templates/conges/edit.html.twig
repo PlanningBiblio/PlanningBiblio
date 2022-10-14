@@ -17,249 +17,250 @@
   {% endif %}
 
   <div class="admin-div">
-  <form name='form' action='{{ asset("/holiday/edit") }}' method='post' id='form' class='googleCalendarForm'>
-    <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
-    <input type='hidden' name='confirm' value='confirm' />
-    <input type='hidden' name='reliquat' value="{{ reliquat }}" />
-    <input type='hidden' name='recuperation' id='recuperation' value="{{ recuperation }}" />
-    <input type='hidden' name='recuperation_prev' id='recuperation_prev' value="{{ recuperation_prev }}"/>
-    <input type='hidden' name='credit' value="{{ credit }}" />
-    <input type='hidden' name='anticipation' value="{{ anticipation }}" />
-    <input type='hidden' id='selected_agent_id' value='{{ selected_agent_id }}' />
-    <input type='hidden' name='id' value="{{ id }}" id='id' />
-    <input type='hidden' name='valide' value='0' />
-    <input type='hidden' id='agent' value="{{ agent_name }}" />
-    <input type='hidden' name='conges-recup' id='conges-recup' value="{{ conges_recuperations }}" />
-    {% if request_type == 'recover' %}
-      <input type='hidden' id='is-recover' value='1' />
-    {% endif %}
-    <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
-    <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
-
-    <table border='0' style="width: 1200px;">
-      <tr>
-        <td style='width:350px;'>Nom, prénom : </td>
-        <td>
-          {% if db_perso | length > 1 %}
-            <select name='perso_id' id='perso_id' style='width:40%;' class='googleCalendarTrigger'>
-              <option value='0' ></option>
-              {% for d in db_perso %}
-                {% if d.id == perso_id %}
-                  <option value="{{ d.id }}" selected='selected'>{{ d.nom }} {{ d.prenom }}</option>
-                {% else %}
-                  <option value="{{ d.id }}">{{ d.nom }} {{ d.prenom }}</option>
-                {% endif %}
-              {% endfor %}
-            </select>
-          {% else %}
-            <input type='hidden' name='perso_id' id='perso_id' value="{{ login_id}}"/>
-            {{ agent_name }}
-          {% endif %}
-        </td>
-      </tr>
-
-      {% if show_allday %}
+    <form name='form' action='{{ asset("/holiday/edit") }}' method='post' id='form' class='googleCalendarForm'>
+      <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
+      <input type='hidden' name='confirm' value='confirm' />
+      <input type='hidden' name='reliquat' value="{{ reliquat }}" />
+      <input type='hidden' name='recuperation' id='recuperation' value="{{ recuperation }}" />
+      <input type='hidden' name='recuperation_prev' id='recuperation_prev' value="{{ recuperation_prev }}"/>
+      <input type='hidden' name='credit' value="{{ credit }}" />
+      <input type='hidden' name='anticipation' value="{{ anticipation }}" />
+      <input type='hidden' id='selected_agent_id' value='{{ selected_agent_id }}' />
+      <input type='hidden' name='id' value="{{ id }}" id='id' />
+      <input type='hidden' name='valide' value='0' />
+      <input type='hidden' id='agent' value="{{ agent_name }}" />
+      <input type='hidden' name='conges-recup' id='conges-recup' value="{{ conges_recuperations }}" />
+      {% if request_type == 'recover' %}
+        <input type='hidden' id='is-recover' value='1' />
+      {% endif %}
+      <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
+      <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
+  
+      <table border='0' style="width: 1200px;">
         <tr>
-          <td style='padding-top:15px;'>Journée(s) entière(s) : </td>
-          <td style='padding-top:15px;'>
-            {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-              <input type='checkbox' name='allday' class='checkdate' checked='checked' />
-            {% else %}
-              <input type='checkbox' name='allday' class='checkdate'/>
-            {% endif %}
-          </td>
-        </tr>
-      {% elseif conges_demi_journee %}
-        <tr>
-          <td style='padding-top:15px;'>Demi-journée(s) : </td>
-          <td style='padding-top:15px;'>
-            {% if halfday %}
-              <input type='checkbox' name='halfday' class='checkdate' checked='checked'/>
-            {% else %}
-              <input type='checkbox' name='halfday' class='checkdate'/>
-            {% endif %}
-          </td>
-        </tr>
-      {% endif %}
-
-      <tr>
-        <td>Date de début : </td>
-        <td>
-          <input type='text' name='debut' id='debut' value="{{ debut }}" class='datepicker googleCalendarTrigger checkdate' style='width:40%;'/>
-          {% if halfday %}
-            <select name="start_halfday" class="checkdate">
-              {% if start_halfday == 'fullday' %}
-                <option value="fullday" selected="selected">Journée complète</option>
-              {% else %}
-                <option value="fullday">Journée complète</option>
-              {% endif %}
-
-              {% if start_halfday == 'morning' %}
-                <option value="morning" selected="selected">Matin</option>
-              {% else %}
-                <option value="morning">Matin</option>
-              {% endif %}
-
-              {% if start_halfday == 'afternoon' %}
-                <option value="afternoon" selected="selected">Après-midi</option>
-              {% else %}
-                <option value="afternoon">Après-midi</option>
-              {% endif %}
-            </select>
-          {% else %}
-            <select name="start_halfday" style="display: none;" class="checkdate">
-              <option value="fullday">Journée complète</option>
-              <option value="morning">Matin</option>
-              <option value="afternoon">Après-midi</option>
-            </select>
-          {% endif %}
-        </td>
-      </tr>
-
-      {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' or halfday %}
-        <tr id='hre_debut' style="display:none">
-      {% else %}
-        <tr id='hre_debut'>
-      {% endif %}
-        <td>Heure de début : </td>
-        <td>
-          <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:40%"
-            value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}"/>
-        </td>
-      </tr>
-
-      <tr>
-        <td>Date de fin : </td>
-        <td>
-          <input type='text' name='fin' id='fin' value="{{ fin }}"  class='datepicker googleCalendarTrigger checkdate' style='width:40%;'/>
-          {% if halfday %}
-            <select name="end_halfday" class="checkdate">
-              {% if end_halfday == 'fullday' %}
-                <option value="fullday" selected="selected">Journée complète</option>
-              {% else %}
-                <option value="fullday">Journée complète</option>
-              {% endif %}
-
-              {% if end_halfday == 'morning' %}
-                <option value="morning" selected="selected">Matin</option>
-              {% else %}
-                <option value="morning">Matin</option>
-              {% endif %}
-
-              {% if end_halfday == 'afternoon' %}
-                <option value="afternoon" selected="selected">Après-midi</option>
-              {% else %}
-                <option value="afternoon">Après-midi</option>
-              {% endif %}
-            </select>
-          {% else %}
-            <select name="end_halfday" style="display: none;" class="checkdate">
-              <option value="fullday">Journée complète</option>
-              <option value="morning">Matin</option>
-              <option value="afternoon">Après-midi</option>
-            </select>
-          {% endif %}
-        </td>
-      </tr>
-
-      {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' or halfday %}
-        <tr id='hre_fin' style="display:none">
-      {% else %}
-        <tr id='hre_fin'>
-      {% endif %}
-        <td>Heure de fin : </td>
-        <td>
-          <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:40%"
-            value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
-        </td>
-      </tr>
-
-      <tr>
-        {% if conges_mode == 'heures' or request_type == 'recover' %}
-          <td style='padding-top:15px;'>Nombre d'heures : </td>
-        {% else %}
-          <td style='padding-top:15px;'>Nombre de jours : </td>
-        {% endif %}
-        <td style='padding-top:15px;'>
-          {% if conges_mode == 'heures' or request_type == 'recover' %}
-            <div id='nbHeures' style='padding:0 5px; width:50px;'></div>
-          {% else %}
-            <div id='nbJours' style='padding:0 5px; width:50px;'></div>
-          {% endif %}
-          <input type='hidden' name='heures' value='0' />
-          <input type='hidden' name='minutes' value='0' />
-          <input type='hidden' id='erreurCalcul' value='false' />
-        </td>
-      </tr>
-
-      {% if conges_mode == 'jours' %}
-        <tr style="display: none;">
-          <td style="padding-top:15px;">Régularisation sur récupération: </td>
-          <td style="padding-top:15px;">
-            <div id='hr_rest' style='padding:0 5px; width:110px;'></div>
-            <input name="rest" id="rest" type="hidden" value=""/>
-          </td>
-        </tr>
-      {% endif %}
-
-      {% if conges_mode == 'heures' and hours_per_day is not empty %}
-        <tr>
+          <td style='width:350px;'>Nom, prénom : </td>
           <td>
-            Nombre de jours ({{ hours_per_day }}h/jour) :
-            <input type='hidden' name='hours_per_day' id='hours_per_day' value = '{{ hours_per_day }}' />
-          </td>
-          <td>
-            <div id='nbJours' style='padding:0 5px; width:50px;'></div>
+            {% if db_perso | length > 1 %}
+              <select name='perso_id' id='perso_id' style='width:40%;' class='googleCalendarTrigger'>
+                <option value='0' ></option>
+                {% for d in db_perso %}
+                  {% if d.id == perso_id %}
+                    <option value="{{ d.id }}" selected='selected'>{{ d.nom }} {{ d.prenom }}</option>
+                  {% else %}
+                    <option value="{{ d.id }}">{{ d.nom }} {{ d.prenom }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            {% else %}
+              <input type='hidden' name='perso_id' id='perso_id' value="{{ login_id}}"/>
+              {{ agent_name }}
+            {% endif %}
           </td>
         </tr>
-      {% endif %}
-
-      {% if conges_recuperations == 0 %}
-      <tr>
-        <td colspan='2' style='padding-top:20px;'>
-            {% if reliquat != '0.00' %}
-              Ces heures seront débitées sur le réliquat de l'année précédente puis sur : 
-            {% else %}
-              Ces heures seront débitées sur : 
-            {% endif %}
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td>
-          <select name='debit' style='width:30%;'>
-            {% if debit == 'recuperation' %}
-              <option value='recuperation' selected="selected">Le crédit de récupérations</option>
-            {% else %}
-              <option value='recuperation'>Le crédit de récupérations</option>
-            {% endif %}
-
-            {% if debit == 'credit' %}
-              <option value='credit' selected="selected">Le crédit de congés de l'année en cours</option>
-            {% else %}
-              <option value='credit'>Le crédit de congés de l'année en cours</option>
-            {% endif %}
-          </select>
-        </td>
-      </tr>
-
-          {% else %}
-            <tr>
-              <td colspan='2' style='padding-top:20px;'>
-            {% if debit == 'credit' %}
-              {% if reliquat != '0.00' %}
-                Ces heures seront débitées sur le réliquat de l'année précédente puis sur les crédits de congés de l'année en cours.
+  
+        {% if show_allday %}
+          <tr>
+            <td style='padding-top:15px;'>Journée(s) entière(s) : </td>
+            <td style='padding-top:15px;'>
+              {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
+                <input type='checkbox' name='allday' class='checkdate' checked='checked' />
               {% else %}
-                Ces heures seront débitées sur les crédits de congés de l'année en cours.
+                <input type='checkbox' name='allday' class='checkdate'/>
               {% endif %}
-              <input type='hidden' name='debit' value='credit' />
-            {% else %}
-              Ces heures seront débitées sur les crédits de récupérations.
-              <input type='hidden' name='debit' value='recuperation' />
-            {% endif %}
             </td>
-        </tr>
+          </tr>
+        {% elseif conges_demi_journee %}
+          <tr>
+            <td style='padding-top:15px;'>Demi-journée(s) : </td>
+            <td style='padding-top:15px;'>
+              {% if halfday %}
+                <input type='checkbox' name='halfday' class='checkdate' checked='checked'/>
+              {% else %}
+                <input type='checkbox' name='halfday' class='checkdate'/>
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+  
+        <tr>
+          <td>Date de début : </td>
+          <td>
+            <input type='text' name='debut' id='debut' value="{{ debut }}" class='datepicker googleCalendarTrigger checkdate' style='width:40%;'/>
+            {% if halfday %}
+              <select name="start_halfday" class="checkdate">
+                {% if start_halfday == 'fullday' %}
+                  <option value="fullday" selected="selected">Journée complète</option>
+                {% else %}
+                  <option value="fullday">Journée complète</option>
+                {% endif %}
+  
+                {% if start_halfday == 'morning' %}
+                  <option value="morning" selected="selected">Matin</option>
+                {% else %}
+                  <option value="morning">Matin</option>
+                {% endif %}
+  
+                {% if start_halfday == 'afternoon' %}
+                  <option value="afternoon" selected="selected">Après-midi</option>
+                {% else %}
+                  <option value="afternoon">Après-midi</option>
+                {% endif %}
+              </select>
+            {% else %}
+              <select name="start_halfday" style="display: none;" class="checkdate">
+                <option value="fullday">Journée complète</option>
+                <option value="morning">Matin</option>
+                <option value="afternoon">Après-midi</option>
+              </select>
             {% endif %}
+          </td>
+        </tr>
+  
+        {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' or halfday %}
+          <tr id='hre_debut' style="display:none">
+        {% else %}
+          <tr id='hre_debut'>
+        {% endif %}
+          <td>Heure de début : </td>
+          <td>
+            <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:40%"
+              value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}"/>
+          </td>
+        </tr>
+  
+        <tr>
+          <td>Date de fin : </td>
+          <td>
+            <input type='text' name='fin' id='fin' value="{{ fin }}"  class='datepicker googleCalendarTrigger checkdate' style='width:40%;'/>
+            {% if halfday %}
+              <select name="end_halfday" class="checkdate">
+                {% if end_halfday == 'fullday' %}
+                  <option value="fullday" selected="selected">Journée complète</option>
+                {% else %}
+                  <option value="fullday">Journée complète</option>
+                {% endif %}
+  
+                {% if end_halfday == 'morning' %}
+                  <option value="morning" selected="selected">Matin</option>
+                {% else %}
+                  <option value="morning">Matin</option>
+                {% endif %}
+  
+                {% if end_halfday == 'afternoon' %}
+                  <option value="afternoon" selected="selected">Après-midi</option>
+                {% else %}
+                  <option value="afternoon">Après-midi</option>
+                {% endif %}
+              </select>
+            {% else %}
+              <select name="end_halfday" style="display: none;" class="checkdate">
+                <option value="fullday">Journée complète</option>
+                <option value="morning">Matin</option>
+                <option value="afternoon">Après-midi</option>
+              </select>
+            {% endif %}
+          </td>
+        </tr>
+  
+        {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' or halfday %}
+          <tr id='hre_fin' style="display:none">
+        {% else %}
+          <tr id='hre_fin'>
+        {% endif %}
+
+          <td>Heure de fin : </td>
+          <td>
+            <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:40%"
+              value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
+          </td>
+        </tr>
+  
+        <tr>
+          {% if conges_mode == 'heures' or request_type == 'recover' %}
+            <td style='padding-top:15px;'>Nombre d'heures : </td>
+          {% else %}
+            <td style='padding-top:15px;'>Nombre de jours : </td>
+          {% endif %}
+          <td style='padding-top:15px;'>
+            {% if conges_mode == 'heures' or request_type == 'recover' %}
+              <div id='nbHeures' style='padding:0 5px; width:50px;'></div>
+            {% else %}
+              <div id='nbJours' style='padding:0 5px; width:50px;'></div>
+            {% endif %}
+            <input type='hidden' name='heures' value='0' />
+            <input type='hidden' name='minutes' value='0' />
+            <input type='hidden' id='erreurCalcul' value='false' />
+          </td>
+        </tr>
+  
+        {% if conges_mode == 'jours' %}
+          <tr style="display: none;">
+            <td style="padding-top:15px;">Régularisation sur récupération: </td>
+            <td style="padding-top:15px;">
+              <div id='hr_rest' style='padding:0 5px; width:110px;'></div>
+              <input name="rest" id="rest" type="hidden" value=""/>
+            </td>
+          </tr>
+        {% endif %}
+  
+        {% if conges_mode == 'heures' and hours_per_day is not empty %}
+          <tr>
+            <td>
+              Nombre de jours ({{ hours_per_day }}h/jour) :
+              <input type='hidden' name='hours_per_day' id='hours_per_day' value = '{{ hours_per_day }}' />
+            </td>
+            <td>
+              <div id='nbJours' style='padding:0 5px; width:50px;'></div>
+            </td>
+          </tr>
+        {% endif %}
+  
+        {% if conges_recuperations == 0 %}
+          <tr>
+            <td colspan='2' style='padding-top:20px;'>
+              {% if reliquat != '0.00' %}
+                Ces heures seront débitées sur le réliquat de l'année précédente puis sur : 
+              {% else %}
+                Ces heures seront débitées sur : 
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <select name='debit' style='width:30%;'>
+                {% if debit == 'recuperation' %}
+                  <option value='recuperation' selected="selected">Le crédit de récupérations</option>
+                {% else %}
+                  <option value='recuperation'>Le crédit de récupérations</option>
+                {% endif %}
+    
+                {% if debit == 'credit' %}
+                  <option value='credit' selected="selected">Le crédit de congés de l'année en cours</option>
+                {% else %}
+                  <option value='credit'>Le crédit de congés de l'année en cours</option>
+                {% endif %}
+              </select>
+            </td>
+          </tr>
+    
+        {% else %}
+          <tr>
+            <td colspan='2' style='padding-top:20px;'>
+              {% if debit == 'credit' %}
+                {% if reliquat != '0.00' %}
+                  Ces heures seront débitées sur le réliquat de l'année précédente puis sur les crédits de congés de l'année en cours.
+                {% else %}
+                  Ces heures seront débitées sur les crédits de congés de l'année en cours.
+                {% endif %}
+                <input type='hidden' name='debit' value='credit' />
+              {% else %}
+                Ces heures seront débitées sur les crédits de récupérations.
+                <input type='hidden' name='debit' value='recuperation' />
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
 
         {% if not valide %}
           <tr>
@@ -337,9 +338,9 @@
                     </tr>
 
                     <tr class='balance_tr'><td>Solde prévisionnel<sup>*</sup> au <span class='balance_date'>{{ balance_date }}</span> : </td>
-                    <td id='balance2_before'>{{ balance2_before }}</td>
-                    <td>(après débit : <span id='balance2_after'>{{ balance2_before }}</span>)</td>
-                  </tr>
+                      <td id='balance2_before'>{{ balance2_before }}</td>
+                      <td>(après débit : <span id='balance2_after'>{{ balance2_before }}</span>)</td>
+                    </tr>
                   {% endif %}
                 {% endif %}
               </table>
@@ -354,80 +355,80 @@
           </td>
         </tr>
 
-            <tr style='vertical-align:top;'>
-              <td style='padding-top:15px;padding-bottom:15px;'>Demande : </td>
-              <td style='padding-top:15px;padding-bottom:15px;'>
-                {{ saisie }}
-                {% if saisie_par %}
-                  par {{ saisie_par }}
-                {% endif %}
-              </td>
-            </tr>
-
-            {% if adminN2 and not adminN1 %}
-              <tr>
-                <td>Validation niveau 1</td>
-                <td>{{ validation_n1 }}</td>
-              </tr>
+        <tr style='vertical-align:top;'>
+          <td style='padding-top:15px;padding-bottom:15px;'>Demande : </td>
+          <td style='padding-top:15px;padding-bottom:15px;'>
+            {{ saisie }}
+            {% if saisie_par %}
+              par {{ saisie_par }}
             {% endif %}
+          </td>
+        </tr>
 
-            <tr>
-              <td>Validation</td>
-              {% if select_valide %}
-                <td>
-                  <select name='valide' id='validation' style='width:35%;' onchange="afficheRefus(this);">
-                    <option value='0'>&nbsp;</option>
-                    {% if adminN1 %}
-                      {% if valide_n1 > 0 and valide == 0 %}
-                      <option value='2' selected="selected">{{ accepted_pending_str }}</option>
-                      {% else %}
-                        <option value='2'>{{ accepted_pending_str }}</option>
-                      {% endif %}
+        {% if adminN2 and not adminN1 %}
+          <tr>
+            <td>Validation niveau 1</td>
+            <td>{{ validation_n1 }}</td>
+          </tr>
+        {% endif %}
 
-                      {% if valide_n1 < 0 and valide == 0 %}
-                        <option value='-2' selected="selected">{{ refused_pending_str }}</option>
-                      {% else %}
-                        <option value='-2'>{{ refused_pending_str }}</option>
-                      {% endif %}
-                    {% endif %}
+        <tr>
+          <td>Validation</td>
+          {% if select_valide %}
+            <td>
+              <select name='valide' id='validation' style='width:35%;' onchange="afficheRefus(this);">
+                <option value='0'>&nbsp;</option>
+                {% if adminN1 %}
+                  {% if valide_n1 > 0 and valide == 0 %}
+                  <option value='2' selected="selected">{{ accepted_pending_str }}</option>
+                  {% else %}
+                    <option value='2'>{{ accepted_pending_str }}</option>
+                  {% endif %}
 
-                    {% if select_valide_others %}
-                      {% if valide > 0 %}
-                        <option value='1' selected="selected">Accepté</option>
-                      {% else %}
-                        <option value='1'>Accepté</option>
-                      {% endif %}
-
-                      {% if valide < 0 %}
-                        <option value='-1' selected="selected">Refusé</option>
-                      {% else %}
-                        <option value='-1'>Refusé</option>
-                      {% endif %}
-                    {% endif %}
-                  </select>
-                </td>
-              {% else %}
-                {% if valide < 0 %}
-                  <td>Refusé</td>
-                {% elseif valide > 0 %}
-                  <td>Validé</td>
-                {% elseif valide_n1 %}
-                  <td>En attente de validation hiérarchique</td>
-                {% else %}
-                  <td>Demandé</td>
+                  {% if valide_n1 < 0 and valide == 0 %}
+                    <option value='-2' selected="selected">{{ refused_pending_str }}</option>
+                  {% else %}
+                    <option value='-2'>{{ refused_pending_str }}</option>
+                  {% endif %}
                 {% endif %}
-              {% endif %}
-            </tr>
 
-            <tr id='tr_refus' style='vertical-align:top; {{ displayRefus }}'>
-              <td>Motif du refus :</td>
-              <td>
-                <textarea name='refus' cols='16' rows='5' style='width:40%;'>{{ refus }}</textarea>
-              </td>
-            </tr>
+                {% if select_valide_others %}
+                  {% if valide > 0 %}
+                    <option value='1' selected="selected">Accepté</option>
+                  {% else %}
+                    <option value='1'>Accepté</option>
+                  {% endif %}
 
-            <tr>
-              <td></td>
+                  {% if valide < 0 %}
+                    <option value='-1' selected="selected">Refusé</option>
+                  {% else %}
+                    <option value='-1'>Refusé</option>
+                  {% endif %}
+                {% endif %}
+              </select>
+            </td>
+          {% else %}
+            {% if valide < 0 %}
+              <td>Refusé</td>
+            {% elseif valide > 0 %}
+              <td>Validé</td>
+            {% elseif valide_n1 %}
+              <td>En attente de validation hiérarchique</td>
+            {% else %}
+              <td>Demandé</td>
+            {% endif %}
+          {% endif %}
+        </tr>
+
+        <tr id='tr_refus' style='vertical-align:top; {{ displayRefus }}'>
+          <td>Motif du refus :</td>
+          <td>
+            <textarea name='refus' cols='16' rows='5' style='width:40%;'>{{ refus }}</textarea>
+          </td>
+        </tr>
+
+        <tr>
+          <td></td>
         </tr>
 
         <tr>
@@ -462,8 +463,8 @@
             <td colspan='2' style='padding-top:30px; font-style:italic;'><sup>*</sup> Le solde prévisionnel tient compte des demandes des récupérations non validées (crédits et utilisations).</td>
           </tr>
         {% endif %}
-    </table>
-  </form>
-</div>
+      </table>
+    </form>
+  </div>
 </div>
 {% endblock %}
