@@ -29,6 +29,8 @@
     - 21
 "agent.index":
     - 4
+"agent.password":
+    - 100
 "agent.ldap":
     - 21
 "ajax.agentsites":
@@ -49,11 +51,15 @@
     - 100
 "ajax.holiday.absence.control":
     - 100
-"ajax.changepassword":
-    - 21
+"ajax.changeownpassword":
+    - 100
+"ajax.iscurrentpassword":
+    - 100
 "ajax.planningjobcheckcopy":
     - 100
 "ajax.mailtest":
+    - 100
+"ajax.checkpassword":
     - 100
 "ajax.update_agent_login":
     - 21

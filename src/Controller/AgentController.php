@@ -209,6 +209,14 @@ class AgentController extends BaseController
     }
 
     /**
+     * @Route("/agent/password", name="agent.password", methods={"GET"})
+     */
+    public function password(Request $request)
+    {
+        return $this->output('/agents/password.html.twig');
+    }
+
+    /**
      * @Route("/agent/add", name="agent.add", methods={"GET"})
      * @Route("/agent/{id<\d+>}", name="agent.edit", methods={"GET"})
      */
@@ -1082,6 +1090,131 @@ class AgentController extends BaseController
             break;
         }
     }
+
+    private function changeAgentPassword(Request $request, $agent_id, $password) {
+
+        $agent = $this->entityManager->find(Agent::class, $agent_id);
+
+        $response = new Response();
+        if (!$agent) {
+            $response->setContent('Agent not found');
+            $response->setStatusCode(404);
+
+            return $response;
+        }
+
+        if (!$password) {
+            $response->setContent('Missing password');
+            $response->setStatusCode(400);
+
+            return $response;
+        }
+
+        if (!$this->check_password_complexity($password)) {
+            $response->setContent('Password too weak');
+            $response->setStatusCode(400);
+
+            return $response;
+        }
+
+        $password = password_hash($password, PASSWORD_BCRYPT);
+        $agent->password($password);
+        $this->entityManager->persist($agent);
+        $this->entityManager->flush();
+
+        $response->setContent('Password successfully changed');
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/ajax/change-own-password", name="ajax.changeownpassword", methods={"POST"})
+     */
+    public function changeOwnPassword(Request $request)
+    {
+        $this->csrf_protection($request);
+
+        $agent_id = $_SESSION['login_id'];
+        $password = $request->get('password');
+        $current_password = $request->get('current_password');
+        if ($this->checkCurrentPassword($agent_id, $current_password)) {
+            return $this->changeAgentPassword($request, $agent_id, $password);
+        } else {
+            $response = new Response();
+            $response->setContent('Current password is erroneous');
+            $response->setStatusCode(400);
+            return $response;
+        }
+    }
+
+    /**
+     * @Route("/ajax/check-password", name="ajax.checkpassword", methods={"GET"})
+     */
+    public function check_password(Request $request)
+    {
+        $password = $request->get('password');
+        $response = new Response();
+        $ok = $this->check_password_complexity($password);
+        $response->setContent($ok ? "ok" : "not ok");
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
+    // Returns true if the password is complex enough, and false otherwise
+    private function check_password_complexity($password)
+    {
+        $minimum_password_length = $this->config('Auth-PasswordLength') ?? 8;
+        if (strlen($password) < $minimum_password_length) {
+            return false;
+        }
+        if (!preg_match("#[0-9]+#", $password)) {
+            return false;
+        }
+        if (!preg_match("#[A-Z]+#", $password)) {
+            return false;
+        }
+        if (!preg_match("#[a-z]+#", $password)) {
+            return false;
+        }
+        # Special chars list come from this list: https://owasp.org/www-community/password-special-characters
+        $chars = array('!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~');
+        foreach($chars as $char) {
+            if (strpos($password, $char) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @Route("/ajax/is-current-password", name="ajax.iscurrentpassword", methods={"GET"})
+     */
+    public function isCurrentPassword(Request $request)
+    {
+        $agent_id = $_SESSION['login_id'];
+        $password = $request->get('password');
+        $response = new Response();
+
+        $isCurrentPassword = $this->checkCurrentPassword($agent_id, $password);
+
+        $response->setContent($isCurrentPassword ? "1" : 0);
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
+    private function checkCurrentPassword($agent_id, $password) {
+        $isCurrentPassword = false;
+        $agent = $this->entityManager->find(Agent::class, $agent_id);
+        $hashedPassword = $agent->password();
+        if (password_verify($password, $hashedPassword)) {
+            $isCurrentPassword = true;
+        }
+        return $isCurrentPassword;
+    }
+
 
     /**
      * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"})
