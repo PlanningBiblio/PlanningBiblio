@@ -40,14 +40,22 @@ class HourHelper extends BaseHelper
             return '';
         }
 
+        // $time is already H:i:s formated.
+        // Return it.
         if(\DateTime::createFromFormat('H:i:s', $time)){
             return $time;
         }
 
+        // As we sometimes loop on working hours array,
+        // and so pass a non time value (i.e site's number,
+        // see route [POST] /workinghour) we need to keep,
+        // we don't return empty but the incoming one.
         if (!\DateTime::createFromFormat('H:i', $time)) {
             return $time;
         }
 
+        // We we are sure the incoming value is a H:i formated one
+        // that we can transform.
         if (!\DateTime::createFromFormat('H:i:s', $time)) {
             $time_dt = \DateTime::createFromFormat('H:i', $time);
             $time = $time_dt->format('H:i:s');
