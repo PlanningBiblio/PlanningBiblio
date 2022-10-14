@@ -1,5 +1,91 @@
 *** Unreleased ***
 - Enhancements
+- Fixes
+- Plumbing
+
+*** Version 22.05.00       (2022-06-08)   ***
+- Enhancements
+Planook capabilities
+Set a specific message for recover validation
+Password complexity
+Allow custom exclusions from custom_options.php
+
+- Fixes
+Fix Unknown column 'comand'/'nom' in 'field list' (fix_encoding_issues)
+Make toHis method don't transform sites in working hours
+Check if position exists when importing template
+Hide the display of the hour/day equivalence when the necessary setting is not defined
+Fix check mail config
+Fix free break calculation condition
+Statistics: Show hours exceeding less than 30 minutes in green
+MSGraph sync: Fix update event query and improve logs
+Fix sending the ICS URL by mail
+Load data during installation and fix the absences_info table
+Fix the query that remove duplicates in DBRev 22.04.00.000
+Define morning end at 12:00 if there is no break in working hours
+Show translated label for comp_time
+Show translated label for overtime
+New theme: rename div id content-holyday to content-form
+New theme: add the missing <div>, id and class to complete the new theme
+defined used variable to false when adding new framework
+PR679 change http to https
+Modification of the link to the website in all the files & the readme
+New theme: Fix alignement problem, when adding new workinghour
+Correctly take into account the number of weeks of working hours.
+Fix error 500 on the calendar view
+New theme: Display the schedule date and location when printed
+New theme: remove the title background and the green background of the planning
+New theme: Align the site's name with the date when printed
+make getCountedHours takes week rotation into account
+Add the version number in the JS and CSS link
+Typo breakin access to calendar
+Correctly calculate holiday credits in days on my account
+Do not display credits in hours on "my account" if conges-mode=jours
+Do not set SMTP settings when the local mailer is used
+Add more precision to hours count when adding holiday
+MSGraph sync: Change isEventEmpty condition
+Take into account the notification workflow where deleting absence
+Pass correct notification id to getRecipients and getRecipients2
+Undefined offset: -1 at /home/planningb/www/planningbiblio/src/Controller/StatisticController.php line 2538
+Expected parameter 2 to be an array, null given at src/Controller/StatisticController.php line 2671
+
+- Plumbing
+Move working hours history html in PlanningHebdo-Agents condition
+PHP 8.1 compatibility
+Change CI configuration for reusable build with different php version Add job
+For php 8 build Add job for PHP 8.1 and MariaDB 10.6 Use new next-generation
+Convenience images from circleCI Change the
+Way installing PHP extensions
+Write tests for method toHis
+Unit test for [POST]/admin/info
+Add unit tests for admin info forms
+Unit tests for skill list, add and edit forms
+Add Unit test got log function
+Add Unit test for PLBEntity Model
+Add unit tests for position list, add and edit form
+Delete 2 unused files
+use the JS function url() when needed
+add unit tests for Calendar Controller
+Add unit tests for overtime add, list, and edit form
+Symfonyze planning, model import and save, planning deletion
+symfonyze LDAP search / import
+
+*** Version 22.04.01       (2022-06-08)   ***
+- Enhancements
+Improve validation/notification schema
+Use the granularity setting for planno-break-timepicker
+
+- Fixes
+Do not execute web cron on CLI (avoid CSRF Exceptions)
+Transform working hours to His format in agents table
+Change out-of-work text color to #5394BA
+prevent include class.conges.php twice
+
+- Plumbing
+Rename comptime to overtime
+
+*** Version 22.04.00       (2022-04-01)   ***
+- Enhancements
 Display disabled planno-break-timepickers in black
 Holiday: dynamically get current holiday credits (multi-agents form)
 Restrict absences list interval to a year maximum
