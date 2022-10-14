@@ -1149,7 +1149,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/ajax/check-password", name="ajax.checkpassword", methods={"POST"})
+     * @Route("/ajax/check-password", name="ajax.checkpassword", methods={"GET"})
      */
     public function check_password(Request $request)
     {
@@ -1189,7 +1189,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/ajax/is-current-password", name="ajax.iscurrentpassword", methods={"POST"})
+     * @Route("/ajax/is-current-password", name="ajax.iscurrentpassword", methods={"GET"})
      */
     public function isCurrentPassword(Request $request)
     {
