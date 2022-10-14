@@ -1,9 +1,38 @@
 *** Unreleased ***
 - Enhancements
 - Fixes
+- Plumbing
+
+*** Version 21.10.05       (2022-10-14)   ***
+- Enhancements
+MT36303: Add more precision to hours count when adding holiday
+Use the granularity setting for planno-break-timepicker
+
+- Fixes
+Check if position exists when importing template
+Fix free break calculation condition
+Statistics: Show hours exceeding less than 30 minutes in green
+MSGraph sync: Fix update event query and improve logs
+LDAP import: fix positions and rights json serialization
+Define morning end at 12:00 if there is no break in working hours
+Correctly take into account the number of weeks of working hours
 Fix error 500 on the calendar view
 Make getCountedHours takes week rotation into account
+Typo breaking access to calendar
+Correctly calculate holiday credits in days on my account
+Do not display credits in hours on "my account" if conges-mode=jours
+Do not set SMTP settings when the local mailer is used
+MSGraph sync: Change isEvntEmpty condition
+Take into account the notification workflow where deleting absence
+Pass correct notification id to getRecipients and getRecipients2
+Undefined offset: -1 at /home/planningb/www/planningbiblio/src/Controller/StatisticController.php line 2538
+Expected parameter 2 to be an array, null given at src/Controller/StatisticController.php line 2671
+Do not execute web cron on CLI (avoid CSRF Exceptions)
+Fix error 500 on the calendar view
+Make getCountedHours takes week rotation into account
+
 - Plumbing
+Move working hours history html in PlanningHebdo-Agents condition
 
 *** Version 21.10.04       (2022-04-29)   ***
 - Fixes
