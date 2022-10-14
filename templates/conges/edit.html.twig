@@ -6,15 +6,17 @@
   <script type='text/JavaScript' src='{{ asset("conges/js/script.conges.js") }}'></script>
   <script type='text/JavaScript' src='{{ asset("js/dateUtils.js") }}'></script>
   <script type='text/JavaScript' src='{{ asset("js/holiday.js") }}'></script>
-
 {% endblock %}
 
 {% block page %}
+  <div id="content-form">
   {% if request_type == 'recover' %}
     <h3>Demande récupérations</h3>
   {% else %}
     <h3>Demande de congés</h3>
   {% endif %}
+
+  <div class="admin-div">
   <form name='form' action='{{ asset("/holiday/edit") }}' method='post' id='form' class='googleCalendarForm'>
     <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
     <input type='hidden' name='confirm' value='confirm' />
@@ -199,9 +201,9 @@
         </tr>
       {% endif %}
 
+      {% if conges_recuperations == 0 %}
       <tr>
         <td colspan='2' style='padding-top:20px;'>
-          {% if conges_recuperations == 0 %}
             {% if reliquat != '0.00' %}
               Ces heures seront débitées sur le réliquat de l'année précédente puis sur : 
             {% else %}
@@ -210,7 +212,7 @@
         </td>
       </tr>
       <tr>
-        <td>&nbsp;</td>
+        <td></td>
         <td>
           <select name='debit' style='width:30%;'>
             {% if debit == 'recuperation' %}
@@ -227,7 +229,10 @@
           </select>
         </td>
       </tr>
+
           {% else %}
+            <tr>
+              <td colspan='2' style='padding-top:20px;'>
             {% if debit == 'credit' %}
               {% if reliquat != '0.00' %}
                 Ces heures seront débitées sur le réliquat de l'année précédente puis sur les crédits de congés de l'année en cours.
@@ -235,15 +240,13 @@
                 Ces heures seront débitées sur les crédits de congés de l'année en cours.
               {% endif %}
               <input type='hidden' name='debit' value='credit' />
-            </td>
-        </tr>
             {% else %}
               Ces heures seront débitées sur les crédits de récupérations.
               <input type='hidden' name='debit' value='recuperation' />
+            {% endif %}
             </td>
         </tr>
             {% endif %}
-          {% endif %}
 
         {% if not valide %}
           <tr>
@@ -322,7 +325,8 @@
 
                     <tr class='balance_tr'><td>Solde prévisionnel<sup>*</sup> au <span class='balance_date'>{{ balance_date }}</span> : </td>
                     <td id='balance2_before'>{{ balance2_before }}</td>
-                    <td>(après débit : <span id='balance2_after'>{{ balance2_before }}</span>)</td></tr>
+                    <td>(après débit : <span id='balance2_after'>{{ balance2_before }}</span>)</td>
+                  </tr>
                   {% endif %}
                 {% endif %}
               </table>
@@ -337,8 +341,6 @@
           </td>
         </tr>
 
-        <tr>
-          <td>&nbsp;
             <tr style='vertical-align:top;'>
               <td style='padding-top:15px;padding-bottom:15px;'>Demande : </td>
               <td style='padding-top:15px;padding-bottom:15px;'>
@@ -369,9 +371,7 @@
             </tr>
 
             <tr>
-              <td>&nbsp;</td>
-            </tr>
-          </td>
+              <td></td>
         </tr>
 
         <tr>
@@ -408,5 +408,6 @@
         {% endif %}
     </table>
   </form>
-
+</div>
+</div>
 {% endblock %}
