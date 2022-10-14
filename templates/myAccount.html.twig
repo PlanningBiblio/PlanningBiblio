@@ -3,6 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
+{% include 'agents/elements/change_password.html.twig' %}
 
     <!--	Menu	-->
     <h3>Mon Compte</h3>
@@ -135,44 +136,13 @@
       {% endif %}
       <!-- Mot de Passe -->
       <div id='motDePasse' style='margin-left:80px;display:none;'>
+          <h3>Changement de mot de passe</h3>
         {% if config('demo') %}
-          <h3>Modification du mot de passe</h3>
           Vous utilisez une version de démonstration.<br/>
           Votre mot de passe ne peut pas être modifié.<br/>
         {% elseif auth_mode == "SQL" %}
-          <h3>Modification du mot de passe</h3>
-          <h4>{{ login.surname }} {{ login.name }}</h4>
-          <form name='form' method='get' action="{{ asset('index.php') }}">
-            <input type='hidden' name='page' value='personnel/password.php' />
-            <table class='tableauFiches'>
-              <tr>
-                <td>Ancien mot de passe : </td>
-                <td>
-                  <input type='password' name='ancien' class='ui-widget-content ui-corner-all'/>
-                </td>
-              </tr>
-              <tr>
-                <td> Nouveau mot de passe : </td>
-                <td>
-                  <input type='password' name='nouveau' class='ui-widget-content ui-corner-all'/>
-                </td>
-              </tr>
-              <tr>
-                <td>  Confirmer le nouveau mot de passe : </td>
-                <td>
-                  <input type='password' name='confirm' class='ui-widget-content ui-corner-all'/>
-                </td>
-              </tr>
-              <tr>
-                <td colspan='2' style='text-align:center;'>
-                  <br/><input type='button' value='Annuler' onclick="location.href={{ asset('index.php') }};" class='ui-button ui-button-type2'/>
-                  <input type='submit' value='Modifier' class='ui-button' style='margin-left:30px;'/>
-                </td>
-              </tr>
-            </table>
-          </form>
+          {% include 'agents/elements/change_password_div.html.twig' %}
         {% else %}
-          <h3>Modification du mot de passe</h3>
           Vous utilisez un système d'authentification centralisé.<br/>
           Votre mot de passe ne peut pas être modifié à partir du planning.<br/>
         {% endif %}

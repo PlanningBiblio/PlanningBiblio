@@ -105,7 +105,7 @@ if ($config['PlanningHebdo'] or $config['ICS-Export']) {
 }
 // Mot de passe modifiable seulement si authentification SQL
 elseif ($_SESSION['oups']['Auth-Mode']=="SQL") {
-    echo "<a href='index.php?page=personnel/password.php' class='myAccountLink'>\n";
+    echo "<a href='{$config['URL']}/agent/password' class='myAccountLink'>\n";
     echo "Changer de mot de passe\n";
 }
 echo "<div id='logout_text'><a href='{$config['URL']}/logout' >Déconnexion</a></div>\n";

@@ -1,5 +1,4 @@
 {# menu.html.twig #}
-
   <div class="navigation">
     <div class='popper' id='topdeck'></div>
     <script type="text/JavaScript">
@@ -68,15 +67,12 @@
             </a>
           </td>
         </tr>
-
         <tr>
           <td colspan='2' style='text-align:right;'>
             {% if planninghebdo or ics_export %}
               <a href='{{ asset("/myaccount") }}' class='myAccountLink'>Mon Compte</a>
             {% elseif oups_auth_mode == 'SQL' %}
-              <a href='{{ asset("index.php?page=personnel/password.php") }}' class='myAccountLink'>
-                Changer de mot de passe
-              </a>
+                <a href='{{ asset("agent/password") }}' class='myAccountLink'>Changer de mot de passe</a>
             {% endif %}
             <div id='logout_text'>
               <a href='{{ asset("logout") }}' >Déconnexion</a>

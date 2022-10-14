@@ -3,65 +3,11 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <style>
-    .password-input {
-      position: absolute;
-      left: 300px;
-    }
-    .password-error {
-      color: red;
-      display: none;
-    }
-  </style>
   <script type='text/JavaScript'>
     <!--
     complet = JSON.parse('{{ postes_completNoms_json | e('js') }}');
     -->
-    function save_password(agent_id, password) {
-      $.ajax({
-        url: url('ajax/change-password'),
-        type: "POST",
-        dataType: "html",
-        data: {password: password, id: agent_id},
-        success: function(){
-            $("#reset-password-form").dialog( "close" );
-        },
-        error: function(xhr, ajaxOptions, thrownError){
-          alert("Erreur lors de la modification du mot de passe");
-        }
-      });
-    }
-
-    $(document).ready(function(){
-      $("#reset-password-form").dialog({
-        autoOpen: false,
-        height: 240,
-        width: 580,
-        modal: true,
-        buttons: {
-          Enregistrer: function() {
-            $('#password-dont-match').hide();
-            $('#password-empty').hide();
-
-            password = $('#new_password').val();
-            confirm_password = $('#confirm_new_password').val();
-
-            if (password != confirm_password) {
-              $('#password-dont-match').show();
-            }
-            else if (password == '') {
-              $('#password-empty').show();
-            } else {
-              agent_id = $('input[name="id"]').val();
-              save_password(agent_id, password);
-            }
-          },
-          Annuler: function() {
-            $(this).dialog( "close" );
-          },
-        },
-      });
-
+    $( document ).ready(function() {
       $("#reset-login-form").dialog({
         autoOpen: false,
         height: 180,
@@ -107,10 +53,6 @@
         },
       });
 
-      $('#change-password-link').on('click', function() {
-        $("#reset-password-form").dialog( "open" );
-      });
-
       $('#change-login-link').on('click', function() {
         $('#login-duplicate').hide();
         $('#login-empty').hide();
@@ -120,7 +62,6 @@
       });
     });
   </script>
-
   <h3>{{ titre }}</h3>
 
   <div class='ui-tabs'>
