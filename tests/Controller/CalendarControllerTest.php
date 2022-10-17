@@ -15,8 +15,6 @@ class CalendarControllerTest extends PLBWebTestCase
 {
     public function testCalendarWithMultiSites()
     {
-        global $entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
@@ -69,8 +67,6 @@ class CalendarControllerTest extends PLBWebTestCase
     }
 
     public function testCalendarWithPlanningHebdo(){
-        global $entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'actif' => 'Actif'));
@@ -130,8 +126,6 @@ class CalendarControllerTest extends PLBWebTestCase
 
     public function testCalendarWithAbsence()
     {
-        global $entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
@@ -188,8 +182,6 @@ class CalendarControllerTest extends PLBWebTestCase
 
     public function testFullCalendar()
     {
-        global $entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
@@ -239,8 +231,6 @@ class CalendarControllerTest extends PLBWebTestCase
 
     public function testEmptyCalendar()
     {
-        global $entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'actif' => 'Actif'));
@@ -286,8 +276,6 @@ class CalendarControllerTest extends PLBWebTestCase
 
     public function testDeletedAgentCalendar()
     {
-        global $entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'actif' => 'Inactif', 'supprime' => 1));
