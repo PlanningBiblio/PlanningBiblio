@@ -138,7 +138,6 @@ class CJICS
 
         // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
         $ical   = new ICal($src);
-        //$events = $ical->events();
         $events = $ical->cal['VEVENT'];
 
         // Récupération du nom du calendrier
