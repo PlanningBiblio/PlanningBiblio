@@ -1313,8 +1313,8 @@ function recurrenceRRuleText($rrule)
 
       if ($bymonthday) {
           $n = $bymonthday;
-          $n = $n == 1 ? 'Le 1<sup>er</sup>' : 'Le '+$n;
-          $text = $text == 'Tous les mois' ? "$n de chaque mois" : "$n, tous les $interval mois";
+          $n_text = $n == 1 ? 'Le 1<sup>er</sup>' : "Le $n";
+          $text = $text == 'Tous les mois' ? "$n_text de chaque mois" : "$n_text, tous les $interval mois";
       }
       break;
   }
