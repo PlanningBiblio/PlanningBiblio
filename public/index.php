@@ -31,6 +31,8 @@ if (isset($_SESSION['login_id'])) {
     require_once(__DIR__.'/include/cron.php');
 }
 
+$base_url = plannoBaseUrl($request);
+
 // Si pas de session, redirection vers la page d'authentification
 if (empty($_SESSION['login_id'])) {
     // Action executée dans un popup alors que la session a été perdue, on affiche
@@ -38,7 +40,7 @@ if (empty($_SESSION['login_id'])) {
         echo "<div style='margin:60px 30px;'>\n";
         echo "<center>\n";
         echo "Votre session a expiré.<br/><br/>\n";
-        echo "<a href='{$config['URL']}/login' target='_top'>Cliquez ici pour vous reconnecter</a>\n";
+        echo "<a href='$base_url/login' target='_top'>Cliquez ici pour vous reconnecter</a>\n";
         echo "<center></div>\n";
         exit;
     } else {
@@ -70,7 +72,6 @@ if (empty($_SESSION['login_id'])) {
         if ($noCAS) {
             $login_params['noCAS'] = '';
         }
-        $base_url = plannoBaseUrl($request);
         $login_url = "$base_url/login?" . http_build_query($login_params);
         header("Location: $login_url");
         exit;
@@ -78,7 +79,7 @@ if (empty($_SESSION['login_id'])) {
 }
 
 if (!$page && $path == '/') {
-    header("Location: {$config['URL']}/index");
+    header("Location: $base_url/index");
     exit();
 }
 
