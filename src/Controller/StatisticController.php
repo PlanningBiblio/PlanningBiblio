@@ -3160,7 +3160,7 @@ class StatisticController extends BaseController
 
         $tab = array();
 
-        $floors = $entityManager->getRepository(SelectFloor::class);
+        $floors = $this->entityManager->getRepository(SelectFloor::class);
 
         // Récupération des infos sur les agents
         $p = new \personnel();
