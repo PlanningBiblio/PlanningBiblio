@@ -1265,6 +1265,7 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
  * @param int perso_id : Si 0 = griser la cellule, si 2 = Tout le monde
  */
 function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,griser,cellid,logaction = 1){
+  disableRedo();
   if(griser==undefined){
     griser=0;
   }
