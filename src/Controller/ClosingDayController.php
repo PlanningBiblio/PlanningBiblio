@@ -90,7 +90,7 @@ class ClosingDayController extends BaseController
     }
 
     /**
-     * @Route("/closingday", name="closingday.save", methods={"POST"})
+     * @Route("/closingday", name="closingday.save", methods={"POST"}, defaults={"csrf": 1})
      */
     public function save(Request $request, Session $session){
         $post = $request->request->all();

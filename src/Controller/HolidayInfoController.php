@@ -97,7 +97,7 @@ class HolidayInfoController extends BaseController
     }
 
     /**
-     * @Route("/holiday-info", name="holiday_info.update", methods={"POST"})
+     * @Route("/holiday-info", name="holiday_info.update", methods={"POST"}, defaults={"csrf": 1})
      */
     public function save(Request $request, Session $session)
     {
@@ -134,7 +134,7 @@ class HolidayInfoController extends BaseController
     }
 
     /**
-     * @Route("/holiday-info", name="holiday_info.delete", methods={"DEL"})
+     * @Route("/holiday-info", name="holiday_info.delete", methods={"DEL"}, defaults={"csrf": 1})
      */
     public function delete(Request $request, Session $session)
     {

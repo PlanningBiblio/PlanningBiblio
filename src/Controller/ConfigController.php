@@ -95,7 +95,7 @@ class ConfigController extends BaseController
     }
 
     /**
-     * @Route("/config", name="config.update"), methods={"POST"})
+     * @Route("/config", name="config.update"), methods={"POST"}, defaults={"csrf": 1})
      */
     public function update(Request $request, Session $session)
     {

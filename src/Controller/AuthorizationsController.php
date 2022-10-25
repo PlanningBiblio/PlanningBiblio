@@ -48,7 +48,7 @@ class AuthorizationsController extends BaseController
     }
 
     /**
-     * @Route("/login", name="login.check", methods={"POST"})
+     * @Route("/login", name="login.check", methods={"POST"}, defaults={"csrf": 1})
      */
     public function check_login(Request $request, LoggerInterface $logger = null)
     {

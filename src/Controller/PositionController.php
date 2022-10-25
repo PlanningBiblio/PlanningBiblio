@@ -250,7 +250,7 @@ class PositionController extends BaseController
     }
 
     /**
-     * @Route("/position", name="position.save", methods={"POST"})
+     * @Route("/position", name="position.save", methods={"POST"}, defaults={"csrf": 1})
      */
     public function save(Request $request, Session $session)
     {
@@ -343,7 +343,7 @@ class PositionController extends BaseController
     }
 
     /**
-     * @Route("/position",name="position.delete", methods={"DELETE"})
+     * @Route("/position",name="position.delete", methods={"DELETE"}, defaults={"csrf": 1})
      */
      public function delete_position(Request $request, Session $session){
 

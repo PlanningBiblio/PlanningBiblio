@@ -94,6 +94,7 @@
       </tbody>
     </table>
     <input type='hidden' name='CSRFToken' id='CSRFToken' value="{{ CSRFToken }}" />
+    <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
     <input type='button' value='Modifier la sélection' class='ui-button' id='update-button' />
   </form>
 

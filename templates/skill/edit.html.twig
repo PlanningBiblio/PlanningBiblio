@@ -15,6 +15,7 @@
     <div class="skill">
       <form method="post" name="form" action='{{ asset("skill") }}'>
         <input type="hidden" name='CSRFToken' value='{{ CSRFSession }}' />
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
         <table class='tableauFiches'>
           <tr>
             <td> Nom :</td>

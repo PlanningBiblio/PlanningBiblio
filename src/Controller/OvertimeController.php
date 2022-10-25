@@ -236,7 +236,7 @@ class OvertimeController extends BaseController
     }
 
     /**
-     * @Route("/overtime", name="overtime.save", methods={"POST"})
+     * @Route("/overtime", name="overtime.save", methods={"POST"}, defaults={"csrf": 1})
      */
     public function save(Request $request, Session $session)
     {

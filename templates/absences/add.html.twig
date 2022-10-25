@@ -23,6 +23,7 @@
 
             <form id="form" name='form' action='/absence' method='post' enctype='multipart/form-data'>
               <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+              <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
               <input type='hidden' id='admin' value='{{ admin }}' />
               <input type='hidden' id='login_id' value='{{ loggedin_id }}' />
 

@@ -439,10 +439,11 @@ function supprimeConges(retour){
 
   conf=confirm("Etes-vous sûr(e) de vouloir supprimer ce congé ?");
   if(conf){
+    var _token = $('input[name=_token]').val();
     $.ajax({
       url: url('ajax/holiday-delete'),
       type: "get",
-      data: "id="+$("#id").val()+"&CSRFToken="+$("#CSRFSession").val(),
+      data: "id="+$("#id").val()+"&CSRFToken="+$("#CSRFSession").val()+'&token='+_token,
       success: function(){
         location.href = retour;
       },

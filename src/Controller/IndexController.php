@@ -494,7 +494,7 @@ class IndexController extends BaseController
     }
 
     /**
-     * @Route("/deleteplanning", name="planning.delete", methods={"POST"})
+     * @Route("/deleteplanning", name="planning.delete", methods={"POST"}, defaults={"csrf": 1})
      */
     public function delete_planning(Request $request, Session $session)
     {
@@ -551,7 +551,7 @@ class IndexController extends BaseController
     }
 
     /**
-     * @Route("/modelimport", name="model.import", methods={"POST"})
+     * @Route("/modelimport", name="model.import", methods={"POST"}, defaults={"csrf": 1})
      */
     public function model_import(Request $request, Session $session)
     {

@@ -238,7 +238,7 @@ class AbsenceController extends BaseController
     }
 
     /**
-     * @Route("/absence", name="absence.save", methods={"POST"})
+     * @Route("/absence", name="absence.save", methods={"POST"}, defaults={"csrf": 1})
      */
     public function save(Request $request, Session $session)
     {
@@ -449,7 +449,7 @@ class AbsenceController extends BaseController
     }
 
     /**
-     * @Route("/absence", name="absence.delete", methods={"DELETE"})
+     * @Route("/absence", name="absence.delete", methods={"DELETE"}, defaults={"csrf": 1})
      */
     public function delete_absence(Request $request)
     {

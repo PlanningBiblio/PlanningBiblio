@@ -35,6 +35,7 @@
       <form name='form' method='post' action="{{ asset('framework-group') }}" onsubmit='return ctrl_form({{champs}});'>
         <input type='hidden' name='id' value="{{ id }}" />
         <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}" />
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
         <table class='tableauFiches'>
           <tr>
             <td class="textAlignRight">Nom du groupe</td>

@@ -19,11 +19,12 @@ function supprimeGroupe(id){
   var nom=$("#td-groupe-"+id+"-nom").text();
 
   if(confirm("Etes vous sûr(e) de vouloir supprimer le groupe \""+nom+"\"?")){
+    var _token = $('input[name=_token]').val();
     $.ajax({
       url: url('framework-group'),
       type: "delete",
       dataType: "json",
-      data: {id: id, CSRFToken: CSRFToken},
+      data: {id: id, CSRFToken: CSRFToken, _token: _token},
       success: function(){
         var tr=$("#tr-groupe-"+id).next("tr");
         while(tr.length>0){
@@ -58,11 +59,12 @@ function supprimeLigne(id){
   var nom=$("#td-ligne-"+id+"-nom").text();
 
   if(confirm("Etes-vous sûr(e) de vouloir supprimer la ligne \""+nom+"\" ?")){
+    var _token = $('input[name=_token]').val();
     $.ajax({
       url: url('framework-line'),
       type: "delete",
       dataType: "json",
-      data: {id: id, CSRFToken: CSRFToken},
+      data: {id: id, CSRFToken: CSRFToken, _token: _token},
       success: function(){
         var tr=$("#tr-ligne-"+id).next("tr");
         while(tr.length>0){
@@ -87,11 +89,12 @@ function supprimeTableau(tableau){
   var nom=$("#td-tableau-"+tableau+"-nom").text();
   if(confirm("Etes vous sûr(e) de vouloir supprimer le tableau \""+nom+"\"?\nLes groupes utilsant ce tableau seront également supprimés")){
     var CSRFToken = $('#CSRFSession').val();
+    var _token = $('input[name=_token]').val();
     $.ajax({
       url: url('framework'),
       type: "delete",
       dataType: "json",
-      data: {tableau: tableau, CSRFToken: CSRFToken, name: nom},
+      data: {tableau: tableau, CSRFToken: CSRFToken, name: nom, _token: _token},
       success: function(){
         window.location.href = url('framework');
       },
@@ -195,10 +198,11 @@ function supprime_select(classe,page){
   else if(confirm("Etes-vous sûr(e) de vouloir supprimer les éléments sélectionnés ?\nLes groupes utilisant ces éléments seront également supprimés")){
 
     var CSRFToken = $('#CSRFSession').val();
+    var _token = $('input[name=_token]').val();
     $.ajax({
       url: page,
       type: "get",
-      data: "ids="+ids+"&CSRFToken="+CSRFToken,
+      data: "ids="+ids+"&CSRFToken="+CSRFToken+'_token='+_token,
       success: function(result){
         msg=encodeURIComponent("Les éléments sélectionnés ont été supprimés avec succès");
         window.location.href= url('framework?msgType=success&msg=' + msg);
@@ -211,11 +215,12 @@ function supprime_select(classe,page){
 }
 
 function tableauxInfos(){
+  var _token = $('input[name=_token]').val();
   $.ajax({
     url: url('framework/info'),
     type: "post",
     dataType: "json",
-    data: {id:$("#id").val(), nom:$("#nom").val(), nombre:$("#nombre").val(), site:$("#site").val(), CSRFToken:$("#CSRFSession").val()},
+    data: {id:$("#id").val(), nom:$("#nom").val(), nombre:$("#nombre").val(), site:$("#site").val(), CSRFToken:$("#CSRFSession").val(), _token: _token},
     success: function(result){
       var msg=encodeURIComponent("Les informations ont été modifiées avec succès");
       if($("#id").val()){
@@ -255,6 +260,7 @@ $(function(){
   $("#tableauxSupprimes").change(function(){
     if($(this).val()){
       var CSRFToken=$('#CSRFSession').val();
+      var _token = $('input[name=_token]').val();
       var id=$(this).val();
       var name=$("#tableauxSupprimes option:selected").text();
 
@@ -263,7 +269,7 @@ $(function(){
           url: url('framework/restore_table'),
           type: "post",
           dataType: "json",
-          data: {id: id, CSRFToken: CSRFToken, name: name},
+          data: {id: id, CSRFToken: CSRFToken, name: name, _token: _token},
           success: function(){
             location.href = url('framework');
           },
