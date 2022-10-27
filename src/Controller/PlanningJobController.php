@@ -802,6 +802,8 @@ class PlanningJobController extends BaseController
      */
     public function undo(Request $request)
     {
+        $this->csrf_protection($request);
+
         $date = $request->get('date');
         $site = $request->get('site');
         $CSRFToken = $request->get('CSRFToken');
@@ -877,6 +879,8 @@ class PlanningJobController extends BaseController
      */
     public function redo(Request $request)
     {
+        $this->csrf_protection($request);
+
         $date = $request->get('date');
         $site = $request->get('site');
         $CSRFToken = $request->get('CSRFToken');
