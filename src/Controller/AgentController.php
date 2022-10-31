@@ -780,7 +780,7 @@ class AgentController extends BaseController
                 'recup_heures'          => $recupHeures,
                 'recup_min'             => $conges['recupCents'],
                 'recup_string'          => $recupString,
-                'lang_comp_time'        => $lang['overtime'],
+                'lang_comp_time'        => $lang['comp_time'],
                 'show_hours_to_days'    => $holiday_helper->showHoursToDays(),
             );
             if ($holiday_helper->showHoursToDays()) {
