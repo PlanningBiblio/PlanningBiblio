@@ -232,7 +232,7 @@
 
   <div id='confirmation'style="display: none;">
     <h3>Suppression</h3>
-    <form name='form' id='confirmation-form' action="{{ asset('/agent') }}"  method='delete'>
+    <form name='form' id='confirmation-form' action="{{ asset('/agent') }}"  method='post'>
       <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
       <input type='hidden' name='id' id='agent-id' value=""/>
       <input type='hidden' name='menu' value='off' />
@@ -246,7 +246,7 @@
 
   {% if actif != 'Supprimé' %}
     <div id='suppression' style="display: none;">
-      <form method='delete' action="{{ asset('/agent') }}" name='form' onsubmit='verif_form("date=date");'>
+      <form method='post' action="{{ asset('/agent') }}" name='form' onsubmit='verif_form("date=date");'>
         <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
         <input type='hidden' name='menu' value='off' />
         <input type='hidden' name='confirm' value='on' />
@@ -287,7 +287,6 @@
             note.textContent = "Êtes-vous sûr(e) de vouloir supprimer " + nom.toString() + " ?";
           {% else %}
             note.textContent = "Êtes-vous sûr(e) de vouloir définitivement supprimer " + nom.toString() + " ?";
-            $('#confirmation-form').method = "delete";
           {% endif %}
         });
         {% if actif != 'Supprimé' %}
