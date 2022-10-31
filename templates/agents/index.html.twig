@@ -3,7 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <form name='form2' action='{{ asset("/agent") }}' method='get'>
+  <form name='form2' action='{{ asset("agent") }}' method='get'>
     <input type = 'hidden' value='{{ actif }}' />
     <table style='margin-bottom:10px;'>
       <tr style='vertical-align:center;'>
@@ -64,7 +64,7 @@
               {% if rights21 %}
               <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ a.id }}' class='checkbox' />
               {% endif %}
-              <a href="{{ asset ('/agent/')}}{{ a.id }}">
+              <a href="{{ asset ('agent/')}}{{ a.id }}">
                 <span class='pl-icon pl-icon-edit' title='Modifier'></span>
               </a>
               {% if rights21 and a.id != login_id and a.id > 1 %}

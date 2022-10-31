@@ -13,7 +13,7 @@
       <h3>Ajout d'un poste</h3>
     {% endif %}
     <div class="admin-div">
-      <form method='post' action="{{ asset('/position') }}" name='form'>
+      <form method='post' action="{{ asset('position') }}" name='form'>
         <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}"/>
         <input type='hidden' name='group_id' value='{{ group_id }}'/>
         {% if id is defined %}
