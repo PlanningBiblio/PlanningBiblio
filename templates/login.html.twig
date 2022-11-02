@@ -95,7 +95,7 @@
               {% if config("Auth-Anonyme") %}
                 <tr>
                   <td colspan="2" align="center"><br/>
-                    <a href="/index.php?login=anonyme">Accès anonyme</a>
+                    <a href="{{ asset('index.php') }}?login=anonyme">Accès anonyme</a>
                   </td>
                 </tr>
               {% endif %}
