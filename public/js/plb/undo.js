@@ -6,7 +6,9 @@ $(document).ready(function(){
   });
 
   $('#undo-action').on('click', function() {
+    if (!$(this).hasClass('isDisabled')) {
       undo();
+    }
   });
 });
 

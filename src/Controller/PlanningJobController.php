@@ -842,8 +842,9 @@ class PlanningJobController extends BaseController
         }
 
         // Means that after this undo,
-        // there will be nothing more to undo.
-        if (empty($history)) {
+        // there will be nothing more to undo,
+        // because there is nothing left in history or because the last action is not made by the logged in agent
+        if (empty($history) or $history[0]['updated_by'] != $_SESSION['login_id']) {
             $response['remaining_undo'] = 0;
         }
 

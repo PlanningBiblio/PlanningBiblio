@@ -6,7 +6,9 @@ $(document).ready(function(){
   });
 
   $('#redo-action').on('click', function() {
+    if (!$(this).hasClass('isDisabled')) {
       redo();
+    }
   });
 });
 
