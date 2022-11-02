@@ -63,7 +63,7 @@
     </span>
 
     <span style='float:right; vertical-align:top; margin:10px 5px;'>
-      <a href='absence/add' class='ui-button ui-button-type2'>Ajouter</a>
+      <a href='{{ asset("absence/add") }}' class='ui-button ui-button-type2'>Ajouter</a>
     </span>
   </form>
   
@@ -97,7 +97,7 @@
           <td style='white-space: nowrap;'>
             <div class="icon-div">
               {% if abs.view_details %}
-                <a href='absence/{{ abs.id }}'>
+                <a href='{{ asset("absence") }}/{{ abs.id }}'>
                   <span class='pl-icon pl-icon-edit' title='Voir'></span>
                 </a>
               {% endif %}
@@ -160,7 +160,7 @@
           {% endif %}
           <td>
             {% for doc in abs.absdocs %}
-              <a href="absences/document/{{ doc.id }}" target='_blank' >{{ doc.filename }}</a>
+              <a href="{{ asset("absences/document") }}/{{ doc.id }}" target='_blank' >{{ doc.filename }}</a>
               <br/>
             {% endfor %}
           </td>
