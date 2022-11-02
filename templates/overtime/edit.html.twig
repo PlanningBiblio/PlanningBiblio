@@ -136,7 +136,7 @@
 
           <tr>
             <td colspan="2" class="td_validation">
-              <input type="button" class="ui-button ui-button-type2" value="Retour" onclick='location.href="/overtime";' />
+              <input type="button" class="ui-button ui-button-type2" value="Retour" onclick='location.href="{{ asset('overtime') }}";' />
               {% if overtime.save %}
                 <input type="submit" class="ui-button" value="Enregistrer"/>
               {% endif %}

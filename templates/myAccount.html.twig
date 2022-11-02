@@ -51,7 +51,7 @@
                 {% for elem in planning %}
                   <tr>
                     <td style='white-space:nowrap;'>{{ elem.remplace ? "<font style='font-size:20pt;'>&rdsh;</font>": "" }}
-                      <a href='/workinghour/{{ elem.id }}?retour=/myaccount'/>
+                      <a href="{{ asset('workinghour') }}/{{ elem.id }}?retour=/myaccount"/>
                         <span class='pl-icon pl-icon-edit' title='Voir'></span>
                       </a>
                     </td>
