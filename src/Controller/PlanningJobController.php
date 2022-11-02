@@ -806,15 +806,9 @@ class PlanningJobController extends BaseController
 
         $date = $request->get('date');
         $site = $request->get('site');
-        $CSRFToken = $request->get('CSRFToken');
 
         if (!$this->canManagePlanning($site)) {
             return $this->json('forbiden');
-        }
-
-        if (!$CSRFToken or !isset($_SESSION['oups']['CSRFToken'])
-            or $CSRFToken !== $_SESSION['oups']['CSRFToken']) {
-            return $this->json('Bad CSRF token');
         }
 
         if (!$date || !$site) {
@@ -887,11 +881,6 @@ class PlanningJobController extends BaseController
 
         if (!$this->canManagePlanning($site)) {
             return $this->json('forbiden');
-        }
-
-        if (!$CSRFToken or !isset($_SESSION['oups']['CSRFToken'])
-            or $CSRFToken !== $_SESSION['oups']['CSRFToken']) {
-            return $this->json('Bad CSRF token');
         }
 
         if (!$date || !$site) {
