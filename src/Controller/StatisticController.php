@@ -2073,7 +2073,7 @@ class StatisticController extends BaseController
                 $postes = array();
                 if (is_array($resultat)) {
                     foreach ($resultat as &$elem) {
-                        if ($agent == $elem['perso_id']) {
+                        if (!empty($elem['perso_id']) and $agent == $elem['perso_id']) {
                             // Vérifie à partir de la table absences si l'agent est absent
                             // S'il est absent, on met à 1 la variable $elem['absent']
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {

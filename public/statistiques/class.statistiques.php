@@ -60,28 +60,35 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
         $cellules=array_merge($cellules, array("Etage","Heures par poste"));
         $lignes[]=implode($separateur, $cellules);
     }
+
+    $neverSelected = array();
+    if ($nom == 'agent' and !empty ($tab['neverSelected'])) {
+        $neverSelected = $tab['neverSelected'];
+        unset($tab['neverSelected']);
+    }
+
     foreach ($tab as $elem) {
-        $jour=$elem[2]/$nbJours;
-        $hebdo=$jour*$joursParSemaine;
+        $jour = $elem[2] / $nbJours;
+        $hebdo = $jour * $joursParSemaine;
         foreach ($elem[1] as $poste) {
             $cellules=array();
             if ($nom=="agent") {
                 $cellules[]=$elem[0][1];	// nom
-    $cellules[]=$elem[0][2];	// prénom
+                $cellules[]=$elem[0][2];	// prénom
             } else {
                 $cellules[]=$elem[0];		// nom du service ou du statut
             }
-            $cellules[]=number_format($elem[2], 2, ',', ' ');			// Nombre d'heures
-      $cellules[]=number_format($hebdo, 2, ',', ' ');		// moyenne hebdo
-      if ($GLOBALS['config']['Multisites-nombre']>1) {
-          for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-              $jour=$elem["sites"][$i]/$nbJours;
-              $hebdo=$jour*$joursParSemaine;
-              $cellules[]=number_format($elem["sites"][$i], 2, ',', ' ');
-              $cellules[]=number_format($hebdo, 2, ',', ' ');
-          }
-      }
-            $cellules[]=$poste[1];						// Nom du poste
+            $cellules[]=number_format($elem[2], 2, ',', ' ');	// Nombre d'heures
+            $cellules[]=number_format($hebdo, 2, ',', ' ');	// moyenne hebdo
+            if ($GLOBALS['config']['Multisites-nombre']>1) {
+                for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
+                    $jour=$elem["sites"][$i]/$nbJours;
+                    $hebdo=$jour*$joursParSemaine;
+                    $cellules[]=number_format($elem["sites"][$i], 2, ',', ' ');
+                    $cellules[]=number_format($hebdo, 2, ',', ' ');
+                }
+            }
+            $cellules[]=$poste[1];				// Nom du poste
             $site=null;
             if ($poste["site"]>0 and $GLOBALS['config']['Multisites-nombre']>1) {
                 $site=$GLOBALS['config']["Multisites-site{$poste['site']}"]." ";
@@ -89,17 +96,17 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             if ($GLOBALS['config']['Multisites-nombre']>1) {
                 $cellules[]=$site;
             }
-            $cellules[]=$poste[2];						// Etage
-      $cellules[]=number_format($poste[3], 2, ',', ' ');			// Heures par poste
-      $lignes[]=implode($separateur, $cellules);
+            $cellules[]=$poste[2];				// Etage
+            $cellules[]=number_format($poste[3], 2, ',', ' ');	// Heures par poste
+            $lignes[]=implode($separateur, $cellules);
         }
     }
 
-    if ($nom == 'agent' and !empty ($tab['neverSelected'])) {
+    if (!empty($neverSelected)) {
         $lignes[] = null;
         $lignes[] = "Agents jamais postés";
         $lignes[] = implode($separateur, array("Nom","Prénom"));
-        foreach ($tab['neverSelected'] as $elem) {
+        foreach ($neverSelected as $elem) {
             $lignes[] = implode($separateur, array($elem[1], $elem[2]));
         }
     }
@@ -117,16 +124,18 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             $cellules=array();
             if ($nom=="agent") {
                 $cellules[]=$elem[0][1];	// nom
-    $cellules[]=$elem[0][2];	// prénom
+                $cellules[]=$elem[0][2];	// prénom
             } else {
                 $cellules[]=$elem[0];		// nom du service ou du statut
             }
-            $cellules[]=count($elem[3]);						// nombre de samedi
-      $cellules[]=dateFr($samedi[0]);						// date
-      $cellules[]=number_format($samedi[1], 2, ',', ' ');	// heures
-      $lignes[]=implode($separateur, $cellules);
+            $cellules[]=count($elem[3]);			// nombre de samedi
+            $cellules[]=dateFr($samedi[0]);			// date
+
+            $cellules[]=number_format($samedi[1], 2, ',', ' ');	// heures
+            $lignes[]=implode($separateur, $cellules);
         }
     }
+
     if ($GLOBALS['config']['Dimanche']) {
         $lignes[]=null;
         $lignes[]="Dimanches";
@@ -140,19 +149,19 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
                 $cellules=array();
                 if ($nom=="agent") {
                     $cellules[]=$elem[0][1];	// nom
-      $cellules[]=$elem[0][2];	// prénom
+                    $cellules[]=$elem[0][2];	// prénom
                 } else {
-                    $cellules[]=$elem[0];		// nom du service ou du statut
+                    $cellules[]=$elem[0];	// nom du service ou du statut
                 }
-                $cellules[]=count($elem[6]);						// nombre de dimanche
-    $cellules[]=dateFr($dimanche[0]);						// date
-    $cellules[]=number_format($dimanche[1], 2, ',', ' ');	// heures
-    $lignes[]=implode($separateur, $cellules);
+                $cellules[]=count($elem[6]);				// nombre de dimanche
+                $cellules[]=dateFr($dimanche[0]);			// date
+                $cellules[]=number_format($dimanche[1], 2, ',', ' ');	// heures
+                $lignes[]=implode($separateur, $cellules);
             }
         }
     }
 
-    //		Affichage des jours feries
+    // Affichage des jours feries
     $lignes[]=null;
     $lignes[]="Jours fériés";
     if ($nom=="agent") {
@@ -165,14 +174,14 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             $cellules=array();
             if ($nom=="agent") {
                 $cellules[]=$elem[0][1];	// nom
-    $cellules[]=$elem[0][2];	// prénom
+                $cellules[]=$elem[0][2];	// prénom
             } else {
                 $cellules[]=$elem[0];		// nom du service ou du statut
             }
-            $cellules[]=count($elem[8]);						// nombre de J. Feriés
-      $cellules[]=dateFr($ferie[0]);						// date
-      $cellules[]=number_format($ferie[1], 2, ',', ' ');	// heures
-      $lignes[]=implode($separateur, $cellules);
+            $cellules[]=count($elem[8]);			// nombre de J. Feriés
+            $cellules[]=dateFr($ferie[0]);			// date
+            $cellules[]=number_format($ferie[1], 2, ',', ' ');	// heures
+            $lignes[]=implode($separateur, $cellules);
         }
     }
 
@@ -190,19 +199,18 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             $cellules=array();
             if ($nom=="agent") {
                 $cellules[]=$elem[0][1];	// nom
-    $cellules[]=$elem[0][2];	// prénom
+                $cellules[]=$elem[0][2];	// prénom
             } else {
                 $cellules[]=$elem[0];		// nom du service ou du statut
             }
-            $cellules[]=number_format($total_absences, 2, ',', ' ');
-            ;						// heures total d'absences
-      $cellules[]=dateFr($absences[0]);					// date
-      $cellules[]=number_format($absences[1], 2, ',', ' ');	// heures
-      $lignes[]=implode($separateur, $cellules);
+            $cellules[]=number_format($total_absences, 2, ',', ' ');	// heures total d'absences
+            $cellules[]=dateFr($absences[0]);				// date
+            $cellules[]=number_format($absences[1], 2, ',', ' ');	// heures
+            $lignes[]=implode($separateur, $cellules);
         }
     }
 
-    //	Affichage des statistiques sur les créneaux horaires
+    // Affichage des statistiques sur les créneaux horaires
     $heures = array();
     foreach ($tab as $elem) {
         foreach ($elem[7] as $k => $v) {
