@@ -5,12 +5,14 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Model\Agent;
 use App\Model\AbsenceReason;
+use App\Model\PlanningPositionHistory;
 
 use App\PlanningBiblio\WorkingHours;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/include/function.php');
@@ -795,16 +797,179 @@ class PlanningJobController extends BaseController
         return $this->json($result);
     }
 
+    /**
+     * @Route("/ajax/planningjob/undo", name="planningjob.undo", methods={"POST"})
+     */
+    public function undo(Request $request)
+    {
+        $this->csrf_protection($request);
+
+        $date = $request->get('date');
+        $site = $request->get('site');
+
+        if (!$this->canManagePlanning($site)) {
+            return $this->json('forbiden');
+        }
+
+        if (!$date || !$site) {
+            $response = new Response();
+            $response->setContent('Bad request');
+            $response->setStatusCode(400);
+            return $response;
+        }
+
+        $history = $this->entityManager
+             ->getRepository(PlanningPositionHistory::class)
+             ->undoable($date, $site);
+
+        // Nothing to cancel.
+        if (empty($history)) {
+            return $this->json('');
+        }
+
+        $action = array_shift($history);
+        $action_before = null;
+        $response = array(
+            'remaining_undo' => 1,
+            'actions' => array()
+        );
+
+        // Transform full DateTime to sql date or time.
+        $action = $this->convertActionDates($action);
+
+        if ($action['play_before'] == 1) {
+            $action_before = array_shift($history);
+        }
+
+        // Means that after this undo,
+        // there will be nothing more to undo,
+        // because there is nothing left in history or because the last action is not made by the logged in agent
+        if (empty($history) or $history[0]['updated_by'] != $_SESSION['login_id']) {
+            $response['remaining_undo'] = 0;
+        }
+
+        $a1 = $this->entityManager
+           ->getRepository(PlanningPositionHistory::class)->find($action['id']);
+        $a1->undone(1);
+        $this->entityManager->persist($a1);
+
+        if ($action_before) {
+            $a2 = $this->entityManager
+                ->getRepository(PlanningPositionHistory::class)->find($action_before['id']);
+            $a2->undone(1);
+            $this->entityManager->persist($a2);
+            $action_before = $this->convertActionDates($action_before);
+            $response['actions'][] = $action_before;
+        }
+
+        $this->entityManager->flush();
+
+        $response['actions'][] = $action;
+
+        return $this->json($response);
+    }
+
+    /**
+     * @Route("/ajax/planningjob/redo", name="planningjob.redo", methods={"POST"})
+     */
+    public function redo(Request $request)
+    {
+        $this->csrf_protection($request);
+
+        $date = $request->get('date');
+        $site = $request->get('site');
+        $CSRFToken = $request->get('CSRFToken');
+
+        if (!$this->canManagePlanning($site)) {
+            return $this->json('forbiden');
+        }
+
+        if (!$date || !$site) {
+            $response = new Response();
+            $response->setContent('Bad request');
+            $response->setStatusCode(400);
+            return $response;
+        }
+
+        $history = $this->entityManager
+             ->getRepository(PlanningPositionHistory::class)
+             ->redoable($date, $site);
+
+        // Nothing to cancel.
+        if (empty($history)) {
+            return $this->json('');
+        }
+
+        $action = array_shift($history);
+        $action_after = null;
+        $response = array(
+            'remaining_redo' => 1,
+            'actions' => array()
+        );
+
+        // Transform full DateTime to sql date or time.
+        $action = $this->convertActionDates($action);
+
+        $response['actions'][] = $action;
+
+        // As we play redo in reverse order,
+        // the second element history could
+        // be an action to play after.
+        if (isset($history[0]) && $history[0]['play_before'] == 1) {
+            $action_after = array_shift($history);
+        }
+
+        // Means that after this undo,
+        // there will be nothing more to undo.
+        if (empty($history)) {
+            $response['remaining_redo'] = 0;
+        }
+
+        $a1 = $this->entityManager
+           ->getRepository(PlanningPositionHistory::class)->find($action['id']);
+        $a1->undone(0);
+        $this->entityManager->persist($a1);
+
+        if ($action_after) {
+            $a2 = $this->entityManager
+                ->getRepository(PlanningPositionHistory::class)->find($action_after['id']);
+            $a2->undone(0);
+            $this->entityManager->persist($a2);
+            $action_after = $this->convertActionDates($action_after);
+            $response['actions'][] = $action_after;
+        }
+
+        $this->entityManager->flush();
+
+        return $this->json($response);
+    }
+
     private function canManagePlanning($site)
     {
         if (!$_SESSION['login_id']) {
             return false;
         }
 
-        if (!in_array((300 + $site), $this->droits) and !in_array((1000 + $site), $this->droits)) {
+        $droits = $GLOBALS['droits'];
+
+        if (!in_array((300 + $site), $droits) and !in_array((1000 + $site), $droits)) {
             return false;
         }
 
         return true;
+    }
+
+    private function convertActionDates($action)
+    {
+        //$date = new \DateTime($action['date']);
+        $action['date'] = $action['date']->format('Y-m-d');
+
+        //$beginning = new \DateTime($action['beginning']);
+        $action['beginning'] = $action['beginning']->format('H:i:s');
+
+        //$end = new \DateTime($action['end']);
+        $action['end'] = $action['end']->format('H:i:s');
+
+        return $action;
     }
 }

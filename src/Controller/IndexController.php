@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Model\AbsenceReason;
 use App\Model\SelectFloor;
+use App\Model\PlanningPositionHistory;
+use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 use App\Model\Agent;
 use App\Model\Model;
 use App\PlanningBiblio\PresentSet;
@@ -84,6 +86,24 @@ class IndexController extends BaseController
         // Planning's comments
         $comments = $this->getComments($date, $site);
 
+        // Check if an action is undoable or redoable.
+        $undoables = $this->entityManager
+            ->getRepository(PlanningPositionHistory::class)
+            ->undoable($date, $site);
+        $redoables = $this->entityManager
+            ->getRepository(PlanningPositionHistory::class)
+            ->redoable($date, $site);
+
+        $undoable = 1;
+        if (empty($undoables)) {
+            $undoable = 0;
+        }
+
+        $redoable = 1;
+        if (empty($redoables)) {
+            $redoable = 0;
+        }
+
         $this->templateParams(array(
             'content_planning' => true,
             'date' => $date, 'dates' => $dates, 'site' => $site,
@@ -104,6 +124,8 @@ class IndexController extends BaseController
             'autorisationNotes' => $autorisationNotes,
             'CSRFSession' => $GLOBALS['CSRFSession'],
             'week_view' => false,
+            'undoable' => $undoable,
+            'redoable' => $redoable,
             'show_framework_select' => $show_framework_select,
             'base_url' => $this->config('URL'),
             'comments' => $comments,
@@ -512,6 +534,9 @@ class IndexController extends BaseController
         }
 
         if ($week) {
+            $history = new PlanningPositionHistoryHelper();
+            $history->delete_plannings($start, $end, $site);
+
             // Table pl_poste (agents assignment)
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
@@ -530,6 +555,9 @@ class IndexController extends BaseController
 
             return $this->redirectToRoute('index');
         }
+
+        $history = new PlanningPositionHistoryHelper();
+        $history->delete_plannings($date, $date, $site);
 
         // Table pl_poste (agents assignment)
         $db = new \db();
@@ -631,6 +659,9 @@ class IndexController extends BaseController
             $sql = null;
             $values = array();
             $absents = array();
+
+            $history = new PlanningPositionHistoryHelper();
+            $history->delete_plannings($elem, $elem, $site, 'import-model');
 
             $db = new \db();
             $db->CSRFToken = $CSRFToken;

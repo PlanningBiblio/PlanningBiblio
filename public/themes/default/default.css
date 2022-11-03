@@ -292,6 +292,14 @@ h3{
   margin-top: 3px;
 }
 
+.pl-icon-undo {
+  background:url("images/icon/undo_white_24dp.svg") no-repeat center;
+}
+
+.pl-icon-redo {
+  background:url("images/icon/redo_white_24dp.svg") no-repeat center;
+}
+
 /* Info-bulles */
 .ui-tooltip{
   /* Permet les sauts de lignes avec l'entité .&#013; */
@@ -626,6 +634,16 @@ select
   position: absolute;
   right: 175px;
 }
+
+/*.pl-undo {
+  color: #FFFFFF;
+  position: absolute;
+  right: 75px;
+}
+
+.pl-undo a {
+  color: #FFFFFF;
+}*/
 
 #planning-semaine #td_boutons{
   padding:30px;
@@ -1244,6 +1262,11 @@ img{
 #validation{
   font-size:13px;
   margin:0 20px 0 0;
+}
+
+#undo-redo{
+  font-size:13px;
+  margin:5px 20px 0 0;
 }
 
 #imprimante{
@@ -2437,4 +2460,15 @@ div.presents-absents {
 .vert td.td_postes, .green td.td_postes{
   background: #BFEEC8; 
   color: #000;
+}
+
+.isDisabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.isDisabled > a {
+  color: currentColor;
+  display: inline-block;  /* For IE11/ MS Edge bug */
+  pointer-events: none;
+  text-decoration: none;
 }

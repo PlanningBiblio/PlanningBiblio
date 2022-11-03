@@ -1,5 +1,10 @@
 {# planning/poste/date-menu.html.twig #}
 
+{% block specificjs %}
+  <script type="text/JavaScript" src='js/plb/undo.js'></script>
+  <script type="text/JavaScript" src='js/plb/redo.js'></script>
+{% endblock %}
+
 <!-- Show title and calendar widgets -->
 <div>
   <div id='divcalendrier' class='text'>
@@ -109,6 +114,21 @@
             </div>
 
             <div id='planningTips'>&nbsp;</div>
+            {% if (userCan('300', site) or userCan('1000', site)) and not locked %}
+              <div id='undo-redo' class='pl-undo' style="{{ locked ? 'display:none;' }}">
+                {% if undoable %}
+                  <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
+                {% else %}
+                  <a id="undo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
+                {% endif %}
+
+                {% if redoable %}
+                  <a id="redo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-redo"></span></a>
+                {% else %}
+                  <a id="redo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-redo"></span></a>
+                {% endif %}
+              </div>
+            {% endif %}
           {% endif %}
         </td>
       </tr>
