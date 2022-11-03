@@ -535,7 +535,7 @@ class IndexController extends BaseController
 
         if ($week) {
             $history = new PlanningPositionHistoryHelper();
-            $history->delete_plannings($debut, $fin, $site);
+            $history->delete_plannings($start, $end, $site);
 
             // Table pl_poste (agents assignment)
             $db = new \db();
