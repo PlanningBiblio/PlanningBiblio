@@ -39,6 +39,7 @@ class PLBWebTestCase extends PantherTestCase
 
     protected function login($agent)
     {
+        $this->logout();
         global $entityManager;
 
         $password = password_hash("MyPass", PASSWORD_BCRYPT);
@@ -56,6 +57,12 @@ class PLBWebTestCase extends PantherTestCase
 
         $this->client->waitForVisibility('html');
     }
+
+    protected function logout()
+    {
+        $this->client->request('GET', '/logout');
+    }
+
 
     protected function jqueryAjaxFinished(): callable
     {
