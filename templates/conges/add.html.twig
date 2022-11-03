@@ -18,6 +18,7 @@
           <td>
             <form name='form' action='/holiday' method='post' id='form'>
               <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+              <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
               <input type='hidden' name='confirm' value='confirm' />
               <input type='hidden' name='reliquat' value='{{ reliquat }}' />
               <input type='hidden' name='recuperation' id='recuperation' value='{{ recuperation }}' />

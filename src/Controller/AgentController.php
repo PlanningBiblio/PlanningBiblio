@@ -804,7 +804,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/agent", name="agent.save", methods={"POST"})
+     * @Route("/agent", name="agent.save", methods={"POST"}, defaults={"csrf": 1})
      */
     public function save(Request $request)
     {
@@ -1129,12 +1129,10 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/ajax/change-own-password", name="ajax.changeownpassword", methods={"POST"})
+     * @Route("/ajax/change-own-password", name="ajax.changeownpassword", methods={"POST"}, defaults={"csrf": 1})
      */
     public function changeOwnPassword(Request $request)
     {
-        $this->csrf_protection($request);
-
         $agent_id = $_SESSION['login_id'];
         $password = $request->get('password');
         $current_password = $request->get('current_password');
@@ -1217,7 +1215,7 @@ class AgentController extends BaseController
 
 
     /**
-     * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"})
+     * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"}, defaults={"csrf": 1})
      */
     public function update_login(Request $request)
     {
@@ -1380,7 +1378,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/agent/ldap", name="agent.import", methods={"POST"})
+     * @Route("/agent/ldap", name="agent.import", methods={"POST"}, defaults={"csrf": 1})
      */
     public function ldap_import(Request $request, Session $session)
     {

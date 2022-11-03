@@ -68,16 +68,10 @@ class AbsenceInfoController extends BaseController
     }
 
     /**
-     * @Route("/absences/info", name="absences.info.update", methods={"POST"})
+     * @Route("/absences/info", name="absences.info.update", methods={"POST"}, defaults={"csrf": 1})
      */
     public function update(Request $request, Session $session)
     {
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('absences.info.index');
-        }
-
         $id = $request->get('id');
         $start = \DateTime::createFromFormat("d/m/Y", $request->get('start'));
         $end = \DateTime::createFromFormat("d/m/Y", $request->get('end'));
@@ -111,16 +105,10 @@ class AbsenceInfoController extends BaseController
     }
 
     /**
-     * @Route("/absences/info", name="absences.info.delete", methods={"DEL"})
+     * @Route("/absences/info", name="absences.info.delete", methods={"DEL"}, defaults={"csrf": 1})
      */
     public function delete(Request $request, Session $session)
     {
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('absences.info.index');
-        }
-
         $id = $request->get('id');
 
         $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);

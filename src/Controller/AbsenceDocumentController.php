@@ -32,7 +32,7 @@ class AbsenceDocumentController extends BaseController
     }
 
     /**
-     * @Route("/absences/document/{id}", name="absences.document.delete", methods={"DELETE"})
+     * @Route("/absences/document/{id}", name="absences.document.delete", methods={"DELETE"}, defaults={"csrf": 1})
      */
     public function delete(Request $request, Session $session)
     {
@@ -46,7 +46,7 @@ class AbsenceDocumentController extends BaseController
     }
 
    /**
-     * @Route("/absences/document/{id_absence}", name="absences.document.add", methods={"POST"})
+     * @Route("/absences/document/{id_absence}", name="absences.document.add", methods={"POST"}, defaults={"csrf": 1})
      */
     public function add(Request $request, Session $session)
     {

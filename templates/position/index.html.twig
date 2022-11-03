@@ -53,10 +53,11 @@
                     function confirmDel(id){
                       if (window.confirm("Voulez-vous vraiment supprimer ce poste ?")){
                         CSRFToken = $('#CSRFSession').val();
+                        var _token = $('input[name=_token]').val();
                         $.ajax({
                           url : '{{ asset("position") }}',
                           type : 'DELETE',
-                          data : {id: id, CSRFToken: CSRFToken},
+                          data : {id: id, CSRFToken: CSRFToken, _token: _token},
                           success: function(response){
                             if (response == "Ok"){
                               window.location.reload('/position');

@@ -102,7 +102,7 @@ class NotificationController extends BaseController {
     }
 
     /**
-     * @Route("/notification", name="notification.save", methods={"POST"})
+     * @Route("/notification", name="notification.save", methods={"POST"}, defaults={"csrf": 1})
      */
     public function save(Request $request){
         $agents = $request->get('agents');

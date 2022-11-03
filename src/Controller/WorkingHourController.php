@@ -545,7 +545,7 @@ class WorkingHourController extends BaseController
     }
 
     /**
-     * @Route("/workinghour", name="workinghour.save", methods={"POST"})
+     * @Route("/workinghour", name="workinghour.save", methods={"POST"}, defaults={"csrf": 1})
      */
     public function save(Request $request, Session $session){
         $post = $request->request->all();
@@ -614,7 +614,7 @@ class WorkingHourController extends BaseController
     }
 
     /**
-     * @Route("/workinghour", name="workinghour.delete", methods={"DELETE"})
+     * @Route("/workinghour", name="workinghour.delete", methods={"DELETE"}, defaults={"csrf": 1})
      */
     public function delete(Request $request, Session $session){
         $CSRFToken = $request->get('CSRFToken');

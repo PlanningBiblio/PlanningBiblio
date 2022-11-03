@@ -128,7 +128,7 @@ class SkillController extends BaseController
 
 
     /**
-     * @Route("/skill", name = "skill.save", methods={"POST"})
+     * @Route("/skill", name = "skill.save", methods={"POST"}, defaults={"csrf": 1})
      */
     public function save(Request $request, Session $session){
         $id = $request->get('id');
@@ -181,7 +181,7 @@ class SkillController extends BaseController
     }
 
     /**
-     * @Route("/skill", name="skill.delete", methods={"DELETE"})
+     * @Route("/skill", name="skill.delete", methods={"DELETE"}, defaults={"csrf": 1})
      */
 
     public function delete_skill(Request $request, Session $session){

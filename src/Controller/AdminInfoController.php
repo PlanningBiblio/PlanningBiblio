@@ -68,16 +68,10 @@ class AdminInfoController extends BaseController
     }
 
     /**
-     * @Route("/admin/info", name="admin.info.update", methods={"POST"})
+     * @Route("/admin/info", name="admin.info.update", methods={"POST"}, defaults={"csrf": 1})
      */
     public function update(Request $request, Session $session)
     {
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('admin.info.index');
-        }
-
         $id = $request->get('id');
         $start = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('start'));
         $end = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('end'));
@@ -110,16 +104,10 @@ class AdminInfoController extends BaseController
     }
 
     /**
-     * @Route("/admin/info", name="admin.info.delete", methods={"DEL"})
+     * @Route("/admin/info", name="admin.info.delete", methods={"DEL"}, defaults={"csrf": 1})
      */
     public function delete(Request $request, Session $session)
     {
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('admin.info.index');
-        }
-
         $id = $request->get('id');
 
         $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);

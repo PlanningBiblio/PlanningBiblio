@@ -14,7 +14,7 @@
             {% endif %}
 
             <form id='form' method='POST' action='{{ asset('/absences/info') }}' name='form' onsubmit='return verif_form("start=date1;end=date2;text");'>
-                <input type="hidden" name="_token" value="{{ csrf_token('csrf') }}"/>
+                <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
                 <input type='hidden' name='id' value='{{ id }}'/>
 
                 <table class='tableauFiches'>

@@ -338,6 +338,8 @@ function addAbsenceDocument(id) {
     if (!file_data) { alert('Vous devez sélectionner un fichier.'); return false; }
     var form_data = new FormData();
     form_data.append('documentFile', file_data);
+    var _token = $('input[name=_token]').val();
+    form_data.append('_token', _token);
     $.ajax({
         url: url('absences/document/' + id),
         type: 'POST',
@@ -371,9 +373,11 @@ function refreshAbsenceDocumentList(id) {
 
 function deleteAbsenceDocument(id) {
     if (confirm("Êtes vous sûr(e) de vouloir supprimer ce document ?")) {
+        var _token = $('input[name=_token]').val();
         $.ajax({
             url: url('absences/document/' + id),
             type: 'DELETE',
+            data: {_token: _token},
             success: function(id) {
                 $("#document_" + id).fadeOut("normal", function() {
                     $(this).remove();

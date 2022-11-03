@@ -13,6 +13,7 @@
       Etes vous sûr de vouloir supprimer le planning du {{ dateFr }} ?
       <form id="delete-planning-day-form" action="{{ asset('deleteplanning') }}" method="post">
         <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
         <input type='hidden' name='week' value='0' />
         <input type='hidden' name='site' value='{{ site }}' />
         <input type='hidden' name='date' value='{{ date }}' />
@@ -27,6 +28,7 @@
       (du {{ startHr }} au {{ endHr }}) ?
       <form id="delete-planning-week-form" action="{{ asset('deleteplanning') }}" method="post">
         <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
         <input type='hidden' name='week' value='1' />
         <input type='hidden' name='site' value='{{ site }}' />
         <input type='hidden' name='start' value='{{ start }}' />

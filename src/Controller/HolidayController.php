@@ -279,7 +279,7 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/holiday/edit", name="holiday.update", methods={"POST"})
+     * @Route("/holiday/edit", name="holiday.update", methods={"POST"}, defaults={"csrf": 1})
      * @Route("/holiday/edit/{id}", name="holiday.edit", methods={"GET"})
      */
     public function edit(Request $request, Session $session)
@@ -492,7 +492,7 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/holiday", name="holiday.save", methods={"POST"})
+     * @Route("/holiday", name="holiday.save", methods={"POST"}, defaults={"csrf": 1})
      */
     public function add_confirm(Request $request, Session $session)
     {

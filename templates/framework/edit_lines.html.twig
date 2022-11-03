@@ -16,6 +16,7 @@
         {% endif %}
       <form action="{{ asset('framework-line') }}" method='post' >
         <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
         <input type='hidden' name='cfg-type' value='lignes_sep' />
         <input type='hidden' name='id' value="{{ (id is defined) ? id : '' }}" />
         <table class='tableauFiches' style='width:700px;'>

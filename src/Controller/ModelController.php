@@ -53,7 +53,7 @@ class ModelController extends BaseController
     }
 
     /**
-     * @Route("/model", name="model.save", methods={"POST"})
+     * @Route("/model", name="model.save", methods={"POST"}, defaults={"csrf": 1})
      */
     public function save(Request $request, Session $session)
     {
@@ -82,7 +82,7 @@ class ModelController extends BaseController
     }
 
     /**
-     * @Route("/model-add", name="model.add", methods={"POST", "GET"})
+     * @Route("/model-add", name="model.add", methods={"POST", "GET"}, defaults={"csrf": 1})
      */
     public function add(Request $request, Session $session)
     {
@@ -150,7 +150,7 @@ class ModelController extends BaseController
 
 
     /**
-     * @Route("/model/{id}", name="model.delete", methods={"DEL"})
+     * @Route("/model/{id}", name="model.delete", methods={"DEL"}, defaults={"csrf": 1})
      */
     public function delete(Request $request, Session $session)
     {

@@ -25,11 +25,12 @@
             if (login == '') {
               $('#login-empty').show();
             } else {
+              var _token = $('input[name=_token]').val();
               $.ajax({
                 url: url('ajax/update_agent_login'),
                 type: "POST",
                 dataType: "html",
-                data: {login: login, id: agent_id},
+                data: {login: login, id: agent_id, _token: _token},
                 success: function(filtered_login){
                     $("#reset-login-form").dialog( "close" );
                     $('#login').html(filtered_login);
@@ -94,6 +95,7 @@
 
     <form method='post' action='{{ asset("/agent") }}' name='form'>
       <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+      <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
 
       <div id='main' style='margin-left:70px;padding-top:30px;'>
         <input type='hidden' value='{{ action }}' name='action' />

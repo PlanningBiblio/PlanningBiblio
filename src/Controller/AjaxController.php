@@ -47,7 +47,7 @@ class AjaxController extends BaseController
     }
 
     /**
-     * @Route("/ajax/holiday-delete", name="ajax.holidaydelete", methods={"GET"})
+     * @Route("/ajax/holiday-delete", name="ajax.holidaydelete", methods={"GET"}, defaults={"csrf": 1})
      */
     public function deleteHoliday(Request $request)
     {
@@ -120,7 +120,7 @@ class AjaxController extends BaseController
     }
 
     /**
-     * @Route("/ajax/edit-absence-reasons", name="ajax.editabsencereasons", methods={"POST"})
+     * @Route("/ajax/edit-absence-reasons", name="ajax.editabsencereasons", methods={"POST"}, defaults={"csrf": 1})
      */
     public function editAbsenceReasons(Request $request)
     {

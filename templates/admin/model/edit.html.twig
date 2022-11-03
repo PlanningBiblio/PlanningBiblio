@@ -9,6 +9,7 @@
   <div class="admin-div">
     <form method='post' action='{{ asset("/model") }}' name='form'>
       <input type='hidden' name='id' value='{{ template.model_id }}' />
+      <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
       <table class='tableauFiches' style='width:700px;'>
         <tr>
           <td style='width:150px;'>Nom du modèle :</td>
