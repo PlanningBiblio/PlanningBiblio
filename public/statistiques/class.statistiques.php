@@ -83,7 +83,6 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             if ($GLOBALS['config']['Multisites-nombre']>1) {
                 for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
                     $jour=$elem["sites"][$i]/$nbJours;
-                    $hebdo=$jour*$joursParSemaine;
                     $cellules[]=number_format($elem["sites"][$i], 2, ',', ' ');
                     $cellules[]=number_format($hebdo, 2, ',', ' ');
                 }
