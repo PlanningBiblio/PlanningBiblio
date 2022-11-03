@@ -25,7 +25,7 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 class PlanningJobController extends BaseController
 {
     /**
-     * @Route("/planningjob/contextmenu", name="planningjob.contextmenu", methods={"GET"})
+     * @Route("/planningjob/contextmenu", name="planningjob.contextmenu", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function contextmenu(Request $request)
     {
@@ -731,7 +731,7 @@ class PlanningJobController extends BaseController
     }
 
     /**
-     * @Route("/ajax/planningjob/checkcopy", name="ajax.planningjobcheckcopy", methods={"GET"})
+     * @Route("/ajax/planningjob/checkcopy", name="ajax.planningjobcheckcopy", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function checkCopy(Request $request)
     {

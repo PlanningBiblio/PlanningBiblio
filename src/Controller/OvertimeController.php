@@ -18,7 +18,7 @@ class OvertimeController extends BaseController
 {
     use \App\Controller\Traits\EntityValidationStatuses;
     /**
-     * @Route("/overtime", name="overtime.index", methods={"GET"})
+     * @Route("/overtime", name="overtime.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request)
     {
@@ -188,7 +188,7 @@ class OvertimeController extends BaseController
     }
 
     /**
-     * @Route("/overtime/{id}", name="overtime.edit", methods={"GET"})
+     * @Route("/overtime/{id}", name="overtime.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request)
     {
@@ -236,7 +236,7 @@ class OvertimeController extends BaseController
     }
 
     /**
-     * @Route("/overtime", name="overtime.save", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/overtime", name="overtime.save", methods={"POST"})
      */
     public function save(Request $request, Session $session)
     {

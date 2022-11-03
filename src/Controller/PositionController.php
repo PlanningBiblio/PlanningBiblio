@@ -19,7 +19,7 @@ require_once(__DIR__ . '/../../public/activites/class.activites.php');
 class PositionController extends BaseController
 {
     /**
-     * @Route("/position", name="position.index", methods={"GET"})
+     * @Route("/position", name="position.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request)
     {
@@ -114,8 +114,8 @@ class PositionController extends BaseController
     }
 
     /**
-     * @Route("/position/add", name="position.add", methods={"GET"})
-     * @Route("/position/{id}", name="position.edit", methods={"GET"})
+     * @Route("/position/add", name="position.add", methods={"GET"}, defaults={"no-csrf": 1})
+     * @Route("/position/{id}", name="position.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request)
     {
@@ -250,7 +250,7 @@ class PositionController extends BaseController
     }
 
     /**
-     * @Route("/position", name="position.save", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/position", name="position.save", methods={"POST"})
      */
     public function save(Request $request, Session $session)
     {
@@ -343,7 +343,7 @@ class PositionController extends BaseController
     }
 
     /**
-     * @Route("/position",name="position.delete", methods={"DELETE"}, defaults={"csrf": 1})
+     * @Route("/position",name="position.delete", methods={"DELETE"})
      */
      public function delete_position(Request $request, Session $session){
 

@@ -13,7 +13,7 @@ use App\Model\AbsenceInfo;
 class AbsenceInfoController extends BaseController
 {
     /**
-     * @Route("/absences/info", name="absences.info.index", methods={"GET"})
+     * @Route("/absences/info", name="absences.info.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session)
     {
@@ -34,7 +34,7 @@ class AbsenceInfoController extends BaseController
     }
 
     /**
-     * @Route("/absences/info/add", name="absences.info.add", methods={"GET"})
+     * @Route("/absences/info/add", name="absences.info.add", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function add(Request $request)
     {
@@ -49,7 +49,7 @@ class AbsenceInfoController extends BaseController
     }
 
     /**
-     * @Route("/absences/info/{id}", name="absences.info.edit", methods={"GET"})
+     * @Route("/absences/info/{id}", name="absences.info.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request)
     {
@@ -68,7 +68,7 @@ class AbsenceInfoController extends BaseController
     }
 
     /**
-     * @Route("/absences/info", name="absences.info.update", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/absences/info", name="absences.info.update", methods={"POST"})
      */
     public function update(Request $request, Session $session)
     {
@@ -105,7 +105,7 @@ class AbsenceInfoController extends BaseController
     }
 
     /**
-     * @Route("/absences/info", name="absences.info.delete", methods={"DEL"}, defaults={"csrf": 1})
+     * @Route("/absences/info", name="absences.info.delete", methods={"DEL"})
      */
     public function delete(Request $request, Session $session)
     {

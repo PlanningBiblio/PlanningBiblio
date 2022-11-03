@@ -22,7 +22,7 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 class HolidayController extends BaseController
 {
     /**
-     * @Route("/holiday/index", name="holiday.index", methods={"GET"})
+     * @Route("/holiday/index", name="holiday.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request)
     {
@@ -265,7 +265,7 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/ajax/holidays-hours-to-days", name="ajax.holidays-hours-to-days", methods={"GET"})
+     * @Route("/ajax/holidays-hours-to-days", name="ajax.holidays-hours-to-days", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function hoursToDays(Request $request, Session $session)
     {
@@ -279,8 +279,8 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/holiday/edit", name="holiday.update", methods={"POST"}, defaults={"csrf": 1})
-     * @Route("/holiday/edit/{id}", name="holiday.edit", methods={"GET"})
+     * @Route("/holiday/edit", name="holiday.update", methods={"POST"})
+     * @Route("/holiday/edit/{id}", name="holiday.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request, Session $session)
     {
@@ -492,7 +492,7 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/holiday", name="holiday.save", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/holiday", name="holiday.save", methods={"POST"})
      */
     public function add_confirm(Request $request, Session $session)
     {
@@ -512,8 +512,8 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/holiday/new", name="holiday.new", methods={"GET", "POST"})
-     * @Route("/holiday/new/{perso_id}", name="holiday.new.new", methods={"GET", "POST"})
+     * @Route("/holiday/new", name="holiday.new", methods={"GET", "POST"}, defaults={"no-csrf": 1})
+     * @Route("/holiday/new/{perso_id}", name="holiday.new.new", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function add(Request $request)
     {
@@ -651,7 +651,7 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/holiday/accounts", name="holiday.accounts", methods={"GET"})
+     * @Route("/holiday/accounts", name="holiday.accounts", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function account(Request $request)
     {
@@ -736,7 +736,7 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/ajax/holiday-halfday-hours", name="ajax.holiday-halfday-hours", methods={"GET"})
+     * @Route("/ajax/holiday-halfday-hours", name="ajax.holiday-halfday-hours", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function halfdayHours(Request $request)
     {
@@ -796,7 +796,7 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/ajax/check-planning", name="ajax.checkplanning", methods={"POST"})
+     * @Route("/ajax/check-planning", name="ajax.checkplanning", methods={"POST"}, defaults={"no-csrf": 1})
      */
     public function checkPlanning(Request $request)
     {
@@ -838,7 +838,7 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/ajax/holiday-credit", name="ajax.holidaycredit", methods={"GET"})
+     * @Route("/ajax/holiday-credit", name="ajax.holidaycredit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function checkCredit(Request $request)
     {
@@ -888,7 +888,7 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/ajax/current-credits", name="ajax.currentcredits", methods={"get"})
+     * @Route("/ajax/current-credits", name="ajax.currentcredits", methods={"get"}, defaults={"no-csrf": 1})
      */
     public function current_credits(Request $request)
     {

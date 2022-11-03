@@ -25,7 +25,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->logInAgent($agent, array(5));
 
         $client = static::createClient();
-        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
+        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('');
 
         $client->request('POST', '/position', array('nom' => 'bureau', 'activites' => [], 'categories' => [], 'site' => 1, 'bloquant' => 1, 'statistiques' => 0, 'teleworking' => 1, 'etage' => '', 'groupe' => 'admin', 'groupe_id' => '', 'obligatoire' => 'Obligatoire', 'site' => '', '_token' => $token));
 

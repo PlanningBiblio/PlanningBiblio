@@ -24,7 +24,7 @@ class WorkingHourController extends BaseController
     private $workinghours = array();
 
     /**
-     * @Route("/ajax/workinghour-tables", name="ajax.workinghourtables", methods={"GET"})
+     * @Route("/ajax/workinghour-tables", name="ajax.workinghourtables", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function tables(Request $request)
     {
@@ -124,7 +124,7 @@ class WorkingHourController extends BaseController
 
 
     /**
-     * @Route("/workinghour", name="workinghour.index", methods={"GET"})
+     * @Route("/workinghour", name="workinghour.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session){
         // Initialisation des variables
@@ -261,7 +261,7 @@ class WorkingHourController extends BaseController
     }
 
     /**
-     * @Route("/workinghour/add/{agent_id<\d+>?}", name="workinghour.add", methods={"GET"})
+     * @Route("/workinghour/add/{agent_id<\d+>?}", name="workinghour.add", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function add(Request $request, Session $session) {
         // Initialisation des variables
@@ -354,7 +354,7 @@ class WorkingHourController extends BaseController
     }
 
     /**
-     * @Route("/workinghour/{id<\d+>}", name="workinghour.edit", methods={"GET"})
+     * @Route("/workinghour/{id<\d+>}", name="workinghour.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request, Session $session){
         // Initialisation des variables
@@ -545,7 +545,7 @@ class WorkingHourController extends BaseController
     }
 
     /**
-     * @Route("/workinghour", name="workinghour.save", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/workinghour", name="workinghour.save", methods={"POST"})
      */
     public function save(Request $request, Session $session){
         $post = $request->request->all();
@@ -614,7 +614,7 @@ class WorkingHourController extends BaseController
     }
 
     /**
-     * @Route("/workinghour", name="workinghour.delete", methods={"DELETE"}, defaults={"csrf": 1})
+     * @Route("/workinghour", name="workinghour.delete", methods={"DELETE"})
      */
     public function delete(Request $request, Session $session){
         $CSRFToken = $request->get('CSRFToken');

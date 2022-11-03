@@ -17,7 +17,7 @@ require_once(__DIR__.'/../../public/activites/class.activites.php');
 class SkillController extends BaseController
 {
     /**
-     * @Route("/skill", name ="skill.index", methods={"GET"})
+     * @Route("/skill", name ="skill.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session)
     {
@@ -99,7 +99,7 @@ class SkillController extends BaseController
     }
 
     /**
-     * @Route("/skill/add", name ="skill.add", methods={"GET"})
+     * @Route("/skill/add", name ="skill.add", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function add(Request $request, Session $session){
 
@@ -111,7 +111,7 @@ class SkillController extends BaseController
     }
 
     /**
-     * @Route("/skill/{id}", name = "skill.edit", methods={"GET"})
+     * @Route("/skill/{id}", name = "skill.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request, Session $session){
 
@@ -128,7 +128,7 @@ class SkillController extends BaseController
 
 
     /**
-     * @Route("/skill", name = "skill.save", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/skill", name = "skill.save", methods={"POST"})
      */
     public function save(Request $request, Session $session){
         $id = $request->get('id');
@@ -181,7 +181,7 @@ class SkillController extends BaseController
     }
 
     /**
-     * @Route("/skill", name="skill.delete", methods={"DELETE"}, defaults={"csrf": 1})
+     * @Route("/skill", name="skill.delete", methods={"DELETE"})
      */
 
     public function delete_skill(Request $request, Session $session){

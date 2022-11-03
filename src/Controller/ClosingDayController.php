@@ -13,7 +13,7 @@ class ClosingDayController extends BaseController
 {
 
     /**
-     * @Route("/closingday", name="closingday.index", methods={"GET"})
+     * @Route("/closingday", name="closingday.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request){
         // Initalisation des variables
@@ -90,7 +90,7 @@ class ClosingDayController extends BaseController
     }
 
     /**
-     * @Route("/closingday", name="closingday.save", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/closingday", name="closingday.save", methods={"POST"})
      */
     public function save(Request $request, Session $session){
         $post = $request->request->all();

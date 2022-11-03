@@ -25,7 +25,7 @@ class AgentController extends BaseController
 {
 
     /**
-     * @Route("/ajax/agent-sites", name="ajax.agentsites", methods={"GET"})
+     * @Route("/ajax/agent-sites", name="ajax.agentsites", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function sites(Request $request)
     {
@@ -58,7 +58,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/agent", name="agent.index", methods={"GET"})
+     * @Route("/agent", name="agent.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request){
 
@@ -209,7 +209,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/agent/password", name="agent.password", methods={"GET"})
+     * @Route("/agent/password", name="agent.password", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function password(Request $request)
     {
@@ -217,8 +217,8 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/agent/add", name="agent.add", methods={"GET"})
-     * @Route("/agent/{id<\d+>}", name="agent.edit", methods={"GET"})
+     * @Route("/agent/add", name="agent.add", methods={"GET"}, defaults={"no-csrf": 1})
+     * @Route("/agent/{id<\d+>}", name="agent.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function add(Request $request)
     {
@@ -804,7 +804,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/agent", name="agent.save", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/agent", name="agent.save", methods={"POST"})
      */
     public function save(Request $request)
     {
@@ -1129,7 +1129,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/ajax/change-own-password", name="ajax.changeownpassword", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/ajax/change-own-password", name="ajax.changeownpassword", methods={"POST"})
      */
     public function changeOwnPassword(Request $request)
     {
@@ -1147,7 +1147,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/ajax/check-password", name="ajax.checkpassword", methods={"GET"})
+     * @Route("/ajax/check-password", name="ajax.checkpassword", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function check_password(Request $request)
     {
@@ -1187,7 +1187,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/ajax/is-current-password", name="ajax.iscurrentpassword", methods={"GET"})
+     * @Route("/ajax/is-current-password", name="ajax.iscurrentpassword", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function isCurrentPassword(Request $request)
     {
@@ -1215,7 +1215,7 @@ class AgentController extends BaseController
 
 
     /**
-     * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"})
      */
     public function update_login(Request $request)
     {
@@ -1257,7 +1257,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/agent/ldap", name="agent.ldap", methods={"GET"})
+     * @Route("/agent/ldap", name="agent.ldap", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function ldap_search(Request $request)
     {
@@ -1378,7 +1378,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/agent/ldap", name="agent.import", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/agent/ldap", name="agent.import", methods={"POST"})
      */
     public function ldap_import(Request $request, Session $session)
     {

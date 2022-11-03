@@ -15,7 +15,7 @@ require_once(__DIR__.'/../../public/personnel/class.personnel.php');
 class CalendarController extends BaseController
 {
     /**
-     * @Route("calendar", name = "calendar.index", methods={"GET"})
+     * @Route("calendar", name = "calendar.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session){
         $debut = $request->get('debut');

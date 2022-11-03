@@ -37,6 +37,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
 
         $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id())));
+        $data['_token'] = $client->getContainer()->get('security.csrf.token_manager')->getToken('');
 
         $client->request('POST', '/holiday', $data);
 
@@ -65,6 +66,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id()), 'start_halfday' => 'morning', 'end_halfday' => 'morning'));
+        $data['_token'] = $client->getContainer()->get('security.csrf.token_manager')->getToken('');
 
         $client->request('POST', '/holiday', $data);
 
@@ -93,6 +95,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id()), 'start_halfday' => 'afternoon', 'end_halfday' => 'afternoon'));
+        $data['_token'] = $client->getContainer()->get('security.csrf.token_manager')->getToken('');
 
         $client->request('POST', '/holiday', $data);
 
@@ -123,6 +126,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $this->addWorkingHours($abreton, array('09:00:00', '12:00:00', '13:00:00', '17:00:00'));
 
         $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id(), $abreton->id()), 'start_halfday' => 'afternoon', 'end_halfday' => 'afternoon'));
+        $data['_token'] = $client->getContainer()->get('security.csrf.token_manager')->getToken('');
 
         $client->request('POST', '/holiday', $data);
 
@@ -169,6 +173,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
             'end_halfday' => 'morning',
             'debut' => '24/01/2022',
             'fin' => '28/01/2022',
+            '_token' => $client->getContainer()->get('security.csrf.token_manager')->getToken('')
         ));
 
         $client->request('POST', '/holiday', $data);

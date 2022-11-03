@@ -17,7 +17,7 @@ require_once(__DIR__ . '/../../public/include/db.php');
 class ModelController extends BaseController
 {
     /**
-     * @Route("/model", name="model.index", methods={"GET"})
+     * @Route("/model", name="model.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session)
     {
@@ -53,7 +53,7 @@ class ModelController extends BaseController
     }
 
     /**
-     * @Route("/model", name="model.save", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/model", name="model.save", methods={"POST"})
      */
     public function save(Request $request, Session $session)
     {
@@ -82,7 +82,7 @@ class ModelController extends BaseController
     }
 
     /**
-     * @Route("/model-add", name="model.add", methods={"POST", "GET"}, defaults={"csrf": 1})
+     * @Route("/model-add", name="model.add", methods={"POST", "GET"})
      */
     public function add(Request $request, Session $session)
     {
@@ -134,7 +134,7 @@ class ModelController extends BaseController
     }
 
     /**
-     * @Route("/model/{id}", name="model.edit", methods={"GET"})
+     * @Route("/model/{id}", name="model.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request)
     {
@@ -150,7 +150,7 @@ class ModelController extends BaseController
 
 
     /**
-     * @Route("/model/{id}", name="model.delete", methods={"DEL"}, defaults={"csrf": 1})
+     * @Route("/model/{id}", name="model.delete", methods={"DEL"})
      */
     public function delete(Request $request, Session $session)
     {

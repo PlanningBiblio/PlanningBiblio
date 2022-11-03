@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class AbsenceDocumentController extends BaseController
 {
     /**
-     * @Route("/absences/document/{id}", name="absences.document.index", methods={"GET"})
+     * @Route("/absences/document/{id}", name="absences.document.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session)
     {
@@ -32,7 +32,7 @@ class AbsenceDocumentController extends BaseController
     }
 
     /**
-     * @Route("/absences/document/{id}", name="absences.document.delete", methods={"DELETE"}, defaults={"csrf": 1})
+     * @Route("/absences/document/{id}", name="absences.document.delete", methods={"DELETE"})
      */
     public function delete(Request $request, Session $session)
     {
@@ -46,7 +46,7 @@ class AbsenceDocumentController extends BaseController
     }
 
    /**
-     * @Route("/absences/document/{id_absence}", name="absences.document.add", methods={"POST"}, defaults={"csrf": 1})
+     * @Route("/absences/document/{id_absence}", name="absences.document.add", methods={"POST"})
      */
     public function add(Request $request, Session $session)
     {
@@ -69,7 +69,7 @@ class AbsenceDocumentController extends BaseController
     }
 
    /**
-     * @Route("/absences/documents/{id_absence}", name="absences.document.list", methods={"GET"})
+     * @Route("/absences/documents/{id_absence}", name="absences.document.list", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function list(Request $request, Session $session)
     {
@@ -84,5 +84,4 @@ class AbsenceDocumentController extends BaseController
         $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
-
 }

@@ -18,7 +18,7 @@ require_once(__DIR__ . '/../../public/postes/class.postes.php');
 class FrameworkController extends BaseController
 {
     /**
-     * @Route ("/framework", name="framework.index", methods={"GET"})
+     * @Route("/framework", name="framework.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index (Request $request, Session $session){
         $nbSites = $this->config('Multisites-nombre');
@@ -109,7 +109,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework/info", name="framework.save_table_info", methods={"POST"}, defaults={"csrf": 1})
+     * @Route ("/framework/info", name="framework.save_table_info", methods={"POST"})
      */
     public function saveInfo(Request $request, Session $session){
         $post = $request->request->all();
@@ -169,7 +169,7 @@ class FrameworkController extends BaseController
         }
     }
      /**
-     * @Route ("/framework/add", name="framework.add_table", methods={"GET"})
+     * @Route ("/framework/add", name="framework.add_table", methods={"GET"}, defaults={"no-csrf": 1})
      */
      public function addTable (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
@@ -228,7 +228,7 @@ class FrameworkController extends BaseController
 
      }
     /**
-     * @Route ("/framework/{id}", name="framework.edit_table", methods={"GET"})
+     * @Route ("/framework/{id}", name="framework.edit_table", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function editTable (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
@@ -354,7 +354,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework", name="framework.save_table", methods={"POST"}, defaults={"csrf": 1})
+     * @Route ("/framework", name="framework.save_table", methods={"POST"})
      */
     public function saveTable (Request $request, Session $session){
         $post = $request->request->all();
@@ -418,7 +418,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("framework-table/save-line", name="framework.save_table_line", methods={"POST"}, defaults={"csrf": 1})
+     * @Route ("framework-table/save-line", name="framework.save_table_line", methods={"POST"})
      */
     public function saveTableLine(Request $request, Session $session){
         $form_post = $request->request->all();
@@ -515,7 +515,7 @@ class FrameworkController extends BaseController
     }
 
      /**
-     * @Route ("/framework", name="framework.delete_table", methods={"DELETE"}, defaults={"csrf": 1})
+     * @Route ("/framework", name="framework.delete_table", methods={"DELETE"})
      */
     public function deleteTable (Request $request, Session $session){
         $post = $request->request->all();
@@ -543,7 +543,7 @@ class FrameworkController extends BaseController
     }
 
      /**
-     * @Route ("/framework-batch_delete", name="framework.delete_selected_tables", methods={"GET"}, defaults={"csrf": 1})
+     * @Route ("/framework-batch_delete", name="framework.delete_selected_tables", methods={"GET"})
      */
     public function deleteSelectedTables (Request $request, Session $session){
         $CSRFToken = $request->get("CSRFToken");
@@ -565,7 +565,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-    * @Route ("/framework/restore_table", name="framework.restore_table", methods={"POST"}, defaults={"csrf": 1})
+    * @Route ("/framework/restore_table", name="framework.restore_table", methods={"POST"})
     */
     public function restoreTable (Request $request, Session $session) {
         $CSRFToken = $request->get("CSRFToken");
@@ -623,7 +623,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-group/add", name="framework.add_group", methods={"GET"})
+     * @Route ("/framework-group/add", name="framework.add_group", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function addGroup (Request $request, Session $session){
         // Initialisation des variables
@@ -672,7 +672,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-group/{id}", name="framework.edit_group", methods={"GET"})
+     * @Route ("/framework-group/{id}", name="framework.edit_group", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function editGroup (Request $request, Session $session){
         // Initialisation des variables
@@ -730,7 +730,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-group", name="framework.save_group", methods={"POST"}, defaults={"csrf": 1})
+     * @Route ("/framework-group", name="framework.save_group", methods={"POST"})
      */
     public function saveGroup (Request $request, Session $session){
         $post = $request->request->all();
@@ -746,7 +746,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-group", name="framework.delete_group", methods={"DELETE"}, defaults={"csrf": 1})
+     * @Route ("/framework-group", name="framework.delete_group", methods={"DELETE"})
      */
     public function deleteGroup (Request $request, Session $session){
         $CSRFToken =  $request->request->get("CSRFToken");
@@ -760,7 +760,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-line/add", name="framework.add_line", methods={"GET"})
+     * @Route ("/framework-line/add", name="framework.add_line", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function addLine (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
@@ -774,7 +774,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-line/{id}", name="framework.edit_line", methods={"GET"})
+     * @Route ("/framework-line/{id}", name="framework.edit_line", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function editLine (Request $request, Session $session){
         // Initialisation des variables
@@ -798,7 +798,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-line", name="framework.save_line", methods={"POST"}, defaults={"csrf": 1})
+     * @Route ("/framework-line", name="framework.save_line", methods={"POST"})
      */
     public function saveLine (Request $request, Session $session){
         $post = $request->request->all();
@@ -839,7 +839,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-line", name="framework.delete_line", methods={"DELETE"}, defaults={"csrf": 1})
+     * @Route ("/framework-line", name="framework.delete_line", methods={"DELETE"})
      */
     public function deleteLine (Request $request, Session $session){
         $post = $request->request->all();
@@ -854,7 +854,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework/copy/{id}", name="framework.copy_table", methods={"GET", "POST"}, defaults={"csrf": 1})
+     * @Route ("/framework/copy/{id}", name="framework.copy_table", methods={"GET", "POST"})
      */
     public function copyTable (Request $request, Session $session){
 

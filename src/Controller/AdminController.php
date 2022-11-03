@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class AdminController extends BaseController
 {
     /**
-     * @Route("/admin", name="admin.index", methods={"GET"})
+     * @Route("/admin", name="admin.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request)
     {

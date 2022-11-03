@@ -17,11 +17,18 @@ class CSRFListener
         }
 
         $request = $event->getRequest();
+        $route = $event->getRequest()->attributes->get('_route');
+
+        if (str_starts_with($route, '_')) {
+            return;
+        }
+
         $routeParameters = $request->attributes->get('_route_params');
+        if (isset($routeParameters['no-csrf']) && $routeParameters['no-csrf']) {
+            return;
+        }
 
         // Handle CSRF protection only for route with the token param.
-        if (isset($routeParameters['csrf']) && $routeParameters['csrf']) {
-            $controller->csrf_protection($request);
-        }
+        $controller->csrf_protection($request);
     }
 }

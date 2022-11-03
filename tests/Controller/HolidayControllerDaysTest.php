@@ -50,7 +50,8 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $data = $this->getHolidayData(array(
             'perso_id' => $jdevoe->id(),
             'debut' => '24/01/2022',
-            'fin' => '28/01/2022'
+            'fin' => '28/01/2022',
+            '_token' => $client->getContainer()->get('security.csrf.token_manager')->getToken('')
         ));
 
         $client->request('POST', '/holiday', $data);
@@ -113,7 +114,8 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $data = $this->getHolidayData(array(
             'perso_ids' => array($jdevoe->id(), $adenis->id()),
             'debut' => '24/01/2022',
-            'fin' => '26/01/2022'
+            'fin' => '26/01/2022',
+            '_token' => $client->getContainer()->get('security.csrf.token_manager')->getToken('')
         ));
 
         $client->request('POST', '/holiday', $data);
@@ -201,7 +203,8 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $data = $this->getHolidayData(array(
             'perso_ids' => array($jdevoe->id(), $adenis->id()),
             'debut' => '24/01/2022',
-            'fin' => '26/01/2022'
+            'fin' => '26/01/2022',
+            '_token' => $client->getContainer()->get('security.csrf.token_manager')->getToken('')
         ));
 
         $client->request('POST', '/holiday', $data);

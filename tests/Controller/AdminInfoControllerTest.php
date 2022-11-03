@@ -25,7 +25,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->logInAgent($agent, array(23));
 
         $client = static::createClient();
-        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
+        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('');
 
         $client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'salut', '_token' => $token));
         
