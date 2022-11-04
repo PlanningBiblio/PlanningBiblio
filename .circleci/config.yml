@@ -33,9 +33,11 @@ jobs:
 
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
       - run: sudo -E install-php-extensions zip mysqli pdo_mysql
+      - run: sudo apt install snapd
       - run: sudo apt install -y google-chrome-stable
       - run: sudo apt install -y mariadb-client
       - run: sudo pecl install xdebug
+      - run: sudo snap install chromium
 
       # Chrome driver.
       - run: wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
@@ -63,7 +65,7 @@ jobs:
 
       # run tests with phpunit or codecept
       - run: echo 'xdebug.mode=coverage' | sudo tee -a /etc/php.d/circleci.ini
-      - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
+      - run: ./vendor/bin/phpunit --debug --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
       - run: bash <(curl -s https://codecov.io/bash)
 
 workflows:
