@@ -2835,6 +2835,35 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.05.00.003";
+if (version_compare($config['Version'], $v) === -1) {
+    // Symfonize detached agent
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/volants/index.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/detached' WHERE `url`='planning/volants/index.php';";
+
+    // Symfonize absences modif
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='absences/modif2.php';";
+
+    // Add pl_position_history table (undo / redo)
+    $sql[] = "CREATE TABLE `{$dbprefix}pl_position_history` (
+      id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+      perso_ids TEXT NOT NULL,
+      date DATE NULL,
+      beginning TIME NOT NULL,
+      end TIME NOT NULL,
+      site INT(11) NOT NULL DEFAULT 1,
+      position INT(11) NOT NULL,
+      action VARCHAR(20) NOT NULL,
+      undone TINYINT NOT NULL DEFAULT 0,
+      archive TINYINT NOT NULL DEFAULT 0,
+      play_before TINYINT NOT NULL DEFAULT 0,
+      updated_by INT(11) NOT NULL,
+      updated_at DATETIME NOT NULL
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
