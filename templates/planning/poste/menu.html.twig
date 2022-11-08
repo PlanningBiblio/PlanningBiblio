@@ -36,18 +36,16 @@
 
           <table class='noprint' id='tab_jours'>
             <tr valign='top'>
-              <!-- We can't use asset function for the moment
-              because this menu is used in non-symfonyzed page (week view).-->
-              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[0] }}'  class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </td>
-              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[1] }}'  class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </td>
-              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[2] }}'  class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </td>
-              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[3] }}'  class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </td>
-              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[4] }}'  class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </td>
-              <td style="font-size: 13pt;"><a href='{{ base_url }}/index?date={{ dates[5] }}'  class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></td>
+              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[0] }}"  class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </td>
+              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[1] }}"  class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </td>
+              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[2] }}"  class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </td>
+              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[3] }}"  class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </td>
+              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[4] }}"  class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </td>
+              <td style="font-size: 13pt;"><a href="{{ asset('index') }}?date={{ dates[5] }}"  class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></td>
               {% if config('Dimanche') %}
-                <td align='center' style="font-size: 13pt;"> / <a href='{{ base_url }}/index?date={{ dates[6] }}' class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </td>
+                <td align='center' style="font-size: 13pt;"> / <a href="{{ asset('index') }}?date={{ dates[6] }}" class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </td>
               {% endif %}
-                <td style="font-size: 13pt;"> / <a href='{{ base_url }}/week' class="{{ week_view ? 'menuRed' : 'menu' }}" >Semaine</a></td>
+                <td style="font-size: 13pt;"> / <a href="{{ asset('week') }}" class="{{ week_view ? 'menuRed' : 'menu' }}" >Semaine</a></td>
             </tr>
           </table>
 
@@ -67,7 +65,7 @@
               <span class='pl-icon pl-icon-printer'></span>
             </a>
 
-            <a href='{{ base_url }}/index' title='Actualiser'>
+            <a href="{{ asset('index') }}" title="Actualiser">
               <span class='pl-icon pl-icon-refresh'>
             </a>
 
@@ -107,7 +105,7 @@
                 <span class='pl-icon pl-icon-printer'></span>
               </a>
 
-              <a href='{{ base_url }}/index?date={{ date }}&amp;site={{ site }}' title='Actualiser'>
+              <a href="{{ asset('index') }}?date={{ date }}&amp;site={{ site }}" title="Actualiser">
                 <span class='pl-icon pl-icon-refresh'>
               </a>
 
