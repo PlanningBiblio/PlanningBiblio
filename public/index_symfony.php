@@ -38,6 +38,11 @@ if (!empty($_SESSION['login_id']) && $path == '/login') {
     exit();
 }
 
+// Show all week plannings.
+if ($path == '/index' and !$date and $_SESSION['oups']['week']) {
+    header("Location: $base_url/week");
+}
+
 
 if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? $_ENV['TRUSTED_PROXIES'] ?? false) {
     Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
