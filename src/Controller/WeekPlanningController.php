@@ -458,7 +458,6 @@ class WeekPlanningController extends BaseController
         }
 
         $this->templateParams(array(
-            'content_planning' => true,
             'days' => $days
         ));
 
