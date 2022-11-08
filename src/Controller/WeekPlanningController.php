@@ -181,7 +181,6 @@ class WeekPlanningController extends BaseController
         $this->templateParams(array(
             'affSem'            => $affSem,
             'autorisationN1'    => $autorisationN1,
-            'base_url'          => $this->config('URL'),
             'content_planning'  => true,
             'CSRFSession'       => $CSRFSession,
             'date'              => $date,

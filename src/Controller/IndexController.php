@@ -127,7 +127,6 @@ class IndexController extends BaseController
             'undoable' => $undoable,
             'redoable' => $redoable,
             'show_framework_select' => $show_framework_select,
-            'base_url' => $this->config('URL'),
             'comments' => $comments,
             'CSRFToken' => $GLOBALS['CSRFSession'],
         ));
