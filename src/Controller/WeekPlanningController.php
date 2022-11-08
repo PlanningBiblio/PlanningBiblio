@@ -277,7 +277,7 @@ class WeekPlanningController extends BaseController
                 // Using a global variable will avoid multiple access to
                 // the database and enhance performances.
                 $a = new \absences();
-                $a->valide = true;
+                $a->valide = false;
                 $a->documents = false;
                 $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
                 global $absences;
