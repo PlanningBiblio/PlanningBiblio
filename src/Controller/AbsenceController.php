@@ -611,20 +611,6 @@ class AbsenceController extends BaseController
             $errors[]=$m->error_CJInfo;
         }
 
-        // Mise à jour du champs 'absent' dans 'pl_poste'
-        /**
-         * @note : le champ pl_poste.absent n'est plus mis à 1 lors de la validation des absences depuis la version 2.4
-         * mais nous devons garder la mise à 0 pour la suppresion des absences enregistrées avant cette version
-         * NB : le champ pl_poste.absent est également utilisé pour barrer les agents depuis le planning, donc on ne supprime pas toutes ses valeurs
-         */
-        foreach ($agents as $agent) {
-            $db=new \db();
-            $req="UPDATE `{$this->dbprefix}pl_poste` SET `absent`='0' WHERE
-            CONCAT(`date`,' ',`debut`) < '$fin' AND CONCAT(`date`,' ',`fin`) > '$debut'
-            AND `perso_id`='{$agent['perso_id']}'";
-            $db->query($req);
-        }
-
         // If recurrence, delete or update ICS event and delete all occurences.
         if ($recurrent) {
             switch ($recurrent) {
@@ -1244,25 +1230,6 @@ class AbsenceController extends BaseController
 
         // Si pas de récurrence, modifiation des informations directement dan la base de données
         else {
-
-          // Mise à jour du champs 'absent' dans 'pl_poste'
-            // Suppression du marquage absent pour tous les agents qui étaient concernés par l'absence avant sa modification
-            // Comprend les agents supprimés et ceux qui restent
-            /**
-            * @note : le champ pl_poste.absent n'est plus mis à 1 lors de la validation des absences depuis la version 2.4
-            * mais nous devons garder la mise à 0 pour la suppression ou modifications des absences enregistrées avant cette version.
-            * NB : le champ pl_poste.absent est également utilisé pour barrer les agents depuis le planning, donc on ne supprime pas toutes ses valeurs
-            */
-            $ids =implode(",", $perso_ids1);
-            $db = new \db();
-            $debut1 = $db->escapeString($debut1);
-            $fin1 = $db->escapeString($fin1);
-            $ids = $db->escapeString($ids);
-            $req = "UPDATE `{$this->dbprefix}pl_poste` SET `absent`='0' WHERE
-            CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`fin`) > '$debut1'
-            AND `perso_id` IN ($ids)";
-            $db->query($req);
-
 
             // Préparation des données pour mise à jour de la table absence et insertion pour les agents ajoutés
             $data = array('motif' => $motif, 'motif_autre' => $motif_autre, 'commentaires' => $commentaires, 'debut' => $debut_sql, 'fin' => $fin_sql, 'groupe' => $groupe,
