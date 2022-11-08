@@ -35,7 +35,7 @@
 
           {% if day.verrou or autorisationN1 %}
             <div id="tableau" data-tableId="{{ day.tab }}" >
-              <table class="tabsemaine1" cellspacing="0" cellpadding="0" class="text">
+              <table class="text tabsemaine1" cellspacing="0" cellpadding="0">
                 {% for t in day.tabs %}
                   <tr class="tr_horaires tableau{{ t.l }} {{ t.classe }}">
                     <td class="td_postes" data-id="{{ t.l }}" data-title="{{ t.titre }}">
