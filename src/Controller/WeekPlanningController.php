@@ -279,6 +279,8 @@ class WeekPlanningController extends BaseController
                 $a = new \absences();
                 $a->valide = false;
                 $a->documents = false;
+                $a->rejected = false;
+                $a->agents_supprimes = array(0,1,2);    // required for history
                 $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
                 global $absences;
                 $absences = $a->elements ?? array();
