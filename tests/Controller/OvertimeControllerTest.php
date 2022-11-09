@@ -87,13 +87,13 @@ class OvertimeControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//input[@class="ui-button ui-button-type2"]');
         $this->assertEquals('Réinitialiser', $result->attr("value"),'input value is Réinitialiser');
 
-        $result = $crawler->filterXPath('//th[@class="tableSort"]');
-        $this->assertEquals('Heures', $result->text(),'Heures is table title');
-        $this->assertEquals('Validation', $result->eq(1)->text(),'Validation is table title');
-        $this->assertEquals('Crédits', $result->eq(2)->text(),'Crédits is table title');
-        $this->assertEquals('Commentaires', $result->eq(3)->text(),'Commentaires is table title');
+        $result = $crawler->filterXPath('//th');
+        $this->assertEquals('Heures', $result->eq(2)->text(),'Heures is table title');
+        $this->assertEquals('Validation', $result->eq(3)->text(),'Validation is table title');
+        $this->assertEquals('Crédits', $result->eq(4)->text(),'Crédits is table title');
+        $this->assertEquals('Commentaires', $result->eq(5)->text(),'Commentaires is table title');
 
-        $result = $crawler->filterXPath('//th[@class="dataTableDateFR tableSort"]');
+        $result = $crawler->filterXPath('//th[@class="dataTableDateFR"]');
         $this->assertEquals('Date', $result->text(),'Date is table title');
 
         $result = $crawler->filterXPath('//button[@id="dialog-button"]');
