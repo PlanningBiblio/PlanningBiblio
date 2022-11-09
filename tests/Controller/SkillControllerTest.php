@@ -133,7 +133,7 @@ class SkillControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//input[@class="ui-button"]');
         $this->assertEquals($result->attr('value'),'Ajouter','check input for name');
 
-        $result = $crawler->filterXPath('//th[@class="tableSort"]');
+        $result = $crawler->filterXPath('//th')->eq(1);
         $this->assertEquals($result->text(),' Nom de l\'activité ','th is Nom de l\'activité');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
