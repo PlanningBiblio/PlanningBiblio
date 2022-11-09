@@ -70,18 +70,18 @@
   <table id='tableAbsencesVoir' class='CJDataTable' data-sort="{{ sort }}">
     <thead>
        <tr>
-         <th class='dataTableNoSort' >&nbsp;</th>
-         <th class='dataTableDateFR' >Début</th>
-         <th class='dataTableDateFR-fin' >Fin</th>
+         <th class='dataTableNoSort'>&nbsp;</th>
+         <th class='dataTableDateFR'>Début</th>
+         <th class='dataTableDateFR-fin'>Fin</th>
          <th id='thNom'>Agents</th>
          {% if config('Absences-validation') %}
-           <th id='thValidation' >État</th>
+           <th id='thValidation'>État</th>
          {% endif %}
          <th>Motif</th>
          <th>Commentaires</th>
-         <th class='dataTableDateFR' >Demande</th>
+         <th class='dataTableDateFR'>Demande</th>
          {% if can_manage_sup_doc %}
-           <th id='thPiecesJustif' class='dataTableNoSort' >
+           <th id='thPiecesJustif' class='dataTableNoSort'>
              <label style='white-space:nowrap'>Pièces justificatives</label><br/>
              <div class='absences-pj'>PJ 1</div>
              <div class='absences-pj'>PJ 2</div>
