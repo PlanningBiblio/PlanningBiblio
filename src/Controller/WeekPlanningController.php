@@ -43,14 +43,14 @@ class WeekPlanningController extends BaseController
         }
 
         $_SESSION['PLdate'] = $date;
+        $_SESSION['week'] = true;
+
         $d = new \datePl($date);
         $semaine = $d->semaine;
         $semaine3 = $d->semaine3;
         $jour = $d->jour;
         $dates = $d->dates;
         $dateAlpha = dateAlpha($date);
-
-        $_SESSION['oups']['week']=true;
 
         // ------------------ TABLEAU -----------------------//
         // Multisites : la variable $site est égale à 1 par défaut.

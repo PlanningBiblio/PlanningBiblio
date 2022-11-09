@@ -8,7 +8,6 @@ $_SESSION['login_id'] = isset($_SESSION['login_id']) ? $_SESSION['login_id'] : '
 $_SESSION['login_nom'] = isset($_SESSION['login_nom']) ? $_SESSION['login_nom'] : '';
 $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_prenom'] : '';
 $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSION['oups']['Auth-Mode'] : '';
-$_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
 $version="22.05.00.003"; // xx.xx.xx.xxx
@@ -66,10 +65,6 @@ if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and empty($_SESS
 // Sécurité CSRFToken
 $CSRFSession = isset($_SESSION['oups']['CSRFToken']) ? $_SESSION['oups']['CSRFToken'] : null;
 $_SESSION['PLdate']=array_key_exists("PLdate", $_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
-
-if (!array_key_exists("oups", $_SESSION)) {
-    $_SESSION['oups']=array("week" => false);
-}
 
 // Recupération des droits d'accès de l'agent
 $logged_in = $entityManager->find(Agent::class, $_SESSION['login_id']);
