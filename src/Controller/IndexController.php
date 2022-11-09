@@ -52,12 +52,17 @@ class IndexController extends BaseController
         // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
         $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
 
+        // Show all week plannings.
+        if (!$request->get('date') and $_SESSION['week']) {
+          return $this->redirectToRoute('planning.week');
+        }
+
         list($date, $dateFr) = $this->setDate($date);
 
         list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha)
             = $this->getDatesPlanning($date);
 
-        $_SESSION['oups']['week'] = false;
+        $_SESSION['week'] = false;
 
         $groupes = $this->getFrameworksGroup();
         $site = $this->setSite($site);
