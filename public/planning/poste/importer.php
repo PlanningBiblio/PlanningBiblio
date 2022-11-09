@@ -156,6 +156,16 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
         include(__DIR__.'/../../planningHebdo/planning.php');
     }
 
+    // Get all possitions.
+    $db = new db();
+    $db->select('postes', '*');
+    $all_positions = array();
+    if ($db->result) {
+        foreach ($db->result as $position) {
+            $all_positions[$position['id']] = $position;
+        }
+    }
+
     $i=0;
     foreach ($dates as $elem) {
         $i++;				// utilisé pour la colone jour du modèle (1=lundi, 2=mardi ...) : on commence à 1
@@ -256,10 +266,14 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
                 $fin=$elem." ".$elem2['fin'];
 
                 // Look for absences
-                $teleworking_reasons = $entityManager->getRepository(AbsenceReason::class)
-                                                     ->getRemoteWorkingDescriptions();
-                $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
-                $filter .= " $teleworking_exception";
+                $filter = '';
+                $position = isset($all_positions[$elem2['poste']]) ? $all_positions[$elem2['poste']] : null;
+                if ($position && $position['teleworking'] == 1) {
+                    $teleworking_reasons = $entityManager->getRepository(AbsenceReason::class)
+                                                         ->getRemoteWorkingDescriptions();
+                    $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
+                    $filter .= " $teleworking_exception";
+                }
 
                 $db2 = new db();
                 $db2->select("absences", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
