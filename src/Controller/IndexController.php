@@ -653,14 +653,20 @@ class IndexController extends BaseController
             }
         }
 
-        // Get all possitions.
-        $db = new \db();
-        $db->select('postes', '*');
-        $all_positions = array();
-        if ($db->result) {
-            foreach ($db->result as $position) {
-                $all_positions[$position['id']] = $position;
+        if (!$get_absents) {
+            // Get all possitions.
+            $db = new \db();
+            $db->select('postes', '*');
+            $all_positions = array();
+            if ($db->result) {
+                foreach ($db->result as $position) {
+                    $all_positions[$position['id']] = $position;
+                }
             }
+
+            // Get teleworking reasons
+            $teleworking_reasons = $this->entityManager->getRepository(AbsenceReason::class)
+                ->getRemoteWorkingDescriptions();
         }
 
         $i=0;
@@ -769,15 +775,12 @@ class IndexController extends BaseController
                     $fin=$elem." ".$elem2['fin'];
 
                     // Look for absences
-
                     if (!$get_absents) {
                         $filter = $this->config('Absences-validation') ? 'AND `valide`>0' : null;
 
                         // Exclude absence with remote working reason only for teleworking compliants positions.
                         $position = isset($all_positions[$elem2['poste']]) ? $all_positions[$elem2['poste']] : null;
                         if ($position && $position['teleworking'] == 1) {
-                            $teleworking_reasons = $this->entityManager->getRepository(AbsenceReason::class)
-                                                                       ->getRemoteWorkingDescriptions();
                             $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons))
                                 ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
                             $filter .= " $teleworking_exception";
