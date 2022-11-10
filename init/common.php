@@ -12,7 +12,12 @@ function plannoBaseUrl(Request $request) {
 
     $request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
 
-    $url = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
+    $scheme = 'http';
+    if ($request->getPort() == 443) {
+        $scheme = 'https';
+    }
+
+    $url = $scheme . '://' . $request->getHttpHost() . $request->getBaseUrl();
 
     $url = str_replace('/index.php', '', $url);
 
