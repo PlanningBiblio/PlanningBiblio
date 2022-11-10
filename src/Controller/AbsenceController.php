@@ -611,20 +611,6 @@ class AbsenceController extends BaseController
             $errors[]=$m->error_CJInfo;
         }
 
-        // Mise à jour du champs 'absent' dans 'pl_poste'
-        /**
-         * @note : le champ pl_poste.absent n'est plus mis à 1 lors de la validation des absences depuis la version 2.4
-         * mais nous devons garder la mise à 0 pour la suppresion des absences enregistrées avant cette version
-         * NB : le champ pl_poste.absent est également utilisé pour barrer les agents depuis le planning, donc on ne supprime pas toutes ses valeurs
-         */
-        foreach ($agents as $agent) {
-            $db=new \db();
-            $req="UPDATE `{$this->dbprefix}pl_poste` SET `absent`='0' WHERE
-            CONCAT(`date`,' ',`debut`) < '$fin' AND CONCAT(`date`,' ',`fin`) > '$debut'
-            AND `perso_id`='{$agent['perso_id']}'";
-            $db->query($req);
-        }
-
         // If recurrence, delete or update ICS event and delete all occurences.
         if ($recurrent) {
             switch ($recurrent) {
