@@ -166,6 +166,10 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
         }
     }
 
+    // Get teleworking reasons
+    $teleworking_reasons = $entityManager->getRepository(AbsenceReason::class)
+        ->getRemoteWorkingDescriptions();
+
     $i=0;
     foreach ($dates as $elem) {
         $i++;				// utilisé pour la colone jour du modèle (1=lundi, 2=mardi ...) : on commence à 1
@@ -269,8 +273,6 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
                 $filter = '';
                 $position = isset($all_positions[$elem2['poste']]) ? $all_positions[$elem2['poste']] : null;
                 if ($position && $position['teleworking'] == 1) {
-                    $teleworking_reasons = $entityManager->getRepository(AbsenceReason::class)
-                                                         ->getRemoteWorkingDescriptions();
                     $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
                     $filter .= " $teleworking_exception";
                 }
