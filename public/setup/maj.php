@@ -1893,25 +1893,25 @@ if (version_compare($config['Version'], $v) === -1) {
 
 $v="20.05.00.001";
 if (version_compare($config['Version'], $v) === -1) {
-    $sql[]="ALTER TABLE `{$dbprefix}planning_hebdo` ADD `exception` INT(11) NOT NULL DEFAULT 0;";
+    $sql[]="ALTER TABLE `{$dbprefix}planning_hebdo` ADD COLUMN IF NOT EXISTS `exception` INT(11) NOT NULL DEFAULT 0;";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="20.05.00.002";
 if (version_compare($config['Version'], $v) === -1) {
-    $sql[] = "ALTER TABLE `{$dbprefix}absences` ADD COLUMN last_modified VARCHAR(255) NULL AFTER ical_key;";
+    $sql[] = "ALTER TABLE `{$dbprefix}absences` ADD COLUMN IF NOT EXISTS last_modified VARCHAR(255) NULL AFTER ical_key;";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="20.05.00.003";
 if (version_compare($config['Version'], $v) === -1) {
-    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`, `valeurs`) VALUES ('Absences-journeeEntiere', 'boolean', '1', 'Absences','38', 'Le paramètre \"Journée(s) entière(s)\" est coché par défaut lors de la saisie d\'une absence.', '');";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`, `valeurs`) VALUES ('Absences-journeeEntiere', 'boolean', '1', 'Absences','38', 'Le paramètre \"Journée(s) entière(s)\" est coché par défaut lors de la saisie d\'une absence.', '');";
 
-    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Journey-time-between-sites', 'text', '0', 'Temps de trajet moyen entre sites (en minutes)', 'Planning', 95);";
-    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Journey-time-between-areas', 'text', '0', 'Temps de trajet moyen entre zones (en minutes)', 'Planning', 96);";
-    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Journey-time-for-absences', 'text', '0', 'Temps de trajet moyen entre une absence et un poste de service public (en minutes)', 'Planning', 97);";
+    $sql[]="INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Journey-time-between-sites', 'text', '0', 'Temps de trajet moyen entre sites (en minutes)', 'Planning', 95);";
+    $sql[]="INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Journey-time-between-areas', 'text', '0', 'Temps de trajet moyen entre zones (en minutes)', 'Planning', 96);";
+    $sql[]="INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Journey-time-for-absences', 'text', '0', 'Temps de trajet moyen entre une absence et un poste de service public (en minutes)', 'Planning', 97);";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
