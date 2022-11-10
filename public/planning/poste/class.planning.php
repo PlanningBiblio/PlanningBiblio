@@ -339,7 +339,7 @@ class planning
                         $elem['color'] = 'red';
                     } elseif ($hres_jour>7) {			// plus de 7h:jour : rouge
                         $elem['color'] = 'red';
-                    } elseif (($heuresHebdo-$hres_sem)<=0.5 and ($hres_sem-$heuresHebdo)<=0.5) {		// 0,5 du quota hebdo : vert
+                    } elseif ( (floatval($heuresHebdo) - floatval($hres_sem)) <= 0.5 and (floatval($hres_sem) - floatval($heuresHebdo)) <= 0.5 ) {  // 0,5 du quota hebdo : vert
                         $elem['color'] = 'green';
                     } elseif ($hres_sem>$heuresHebdo) {			// plus du quota hebdo : rouge
                         $elem['color'] = 'red';
