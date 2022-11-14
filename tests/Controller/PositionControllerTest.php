@@ -62,35 +62,35 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('name'),'nom','input for post name value is nom');
 
         $result = $crawler->filterXPath('//tr/td/table');
-        $this->assertStringContainsString('Nom du poste :', $result->text(), 'label is Nom du post');
-        $this->assertStringContainsString('Etage :', $result->text(), 'label is Etage');
-        $this->assertStringContainsString('Mezzanine', $result->text(),'select contains Mezzanine');
-        $this->assertStringContainsString('RDC', $result->text(),'Select contains RDC');
-        $this->assertStringContainsString('RDJ', $result->text(),'Select contains RDJ');
-        $this->assertStringContainsString('Magasins', $result->text(),'Select contains Magasins');
-        $this->assertStringContainsString('Groupe:', $result->text(), 'label is Groupe');
-        $this->assertStringContainsString('Obligatoire / renfort :',$result->text(),'label is Obligatoire / renfort : ');
-        $this->assertStringContainsString('Bloquant :',$result->text(),'label is Bloquant : ');
-        $this->assertStringContainsString('Statistiques :',$result->text(),'label is Statistiques: ');
-        $this->assertStringContainsString('Compatible télétravail :',$result->text(),'label is Compatible télétravail');
+        $this->assertStringContainsString('Nom du poste :', $result->text(null, false), 'label is Nom du post');
+        $this->assertStringContainsString('Etage :', $result->text(null, false), 'label is Etage');
+        $this->assertStringContainsString('Mezzanine', $result->text(null, false),'select contains Mezzanine');
+        $this->assertStringContainsString('RDC', $result->text(null, false),'Select contains RDC');
+        $this->assertStringContainsString('RDJ', $result->text(null, false),'Select contains RDJ');
+        $this->assertStringContainsString('Magasins', $result->text(null, false),'Select contains Magasins');
+        $this->assertStringContainsString('Groupe:', $result->text(null, false), 'label is Groupe');
+        $this->assertStringContainsString('Obligatoire / renfort :',$result->text(null, false),'label is Obligatoire / renfort : ');
+        $this->assertStringContainsString('Bloquant :',$result->text(null, false),'label is Bloquant : ');
+        $this->assertStringContainsString('Statistiques :',$result->text(null, false),'label is Statistiques: ');
+        $this->assertStringContainsString('Compatible télétravail :',$result->text(null, false),'label is Compatible télétravail');
 
-        $this->assertStringContainsString('Activités :',$result->eq(1)->text(),'Activités :','label is Nom du post');
-        $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text(),'checkBox is Assistance audiovisuel');
-        $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text(),'checkBox is Assistance autoformation');
-        $this->assertStringContainsString(' Communication', $result->eq(1)->text(),'checkBox is Communication');
-        $this->assertStringContainsString(' Communication réserve', $result->eq(1)->text(),'checkBox is Communication réserve');
-        $this->assertStringContainsString(' Inscription', $result->eq(1)->text(),'checkBox is Inscription');
-        $this->assertStringContainsString(' Prêt/retour de document', $result->eq(1)->text(),'checkBox is Prêt/retour de document');
-        $this->assertStringContainsString(' Prêt de matériel', $result->eq(1)->text(),'checkBox is Prêt de matériel');
-        $this->assertStringContainsString(' Rangement', $result->eq(1)->text(),'checkBox is Rangement');
-        $this->assertStringContainsString(' Renseignement', $result->eq(1)->text(),'checkBox is Renseignement');
-        $this->assertStringContainsString(' Renseignement bibliographique', $result->eq(1)->text(),'checkBox is Renseignement bibliographique ');
-        $this->assertStringContainsString(' Renseignement réserve', $result->eq(1)->text(),'checkBox is Renseignement réserve');
-        $this->assertStringContainsString(' Renseignement spécialisé', $result->eq(1)->text(),'checkBox is Renseignement spécialisé');
-        $this->assertStringContainsString(' Catégories* :',$result->eq(1)->text(),'label is Nom du post');
-        $this->assertStringContainsString(' Catégorie A', $result->eq(1)->text(),'checkBox is Catégorie A ');
-        $this->assertStringContainsString(' Catégorie B', $result->eq(1)->text(),'checkBox is Catégorie B');
-        $this->assertStringContainsString(' Catégorie C', $result->eq(1)->text(),'checkBox is Catégorie C');
+        $this->assertStringContainsString('Activités :',$result->eq(1)->text(null, false),'Activités :','label is Nom du post');
+        $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text(null, false),'checkBox is Assistance audiovisuel');
+        $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text(null, false),'checkBox is Assistance autoformation');
+        $this->assertStringContainsString(' Communication', $result->eq(1)->text(null, false),'checkBox is Communication');
+        $this->assertStringContainsString(' Communication réserve', $result->eq(1)->text(null, false),'checkBox is Communication réserve');
+        $this->assertStringContainsString(' Inscription', $result->eq(1)->text(null, false),'checkBox is Inscription');
+        $this->assertStringContainsString(' Prêt/retour de document', $result->eq(1)->text(null, false),'checkBox is Prêt/retour de document');
+        $this->assertStringContainsString(' Prêt de matériel', $result->eq(1)->text(null, false),'checkBox is Prêt de matériel');
+        $this->assertStringContainsString(' Rangement', $result->eq(1)->text(null, false),'checkBox is Rangement');
+        $this->assertStringContainsString(' Renseignement', $result->eq(1)->text(null, false),'checkBox is Renseignement');
+        $this->assertStringContainsString(' Renseignement bibliographique', $result->eq(1)->text(null, false),'checkBox is Renseignement bibliographique ');
+        $this->assertStringContainsString(' Renseignement réserve', $result->eq(1)->text(null, false),'checkBox is Renseignement réserve');
+        $this->assertStringContainsString(' Renseignement spécialisé', $result->eq(1)->text(null, false),'checkBox is Renseignement spécialisé');
+        $this->assertStringContainsString(' Catégories* :',$result->eq(1)->text(null, false),'label is Nom du post');
+        $this->assertStringContainsString(' Catégorie A', $result->eq(1)->text(null, false),'checkBox is Catégorie A ');
+        $this->assertStringContainsString(' Catégorie B', $result->eq(1)->text(null, false),'checkBox is Catégorie B');
+        $this->assertStringContainsString(' Catégorie C', $result->eq(1)->text(null, false),'checkBox is Catégorie C');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add"]');
         $this->assertEquals($result->attr('title'),'Ajouter','span is Ajouter');
@@ -115,10 +115,10 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('value'),'Valider','input submit value is Valider');
 
         $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
-        $this->assertEquals($result->text(),'Annuler','input submit value is Annuler');
+        $this->assertEquals($result->text(null, false),'Annuler','input submit value is Annuler');
 
         $result = $crawler->filterXPath('//td[@class="noteBasDePage"]');
-        $this->assertStringContainsString('* Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste', $result->text(),'noteBasDePage is ok');
+        $this->assertStringContainsString('* Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste', $result->text(null, false),'noteBasDePage is ok');
     }
 
     public function testFormEdit()
@@ -160,38 +160,38 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('value'),'bureau','input for post name value is nom');
 
         $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(7)->text(),'Nom du poste :','label is Nom du post');
+        $this->assertEquals($result->eq(7)->text(null, false),'Nom du poste :','label is Nom du post');
 
 
         $result = $crawler->filterXPath('//tr/td/table');
-        $this->assertStringContainsString('Etage :', $result->text(), 'label is Etage');
-        $this->assertStringContainsString('Mezzanine', $result->text(),'select contains Mezzanine');
-        $this->assertStringContainsString('RDC', $result->text(),'Select contains RDC');
-        $this->assertStringContainsString('RDJ', $result->text(),'Select contains RDJ');
-        $this->assertStringContainsString('Magasins', $result->text(),'Select contains Magasins');
-        $this->assertStringContainsString('Groupe:', $result->text(), 'label is Groupe');
-        $this->assertStringContainsString('Obligatoire / renfort :',$result->text(),'label is Obligatoire / renfort : ');
-        $this->assertStringContainsString('Bloquant :',$result->text(),'label is Bloquant : ');
-        $this->assertStringContainsString('Statistiques :',$result->text(),'label is Statistiques: ');
-        $this->assertStringContainsString('Compatible télétravail :',$result->text(),'label is Compatible télétravail');
+        $this->assertStringContainsString('Etage :', $result->text(null, false), 'label is Etage');
+        $this->assertStringContainsString('Mezzanine', $result->text(null, false),'select contains Mezzanine');
+        $this->assertStringContainsString('RDC', $result->text(null, false),'Select contains RDC');
+        $this->assertStringContainsString('RDJ', $result->text(null, false),'Select contains RDJ');
+        $this->assertStringContainsString('Magasins', $result->text(null, false),'Select contains Magasins');
+        $this->assertStringContainsString('Groupe:', $result->text(null, false), 'label is Groupe');
+        $this->assertStringContainsString('Obligatoire / renfort :',$result->text(null, false),'label is Obligatoire / renfort : ');
+        $this->assertStringContainsString('Bloquant :',$result->text(null, false),'label is Bloquant : ');
+        $this->assertStringContainsString('Statistiques :',$result->text(null, false),'label is Statistiques: ');
+        $this->assertStringContainsString('Compatible télétravail :',$result->text(null, false),'label is Compatible télétravail');
 
-        $this->assertStringContainsString('Activités :',$result->eq(1)->text(),'Activités :','label is Nom du post');
-        $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text(),'checkBox is Assistance audiovisuel');
-        $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text(),'checkBox is Assistance autoformation');
-        $this->assertStringContainsString(' Communication', $result->eq(1)->text(),'checkBox is Communication');
-        $this->assertStringContainsString(' Communication réserve', $result->eq(1)->text(),'checkBox is Communication réserve');
-        $this->assertStringContainsString(' Inscription', $result->eq(1)->text(),'checkBox is Inscription');
-        $this->assertStringContainsString(' Prêt/retour de document', $result->eq(1)->text(),'checkBox is Prêt/retour de document');
-        $this->assertStringContainsString(' Prêt de matériel', $result->eq(1)->text(),'checkBox is Prêt de matériel');
-        $this->assertStringContainsString(' Rangement', $result->eq(1)->text(),'checkBox is Rangement');
-        $this->assertStringContainsString(' Renseignement', $result->eq(1)->text(),'checkBox is Renseignement');
-        $this->assertStringContainsString(' Renseignement bibliographique', $result->eq(1)->text(),'checkBox is Renseignement bibliographique ');
-        $this->assertStringContainsString(' Renseignement réserve', $result->eq(1)->text(),'checkBox is Renseignement réserve');
-        $this->assertStringContainsString(' Renseignement spécialisé', $result->eq(1)->text(),'checkBox is Renseignement spécialisé');
-        $this->assertStringContainsString(' Catégories* :',$result->eq(1)->text(),'label is Nom du post');
-        $this->assertStringContainsString(' Catégorie A', $result->eq(1)->text(),'checkBox is Catégorie A ');
-        $this->assertStringContainsString(' Catégorie B', $result->eq(1)->text(),'checkBox is Catégorie B');
-        $this->assertStringContainsString(' Catégorie C', $result->eq(1)->text(),'checkBox is Catégorie C');
+        $this->assertStringContainsString('Activités :',$result->eq(1)->text(null, false),'Activités :','label is Nom du post');
+        $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text(null, false),'checkBox is Assistance audiovisuel');
+        $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text(null, false),'checkBox is Assistance autoformation');
+        $this->assertStringContainsString(' Communication', $result->eq(1)->text(null, false),'checkBox is Communication');
+        $this->assertStringContainsString(' Communication réserve', $result->eq(1)->text(null, false),'checkBox is Communication réserve');
+        $this->assertStringContainsString(' Inscription', $result->eq(1)->text(null, false),'checkBox is Inscription');
+        $this->assertStringContainsString(' Prêt/retour de document', $result->eq(1)->text(null, false),'checkBox is Prêt/retour de document');
+        $this->assertStringContainsString(' Prêt de matériel', $result->eq(1)->text(null, false),'checkBox is Prêt de matériel');
+        $this->assertStringContainsString(' Rangement', $result->eq(1)->text(null, false),'checkBox is Rangement');
+        $this->assertStringContainsString(' Renseignement', $result->eq(1)->text(null, false),'checkBox is Renseignement');
+        $this->assertStringContainsString(' Renseignement bibliographique', $result->eq(1)->text(null, false),'checkBox is Renseignement bibliographique ');
+        $this->assertStringContainsString(' Renseignement réserve', $result->eq(1)->text(null, false),'checkBox is Renseignement réserve');
+        $this->assertStringContainsString(' Renseignement spécialisé', $result->eq(1)->text(null, false),'checkBox is Renseignement spécialisé');
+        $this->assertStringContainsString(' Catégories* :',$result->eq(1)->text(null, false),'label is Nom du post');
+        $this->assertStringContainsString(' Catégorie A', $result->eq(1)->text(null, false),'checkBox is Catégorie A ');
+        $this->assertStringContainsString(' Catégorie B', $result->eq(1)->text(null, false),'checkBox is Catégorie B');
+        $this->assertStringContainsString(' Catégorie C', $result->eq(1)->text(null, false),'checkBox is Catégorie C');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add"]');
         $this->assertEquals($result->attr('title'),'Ajouter','span edit icon is Ajouter');
@@ -220,10 +220,10 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('value'),'Valider','input submit value is Valider');
 
         $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
-        $this->assertEquals($result->text(),'Annuler','input submit value is Annuler');
+        $this->assertEquals($result->text(null, false),'Annuler','input submit value is Annuler');
 
         $result = $crawler->filterXPath('//td[@class="noteBasDePage"]');
-        $this->assertStringContainsString('* Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste', $result->text(),'noteBasDePage is ok');
+        $this->assertStringContainsString('* Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste', $result->text(null, false),'noteBasDePage is ok');
     }
 
     public function testPositionList()
@@ -260,13 +260,13 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertSelectorTextContains('h3', 'Liste des postes');
 
         $result = $crawler->filterXPath('//thead/tr');
-        $this->assertStringContainsString('Nom du poste',$result->text(),'check label for name');
-        $this->assertStringContainsString('Etage',$result->text(),'check label for Etage');
-        $this->assertStringContainsString('Activités',$result->text(),'check label for activités');
-        $this->assertStringContainsString('Groupe',$result->text(),'check label for Group');
-        $this->assertStringContainsString('Obligatoire/renfort',$result->text(),'check label for Obligatoire');
-        $this->assertStringContainsString('Bloquant',$result->text(),'check label for Bloquant');
-        $this->assertStringContainsString('Statistiques',$result->text(),'check label for Sttistiques');
+        $this->assertStringContainsString('Nom du poste',$result->text(null, false),'check label for name');
+        $this->assertStringContainsString('Etage',$result->text(null, false),'check label for Etage');
+        $this->assertStringContainsString('Activités',$result->text(null, false),'check label for activités');
+        $this->assertStringContainsString('Groupe',$result->text(null, false),'check label for Group');
+        $this->assertStringContainsString('Obligatoire/renfort',$result->text(null, false),'check label for Obligatoire');
+        $this->assertStringContainsString('Bloquant',$result->text(null, false),'check label for Bloquant');
+        $this->assertStringContainsString('Statistiques',$result->text(null, false),'check label for Sttistiques');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Modifier','Edit Icons');
