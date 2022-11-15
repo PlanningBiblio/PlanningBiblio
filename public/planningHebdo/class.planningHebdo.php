@@ -104,79 +104,29 @@ class planningHebdo
         $CSRFToken=$data['CSRFToken'];
         unset($data['CSRFToken']);
 
-        // Si $data['annee'] : il y a 2 périodes distinctes avec des horaires définis
-        // (horaires normaux et horaires réduits) soit 2 tableaux à insérer
-        if (array_key_exists("annee", $data)) {
-            // Récupération des horaires
-            $this->dates=array($data['annee']);
-            $this->getPeriodes();
-            $dates=$this->periodes;
+        $insert = array(
+            'perso_id'      => $perso_id,
+            'debut'         => $data['debut'],
+            'fin'           => $data['fin'],
+            'temps'         => json_encode($data['temps']),
+            'valide_n1'     => $valide_n1,
+            'validation_n1' => $validation_n1,
+            'valide'        => $valide_n2,
+            'validation'    => $validation_n2,
+            'breaktime'     => json_encode($data['breaktime']),
+            'exception'     => $data['exception'],
+            'nb_semaine'    => $data['number_of_weeks'],
+        );
 
-            // 1er tableau
-            $insert = array(
-                'perso_id'      => $perso_id,
-                'debut'         => $dates[0][0],
-                'fin'           => $dates[0][1],
-                'temps'         => json_encode($data['temps']),
-                'valide_n1'     => $valide_n1,
-                'validation_n1' => $validation_n1,
-                'valide'        => $valide_n2,
-                'validation'    => $validation_n2,
-                'breaktime'     => json_encode($data['breaktime']),
-                'exception'     => $data['exception']
-            );
-
-            $db=new db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert("planning_hebdo", $insert);
-            $this->error=$db->error;
-
-            // 2ème tableau
-            $insert = array(
-                "perso_id"      => $perso_id,
-                "debut"         => $dates[0][2],
-                "fin"           => $dates[0][3],
-                "temps"         => json_encode($data['temps2']),
-                "valide_n1"     => $valide_n1,
-                "validation_n1" => $validation_n1,
-                "valide"        => $valide_n2,
-                "validation"    => $validation_n2,
-                'breaktime'     => json_encode($data['breaktime']),
-                'exception'     => $data['exception']
-            );
-
-            $db=new db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert("planning_hebdo", $insert);
-            $this->error=$db->error?$db->error:$this->error;
+        // Dans le cas d'une copie (voir fonction copy)
+        if (isset($data['remplace'])) {
+            $insert['remplace']=$data['remplace'];
         }
 
-        // Sinon, insertion d'un seul tableau
-        else {
-            $insert = array(
-                'perso_id'      => $perso_id,
-                'debut'         => $data['debut'],
-                'fin'           => $data['fin'],
-                'temps'         => json_encode($data['temps']),
-                'valide_n1'     => $valide_n1,
-                'validation_n1' => $validation_n1,
-                'valide'        => $valide_n2,
-                'validation'    => $validation_n2,
-                'breaktime'     => json_encode($data['breaktime']),
-                'exception'     => $data['exception'],
-                'nb_semaine'    => $data['number_of_weeks'],
-            );
-
-            // Dans le cas d'une copie (voir fonction copy)
-            if (isset($data['remplace'])) {
-                $insert['remplace']=$data['remplace'];
-            }
-
-            $db=new db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert("planning_hebdo", $insert);
-            $this->error=$db->error;
-        }
+        $db=new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert("planning_hebdo", $insert);
+        $this->error=$db->error;
 
         if ($GLOBALS['config']['PlanningHebdo-notifications-agent-par-agent']) {
             $a = new absences();
@@ -683,26 +633,4 @@ class planningHebdo
         return $result;
     }
   
-    public function updatePeriodes($data)
-    {
-        $annee=array($data['annee'][0],$data['annee'][1]);
-        // Convertion des dates JJ/MM/AAAA => AAAA-MM-JJ
-        $data['dates'][0]=array_map("dateFr", $data['dates'][0]);
-        $data['dates'][1]=array_map("dateFr", $data['dates'][1]);
-        $dates=array(json_encode($data['dates'][0]),json_encode($data['dates'][1]));
-    
-        $CSRFToken=$data['CSRFToken'];
-    
-        for ($i=0;$i<count($annee);$i++) {
-            $db=new db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete('planning_hebdo_periodes', array('annee'=>$annee[$i]));
-            $this->error=$db->error?true:false;
-            $insert=array("annee"=>$annee[$i],"dates"=>$dates[$i]);
-            $db=new db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert("planning_hebdo_periodes", $insert);
-            $this->error=$db->error?true:$this->error;
-        }
-    }
 }

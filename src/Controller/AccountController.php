@@ -29,17 +29,6 @@ class AccountController extends BaseController
         $CSRFSession = $GLOBALS['CSRFSession'];
         $credits = array();
 
-        // Contrôle si les périodes sont renseignées avant d'afficher les années universitaires dans le menu déroulant
-        $annees = array();
-        foreach ($tmp as $elem) {
-            $p = new \planningHebdo();
-            $p->dates = array($elem);
-            $p->getPeriodes();
-            if (($p->getPeriodes() != null) and $p->periodes[0][0] and $p->periodes[0][1] and $p->periodes[0][2] and $p->periodes[0][3]) {
-                $annees[] = $elem;
-            }
-        }
-
         // Informations sur l'agent
         $p = new \personnel();
         $p->CSRFToken = $CSRFSession;

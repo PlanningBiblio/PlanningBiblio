@@ -495,12 +495,6 @@ $sql[]="CREATE TABLE `{$dbprefix}planning_hebdo` (
   UNIQUE KEY `cle` (`cle`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
-$sql[]="CREATE TABLE `{$dbprefix}planning_hebdo_periodes` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `annee` VARCHAR(9),
-  `dates` TEXT
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
-
 // Agents volants
 $sql[] = "CREATE TABLE `{$dbprefix}volants` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
