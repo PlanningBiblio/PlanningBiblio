@@ -28,7 +28,7 @@ class StatisticController extends BaseController
 {
 
     /**
-     * @Route("/statistics", name="statistics.index", methods={"GET"})
+     * @Route("/statistics", name="statistics.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session)
     {
@@ -36,7 +36,7 @@ class StatisticController extends BaseController
     }
 
     /**
-     * @Route("/statistics/saturday", name="statistics.saturday", methods={"GET", "POST"})
+     * @Route("/statistics/saturday", name="statistics.saturday", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function saturday (Request $request, Session $session)
     {
@@ -392,7 +392,7 @@ class StatisticController extends BaseController
     }
 
     /**
-     * @Route("/statistics/service", name="statistics.service", methods={"GET", "POST"})
+     * @Route("/statistics/service", name="statistics.service", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function service(Request $request, Session $session)
     {
@@ -831,7 +831,7 @@ class StatisticController extends BaseController
     }
       
     /**
-     * @Route("/statistics/status", name="statistics.status", methods={"GET", "POST"})
+     * @Route("/statistics/status", name="statistics.status", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function status( Request $request, Session $session)
     {
@@ -1289,7 +1289,7 @@ class StatisticController extends BaseController
         return $this->output('/statistics/status.html.twig');
     }
     /**
-     * @Route("/statistics/attendeesmissing", name="statistics.attendeesmissing", methods={"GET", "POST"})
+     * @Route("/statistics/attendeesmissing", name="statistics.attendeesmissing", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function attendeesmissing( Request $request, Session $session )
     {
@@ -1393,7 +1393,7 @@ class StatisticController extends BaseController
     }
 
     /**
-     * @Route("/statistics/absence", name="statistics.absence", methods={"GET", "POST"})
+     * @Route("/statistics/absence", name="statistics.absence", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function absence( Request $request, Session $session )
     {
@@ -1572,7 +1572,7 @@ class StatisticController extends BaseController
     }
 
     /**
-     * @Route("/statistics/positionsummary", name="statistics.positionsummary", methods={"GET", "POST"})
+     * @Route("/statistics/positionsummary", name="statistics.positionsummary", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function positionsummary(Request $request, Session $session)
     {
@@ -1872,7 +1872,7 @@ class StatisticController extends BaseController
     }
 
     /**
-     * @Route("/statistics/agent", name="statistics.agent", methods={"GET", "POST"})
+     * @Route("/statistics/agent", name="statistics.agent", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function agent(Request $request, Session $session){
         // Initialisation des variables :
@@ -2299,7 +2299,7 @@ class StatisticController extends BaseController
     }
 
     /**
-     * @Route("/statistics/time", name="statistics.time", methods={"GET", "POST"})
+     * @Route("/statistics/time", name="statistics.time", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function bytime(Request $request, Session $session)
     {
@@ -2735,7 +2735,7 @@ class StatisticController extends BaseController
     }
 
     /**
-     * @Route("/statistics/supportposition", name="statistics.supportposition", methods={"GET", "POST"})
+     * @Route("/statistics/supportposition", name="statistics.supportposition", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function supportposition(Request $request, Session $session)
     {
@@ -3045,7 +3045,7 @@ class StatisticController extends BaseController
     }
 
     /**
-     * @Route("/statistics/position", name="statistics.position", methods={"GET", "POST"})
+     * @Route("/statistics/position", name="statistics.position", methods={"GET", "POST"}, defaults={"no-csrf": 1})
      */
     public function position(Request $request, Session $session)
     {

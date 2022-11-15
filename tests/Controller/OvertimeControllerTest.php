@@ -53,7 +53,8 @@ class OvertimeControllerTest extends PLBWebTestCase
                 'id' => $overTime->id(),
                 'heures' => '01:30',
                 'commentaires' => 'ploup',
-                'CSRFToken' => '00000'
+                'CSRFToken' => '00000',
+                '_token' => $client->getContainer()->get('security.csrf.token_manager')->getToken('')
             )
         );
 

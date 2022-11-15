@@ -17,7 +17,7 @@ require_once(__DIR__.'/../../public/activites/class.activites.php');
 class SkillController extends BaseController
 {
     /**
-     * @Route("/skill", name ="skill.index", methods={"GET"})
+     * @Route("/skill", name ="skill.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session)
     {
@@ -99,7 +99,7 @@ class SkillController extends BaseController
     }
 
     /**
-     * @Route("/skill/add", name ="skill.add", methods={"GET"})
+     * @Route("/skill/add", name ="skill.add", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function add(Request $request, Session $session){
 
@@ -111,7 +111,7 @@ class SkillController extends BaseController
     }
 
     /**
-     * @Route("/skill/{id}", name = "skill.edit", methods={"GET"})
+     * @Route("/skill/{id}", name = "skill.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request, Session $session){
 

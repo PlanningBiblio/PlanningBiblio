@@ -135,12 +135,13 @@ $(document).ready(function(){
     date = $('form[name="save-model-form"] input[name="date"]').val()
     week = $('form[name="save-model-form"] input[name="semaine"]').is(':checked') ? 1 : 0;
     csrftoken = $('#CSRFSession').val();
+    var _token = $('input[name=_token]').val();
 
     $.ajax({
       url: url('model-add'),
       type: 'post',
       //dataType: 'json',
-      data: {name: name, site: site, date: date, week: week, CSRFToken: csrftoken, erase: erase},
+      data: {name: name, site: site, date: date, week: week, CSRFToken: csrftoken, erase: erase, _token: _token},
       success: function(result){
         if (result == 'model exists' && erase == false) {
           model_form.dialog('close');

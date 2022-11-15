@@ -17,7 +17,7 @@ require_once(__DIR__ . '/../../public/include/db.php');
 class ModelController extends BaseController
 {
     /**
-     * @Route("/model", name="model.index", methods={"GET"})
+     * @Route("/model", name="model.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session)
     {
@@ -134,7 +134,7 @@ class ModelController extends BaseController
     }
 
     /**
-     * @Route("/model/{id}", name="model.edit", methods={"GET"})
+     * @Route("/model/{id}", name="model.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request)
     {

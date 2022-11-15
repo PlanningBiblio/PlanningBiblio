@@ -15,7 +15,7 @@ require_once (__DIR__."/../../public/planningHebdo/class.planningHebdo.php");
 class AccountController extends BaseController
 {
     /**
-     * @Route("/myaccount", name="account.index", methods={"GET"})
+     * @Route("/myaccount", name="account.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session)
     {

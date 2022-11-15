@@ -17,6 +17,7 @@
       {% if results |length > 0 %}
         <form name='form' method='post' action="{{ asset('agent/ldap') }}">
           <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+          <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
           <input type='hidden' name='import-type' value='ldap' />
           <input type='hidden' name='recherche' value='{{ search_term }}' />
           <table id='tableLdapImport' class='CJDataTable' data-sort='[[1,"asc"],[2,"asc"]]' data-length='50' >

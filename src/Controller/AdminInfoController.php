@@ -13,7 +13,7 @@ use App\Model\AdminInfo;
 class AdminInfoController extends BaseController
 {
     /**
-     * @Route("/admin/info", name="admin.info.index", methods={"GET"})
+     * @Route("/admin/info", name="admin.info.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session)
     {
@@ -34,7 +34,7 @@ class AdminInfoController extends BaseController
     }
 
     /**
-     * @Route("/admin/info/add", name="admin.info.addform", methods={"GET"})
+     * @Route("/admin/info/add", name="admin.info.addform", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function addform(Request $request)
     {
@@ -49,7 +49,7 @@ class AdminInfoController extends BaseController
     }
 
     /**
-     * @Route("/admin/info/{id}", name="admin.info.editform", methods={"GET"})
+     * @Route("/admin/info/{id}", name="admin.info.editform", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function editform(Request $request)
     {
@@ -72,12 +72,6 @@ class AdminInfoController extends BaseController
      */
     public function update(Request $request, Session $session)
     {
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('admin.info.index');
-        }
-
         $id = $request->get('id');
         $start = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('start'));
         $end = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('end'));
@@ -114,12 +108,6 @@ class AdminInfoController extends BaseController
      */
     public function delete(Request $request, Session $session)
     {
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('admin.info.index');
-        }
-
         $id = $request->get('id');
 
         $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);

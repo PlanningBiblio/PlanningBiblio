@@ -49,7 +49,8 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $data = $this->getHolidayData(array(
             'perso_id' => $jdevoe->id(),
             'valide' => 0,
-            'valide_n1' => 0
+            'valide_n1' => 0,
+            '_token' => $client->getContainer()->get('security.csrf.token_manager')->getToken('')
         ));
 
         $client->request('POST', '/holiday', $data);
@@ -98,6 +99,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array('perso_id' => $jdevoe->id()));
+        $data['_token'] = $client->getContainer()->get('security.csrf.token_manager')->getToken('');
 
         $client->request('POST', '/holiday', $data);
 
@@ -149,6 +151,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
             'hre_debut' => '09:00:00',
             'hre_fin' => '10:00:00',
             'allday' => '',
+            '_token' => $client->getContainer()->get('security.csrf.token_manager')->getToken('')
         ));
 
         $client->request('POST', '/holiday', $data);
@@ -200,6 +203,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $data = $this->getHolidayData(array(
             'perso_id' => $jdevoe->id(),
             'debit' => 'recuperation',
+            '_token' => $client->getContainer()->get('security.csrf.token_manager')->getToken('')
         ));
 
         $client->request('POST', '/holiday', $data);

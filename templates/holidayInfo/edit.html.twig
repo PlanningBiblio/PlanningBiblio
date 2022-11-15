@@ -13,6 +13,7 @@
       {% endif %}
       <form id="form" method='post' action="{{ asset('holiday-info') }}" name='form' onsubmit='return verif_form("debut=date1;fin=date2;texte");'>
         <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}"/>
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
         <input type='hidden' name='id' value="{{ id }}"/>
         <table class='tableauFiches'>
           <tr>

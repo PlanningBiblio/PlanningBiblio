@@ -23,7 +23,7 @@ class AbsenceController extends BaseController
     use \App\Controller\Traits\EntityValidationStatuses;
 
     /**
-     * @Route("/absence", name="absence.index", methods={"GET"})
+     * @Route("/absence", name="absence.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request)
     {
@@ -178,7 +178,7 @@ class AbsenceController extends BaseController
     }
 
     /**
-     * @Route("/absence/add", name="absence.add", methods={"GET"})
+     * @Route("/absence/add", name="absence.add", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function add(Request $request)
     {
@@ -300,7 +300,7 @@ class AbsenceController extends BaseController
     }
 
     /**
-     * @Route("/absence/{id}", name="absence.edit", methods={"GET"})
+     * @Route("/absence/{id}", name="absence.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request)
     {
@@ -713,7 +713,7 @@ class AbsenceController extends BaseController
     }
 
     /**
-     * @Route("/absence-statuses", name="absence.statuses", methods={"GET"})
+     * @Route("/absence-statuses", name="absence.statuses", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function absence_validation_statuses(Request $request)
     {

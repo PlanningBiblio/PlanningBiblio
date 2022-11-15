@@ -17,7 +17,7 @@ class AuthorizationsController extends BaseController
 {
 
     /**
-     * @Route("/login", name="login", methods={"GET"})
+     * @Route("/login", name="login", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function login(Request $request, LoggerInterface $logger = null)
     {
@@ -143,7 +143,7 @@ class AuthorizationsController extends BaseController
     }
 
     /**
-     * @Route("/logout", name="logout", methods={"GET"})
+     * @Route("/logout", name="logout", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function logout(Request $request)
     {
@@ -168,7 +168,7 @@ class AuthorizationsController extends BaseController
     }
 
     /**
-     * @Route("/access-denied", name="access-denied", methods={"GET"})
+     * @Route("/access-denied", name="access-denied", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function denied(Request $request)
     {

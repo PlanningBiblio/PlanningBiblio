@@ -19,7 +19,7 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 class AjaxController extends BaseController
 {
     /**
-     * @Route("/ajax/agents-by-sites", name="ajax.agentsbysites", methods={"GET"})
+     * @Route("/ajax/agents-by-sites", name="ajax.agentsbysites", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function agentsBySites(Request $request)
     {
@@ -63,7 +63,7 @@ class AjaxController extends BaseController
     }
 
     /**
-     * @Route("/ajax/mail-test", name="ajax.mailtest", methods={"POST"})
+     * @Route("/ajax/mail-test", name="ajax.mailtest", methods={"POST"}, defaults={"no-csrf": 1})
      */
     public function mailTest(Request $request)
     {
@@ -151,7 +151,7 @@ class AjaxController extends BaseController
 
 
     /**
-     * @Route("/ajax/holiday-absence-control", name="ajax.holiday.absence.control", methods={"GET"})
+     * @Route("/ajax/holiday-absence-control", name="ajax.holiday.absence.control", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function holidayAbsenceControl(Request $request)
     {

@@ -61,6 +61,7 @@
           <form name='form' method='post' action='{{ asset("login") }}'>
             <input type='hidden' name='auth' value='' />
             <input type='hidden' name='redirURL' value="{{ redirect_url }}" />
+            <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
             <table style='width:100%;'>
               <tr>
                 <td style='text-align:right;width:48%;'>Utilisateur : </td>

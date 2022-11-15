@@ -19,7 +19,7 @@ require_once(__DIR__ . '/../../public/activites/class.activites.php');
 class PositionController extends BaseController
 {
     /**
-     * @Route("/position", name="position.index", methods={"GET"})
+     * @Route("/position", name="position.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request)
     {
@@ -114,8 +114,8 @@ class PositionController extends BaseController
     }
 
     /**
-     * @Route("/position/add", name="position.add", methods={"GET"})
-     * @Route("/position/{id}", name="position.edit", methods={"GET"})
+     * @Route("/position/add", name="position.add", methods={"GET"}, defaults={"no-csrf": 1})
+     * @Route("/position/{id}", name="position.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request)
     {

@@ -13,7 +13,7 @@ require_once(__DIR__ . '/../../public/conges/class.conges.php');
 class HolidayInfoController extends BaseController
 {
     /**
-     * @Route("/holiday-info", name="holiday_info.index", methods={"GET"})
+     * @Route("/holiday-info", name="holiday_info.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request, Session $session)
     {
@@ -46,7 +46,7 @@ class HolidayInfoController extends BaseController
     }
 
     /**
-     * @Route("/holiday-info/add", name="holiday_info.add", methods={"GET"})
+     * @Route("/holiday-info/add", name="holiday_info.add", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function add(Request $request)
     {
@@ -67,7 +67,7 @@ class HolidayInfoController extends BaseController
     }
 
     /**
-     * @Route("/holiday-info/{id}", name="holiday_info.edit", methods={"GET"})
+     * @Route("/holiday-info/{id}", name="holiday_info.edit", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function edit(Request $request)
     {

@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class HelpController extends BaseController
 {
     /**
-     * @Route("/help", name="help")
+     * @Route("/help", name="help", defaults={"no-csrf": 1})
      */
     public function index()
     {

@@ -35,7 +35,7 @@ class IndexController extends BaseController
     private $dbprefix;
 
     /**
-     * @Route("/index", name="index", methods={"GET"})
+     * @Route("/index", name="index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request)
     {
@@ -854,7 +854,7 @@ class IndexController extends BaseController
     }
 
     /**
-     * @Route("/modelform", name="model.form", methods={"GET"})
+     * @Route("/modelform", name="model.form", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function model_form(Request $request)
     {

@@ -18,7 +18,7 @@ require_once(__DIR__ . '/../../public/postes/class.postes.php');
 class FrameworkController extends BaseController
 {
     /**
-     * @Route ("/framework", name="framework.index", methods={"GET"})
+     * @Route("/framework", name="framework.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index (Request $request, Session $session){
         $nbSites = $this->config('Multisites-nombre');
@@ -169,7 +169,7 @@ class FrameworkController extends BaseController
         }
     }
      /**
-     * @Route ("/framework/add", name="framework.add_table", methods={"GET"})
+     * @Route ("/framework/add", name="framework.add_table", methods={"GET"}, defaults={"no-csrf": 1})
      */
      public function addTable (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
@@ -228,7 +228,7 @@ class FrameworkController extends BaseController
 
      }
     /**
-     * @Route ("/framework/{id}", name="framework.edit_table", methods={"GET"})
+     * @Route ("/framework/{id}", name="framework.edit_table", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function editTable (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
@@ -623,7 +623,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-group/add", name="framework.add_group", methods={"GET"})
+     * @Route ("/framework-group/add", name="framework.add_group", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function addGroup (Request $request, Session $session){
         // Initialisation des variables
@@ -672,7 +672,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-group/{id}", name="framework.edit_group", methods={"GET"})
+     * @Route ("/framework-group/{id}", name="framework.edit_group", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function editGroup (Request $request, Session $session){
         // Initialisation des variables
@@ -760,7 +760,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-line/add", name="framework.add_line", methods={"GET"})
+     * @Route ("/framework-line/add", name="framework.add_line", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function addLine (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
@@ -774,7 +774,7 @@ class FrameworkController extends BaseController
     }
 
     /**
-     * @Route ("/framework-line/{id}", name="framework.edit_line", methods={"GET"})
+     * @Route ("/framework-line/{id}", name="framework.edit_line", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function editLine (Request $request, Session $session){
         // Initialisation des variables

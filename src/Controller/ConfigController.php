@@ -11,7 +11,7 @@ use App\Model\ConfigParam;
 class ConfigController extends BaseController
 {
     /**
-     * @Route("/config", name="config.index", methods={"GET"})
+     * @Route("/config", name="config.index", methods={"GET"}, defaults={"no-csrf": 1})
      */
     public function index(Request $request)
     {
