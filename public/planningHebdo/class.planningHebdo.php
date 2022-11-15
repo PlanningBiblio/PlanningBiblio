@@ -361,31 +361,6 @@ class planningHebdo
         return $to;
     }
 
-    public function getPeriodes()
-    {
-        if (!empty($this->dates)) {
-            $dates=array();
-            $annees=$this->dates;
-            sort($annees);
-            $i=0;
-            foreach ($annees as $annee) {
-                $db=new db();
-                $db->select("planning_hebdo_periodes", "*", "`annee`='$annee'", "ORDER BY `annee`");
-                if ($db->result) {
-                    $dates[$i]=json_decode(html_entity_decode($db->result[0]['dates'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                    $datesFr[$i]=array_map("dateFr", $dates[$i]);
-                    $i++;
-                } else {
-                    $dates[$i]=null;
-                    $datesFr[$i]=null;
-                    $i++;
-                }
-            }
-        }
-        $this->periodes=$dates;
-        $this->periodesFr=$datesFr;
-    }
-
     /**
      * @function getRecipients
      * Retourne la liste des destinataires des notifications en fonction du niveau de validation.
