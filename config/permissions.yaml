@@ -101,11 +101,15 @@
     - 25
 "overtime.edit":
     - 100
+"overtime.index":
+    - 100
+"overtime.save":
+    - 100
+"ajax.workinghourtables":
+    - 100
 "comptime.add":
     - 100
 "comptime.save":
-    - 100
-"ajax.workinghourtables":
     - 100
 "detached.index":
     - 301
