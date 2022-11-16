@@ -15,11 +15,8 @@ class LegalNoticesController extends BaseController
     /**
      * @Route("/legalNotices", name="legalnotices", methods={"GET"})
      */
-    public function legalNotices(Request $request)
+    public function index(Request $request)
     {
-        $legal_notices_gdpr = $this->config('legalNotices-GDPR');
-        $this->templateParams(array("legal_notices_gdpr" => $legal_notices_gdpr));
-
         return $this->output('legalNotices/index.html.twig');
     }
 }

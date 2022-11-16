@@ -3,10 +3,8 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <div id='legal_notices'>
+  <div id='legalNotices'>
     <h3>Mentions légales</h3>
-    {% if legal_notices_gdpr %}
-      {{ legal_notices_gdpr | markdown_to_html }}
-    {% endif %}
+    {{ config('legalNotices') | markdown_to_html }}
   </div>
 {% endblock %}
