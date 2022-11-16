@@ -5,7 +5,7 @@ $( document ).ready(function() {
 
 $(function(){
   $('select[name="perso_id"]').on('change', function() {
-    if (window.location.href.includes('recup_pose.php')) {
+    if (window.location.href.includes('/comptime/add')) {
       return false;
     }
 
