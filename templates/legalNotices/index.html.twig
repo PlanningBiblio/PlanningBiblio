@@ -3,8 +3,23 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <div id='legalNotices'>
+  {% if not show_menu %}
+    <p style="text-align:center;">
+      <div id='auth-logo'></div>
+    </p>
+  {% endif %}
+
+  <div id="content-form">
     <h3>Mentions légales</h3>
-    {{ config('legalNotices') | markdown_to_html }}
+    <div class="admin-div">
+      {{ config('legalNotices') | markdown_to_html }}
+    </div>
   </div>
+
+  {% if not show_menu %}
+    <p style="text-align:center; margin-top:30px;">
+      <a style="font-size:1.5em;" href="{{ asset('login') }}">Retour</a>
+    </p>
+  {% endif %}
+
 {% endblock %}

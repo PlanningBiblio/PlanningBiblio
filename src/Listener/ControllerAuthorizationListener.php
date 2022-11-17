@@ -38,11 +38,11 @@ class ControllerAuthorizationListener
     public function onKernelRequest(GetResponseEvent $event)
     {
         $page = $event->getRequest()->getPathInfo();
-        $page = preg_replace('/([a-z\/]*).*/', "$1", $page);
+        $page = preg_replace('/([a-z-\/]*).*/', "$1", $page);
         $page = rtrim($page, '/add');
         $page = rtrim($page, '/');
 
-        if ($page == '/login' || $page == '/logout') {
+        if (in_array($page, ['/login', '/logout', '/legal-notices'])) {
             return;
         }
 
