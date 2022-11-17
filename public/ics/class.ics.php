@@ -39,8 +39,9 @@ Classe permettant le traitement des fichiers ICS
  * EXDATE : exception dates
  */
  
+use ICal\ICal;
+
 require_once(__DIR__.'/../include/config.php');
-require_once(__DIR__.'/ics-parser/class.iCalReader.php');
 require_once(__DIR__.'/../personnel/class.personnel.php');
 
 class CJICS
@@ -71,7 +72,7 @@ class CJICS
         $calName = null;                // Nom du calendrier
 
         // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
-        $ical   = new ICal($src, "MO");
+        $ical   = new ICal($src);
 
         // Récupération du nom du calendrier
         $calName=$ical->calendarName();
@@ -136,8 +137,9 @@ class CJICS
         }
 
         // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
-        $ical   = new ICal($src, "MO");
-        $events = $ical->events();
+        $ical   = new ICal($src);
+        //$events = $ical->events();
+        $events = $ical->cal['VEVENT'];
 
         // Récupération du nom du calendrier
         $calName = $ical->calendarName();
@@ -148,7 +150,7 @@ class CJICS
         }
 
         // Product ID / Product name
-        $prodID = $ical->calendarProdID();
+        $prodID = $ical->cal['VCALENDAR']['PRODID'] ?? null;
 
         $calTimeZone = $ical->calendarTimezone();
         if ($this->logs) {
