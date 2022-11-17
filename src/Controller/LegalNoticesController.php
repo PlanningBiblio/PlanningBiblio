@@ -13,10 +13,16 @@ class LegalNoticesController extends BaseController
 {
 
     /**
-     * @Route("/legalNotices", name="legalnotices", methods={"GET"})
+     * @Route("/legal-notices", name="legal-notices", methods={"GET"})
      */
     public function index(Request $request)
     {
+        $show_menu = empty($_SESSION['login_id']) ? 0 : 1;
+
+        $this->templateParams(array(
+            'show_menu' => $show_menu,
+        ));
+
         return $this->output('legalNotices/index.html.twig');
     }
 }

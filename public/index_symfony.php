@@ -24,7 +24,7 @@ global $base_url;
 $base_url = plannoBaseUrl($request);
 
 // Session has expired. Redirect to authentication page.
-if (empty($_SESSION['login_id']) && $path != '/login' && $path != 'logout') {
+if (empty($_SESSION['login_id']) && !in_array($path, ['/login', '/logout', '/legal-notices'])) {
 
     $redirect = ltrim($path, '/');
     header("Location: $base_url/login?redirURL=$redirect");
