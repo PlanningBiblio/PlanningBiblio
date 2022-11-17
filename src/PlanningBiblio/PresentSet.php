@@ -38,6 +38,7 @@ class PresentSet
         $presents = array();
         foreach ($this->db->result as $elem) {
             $heures = null;
+            $week_number = 0;
 
             $temps = array();
 
