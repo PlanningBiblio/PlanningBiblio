@@ -27,7 +27,7 @@
       {% endif %}
     {% endif %}
 
-    {% if not_ready is defined and not_ready %}
+    {% if not_ready %}
       <div class='decalage-gauche'><p>Le planning n'est pas prêt.</p></div>
 
       {% if config('Planning-CommentairesToujoursActifs') %}
@@ -125,22 +125,52 @@
         </div>
       {% endif %}
 
-      {% if config('Absences-planning') == 1 and absences_planning | length > 0 %}
-        <h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
-        <div class='decalage-gauche'>
-          <table>
-            {% for a in absences_planning %}
-              {% if a.valide %}
-                <tr class="{{ a.class }} {{ a.bold }}">
-                  <td style='text-align:left;'>
-                    {{ a.nom }} {{ a.prenom }}{{ a.heures }}{{ a.nonValidee }}
-                  </td>
-                </tr>
-              {% endif %}
-            {% endfor %}
+      {% if locked or (autorisationN1 or autorisationN2) %}
+        {% if config('Absences-planning') == 1 and absences_planning | length > 0 %}
+          <h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
+          <div class='decalage-gauche'>
+            <table>
+              {% for a in absences_planning %}
+                {% if a.valide %}
+                  <tr class="{{ a.class }} {{ a.bold }}">
+                    <td style='text-align:left;'>
+                      {{ a.nom }} {{ a.prenom }}{{ a.heures }}{{ a.nonValidee }}
+                    </td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </table>
+          </div>
+        {% endif %}
+
+        {% if config('Absences-planning') == 2 and absences_planning | length > 0 %}
+          <h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
+
+          <table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'>
+            <thead>
+              <tr>
+                <th class='tableSort'>Nom</th>
+                <th class='tableSort'>Prénom</th>
+                <th class='dataTableDateFR tableSort'>Début</th>
+                <th class='dataTableDateFR tableSort'>Fin</th>
+                <th class='tableSort'>Motif</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in absences_planning %}
+                {% if a.valide %}
+                  <tr class="{{ a.bold }}">
+                    <td>{{ a.nom }}</td>
+                    <td>{{ a.prenom }}</td>
+                    <td>{{ a.debutAff }}</td>
+                    <td>{{ a.finAff }}</td>
+                    <td>{{ a.motif }}{{ a.nonValidee }}</td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
           </table>
-        </div>
-      {% endif %}
+        {% endif %}
 
       {% if config('Absences-planning') == 2 and absences_planning | length > 0 %}
         <h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
@@ -180,40 +210,45 @@
               </td>
               {% if absences_planning | length > 0 %}
                 <td>
-                  <h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>
+                  <h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3>
                 </td>
-              {% endif %}
-            </tr>
+                {% if absences_planning | length > 0 %}
+                  <td>
+                    <h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>
+                  </td>
+                {% endif %}
+              </tr>
 
-            <tr style='vertical-align:top;'>
-              <td>
-                <table cellspacing='0'>
-                  {% for p in presents %}
-                    <tr class="{{ p.class }}">
-                      <td>{{ p.nom }}</td>
-                      <td style='padding-left:15px;'>{{ p.site }}{{ p.heures }}</td>
-                    </tr>
-                  {% endfor %}
-                </table>
-              </td>
-
-              <td>
-                <table cellspacing='0'>
-                  {% for a in absences_planning %}
-                    {% if a.valide %}
-                      <tr class="{{ a.class }} {{ a.bold }}">
-                        <td>{{ a.nom }} {{ a.prenom }}</td>
-                        <td style='padding-left:15px;'>
-                          {{ a.motif }}{{ a.heures }}{{ a.nonValidee }}
-                        </td>
+              <tr style='vertical-align:top;'>
+                <td>
+                  <table cellspacing='0'>
+                    {% for p in presents %}
+                      <tr class="{{ p.class }}">
+                        <td>{{ p.nom }}</td>
+                        <td style='padding-left:15px;'>{{ p.site }}{{ p.heures }}</td>
                       </tr>
-                    {% endif %}
-                  {% endfor %}
-                </table>
-              </td>
-            </tr>
-          </table>
-        </div>
+                    {% endfor %}
+                  </table>
+                </td>
+
+                <td>
+                  <table cellspacing='0'>
+                    {% for a in absences_planning %}
+                      {% if a.valide %}
+                        <tr class="{{ a.class }} {{ a.bold }}">
+                          <td>{{ a.nom }} {{ a.prenom }}</td>
+                          <td style='padding-left:15px;'>
+                            {{ a.motif }}{{ a.heures }}{{ a.nonValidee }}
+                          </td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </div>
+        {% endif %}
       {% endif %}
     {% endif %}
   </div>

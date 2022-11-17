@@ -167,14 +167,6 @@ class IndexController extends BaseController
             $tab = $currentFramework;
         }
 
-        if (!$tab) {
-            $this->templateParams(array(
-                'no_tab' => 1,
-                'tab'    => $tab,
-            ));
-            return $this->output('planning/poste/index.html.twig');
-        }
-
         // Div planning-data : permet de transmettre les valeurs $verrou et $autorisationN1 à la fonction affichant le menudiv
         // data-validation pour les fonctions refresh_poste et verrouillage du planning
         // Lignes vides pour l'affichage ou non des lignes vides au chargement de la page et après validation (selon la config)
@@ -182,6 +174,10 @@ class IndexController extends BaseController
             'lignesVides'   => $this->config('Planning-lignesVides'),
             'tab'           => $tab,
         ));
+
+        if (!$tab) {
+            return $this->output('planning/poste/index.html.twig');
+        }
 
         if (!$verrou and !$autorisationN1) {
             $this->templateParams(array(
