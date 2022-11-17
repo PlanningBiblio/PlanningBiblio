@@ -25,7 +25,7 @@
               {% else %}
                 <font class='bold' id='valeur_{{ r.id}}'>{{ r.valeur }}</font>
               {% endif %}
-              <select id='type_{{ r.id }}' style='position:absolute;width:150px;left:410px;'>
+              <select id='type_{{ r.id }}' style='position:absolute;width:150px;left:410px;' onchange='padding20($(this));'>
                 <option value='0'>&nbsp;</option>
                 {% for t in reason_types %}
                   {% if t.id == r.type %}

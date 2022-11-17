@@ -1323,7 +1323,7 @@ img{
 /* Elements "sortable" (gestion des motifs d'absences, des statuts des agents */
 ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
 ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 30px; }
-ul[id$="-sortable"] li span { position: absolute; margin-left: -1.3em; }
+ul[id$="-sortable"] li span { margin-left: -1.3em; }
 
 .bold{
   font-weight:bold;

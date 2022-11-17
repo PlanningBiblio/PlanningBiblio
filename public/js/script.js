@@ -333,6 +333,17 @@ function decompte(dcpt){
 	}
 }
 
+
+function padding20(elem) {
+    if(elem.val()==2){
+      elem.prev("font").removeClass("bold");
+      elem.prev("font").addClass("padding20");
+    }else{
+      elem.prev("font").addClass("bold");
+      elem.prev("font").removeClass("padding20");
+    }
+}
+
 function addAbsenceDocument(id) {
     var file_data = $('#documentFile').prop('files')[0];
     if (!file_data) { alert('Vous devez sélectionner un fichier.'); return false; }
@@ -420,7 +431,7 @@ function errorHighlight(e, type, icon) {
         $(this).addClass('ui-widget');
         var alertHtml = '<div class="ui-state-' + type + ' ui-corner-all" style="padding:0 .7em;">';
         alertHtml += '<p style="text-align:center;">';
-        alertHtml += '<span class="ui-icon ' + icon + '" style="float:left;margin-right: .3em;"></span>';
+        alertHtml += '<span class="pl-icon ' + icon + '" style="float:left;margin-right: .3em;"></span>';
         alertHtml += $(this).html();
         alertHtml += '</p>';
         alertHtml += '</div>';
