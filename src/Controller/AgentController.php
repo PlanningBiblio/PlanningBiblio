@@ -811,13 +811,13 @@ class AgentController extends BaseController
 
         $params = $request->request->all();
 
-        $arrivee = filter_input(INPUT_POST, "arrivee", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-        $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
-        $depart = filter_input(INPUT_POST, "depart", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-        $heuresHebdo = filter_input(INPUT_POST, "heuresHebdo", FILTER_SANITIZE_STRING);
-        $heuresTravail = filter_input(INPUT_POST, "heuresTravail", FILTER_SANITIZE_STRING);
-        $id = filter_input(INPUT_POST, "id", FILTER_SANITIZE_NUMBER_INT);
-        $mail = trim(filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL));
+        $arrivee = $request->get('arrivee');
+        $depart = $request->get('depart');
+        $CSRFToken = $request->get('CSRFToken');
+        $heuresHebdo = $request->get('heuresHebdo');
+        $heuresTravail = $request->get('heuresTravail');
+        $id = $request->get('id');
+        $mail = $request->get('mail');
 
         $actif = htmlentities($params['actif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         $action = $params['action'];
@@ -829,7 +829,7 @@ class AgentController extends BaseController
         $droits = array_key_exists("droits", $params) ? $params['droits'] : null;
         $categorie = trim($params['categorie']);
         $informations = trim($params['informations']);
-        $mailsResponsables = trim(str_replace(array("\n", " "), null, $params['mailsResponsables']));
+        $mailsResponsables = trim(str_replace(array("\n", " "), null, $params['mails_responsables']));
         $matricule = trim($params['matricule']);
         $url_ics = isset($params['url_ics']) ? trim($params['url_ics']) : null;
         $nom = trim($params['nom']);

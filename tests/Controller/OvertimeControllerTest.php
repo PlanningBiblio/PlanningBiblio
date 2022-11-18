@@ -93,9 +93,6 @@ class OvertimeControllerTest extends PLBWebTestCase
         $this->assertEquals('Crédits', $result->eq(4)->text(null, false),'Crédits is table title');
         $this->assertEquals('Commentaires', $result->eq(5)->text(null, false),'Commentaires is table title');
 
-        $result = $crawler->filterXPath('//th[@class="dataTableDateFR"]');
-        $this->assertEquals('Date', $result->text(null, false),'Date is table title');
-
         $result = $crawler->filterXPath('//button[@id="dialog-button"]');
         $this->assertEquals('Nouvelle demande', $result->text(null, false),'button text is Nouvelle demande');
 
