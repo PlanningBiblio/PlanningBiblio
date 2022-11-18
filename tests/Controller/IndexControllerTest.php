@@ -32,17 +32,17 @@ class IndexControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(99,100));
 
-        $Y = date('Y');
+        $y = date('Y');
         $m = date('m');
         $d = date('d');
         $_SESSION['oups']['CSRFToken'] = '00000';
 
-        $crawler = $client->request('GET', "/index", array('date' => "$Y-$m-$d", 'CSRFToken' => '00000'));
+        $crawler = $client->request('GET', "/index", array('date' => "$y-$m-$d", 'CSRFToken' => '00000'));
 
         $result = $crawler->filterXPath('//div[@class="decalage-gauche"]/p');
         $this->assertEquals($result->text(),"Le planning n'est pas prêt.",'test index with no planning');
 
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
+        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$y");
 
         $pl_post_lock = $builder->build
         (
@@ -69,9 +69,9 @@ class IndexControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(99,100));
 
-        $crawler = $client->request('GET', "/index", array('date' => "$Y-$m-$d", 'CSRFToken' => '00000'));
+        $crawler = $client->request('GET', "/index", array('date' => "$y-$m-$d", 'CSRFToken' => '00000'));
 
         $result = $crawler->filterXPath('//div[@class="decalage-gauche"]/font');
-        $this->assertEquals($result->text(),"Le planning du $d/$m/$Y n'est pas validé !",'test index with no lock planning');
+        $this->assertEquals($result->text(),"Le planning du $d/$m/$y n'est pas validé !",'test index with no lock planning');
     }
 }
