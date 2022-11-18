@@ -153,9 +153,9 @@ $(function() {
       number++;
     }
 
-    $("#motifs-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon pl-icon-arrowupdown'></span>"
+    $("#motifs-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='pl-icon pl-icon-arrowupdown'></span>"
       +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<select id='type_"+number+"' style='position:absolute;width:150px;left:410px;'>"
+      +"<select id='type_"+number+"' style='position:absolute;width:150px;left:410px;' onchange='padding20($(this));'>"
       +options
       +"</select>"
       +"<select id='notification-workflow_"+number+"' style='position:absolute;width:150px;left:590px;'>"
@@ -169,17 +169,6 @@ $(function() {
     $("#add-motif-text").val(null);
   });
   
-  // Modifie la classe de la ligne lors du changement du select type (Boite de dialogue permettant de modifier la liste des motifs)
-  $("select[id^=type]").change(function(){
-    if($(this).val()==2){
-      $(this).prev("font").removeClass("bold");
-      $(this).prev("font").addClass("padding20");
-    }else{
-      $(this).prev("font").addClass("bold");
-      $(this).prev("font").removeClass("padding20");
-    }
-  });
-
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
   $("select[name=motif]").change(function(){
     if($(this).val().toLowerCase()=="autre" || $(this).val().toLowerCase()=="other"){
