@@ -2845,7 +2845,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='absences/modif2.php';";
 
     // Add pl_position_history table (undo / redo)
-    $sql[] = "CREATE TABLE `{$dbprefix}pl_position_history` (
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}pl_position_history` (
       id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
       perso_ids TEXT NOT NULL,
       date DATE NULL,
