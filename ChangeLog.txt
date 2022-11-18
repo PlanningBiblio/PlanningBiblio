@@ -3,6 +3,32 @@
 - Fixes
 - Plumbing
 
+*** Version 22.10.00       (2022-11-18)    ***
+- Enhancements
+Make disabled notifications should not be considered as an error
+Ignore absence for remote working when importing planning template
+Absence deletion does not affect the pl_poste table anymore
+Show agent that are not on schedule in statistic by agent
+Add legal notices feature
+
+- Fixes
+Working hours: fix quota comparison
+add missing div on template holiday/edit
+Update ics-parser from 1.0.3 to 3.*
+delete references to planning_hebdo_tables
+Fix statistic exports
+Show adequate plannings message for unautorized users
+Fix lack of CSS when adding a reason/status/level/... in Agents, Position, Absences
+
+- Plumbing
+Remove tableSort and tableSort-bis CSS class
+CSS Optimization, remove supernumeraries blanks
+Symfonyze week planning
+Add unit tests for a recurring absence every 2 weeks
+Bump apereo/phpcas from 1.5.0 to 1.6.0
+Add unit tests for index with Planning Not Ready Without Permission
+Move symfonized page permissions to YAML file
+
 *** Version 22.05.00       (2022-06-08)   ***
 - Enhancements
 Planook capabilities

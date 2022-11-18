@@ -10,9 +10,9 @@ $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_
 $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSION['oups']['Auth-Mode'] : '';
 
 // Version
-$version="22.05.00.003"; // xx.xx.xx.xxx
+$version="22.10.00.000"; // xx.xx.xx.xxx
 $GLOBALS['version'] = $version;
-$displayed_version="22.05.00"; // xx.xx.xx
+$displayed_version="22.10.00"; // xx.xx.xx
 
 require_once __DIR__.'/../vendor/autoload.php';
 

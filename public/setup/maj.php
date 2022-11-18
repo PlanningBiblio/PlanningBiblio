@@ -2864,6 +2864,42 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.10.00.000";
+if (version_compare($config['Version'], $v) === -1) {
+    // MT 38200 - move symfonyzed permission to YAML file
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/help';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/calendar';";
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '' WHERE `page`='/absences/info';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/agent';";
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '', `nom` = 'Postes et activités' WHERE `page`='/position';";
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '' WHERE `page`='/config';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/skill';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/skill/add';";
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '' WHERE `page`='/admin/info';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/admin/info/add';";
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '' WHERE `page`='/closingday';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/holiday/index';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/holiday/new';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/holiday/edit';";
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '' WHERE `page`='/statistics/attendeesmissing';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/holiday';";
+
+    // MT38196 symfonyze week planning.
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/semaine.php';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/index.php';";
+
+    // Remove table planning_hebdo_periodes.
+    $sql[] = "DROP TABLE IF EXISTS `{$dbprefix}planning_hebdo_periodes`;";
+
+    // Restore right 301.
+    $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Poste', 301, 'Création / modification des plannings, utilisation et gestion des modèles', '', 'Planning', 110);";
+
+    // Add legal notices option.
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('legalNotices', 'textarea', '', 'Mentions légales (exemple : notice RGPD). La syntaxe markdown peut être utilisée pour la saisie.', 'Mentions légales', 10);";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
