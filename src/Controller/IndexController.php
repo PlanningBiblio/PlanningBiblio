@@ -53,7 +53,7 @@ class IndexController extends BaseController
         $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
 
         // Show all week plannings.
-        if (!$request->get('date') and isset($_SESSION['week']) and $_SESSION['week']) {
+        if (!$request->get('date') and !empty($_SESSION['week'])) {
           return $this->redirectToRoute('planning.week');
         }
 
@@ -182,7 +182,7 @@ class IndexController extends BaseController
 
         if (!$verrou and !$autorisationN1) {
             $this->templateParams(array(
-                'absences_planning'   => 0,
+                'absences_planning'   => [],
                 'presents'            => 0,
                 'tabs'                => 0,
             ));
@@ -204,12 +204,12 @@ class IndexController extends BaseController
             global $absences;
             $absences = $this->getAbsences($date);
 
-            // Show absences for curret site at bottom of the planning
-            $absences_planning = $this->getAbsencesPlanning($date, $site);
-
-            // $conges will be used in the cellule_poste function.
+            // $conges will be used in the cellule_poste function and added to $absences_planning
             global $conges;
             $conges = $this->getHolidays($date);
+
+            // Show absences for current site at bottom of the planning
+            $absences_planning = $this->getAbsencesPlanning($date, $site, $conges);
 
             // ------------ Planning display --------------------//
             // Separation lines
@@ -359,170 +359,45 @@ class IndexController extends BaseController
             // Affichage des absences
             if ($this->config('Absences-planning')) {
 
-                // Add holidays
-                foreach ($conges as $elem) {
-                    $elem['motif'] = 'Congé payé';
-                    $absences_planning[] = $elem;
-                    $absences_id[] = $elem['perso_id'];
-                }
+                $this->templateParams(array('absences_planning' => $absences_planning));
 
-                usort($absences_planning, 'cmp_nom_prenom_debut_fin');
+                if ($this->config('Absences-planning') == 3) {
 
-                switch ($this->config('Absences-planning')) {
-                    case "1":
-                        if (!empty($absences_planning)) {
-                            $class="tr1";
-                            foreach ($absences_planning as $index => $elem) {
-                                $absences_planning[$index]['valide'] = 1;
-                                if ($elem['valide'] <= 0 and $this->config('Absences-non-validees') == 0) {
-                                    $absences_planning[$index]['valide'] = 0;
-                                    continue;
-                                }
-
-                                $heures=null;
-                                $debut=null;
-                                $fin=null;
-                                if ($elem['debut']>"$date 00:00:00") {
-                                    $debut=substr($elem['debut'], -8);
-                                }
-                                if ($elem['fin']<"$date 23:59:59") {
-                                    $fin=substr($elem['fin'], -8);
-                                }
-                                if ($debut and $fin) {
-                                    $heures=" de ".heure2($debut)." à ".heure2($fin);
-                                } elseif ($debut) {
-                                    $heures=" à partir de ".heure2($debut);
-                                } elseif ($fin) {
-                                    $heures=" jusqu'à ".heure2($fin);
-                                }
+                    $heures=null;
+                    $presents=array();
+                    $absents=array(2); // 2 = Remove "Everybody" user
                 
-                                $bold = null;
-                                $nonValidee = null;
-                                if ($this->config('Absences-non-validees') == 1) {
-                                    if ($elem['valide'] > 0) {
-                                        $bold = 'bold';
-                                    } else {
-                                        $nonValidee = " (non validée)";
-                                    }
-                                }
-
-                                $class=$class=="tr1"?"tr2":"tr1";
-                                $absences_planning[$index]['class'] = $class;
-                                $absences_planning[$index]['bold'] = $bold;
-                                $absences_planning[$index]['heures'] = $heures;
-                                $absences_planning[$index]['nonValidee'] = $nonValidee;
+                    // Excludes those who are absent
+                    // all the day
+                    if (!empty($absences_planning)) {
+                        foreach ($absences_planning as $elem) {
+                            if ($elem['debut'] <= $date . ' 00:00:00'
+                                and $elem['fin'] >= $date . ' 23:59:59'
+                                and $elem['valide'] > 0) {
+                                $absents[]=$elem['perso_id'];
                             }
                         }
-                        break;
-
-                    case "2":
-                        if (!empty($absences_planning)) {
-                            foreach ($absences_planning as $index => $elem) {
-                                $absences_planning[$index]['valide'] = 1;
-                                if ($elem['valide'] <= 0 and $this->config('Absences-non-validees') == 0) {
-                                    $absences_planning[$index]['valide'] = 0;
-                                    continue;
-                                }
-
-                                $bold = null;
-                                $nonValidee = null;
-                                if ($this->config('Absences-non-validees') == 1) {
-                                    if ($elem['valide'] > 0) {
-                                        $bold = 'bold';
-                                    } else {
-                                        $nonValidee = " (non validée)";
-                                    }
-                                }
-
-                                $absences_planning[$index]['bold'] = $bold;
-                                $absences_planning[$index]['nonValidee'] = $nonValidee;
-                            }
-                        }
-                        break;
-
-                    case "3":
-                        $heures=null;
-                        $presents=array();
-                        $absents=array(2); // 2 = Remove "Everybody" user
-
-                        // Excludes those who are absent
-                        // all the day
-                        if (!empty($absences_planning)) {
-                            foreach ($absences_planning as $elem) {
-                                if ($elem['debut'] <= $date . ' 00:00:00'
-                                    and $elem['fin'] >= $date . ' 23:59:59'
-                                    and $elem['valide'] > 0) {
-                                    $absents[]=$elem['perso_id'];
-                                }
-                            }
-                        }
-
-                        // Looking for agents to exclude
-                        // because they don't work this day
-                        $db = new \db();
-                        $dateSQL=$db->escapeString($date);
-
-                        $presentset = new PresentSet($dateSQL, $d, $absents, $db);
-                        $presents = $presentset->all();
-
-                        // Presents list
-                        $class="tr1";
-                        foreach ($presents as $index => $elem) {
-                            $class=$class=="tr1"?"tr2":"tr1";
-                            $presents[$index]['class'] = $class;
-                            $presents[$index]['heures'] = html_entity_decode($elem['heures']);
-                        }
-                        $this->templateParams(array('presents' => $presents));
-
-                        // Absents list
-                        $class="tr1";
-                        foreach ($absences_planning as $index => $elem) {
-                            $absences_planning[$index]['valide'] = 1;
-                            if ($elem['valide'] <= 0 and $this->config('Absences-non-validees') == 0) {
-                                $absences_planning[$index]['valide'] = 0;
-                                continue;
-                            }
-
-                            $heures=null;
-                            $debut=null;
-                            $fin=null;
-                            if ($elem['debut']>"$date 00:00:00") {
-                                $debut=substr($elem['debut'], -8);
-                            }
-                            if ($elem['fin']<"$date 23:59:59") {
-                                $fin=substr($elem['fin'], -8);
-                            }
-                            if ($debut and $fin) {
-                                $heures=", ".heure2($debut)." - ".heure2($fin);
-                            } elseif ($debut) {
-                                $heures=" à partir de ".heure2($debut);
-                            } elseif ($fin) {
-                                $heures=" jusqu'à ".heure2($fin);
-                            }
-
-                            $class=$class=="tr1"?"tr2":"tr1";
-
-                            $bold = null;
-                            $nonValidee = null;
-
-                            if ($this->config('Absences-non-validees') == 1) {
-                                if ($elem['valide'] > 0) {
-                                    $bold = 'bold';
-                                } else {
-                                    $nonValidee = " (non validée)";
-                                }
-                            }
-
-                            $absences_planning[$index]['bold'] = '';
-                            $absences_planning[$index]['class'] = $class;
-                            $absences_planning[$index]['heures'] = $heures;
-                            $absences_planning[$index]['nonValidee'] = $nonValidee;
-                        }
-                        break;
+                    }
+                
+                    // Looking for agents to exclude
+                    // because they don't work this day
+                    $db = new \db();
+                    $dateSQL=$db->escapeString($date);
+                
+                    $presentset = new PresentSet($dateSQL, $d, $absents, $db);
+                    $presents = $presentset->all();
+                
+                    // Presents list
+                    $class = 'tr1';
+                    foreach ($presents as $index => $elem) {
+                        $class = $class == 'tr1' ? 'tr2' : 'tr1';
+                        $presents[$index]['class'] = $class;
+                        $presents[$index]['heures'] = html_entity_decode($elem['heures']);
+                    }
+                    $this->templateParams(array('presents' => $presents));
                 }
             }
-
-            $this->templateParams(array('absences_planning' => $absences_planning));
+                
         }
 
         return $this->output('planning/poste/index.html.twig');
@@ -1267,13 +1142,65 @@ class IndexController extends BaseController
         return $absences;
     }
 
-    private function getAbsencesPlanning($date, $site)
+    private function getAbsencesPlanning($date, $site, $conges)
     {
         $a = new \absences();
         $a->valide = false;
         $a->documents = false;
         $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, array($site));
-        return $a->elements;
+
+        $absences = $a->elements;
+
+        // Add holidays
+        foreach ($conges as $elem) {
+            $elem['motif'] = 'Congé payé';
+            $absences[] = $elem;
+        }
+
+        usort($absences, 'cmp_nom_prenom_debut_fin');
+
+        $class = 'tr1';
+        foreach ($absences as $index => $elem) {
+            $absences[$index]['valide'] = 1;
+            if ($elem['valide'] <= 0 and $this->config('Absences-non-validees') == 0) {
+                unset ($absences[$index]);
+                continue;
+            }
+
+            $heures = null;
+            $debut = null;
+            $fin = null;
+            if ($elem['debut'] > "$date 00:00:00") {
+                $debut = substr($elem['debut'], -8);
+            }
+            if ($elem['fin']<"$date 23:59:59") {
+                $fin = substr($elem['fin'], -8);
+            }
+            if ($debut and $fin) {
+                $heures = " de ".heure2($debut)." à ".heure2($fin);
+            } elseif ($debut) {
+                $heures = " à partir de ".heure2($debut);
+            } elseif ($fin) {
+                $heures = " jusqu'à ".heure2($fin);
+            }
+
+            $bold = null;
+            $nonValidee = null;
+            if ($this->config('Absences-non-validees') == 1) {
+                if ($elem['valide'] > 0) {
+                    $bold = 'bold';
+                } else {
+                    $nonValidee = " (non validée)";
+                }
+            }
+
+            $class = $class == 'tr1' ? 'tr2' : 'tr1 ';
+            $absences[$index]['class'] = $class . ' ' . $bold;
+            $absences[$index]['heures'] = $heures;
+            $absences[$index]['nonValidee'] = $nonValidee;
+        }
+
+        return $absences;
     }
 
     private function getHolidays($date)
@@ -1355,4 +1282,5 @@ class IndexController extends BaseController
 
         return false;
     }
+
 }
