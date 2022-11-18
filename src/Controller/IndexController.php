@@ -53,7 +53,7 @@ class IndexController extends BaseController
         $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
 
         // Show all week plannings.
-        if (!$request->get('date') and $_SESSION['week']) {
+        if (!$request->get('date') and isset($_SESSION['week']) and $_SESSION['week']) {
           return $this->redirectToRoute('planning.week');
         }
 
