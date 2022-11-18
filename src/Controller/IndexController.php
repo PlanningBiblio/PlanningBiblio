@@ -154,6 +154,7 @@ class IndexController extends BaseController
                     'no_week_planning' => $pasDeDonneesSemaine,
                     'groups' => $groupes,
                     'week' => $semaine,
+                    'tab' => $tab,
             ));
 
             return $this->output('planning/poste/index.html.twig');
