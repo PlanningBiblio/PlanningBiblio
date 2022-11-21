@@ -24,6 +24,8 @@ class ControllerAuthorizationListener
 
     protected $entityManager;
 
+    protected $anonymous_pages = array('/index', '/week', '/help');
+
     public function __construct(\Twig\Environment $twig, EntityManagerInterface $em)
     {
         $this->permissions = Yaml::parseFile(__DIR__."/../../config/permissions.yaml");
@@ -53,10 +55,8 @@ class ControllerAuthorizationListener
         $route = $event->getRequest()->attributes->get('_route');
 
         if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
-            foreach ($accesses as $access) {
-                if ($access->groupe_id() == '99') {
-                    return;
-                }
+            if (in_array($page, $this->anonymous_pages)) {
+                return;
             }
             $this->triggerAccessDenied($event);
             return;
