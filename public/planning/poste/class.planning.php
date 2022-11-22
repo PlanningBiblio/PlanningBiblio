@@ -16,6 +16,7 @@ Utilisée par les fichiers du dossier "planning/poste"
 */
 
 use App\Model\Agent;
+use App\Model\AbsenceReason;
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
@@ -396,6 +397,10 @@ class planning
         $p=new postes();
         $p->fetch();
         $postes=$p->elements;
+
+        // Get teleworking reasons
+        $teleworking_reasons = $entityManager->getRepository(AbsenceReason::class)
+            ->getRemoteWorkingDescriptions();
     
         // Recherche des informations dans la table pl_poste pour la date $this->date
         $date=$this->date;
@@ -417,6 +422,20 @@ class planning
             $end = $elem['date'] . ' ' . $elem["fin"];
             if ($agent->isAbsentOn($start, $end)) {
                 $elem["absent"] = 1;
+
+                $position = isset($postes[$elem['poste']]) ? $postes[$elem['poste']] : null;
+                if ($elem["absent"] ==  1 && $position && $position['teleworking'] == 1) {
+                    $filter = '';
+                    $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons))
+                        ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
+                    $filter .= " $teleworking_exception";
+
+                    $db = new \db();
+                    $db->select('absences', '*', "`debut`<'$end' AND `fin`>'$start' AND `perso_id`='$id' $filter ");
+                    if (!$db->result) {
+                        $elem["absent"] = 0;
+                    }
+                }
             }
 
             if ($agent->isOnVacationOn($start, $end)) {
