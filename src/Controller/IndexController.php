@@ -1195,7 +1195,7 @@ class IndexController extends BaseController
             }
 
             if ($this->config('Absences-planning') != 2) {
-                $class = $class == 'tr1' ? 'tr2' : 'tr1 ';
+                $class = $class == 'tr1' ? 'tr2' : 'tr1';
                 $absences[$index]['class'] = $class . ' ' . $bold;
             } else {
                 $absences[$index]['class'] = $bold;
