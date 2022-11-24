@@ -420,24 +420,23 @@ class planning
             $agent = $agents[$id];
             $start = $elem['date'] . ' ' . $elem["debut"];
             $end = $elem['date'] . ' ' . $elem["fin"];
-            if ($agent->isAbsentOn($start, $end)) {
-                $elem["absent"] = 1;
 
-                $position = isset($postes[$elem['poste']]) ? $postes[$elem['poste']] : null;
-                if ($elem["absent"] ==  1 && $position && $position['teleworking'] == 1) {
-                    $filter = '';
-                    $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons))
-                        ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
-                    $filter .= " $teleworking_exception";
+            // Looking for absences.
+            $filter = '';
+            $position = isset($postes[$elem['poste']]) ? $postes[$elem['poste']] : null;
+            if ($position && $position['teleworking'] == 1) {
+                $teleworking_exception = (!empty($teleworking_reasons))
+                    ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')"
+                    : null;
 
-                    $db = new \db();
-                    $db->select('absences', '*', "`debut`<'$end' AND `fin`>'$start' AND `perso_id`='$id' $filter ");
-                    if (!$db->result) {
-                        $elem["absent"] = 0;
-                    }
-                }
+                $filter .= " $teleworking_exception";
             }
 
+            $db = new \db();
+            $db->select('absences', '*', "`debut`<'$end' AND `fin`>'$start' AND `perso_id`='$id' $filter ");
+            $elem['absent'] = $db->result ? 1 : 0;
+
+            // Looking for holidays.
             if ($agent->isOnVacationOn($start, $end)) {
                 $elem["absent"] = 1;
             }
