@@ -211,7 +211,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `depart` date NOT NULL DEFAULT '0000-00-00',
   `postes` text NOT NULL,
   `actif` varchar(20) NOT NULL DEFAULT 'true',
-  `droits` varchar(500) NOT NULL,
+  `droits` TEXT COLLATE utf8mb4_unicode_ci NOT NULL,
   `login` varchar(100) NOT NULL DEFAULT '',
   `password` varchar(255) NOT NULL DEFAULT '',
   `commentaires` text NOT NULL,
