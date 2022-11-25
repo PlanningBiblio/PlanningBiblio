@@ -49,4 +49,36 @@ class SkillRepository extends EntityRepository
         return $deleted_skill;
     }
 
+    public function delete()
+    {
+        $db=new \db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->update("activites", array("supprime"=>"SYSDATE"), array("id"=>$this->id));
+    }
+
+    public function all()
+    {
+        $activites=array();
+        $db=new \db();
+        $db->sanitize_string = false;
+        if ($this->deleted) {
+            $db->select2("activites");
+        } else {
+            $db->select2("activites", null, array("supprime"=>null));
+        }
+      
+        if ($db->result) {
+            $activites=$db->result;
+        }
+    
+        usort($activites, "cmp_nom");
+    
+        $tmp=array();
+        foreach ($activites as $elem) {
+            $tmp[$elem['id']]=$elem;
+        }
+        $activites=$tmp;
+        $this->elements=$activites;
+    }
+
 }

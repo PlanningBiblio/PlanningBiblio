@@ -27,7 +27,6 @@ require_once "../../include/config.php";
 require_once "../../init_ajax.php";
 require_once "../../include/function.php";
 require_once "../../absences/class.absences.php";
-require_once "../../activites/class.activites.php";
 require_once "class.planning.php";
 require_once __DIR__."/../volants/class.volants.php";
 require_once __DIR__."/../../init_ajax.php";
@@ -268,9 +267,9 @@ $tab=$db->result;
 usort($tab, "cmp_nom_prenom");
 
 // Ajoute les qualifications de chaque agent (activités) dans le tableaux $cellules pour personnaliser l'affichage des cellules en fonction des qualifications
-$a=new activites();
+$a=$entityManager->getRepository(Skill::class);
 $a->deleted=true;
-$a->fetch();
+$a->all();
 $activites=$a->elements;
 
 foreach ($tab as $k => $v) {
