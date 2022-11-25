@@ -2813,7 +2813,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='default' WHERE `nom`='Affichage-theme';";
 
     // Password complexity.
-    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Auth-PasswordLength', 'text', '8', 'Nombre minimum de caractères obligatoires pour le changement de mot de passe.','Authentification', '', '20');";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Auth-PasswordLength', 'text', '8', 'Nombre minimum de caractères obligatoires pour le changement de mot de passe.','Authentification', '', '20');";
 
     // remove holiday cet
     $sql[] = "DROP TABLE IF EXISTS `{$dbprefix}conges_cet`;";
@@ -2895,7 +2895,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Poste', 301, 'Création / modification des plannings, utilisation et gestion des modèles', '', 'Planning', 110);";
 
     // Add legal notices option.
-    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('legalNotices', 'textarea', '', 'Mentions légales (exemple : notice RGPD). La syntaxe markdown peut être utilisée pour la saisie.', 'Mentions légales', 10);";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('legalNotices', 'textarea', '', 'Mentions légales (exemple : notice RGPD). La syntaxe markdown peut être utilisée pour la saisie.', 'Mentions légales', 10);";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
