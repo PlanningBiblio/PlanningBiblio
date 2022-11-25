@@ -2793,7 +2793,7 @@ $v="22.05.00.001";
 if (version_compare($config['Version'], $v) === -1) {
 
     // Planook configuration is made to hide some information in order to propose a light version of Planno
-    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Planook', 'hidden', '0', 'Version Lite Planook',' Divers','','0');";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Planook', 'hidden', '0', 'Version Lite Planook',' Divers','','0');";
 
     // Hide statistics menu
     $sql[] = "UPDATE `{$dbprefix}menu` SET `condition` = 'config!=Planook' WHERE `niveau1` = '40';";
