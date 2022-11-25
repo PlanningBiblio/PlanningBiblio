@@ -42,7 +42,6 @@ require_once "../include/config.php";
 require_once "../include/function.php";
 require_once "../absences/class.absences.php";
 require_once "../personnel/class.personnel.php";
-require_once "../postes/class.postes.php";
 require_once __DIR__ . '/../init_entitymanager.php';
 
 $CSRFToken = CSRFToken();
@@ -114,8 +113,7 @@ if ($db->result) {
 }
 
 // Recherche des postes pour affichage du nom des postes
-$p=new postes();
-$p->fetch();
+$p=$entityManager->getRepository(Position::class)->all();
 $postes=$p->elements;
 
 // Liste des sites
