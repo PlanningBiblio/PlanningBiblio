@@ -137,8 +137,15 @@ class CJICS
         }
 
         // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
-        $ical   = new ICal($src);
-        $events = $ical->cal['VEVENT'];
+        try {
+            $ical   = new ICal($src);
+            $events = $ical->cal['VEVENT'];
+        } catch(Exception $e) {
+            if ($this->logs) {
+                logs("Agent #$perso_id : Impossible de lire le fichier $src", "ICS", $CSRFToken);
+                return false;
+            }
+        }
 
         // Récupération du nom du calendrier
         $calName = $ical->calendarName();
