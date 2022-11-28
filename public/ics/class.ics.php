@@ -142,7 +142,9 @@ class CJICS
             $events = $ical->cal['VEVENT'];
         } catch(Exception $e) {
             if ($this->logs) {
+                $error = $e->getMessage();
                 logs("Agent #$perso_id : Impossible de lire le fichier $src", "ICS", $CSRFToken);
+                logs("Agent #$perso_id : Error : $error", "ICS", $CSRFToken);
                 return false;
             }
         }
