@@ -23,21 +23,28 @@ if (!isset($version)) {
 
 function authCAS($logger)
 {
-    if ($GLOBALS['config']['CAS-Debug']) {
-        $tmp_dir=sys_get_temp_dir();
+    $config = $GLOBALS['config'];
+
+    if ($config['CAS-Debug']) {
         phpCAS::setLogger($logger);
         phpCAS::setVerbose(true);
     }
-    phpCAS::client($GLOBALS['config']['CAS-Version'], $GLOBALS['config']['CAS-Hostname'], intval($GLOBALS['config']['CAS-Port']), $GLOBALS['config']['CAS-URI'], false);
-    phpCAS::setExtraCurlOption(CURLOPT_SSLVERSION, intval($GLOBALS['config']['CAS-SSLVersion']));
-    if ($GLOBALS['config']['CAS-CACert']) {
-        phpCAS::setCasServerCACert($GLOBALS['config']['CAS-CACert']);
+
+    $base_schema = $config['CAS-Port'] == '80' ? 'http' : 'https';
+    $base_port = in_array($config['CAS-Port'], [80, 443]) ? null : ": {$config['CAS-Port']}";
+    $base_url = $base_schema . '://' . $config['CAS-Hostname'] . $base_port;
+
+    phpCAS::client($config['CAS-Version'], $config['CAS-Hostname'], intval($config['CAS-Port']), $config['CAS-URI'], $base_url, false);
+
+    phpCAS::setExtraCurlOption(CURLOPT_SSLVERSION, intval($config['CAS-SSLVersion']));
+    if ($config['CAS-CACert']) {
+        phpCAS::setCasServerCACert($config['CAS-CACert']);
     } else {
         phpCAS::setNoCasServerValidation();
     }
 
-    if (!empty($GLOBALS['config']['CAS-ServiceURL'])) {
-        phpCAS::setFixedServiceURL($GLOBALS['config']['CAS-ServiceURL']);
+    if (!empty($config['CAS-ServiceURL'])) {
+        phpCAS::setFixedServiceURL($config['CAS-ServiceURL']);
     }
 
     phpCAS::forceAuthentication();
