@@ -2763,6 +2763,31 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.04.01.001";
+if (version_compare($config['Version'], $v) === -1) {
+    // MT 35062. New validation schema.
+
+    if (!column_exists("{$dbprefix}responsables", 'notification_level1')) {
+        $sql[] = "ALTER TABLE `{$dbprefix}responsables` CHANGE `notification` `notification_level1` INT(1) NOT NULL DEFAULT '0'";
+    }
+
+    if (!column_exists("{$dbprefix}responsables", 'notification_level2')) {
+        $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN `notification_level2` INT(1) NOT NULL DEFAULT '0' AFTER `notification_level1`";
+    }
+
+    if (!column_exists("{$dbprefix}responsables", 'level1')) {
+        $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN `level1` INT(1) NOT NULL DEFAULT '1' AFTER `responsable`";
+    }
+
+    if (!column_exists("{$dbprefix}responsables", 'level2')) {
+        $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN `level2` INT(1) NOT NULL DEFAULT '0' AFTER `level1`";
+    }
+
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Absences-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"L\'absence doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Absences', 'La validation niveau 2 des absences peut se faire directement ou doit attendre la validation niveau 1', '31')";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
