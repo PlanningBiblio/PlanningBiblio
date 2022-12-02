@@ -32,6 +32,7 @@ use App\Model\Agent;
 class conges
 {
     public $agent=null;
+    public $agents = array();
     public $agents_supprimes=array(0);
     public $admin=false;
     public $annee=null;
@@ -521,21 +522,15 @@ class conges
         // Affichage ou non des crédits des agents supprimés
         $supprime=implode("','", $this->agents_supprimes);
 
-        // Recherche des agents
-        // N'affiche que les agents des sites gérés (Multisites seulement)
-        $sitesReq=null;
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            $tmp=array();
-            if (!empty($this->sites)) {
-                foreach ($this->sites as $elem) {
-                    $tmp[]="sites LIKE '%\"$elem\"%'";
-                    $sitesReq=" AND (".implode(" OR ", $tmp).") ";
-                }
-            }
+        // Show managed agents only
+        $perso_ids = array();
+        foreach ($this->agents as $agent) {
+            $perso_ids[] = $agent->id();
         }
+        $agents_req = 'AND `id` IN (' . implode(',', $perso_ids) . ')';
 
         $db=new db();
-        $db->select("personnel", "id,nom,prenom,conges_credit,conges_reliquat,conges_anticipation,comp_time,conges_annuel", "`supprime` IN ('$supprime') AND `id`<>'2' $sitesReq");
+        $db->select("personnel", "id,nom,prenom,conges_credit,conges_reliquat,conges_anticipation,comp_time,conges_annuel", "`supprime` IN ('$supprime') AND `id`<>'2' $agents_req");
         if (!$db->result) {
             return false;
         }
