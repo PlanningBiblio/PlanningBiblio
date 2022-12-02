@@ -722,9 +722,6 @@ class HolidayController extends BaseController
         if ($agents_supprimes) {
             $c->agents_supprimes = array(0,1);
         }
-        if ($this->config('Multisites-nombre') > 1) {
-            $c->sites = $sites;
-        }
         $c->agents = $managed;
         $c->fetchAllCredits();
 
