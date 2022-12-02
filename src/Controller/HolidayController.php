@@ -712,6 +712,12 @@ class HolidayController extends BaseController
         $checked3=$credits_en_attente?"checked='checked'":null;
         $checked4=$hours_to_days?"checked='checked'":null;
 
+        // Look for managed agents only
+        $managed = $this->entityManager
+            ->getRepository(Agent::class)
+            ->setModule('holiday')
+            ->getManagedFor($_SESSION['login_id'], $agents_supprimes);
+
         $c = new \conges();
         if ($agents_supprimes) {
             $c->agents_supprimes = array(0,1);
@@ -719,6 +725,7 @@ class HolidayController extends BaseController
         if ($this->config('Multisites-nombre') > 1) {
             $c->sites = $sites;
         }
+        $c->agents = $managed;
         $c->fetchAllCredits();
 
         $this->templateParams(array(
