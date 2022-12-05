@@ -451,6 +451,7 @@ $sql[]="CREATE TABLE `{$dbprefix}cron` (
   `command` VARCHAR(200), 
   `comments` VARCHAR(500),
   `last` DATETIME NULL DEFAULT '0000-00-00 00:00:00', 
+  `disabled` TINYINT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
