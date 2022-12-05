@@ -3,6 +3,17 @@
 - Fixes
 - Plumbing
 
+*** Version 22.10.01       (2022-12-05)    ***
+- Fixes
+Restore access to planning and page for anonymous users
+Fix duplicate display of absence list
+Do not add tr1/tr2 classes on DataTable rows
+Restore odd/even lines in absences table
+Fix a migration error
+Catch exceptions when parsing ICS files
+Make personnel.droits a text column
+CAS Auth: set the required param "CAS base URL"
+
 *** Version 22.10.00       (2022-11-18)    ***
 - Enhancements
 Make disabled notifications should not be considered as an error

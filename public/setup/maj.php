@@ -2955,6 +2955,13 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.10.01.000";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `droits` `droits` TEXT COLLATE utf8mb4_unicode_ci NOT NULL;";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
