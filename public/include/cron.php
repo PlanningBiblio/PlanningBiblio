@@ -18,6 +18,8 @@ A améliorer :  pour le moment, chaque ligne est exécutée à la première conn
 Page appelée par le fichier index.php
 */
 
+require_once(__DIR__ . '/../../public/include/db.php');
+
 if (php_sapi_name() != 'cli') {
 
     // Dates
@@ -73,7 +75,7 @@ if (php_sapi_name() != 'cli') {
                 if ($elemCron['last'] < $command_date) {
 
                    // on exécute la commande
-                    include __DIR__ . '/../' . $elemCron['command'];
+                    include(__DIR__ . '/../../src/Cron/Legacy/' . $elemCron['command']);
 
                     // On met à jour la date dans la base de données
                     $dbCron2=new db();

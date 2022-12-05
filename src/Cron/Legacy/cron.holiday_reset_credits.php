@@ -16,8 +16,9 @@ Page appelée par le fichier include/cron.php
 Met à jour les crédits de congés
 */
 
-require_once "class.conges.php";
-require_once "personnel/class.personnel.php";
+require_once(__DIR__ . '/../../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../../public/include/db.php');
 
 // Ajout d'une ligne d'information dans le tableau des congés
 $p=new personnel();
