@@ -14,7 +14,8 @@ Fichier executant des taches planifiées quotidiennement pour le module planning
 Page appelée par le fichier include/cron.php
 */
 
-require_once "class.planningHebdo.php";
+require_once(__DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php');
+require_once(__DIR__ . '/../../../public/include/db.php');
 
 $p=new planningHebdo();
 $p->debut=date("Y-m-d");

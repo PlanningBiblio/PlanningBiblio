@@ -1,23 +1,24 @@
 <?php
 /**
-Planning Biblio, Plugin Conges Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
-Fichier : conges/cron.jan1.php
-Création : 13 août 2013
-Dernière modification : 10 février 2018
-@author Jérôme Combes <jerome@planningbiblio.fr>
+Fichier : src/Cron/Legacy/cron.holiday_reset_comp_time.php
+Création : 5 décembre 2022
+Dernière modification : 5 décembre 2022
+@author Alex Arnaud <alex.arnaud@biblibre.com>
 
 Description :
-Fichier executant des taches planifiées au 1er janvier pour le plugin Conges.
+Fichier executant des taches planifiées au 1er septembre pour le plugin Conges.
 Page appelée par le fichier include/cron.php
-Supprime le reliquat à tous les agents
+Met à jour les crédits de récupération
 */
 
-require_once "class.conges.php";
-require_once "personnel/class.personnel.php";
+require_once(__DIR__ . '/../../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../../public/include/db.php');
 
 // Ajout d'une ligne d'information dans le tableau des congés
 $p=new personnel();
@@ -26,10 +27,10 @@ $p->fetch();
 if ($p->elements) {
     foreach ($p->elements as $elem) {
         $credits=array();
+        $credits['comp_time'] = 0;
         $credits['conges_credit'] = $elem['conges_credit'];
-        $credits['comp_time'] = $elem['comp_time'];
         $credits['conges_anticipation'] = $elem['conges_anticipation'];
-        $credits['conges_reliquat'] = 0;
+        $credits['conges_reliquat'] = $elem['conges_reliquat'];
 
         $c=new conges();
         $c->perso_id=$elem['id'];
@@ -41,4 +42,4 @@ if ($p->elements) {
 // Modifie les crédits
 $db=new db();
 $db->CSRFToken = $CSRFSession;
-$db->update('personnel', array('conges_reliquat' => '0.00'));
+$db->update("personnel", "comp_time='0.00'");
