@@ -433,7 +433,7 @@ class planning
             }
 
             $db = new \db();
-            $db->select('absences', '*', "`debut`<'$end' AND `fin`>'$start' AND `perso_id`='$id' $filter ");
+            $db->select('absences', '*', "`debut`<'$end' AND `fin`>'$start' AND `valide` > 0 AND `perso_id`='$id' $filter ");
             $elem['absent'] = $db->result ? 1 : 0;
 
             // Looking for holidays.
