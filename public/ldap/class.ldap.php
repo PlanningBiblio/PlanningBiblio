@@ -50,6 +50,16 @@ function authCAS($logger)
     phpCAS::forceAuthentication();
 
     $login=phpCAS::getUser();
+
+    if (!empty($config['CAS-LoginAttribute'])) {
+        $attr = $config['CAS-LoginAttribute'];
+        $attributes = phpCAS::getAttributes();
+
+        if (!empty($attributes[$attr]) and is_string($attributes[$attr])) {
+            $login = $attributes[$attr];
+        }
+    }
+
     $login=filter_var($login, FILTER_SANITIZE_STRING);
 
     // Si authentification CAS et utilisateur existe : retourne son login
