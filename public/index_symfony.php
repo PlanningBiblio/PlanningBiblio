@@ -12,6 +12,10 @@ include_once(__DIR__.'/../init/init_menu.php');
 include_once(__DIR__.'/../init/init_templates.php');
 include_once(__DIR__ . '/../init/common.php');
 
+if (isset($_SESSION['login_id'])) {
+    require_once(__DIR__.'/include/cron.php');
+}
+
 if ($_SERVER['APP_DEBUG']) {
     #umask(0000);
 
