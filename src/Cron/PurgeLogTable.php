@@ -42,9 +42,9 @@ Example: php bin/console PlanningBiblio:PurgeLogTable \"12 MONTH\"
         // TODO: Now that the model exists, I could be replaced by a query builder.
         $query = "DELETE FROM " . $_ENV['DATABASE_PREFIX'] . "log WHERE timestamp < (NOW() - INTERVAL $delay)";
         $statement = $em->getConnection()->prepare($query);
-        $statement->execute();
+        $result = $statement->execute();
         $logger = new Logger($em, $input->getOption('stdout'));
-        $logger->log("Log table entries older than $delay purged (" . $statement->rowCount() . " deleted)", "PurgeLogTable");
+        $logger->log("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)", "PurgeLogTable");
         $this->release();
     }
 }
