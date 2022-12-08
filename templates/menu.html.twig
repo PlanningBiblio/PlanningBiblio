@@ -71,7 +71,7 @@
           <td colspan='2' style='text-align:right;'>
             {% if planninghebdo or ics_export %}
               <a href='{{ asset("/myaccount") }}' class='myAccountLink'>Mon Compte</a>
-            {% elseif oups_auth_mode == 'SQL' %}
+            {% elseif config('Auth-Mode') == 'SQL' %}
                 <a href='{{ asset("agent/password") }}' class='myAccountLink'>Changer de mot de passe</a>
             {% endif %}
             <div id='logout_text'>
