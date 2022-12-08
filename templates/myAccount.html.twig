@@ -136,16 +136,8 @@
       {% endif %}
       <!-- Mot de Passe -->
       <div id='motDePasse' style='margin-left:80px;display:none;'>
-          <h3>Changement de mot de passe</h3>
-        {% if config('demo') %}
-          Vous utilisez une version de démonstration.<br/>
-          Votre mot de passe ne peut pas être modifié.<br/>
-        {% elseif auth_mode == "SQL" %}
-          {% include 'agents/elements/change_password_div.html.twig' %}
-        {% else %}
-          Vous utilisez un système d'authentification centralisé.<br/>
-          Votre mot de passe ne peut pas être modifié à partir du planning.<br/>
-        {% endif %}
+        <h3>Changement de mot de passe</h3>
+        {% include 'agents/elements/change_password_div.html.twig' %}
       </div> <!-- motDePasse -->
       <!-- Calendrier ICS -->
       <div id='ics' style='margin-left:80px;display:none;'>
