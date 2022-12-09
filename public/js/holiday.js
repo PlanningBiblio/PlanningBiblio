@@ -5,7 +5,7 @@ $( document ).ready(function() {
 
 $(function(){
   $('select[name="perso_id"]').on('change', function() {
-    if (window.location.href.includes('/comptime/add')) {
+    if (window.location.href.includes(url('comptime/add'))) {
       return false;
     }
 
@@ -20,7 +20,7 @@ $(function(){
       return false;
     }
 
-    document.location.href="/holiday/new/" + this.value;
+    document.location.href = url('holiday/new/') + this.value;
   });
 
   $('select[name="debit"]').on('change', function() {
@@ -42,7 +42,7 @@ $(function(){
   });
 
   $('#cancel').on('click', function() {
-    document.location.href="/holiday/index";
+    document.location.href = url('holiday/index');
   });
 
   $('#validate').on('click', function() {
