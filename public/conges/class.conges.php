@@ -103,7 +103,7 @@ class conges
         }
 
         // En cas de validation, on débite les crédits dans la fiche de l'agent et on barre l'agent s'il est déjà placé dans le planning
-        if ($data['valide_init'] == 1 and !$db->error) {
+        if (isset($data['valide_init']) and $data['valide_init'] == 1 and !$db->error) {
             $data['id'] = $this->id;
             $this->calcCreditsOnValidation($data);
         }

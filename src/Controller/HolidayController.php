@@ -90,12 +90,12 @@ class HolidayController extends BaseController
             $c->agents_supprimes = array(0,1);
         }
 
-        $addLink = '/holiday/new';
+        $addLink = 'holiday/new';
         // Si la gestion des congés et des récupérations est dissociée, on ne recherche que les infos voulues
         if ($this->config('Conges-Recuperations') == '1') {
             if ($voir_recup) {
                 $c->debit='recuperation';
-                $addLink = '/index.php?page=conges/recup_pose.php';
+                $addLink = 'comptime/add';
             } else {
                 $c->debit='credit';
             }
