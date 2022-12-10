@@ -1512,43 +1512,42 @@ class AgentController extends BaseController
         // Initialisation des variables
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');
-        $hasDate = $request->get('hasDate') ? 1 : null;
         $date = $request->get('date');
-        $date = dateSQL($date);
 
-         // Disallow admin deletion
+        // Disallow admin deletion
         if ($id == 1) {
             return $this->json("error");
+
+        // If the date parameter is given, even if empty : deletion level 1
+        } elseif ($date !== null) {
+            $date = dateSQL($date);
+            // Mise à jour de la table personnel
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update("personnel", array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date), array("id"=>$id));
+
+            // Mise à jour de la table pl_poste
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "$id", 'date' =>">$date"));
+
+            // Mise à jour de la table responsables
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("responsables", array('responsable' => $id));
+
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("responsables", array('perso_id' => $id));
+
+            return $this->json("Ok");
+
+        // If the date parameter is not given : deletion level 2
         } else {
-            if ($hasDate == 1){ //Si date = suppression avec date
-                // Mise à jour de la table personnel
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->update("personnel", array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date), array("id"=>$id));
-
-                // Mise à jour de la table pl_poste
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "$id", 'date' =>">$date"));
-
-                // Mise à jour de la table responsables
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->delete("responsables", array('responsable' => $id));
-
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->delete("responsables", array('perso_id' => $id));
-
-                return $this->json("Ok");
-
-            } else { //Sinon = suppression définitive
-                $p = new \personnel();
-                $p->CSRFToken = $CSRFToken;
-                $p->delete($id);
-                return $this->json("Definitif");
-            }
-
+            $p = new \personnel();
+            $p->CSRFToken = $CSRFToken;
+            $p->delete($id);
+            return $this->json("Definitif");
         }
     }
 

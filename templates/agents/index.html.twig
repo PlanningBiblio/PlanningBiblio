@@ -69,7 +69,7 @@
               </a>
               {% if rights21 and a.id != login_id and a.id > 1 %}
                 <a href='#' >
-                  <span class='pl-icon pl-icon-drop delete-agent' title='Supprimer' data-id="{{ a.id }}" data-nom="{{ a.surname }} {{ a.name }}"></span>
+                  <span class='pl-icon pl-icon-dropblack delete-agent' title='Supprimer' data-id="{{ a.id }}" data-nom="{{ a.surname }} {{ a.name }}"></span>
                 </a>
               {% endif %}
             </div>
@@ -230,7 +230,7 @@
     </form>
   </div>
 
-  <div id='confirmation'style="display: none;">
+  <div id="confirmation" style="display: none;">
     <h3>Suppression</h3>
     <form name='form' id='confirmation-form' action="{{ asset('/agent') }}"  method='post'>
       <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
@@ -257,7 +257,6 @@
         &nbsp;&nbsp;
         <input type='button' value='Supprimer' id='Supprimer' />
         <input type='hidden' name='id' id='id' value=''>
-        <input type='hidden' name='has-date' id='has-date' value='0'>
       </form>
     </div>
   {% endif %}
@@ -307,14 +306,12 @@
 
           $('#Supprimer').on('click', function(){
             var id = $('#id').val();
-            $("#has-date").attr("value", "1");
             date = $("#delete-date").val();
             CSRFToken = $('#CSRFSession').val();
-            var hasDate = document.getElementById('has-date').value;
             $.ajax({
               url : '{{ asset("agent") }}',
               type : 'DELETE',
-              data : {id: id, CSRFToken: CSRFToken, date: date, hasDate: hasDate},
+              data : {id: id, CSRFToken: CSRFToken, date: date},
               success: function(response){
                 if (response == "Ok"){
                   CJInfo("L'agent a bien été supprimé.","success");
@@ -337,7 +334,7 @@
             $.ajax({
               url : '{{ asset("agent") }}',
               type : 'DELETE',
-              data : {id: id, CSRFToken: CSRFToken, date: null, hasDate: null},
+              data : {id: id, CSRFToken: CSRFToken},
               success: function(response){
                 if (response == "Definitif"){
                   CJInfo("L'agent a été définitivement supprimé.","success"); 
