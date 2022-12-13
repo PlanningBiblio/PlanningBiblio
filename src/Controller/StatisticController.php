@@ -3367,11 +3367,14 @@ class StatisticController extends BaseController
                 $agent[3] = heure4($agent[3]);
             }
 
-            foreach ($tab[$key]['services'] as $service) {
+            sort($tab[$key]['services']);
+            sort($tab[$key]['statuts']);
+
+            foreach ($tab[$key]['services'] as &$service) {
                 $service['nom'] = str_replace("ZZZ_", "", $service['nom']);
                 $service['heures'] = heure4($service['heures']);
             }
-            foreach ($tab[$key]['statuts'] as $statut) {
+            foreach ($tab[$key]['statuts'] as &$statut) {
                 $statut['nom'] = str_replace("ZZZ_", "", $statut['nom']);
                 $statut['heures']= heure4($statut['heures']);
             }
