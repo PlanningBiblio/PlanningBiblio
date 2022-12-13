@@ -123,6 +123,7 @@ $floors = $entityManager->getRepository(SelectFloor::class);
 
 // Récupération des infos sur les agents
 $p=new personnel();
+$p->supprime = array(0,1,2);
 $p->fetch();
 $agents_infos=$p->elements;
 
