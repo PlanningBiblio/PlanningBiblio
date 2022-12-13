@@ -1545,7 +1545,7 @@ class StatisticController extends BaseController
         foreach ($tab as &$elem) {
             $elem['totalHeures'] = is_numeric($elem['totalHeures']) ? heure4($elem['totalHeures']) : "Erreur";
             foreach ($motifs as $motif) {
-                if ($elem[$motif]) {
+                if (!empty($elem[$motif])) {
                     $elem[$motif]['heures'] = is_numeric($elem[$motif]['heures']) ? heure4($elem[$motif]['heures']) : "Erreur";
                 }
             }
