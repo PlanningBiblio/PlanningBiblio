@@ -27,7 +27,7 @@ include_once('init_templates.php');
 include_once(__DIR__ . '/../init/common.php');
 
 require_once(__DIR__.'/include/feries.php');
-if (isset($_SESSION['login_id'])) {
+if (!empty($_SESSION['login_id'])) {
     require_once(__DIR__.'/include/cron.php');
 }
 
