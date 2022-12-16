@@ -16,6 +16,7 @@ class HomeController extends BaseController
      */
     public function index(Request $request)
     {
+        error_log('access home /');
         return $this->redirectToRoute('index');
     }
 }

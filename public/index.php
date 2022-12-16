@@ -19,6 +19,8 @@ Inclut au départ les fichiers config.php, doctype.php et header.php
 Inclut à la fin le fichier footer.php
 */
 
+error_log("access index.php");
+
 use Symfony\Component\HttpFoundation\Request;
 
 include_once('init.php');
