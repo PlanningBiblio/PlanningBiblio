@@ -4,6 +4,7 @@ use App\Model\Agent;
 use App\Model\Absence;
 use App\Model\WeekPlanning;
 use App\Model\PlanningPositionLock;
+use App\Model\PlanningPosition;
 use App\Model\PlanningPositionTabAffectation;
 
 use Symfony\Component\DomCrawler\Crawler;
@@ -19,6 +20,8 @@ class IndexControllerTest extends PLBWebTestCase
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
+        $builder->delete(PlanningPosition::class);
+        $builder->delete(PlanningPositionTabAffectation::class);
 
 
         $client = static::createClient();
