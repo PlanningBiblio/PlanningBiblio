@@ -28,6 +28,9 @@ if ($p->elements) {
     foreach ($p->elements as $elem) {
         $credits=array();
         $credits['comp_time'] = 0;
+        $credits['conges_credit'] = $elem['conges_credit'];
+        $credits['conges_anticipation'] = $elem['conges_anticipation'];
+        $credits['conges_reliquat'] = $elem['conges_reliquat'];
 
         $c=new conges();
         $c->perso_id=$elem['id'];

@@ -35,6 +35,7 @@ if ($p->elements) {
             $credits['comp_time'] = 0;
         } else {
             $credits['conges_reliquat'] = $elem['conges_credit'];
+            $credits['comp_time'] = $elem['comp_time'];
         }
 
         $c=new conges();
