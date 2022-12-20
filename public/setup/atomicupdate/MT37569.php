@@ -9,4 +9,4 @@ $sql[] = "UPDATE `{$dbprefix}cron` SET  `command` = 'cron.holiday_reset_credits.
 
 $sql[] = "INSERT IGNORE INTO `{$dbprefix}cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `comments`) VALUES ( '0', '0', '1', '9', '*', 'cron.holiday_reset_comp_time.php', 'Reset holliday compensatory time');";
 
-$sql[] = "ALTER TABLE `{$dbprefix}cron` ADD COLUMN IF NOT EXISTS `disabled` ENUM('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' AFTER `last`;";
+$sql[] = "ALTER TABLE `{$dbprefix}cron` ADD COLUMN IF NOT EXISTS `disabled` TINYINT(1) NOT NULL DEFAULT '0' AFTER `last`;";

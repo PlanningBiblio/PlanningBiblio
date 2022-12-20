@@ -18,12 +18,9 @@ class Crontab {
 
         $today = date('Y-m-d');
 
-        $crons = $this->entityManager->getRepository(Cron::class)->findAll();
+        $crons = $this->entityManager->getRepository(Cron::class)->findBy(['disabled' => 0]);
 
         foreach ($crons as $cron) {
-            if ($cron->isDisabled()) {
-                continue;
-            }
 
             $date_cron = $cron->last()->format('Y-m-d H:m:s');
 

@@ -40,15 +40,6 @@ class Cron extends PLBEntity
     /** @Column(type="datetime") **/
     protected $last;
 
-    /** @Column(type="string", length=1) **/
+    /** @Column(type="boolean") **/
     protected $disabled;
-
-    public function isDisabled()
-    {
-        if ($this->disabled() == '1') {
-            return true;
-        }
-
-        return false;
-    }
 }
