@@ -58,10 +58,10 @@ class Crontab {
 
     public static function update_cron($cron)
     {
-        $last = date('Y-m-d H:i:s');
-        $last = \DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
+        $last = date_create();
 
         $cron->last($last);
+
         $entityManager = $GLOBALS['entityManager'];
         $entityManager->persist($cron);
         $entityManager->flush();
