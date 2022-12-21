@@ -1540,14 +1540,14 @@ class AgentController extends BaseController
             $db->CSRFToken = $CSRFToken;
             $db->delete("responsables", array('perso_id' => $id));
 
-            return $this->json("Ok");
+            return $this->json("level 1 delete OK");
 
         // If the date parameter is not given : deletion level 2
         } else {
             $p = new \personnel();
             $p->CSRFToken = $CSRFToken;
             $p->delete($id);
-            return $this->json("Definitif");
+            return $this->json("permanent delete OK");
         }
     }
 
