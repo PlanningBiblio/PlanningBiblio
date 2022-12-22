@@ -16,19 +16,21 @@ Inclus ensuite le fichier setup/createconfig.php si la base a été créée corr
 Ce fichier valide le formulaire de la page setup/index.php
 */
 
-session_start();
+require_once(__DIR__ . '/../../init/init_ajax.php');
 
 //	Variables
-$dbhost=filter_input(INPUT_POST, "dbhost", FILTER_SANITIZE_STRING);
-$dbport = filter_input(INPUT_POST, 'dbport', FILTER_SANITIZE_NUMBER_INT);
-$dbname=filter_input(INPUT_POST, "dbname", FILTER_SANITIZE_STRING);
-$dbAdminUser=filter_input(INPUT_POST, "adminuser", FILTER_SANITIZE_STRING);
-$dbAdminPass=filter_input(INPUT_POST, "adminpass", FILTER_UNSAFE_RAW);
-$dbuser=filter_input(INPUT_POST, "dbuser", FILTER_SANITIZE_STRING);
-$dbpass=filter_input(INPUT_POST, "dbpass", FILTER_UNSAFE_RAW);
-$dbprefix=filter_input(INPUT_POST, "dbprefix", FILTER_SANITIZE_STRING);
-$dropUser=filter_input(INPUT_POST, "dropuser", FILTER_SANITIZE_STRING);
-$dropDB=filter_input(INPUT_POST, "dropdb", FILTER_SANITIZE_STRING);
+$dbhost = $request->get('dbhost');
+$dbport = $request->get('dbport');
+$dbname = $request->get('dbname');
+$dbAdminUser = $request->get('adminuser');
+$dbAdminPass = $request->get('adminpass');
+$dbuser = $request->get('dbuser');
+$dbpass = $request->get('dbpass');
+$dbprefix = $request->get('dbprefix');
+$dropUser = $request->get('dropuser');
+$dropDB = $request->get('dropdb');
+
+$dbport = filter_var($dbport, FILTER_SANITIZE_NUMBER_INT);
 
 $sql=array();
 $erreur=false;

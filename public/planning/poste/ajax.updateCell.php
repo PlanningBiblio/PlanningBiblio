@@ -18,36 +18,42 @@ use App\Model\Position;
 use App\Model\PlanningPositionHistory;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 
-ini_set("display_errors", 0);
-
-session_start();
-
-// Includes
-require_once(__DIR__ . '/../../include/config.php');
 require_once(__DIR__ . '/../../../init/init_ajax.php');
 require_once(__DIR__ . '/../../include/function.php');
 require_once(__DIR__ . '/../../absences/class.absences.php');
 require_once(__DIR__ . '/../../activites/class.activites.php');
-require_once(__DIR__ . '/class.planning.php');
 require_once(__DIR__ . '/../volants/class.volants.php');
+require_once('class.planning.php');
 
 //	Initialisation des variables
-$ajouter=filter_input(INPUT_POST, "ajouter", FILTER_CALLBACK, array("options"=>"sanitize_on"));
-$barrer=filter_input(INPUT_POST, "barrer", FILTER_SANITIZE_NUMBER_INT);
-$CSRFToken=filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
-$date=filter_input(INPUT_POST, "date", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
-$debut=filter_input(INPUT_POST, "debut", FILTER_CALLBACK, array("options"=>"sanitize_time"));
-$fin=filter_input(INPUT_POST, "fin", FILTER_CALLBACK, array("options"=>"sanitize_time"));
-$griser=filter_input(INPUT_POST, "griser", FILTER_SANITIZE_NUMBER_INT);
-$perso_id=filter_input(INPUT_POST, "perso_id", FILTER_SANITIZE_STRING);
-$perso_id_origine=filter_input(INPUT_POST, "perso_id_origine", FILTER_SANITIZE_NUMBER_INT);
-$poste=filter_input(INPUT_POST, "poste", FILTER_SANITIZE_NUMBER_INT);
-$site=filter_input(INPUT_POST, "site", FILTER_SANITIZE_NUMBER_INT);
-$tout=filter_input(INPUT_POST, "tout", FILTER_CALLBACK, array("options"=>"sanitize_on"));
-$logaction=filter_input(INPUT_POST, "logaction", FILTER_CALLBACK, array("options"=>"sanitize_on"));
+$ajouter = $request->get('ajouter');
+$barrer = $request->get('barrer');
+$CSRFToken = $request->get('CSRFToken');
+$date = $request->get('date');
+$debut = $request->get('debut');
+$fin = $request->get('fin');
+$griser = $request->get('griser');
+$perso_id = $request->get('perso_id');
+$perso_id_origine = $request->get('perso_id_origine');
+$poste = $request->get('poste');
+$site = $request->get('site');
+$tout = $request->get('tout');
+$logaction = $request->get('logaction');
 
-$login_id=$_SESSION['login_id'];
-$now=date("Y-m-d H:i:s");
+$ajouter = filter_var($ajouter, FILTER_CALLBACK, array('options' => 'sanitize_on'));
+$barrer = filter_var($barrer, FILTER_SANITIZE_NUMBER_INT);
+$date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateSQL'));
+$debut = filter_var($debut, FILTER_CALLBACK, array('options' => 'sanitize_time'));
+$fin = filter_var($fin, FILTER_CALLBACK, array('options' => 'sanitize_time'));
+$griser = filter_var($griser, FILTER_SANITIZE_NUMBER_INT);
+$perso_id_origine = filter_var($perso_id_origine, FILTER_SANITIZE_NUMBER_INT);
+$poste = filter_var($poste, FILTER_SANITIZE_NUMBER_INT);
+$site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
+$tout = filter_var($tout, FILTER_CALLBACK, array('options' => 'sanitize_on'));
+$logaction = filter_var($logaction, FILTER_CALLBACK, array('options' => 'sanitize_on'));
+
+$login_id = $_SESSION['login_id'];
+$now = date("Y-m-d H:i:s");
 
 $barrer = intval($barrer);
 

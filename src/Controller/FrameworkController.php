@@ -430,8 +430,8 @@ class FrameworkController extends BaseController
 
         $post=array();
         foreach ($_POST as $key => $value) {
-            $key = filter_var($key, FILTER_SANITIZE_STRING);
-            $post[$key] = filter_var($value, FILTER_SANITIZE_STRING);
+            $key = htmlspecialchars(strval($key));
+            $post[$key] = htmlspecialchars(strval($value));
         }
 
         // Suppression des infos concernant ce tableau dans la table pl_poste_lignes

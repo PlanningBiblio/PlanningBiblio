@@ -13,7 +13,7 @@ Récupère les informations saisies dans le formulaire de la page setup/index.ph
 nom de la base de données à créer, identifiant de l'utilisateur de la base de données à créer
 */
 
-session_start();
+require_once(__DIR__ . '/../../init/init_ajax.php');
 
 $env_file = __DIR__ . '/../../.env';
 $env_local_file = __DIR__ . '/../../.env.local';
@@ -22,16 +22,18 @@ if (file_exists(__DIR__ . '/../../.env.local')) {
     header('Location: index.php');
 }
 
-$dbhost = filter_input(INPUT_POST, 'dbhost', FILTER_SANITIZE_STRING);
-$dbport = filter_input(INPUT_POST, 'dbport', FILTER_SANITIZE_NUMBER_INT);
-$dbname = filter_input(INPUT_POST, 'dbname', FILTER_SANITIZE_STRING);
-$adminuser = filter_input(INPUT_POST, 'adminuser', FILTER_SANITIZE_STRING);
-$adminpass = filter_input(INPUT_POST, 'adminpass', FILTER_UNSAFE_RAW);
-$dbuser = filter_input(INPUT_POST, 'dbuser', FILTER_SANITIZE_STRING);
-$dbpass = filter_input(INPUT_POST, 'dbpass', FILTER_UNSAFE_RAW);
-$dbprefix = filter_input(INPUT_POST, 'dbprefix', FILTER_SANITIZE_STRING);
-$dropuser = filter_input(INPUT_POST, 'dropuser', FILTER_SANITIZE_STRING);
-$dropdb = filter_input(INPUT_POST, 'dropdb', FILTER_SANITIZE_STRING);
+$dbhost = $request->get('dbhost');
+$dbport = $request->get('dbport');
+$dbname = $request->get('dbname');
+$adminuser = $request->get('adminuser');
+$adminpass = $request->get('adminpass');
+$dbuser = $request->get('dbuser');
+$dbpass = $request->get('dbpass');
+$dbprefix = $request->get('dbprefix');
+$dropuser = $request->get('dropuser');
+$dropdb = $request->get('dropdb');
+
+$dbport = filter_var($dbport, FILTER_SANITIZE_NUMBER_INT);
 
 $app_secret = isset($_SESSION['app_secret']) ? $_SESSION['app_secret'] : bin2hex(random_bytes(16));
 $_SESSION['app_secret'] = $app_secret;

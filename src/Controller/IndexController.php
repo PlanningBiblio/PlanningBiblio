@@ -43,12 +43,12 @@ class IndexController extends BaseController
     {
         // Initialisation des variables
         $CSRFToken = $request->get('CSRFToken');
-        $this->CSRFToken = $CSRFToken;
         $groupe = $request->get('groupe');
         $site = $request->get('site');
         $tableau = $request->get('tableau');
         $date = $request->get('date');
 
+        $this->CSRFToken = $CSRFToken;
         $this->dbprefix = $GLOBALS['dbprefix'];
 
         // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx

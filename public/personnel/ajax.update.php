@@ -16,7 +16,6 @@ Ce script est appelé par la fonction JS personnel/js/index.js : agent_list
 
 use App\Model\Agent;
 
-require_once(__DIR__.'/../include/config.php');
 require_once(__DIR__ . '/../../init/init_ajax.php');
 
 if (!in_array(21, $_SESSION['droits'])) {
@@ -25,7 +24,7 @@ if (!in_array(21, $_SESSION['droits'])) {
 }
 
 // CSFR Protection
-$CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
+$CSRFToken = $request->get('CSRFToken');
 if ( !isset($_SESSION['oups']['CSRFToken']) or $CSRFToken != $_SESSION['oups']['CSRFToken']) {
     error_log("CSRF Token Exception {$_SERVER['SCRIPT_NAME']}");
     echo json_encode("CSRF Token Exception {$_SERVER['SCRIPT_NAME']}");
@@ -33,24 +32,24 @@ if ( !isset($_SESSION['oups']['CSRFToken']) or $CSRFToken != $_SESSION['oups']['
 }
 
 // Selected agents
-$list = filter_input(INPUT_POST, 'list', FILTER_SANITIZE_STRING);
+$list = $request->get('list');
 $list = html_entity_decode($list, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 $list = json_decode($list);
 
 // Main tab
-$actif = filter_input(INPUT_POST, 'actif', FILTER_SANITIZE_STRING);
-$contrat = filter_input(INPUT_POST, 'contrat', FILTER_SANITIZE_STRING);
-$heures_hebdo = filter_input(INPUT_POST, 'heures_hebdo', FILTER_SANITIZE_STRING);
-$heures_travail = filter_input(INPUT_POST, 'heures_travail', FILTER_SANITIZE_STRING);
-$service = filter_input(INPUT_POST, 'service', FILTER_SANITIZE_STRING);
-$statut = filter_input(INPUT_POST, 'statut', FILTER_SANITIZE_STRING);
+$actif = $request->get('actif');
+$contrat = $request->get('contrat');
+$heures_hebdo = $request->get('heures_hebdo');
+$heures_travail = $request->get('heures_travail');
+$service = $request->get('service');
+$statut = $request->get('statut');
 
 $contrat = htmlentities($contrat, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 $service = htmlentities($service, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 $statut = htmlentities($statut, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 
 // Skills tab
-$postes = filter_input(INPUT_POST, 'postes', FILTER_SANITIZE_STRING);
+$postes = $request->get('postes');
 
 if ($postes != '-1') {
         $postes = explode(',', $postes);

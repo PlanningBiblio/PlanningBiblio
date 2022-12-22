@@ -87,7 +87,7 @@ class personnel
         $filter=array();
 
         // Filtre selon le champ actif (administratif, service public)
-        $actif=htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $actif = htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
         if ($actif) {
             $filter['actif'] = $actif;
         }

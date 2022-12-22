@@ -44,12 +44,13 @@ if (!file_exists(__DIR__ . '/../../.env.local')) {
 
 include "../include/config.php";
 
-$CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
-$nom=filter_input(INPUT_POST, "nom", FILTER_SANITIZE_STRING);
-$prenom=filter_input(INPUT_POST, "prenom", FILTER_SANITIZE_STRING);
-$password=filter_input(INPUT_POST, "password", FILTER_UNSAFE_RAW);
-$password2=filter_input(INPUT_POST, "password2", FILTER_UNSAFE_RAW);
-$email=filter_input(INPUT_POST, "email", FILTER_UNSAFE_RAW);
+$CSRFToken = $request->get('CSRFToken');
+$nom = $request->get('nom');
+$prenom = $request->get('prenom');
+$password = $request->get('password');
+$password2 = $request->get('password2');
+$email = $request->get('email');
+
 $erreur=false;
 
 if (strlen($password)<6) {
