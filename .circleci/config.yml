@@ -45,6 +45,9 @@ jobs:
       - run: sudo dpkg -i googlechrome-114/google-chrome-stable_current_amd64.deb
       - run: rm -rf googlechrome-114
 
+       Show PHP version
+      - run: php -v
+
       # Chrome driver.
       - run: wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
       - run: sudo unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/

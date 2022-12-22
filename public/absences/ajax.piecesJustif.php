@@ -14,15 +14,16 @@ Description :
 Enregistre les modifications apportées sur les cases à cacher "Pièces justificatives" dans la liste des absences (voir.php)
 Appelé lors du clic sur les cases à cocher, évènement $(".absences-pj input[type=checkbox]").click(), fichier voir.js
 */
-session_start();
 
-require_once "../include/config.php";
-require_once "class.absences.php";
+require_once(__DIR__ . '/../init_ajax.php');
+require_once('class.absences.php');
 
-$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-$pj = filter_input(INPUT_GET, 'pj', FILTER_SANITIZE_STRING);
-$checked = filter_input(INPUT_GET, 'checked', FILTER_SANITIZE_STRING);
-$CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
+$id = $request->get('id');
+$pj = $request->get('pj');
+$checked = $request->get('checked');
+$CSRFToken = $request->get('CSRFToken');
+
+$id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 
 $a=new absences();
 $a->CSRFToken = $CSRFToken;

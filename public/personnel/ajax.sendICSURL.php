@@ -18,22 +18,22 @@ Script appelé par $( "#ics-url-form" ).dialog({ Envoyer ]), personnel/js/modif.
 
 ini_set("display_errors", 0);
 
-session_start();
-
 // Includes
-require_once __DIR__.'/../include/config.php';
-require_once __DIR__.'/../include/function.php';
+require_once(__DIR__ . '/../init_ajax.php');
+require_once(__DIR__ . '/../include/function.php');
 
 // data: {recipient: recipient, subject: subject, message: message},
 
-$CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
-$recipient = filter_input(INPUT_POST, 'recipient', FILTER_SANITIZE_EMAIL);
-$subject = filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING);
-$message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
+$CSRFToken = $request->get('CSRFToken');
+$message = $request->get('message');
+$recipient = $request->get('recipient');
+$subject = $request->get('subject');
 
 $message = trim($message);
 $message = preg_replace("/(http:\/\/.*[^ \n])/", "<a href='$1' target='_blank'>$1</a>", $message);
 $message = str_replace(array("\n","\r"), "<br/>", $message);
+
+$recipient = filter_var($recipient, FILTER_SANITIZE_EMAIL);
 
 // Envoi du mail
 $m = new CJMail();

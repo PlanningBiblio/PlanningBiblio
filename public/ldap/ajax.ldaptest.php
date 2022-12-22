@@ -14,19 +14,19 @@ Permet de tester les paramètres LDAP saisis sur la page administration / config
 Script appelé par la fonction JS ldaptest() (admin/js/config?js) lors du click sur le bouton "test" de la page administration / configuration / LDAP
 */
 
-session_start();
+require_once(__DIR__ . '/../init_ajax.php');
+include_once('class.ldap.php');
 
-include_once "../include/config.php";
-include_once "class.ldap.php";
+$filter = $request->get('filter');
+$host = $request->get('host');
+$idAttribute = $request->get('idAttribute');
+$protocol = $request->get('protocol');
+$rdn = $request->get('rdn');
+$suffix = $request->get('suffix');
+$password = $request->get('password');
+$port = $request->get('port');
 
-$filter = filter_input(INPUT_POST, 'filter', FILTER_SANITIZE_STRING);
-$host = filter_input(INPUT_POST, 'host', FILTER_SANITIZE_STRING);
-$idAttribute = filter_input(INPUT_POST, 'idAttribute', FILTER_SANITIZE_STRING);
-$password = filter_input(INPUT_POST, 'password', FILTER_UNSAFE_RAW);
-$port = filter_input(INPUT_POST, 'port', FILTER_SANITIZE_NUMBER_INT);
-$protocol = filter_input(INPUT_POST, 'protocol', FILTER_SANITIZE_STRING);
-$rdn = filter_input(INPUT_POST, 'rdn', FILTER_SANITIZE_STRING);
-$suffix = filter_input(INPUT_POST, 'suffix', FILTER_SANITIZE_STRING);
+$port = filter_var($port, FILTER_SANITIZE_NUMBER_INT);
 
 // Connexion au serveur LDAP
 $url = $protocol.'://'.$host.':'.$port;

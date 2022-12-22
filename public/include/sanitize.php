@@ -21,14 +21,6 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
-function sanitize_array_string($n)
-{
-    if (is_array($n)) {
-        return array_map("sanitize_array_string", $n);
-    }
-    return filter_var($n, FILTER_SANITIZE_STRING);
-}
-
 function sanitize_array_unsafe($n)
 {
     if (is_array($n)) {
@@ -128,22 +120,6 @@ function sanitize_on01($input)
     // Vérifions si le format est valide
     if ($input) {
         $reponse_filtre = 1;
-    }
-    return $reponse_filtre;
-}
-
-// sanitize_page
-// Contrôle si la page demandée peut être chargée
-function sanitize_page($input)
-{
-    $reponse_filtre = null;
-    $input=filter_var($input, FILTER_SANITIZE_STRING);
-    if ($input) {
-        $db=new db();
-        $db->select2("acces", "page", array("page"=>$input));
-        if ($db->result) {
-            $reponse_filtre = $input;
-        }
     }
     return $reponse_filtre;
 }

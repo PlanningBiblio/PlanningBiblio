@@ -14,6 +14,8 @@
  * Init session, and entity manager for ajax scripts
  */
 
+ini_set('display_errors', 0);
+
 if ( session_status() == PHP_SESSION_NONE ) {
 	session_start();
 }
@@ -21,3 +23,7 @@ if ( session_status() == PHP_SESSION_NONE ) {
 require_once(__DIR__ . '/../vendor/autoload.php');
 require_once(__DIR__ . '/../public/include/config.php');
 require_once(__DIR__ . '/../init/init_entitymanager.php');
+
+use Symfony\Component\HttpFoundation\Request;
+
+$request = Request::createFromGlobals();

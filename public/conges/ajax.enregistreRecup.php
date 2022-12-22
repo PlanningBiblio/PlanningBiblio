@@ -15,17 +15,21 @@ Enregistre la demande de récupération
 */
 
 require_once(__DIR__ . '/../../init/init_ajax.php');
-include "class.conges.php";
+include('class.conges.php');
 
 use App\Model\Agent;
 
 // Initialisation des variables
-$commentaires=trim(filter_input(INPUT_POST, "commentaires", FILTER_SANITIZE_STRING));
-$CSRFToken=trim(filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING));
-$date=filter_input(INPUT_POST, "date", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-$date2=filter_input(INPUT_POST, "date2", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-$heures=filter_input(INPUT_POST, "heures", FILTER_SANITIZE_STRING);
-$perso_id=filter_input(INPUT_POST, "perso_id", FILTER_SANITIZE_NUMBER_INT);
+$commentaires = $request->get('commentaires');
+$CSRFToken = $request->get('CSRFToken');
+$heures = $request->get('heures');
+$date = $request->get('date');
+$date2 = $request->get('date2');
+$perso_id = $request->get('perso_id');
+
+$date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
+$date2 = filter_var($date2, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
+$perso_id = filter_var($perso_id, FILTER_SANITIZE_NUMBER_INT);
 
 list($hours, $minutes) = explode(':', $heures);
 $heures = intVal($hours) + intVal($minutes) / 60;

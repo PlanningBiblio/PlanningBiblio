@@ -17,19 +17,18 @@ les place dans les tableaux $cellules et $lignes, puis les écrit dans un fichie
 Page appelée par la fonction JavaScript "export_stat" lors du clique sur les liens "exporter" des pages de statistiques
 */
 
-session_start();
-require_once "../include/config.php";
-require_once "../include/sanitize.php";
-require_once "../include/function.php";
-require_once "class.statistiques.php";
+require_once(__DIR__ . '/../init_ajax.php');
+require_once(__DIR__ . '/../include/sanitize.php');
+require_once(__DIR__ . '/../include/function.php');
+require_once('class.statistiques.php');
 
 
 // Initialisation des variables
-$nom=filter_input(INPUT_GET, "nom", FILTER_SANITIZE_STRING);
-$type=filter_input(INPUT_GET, "type", FILTER_SANITIZE_STRING);
+$nom = $request->get('nom');
+$type = $request->get('type');
 
-$nom=filter_var($nom, FILTER_SANITIZE_URL);
-$type=filter_var($type, FILTER_CALLBACK, array("options"=>"sanitize_file_extension"));
+$nom = filter_var($nom, FILTER_SANITIZE_URL);
+$type = filter_var($type, FILTER_CALLBACK, array('options' => 'sanitize_file_extension'));
 
  // Compter les jours ouvrables (ou ouvrés) entre début et fin
 $debut = isset($_SESSION['stat_debut']) ? $_SESSION['stat_debut'] : null;

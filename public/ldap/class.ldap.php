@@ -60,7 +60,7 @@ function authCAS($logger)
         }
     }
 
-    $login=filter_var($login, FILTER_SANITIZE_STRING);
+    $login = htmlspecialchars(strval($login));
 
     // Si authentification CAS et utilisateur existe : retourne son login
     return $login;

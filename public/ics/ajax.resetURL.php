@@ -15,13 +15,13 @@ Redéfini un nouveau code ICS pour l'agent sélectionné, ce qui génère une no
 Script appelé en ajax via la fonction resetICSURL() (js/script.js)
 */
 
-session_start();
+require_once(__DIR__ . '/../init_ajax.php');
+require_once(__DIR__ . '/../personnel/class.personnel.php');
 
-require_once "../include/config.php";
-require_once "../personnel/class.personnel.php";
+$id = $request->get('id');
+$CSRFToken = $request->get('CSRFToken');
 
-$id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-$CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
+$id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 
 $db = new db();
 $db->CSRFToken = $CSRFToken;

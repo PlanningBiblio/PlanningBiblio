@@ -18,15 +18,14 @@ Cette page est appelée par la function JavaScript "afficheTableauxDiv" utilisé
 
 ini_set("display_errors", 0);
 
-session_start();
+require_once(__DIR__ . '/../../init_ajax.php');
 
-// Includes
-require_once "../../include/config.php";
+$perso_id = $_SESSION['login_id'];
+$CSRFToken = $request->get('CSRFToken');
+$hiddenTables = $request->get('hiddenTables');
+$tableId = $request->get('tableId');
 
-$perso_id=$_SESSION['login_id'];
-$CSRFToken=filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
-$tableId=filter_input(INPUT_POST, "tableId", FILTER_SANITIZE_NUMBER_INT);
-$hiddenTables=filter_input(INPUT_POST, "hiddenTables", FILTER_SANITIZE_STRING);
+$tableId = filter_var($tableId, FILTER_SANITIZE_NUMBER_INT);
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
