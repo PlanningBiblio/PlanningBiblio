@@ -37,6 +37,9 @@ jobs:
       - run: sudo apt install -y mariadb-client
       - run: sudo pecl install xdebug
 
+      # Show PHP version
+      - run: php -v
+
       # Chrome driver.
       - run: wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
       - run: sudo unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
@@ -66,7 +69,7 @@ jobs:
       - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
       - run: bash <(curl -s https://codecov.io/bash)
 
-  install-and-test-7-4:
+  install-and-test-without-codecov:
     parameters:
       e:
         type: executor
@@ -82,6 +85,9 @@ jobs:
       - run: sudo -E install-php-extensions zip mysqli pdo_mysql
       - run: sudo apt install -y google-chrome-stable
       - run: sudo apt install -y mariadb-client
+
+      # Show PHP version
+      - run: php -v
 
       # Chrome driver.
       - run: wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
@@ -107,19 +113,19 @@ jobs:
           paths:
             - ./vendor
 
-      # run tests with phpunit or codecept
-      - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
+      # run tests with phpunit
+      - run: ./vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/
 
 workflows:
   version: 2
   build:
     jobs:
-      - install-and-test-7-4:
+      - install-and-test-without-codecov:
           name: php:7.4
           e:
             name: plb
             php: '7.4'
-      - install-and-test:
+      - install-and-test-without-codecov:
           name: php:8.0
           e:
             name: plb
@@ -129,3 +135,8 @@ workflows:
           e:
             name: plb
             php: '8.1'
+      - install-and-test:
+          name: php:8.2
+          e:
+            name: plb
+            php: '8.2'
