@@ -55,10 +55,11 @@ class AgentControllerTest extends PLBWebTestCase
 
         $client = static::createClient();
         $_SESSION['oups']['CSRFToken'] = '00000';
-        $this->CSRFToken = '00000';
 
         $d1 = date('d') - 3;
+        if($d1<10) {$d1 = "0$d1";}
         $d2 = date('d') + 3;
+        if($d2<10) {$d2 = "0$d2";}
         $m = date('m');
         $Y = date('Y');
         $start = "$Y-$m-$d1";
@@ -135,16 +136,16 @@ class AgentControllerTest extends PLBWebTestCase
         $crawler = $client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//table[@id="tableAgents"]/thead');
-        $this->assertStringContainsString('Nom', $result->text());
-        $this->assertStringContainsString('Prénom', $result->text());
-        $this->assertStringContainsString('Heures', $result->text());
-        $this->assertStringContainsString('Statut', $result->text());
-        $this->assertStringContainsString('Service', $result->text());
-        $this->assertStringContainsString('Arrivée', $result->text());
-        $this->assertStringContainsString('Départ', $result->text());
-        $this->assertStringContainsString('Accès', $result->text());
+        $this->assertStringContainsString('Nom', $result->text(null,false));
+        $this->assertStringContainsString('Prénom', $result->text(null,false));
+        $this->assertStringContainsString('Heures', $result->text(null,false));
+        $this->assertStringContainsString('Statut', $result->text(null,false));
+        $this->assertStringContainsString('Service', $result->text(null,false));
+        $this->assertStringContainsString('Arrivée', $result->text(null,false));
+        $this->assertStringContainsString('Départ', $result->text(null,false));
+        $this->assertStringContainsString('Accès', $result->text(null,false));
 
-        $this->assertStringNotContainsString('Sites', $result->text());
+        $this->assertStringNotContainsString('Sites', $result->text(null,false));
 
         $this->assertDirectoryDoesNotExist('//input[@value="Import LDAP"]');
 
@@ -164,7 +165,7 @@ class AgentControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//table[@id="tableAgents"]/thead');
 
-        $this->assertStringContainsString('Sites', $result->text());
+        $this->assertStringContainsString('Sites', $result->text(null,false));
 
         //test LDAP host and suffix
         $GLOBALS['config']['Multisites-nombre'] = 4;
@@ -183,24 +184,24 @@ class AgentControllerTest extends PLBWebTestCase
         $GLOBALS['config']['Granularite'] = 30;
 
         $result = $crawler->filterXPath('//select[@name="heures_travail"]/option');
-        $this->assertEquals('1h00', $result->eq(2)->text());
-        $this->assertEquals('1h30', $result->eq(3)->text());
+        $this->assertEquals('1h00', $result->eq(2)->text(null,false));
+        $this->assertEquals('1h30', $result->eq(3)->text(null,false));
 
         $GLOBALS['config']['Granularite'] = 5;
 
         $crawler = $client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//select[@name="heures_travail"]/option');
-        $this->assertEquals('1h00', $result->eq(2)->text());
-        $this->assertEquals('1h05', $result->eq(3)->text());
+        $this->assertEquals('1h00', $result->eq(2)->text(null,false));
+        $this->assertEquals('1h05', $result->eq(3)->text(null,false));
 
         $GLOBALS['config']['Granularite'] = 15;
 
         $crawler = $client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//select[@name="heures_travail"]/option');
-        $this->assertEquals('1h00', $result->eq(2)->text());
-        $this->assertEquals('1h15', $result->eq(3)->text());
+        $this->assertEquals('1h00', $result->eq(2)->text(null,false));
+        $this->assertEquals('1h15', $result->eq(3)->text(null,false));
     }
 
     public function testEditFormElement() {
@@ -210,6 +211,7 @@ class AgentControllerTest extends PLBWebTestCase
         $GLOBALS['config']['LDAP-Host'] = '';
         $GLOBALS['config']['LDAP-Suffix'] = '';
         $GLOBALS['config']['Conges-Enable'] = 1;
+        $GLOBALS['config']['PlanningHebdo'] = 0;
 
         $client = static::createClient();
 
@@ -236,32 +238,32 @@ class AgentControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//div[@class="ui-tabs"]/ul/li');
 
-        $this->assertEquals('Infos générales', $result->eq(0)->text());
-        $this->assertEquals('Activités', $result->eq(1)->text());
-        $this->assertEquals('Heures de présence', $result->eq(2)->text());
-        $this->assertEquals('Congés', $result->eq(3)->text());
-        $this->assertEquals('Droits d\'accès', $result->eq(4)->text());
-        $this->assertEquals('Annuler', $result->eq(5)->text());
-        $this->assertEquals('Valider', $result->eq(6)->text());
+        $this->assertEquals('Infos générales', $result->eq(0)->text(null,false));
+        $this->assertEquals('Activités', $result->eq(1)->text(null,false));
+        $this->assertEquals('Heures de présence', $result->eq(2)->text(null,false));
+        $this->assertEquals('Congés', $result->eq(3)->text(null,false));
+        $this->assertEquals('Droits d\'accès', $result->eq(4)->text(null,false));
+        $this->assertEquals('Annuler', $result->eq(5)->text(null,false));
+        $this->assertEquals('Valider', $result->eq(6)->text(null,false));
 
         $result = $crawler->filterXPath('//table[@style="width:90%;"]');
 
-        $this->assertStringContainsString('Nom :', $result->text());
-        $this->assertStringContainsString('Prénom :', $result->text());
-        $this->assertStringContainsString('E-mail :', $result->text());
-        $this->assertStringContainsString('Statut :', $result->text());
-        $this->assertStringContainsString('Contrat :', $result->text());
-        $this->assertStringContainsString('Service de rattachement:', $result->text());
-        $this->assertStringContainsString('Heures de service public par semaine:', $result->text());
-        $this->assertStringContainsString('Heures de travail par semaine:', $result->text());
-        $this->assertStringContainsString('Service public / Administratif :', $result->text());
-        $this->assertStringContainsString('Sites :', $result->text());
-        $this->assertStringContainsString('Date d\'arrivée', $result->text());
-        $this->assertStringContainsString('Date de départ', $result->text());
-        $this->assertStringContainsString('Matricule :', $result->text());
-        $this->assertStringContainsString('E-mails des responsables :', $result->text());
-        $this->assertStringContainsString('Informations :', $result->text());
-        $this->assertStringContainsString('Login :', $result->text());
+        $this->assertStringContainsString('Nom :', $result->text(null,false));
+        $this->assertStringContainsString('Prénom :', $result->text(null,false));
+        $this->assertStringContainsString('E-mail :', $result->text(null,false));
+        $this->assertStringContainsString('Statut :', $result->text(null,false));
+        $this->assertStringContainsString('Contrat :', $result->text(null,false));
+        $this->assertStringContainsString('Service de rattachement:', $result->text(null,false));
+        $this->assertStringContainsString('Heures de service public par semaine:', $result->text(null,false));
+        $this->assertStringContainsString('Heures de travail par semaine:', $result->text(null,false));
+        $this->assertStringContainsString('Service public / Administratif :', $result->text(null,false));
+        $this->assertStringContainsString('Sites :', $result->text(null,false));
+        $this->assertStringContainsString('Date d\'arrivée', $result->text(null,false));
+        $this->assertStringContainsString('Date de départ', $result->text(null,false));
+        $this->assertStringContainsString('Matricule :', $result->text(null,false));
+        $this->assertStringContainsString('E-mails des responsables :', $result->text(null,false));
+        $this->assertStringContainsString('Informations :', $result->text(null,false));
+        $this->assertStringContainsString('Login :', $result->text(null,false));
 
         $result = $crawler->filterXPath('//input[@name="nom"]');
         $this->assertEquals('Dupont', $result->attr('value'));
@@ -276,17 +278,17 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEmpty($result->attr('checked'));
 
         $result = $crawler->filterXPath('//span[@id="login"]');
-        $this->assertEquals($result->text(), 'jdupont');
+        $this->assertEquals($result->text(null,false), 'jdupont');
 
         ///////ACTIVITES/////////
 
         $result = $crawler->filterXPath('//b');
-        $this->assertEquals('Activités disponibles', $result->text());
+        $this->assertEquals('Activités disponibles', $result->text(null,false));
 
-        $this->assertEquals('Activités attribuées', $result->eq(1)->text());
+        $this->assertEquals('Activités attribuées', $result->eq(1)->text(null,false));
 
         $result = $crawler->filterXPath('//div[@id="dispo_div"]');
-        $this->assertStringContainsString('Assistance audiovisuel', $result->text());
+        $this->assertStringContainsString('Assistance audiovisuel', $result->text(null,false));
 
         $result = $crawler->filterXPath('//td[@style="text-align:center;padding-top:100px;"]/input[@type="button"]');
         $this->assertEquals('Attribuer >>', $result->attr('value'));
@@ -298,46 +300,66 @@ class AgentControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//div[@id="temps"]');
 
-        $this->assertStringContainsString('Heure d\'arrivée', $result->text());
-        $this->assertStringContainsString('Début de pause', $result->text());
-        $this->assertStringContainsString('Fin de pause', $result->text());
-        $this->assertStringContainsString('Heure de départ', $result->text());
-        $this->assertStringContainsString('Site', $result->text());
-        $this->assertStringContainsString('Temps', $result->text());
+        $this->assertStringContainsString('Heure d\'arrivée', $result->text(null,false));
+        $this->assertStringContainsString('Début de pause', $result->text(null,false));
+        $this->assertStringContainsString('Fin de pause', $result->text(null,false));
+        $this->assertStringContainsString('Heure de départ', $result->text(null,false));
+        $this->assertStringContainsString('Site', $result->text(null,false));
+        $this->assertStringContainsString('Temps', $result->text(null,false));
 
-        $this->assertStringContainsString('Lundi', $result->text());
-        $this->assertStringContainsString('Mardi', $result->text());
-        $this->assertStringContainsString('Mercredi', $result->text());
-        $this->assertStringContainsString('Jeudi', $result->text());
-        $this->assertStringContainsString('Vendredi', $result->text());
-        $this->assertStringContainsString('Samedi', $result->text());
+        $this->assertStringContainsString('Lundi', $result->text(null,false));
+        $this->assertStringContainsString('Mardi', $result->text(null,false));
+        $this->assertStringContainsString('Mercredi', $result->text(null,false));
+        $this->assertStringContainsString('Jeudi', $result->text(null,false));
+        $this->assertStringContainsString('Vendredi', $result->text(null,false));
+        $this->assertStringContainsString('Samedi', $result->text(null,false));
 
         //////Congés/////////
 
         $result = $crawler->filterXPath('//div[@id="conges"]');
 
-        $this->assertStringContainsString('Nombre d\'heures de congés par an :', $result->text());
-        $this->assertStringContainsString('Crédit d\'heures de congés actuel :', $result->text());
-        $this->assertStringContainsString('Reliquat de congés :', $result->text());
-        $this->assertStringContainsString('Solde débiteur :', $result->text());
-        $this->assertStringContainsString('Récupérations :', $result->text());
+        $this->assertStringContainsString('Nombre d\'heures de congés par an :', $result->text(null,false));
+        $this->assertStringContainsString('Crédit d\'heures de congés actuel :', $result->text(null,false));
+        $this->assertStringContainsString('Reliquat de congés :', $result->text(null,false));
+        $this->assertStringContainsString('Solde débiteur :', $result->text(null,false));
+        $this->assertStringContainsString('Récupérations :', $result->text(null,false));
 
         //////Rights/////////
 
         $result = $crawler->filterXPath('//div[@id="access"]/h3');
 
-        $this->assertEquals('Absences', $result->eq(1)->text());
-        $this->assertEquals('Agendas', $result->eq(2)->text());
-        $this->assertEquals('Agents', $result->eq(3)->text());
-        $this->assertEquals('Planning', $result->eq(4)->text());
-        $this->assertEquals('Postes', $result->eq(5)->text());
-        $this->assertEquals('Statistiques', $result->eq(6)->text());
-        $this->assertEquals('Divers', $result->eq(7)->text());
+        $this->assertEquals('Absences', $result->eq(1)->text(null,false));
+        $this->assertEquals('Agendas', $result->eq(2)->text(null,false));
+        $this->assertEquals('Agents', $result->eq(3)->text(null,false));
+        $this->assertEquals('Planning', $result->eq(4)->text(null,false));
+        $this->assertEquals('Postes', $result->eq(5)->text(null,false));
+        $this->assertEquals('Statistiques', $result->eq(6)->text(null,false));
+        $this->assertEquals('Divers', $result->eq(7)->text(null,false));
 
         $result = $crawler->filterXPath('//div[@id="access"]/table/tbody/tr/td/h3');
-        $this->assertEquals('Absences', $result->eq(0)->text());
-        $this->assertEquals('Congés', $result->eq(1)->text());
-        $this->assertEquals('Planning', $result->eq(2)->text());
+        $this->assertEquals('Absences', $result->eq(0)->text(null,false));
+        $this->assertEquals('Congés', $result->eq(1)->text(null,false));
+        $this->assertEquals('Planning', $result->eq(2)->text(null,false));
+
+        $result = $crawler->filterXPath("//div[@id='access']");
+        $this->assertStringContainsString('Modifier ses propres absences', $result->text(null,false));
+        $this->assertStringContainsString('Enregistrement d\'absences pour plusieurs agents', $result->text(null,false));
+        $this->assertStringContainsString('Gestion des absences, validation niveau 1', $result->text(null,false));
+        $this->assertStringContainsString('Gestion des absences, pièces justificatives', $result->text(null,false));
+        $this->assertStringContainsString('Voir les agendas de tous', $result->text(null,false));
+        $this->assertStringContainsString('Voir les fiches des agents', $result->text(null,false));
+        $this->assertStringContainsString('Gestion des agents', $result->text(null,false));
+        $this->assertStringContainsString('Gestion des congés, validation niveau 1', $result->text(null,false));
+        $this->assertStringContainsString('Gestion des congés, validation niveau 2', $result->text(null,false));
+        $this->assertStringContainsString('Modification des plannings', $result->text(null,false));
+        $this->assertStringContainsString('Griser les cellules des plannings', $result->text(null,false));
+        $this->assertStringContainsString('Modification des commentaires des plannings', $result->text(null,false));
+        $this->assertStringContainsString('Configuration des tableaux', $result->text(null,false));
+        $this->assertStringContainsString('Gestion des postes', $result->text(null,false));
+        $this->assertStringContainsString('Accès aux statistiques', $result->text(null,false));
+        $this->assertStringContainsString('Accès aux statistiques Présents / Absents', $result->text(null,false));
+        $this->assertStringContainsString('Gestion des jours fériés', $result->text(null,false));
+        $this->assertStringContainsString('Informations', $result->text(null,false));
 
     }
 
