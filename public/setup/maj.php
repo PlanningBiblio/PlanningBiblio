@@ -2770,7 +2770,7 @@ if (version_compare($config['Version'], $v) === -1) {
         foreach ($db->result as $tab) {
             $id = $tab['id'];
             $old = $tab['nom'];
-            $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = addslashes(html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
             if ($new != $old) {
                 $sql[] = "UPDATE `{$dbprefix}pl_poste_tab` SET `nom` = '$new' WHERE `id` = '$id';";
             }
