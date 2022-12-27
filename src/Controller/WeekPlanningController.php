@@ -139,6 +139,7 @@ class WeekPlanningController extends BaseController
 
         // Récupération des postes
         $db = new \db();
+        $db->sanitize_string = false;
         $db->select2('postes', '*', '1', 'ORDER BY `id`');
 
         if ($db->result) {
