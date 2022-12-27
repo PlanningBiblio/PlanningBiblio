@@ -366,6 +366,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `statistiques` ENUM('0','1') DEFAULT '1',
   `teleworking` ENUM('0','1') NOT NULL DEFAULT '0',
   `bloquant` enum('0','1') DEFAULT '1',
+  `lunch` tinyint(1) NOT NULL DEFAULT 0,
   `site` INT(1) DEFAULT '1',
   `categories` TEXT NULL DEFAULT NULL,
   `supprime` DATETIME NULL DEFAULT NULL,
