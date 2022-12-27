@@ -88,7 +88,7 @@ class PositionController extends BaseController
             }
             $activites = implode(", ", $activites);
             $activitesAffichees = implode(", ", $activitesAffichees);
-            if (!empty($activitesPoste) and count($activitesPoste)>3) {
+            if (count($activitesPoste)>3) {
                 $activitesAffichees.=" ...";
             }
 
