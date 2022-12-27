@@ -968,6 +968,7 @@ class IndexController extends BaseController
         $postes=array();
 
         $db = new \db();
+        $db->sanitize_string = false;
         $db->select2('postes', '*', '1', 'ORDER BY `id`');
         $floors =  $this->entityManager->getRepository(SelectFloor::class);
 
