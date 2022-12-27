@@ -60,8 +60,8 @@
                     <span class='pl-icon pl-icon-add' title='Ajouter' id='add-etage-button' style='cursor:pointer; margin-left:4px;'></span>
                   </td>
                 </tr>
-                <tr>
-                  {% if not config('Planook') %}
+                {% if not config('Planook') %}
+                  <tr>
                     <td>Groupe:</td>
                     <td style='white-space: nowrap;'>
                       <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
@@ -104,8 +104,15 @@
                       <input type='radio' name='teleworking' value='1' {{ teleworking1 }}/> Oui
                       <input type='radio' name='teleworking' value='0' {{ teleworking2 }}/> Non
                     </td>
-                  {% endif %}
-                </tr>
+                  </tr>
+                  <tr>
+                    <td>Poste repas :</td>
+                    <td>
+                      <input type='radio' name='lunch' value='1' {{ lunch1 }}/> Oui
+                      <input type='radio' name='lunch' value='0' {{ lunch2 }}/> Non
+                    </td>
+                  </tr>
+                {% endif %}
               </table>
             </td>
 

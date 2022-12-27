@@ -139,6 +139,8 @@ class PositionController extends BaseController
             $bloq2 = !$position->bloquant()?"checked='checked'":"";
             $teleworking1 = $position->teleworking() ? "checked='checked'" : "";
             $teleworking2 = !$position->teleworking() ? "checked='checked'" : "";
+            $lunch1 = $position->lunch() ? "checked='checked'" : "";
+            $lunch2 = !$position->lunch() ? "checked='checked'" : "";
         } else {
             $id = null;
             $nom =  null;
@@ -156,6 +158,8 @@ class PositionController extends BaseController
             $bloq2 = null;
             $teleworking1 = null;
             $teleworking2 = 'checked';
+            $lunch1 = null;
+            $lunch2 = 'checked';
         }
 
         // Floors, groups and skills
@@ -232,6 +236,8 @@ class PositionController extends BaseController
             'stat2'         => $stat2,
             'teleworking1'  => $teleworking1,
             'teleworking2'  => $teleworking2,
+            'lunch1'        => $lunch1,
+            'lunch2'        => $lunch2,
             'bloq1'         => $bloq1,
             'bloq2'         => $bloq2,
             'floors'        => $floors,
@@ -271,6 +277,7 @@ class PositionController extends BaseController
             $categories = $request->get('categories', []);
             $site = $request->get('site', 1);
             $bloquant = $request->get('bloquant', 1);
+            $lunch = $request->get('lunch', 0);
             $statistiques = $request->get('statistiques', 1);
             $teleworking = $request->get('teleworking', 0);
             $etage = $request->get('etage',"");
@@ -287,6 +294,7 @@ class PositionController extends BaseController
                 $position->bloquant($bloquant);
                 $position->statistiques($statistiques);
                 $position->teleworking($teleworking);
+                $position->lunch($lunch);
                 $position->etage($etage);
                 $position->groupe($groupe);
                 $position->groupe_id($groupe_id);
@@ -316,6 +324,7 @@ class PositionController extends BaseController
                 $position->bloquant($bloquant);
                 $position->statistiques($statistiques);
                 $position->teleworking($teleworking);
+                $position->lunch($lunch);
                 $position->etage($etage);
                 $position->groupe($groupe);
                 $position->groupe_id($groupe_id);
