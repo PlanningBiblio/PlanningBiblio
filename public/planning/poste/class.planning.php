@@ -15,6 +15,7 @@ Utilisée par les fichiers du dossier "planning/poste"
 
 use App\Model\Agent;
 use App\Model\AbsenceReason;
+use App\Model\Position;
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
@@ -122,8 +123,6 @@ class planning
         $semaine3=$d->semaine3;
         $site=$this->site;
 
-        $lunch_positions = $config['Position-Lunch'] ?? array();
-
         if ($hide) {
             $display="display:none;";
             $groupe_hide=null;
@@ -194,10 +193,13 @@ class planning
       );
 
             if ($db_heures->result) {
+
+                $positions = $GLOBALS['entityManager']->getRepository(Position::class);
+
                 // Pour chaqe résultat, on ajoute le nombre d'heures correspondant à l'agent concerné, pour le jour, la semaine et/ou les 4 semaines
                 foreach ($db_heures->result as $elem) {
 
-          // Vérifie à partir de la table absences si l'agent est absent
+                    // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent, on passe (continue 2)
                     foreach ($absencesDB as $a) {
                         if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
@@ -205,7 +207,7 @@ class planning
                         }
                     }
 
-                    if (in_array($elem['poste'], $lunch_positions)) {
+                    if ($positions->find($elem['poste'])->lunch()) {
                         continue;
                     }
 
@@ -721,14 +723,16 @@ class planning
             return array();
         }
 
-        $lunch_position = null;
-        if (!empty($GLOBALS['config']['Position-Lunch'])) {
-            $lunch_position = implode(',', $GLOBALS['config']['Position-Lunch']);
+        $positions = $GLOBALS['entityManager']->getRepository(Position::class);
+
+        $lunch_positions = array();
+        foreach ($positions->findBy(['lunch' => true]) as $elem) {
+            $lunch_positions[] = $elem->id(); 
         }
 
-        if (!empty($GLOBALS['config']['Position-Lunch'])
-            and isset($poste)
-            and in_array($poste, $GLOBALS['config']['Position-Lunch'])) {
+        $lunch_positions = implode(',', $lunch_positions);
+       
+        if (isset($poste) and $positions->find($poste)->lunch()) {
             return array();
         }
 
@@ -749,8 +753,8 @@ class planning
       // Recherche dans la base de données des autres plages concernées
             $db=new db();
 
-            if ($lunch_position) {
-                $db->select("pl_poste", "*", "date = '$date' AND debut < '$sr_fin' AND fin > '$sr_debut' AND poste NOT IN ($lunch_position)", "ORDER BY debut,fin");
+            if (!empty($lunch_positions)) {
+                $db->select("pl_poste", "*", "date = '$date' AND debut < '$sr_fin' AND fin > '$sr_debut' AND poste NOT IN ($lunch_positions)", "ORDER BY debut,fin");
             } else {
                 $db->select2("pl_poste", "*", array("date"=>$date, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
             }

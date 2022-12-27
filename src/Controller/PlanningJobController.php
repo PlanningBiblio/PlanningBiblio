@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Model\Agent;
 use App\Model\AbsenceReason;
 use App\Model\PlanningPositionHistory;
+use App\Model\Position;
 
 use App\PlanningBiblio\WorkingHours;
 
@@ -65,7 +66,7 @@ class PlanningJobController extends BaseController
             && $this->config('PlanningHebdo-PauseLibre')
         ) ? 1 : 0;
 
-        $lunch_positions = $this->config('Position-Lunch') ?? array();
+        $positions = $this->entityManager->getRepository(Position::class);
 
         // PlanningHebdo and EDTSamedi are not compliant.
         // So, we disable EDTSamedi if
@@ -257,7 +258,7 @@ class PlanningJobController extends BaseController
                 foreach ($db->result as $elem) {
                     // If the current position is a lunch, don't add it to duration
                     // cause this a not worked position
-                    if (in_array($elem['poste'], $lunch_positions)) {
+                    if ($positions->find($elem['poste'])->lunch()) {
                         continue;
                     }
 
@@ -387,7 +388,7 @@ class PlanningJobController extends BaseController
                 if ($break_countdown) {
                     $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
 
-                    $is_a_break = in_array($poste, $lunch_positions) ? 1 : 0;
+                    $is_a_break = $positions->find($poste)->lunch();
                     $requested_hours = $is_a_break ? 0 : strtotime($fin) - strtotime($debut);
 
                     $wh = new WorkingHours($temps);
