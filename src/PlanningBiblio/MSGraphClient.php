@@ -151,10 +151,9 @@ class MSGraphClient
         }
         $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE motif='" . $this->reason_name . "' AND perso_id IN($usersSQLIds) AND debut >= '" . $from . "' AND fin <= '" . $to . "'";
         $statement = $this->entityManager->getConnection()->prepare($query);
-        $statement->execute();
-        $results = $statement->fetchAll();
+        $results = $statement->execute();
         $this->localEvents = array();
-        foreach ($results as $localEvent) {
+        foreach ($results->fetchAllAssociative() as $localEvent) {
             $this->localEvents[$localEvent['perso_id'] . $localEvent['ical_key']] = $localEvent;
         }
         $this->log("Amount of local events: " . count($this->localEvents));
@@ -227,8 +226,7 @@ class MSGraphClient
                         'ical_key'          => $incomingEvent->iCalUId,
                         'perso_id'          => $eventArray['plb_id']
                     ));
-                    $count = $statement->rowCount();
-                    $this->log("updating event '" . $incomingEvent->subject . "' from " . $this->formatDate($incomingEvent->start) . " to " . $this->formatDate($incomingEvent->end) ." for user " . $eventArray['plb_id'] . " (" . $eventArray['plb_login'] . "), ical_key: " . $incomingEvent->iCalUId . ", updated rows: $count");
+                    $this->log("updating event '" . $incomingEvent->subject . "' from " . $this->formatDate($incomingEvent->start) . " to " . $this->formatDate($incomingEvent->end) ." for user " . $eventArray['plb_id'] . " (" . $eventArray['plb_login'] . "), ical_key: " . $incomingEvent->iCalUId);
                 }
             } else {
                 // Event insertion
@@ -251,8 +249,7 @@ class MSGraphClient
                     'last_modified' => $incomingEvent->lastModifiedDateTime,
                     'rrule'         => $rrule
                 ));
-                $count = $statement->rowCount();
-                $this->log("inserting event '" . $incomingEvent->subject . "' from " . $this->formatDate($incomingEvent->start) . " to " . $this->formatDate($incomingEvent->end) ." for user " . $eventArray['plb_id'] . " (" . $eventArray['plb_login'] . "), ical_key: " . $incomingEvent->iCalUId . ", inserted rows: $count");
+                $this->log("inserting event '" . $incomingEvent->subject . "' from " . $this->formatDate($incomingEvent->start) . " to " . $this->formatDate($incomingEvent->end) ." for user " . $eventArray['plb_id'] . " (" . $eventArray['plb_login'] . "), ical_key: " . $incomingEvent->iCalUId);
             }
         }
     }
