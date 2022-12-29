@@ -1117,6 +1117,7 @@ class AgentController extends BaseController
         }
 
         $password = password_hash($password, PASSWORD_BCRYPT);
+
         $agent->password($password);
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
@@ -1132,19 +1133,22 @@ class AgentController extends BaseController
      */
     public function changeOwnPassword(Request $request)
     {
-        $this->csrf_protection($request);
+            if(!$this->csrf_protection($request)){
+                return $this->redirectToRoute('access-denied');
+            }
 
-        $agent_id = $_SESSION['login_id'];
-        $password = $request->get('password');
-        $current_password = $request->get('current_password');
-        if ($this->checkCurrentPassword($agent_id, $current_password)) {
-            return $this->changeAgentPassword($request, $agent_id, $password);
-        } else {
-            $response = new Response();
-            $response->setContent('Current password is erroneous');
-            $response->setStatusCode(400);
-            return $response;
-        }
+            $agent_id = $_SESSION['login_id'];
+            $password = $request->get('password');
+            $current_password = $request->get('current_password');
+
+            if ($this->checkCurrentPassword($agent_id, $current_password)) {
+                return $this->changeAgentPassword($request, $agent_id, $password);
+            } else {
+                $response = new Response();
+                $response->setContent('Current password is erroneous');
+                $response->setStatusCode(400);
+                return $response;
+            }
     }
 
     /**
@@ -1208,9 +1212,11 @@ class AgentController extends BaseController
         $isCurrentPassword = false;
         $agent = $this->entityManager->find(Agent::class, $agent_id);
         $hashedPassword = $agent->password();
+
         if (password_verify($password, $hashedPassword)) {
             $isCurrentPassword = true;
         }
+
         return $isCurrentPassword;
     }
 
