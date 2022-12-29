@@ -115,8 +115,9 @@ class BaseController extends AbstractController
         $submittedToken = $request->request->get('_token');
 
         if (!$this->isCsrfTokenValid('', $submittedToken)) {
-            die("The CSRF token is not valid !");
+            return false;
         }
+        return true;
     }
 
     /**

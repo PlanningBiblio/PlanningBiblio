@@ -1132,11 +1132,17 @@ class AgentController extends BaseController
      */
     public function changeOwnPassword(Request $request)
     {
-        $this->csrf_protection($request);
+        if (!$this->csrf_protection($request)) {
+            $response = new Response();
+            $response->setContent('CSRF token error');
+            $response->setStatusCode(400);
+            return $response;
+        }
 
         $agent_id = $_SESSION['login_id'];
         $password = $request->get('password');
         $current_password = $request->get('current_password');
+
         if ($this->checkCurrentPassword($agent_id, $current_password)) {
             return $this->changeAgentPassword($request, $agent_id, $password);
         } else {
@@ -1204,22 +1210,28 @@ class AgentController extends BaseController
         return $response;
     }
 
-    private function checkCurrentPassword($agent_id, $password) {
+    private function checkCurrentPassword($agent_id, $password)
+    {
         $isCurrentPassword = false;
         $agent = $this->entityManager->find(Agent::class, $agent_id);
         $hashedPassword = $agent->password();
+	
         if (password_verify($password, $hashedPassword)) {
             $isCurrentPassword = true;
         }
+
         return $isCurrentPassword;
     }
-
 
     /**
      * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"})
      */
     public function update_login(Request $request)
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $login = $request->get('login');
         $agent_id = $request->get('id');
         $response = new Response();
