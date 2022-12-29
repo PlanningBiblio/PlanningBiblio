@@ -29,7 +29,7 @@
                 url: url('ajax/update_agent_login'),
                 type: "POST",
                 dataType: "html",
-                data: {login: login, id: agent_id},
+                data: {_token: $('#_token').val(), login: login, id: agent_id},
                 success: function(filtered_login){
                     $("#reset-login-form").dialog( "close" );
                     $('#login').html(filtered_login);

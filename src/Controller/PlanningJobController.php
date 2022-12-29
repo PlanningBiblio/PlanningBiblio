@@ -810,7 +810,10 @@ class PlanningJobController extends BaseController
      */
     public function undo(Request $request)
     {
-        $this->csrf_protection($request);
+
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
 
         $date = $request->get('date');
         $site = $request->get('site');
@@ -827,8 +830,8 @@ class PlanningJobController extends BaseController
         }
 
         $history = $this->entityManager
-             ->getRepository(PlanningPositionHistory::class)
-             ->undoable($date, $site);
+            ->getRepository(PlanningPositionHistory::class)
+            ->undoable($date, $site);
 
         // Nothing to cancel.
         if (empty($history)) {
@@ -857,7 +860,7 @@ class PlanningJobController extends BaseController
         }
 
         $a1 = $this->entityManager
-           ->getRepository(PlanningPositionHistory::class)->find($action['id']);
+            ->getRepository(PlanningPositionHistory::class)->find($action['id']);
         $a1->undone(1);
         $this->entityManager->persist($a1);
 
@@ -882,7 +885,9 @@ class PlanningJobController extends BaseController
      */
     public function redo(Request $request)
     {
-        $this->csrf_protection($request);
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
 
         $date = $request->get('date');
         $site = $request->get('site');
