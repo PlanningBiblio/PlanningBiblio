@@ -2962,6 +2962,27 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.10.02.000";
+if (version_compare($config['Version'], $v) === -1) {
+    // MT 37560: holidays reseting scripts
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '19' WHERE `categorie` = 'Congés' AND `nom` = 'Recup-Uneparjour';";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` ( `nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('Conges-transfer-comp-time', 'boolean', '0', 'Transférer les récupérations restantes sur le reliquat', 'Congés', '', NULL, '16');";
+
+    $sql[] = "UPDATE `{$dbprefix}cron` SET  `command` = 'cron.planning_hebdo_daily.php', comments = 'Daily Cron for Planning Hebdo module' WHERE `command` = 'planningHebdo/cron.daily.php';";
+    $sql[] = "UPDATE `{$dbprefix}cron` SET  `command` = 'cron.holiday_reset_remainder.php', comments = 'Reset holliday remainders' WHERE `command` = 'conges/cron.jan1.php';";
+    $sql[] = "UPDATE `{$dbprefix}cron` SET  `command` = 'cron.holiday_reset_credits.php', comments = 'Reset holliday credits' WHERE `command` = 'conges/cron.sept1.php';";
+
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `comments`) VALUES ( '0', '0', '1', '9', '*', 'cron.holiday_reset_comp_time.php', 'Reset holliday compensatory time');";
+
+    $sql[] = "ALTER TABLE `{$dbprefix}cron` ADD COLUMN IF NOT EXISTS `disabled` TINYINT(1) NOT NULL DEFAULT '0' AFTER `last`;";
+
+    // MT 39194
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `ordre`, `commentaires`) VALUES
+      ('CAS-LoginAttribute', 'text', 'CAS','48', 'Attribut CAS à utiliser pour mapper l\'utilisateur si et seulement si l\'UID CAS ne convient pas. Laisser ce champ vide par défaut. Exemple : \"mail\", dans ce cas, l\'adresse mail de l\'utilisateur est fournie par le serveur CAS et elle est renseignée dans le champ \"login\" des fiches agents de Planno.');";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();

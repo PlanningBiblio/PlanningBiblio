@@ -3,6 +3,24 @@
 - Fixes
 - Plumbing
 
+*** Version 22.10.02       (2022-12-29)    ***
+- Enhancements
+MT39277: Include deleted agents in statistics by position
+MT37569: adapt holiday reseting cron jobs
+MT39194: Add param CAS-LoginAttribute which can be used when the UID should not be used as login
+
+- Fixes
+MT39346: remove CSRF Error before login
+MT39361: Fix a sql query on maj.php
+MT39276: Fix hours display in statistics/absence
+MT39408: Replace fetchAll with fetchAllAssociative in MSGraphClient
+MT 39022: take absences for remote working into account when notifying in plannings
+MT38746: Fix wrong URLs
+
+- Plumbing
+CircleCI : disable codecov on php7.4
+
+
 *** Version 22.10.01       (2022-12-05)    ***
 - Fixes
 Restore access to planning and page for anonymous users
