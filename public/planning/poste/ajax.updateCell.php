@@ -50,6 +50,8 @@ $logaction=filter_input(INPUT_POST, "logaction", FILTER_CALLBACK, array("options
 $login_id=$_SESSION['login_id'];
 $now=date("Y-m-d H:i:s");
 
+$barrer = intval($barrer);
+
 // Pärtie 1 : Enregistrement des nouveaux éléments
 
 // Suppression ou marquage absent
