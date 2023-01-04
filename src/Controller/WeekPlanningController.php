@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 
 use App\Model\AbsenceReason;
 use App\Model\SelectFloor;
+use App\Model\SeparationLine;
 use App\PlanningBiblio\Framework;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -200,13 +201,7 @@ class WeekPlanningController extends BaseController
         // ---------- FIN Affichage du titre et du calendrier ------------//
 
         // Lignes de separation
-        $db = new \db();
-        $db->select2('lignes');
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $lignes_sep[$elem['id']] = $elem['nom'];
-            }
-        }
+        $lignes_sep = $this->entityManager->getRepository(SeparationLine::class);
 
         // Pour tous les jours de la semaine
         $days = array();
@@ -439,7 +434,7 @@ class WeekPlanningController extends BaseController
                             }
                         }
                         if ($ligne['type']=="ligne") {
-                            $ligne['line_sep'] = $lignes_sep[$ligne['poste']];
+                            $ligne['line_sep'] = $lignes_sep->find($ligne['poste'])->nom();
                         }
                         $tab['lignes'][$line_index] = $ligne;
                     }
