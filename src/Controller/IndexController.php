@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Model\AbsenceReason;
 use App\Model\SelectFloor;
 use App\Model\PlanningPositionHistory;
+use App\Model\SeparationLine;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 use App\Model\Agent;
 use App\Model\Model;
@@ -213,7 +214,7 @@ class IndexController extends BaseController
 
             // ------------ Planning display --------------------//
             // Separation lines
-            $lignes_sep = $this->getSepLines();
+            $lignes_sep = $this->entityManager->getRepository(SeparationLine::class);
 
             // Get framework structure, start and end hours.
             list($tabs, $debut, $fin) = $this->getFrameworkStructure($tab);
@@ -348,7 +349,7 @@ class IndexController extends BaseController
 
                     // Separation lines
                     if ($ligne['type']=="ligne") {
-                        $tabs[$index]['lignes'][$key]['separation'] = $lignes_sep[$ligne['poste']];
+                        $tabs[$index]['lignes'][$key]['separation'] = $lignes_sep->find($ligne['poste'])->nom();
                     }
                 }
                 $j++;
@@ -1221,20 +1222,6 @@ class IndexController extends BaseController
         return $conges;
     }
 
-    private function getSepLines()
-    {
-        $lignes_sep = array();
-
-        $db = new \db();
-        $db->select2('lignes');
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $lignes_sep[$elem['id']]=$elem['nom'];
-            }
-        }
-
-        return $lignes_sep;
-    }
 
     private function getFrameworkStructure($tab)
     {

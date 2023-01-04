@@ -368,7 +368,7 @@ $sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES 
 //	Lignes de séparations
 $sql[]="INSERT INTO `{$dbprefix}lignes` (`nom`) VALUES ('Magasins');";
 $sql[]="INSERT INTO `{$dbprefix}lignes` (`nom`) VALUES ('Mezzanine');";
-$sql[]="INSERT INTO `{$dbprefix}lignes` (`nom`) VALUES ('Rez de chauss&eacute;e');";
+$sql[]="INSERT INTO `{$dbprefix}lignes` (`nom`) VALUES ('Rez de chaussée');";
 $sql[]="INSERT INTO `{$dbprefix}lignes` (`nom`) VALUES ('Rez de jardin');";
 
 // Menu
