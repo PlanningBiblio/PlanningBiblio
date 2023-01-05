@@ -120,6 +120,10 @@ class OvertimeControllerTest extends PLBWebTestCase
         $entityManager->persist($overTime);
         $entityManager->flush();
 
+        if (date('m') < 9) {
+            $Y = $Y -1;
+        }
+
         $crawler = $client->request('GET', "/overtime?annee=$Y&perso_id=" .$agent->id());
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
