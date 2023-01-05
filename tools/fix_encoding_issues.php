@@ -467,6 +467,10 @@ foreach ($tables as $table) {
     $name = $table['name'];
     $fields = $table['fields'];
 
+    if (empty($fields)) {
+        continue;
+    }
+
     $sql[] = "ALTER TABLE `{$dbprefix}{$name}` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 
     $fields_query = '`id`, `' . implode('`, `', $table['fields']) . '`';
