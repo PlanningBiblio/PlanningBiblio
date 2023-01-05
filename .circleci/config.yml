@@ -8,7 +8,7 @@ executors:
     parameters:
       php:
         type: string
-        default: '7.4'
+        default: '8.1'
     docker:
       - image: cimg/php:<< parameters.php >>
       - image: cimg/mariadb:10.6
@@ -19,7 +19,7 @@ executors:
           MYSQL_PASSWORD: plb
 
 jobs:
-  install-and-test:
+  install-test-codecov:
     parameters:
       e:
         type: executor
@@ -32,6 +32,7 @@ jobs:
       - run: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
+      - run: php -v
       - run: sudo -E install-php-extensions zip mysqli pdo_mysql
       - run: sudo apt install -y google-chrome-stable
       - run: sudo apt install -y mariadb-client
@@ -66,7 +67,7 @@ jobs:
       - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
       - run: bash <(curl -s https://codecov.io/bash)
 
-  install-and-test-7-4:
+  install-test:
     parameters:
       e:
         type: executor
@@ -79,6 +80,7 @@ jobs:
       - run: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
+      - run: php -v
       - run: sudo -E install-php-extensions zip mysqli pdo_mysql
       - run: sudo apt install -y google-chrome-stable
       - run: sudo apt install -y mariadb-client
@@ -114,18 +116,13 @@ workflows:
   version: 2
   build:
     jobs:
-      - install-and-test-7-4:
-          name: php:7.4
-          e:
-            name: plb
-            php: '7.4'
-      - install-and-test:
-          name: php:8.0
-          e:
-            name: plb
-            php: '8.0'
-      - install-and-test:
+      - install-test-codecov:
           name: php:8.1
           e:
             name: plb
             php: '8.1'
+      - install-test:
+          name: php:8.2
+          e:
+            name: plb
+            php: '8.2'
