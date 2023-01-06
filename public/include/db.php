@@ -39,7 +39,7 @@ class db
     public $error = null;
     public $msg = null;
     public $CSRFToken = false;
-    public $sanitize_string = true;
+    public $sanitize_string = false;
     public $inserted_id = null;
   
     public function __construct()
