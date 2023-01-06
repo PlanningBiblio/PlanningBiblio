@@ -1,7 +1,36 @@
 *** Unreleased ***
 - Enhancements
+MT39277: Include deleted agents in statistics by position
+MT37569: adapt holiday reseting cron jobs
+MT39194: Add param CAS-LoginAttribute which can be used when the UID should not be used as login
+
 - Fixes
+MT38757: restore access to planning and page for anonymous users
+MT38997: Fix duplicate display of absence list
+MT38997: Do not add tr1/tr2 classes on DataTable rows
+MT38997: restore odd/even lines in absences table
+MT39061: catch exceptions when parsing ICS files
+MT39079: make personnel.droits a text column
+MT39112: CAS Auth: set the required param "CAS base URL"
+Fix rowCounts error in PurgeLogTable.php
+MT39346: remove CSRF Error before login
+MT39276: Fix hours display in statistics/absence
+MT39408: Replace fetchAll with fetchAllAssociative in MSGraphClient
+MT39089: fix migrations error
+MT39022: take absences for remote working into account when notifying in plannings
+MT38746: Fix wrong URLs
+MT38912: Show holiday accounts for managed agents only
+MT39277: Correctly display the item "autre" on statistics/position
+Fix Overtimes unit tests
+MT39443: Fix ajax.updateCell.php to restore copy to right cell #828
+MT39412: Remove HTML entities from position's names on planning views
+MT39412: Remove HTML entities from separation line's names on planning views
+
 - Plumbing
+CircleCI : disable codecov on php7.4
+Symfonize recup_pose
+Symfonize agent deletion
+Remove phpunit direct depreciations
 
 *** Version 22.10.00       (2022-11-18)    ***
 - Enhancements

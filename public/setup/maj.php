@@ -2984,6 +2984,29 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.11.00.002";
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT 39412 - remove HTML entities from separation lines
+    $db = new db();
+    $db->select2('lignes');
+
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $old = $elem['nom'];
+            $new = html_entity_decode($elem['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            if ($new != $old) {
+                $sql[] = "UPDATE `{$dbprefix}lignes` SET `nom` = '$new' WHERE `id` = '{$elem['id']}';";
+            }
+        }
+    }
+
+    // Symfonize agent deletion
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='personnel/suppression.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
