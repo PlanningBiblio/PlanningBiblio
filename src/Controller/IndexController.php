@@ -1162,7 +1162,7 @@ class IndexController extends BaseController
         $class = 'tr1';
         foreach ($absences as $index => $elem) {
             $absences[$index]['valide'] = 1;
-            if ($elem['valide'] <= 0 and $this->config('Absences-non-validees') == 0) {
+            if ($elem['valide'] < 0 or ($elem['valide'] == 0 and $this->config('Absences-non-validees') == 0)) {
                 unset ($absences[$index]);
                 continue;
             }
