@@ -2983,6 +2983,26 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.10.03.000";
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT 39412 - Remove HTML entities from separation lines
+    $db = new db();
+    $db->select2('lignes');
+
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $old = $elem['nom'];
+            $new = html_entity_decode($elem['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            if ($new != $old) {
+                $sql[] = "UPDATE `{$dbprefix}lignes` SET `nom` = '$new' WHERE `id` = '{$elem['id']}';";
+            }
+        }
+    }
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();

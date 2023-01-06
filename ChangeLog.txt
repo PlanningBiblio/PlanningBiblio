@@ -3,6 +3,20 @@
 - Fixes
 - Plumbing
 
+*** Version 22.10.03       (2023-01-06)    ***
+- Enhancements
+MT39412: Remove HTML entities from position's names on planning views
+MT39412: Remove HTML entities from separation line's names on planning views
+
+- Fixes
+MT38912: Show holiday accounts for managed agents only
+MT39277: Correctly display the item "autre" on statistics/position
+MT39443: Fix ajax.updateCell.php to restore copy to right cell #828
+
+- Plumbing
+Remove phpunit direct depreciations
+Fix Overtimes unit tests
+
 *** Version 22.10.02       (2022-12-29)    ***
 - Enhancements
 MT39277: Include deleted agents in statistics by position
