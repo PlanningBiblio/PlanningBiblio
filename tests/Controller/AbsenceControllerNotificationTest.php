@@ -115,7 +115,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         $tbody = $crawler->filter('table#tableAbsencesVoir tbody tr');
         $this->assertCount(1, $tbody, 'jdupont see only one absence');
         $result = $crawler->filterXPath('//table[@id="tableAbsencesVoir"]');
-        $this->assertStringContainsString('Dupont Jean', $result->text());
+        $this->assertStringContainsString('Dupont Jean', $result->text(null,false));
 
         // Login with agent having rights for absences
         $this->logInAgent($kboivin, $kboivin->droits());

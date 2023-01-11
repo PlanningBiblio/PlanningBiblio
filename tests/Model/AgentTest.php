@@ -120,6 +120,7 @@ class AgentTest extends TestCase
 
     public function testGetWorkingHoursOn(){
         global $entityManager;
+        $GLOBALS['config']['PlanningHebdo'] = 0;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
