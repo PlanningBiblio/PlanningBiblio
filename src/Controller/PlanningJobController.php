@@ -817,53 +817,53 @@ class PlanningJobController extends BaseController
 
         $date = $request->get('date');
         $site = $request->get('site');
-    
+
         if (!$this->canManagePlanning($site)) {
             return $this->json('forbiden');
         }
-    
+
         if (!$date || !$site) {
             $response = new Response();
             $response->setContent('Bad request');
             $response->setStatusCode(400);
             return $response;
         }
-    
+
         $history = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)
             ->undoable($date, $site);
-    
+
         // Nothing to cancel.
         if (empty($history)) {
             return $this->json('');
         }
-    
+
         $action = array_shift($history);
         $action_before = null;
         $response = array(
             'remaining_undo' => 1,
             'actions' => array()
         );
-    
+
         // Transform full DateTime to sql date or time.
         $action = $this->convertActionDates($action);
-    
+
         if ($action['play_before'] == 1) {
             $action_before = array_shift($history);
         }
-    
+
         // Means that after this undo,
         // there will be nothing more to undo,
         // because there is nothing left in history or because the last action is not made by the logged in agent
         if (empty($history) or $history[0]['updated_by'] != $_SESSION['login_id']) {
             $response['remaining_undo'] = 0;
         }
-    
+
         $a1 = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)->find($action['id']);
         $a1->undone(1);
         $this->entityManager->persist($a1);
-    
+
         if ($action_before) {
             $a2 = $this->entityManager
                 ->getRepository(PlanningPositionHistory::class)->find($action_before['id']);
@@ -872,11 +872,11 @@ class PlanningJobController extends BaseController
             $action_before = $this->convertActionDates($action_before);
             $response['actions'][] = $action_before;
         }
-    
+
         $this->entityManager->flush();
-    
+
         $response['actions'][] = $action;
-    
+
         return $this->json($response);
     }
 
@@ -892,57 +892,57 @@ class PlanningJobController extends BaseController
         $date = $request->get('date');
         $site = $request->get('site');
         $CSRFToken = $request->get('CSRFToken');
-    
+
         if (!$this->canManagePlanning($site)) {
             return $this->json('forbiden');
         }
-    
+
         if (!$date || !$site) {
             $response = new Response();
             $response->setContent('Bad request');
             $response->setStatusCode(400);
             return $response;
         }
-    
+
         $history = $this->entityManager
              ->getRepository(PlanningPositionHistory::class)
              ->redoable($date, $site);
-    
+
         // Nothing to cancel.
         if (empty($history)) {
             return $this->json('');
         }
-    
+
         $action = array_shift($history);
         $action_after = null;
         $response = array(
             'remaining_redo' => 1,
             'actions' => array()
         );
-    
+
         // Transform full DateTime to sql date or time.
         $action = $this->convertActionDates($action);
-    
+
         $response['actions'][] = $action;
-    
+
         // As we play redo in reverse order,
         // the second element history could
         // be an action to play after.
         if (isset($history[0]) && $history[0]['play_before'] == 1) {
             $action_after = array_shift($history);
         }
-    
+
         // Means that after this undo,
         // there will be nothing more to undo.
         if (empty($history)) {
             $response['remaining_redo'] = 0;
         }
-    
+
         $a1 = $this->entityManager
            ->getRepository(PlanningPositionHistory::class)->find($action['id']);
         $a1->undone(0);
         $this->entityManager->persist($a1);
-    
+
         if ($action_after) {
             $a2 = $this->entityManager
                 ->getRepository(PlanningPositionHistory::class)->find($action_after['id']);
@@ -951,9 +951,9 @@ class PlanningJobController extends BaseController
             $action_after = $this->convertActionDates($action_after);
             $response['actions'][] = $action_after;
         }
-    
+
         $this->entityManager->flush();
-    
+
         return $this->json($response);
     }
 

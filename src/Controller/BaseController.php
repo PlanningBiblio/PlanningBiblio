@@ -117,9 +117,7 @@ class BaseController extends AbstractController
         if (!$this->isCsrfTokenValid('', $submittedToken)) {
             return false;
         }
-
         return true;
-
     }
 
     /**
