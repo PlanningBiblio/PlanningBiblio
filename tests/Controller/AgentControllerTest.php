@@ -92,7 +92,7 @@ class AgentControllerTest extends PLBWebTestCase
                 'informations' => '',
                 'recup' => '',
                 'supprime' => '',
-                'mails_responsables' => '',
+                'mailsResponsables' => '',
                 'matricule' => '',
                 'code_ics' => '',
                 'url_ics' => '',
