@@ -54,8 +54,8 @@ class SkillControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Ajout d\'une activité');
 
-        $result=$crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(6)->text(null, false),' Nom :','label is Nom');
+        $result=$crawler->filterXPath('//table[@class="tableauFiches"]');
+        $this->assertStringContainsString(' Nom :', $result->text(null, false),'label is Nom');
 
         $result=$crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
         $this->assertEquals($result->attr('name'),'nom','check input for name');
@@ -93,8 +93,8 @@ class SkillControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Modification de l\'activité');
 
-        $result=$crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(6)->text(null, false),' Nom :','label is Nom');
+        $result=$crawler->filterXPath('//table[@class="tableauFiches"]');
+        $this->assertStringContainsString(' Nom :', $result->text(null, false),'label is Nom');
 
         $result=$crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
         $this->assertEquals($result->attr('value'),'security','check input for name');
