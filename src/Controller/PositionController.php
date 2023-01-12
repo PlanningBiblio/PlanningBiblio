@@ -42,7 +42,6 @@ class PositionController extends BaseController
         // Sélection des activités
         $activitesTab = array();
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select("activites");
         if ($db->result) {
             foreach ($db->result as $elem) {

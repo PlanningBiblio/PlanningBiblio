@@ -633,7 +633,6 @@ class HolidayController extends BaseController
 
         $date = date("Y-m-d");
         $db = new \db();
-        $db->sanitize_string = false;
         $db->query("SELECT * FROM `{$dbprefix}conges_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
 
         $holiday_info = array();

@@ -323,7 +323,6 @@ class AgentController extends BaseController
         $ics = null;
         if ($id) {
             $db = new \db();
-            $db->sanitize_string = false;
             $db->select2("personnel", "*", array("id"=>$id));
             $actif = $db->result[0]['actif'];
             $nom = $db->result[0]['nom'];

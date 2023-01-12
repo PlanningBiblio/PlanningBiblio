@@ -45,7 +45,6 @@ class postes
         // Floors
         $floors = array();
         $db=new db();
-        $db->sanitize_string = false;
         $db->select("select_etages");
         if ($db->result) {
             foreach ($db->result as $elem) {

@@ -134,7 +134,6 @@ class FrameworkController extends BaseController
             }
         
             $db = new \db();
-            $db->sanitize_string = false;
             $db->CSRFToken = $CSRFToken;
             $db->insert("pl_poste_tab", $insert);
 
@@ -156,7 +155,6 @@ class FrameworkController extends BaseController
 
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->sanitize_string = false;
             $db->update("pl_poste_tab", array("nom" => trim($nom)), array("tableau" => $id));
 
             if ($site && $not_used) {
@@ -194,7 +192,6 @@ class FrameworkController extends BaseController
         $tableauNom = '';
         if ($tableauNumero) {
             $db = new \db();
-            $db->sanitize_string = false;
             $db->select2("pl_poste_tab", "*", array("tableau"=>$tableauNumero));
             $tableauNom = $db->result[0]['nom'];
         }
@@ -252,7 +249,6 @@ class FrameworkController extends BaseController
         $tableauNom = '';
         if ($tableauNumero) {
             $db = new \db();
-            $db->sanitize_string = false;
             $db->select2("pl_poste_tab", "*", array("tableau"=>$tableauNumero));
             $tableauNom = $db->result[0]['nom'];
         }
@@ -783,7 +779,6 @@ class FrameworkController extends BaseController
 
         // Récupération de la ligne
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2("lignes", "nom", array("id"=>$id));
         $nom = $db->result[0]['nom'];
 
