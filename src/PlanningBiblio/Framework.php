@@ -58,7 +58,6 @@ class Framework
     public function fetchAll()
     {
         $db = new \db();
-        $db->sanitize_string = false;
         if ($this->supprime) {
             $date=date("Y-m-d H:i:s", strtotime("- 1 year"));
             $db->select2("pl_poste_tab", null, array("supprime"=>">=$date"));
@@ -75,7 +74,6 @@ class Framework
     public function fetchAllGroups()
     {
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2("pl_poste_tab_grp", null, array("supprime"=>null));
         $tab=$db->result;
         if (is_array($tab)) {
@@ -87,7 +85,6 @@ class Framework
     public function fetchGroup($id)
     {
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2("pl_poste_tab_grp", "*", "`id`='$id'");
         $this->elements=$db->result[0];
     }
@@ -101,7 +98,6 @@ class Framework
         $tableaux=array();
         $db = new \db();
         $db->select2("pl_poste_horaires", "tableau", array("numero"=>$tableauNumero), "GROUP BY `tableau`");
-        $db->sanitize_string = false;
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $tableaux[]=$elem['tableau'];

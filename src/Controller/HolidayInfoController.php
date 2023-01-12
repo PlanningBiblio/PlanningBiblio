@@ -28,7 +28,6 @@ class HolidayInfoController extends BaseController
         }
 
         $db = new \db();
-        $db->sanitize_string = false;
         $db->query("SELECT * FROM `{$dbprefix}conges_infos` WHERE `fin`>='$today' ORDER BY `debut`,`fin`;");
 
         if($db->result){
@@ -78,7 +77,6 @@ class HolidayInfoController extends BaseController
         $id = $request->get('id');
 
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select("conges_infos", "*", "id='$id'");
         $debut = dateFr($db->result[0]['debut']);
         $fin = dateFr($db->result[0]['fin']);

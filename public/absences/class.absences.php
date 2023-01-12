@@ -1568,7 +1568,6 @@ class absences
         }
 
         $db = new db();
-        $db->sanitize_string = false;
         $db->select2('absences_recurrentes', 'event', $where);
     
         if ($db->result) {
