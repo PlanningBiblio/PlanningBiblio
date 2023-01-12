@@ -905,7 +905,6 @@ class IndexController extends BaseController
     private function getInfoMessages($date)
     {
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2('infos', '*', array('debut'=>"<={$date}", 'fin'=>">={$date}"), "ORDER BY `debut`,`fin`");
 
         $messages_infos = null;
@@ -969,7 +968,6 @@ class IndexController extends BaseController
         $postes=array();
 
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2('postes', '*', '1', 'ORDER BY `id`');
         $floors =  $this->entityManager->getRepository(SelectFloor::class);
 
