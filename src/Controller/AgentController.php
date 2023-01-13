@@ -1223,6 +1223,10 @@ class AgentController extends BaseController
      */
     public function update_login(Request $request)
     {
+        if(!$this->csrf_protection($request)){
+            return $this->redirectToRoute('access-denied');
+        }
+
         $login = $request->get('login');
         $agent_id = $request->get('id');
         $response = new Response();
