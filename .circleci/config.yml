@@ -80,6 +80,7 @@ jobs:
 
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
       - run: sudo -E install-php-extensions zip mysqli pdo_mysql
+      - run: sudo apt install -y libu2f-udev
       - run: sudo apt install -y google-chrome-stable
       - run: sudo apt install -y mariadb-client
 
