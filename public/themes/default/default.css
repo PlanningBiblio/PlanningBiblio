@@ -1,5 +1,5 @@
 /**
-Planning Biblio
+Planno
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 
@@ -8,6 +8,10 @@ Voir les fichiers README.md et LICENSE
 
 Description :
 Feuille de style principale du programme.
+
+Colors :
+* dark-green : #29495C / rgb(41,73,92,1)
+* yellow : #FFD700 / rgb(255,215,0,1)
 */
 
 body,a,input,select,textarea,button {
@@ -546,7 +550,7 @@ select
 }
 
 .tr1{
-  background-color:#DFDFDF;
+  background-color:#DBDFE1;
 }
 
 .tr2{
@@ -819,7 +823,7 @@ div#tabsemaine1{
 }
 
 .td_obligatoire{
-  background:#0A8754;
+  background: #DBDFE1;
   color: #29495C;
   border-right: 1px solid #999999;
   border-bottom: 1px solid #999999;
@@ -1122,9 +1126,9 @@ a:hover.menuRed, a:hover.menu {
 	}
 
 .cellule_grise {
-	text-align:center;
-	background: #dfdfdf;
-	}
+  text-align:center;
+  background: #DBDFE1;
+}
 
 td.cellule_grise {
   border-right: 1px solid #999999;
