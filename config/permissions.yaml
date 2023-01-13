@@ -253,6 +253,16 @@
     - 17
 "statistics.time":
     - 17
+"site.add":
+    - 100
+"site.edit":
+    - 100
+"site.delete":
+    - 100
+"site.index":
+    - 100
+"site.save":
+    - 100
 "workinghour.index":
     - 100
 "workinghour.add":

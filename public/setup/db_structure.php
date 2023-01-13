@@ -599,3 +599,14 @@ $sql[] = "CREATE TABLE `{$dbprefix}pl_position_history` (
   updated_by INT(11) NOT NULL,
   updated_at DATETIME NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}site` (
+  `id` INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `nom` VARCHAR(55) NOT NULL,
+  `supprime` DATETIME NULL DEFAULT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}site_mail` (
+  `site_id` int(11),
+  `mail` VARCHAR(255) NOT NULL DEFAULT ''
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
