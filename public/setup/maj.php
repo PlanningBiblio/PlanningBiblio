@@ -53,6 +53,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // Si le plugin n'était pas installé, on créé les tables et apporte les modifications nécessaires
     $db=new db();
+    $db->sanitize_string = true;
     $db->select2("plugins", "*", array("nom"=>"planningHebdo"));
     if (!$db->result) {
         // Intégration du plugin Planning Hebdo
@@ -112,6 +113,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
         // Configuration : Notifications
         $db=new db();
+        $db->sanitize_string = true;
         $db->query("SELECT `valeur` FROM `{$dbprefix}planningHebdoConfig` WHERE `nom`='notifications';");
         $notifications=$db->result[0]['valeur'];
 
@@ -131,6 +133,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // Mise à jour des paramètres pour CAS
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT `valeur` FROM `{$dbprefix}config` WHERE `nom`='CAS-Version';");
     $casVersion=$db->result[0]['valeur'];
 
@@ -194,9 +197,11 @@ $v="2.0.3";
 if (version_compare($config['Version'], $v) === -1) {
     // Modification de la config pour les checkboxes Absences-notification
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT `valeurs` FROM `{$dbprefix}config` WHERE `nom`='Absences-notifications1';");
     if ($db->result[0]['valeurs'] != "[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]") {
         $db=new db();
+        $db->sanitize_string = true;
         $db->query("SELECT `{$dbprefix}config` WHERE `nom` IN ('Absences-notifications1','Absences-notifications2','Absences-notifications3','Absences-notifications4');");
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -418,6 +423,7 @@ if (version_compare($config['Version'], $v) === -1) {
     // Config
     // Supprime les éventuels doublons
     $db=new db();
+    $db->sanitize_string = true;
     $db->select2("config");
     $tmp = array();
     foreach ($db->result as $elem) {
@@ -619,6 +625,7 @@ $v="2.5.8";
 if (version_compare($config['Version'], $v) === -1) {
     // Encodage HTML de la table pl_poste_modeles
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('pl_poste_modeles');
     if ($db->result) {
         foreach ($db->result as $elem) {
@@ -629,6 +636,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // Encodage HTML de la table personnel, champ service
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('personnel', array('id','service'));
     if ($db->result) {
         foreach ($db->result as $elem) {
@@ -668,42 +676,50 @@ $v="2.6.4";
 if (version_compare($config['Version'], $v) === -1) {
     // Renomme les tables en minuscules
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}appelDispo` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}appelDispo` TO `{$dbprefix}appel_dispo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}EDTSamedi` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}EDTSamedi` TO `{$dbprefix}edt_samedi`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}heures_Absences` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}heures_Absences` TO `{$dbprefix}heures_absences`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}heures_SP` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}heures_SP` TO `{$dbprefix}heures_sp`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}hiddenTables` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}hiddenTables` TO `{$dbprefix}hidden_tables`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
         $sql[] = "ALTER TABLE `{$dbprefix}hidden_tables` CHANGE `hiddenTables` `hidden_tables` TEXT NULL DEFAULT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}IPBlocker` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}IPBlocker` TO `{$dbprefix}ip_blocker`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}joursFeries` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}joursFeries` TO `{$dbprefix}jours_feries`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}planningHebdo` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}planningHebdo` TO `{$dbprefix}planning_hebdo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
@@ -735,32 +751,38 @@ $v="2.6.8";
 if (version_compare($config['Version'], $v) === -1) {
     // Renomme les tables en minuscules si elles étaient déjà en minuscules (ajout d'undercores)
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}appeldispo` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}appeldispo` TO `{$dbprefix}appel_dispo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}edtsamedi` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}edtsamedi` TO `{$dbprefix}edt_samedi`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}hiddentables` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}hiddentables` TO `{$dbprefix}hidden_tables`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
         $sql[] = "ALTER TABLE `{$dbprefix}hidden_tables` CHANGE `hiddentables` `hidden_tables` TEXT NULL DEFAULT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}ipblocker` WHERE 1;");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}ipblocker` TO `{$dbprefix}ip_blocker`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}joursferies` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}joursferies` TO `{$dbprefix}jours_feries`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
     }
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SELECT count(*) FROM `{$dbprefix}planninghebdo` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
     if ($db->result) {
         $sql[] = "RENAME TABLE `{$dbprefix}planninghebdo` TO `{$dbprefix}planning_hebdo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
@@ -785,6 +807,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $menus = array('abs', 'categories', 'etages', 'groupes', 'services', 'statuts');
     foreach ($menus as $m) {
         $db = new db();
+        $db->sanitize_string = true;
         $db->query("SELECT `id`, `valeur` FROM `{$dbprefix}select_$m`;");
         if ($db->result) {
             foreach ($db->result as $r) {
@@ -1029,6 +1052,7 @@ $v="2.7.14";
 if (version_compare($config['Version'], $v) === -1) {
     // Modification des IDs des droits Absences
     $db = new db();
+    $db->sanitize_string = true;
     $db->select('personnel');
     if ($db->result) {
         foreach ($db->result as $elem) {
@@ -1091,6 +1115,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // Modification des IDs des droits de gestion des heures de présence
     $db = new db();
+    $db->sanitize_string = true;
     $db->select('personnel');
     if ($db->result) {
         foreach ($db->result as $elem) {
@@ -1120,6 +1145,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "ALTER TABLE `{$dbprefix}planning_hebdo` ADD `validation_n1` TIMESTAMP NULL DEFAULT NULL AFTER `valide_n1`;";
   
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('config', array('valeur'), array('nom' => 'PlanningHebdo-Notifications'));
     $result = $db->result[0]['valeur'];
     $valeur = $result == 'droit' ? '[0,4]' : '[3,4]';
@@ -1201,6 +1227,7 @@ if (version_compare($config['Version'], $v) === -1) {
 $v="2.8.04";
 if (version_compare($config['Version'], $v) === -1) {
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('config', array('nom', 'valeur'), array('type'=>'password'));
     if ($db->result) {
         foreach ($db->result as $elem) {
@@ -1218,6 +1245,7 @@ $v="19.04.00";
 if (version_compare($config['Version'], $v) === -1) {
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('plugins', '*', array('nom' => 'conges'));
     $plugin_conges = $db->result ? true : false;
 
@@ -1270,6 +1298,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
             // Modification des ID des droits d'administration niveau 1 et 2
             $db = new db();
+            $db->sanitize_string = true;
             $db->select('personnel');
             if ($db->result) {
                 foreach ($db->result as $elem) {
@@ -1311,6 +1340,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
             // Suppression des doublons dans la table cron
             $db = new db();
+            $db->sanitize_string = true;
             $db->select2('cron', 'id', array('command' => 'plugins/conges/cron.sept1.php'));
             if ($db->result) {
                 for ($i = 1; $i < $db->nb; $i++) {
@@ -1319,6 +1349,7 @@ if (version_compare($config['Version'], $v) === -1) {
             }
 
             $db = new db();
+            $db->sanitize_string = true;
             $db->select2('cron', 'id', array('command' => 'plugins/conges/cron.jan1.php'));
             if ($db->result) {
                 for ($i = 1; $i < $db->nb; $i++) {
@@ -1925,6 +1956,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}menu` SET `url`='/skill' where `url`='activites/index.php';";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('activites', array('id', 'nom'), "`nom` LIKE '%&%'");
     if($db->result){
         foreach ($db->result as $elem) {
@@ -1973,6 +2005,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/position'  WHERE  `url` = 'postes/index.php' ;";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('select_etages', array('id', 'valeur'), "`valeur` LIKE '%&%'");
     if($db->result){
         foreach ($db->result as $elem) {
@@ -1987,6 +2020,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('select_groupes', array('id', 'valeur'), "`valeur` LIKE '%&%'");
     if($db->result){
         foreach ($db->result as $elem) {
@@ -2001,6 +2035,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('postes', array('id', 'nom'), "`nom` LIKE '%&%'");
     if($db->result){
         foreach ($db->result as $elem) {
@@ -2015,6 +2050,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('postes', array('id', 'etage'), "`etage` LIKE '%&%'");
     if($db->result){
         foreach ($db->result as $elem) {
@@ -2029,6 +2065,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('postes', array('id', 'groupe'), "`groupe` LIKE '%&%'");
     if($db->result){
         foreach ($db->result as $elem) {
@@ -2054,6 +2091,7 @@ $v="20.11.00.001";
 if (version_compare($config['Version'], $v) === -1) {
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('jours_feries', array('id', 'nom'), "`nom` LIKE '%&%'");
 
     if($db->result){
@@ -2069,6 +2107,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('jours_feries', array('id', 'commentaire'), "`commentaire` LIKE '%&%'");
 
     if($db->result){
@@ -2226,6 +2265,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_modeles` ADD `model_id` INT(11) NOT NULL DEFAULT '0' AFTER `nom`;";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('pl_poste_modeles_tab', array('id', 'nom', 'site'), null, "ORDER BY `site`, `nom`, `id`");
 
     $last = null;
@@ -2245,6 +2285,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_modeles` DROP COLUMN `nom`;";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('pl_poste_modeles_tab', array('id', 'nom'), "nom LIKE '%&%'");
     if ($db->result) {
         foreach ($db->result as $elem) {
@@ -2415,6 +2456,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // Remove HTML entities for floors and groups
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('select_etages');
     $floors = array();
     if($db->result){
@@ -2434,6 +2476,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('select_groupes');
     $groups = array();
     if($db->result){
@@ -2453,6 +2496,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('postes');
     if($db->result){
         foreach ($db->result as $elem) {
@@ -2496,6 +2540,7 @@ $v="21.11.00.002";
 if (version_compare($config['Version'], $v) === -1) {
     // MT 35801
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('planning_hebdo');
     if($db->result){
         foreach ($db->result as $workinghours) {
@@ -2515,6 +2560,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('personnel');
     if($db->result){
         foreach ($db->result as $agent) {
@@ -2539,6 +2585,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // MT 35862
     $db = new db();
+    $db->sanitize_string = true;
     $db->query("SELECT `id`, `droits` FROM `{$dbprefix}personnel` WHERE `droits` LIKE 'a%';");
 
     if ($db->result) {
@@ -2552,6 +2599,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->query("SELECT `id`, `postes` FROM `{$dbprefix}personnel` WHERE `postes` LIKE 'a%';");
 
     if ($db->result) {
@@ -2572,6 +2620,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // Decode holiday information text.
     $db = new db();
+    $db->sanitize_string = true;
     $db->select('conges_infos');
     if ($db->result) {
         foreach ($db->result as $elem) {
@@ -2583,6 +2632,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // MT 36405
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('select_services', array('id', 'valeur'));
     if($db->result){
         foreach ($db->result as $elem) {
@@ -2597,6 +2647,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('select_statuts', array('id', 'valeur'));
     if($db->result){
         foreach ($db->result as $elem) {
@@ -2611,6 +2662,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('personnel', array('id', 'service', 'statut'));
     if($db->result){
         foreach ($db->result as $elem) {
@@ -2642,6 +2694,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // MT 36590
     $db = new db();
+    $db->sanitize_string = true;
     $db->query("SELECT `valeur` FROM `{$dbprefix}config` WHERE `nom` = 'PlanningHebdo';");
 
     if ( $db->result and $db->result[0]['valeur'] == '1' ) {
@@ -2651,6 +2704,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}config` SET `commentaires` = 'Horaires différents les semaines avec samedi travaillé et semaines à ouverture restreinte. Ce paramètre est ignoré si PlanningHebdo est activé.' WHERE `nom`='EDTSamedi';";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('planning_hebdo');
     if($db->result){
         foreach ($db->result as $workinghours) {
@@ -2672,6 +2726,7 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('personnel');
     if($db->result){
         foreach ($db->result as $agent) {
@@ -2729,6 +2784,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}menu` SET `titre` = 'Heures supplémentaires', `url` = '/overtime' WHERE `url`='/comp-time' LIMIT 1;";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('personnel');
     if($db->result){
         foreach ($db->result as $agent) {
@@ -2765,6 +2821,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/index' WHERE `url`='planning/poste/index.php';";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select('pl_poste_tab');
     if ($db->result) {
         foreach ($db->result as $tab) {
@@ -2930,6 +2987,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}menu` SET `titre` = 'Heures supplémentaires', `url` = '/overtime' WHERE `url`='/comp-time' LIMIT 1;";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('personnel');
     if($db->result){
         foreach ($db->result as $agent) {
@@ -2988,6 +3046,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // MT 39412 - Remove HTML entities from separation lines
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2('lignes');
 
     if ($db->result) {
@@ -3006,6 +3065,7 @@ if (version_compare($config['Version'], $v) === -1) {
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
+    $db->sanitize_string = true;
     $db->query($elem);
     if (!$db->error) {
         if ($cli) {
@@ -3027,6 +3087,7 @@ if (isset($check_tables) and $check_tables === true) {
     $tables = array('appel_dispo', 'edt_samedi', 'heures_absences', 'heures_sp', 'hidden_tables', 'ip_blocker', 'jours_feries', 'planning_hebdo');
     foreach ($tables as $elem) {
         $db=new db();
+        $db->sanitize_string = true;
         $db->query("SELECT count(*) FROM `{$dbprefix}{$elem}` WHERE 1;");
         if ($db->result) {
             echo "$elem : <font style='color:green;'>OK</font><br/>\n";
@@ -3045,6 +3106,7 @@ if (isset($check_tables) and $check_tables === true) {
     foreach ($champs as $elem) {
         foreach ($elem[1] as $field) {
             $db=new db();
+            $db->sanitize_string = true;
             $db->query("SELECT `$field` FROM `{$dbprefix}{$elem[0]}` WHERE 1");
             if ($db->error) {
                 echo "Table {$elem[0]}, champs $field : <font style='color:red;'>Erreur</font><br/>\n";
@@ -3109,6 +3171,7 @@ function serializeToJson($table, $field, $id='id', $where=null, $CSRFToken)
     echo "UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET `$field`=:value WHERE `$id`=:key;<br/>";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2($table, array($id,$field), $where);
 
     if ($db->result) {
@@ -3133,6 +3196,7 @@ function serializeToJson($table, $field, $id='id', $where=null, $CSRFToken)
 
 function column_exists($table_name, $column_name) {
     $db=new db();
+    $db->sanitize_string = true;
     $db->query("SHOW COLUMNS FROM `$table_name` WHERE Field = '$column_name'");
 
     if ($db->nb > 0) {

@@ -25,6 +25,7 @@ foreach ($tables as $table) {
     $field = $table['field'];
     
     $db = new db();
+    $db->sanitize_string = true;
     $db->select2($name, array('id', $field), "`$field` LIKE '%&%'");
 
     if (is_array($db->result)) {
@@ -46,6 +47,7 @@ foreach ($sql as $queries) {
     print $queries . " : ";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->query($queries);
     if ($db->error) {
         print $db->error . "\n";

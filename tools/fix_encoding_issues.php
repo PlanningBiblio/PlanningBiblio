@@ -474,6 +474,7 @@ foreach ($tables as $table) {
     $req = "SELECT $fields_query FROM `{$dbprefix}{$name}`;";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->query($req);
 
     if ($db->result) {
@@ -504,6 +505,7 @@ foreach ($sql as $queries) {
     print $queries . " : ";
 
     $db = new db();
+    $db->sanitize_string = true;
     $db->query($queries);
     if ($db->error) {
         print $db->error . "\n";
