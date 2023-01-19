@@ -1099,9 +1099,7 @@ a:hover.menuRed, a:hover.menu {
   font-weight: normal;
   width:50%;
   text-align:left;
-  padding-top: 50px;
-  padding-bottom: 20px;
-  padding-left: 220px;
+  padding: 50px 0 20px 220px;
 }
 
 .top-button-div {
