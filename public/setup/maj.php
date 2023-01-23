@@ -3062,6 +3062,22 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.10.03.001";
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT37144: Remove SR warning on lunch positions : add the atomic update to check the lunch option
+    $sql[] = "ALTER TABLE `{$dbprefix}postes` ADD COLUMN IF NOT EXISTS `lunch` TINYINT(1) NOT NULL DEFAULT 0 AFTER `bloquant`;";
+
+    if (!empty($config['Position-Lunch']) and is_array($config['Position-Lunch'])) {
+        foreach ($config['Position-Lunch'] as $elem) {
+            $sql[] = "UPDATE `{$dbprefix}postes` SET `lunch` = '1' WHERE `id` = '$elem';";
+        }
+    }
+
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
