@@ -299,8 +299,7 @@ class FrameworkController extends BaseController
         if ($nbSites > 1) {
             $p->site = $site;
         }
-        $p->all("nom");
-        $postes = $p->elements;
+        $postes = $p->all("nom");
 
         // Liste des lignes de séparation
         $db = new \db();

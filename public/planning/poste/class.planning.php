@@ -403,8 +403,7 @@ class planning
             ->getResult();
 
         // Listes des postes
-        $p=$entityManager->getRepository(Position::class)->all();
-        $postes=$p->elements;
+        $postes=$entityManager->getRepository(Position::class)->all();
 
         // Get teleworking reasons
         $teleworking_reasons = $entityManager->getRepository(AbsenceReason::class)

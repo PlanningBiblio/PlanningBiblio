@@ -2383,10 +2383,10 @@ class StatisticController extends BaseController
         $totauxGroupesHeures = array();
         $totauxGroupesPerso = array();
 
-        $p = $this->entityManager->getRepository(Position::class)->all();
+        $postes = $this->entityManager->getRepository(Position::class)->all();
         // Rassemble les postes dans un tableau en fonction de leur groupe (ex: $groupe['pret'] = array(1,2,3))
 
-        foreach ($p->elements as $poste) {
+        foreach ($postes as $poste) {
             if (!empty($poste['groupe'])) {
                 $groupes[$poste['groupe']][] = $poste['id'];
             } else {

@@ -113,8 +113,7 @@ if ($db->result) {
 }
 
 // Recherche des postes pour affichage du nom des postes
-$p=$entityManager->getRepository(Position::class)->all();
-$postes=$p->elements;
+$postes=$entityManager->getRepository(Position::class)->all();
 
 // Liste des sites
 if ($config['Multisites-nombre'] > 1) {

@@ -77,8 +77,7 @@ for ($i=0;$i<=$jours;$i++) {
 }
 
 // Listes des postes
-$p=$entityManager->getRepository(Position::class)->all();
-$postes=$p->elements;
+$postes=$entityManager->getRepository(Position::class)->all();
 
 // Création du message qui sera envoyé par e-mail
 $data=array();

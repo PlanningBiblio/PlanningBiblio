@@ -105,40 +105,6 @@ class PositionRepositoryTest extends TestCase
         $this->assertEquals(1,$deleted_posts);
     }
 
-    public function testDelete() {
-        date_default_timezone_set('Europe/Paris');
-        global $entityManager;
-
-        $_SESSION['oups']['CSRFToken'] = '00000';
-
-        $builder = new FixtureBuilder();
-
-        $d = date("d");
-        $m = date("m");
-        $Y = date("Y")-5;
-
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
-
-        $builder->delete(Skill::class);
-        $post = $builder->build(Position::class, array(
-            'nom' => 'post1',
-            'statistiques' => 0,
-            'teleworking' => 0,
-            'bloquant' => 1,
-            'supprime' => $date
-        ));
-
-        $p = $entityManager->getRepository(Position::class);
-        $p->CSRFToken = '00000';
-        $p->id = $post->id();
-        $p->delete();
-
-        $db = new \db;
-        $db->select2("postes", "*", array("id"=>$post->id()));
-        $post = $db->result;
-
-        $this->assertStringContainsString(date("Y-m-d"), $post[0]['supprime']);
-    }
 
     public function testAll()
     {
@@ -161,9 +127,8 @@ class PositionRepositoryTest extends TestCase
 
         $p = $entityManager->getRepository(Position::class);
         $p->deleted = null;
-        $p->all();
-        $positions = $p->elements;
+        $postes = $p->all();
 
-        $this->assertTrue(in_array($post1->nom(), $p->elements[$post1->id()]));
+        $this->assertTrue(in_array($post1->nom(), $postes[$post1->id()]));
     }
 }

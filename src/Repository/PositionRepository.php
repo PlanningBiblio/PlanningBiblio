@@ -54,14 +54,6 @@ class PositionRepository extends EntityRepository
         return $deleted_position;
     }
 
-
-    public function delete()
-    {
-        $db=new \db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->update("postes", array("supprime"=>"SYSDATE"), array("id"=>$this->id));
-    }
-
     public function all($sort="nom", $name=null, $group=null)
     {
         // Floors
@@ -76,7 +68,7 @@ class PositionRepository extends EntityRepository
         }
 
         $where=array("supprime"=>null);
-    
+
         if ($this->site) {
             $where["site"]=$this->site;
         }
@@ -84,7 +76,6 @@ class PositionRepository extends EntityRepository
         //	Select All
         $db=new \db();
         $db->select2("postes", null, $where, "ORDER BY $sort");
-    
 
         $all=array();
         if ($db->result) {
@@ -107,6 +98,6 @@ class PositionRepository extends EntityRepository
             }
         }
 
-        $this->elements=$result;
+        return $result;
     }
 }

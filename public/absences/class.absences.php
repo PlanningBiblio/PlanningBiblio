@@ -1900,10 +1900,7 @@ class absences
         sort($plannings_valides);
 
         // nom des postes
-        $p=$entityManager->getRepository(Position::class)->all();
-        if($p != NULL){
-            $postes=$p->elements;
-        }
+        $postes=$entityManager->getRepository(Position::class)->all();
 
 
         // Nom des sites
