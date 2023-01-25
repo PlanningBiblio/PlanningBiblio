@@ -12,8 +12,6 @@ use App\Model\Skill;
 use App\Model\Agent;
 use App\Model\Position;
 
-require_once(__DIR__.'/../../public/activites/class.activites.php');
-
 class SkillController extends BaseController
 {
     /**

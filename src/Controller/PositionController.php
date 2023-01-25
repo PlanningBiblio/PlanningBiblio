@@ -14,7 +14,6 @@ use App\Model\SelectGroup;
 use App\Model\Skill;
 
 require_once(__DIR__ . '/../../public/postes/class.postes.php');
-require_once(__DIR__ . '/../../public/activites/class.activites.php');
 
 class PositionController extends BaseController
 {

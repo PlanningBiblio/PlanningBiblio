@@ -943,9 +943,9 @@ class IndexController extends BaseController
     {
         $a = $this->entityManager->getRepository(Skill::class);
         $a->deleted = true;
-        $a->all();
+        $a = $a->all();
 
-        return $a->elements;
+        return $a;
     }
 
     private function getCategories()

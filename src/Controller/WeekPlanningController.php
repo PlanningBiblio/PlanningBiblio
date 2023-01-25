@@ -119,8 +119,7 @@ class WeekPlanningController extends BaseController
 
         // Récupération des activités pour appliquer
         // les classes aux lignes postes en fonction de celles-ci.
-        $a = $entityManager->getRepository(Skill::class)->all();
-        $activites = $a->elements;
+        $activites = $entityManager->getRepository(Skill::class)->all();
 
         // Récupération des catégories pour appliquer
         // les classes aux lignes postes en fonction de celles-ci.

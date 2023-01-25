@@ -87,35 +87,6 @@ class SkillRepositoryTest extends TestCase
         $this->assertEquals(2,$deleted_skills);
     }
 
-    public function testDelete() {
-        date_default_timezone_set('Europe/Luxembourg');
-        global $entityManager;
-
-        $_SESSION['oups']['CSRFToken'] = '00000';
-
-        $builder = new FixtureBuilder();
-
-        $d = date("d");
-        $m = date("m");
-        $Y = date("Y")-5;
-
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
-
-        $builder->delete(Skill::class);
-        $skill = $builder->build(Skill::class, array('nom' => 'basket', 'supprime' => $date));
-
-        $s = $entityManager->getRepository(skill::class);
-        $s->CSRFToken = '00000';
-        $s->id = $skill->id();
-        $s->delete();
-
-        $db = new \db;
-        $db->select2("activites", "*", array("id"=>$skill->id()));
-        $skill = $db->result;
-
-        $this->assertStringContainsString(date("Y-m-d"), $skill[0]['supprime']);
-    }
-
     public function testAll() {
         global $entityManager;
         $builder = new FixtureBuilder();
@@ -150,8 +121,7 @@ class SkillRepositoryTest extends TestCase
 
         $s = $entityManager->getRepository(Skill::class);
         $s->deleted = null;
-        $s->all();
-        $skills = $s->elements;
+        $skills = $s->all();
 
         $this->assertTrue(in_array($skill1->nom(), $skills[$skill1->id()]));
         $this->assertTrue(in_array($skill2->nom(), $skills[$skill2->id()]));

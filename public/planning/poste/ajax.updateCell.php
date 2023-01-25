@@ -269,8 +269,7 @@ usort($tab, "cmp_nom_prenom");
 // Ajoute les qualifications de chaque agent (activités) dans le tableaux $cellules pour personnaliser l'affichage des cellules en fonction des qualifications
 $a=$entityManager->getRepository(Skill::class);
 $a->deleted=true;
-$a->all();
-$activites=$a->elements;
+$activites = $a->all();
 
 foreach ($tab as $k => $v) {
     if ($v['postes']) {

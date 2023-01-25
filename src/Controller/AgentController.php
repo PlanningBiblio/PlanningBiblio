@@ -177,8 +177,7 @@ class AgentController extends BaseController
         }
 
         // Toutes les activités
-        $a = $this->entityManager->getRepository(Skill::class)->all();
-        $activites = $a->elements;
+        $activites = $this->entityManager->getRepository(Skill::class)->all();
 
         $postes_completNoms = array();
         foreach ($activites as $elem) {
@@ -420,8 +419,7 @@ class AgentController extends BaseController
 
         //        --------------        Début listes des activités        ---------------------//
         // Toutes les activités
-        $a = $this->entityManager->getRepository(Skill::class)->all();
-        $activites = $a->elements;
+        $activites = $this->entityManager->getRepository(Skill::class)->all();
 
         foreach ($activites as $elem) {
             $postes_completNoms[] = array($elem['nom'],$elem['id']);
