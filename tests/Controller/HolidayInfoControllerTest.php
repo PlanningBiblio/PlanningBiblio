@@ -162,9 +162,10 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//div');
         $this->assertStringContainsString('Aucune information enregistrée.', $result->eq(7)->text(),  'text no info is Aucune information enregistrée.');	
 
+        $time = strtotime('now');
         $d = date("d")+1;
         $m_1 = date("m");
-        $m_2 = date("m")+1;
+        $m_2 = date("m", strtotime("+1 month", $time));
         $Y = date("Y");
 
         $start = \DateTime::createFromFormat("d/m/Y", "$d/$m_1/$Y");
@@ -186,12 +187,9 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//a[@class="ui-button"]');
         $this->assertEquals('Ajouter', $result->text(),'a is Ajouter');
 
-        $result = $crawler->filterXPath('//th[@class="dataTableDateFR tableSort"]');
+        $result = $crawler->filterXPath('//th[@class="dataTableDateFR"]');
         $this->assertEquals($result->eq(0)->text(),'Début','table title id Début');
         $this->assertEquals($result->eq(1)->text(),'Fin','table title is Fin');
-
-        $result = $crawler->filterXPath('//th[@class="tableSort"]');
-        $this->assertEquals($result->text(),'Texte','table title is Texte');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Edit','span logo edit title is Edit');
