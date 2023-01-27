@@ -3,6 +3,9 @@
 MT39277: Include deleted agents in statistics by position
 MT37569: adapt holiday reseting cron jobs
 MT39194: Add param CAS-LoginAttribute which can be used when the UID should not be used as login
+MT39474: change the background color for mandatory positions
+Remove SR warning on lunch positions : add a lunch properties on position
+MT39248: prohibit changing the password in demo mode
 
 - Fixes
 MT38757: restore access to planning and page for anonymous users
@@ -25,12 +28,29 @@ Fix Overtimes unit tests
 MT39443: Fix ajax.updateCell.php to restore copy to right cell #828
 MT39412: Remove HTML entities from position's names on planning views
 MT39412: Remove HTML entities from separation line's names on planning views
+MT39412: set default value of db::sanitize_string to false
+MT39418: Simplify print.css
+MT39464: do not show refused absences under the planning
+MT38897: ignore tables for which no correction is needed in fix_encoding_issues.php
+MT39300: update sites when changing agent on workinghour copy form
+MT39300: keep same planning checked when planning is the same
+MT39263: fix the display of holiday/add and overtime/edit forms
+MT39263: fix the display of holiday/add and overtime/edit forms
+MT39409: Fix fatal error on page /position
 
 - Plumbing
 CircleCI : disable codecov on php7.4
 Symfonize recup_pose
 Symfonize agent deletion
 Remove phpunit direct depreciations
+Add test for absence right with Absences-notifications-agent-par-agent
+Added unit tests for recurring absence
+Add Unit tests for Model Agent
+Add unit tests for Closing Day Controller
+Add unit tests for Agent index
+Add unit test for add and edit Agent - rights/access
+Add unit tests for Model Model
+Add unit tests for Absences information, list, add, and edit
 
 *** Version 22.10.00       (2022-11-18)    ***
 - Enhancements
