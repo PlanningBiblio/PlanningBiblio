@@ -3,6 +3,44 @@
 - Fixes
 - Plumbing
 
+*** Version 22.04.02       (2023-01-27)    ***
+- Enhancements
+Disabled notifications should not be considered as an error
+Ignore absence for remote working when importing planning template
+Absence deletion does not affect the pl_poste table anymore
+Show agent that are not on schedule in statistic by agent
+Show week average on all lines (exports statitics by agent)
+Include deleted agents in statistics by position
+Change the background color for mandatory positions
+
+- Fixes
+Contextual menu: fix quota comparison
+Add missing div on template holiday/edit
+Fix statistic exports
+Fix lack of CSS when adding a reason/status/level/... in Agents, Position, Absences
+Catch exceptions when parsing ICS files
+Make personnel.droits a text column
+CAS Auth: set the required param "CAS base URL"
+PurgeLogTable: fix rowCounts error
+Remove CSRF error before login
+Fix hours display in statistics/absence
+Replace fetchAll with fetchAllAssociative in MSGraphClient
+Take absences for remote working into account when notifying in plannings
+Use common sql request to get absences for planning notifications
+Fix wrong URLs
+Simplify print.css
+Ignore tables for which no correction is needed in fix_encoding_issues.php
+Fix fatal error on page /position
+
+
+- Plumbing
+Add unit tests for a recurring absence every 2 weeks
+Update ics-parser from 1.0.3 to 3.*
+Delete references to planning_hebdo_tables
+Fix a require for test ClassAbsencesRRulesTest::testEveryTwoWeeks
+CircleCI : disable codecov on php7.4
+
+
 *** Version 22.04.01       (2022-10-14)    ***
 - Enhancements
 Use the granularity setting for planno-break-timepicker

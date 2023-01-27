@@ -2763,6 +2763,20 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.04.02.000";
+if (version_compare($config['Version'], $v) === -1) {
+    // MT 38918
+    $sql[] = "DROP TABLE IF EXISTS `{$dbprefix}planning_hebdo_periodes`;";
+
+    // MT 39079
+    $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `droits` `droits` TEXT COLLATE utf8mb4_unicode_ci NOT NULL;";
+
+    // MT 39409
+    $sql[] = "UPDATE `{$dbprefix}postes` SET `activites` = '[]' WHERE `activites` LIKE '';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
