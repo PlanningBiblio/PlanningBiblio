@@ -3,6 +3,23 @@
 - Fixes
 - Plumbing
 
+*** Version 22.10.04       (2023-01-27)    ***
+- Enhancements
+Change the background color for mandatory positions
+Remove warning SR on lunch positions
+Prohibit changing the password in demo mode
+
+- Fixes
+Set default value of db::sanitize_string to false
+Simplify print.css
+Do not show refused absences under the planning
+Ignore tables for which no correction is needed in fix_encoding_issues.php
+Update sites when changing agent on workinghour copy form
+Keep same planning checked when planning is the same
+Fix the display of holiday/add and overtime/edit forms
+Fix fatal error on page /position
+
+
 *** Version 22.10.03       (2023-01-06)    ***
 - Enhancements
 MT39412: Remove HTML entities from position's names on planning views
