@@ -325,8 +325,6 @@ class FrameworkControllerTest extends PLBWebTestCase
             )
         );
 
-        $db->update("pl_poste_tab", array("tableau"=>$id), array("nom"=>'tab1'));
-
         $this->login($agent);
 
         $crawler = $this->client->request('GET', "/framework-group/add");
