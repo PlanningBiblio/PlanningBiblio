@@ -3078,6 +3078,14 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.10.04.000";
+if (version_compare($config['Version'], $v) === -1) {
+    // MT 39409
+    $sql[] = "UPDATE `{$dbprefix}postes` SET `activites` = '[]' WHERE `activites` LIKE '';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
