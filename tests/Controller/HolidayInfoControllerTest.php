@@ -162,14 +162,11 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//div');
         $this->assertStringContainsString('Aucune information enregistrée.', $result->eq(7)->text(),  'text no info is Aucune information enregistrée.');	
 
-        $time = strtotime('now');
-        $d = date("d")+1;
-        $m_1 = date("m");
-        $m_2 = date("m", strtotime("+1 month", $time));
-        $Y = date("Y");
+        $date1 = date('d/m/Y');
+        $date2 = date('d/m/Y', strtotime('+ 1 month'));
 
-        $start = \DateTime::createFromFormat("d/m/Y", "$d/$m_1/$Y");
-        $end = \DateTime::createFromFormat("d/m/Y", "$d/$m_2/$Y");
+        $start = \DateTime::createFromFormat("d/m/Y", $date1);
+        $end = \DateTime::createFromFormat("d/m/Y", $date2);
 
         $info = new HolidayInfo();
         $info->debut($start);
@@ -195,8 +192,8 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('title'),'Edit','span logo edit title is Edit');
 
         $result = $crawler->filterXPath('//tbody/tr/td');
-        $this->assertEquals($result->eq(1)->text(),"$d/$m_1/$Y",'date début is ok');
-        $this->assertEquals($result->eq(2)->text(),"$d/$m_2/$Y",'date fin is ok');
+        $this->assertEquals($result->eq(1)->text(), $date1, 'date début is ok');
+        $this->assertEquals($result->eq(2)->text(), $date2, 'date fin is ok');
         $this->assertEquals($result->eq(3)->text(),'hello','text info is ok');
     }
 }

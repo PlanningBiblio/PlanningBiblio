@@ -56,14 +56,11 @@ class AgentControllerTest extends PLBWebTestCase
         $client = static::createClient();
         $_SESSION['oups']['CSRFToken'] = '00000';
 
-        $d1 = date('d') - 3;
-        if($d1<10) {$d1 = "0$d1";}
-        $d2 = date('d') + 3;
-        if($d2<10) {$d2 = "0$d2";}
-        $m = date('m');
-        $Y = date('Y');
-        $start = "$Y-$m-$d1";
-        $end = "$Y-$m-$d2";
+        $date1 = strtotime('3 days ago');
+        $date2 = strtotime('+ 3 days');
+
+        $start = date('Y-m-d', $date1);
+        $end = date('Y-m-d', $date2);
 
         $client->request(
             'POST',
@@ -114,8 +111,8 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEquals('Boivin', $info->nom(), 'nom');
         $this->assertEquals('Karel', $info->prenom(), 'prenom');
         $this->assertEquals('kboivin@mail.fr', $info->mail(), 'mail');
-        $this->assertEquals("$d1/$m/$Y", $info->arrivee()->format("d/m/Y"), 'arrivee');
-        $this->assertEquals("$d2/$m/$Y", $info->depart()->format("d/m/Y"), 'depart');
+        $this->assertEquals(date('d/m/Y', $date1), $info->arrivee()->format("d/m/Y"), 'arrivee');
+        $this->assertEquals(date('d/m/Y', $date2), $info->depart()->format("d/m/Y"), 'depart');
     }
 
     public function testAddFormElement() {
