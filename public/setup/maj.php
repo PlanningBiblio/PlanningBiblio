@@ -3017,14 +3017,21 @@ $v="22.11.00.001";
 if (version_compare($config['Version'], $v) === -1) {
 
     // MT 37569: holidays reseting scripts
+
+    $time = strtotime('first day of september');
+    if ( $time >= time()) {
+        $time = strtotime('-1 year', $time);
+    }
+    $last = date('Y-m-d H:i:s', $time);
+
     $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '19' WHERE `categorie` = 'Congés' AND `nom` = 'Recup-Uneparjour';";
     $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` ( `nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('Conges-transfer-comp-time', 'boolean', '0', 'Transférer les récupérations restantes sur le reliquat', 'Congés', '', NULL, '16');";
 
     $sql[] = "UPDATE `{$dbprefix}cron` SET  `command` = 'cron.planning_hebdo_daily.php', comments = 'Daily Cron for Planning Hebdo module' WHERE `command` = 'planningHebdo/cron.daily.php';";
-    $sql[] = "UPDATE `{$dbprefix}cron` SET  `command` = 'cron.holiday_reset_remainder.php', comments = 'Reset holliday remainders' WHERE `command` = 'conges/cron.jan1.php';";
-    $sql[] = "UPDATE `{$dbprefix}cron` SET  `command` = 'cron.holiday_reset_credits.php', comments = 'Reset holliday credits' WHERE `command` = 'conges/cron.sept1.php';";
+    $sql[] = "UPDATE `{$dbprefix}cron` SET  `command` = 'cron.holiday_reset_remainder.php', comments = 'Reset holiday remainders' WHERE `command` = 'conges/cron.jan1.php';";
+    $sql[] = "UPDATE `{$dbprefix}cron` SET  `command` = 'cron.holiday_reset_credits.php', comments = 'Reset holiday credits' WHERE `command` = 'conges/cron.sept1.php';";
 
-    $sql[] = "INSERT IGNORE INTO `{$dbprefix}cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `comments`) VALUES ( '0', '0', '1', '9', '*', 'cron.holiday_reset_comp_time.php', 'Reset holliday compensatory time');";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `comments`, `last`) VALUES ( '0', '0', '1', '9', '*', 'cron.holiday_reset_comp_time.php', 'Reset holiday compensatory time', '$last');";
 
     $sql[] = "ALTER TABLE `{$dbprefix}cron` ADD COLUMN IF NOT EXISTS `disabled` TINYINT(1) NOT NULL DEFAULT '0' AFTER `last`;";
 
