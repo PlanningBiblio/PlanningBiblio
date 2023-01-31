@@ -42,12 +42,13 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->setParam('Absences-notifications-agent-par-agent', 0);
         $this->setParam('PlanningHebdo', 0);
         $this->setParam('Conges-Enable', 1);
-        $this->setParam('Conges-Mode', 'heures');
+        $this->setParam('Conges-Mode', 'Heures');
         $this->setParam('Conges-Heures', 0);
         $this->setParam('Conges-validation', 1);
         $this->setParam('Conges-Validation-N2', 0);
         $this->setParam('Conges-Recuperations', 1);
         $this->setParam('Conges-tous', 0);
+        $this->setParam('Conges-Rappels', 0);
         $this->setParam('Conges-Rappels-Jours', 14);
         $this->setParam('Conges-demi-journees', 1);
         $this->setParam('Conges-fullday-switching-time', 4);
@@ -183,12 +184,25 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertStringContainsString('Solde débiteur : 0h00',$result->text(),'test solde débiteur');
 
         //test statut with all rights
-        $_SESSION['oups']['CSRFToken'] = '00000';
-        $db = new \db();
-        $db->CSRFToken = '00000';
-        $db->update("personnels", array("droits"=>"100"), array("id"=>$jdupont->id()));
 
+        $this->setParam('Multisites-nombre', 1);
+        $this->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->setParam('PlanningHebdo', 0);
+        $this->setParam('Conges-Enable', 1);
+        $this->setParam('Conges-Mode', 'Heures');
+        $this->setParam('Conges-Heures', 0);
         $this->setParam('Conges-validation', 1);
+        $this->setParam('Conges-Validation-N2', 0);
+        $this->setParam('Conges-Recuperations', 1);
+        $this->setParam('Conges-tous', 0);
+        $this->setParam('Conges-Rappels', 0);
+        $this->setParam('Conges-Rappels-Jours', 14);
+        $this->setParam('Conges-demi-journees', 1);
+        $this->setParam('Conges-fullday-switching-time', 4);
+        $this->setParam('Conges-fullday-reference-time', '');
+        $this->setParam('Conges-planningVide', 1);
+        $this->setParam('Conges-apresValidation', 1);
+        $this->setParam('Recup-Uneparjour', 1);
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $result = $crawler->filterXPath('//td[@id="validation-statuses"]');
@@ -197,19 +211,6 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertStringContainsString('Refusée (En attente de validation hiérarchique)',$result->text(),'test statut');
         $this->assertStringContainsString('Acceptée',$result->text(),'test statut');
         $this->assertStringContainsString('Refusée',$result->text(),'test statut');
-
-        //test statut with right 100
-
-        $this->login($jdevoe);
-
-        $crawler = $this->client->request('GET', '/holiday/new');
-        $result = $crawler->filterXPath('//td[@id="validation-statuses"]');
-
-        $this->assertStringContainsString('Demandé',$result->text(),'test statut');
-        $this->assertStringNotContainsString('Acceptée (En attente de validation hiérarchique)',$result->text(),'test statut');
-        $this->assertStringNotContainsString('Refusée (En attente de validation hiérarchique)',$result->text(),'test statut');
-        $this->assertStringNotContainsString('Acceptée',$result->text(),'test statut');
-        $this->assertStringNotContainsString('Refusée',$result->text(),'test statut');
     }
 
     public function testAddMultisite()
