@@ -366,8 +366,9 @@ $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaire
 
 // Cron
 $sql[]="INSERT INTO `{$dbprefix}cron` (`h`,`m`,`dom`,`mon`,`dow`,`command`,`comments`) VALUES ('0','0','*','*','*','cron.planning_hebdo_daily.php','Daily Cron for Planning Hebdo module');";
-$sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,1,'*','cron.holiday_reset_remainder.php','Reset holliday remainders');";
-$sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,9,'*','cron.holiday_reset_credits.php','Reset holliday credits');";
+$sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,1,'*','cron.holiday_reset_remainder.php','Reset holiday remainders');";
+$sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,9,'*','cron.holiday_reset_credits.php','Reset holiday credits');";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `comments`) VALUES ( '0', '0', '1', '9', '*', 'cron.holiday_reset_comp_time.php', 'Reset holiday compensatory time');";
 
 //	Lignes de séparations
 $sql[]="INSERT INTO `{$dbprefix}lignes` (`nom`) VALUES ('Magasins');";
