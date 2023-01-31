@@ -3090,6 +3090,17 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+
+$v="22.11.00.004";
+if (version_compare($config['Version'], $v) === -1) {
+    // MT 39656
+    $sql[] = "UPDATE `{$dbprefix}cron` SET `comments` = 'Reset holiday remainders' WHERE `command` = 'cron.holiday_reset_remainder.php';";
+    $sql[] = "UPDATE `{$dbprefix}cron` SET `comments` = 'Reset holiday credits' WHERE `command` = 'cron.holiday_reset_credits.php';";
+    $sql[] = "UPDATE `{$dbprefix}cron` SET `comments` = 'Reset holiday compensatory time' WHERE `command` = 'cron.holiday_reset_comp_time.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
