@@ -671,7 +671,7 @@ function cmp_heure($a, $b)
 
 function cmp_jour($a, $b)
 {
-    return $a['jour'] > $b['jour'];
+    return ($a['jour'] > $b['jour']) ? 1 : -1;
 }
 
 function cmp_nom($a, $b)
@@ -713,7 +713,7 @@ function cmp_nom_prenom_debut_fin($a, $b)
 
 function cmp_ordre($a, $b)
 {
-    return $a['ordre'] > $b['ordre'];
+    return ($a['ordre'] > $b['ordre']) ? 1 : -1;
 }
 
 function cmp_perso_debut_fin($a, $b)
