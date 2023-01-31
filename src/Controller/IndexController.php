@@ -1028,8 +1028,8 @@ class IndexController extends BaseController
         $notes = $p->notes;
         $notesTextarea = $p->notesTextarea;
         $notesValidation = $p->validation;
-        $notesDisplay = trim($notes) ? null : 'style=display:none;';
-        $notesSuppression = ($notesValidation and !trim($notes))
+        $notesDisplay = trim(strval($notes)) ? null : 'style=display:none;';
+        $notesSuppression = ($notesValidation and !trim(strval($notes)))
             ? 'Suppression du commentaire : ' : null;
 
         return array(
