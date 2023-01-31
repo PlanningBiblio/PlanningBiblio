@@ -77,9 +77,15 @@ class CalendarController extends BaseController
         $joursFeries=$j->elements;
 
         //Sélection des horaires de travail
+        //$temps = emploi du temps
+        $temps = array();
+
         $db = new \db();
         $db->select2("personnel","temps", array("id"=> $perso_id));
-        $temps=json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true); //$temps = emploi du temps
+
+        if (!empty($db->result[0]['temps'])) {
+            $temps = json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+        }
 
         // Sélection des absences
         $filter = $this->config('Absences-validation')?"AND `valide`>0":null;
@@ -356,7 +362,7 @@ class CalendarController extends BaseController
 
                 $current_postes = $tmp;
                 foreach ($current_postes as $elem) {
-                    $pos_name = html_entity_decode($elem['poste'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                    $pos_name = $elem['poste'];
                     $pos_absent = $elem['absent'] == 1;
                     $heure = heure2($elem['debut'])." - ".heure2($elem['fin']);
                     $positions[] = array(
@@ -370,7 +376,7 @@ class CalendarController extends BaseController
             $days[] = array(
                 "aff"      => $date_aff,
                 "closed"   => $closed,
-                "name"     => html_entity_decode($nom, ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
+                "name"     => $nom,
                 "presence" => $presence,
                 "absence"  => $absences_affichage,
                 "position" => $positions,
