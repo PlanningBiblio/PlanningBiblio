@@ -3,17 +3,19 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Model\Agent;
-use App\PlanningBiblio\Helper\HolidayHelper;
-use App\PlanningBiblio\Helper\WeekPlanningHelper;
-use App\Model\AbsenceReason;
 
+use App\Model\AbsenceReason;
+use App\Model\Agent;
+use App\Model\Holiday;
+
+use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;
+use App\PlanningBiblio\Helper\WeekPlanningHelper;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
@@ -332,16 +334,29 @@ class HolidayController extends BaseController
         $roles = $c->roles($perso_id, true);
         list($adminN1, $adminN2) = $roles;
         if ( $confirm ) {
-            $result = $this->update($request);
-            $msg = $result['msg'];
-            $msg2 = $result['msg2'];
-            $msg2Type = $result['msg2Type'];
-            $recover = 0;
 
+            if ($this->isAlreadyModified($id)) {
+                $msg = "Le congé n'a pas pu être modifié";
+                $msg2 = "Veuillez attendre quelques secondes avant de réessayer";
+                $msg2Type = "error";
+
+                $result['back_to'] = 'holiday';
+                if ($this->config('Conges-Recuperations') and $data['debit'] == 'recuperation') {
+                    $msg = "La récupération n'a pas pu être modifiée";
+                    $result['back_to'] = 'recover';
+                }
+
+            } else {
+                $result = $this->update($request);
+                $msg = $result['msg'];
+                $msg2 = $result['msg2'];
+                $msg2Type = $result['msg2Type'];
+            }
+
+            $recover = 0;
             if ($result['back_to'] == 'recover') {
                 $recover = 1;
             }
-
 
             if (!empty($msg)) {
                 $session->getFlashBag()->add('notice', $msg);
@@ -1148,7 +1163,7 @@ class HolidayController extends BaseController
 
         // If halfday is checked, starting and
         // ending hours depends on agent's working hours
-        if ($post['halfday']) {
+        if (isset($post['halfday']) && $post['halfday']) {
             $holidayHelper = new HolidayHelper(array(
                 'agent' => $perso_id,
                 'start' => $debutSQL,
@@ -1295,5 +1310,24 @@ class HolidayController extends BaseController
         $message.="<p>Lien vers la demande de congé :<br/><a href='$url'>$url</a></p>";
 
         return $message;
+    }
+
+    private function isAlreadyModified($id) {
+
+        $holiday = $this->entityManager->getRepository(Holiday::class)->find($id);
+
+        if (!$holiday) {
+            return false;
+        }
+
+        $throttle = $this->config('post_requests_throttle') ?? 1;
+        $last_modified = $holiday->modification();
+        $now = new \DateTime('now');
+        $difference = $now->getTimestamp() - $last_modified->getTimestamp();
+
+        if ($difference <= $throttle) {
+            return true;
+        }
+        return false;
     }
 }
