@@ -31,7 +31,6 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $client->request('POST', '/holiday-info', array('debut' => '05/10/2022 00:00:00', 'fin' => '10/10/2022 00:00:00', 'texte' => 'salut', 'CSRFToken' => '00000'));
         $info = $entityManager->getRepository(HolidayInfo::class)->findOneBy(array('texte' => 'salut'));
 
-        echo($info->fin()->format('Y-m-d h:m:s'));
         $this->assertEquals('2022-10-05', $info->debut()->format('Y-m-d'), "debut is ok");
         $this->assertEquals('2022-10-10', $info->fin()->format('Y-m-d'), "fin is ok");
         $this->assertEquals('salut', $info->texte(), 'info texte is salut');
@@ -163,7 +162,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Aucune information enregistrée.', $result->eq(7)->text(),  'text no info is Aucune information enregistrée.');	
 
         $time = strtotime('now');
-        $d = date("d")+1;
+        $d = date("d", strtotime("+1 day", $time));
         $m_1 = date("m");
         $m_2 = date("m", strtotime("+1 month", $time));
         $Y = date("Y");

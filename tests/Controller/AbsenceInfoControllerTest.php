@@ -162,11 +162,10 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//div');
         $this->assertStringContainsString('Aucune information enregistrée.', $result->eq(7)->text(null,false),  'text no info is Aucune information enregistrée.');
 
-        $d = date("d")+1;
-        if($d < 10){ $d = "0$d"; }
+        $time = strtotime('now');
+        $d = date("d", strtotime("+1 day", $time));
         $m_1 = date("m");
-        $m_2 = date("m")+1;
-        if($m_2 < 10){ $m_2 = "0$m_2"; }
+        $m_2 = date("m", strtotime("+1 month", $time));
         $Y = date("Y");
 
         $start = \DateTime::createFromFormat("d/m/Y", "$d/$m_1/$Y");
