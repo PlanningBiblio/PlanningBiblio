@@ -246,7 +246,7 @@ class OvertimeController extends BaseController
         $id = $request->get('id');
         $commentaires = trim($request->get('commentaires'));
         $heures = $request->get('heures');
-        $refus = trim($request->get('refus'));
+        $refus = trim(strval($request->get('refus')));
         $validation = $request->get('validation');
         $lang = $GLOBALS['lang'];
 

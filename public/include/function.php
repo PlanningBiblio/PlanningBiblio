@@ -614,59 +614,59 @@ function calculSiPresent($debut, $fin, $temps, $jour)
 
 function cmp_0($a, $b)
 {
-    $a[0] > $b[0];
+    ($a[0] > $b[0]) ? 1 : -1;
 }
 
 function cmp_0desc($a, $b)
 {
-    return $a[0] < $b[0];
+    return ($a[0] < $b[0]) ? 1 : -1;
 }
 
 function cmp_01($a, $b)
 {
-    return $a[0][1] > $b[0][1];
+    return ($a[0][1] > $b[0][1]) ? 1 : -1;
 }
 
 function cmp_02($a, $b)
 {
-    return $a[0][2] > $b[0][2];
+    return ($a[0][2] > $b[0][2]) ? 1 : -1;
 }
 
 function cmp_03($a, $b)
 {
-    return $a[0][3] > $b[0][3];
+    return ($a[0][3] > $b[0][3]) ? 1 : -1;
 }
 
 function cmp_03desc($a, $b)
 {
-    return $a[0][3] < $b[0][3];
+    return ($a[0][3] < $b[0][3]) ? 1 : -1;
 }
 
 function cmp_1($a, $b)
 {
     $a[1]=html_entity_decode($a[1], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b[1]=html_entity_decode($b[1], ENT_QUOTES|ENT_IGNORE, "utf-8");
-    return strtolower($a[1]) > strtolower($b[1]);
+    return (strtolower($a[1]) > strtolower($b[1])) ? 1 : -1;
 }
 
 function cmp_1desc($a, $b)
 {
-    return $a[1] < $b[1];
+    return ($a[1] < $b[1]) ? 1 : -1;
 }
 
 function cmp_2($a, $b)
 {
-    return $a[2] > $b[2];
+    return ($a[2] > $b[2]) ? 1 : -1;
 }
 
 function cmp_2desc($a, $b)
 {
-    return $a[2] < $b[2];
+    return ($a[2] < $b[2]) ? 1 : -1;
 }
 
 function cmp_heure($a, $b)
 {
-    return $a['heure'] > $b['heure'];
+    return ($a['heure'] > $b['heure']) ? 1 : -1;
 }
 
 function cmp_jour($a, $b)
@@ -678,7 +678,12 @@ function cmp_nom($a, $b)
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
-    return strtolower($a['nom']) > strtolower($b['nom']);
+
+    if (strtolower($a['nom']) == strtolower($b['nom'])) {
+      return 0;
+    }
+
+    return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
 function cmp_nom_prenom($a, $b)
@@ -688,9 +693,9 @@ function cmp_nom_prenom($a, $b)
     $a['prenom']=html_entity_decode($a['prenom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['prenom']=html_entity_decode($b['prenom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     if (strtolower($a['nom']) == strtolower($b['nom'])) {
-        return strtolower($a['prenom']) > strtolower($b['prenom']);
+        return (strtolower($a['prenom']) > strtolower($b['prenom'])) ? 1 : -1;
     }
-    return strtolower($a['nom']) > strtolower($b['nom']);
+    return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
 function cmp_nom_prenom_debut_fin($a, $b)
@@ -702,13 +707,13 @@ function cmp_nom_prenom_debut_fin($a, $b)
     if (strtolower($a['nom']) == strtolower($b['nom'])) {
         if (strtolower($a['prenom']) == strtolower($b['prenom'])) {
             if (strtolower($a['debut']) == strtolower($b['debut'])) {
-                return strtolower($a['fin']) > strtolower($b['fin']);
+                return (strtolower($a['fin']) > strtolower($b['fin'])) ? 1 : -1;
             }
-            return strtolower($a['debut']) > strtolower($b['debut']);
+            return (strtolower($a['debut']) > strtolower($b['debut'])) ? 1 : -1;
         }
-        return strtolower($a['prenom']) > strtolower($b['prenom']);
+        return (strtolower($a['prenom']) > strtolower($b['prenom'])) ? 1 : -1;
     }
-    return strtolower($a['nom']) > strtolower($b['nom']);
+    return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
 function cmp_ordre($a, $b)
@@ -720,11 +725,11 @@ function cmp_perso_debut_fin($a, $b)
 {
     if ($a['perso_id'] == $b['perso_id']) {
         if ($a['debut'] == $b['debut']) {
-            return $a['fin'] > $b['fin'];
+            return ($a['fin'] > $b['fin']) ? 1 : -1;
         }
-        return $a['debut'] > $b['debut'];
+        return ($a['debut'] > $b['debut']) ? 1 : -1;
     }
-    return $a['perso_id'] > $b['perso_id'];
+    return ($a['perso_id'] > $b['perso_id']) ? 1 : -1;
 }
 
 function cmp_prenom_nom($a, $b)
@@ -734,45 +739,45 @@ function cmp_prenom_nom($a, $b)
     $a['prenom']=html_entity_decode($a['prenom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['prenom']=html_entity_decode($b['prenom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     if (strtolower($a['prenom']) == strtolower($b['prenom'])) {
-        return strtolower($a['nom']) > strtolower($b['nom']);
+        return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
     }
-    return strtolower($a['prenom']) > strtolower($b['prenom']);
+    return (strtolower($a['prenom']) > strtolower($b['prenom'])) ? 1 : -1;
 }
 
 function cmp_debut_fin($a, $b)
 {
     if ($a['debut'] == $b['debut']) {
-        return $a['fin'] > $b['fin'];
+        return ($a['fin'] > $b['fin']) ? 1 : -1;
     }
-    return $a['debut'] > $b['debut'];
+    return ($a['debut'] > $b['debut']) ? 1 : -1;
 }
 
 function cmp_debut_fin_nom($a, $b)
 {
     if ($a['debut'] == $b['debut']) {
         if ($a['fin'] == $b['fin']) {
-            return strtolower(html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8")) > strtolower(html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
+            return (strtolower(html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8")) > strtolower(html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8"))) ? 1 : -1;
         }
-        return $a['fin'] > $b['fin'];
+        return ($a['fin'] > $b['fin']) ? 1 : -1;
     }
-    return $a['debut'] > $b['debut'];
+    return ($a['debut'] > $b['debut']) ? 1 : -1;
 }
 
 function cmp_semaine($a, $b)
 {
-    return $a['semaine'] > $b['semaine'];
+    return ($a['semaine'] > $b['semaine']) ? 1 : -1;
 }
     
 function cmp_semainedesc($a, $b)
 {
-    $a['semaine'] < $b['semaine'];
+    return ($a['semaine'] < $b['semaine']) ? 1 : -1;
 }
 
 function cmp_strip_tags($a, $b)
 {
     $a = html_entity_decode(strip_tags($a), ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b = html_entity_decode(strip_tags($b), ENT_QUOTES|ENT_IGNORE, "utf-8");
-    return strtolower($a) > strtolower($b);
+    return (strtolower($a) > strtolower($b)) ? 1 : -1;
 }
 
 function createURL($page=null)
