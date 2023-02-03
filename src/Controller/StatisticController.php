@@ -2321,7 +2321,7 @@ class StatisticController extends BaseController
     public function bytime(Request $request, Session $session)
     {
         //    Initialisation des variables
-        $CSRFToken = trim($request->get("CSRFToken"));
+        $CSRFToken = trim($request->get("CSRFToken") ?? '');
         if (!$CSRFToken) {
             $CSRFToken = $GLOBALS['CSRFSession'];
         }
