@@ -3,6 +3,8 @@
 use App\PlanningBiblio\Notifier;
 use PHPUnit\Framework\TestCase;
 
+use Tests\Fake\FakeMailTransporter;
+
 require_once(__DIR__ . '/../../public/include/function.php');
 
 class NotifierTest extends TestCase
@@ -27,6 +29,7 @@ class NotifierTest extends TestCase
 
         $notifier = new Notifier();
 
+	$notifier->setRecipients('joe@bar.com');
         $notifier->setMessageCode('create_account');
         $notifier->send();
         $this->assertEquals('Création de compte', $notifier->subject, 'Subject is "Création de compte"');
@@ -38,6 +41,7 @@ class NotifierTest extends TestCase
 
         $notifier = new Notifier();
 
+	$notifier->setRecipients('joe@bar.com');
         $notifier->setMessageCode('create_account');
         $notifier->send();
         $expected = 'Votre compte Planning Biblio a été créé :
@@ -61,8 +65,9 @@ class NotifierTest extends TestCase
 
         $notifier = new Notifier();
 
+	$notifier->setRecipients('joe@bar.com');
         $notifier->setMessageCode('create_account');
-        $notifier->setTransporter(new \CJMail());
+        $notifier->setTransporter(new FakeMailTransporter());
         $notifier->send();
         $this->assertEquals('', $notifier->getError(), 'No transporter error');
     }
@@ -73,8 +78,9 @@ class NotifierTest extends TestCase
 
         $notifier = new Notifier();
 
+	$notifier->setRecipients('joe@bar.com');
         $notifier->setMessageCode('create_account');
-        $notifier->send();
+	$this->assertEquals('CJMail', get_class($notifier->getTransporter()), 'Default transporter is CJMail');
         $this->assertEquals('', $notifier->getError(), 'No transporter error');
     }
 

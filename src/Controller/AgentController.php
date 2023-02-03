@@ -828,7 +828,7 @@ class AgentController extends BaseController
         $droits = array_key_exists("droits", $params) ? $params['droits'] : null;
         $categorie = trim($params['categorie']);
         $informations = trim($params['informations']);
-        $mailsResponsables = trim(str_replace(array("\n", " "), null, $params['mailsResponsables']));
+        $mailsResponsables = trim(str_replace(array("\n", " "), '', $params['mailsResponsables']));
         $matricule = trim($params['matricule']);
         $url_ics = isset($params['url_ics']) ? trim($params['url_ics']) : null;
         $nom = trim($params['nom']);
