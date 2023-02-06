@@ -309,14 +309,18 @@ class HolidayController extends BaseController
 
         if ( $confirm ) {
 
+            $msgType = 'notice';
+
             if ($this->isAlreadyModified($id)) {
                 $msg = "Le congé n'a pas pu être modifié";
-                $msg2 = "Veuillez attendre quelques secondes avant de réessayer";
-                $msg2Type = "error";
+                $msg .= "#BR#Veuillez attendre quelques secondes avant de réessayer";
+                $msgType = "error";
 
                 $result['back_to'] = 'holiday';
                 if ($this->config('Conges-Recuperations') and $data['debit'] == 'recuperation') {
                     $msg = "La récupération n'a pas pu être modifiée";
+                    $msg .= "#BR#Veuillez attendre quelques secondes avant de réessayer";
+                    $msgType = "error";
                     $result['back_to'] = 'recover';
                 }
 
@@ -333,7 +337,7 @@ class HolidayController extends BaseController
             }
 
             if (!empty($msg)) {
-                $session->getFlashBag()->add('notice', $msg);
+                $session->getFlashBag()->add($msgType, $msg);
             }
 
             if (!empty($msg2)) {
