@@ -389,7 +389,6 @@ class planning
     {
         $version="ajax";
         require_once "../../personnel/class.personnel.php";
-        require_once "../../postes/class.postes.php";
         $config=$GLOBALS['config'];
     
         // Liste des agents actifs
@@ -404,9 +403,7 @@ class planning
             ->getResult();
 
         // Listes des postes
-        $p=new postes();
-        $p->fetch();
-        $postes=$p->elements;
+        $postes=$entityManager->getRepository(Position::class)->all();
 
         // Get teleworking reasons
         $teleworking_reasons = $entityManager->getRepository(AbsenceReason::class)

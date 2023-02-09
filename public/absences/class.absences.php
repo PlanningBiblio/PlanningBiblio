@@ -32,6 +32,7 @@ require_once __DIR__."/../personnel/class.personnel.php";
 use App\Model\Agent;
 use App\Model\AbsenceReason;
 use App\Model\AbsenceDocument;
+use App\Model\Position;
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
 
@@ -1872,9 +1873,9 @@ class absences
     */
     public function infoPlannings()
     {
+        $entityManager = $GLOBALS['entityManager'];
         $version="absences";
-        require_once __DIR__ . '/../postes/class.postes.php';
-  
+
         $debut=dateSQL($this->debut);
         $fin=dateSQL($this->fin);
         $perso_ids=implode(",", $this->perso_ids);
@@ -1899,10 +1900,9 @@ class absences
         sort($plannings_valides);
 
         // nom des postes
-        $p=new postes();
-        $p->fetch();
-        $postes=$p->elements;
-    
+        $postes=$entityManager->getRepository(Position::class)->all();
+
+
         // Nom des sites
         $sites=array(1=>null);
         if ($GLOBALS['config']['Multisites-nombre']>1) {

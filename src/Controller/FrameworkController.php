@@ -13,7 +13,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
-require_once(__DIR__ . '/../../public/postes/class.postes.php');
 
 class FrameworkController extends BaseController
 {
@@ -296,12 +295,11 @@ class FrameworkController extends BaseController
         }
 
         // Liste des postes
-        $p = new \postes();
+        $p = $entityManager->getRepository(Position::class);
         if ($nbSites > 1) {
             $p->site = $site;
         }
-        $p->fetch("nom");
-        $postes = $p->elements;
+        $postes = $p->all("nom");
 
         // Liste des lignes de séparation
         $db = new \db();

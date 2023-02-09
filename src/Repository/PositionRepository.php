@@ -9,6 +9,8 @@ use App\Model\PlanningPositionLines;
 
 class PositionRepository extends EntityRepository
 {
+    public $site=null;
+
     public function getAllSkills() {
         $entityManager = $this->getEntityManager();
         $positions = $entityManager->getRepository(Position::class)->findAll();
@@ -50,5 +52,52 @@ class PositionRepository extends EntityRepository
         }
         $entityManager->flush();
         return $deleted_position;
+    }
+
+    public function all($sort="nom", $name=null, $group=null)
+    {
+        // Floors
+        $floors = array();
+        $db=new \db();
+        $db->sanitize_string = false;
+        $db->select("select_etages");
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $floors[$elem['id']] = $elem['valeur'];
+            }
+        }
+
+        $where=array("supprime"=>null);
+
+        if ($this->site) {
+            $where["site"]=$this->site;
+        }
+
+        //	Select All
+        $db=new \db();
+        $db->select2("postes", null, $where, "ORDER BY $sort");
+
+        $all=array();
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $all[$elem['id']]=$elem;
+                $all[$elem['id']]['etage'] = $floors[$elem['etage']] ?? '';
+            }
+        }
+
+        //	By default $result=$all
+        $result=$all;
+
+        //	If name, keep only matching results
+        if (!empty($all) and $name) {
+            $result=array();
+            foreach ($all as $elem) {
+                if (pl_stristr($elem['nom'], $name)) {
+                    $result[$elem['id']]=$elem;
+                }
+            }
+        }
+
+        return $result;
     }
 }

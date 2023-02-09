@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\AbsenceReason;
+use App\Model\Position;
 use App\Model\SelectFloor;
 use App\Model\SelectGroup;
 use App\PlanningBiblio\PresentSet;
@@ -21,7 +22,6 @@ require_once __DIR__ . "/../../public/include/db.php";
 require_once __DIR__ . "/../../public/include/horaires.php";
 include_once __DIR__ . '/../../public/statistiques/class.statistiques.php';
 include_once __DIR__ . '/../../public/absences/class.absences.php';
-include_once __DIR__ . '/../../public/postes/class.postes.php';
 include_once __DIR__ . '/../../public/personnel/class.personnel.php';
 
 class StatisticController extends BaseController
@@ -2383,11 +2383,10 @@ class StatisticController extends BaseController
         $totauxGroupesHeures = array();
         $totauxGroupesPerso = array();
 
-        $p = new \postes();
-        $p->fetch();
+        $postes = $this->entityManager->getRepository(Position::class)->all();
         // Rassemble les postes dans un tableau en fonction de leur groupe (ex: $groupe['pret'] = array(1,2,3))
 
-        foreach ($p->elements as $poste) {
+        foreach ($postes as $poste) {
             if (!empty($poste['groupe'])) {
                 $groupes[$poste['groupe']][] = $poste['id'];
             } else {

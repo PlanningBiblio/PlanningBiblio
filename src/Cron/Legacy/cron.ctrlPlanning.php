@@ -33,11 +33,12 @@ $version=$argv[0];
 require_once(__DIR__ . '/../../../vendor/autoload.php');
 
 use App\PlanningBiblio\Framework;
+use App\Moodel\Position;
 
 require_once(__DIR__ . '/../../../public/include/config.php');
 require_once(__DIR__ . '/../../../public/include/function.php');
 require_once(__DIR__ . '/../../../public/absences/class.absences.php');
-require_once(__DIR__ . '/../../../public/postes/class.postes.php');
+
 
 
 // Génération d'un CSRF Token
@@ -76,9 +77,7 @@ for ($i=0;$i<=$jours;$i++) {
 }
 
 // Listes des postes
-$p=new postes();
-$p->fetch();
-$postes=$p->elements;
+$postes=$entityManager->getRepository(Position::class)->all();
 
 // Création du message qui sera envoyé par e-mail
 $data=array();
