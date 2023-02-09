@@ -612,16 +612,6 @@ function calculSiPresent($debut, $fin, $temps, $jour)
 /** @fonctions de comparaison
  */
 
-function cmp_0($a, $b)
-{
-    ($a[0] > $b[0]) ? 1 : -1;
-}
-
-function cmp_0desc($a, $b)
-{
-    return ($a[0] < $b[0]) ? 1 : -1;
-}
-
 function cmp_01($a, $b)
 {
     return ($a[0][1] > $b[0][1]) ? 1 : -1;
@@ -649,11 +639,6 @@ function cmp_1($a, $b)
     return (strtolower($a[1]) > strtolower($b[1])) ? 1 : -1;
 }
 
-function cmp_1desc($a, $b)
-{
-    return ($a[1] < $b[1]) ? 1 : -1;
-}
-
 function cmp_2($a, $b)
 {
     return ($a[2] > $b[2]) ? 1 : -1;
@@ -662,11 +647,6 @@ function cmp_2($a, $b)
 function cmp_2desc($a, $b)
 {
     return ($a[2] < $b[2]) ? 1 : -1;
-}
-
-function cmp_heure($a, $b)
-{
-    return ($a['heure'] > $b['heure']) ? 1 : -1;
 }
 
 function cmp_jour($a, $b)
@@ -742,42 +722,6 @@ function cmp_prenom_nom($a, $b)
         return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
     }
     return (strtolower($a['prenom']) > strtolower($b['prenom'])) ? 1 : -1;
-}
-
-function cmp_debut_fin($a, $b)
-{
-    if ($a['debut'] == $b['debut']) {
-        return ($a['fin'] > $b['fin']) ? 1 : -1;
-    }
-    return ($a['debut'] > $b['debut']) ? 1 : -1;
-}
-
-function cmp_debut_fin_nom($a, $b)
-{
-    if ($a['debut'] == $b['debut']) {
-        if ($a['fin'] == $b['fin']) {
-            return (strtolower(html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8")) > strtolower(html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8"))) ? 1 : -1;
-        }
-        return ($a['fin'] > $b['fin']) ? 1 : -1;
-    }
-    return ($a['debut'] > $b['debut']) ? 1 : -1;
-}
-
-function cmp_semaine($a, $b)
-{
-    return ($a['semaine'] > $b['semaine']) ? 1 : -1;
-}
-    
-function cmp_semainedesc($a, $b)
-{
-    return ($a['semaine'] < $b['semaine']) ? 1 : -1;
-}
-
-function cmp_strip_tags($a, $b)
-{
-    $a = html_entity_decode(strip_tags($a), ENT_QUOTES|ENT_IGNORE, "utf-8");
-    $b = html_entity_decode(strip_tags($b), ENT_QUOTES|ENT_IGNORE, "utf-8");
-    return (strtolower($a) > strtolower($b)) ? 1 : -1;
 }
 
 function createURL($page=null)
