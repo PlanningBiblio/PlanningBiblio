@@ -654,6 +654,17 @@ function cmp_jour($a, $b)
     return ($a['jour'] > $b['jour']) ? 1 : -1;
 }
 
+function cmp_debut_fin_nom($a, $b)
+{
+    if ($a['debut'] == $b['debut']) {
+        if ($a['fin'] == $b['fin']) {
+            return (strtolower(html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8")) > strtolower(html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8"))) ? 1 : -1;
+        }
+        return ($a['fin'] > $b['fin']) ? 1 : -1;
+    }
+    return ($a['debut'] > $b['debut']) ? 1 : -1;
+}
+
 function cmp_nom($a, $b)
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
