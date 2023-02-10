@@ -51,9 +51,19 @@ body {
 	margin: 0px 0px 0px 0px;
 }
 
+h2 {
+  font-size: 28px;
+  font-weight: bold;
+}
+
 h3{
-  margin-top:25px;
-  font-size:20pt;
+  font-size:26px;
+  font-weight: bold;
+}
+
+h4{
+  font-size:18px;
+  font-weight: bold;
 }
 
 #h3-Multisites{
@@ -154,8 +164,8 @@ h3{
 
 #content{
   width: 90%;
-  margin: 10px auto auto auto;
-  padding: 80px 5px 5px 5px;
+  margin: 50px auto auto auto;
+  padding: 5px;
 }
 
 .content-div{
@@ -980,6 +990,11 @@ div#tabsemaine1{
   width: 100%;
 }
 
+#menudivtab1 tr, #menudivtab2 tr {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
 #menudivtab1 td{
   padding-left: 15px;
 }
@@ -1493,7 +1508,6 @@ div.presents-absents {
 }
 
 .dt-buttons {
-    background-color: #FFFFFF;
     width: 100%;
     padding: 11px 0 11px 0;
     text-align: right;
@@ -1515,16 +1529,10 @@ div.presents-absents {
 }
 
 /*	Agenda	*/
-#div_agenda{
-  min-height:400px;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 #div_agenda_content{
   background-color: #FFF;
-  padding:25px 25px 25px 25px;
+  margin: 25px 0 0 0;
+  padding:25px;
   border-radius: 5px;
 }
 
