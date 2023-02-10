@@ -102,42 +102,38 @@ h3{
   background:url("images/logo-planno.svg") no-repeat left top;
 }
 
-@media only screen and (max-width: 1550px){
-  #logo {
-    width: 48px;
-    height: 36px;
-    background:url("images/favicon.svg") no-repeat center;
-  }
+#mainMenu {
+  max-height: 68px;
 }
 
-#username{
+#accountDiv {
   display: block;
+  margin: 10px 25px 0 0;
 }
 
-@media only screen and (max-width: 1550px){
-  #username {
-    display: none;
-  }
+#accountDiv div {
+  display: inline-block;
 }
 
-#div_account {
+#accountDiv #username {
+  margin: 0 10px 0 0;
+  font-size: 19px;
+}
+
+#accountDiv #logoutIcon {
+  vertical-align: middle;
+  width: 28px;
+  height: 24px;
+}
+
+#accountDiv #myAccountDiv {
   display: block;
+  margin: 0 42px 0 0;
+  text-align: right;
 }
 
-@media only screen and (max-width: 1200px){
-  #div_account {
-    display: none;
-  }
-}
-
-#div_account_reverse {
+#accountDivReverse {
   display: none;
-}
-
-@media only screen and (max-width: 1200px){
-  #div_account_reverse {
-    display: block;
-  }
 }
 
 #logo2 {
@@ -150,11 +146,6 @@ h3{
 
 #logout_img{
   text-align:right;
-}
-
-#logout_text a{
-  font-size:13pt;
-  display:none;
 }
 
 #title{
@@ -1057,16 +1048,17 @@ div#tabsemaine1{
 
 #tab_titre{	/* /index */
   width:100%;
+  height: 145px;
   border: none;
   background-color: #29495C;
-  margin-bottom: 60px;
+  margin-bottom: 20px;
 }
 
 /* Calendrier affiché en haut des plannings */
 #pl-calendar{
   border:0;
   background: rgba(255, 255, 255, 0);
-  margin: 5px 0 5px 10px;
+  margin: 10px 0 5px 10px;
   width: 165.75px;
 }
 
@@ -1196,9 +1188,7 @@ a:hover.menuRed, a:hover.menu {
   font-weight: normal;
   width:50%;
   text-align:left;
-  padding-top: 20px;
-  padding-bottom: 10px;
-  padding-left: 30px;
+  padding: 20px 0 10px 50px;
 }
 
 .top-button-div {
@@ -2540,4 +2530,35 @@ table.dataTable th{
   display: inline-block;  /* For IE11/ MS Edge bug */
   pointer-events: none;
   text-decoration: none;
+}
+
+@media only screen and (max-width: 1550px){
+  #logo {
+    width: 48px;
+    height: 36px;
+    background:url("images/favicon.svg") no-repeat center;
+  }
+
+  #username {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 1200px){
+  #mainMenu {
+    max-height: none;
+  }
+
+  #accountDiv {
+    display: none;
+  }
+
+  #accountDivReverse {
+    display: block;
+  }
+
+  .titreSemFixe{
+    padding: 5px 0 10px 0;
+  }
+
 }

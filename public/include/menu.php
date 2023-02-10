@@ -90,8 +90,8 @@ echo "</ul>\n";
 echo "<ul align='right'><font id='username' class='noprint' style='font-size:19px'>\n";
 echo $_SESSION['login_prenom']." ".$_SESSION['login_nom'];
 echo "</font></ul>\n";
-echo "<div id='div_account'><ul colspan='2' style='text-align:right;'>\n";
-echo "<ul id='logout_img'>\n";
+echo "<div id='accountDiv'><ul colspan='2' style='text-align:right;'>\n";
+echo "<ul id='logoutIcon'>\n";
 echo "<a href='{$config['URL']}/logout' title='Déconnexion'>\n";
 echo "<span class='pl-icon pl-icon-logout'></span></a></ul>\n";
 
@@ -110,7 +110,7 @@ elseif ($_SESSION['oups']['Auth-Mode']=="SQL") {
 </ul>
 </div>
 <?php
-echo "<div id='div_account_reverse'><ul class='menu_ul navbar-nav me-auto mb-2 mb-lg-0 colspan='2' style='text-align:right;'><li class='av-item dropdown menu_li'>\n";
+echo "<div id='accountDivReverse'><ul class='menu_ul navbar-nav me-auto mb-2 mb-lg-0 colspan='2' style='text-align:right;'><li class='av-item dropdown menu_li'>\n";
 
 // Si le module PlanningHebdo ou ICS-Export sont activés, remplace "Changer le mot de passe" par "Mon Compte"
 if ($config['PlanningHebdo'] or $config['ICS-Export']) {

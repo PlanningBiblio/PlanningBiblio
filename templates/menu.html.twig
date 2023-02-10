@@ -1,5 +1,5 @@
 {# menu.html.twig #}
-  <nav class="navigation navbar navbar-expand-custom">
+  <nav id="mainMenu" class="navigation navbar navbar-expand-custom">
     <script type="text/JavaScript">
       <!--
       zlien = new Array;
@@ -45,30 +45,27 @@
         {% endfor %}
       </ul>
 
-      <ul align='right'>
-        <font id="username" class='noprint' style='font-size:19px'>
+      <div id='accountDiv'>
+        <div id="username">
           {{ user_firstname }} {{ user_surname }}
-          </font>
-      </ul>
-      <div id='div_account'>
-        <ul colspan='2' style='text-align:right;'>
-          <ul id='logout_img'>
-            <a href='{{ asset("logout") }}' title='Déconnexion'>
-              <span class='pl-icon pl-icon-logout'></span>
-            </a>
-          </ul>
+        </div>
+
+        <div id="logoutIcon">
+          <a href='{{ asset("logout") }}' title='Déconnexion'>
+            <span class='pl-icon pl-icon-logout'></span>
+          </a>
+        </div>
           
+        <div id='myAccountDiv'>
           {% if planninghebdo or ics_export %}
             <a href='{{ asset("myaccount") }}' class='myAccountLink'>Mon Compte</a>
           {% elseif config('Auth-Mode') == 'SQL' %}
             <a href='{{ asset("agent/password") }}' class='myAccountLink'>Changer de mot de passe</a>
           {% endif %}
-          <div id='logout_text'>
-            <a href='{{ asset("logout") }}' >Déconnexion</a>
-          </div>
-        </ul>
+        </div>
       </div>
-      <div id='div_account_reverse'>
+
+      <div id='accountDivReverse'>
         <ul colspan='2' style='text-align:right;' class='menu_ul navbar-nav me-auto mb-2 mb-lg-0'>
           <li class='av-item dropdown menu_li'>
           {% if planninghebdo or ics_export %}
