@@ -41,6 +41,6 @@ body, #tab_titre {
   height: 40mm;
 }
 
-a, img, .noprint, .popper, .footer, .navigation, .ui-widget-header, div.ui-state-error, .menu_table, #planningTips, .ui-buttoni, #messages_infos {
+a, img, .noprint, .popper, .footer, .navigation, .ui-widget-header, div.ui-state-error, .menu_table, #planningTips, .ui-buttoni, #messages_infos, #pl-calendar, .arrow-right {
   display:none;
 }
