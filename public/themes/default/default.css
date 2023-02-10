@@ -1460,6 +1460,10 @@ div.presents-absents {
   background-color:#F0F0F0;
 }
 
+.dataTable tbody tr.even {
+  background-color:#FFFFFF;
+}
+
 .dataTable tbody tr:hover{
   background-color: #FFD700;
 }
