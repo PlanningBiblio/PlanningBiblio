@@ -1591,38 +1591,21 @@ div.presents-absents {
 }
 
 /* Agents volants */
-#date_planning.volants-title{
-  width: 600px;
-  margin: 0 auto 8  0px;
-  text-align: center;
+#detachedAgentNav {
+  margin: 20px 0 0 0;
 }
 
-.volants-header{
-  position:absolute;
-  left: 200px;
-  top: 70px;
+#detachedAgentNav a {
+  margin: 0 30px 0 0;
 }
 
-.volants-h2{
-  text-align: left;
-  padding-left: 10px;
+#content-planning #content-form {
+  margin-top: 60px;
 }
 
-.volants-a{
-  position: absolute;
-  left: 0px;
-}
-
-.volants-calendar{
-  z-index: 10;
-  position: absolute;
-  top: 100px;
-  left: 10px
-}
-
-#volants-content{
-  margin: 200px auto;
-  width: 1080px;
+#detachedAgentDiv {
+  max-width: 1080px;
+  margin: 20px auto;
 }
 
 #volants-dispo-div,
@@ -1635,8 +1618,7 @@ div.presents-absents {
   float: both;
 }
 
-#volants-buttons-div,
-#volants-calendar{
+#volants-buttons-div {
   margin-top : 45px;
 }
 
