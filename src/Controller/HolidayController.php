@@ -1326,6 +1326,11 @@ class HolidayController extends BaseController
 
         $throttle = $this->config('post_requests_throttle') ?? 1;
         $last_modified = $holiday->modification();
+
+        if (!$last_modified) {
+            return false;
+        }
+
         $now = new \DateTime('now');
         $difference = $now->getTimestamp() - $last_modified->getTimestamp();
 
