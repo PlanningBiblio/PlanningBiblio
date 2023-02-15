@@ -131,7 +131,9 @@
               {{ abs.commentaires }}
             </div>
           </td>
-          <td>{{ abs.demande | date('d/m/Y') }}</td>
+          <td style='white-space:nowrap;'>
+            {{ abs.demande | date('d/m/Y H:i') }}
+          </td>
 
           {% if can_manage_sup_doc %}
             <td style='text-align:center;'>
