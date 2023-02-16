@@ -2515,6 +2515,10 @@ table.dataTable th{
   margin: 20px 0;
 }
 
+#workinghour_tables h3 {
+  margin: 40px 0 15px 0;
+}
+
 @media only screen and (max-width: 1550px){
   #logo {
     width: 48px;
