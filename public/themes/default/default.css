@@ -56,7 +56,7 @@ h2 {
   font-weight: bold;
 }
 
-h3{
+h3 {
   font-size:26px;
   font-weight: bold;
 }
@@ -1828,12 +1828,12 @@ table.dataTable th{
   margin: 10px auto auto auto;
 }
 
-.admin-div{
+.admin-div {
   width: 100%;
   background: #FFF;
   border-radius: 5px;
   margin: 20px 0 0 0;
-  padding: 10px;
+  padding: 20px;
 }
 
 .admin-div select {
