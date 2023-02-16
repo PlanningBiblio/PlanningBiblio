@@ -48,6 +48,7 @@ if (!file_exists("themes/$theme/favicon.png")) {
 <script type='text/JavaScript' src='js/CJScript.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/datePickerFr.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/dataTables.sort.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/bootstrap-5.1.3-dist/bootstrap.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/script.js?version=<?php echo $version; ?>'></script>
 <?php
 getJSFiles($page, $version);
