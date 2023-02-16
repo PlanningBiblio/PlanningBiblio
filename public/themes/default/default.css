@@ -606,12 +606,6 @@ select
 	}
 
 
-#popup {
-	background-color:#FFF;
-	position:absolute;
-	z-index:10;
-	}
-
 .select-popup{
   width: auto;
   height: 20px;
@@ -619,18 +613,6 @@ select
   position: absolute;
   left: 350px;
 }
-
-#opac {
-	opacity: 0.5;
-	filter: alpha(opacity=50);		/*	Pour IE */
-	background:#000;
-	height:100%;
-	width:100%;
-	position:fixed;
-	left:0px;
-	top:0px;
-	z-index:5;
-	}
 
 .th{
   background-color:#FFD700;	

@@ -133,5 +133,4 @@ echo "Deconnexion</a></li>\n";
 </div>
 </div>
 </nav>
-<iframe id='popup' style='display:none;' ></iframe>
 <!--				Fin du menu			-->
