@@ -1850,7 +1850,12 @@ table.dataTable th{
   width: 100%;
   background: #FFF;
   border-radius: 5px;
+  margin: 20px 0 0 0;
   padding: 10px;
+}
+
+.admin-div select {
+  width: 200px;
 }
 
 .info-align{
@@ -2520,6 +2525,12 @@ table.dataTable th{
   display: inline-block;  /* For IE11/ MS Edge bug */
   pointer-events: none;
   text-decoration: none;
+}
+
+/* Working Hours / Planning Hebdo */
+
+#plHebdo-perso-id {
+  margin: 20px 0;
 }
 
 @media only screen and (max-width: 1550px){
