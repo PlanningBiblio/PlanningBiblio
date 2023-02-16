@@ -36,7 +36,7 @@
           {% endif %}
         </div>
       {% else %}
-        <form name='form' method='post' action='{{ asset("login") }}'>
+        <form name='form' method='post'>
           <input type='hidden' name='auth' value='' />
           <input type='hidden' name='redirURL' value="{{ redirect_url }}" />
           <table style='width:100%;'>

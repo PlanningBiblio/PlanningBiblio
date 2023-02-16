@@ -1,13 +1,24 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    enable_authenticator_manager: true
     providers:
-        in_memory: { memory: ~ }
+        users:
+            entity:
+                class: App\Model\Agent
+                property: 'login'
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
+            custom_authenticators:
+                - App\Security\PlannoAuthenticator
+            entry_point: App\Security\EntryPoint
+            logout:
+                path: logout
         main:
-            anonymous: true
+            custom_authenticators:
+                - App\Security\PlannoAuthenticator
+            entry_point: App\Security\EntryPoint
+            logout:
+                path: logout
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
@@ -18,5 +29,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/legal-notices, roles: PUBLIC_ACCESS }
+        - { path: ^/config, roles: ROLE_ADMIN }
+        - { path: ^/, roles: [ROLE_USER, ROLE_ADMIN] }
