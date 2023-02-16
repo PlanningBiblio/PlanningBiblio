@@ -1659,10 +1659,6 @@ div.presents-absents {
     color: #29495C;
 }
 
-.wh-timepicker {
-  width: 150px;
-}
-
 .framework-timepicker {
   width: 85px;
 }
@@ -1867,30 +1863,6 @@ table.dataTable th{
 
 .ui-widget-header .ui-state-hover a {
   color: #29495C;
-}
-
-#workhours{
-  width: 100%;
-  margin: 10px auto auto auto;
-}
-
-.workhours-header, .workhours-body{
-  border: 0px solid #000;
-  border-left: 1px solid #000;
-  border-top: 1px solid #000;
-}
-
-.workhours-header td:last-child, .workhours-body td:last-child{
-  border-right: 1px solid #000;
-}
-
-.workhours-body tr:last-child td{
-  border-bottom: 1px solid #000;
-}
-
-.workhours-header {
-  background: #29495C;
-  color: #fff;
 }
 
 #closingday{
@@ -2517,6 +2489,33 @@ table.dataTable th{
 
 #workinghour_tables h3 {
   margin: 40px 0 15px 0;
+}
+
+#workinghour_tables table {
+  border-spacing : 0;
+  border-collapse : collapse;
+  margin: 0 0 10px 0;
+  background: #FFF;
+}
+
+#workinghour_tables table th {
+  border: 1px solid #29495C;
+  padding: 5px 15px;
+  background: #29495C;
+  color: #FFF;
+  text-align: center;
+  min-width: 120px;
+}
+
+#workinghour_tables td {
+  border: 1px solid #29495C;
+  text-align: center;
+}
+
+#workinghour_tables td input {
+  width: 100%;
+  text-align: center;
+  border: 1px solid rgb(41, 73, 92, 0.3);
 }
 
 @media only screen and (max-width: 1550px){
