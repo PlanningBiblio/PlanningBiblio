@@ -1489,6 +1489,14 @@ div.presents-absents {
     color: #FFFFFF
 }
 
+table.dataTable thead tr>.dtfc-fixed-left, table.dataTable thead tr>.dtfc-fixed-right, table.dataTable tfoot tr>.dtfc-fixed-left, table.dataTable tfoot tr>.dtfc-fixed-right {
+  background-color: #466578;
+}
+
+table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fixed-right {
+  background-color:#F0F0F0;
+}
+
 .dt-buttons {
     width: 100%;
     padding: 11px 0 11px 0;
