@@ -301,7 +301,8 @@ class OvertimeController extends BaseController
         if (isset($update)) {
 
             if ($this->isAlreadyModified($id)) {
-                $result['message'] = "Une erreur est survenue lors de la validation de vos modifications. Veuillez attendre quelques secondes avant de réessayer.";
+                $result['message'] = 'Une erreur est survenue lors de la validation de vos modifications.';
+                $result['message'] .= '#BR#Veuillez attendre quelques secondes avant de réessayer.';
                 $result['type'] = "error";
 
             } else {
