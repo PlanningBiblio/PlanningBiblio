@@ -101,28 +101,30 @@ class ModelController extends BaseController
             $response->setStatusCode(403);
         }
 
-        $existing = $this->entityManager
+        $existing_models = $this->entityManager
             ->getRepository(Model::class)
-            ->findOneBy(array('nom' => $name, 'site' => $site));
+            ->findBy(array('nom' => $name, 'site' => $site));
 
         // Warn user if the model exists.
-        if ($existing && !$erase) {
+        if ($existing_models && !$erase) {
             $response->setContent('model exists');
             $response->setStatusCode(200);
             return $response;
         }
 
         // Erase model.
-        if ($existing) {
+        if ($existing_models) {
             $select = new \db();
-            $select->select2('pl_poste', '*', array('date' => $date, 'site' => $site));
-            if ($select->result) {
-                $delete = new \db();
-                $delete->CSRFToken = $CSRFToken;
-                $delete->delete('pl_poste_modeles', array('model_id' => $existing->id()));
-                $delete = new \db();
-                $delete->CSRFToken = $CSRFToken;
-                $delete->delete('pl_poste_modeles_tab', array('model_id' => $existing->id()));
+            $delete = new \db();
+            foreach ($existing_models as $existing_model) {
+                $select->select2('pl_poste', '*', array('date' => $date, 'site' => $site));
+                if ($select->result) {
+                    $delete->CSRFToken = $CSRFToken;
+                    $delete->delete('pl_poste_modeles', array('model_id' => $existing_model->model_id()));
+                    $delete = new \db();
+                    $delete->CSRFToken = $CSRFToken;
+                    $delete->delete('pl_poste_modeles_tab', array('model_id' => $existing_model->model_id()));
+                }
             }
         }
 
