@@ -40,7 +40,6 @@ class PlannoAuthenticator extends AbstractAuthenticator
     public function supports(Request $request): ?bool
     {
         $requested_url = ltrim($request->getPathInfo(), '/');
-        $this->redirect_url = $requested_url;
         return $request->isMethod('POST') && self::LOGIN_ROUTE === $requested_url;
     }
 
@@ -48,6 +47,7 @@ class PlannoAuthenticator extends AbstractAuthenticator
     // in executeAuthenticator method.
     public function authenticate(Request $request): Passport
     {
+        $this->redirect_url = $request->get('redirURL');
 
         if ($this->check_login($request)) {
             $login = $request->get('login');

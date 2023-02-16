@@ -60,9 +60,9 @@ if (empty($_SESSION['login_id'])) {
 
         $login_params = array();
         if (is_array($get)) {
-            $login_params['redirURL'] = 'index.php?' . http_build_query($get);
+            $login_params['redirURL'] = 'index?' . http_build_query($get);
         } else {
-            $login_params['redirURL'] = 'index.php';
+            $login_params['redirURL'] = 'index';
         }
 
         if (isset($ticket)) {

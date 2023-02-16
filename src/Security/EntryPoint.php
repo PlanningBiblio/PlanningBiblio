@@ -16,6 +16,9 @@ class EntryPoint implements AuthenticationEntryPointInterface
 
     public function start(Request $request, AuthenticationException $authException = null) : Response
     {
-        return new RedirectResponse($this->urlGenerator->generate(PlannoAuthenticator::LOGIN_ROUTE));
+        $route = $request->attributes->get('_route');
+        return new RedirectResponse(
+            $this->urlGenerator->generate(PlannoAuthenticator::LOGIN_ROUTE,
+                array('redirURL' => $route)));
     }
 }
