@@ -26,7 +26,11 @@ class PlannoAuthenticator extends AbstractAuthenticator
 
     protected $logger;
 
-    protected $redirect_url;
+    protected $redirect_url = 'index';
+
+    protected $authenticate_error = '';
+
+    protected $authenticate_arguments = '';
 
     public function __construct(private UserProviderInterface $userProvider, LoggerInterface $logger, Private UrlGeneratorInterface $urlGenerator){
         $this->logger = $logger;
@@ -70,15 +74,12 @@ class PlannoAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $data = [
-            // you may want to customize or obfuscate the message first
-            'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
+        return new RedirectResponse(
+            $this->urlGenerator->generate(PlannoAuthenticator::LOGIN_ROUTE,
+                array('redirURL' => $this->redirect_url,
+                'error' => $this->authenticate_error,
+                'auth_args' => $this->authenticate_arguments)));
 
-            // or to translate this message
-            // $this->translator->trans($exception->getMessageKey(), $exception->getMessageData())
-        ];
-
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }
 
     private function check_login(Request $request)
@@ -133,16 +134,15 @@ class PlannoAuthenticator extends AbstractAuthenticator
         }
 
         if ($authArgs and $redirect_url) {
-            $authArgs .= '&amp;redirURL=' . urlencode($redirect_url);
+            $this->authenticate_arguments = $authArgs .= '&amp;redirURL=' . urlencode($redirect_url);
         } elseif ($redirect_url) {
-            $authArgs = '?redirURL=' . urlencode($redirect_url);
+            $this->authenticate_arguments = '?redirURL=' . urlencode($redirect_url);
         }
 
         // Create a CSRF Token
         $CSRFToken = CSRFToken();
         $_SESSION['oups']['CSRFToken'] = $CSRFToken;
 
-        $error = '';
         if ($auth) {
             // Log login and client IP if success login.
             loginSuccess($login, $CSRFToken);
@@ -159,12 +159,12 @@ class PlannoAuthenticator extends AbstractAuthenticator
                 return true;
             }
 
-            $error = "unknown_user";
+            $this->authenticate_error = 'unknown_user';
             return false;
         }
 
         loginFailed($login, $CSRFToken);
-        $error = 'login_failed';
+        $this->authenticate_error = 'login_failed';
 
         return false;
 

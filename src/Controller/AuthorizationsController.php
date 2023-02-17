@@ -24,7 +24,13 @@ class AuthorizationsController extends BaseController
     public function login(Request $request)
     {
 
-        $error = Cas::redirect();
+        $cas_error = Cas::redirect();
+        $error = $request->get('error');
+        $auth_args = $request->get('auth_args');
+
+        if ($auth_args) {
+            $this->templateParams(array('auth_args' => $auth_args));
+        }
 
         $IPBlocker = loginFailedWait();
         if ($IPBlocker > 0) {
@@ -43,7 +49,7 @@ class AuthorizationsController extends BaseController
             'redirect_url' => $redirect_url,
             'new_login' => $new_login,
             'demo_mode' => empty($this->config('demo')) ? 0 : 1,
-            'error' => $error,
+            'error' => $cas_error ? $cas_error : $error,
         ));
 
         return $this->output('login.html.twig');
