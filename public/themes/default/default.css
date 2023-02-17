@@ -1486,6 +1486,11 @@ div.presents-absents {
     min-height: 40px;
 }
 
+.dataTables_wrapper .dataTables_paginate .fg-button {
+  border: 1px solid #FFFFFF;
+  padding: 5px;
+}
+
 .dataTables_wrapper .dataTables_filter input,
 .dataTables_wrapper .dataTables_length select {
     background-color: #29485C;
