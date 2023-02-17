@@ -1681,11 +1681,26 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
 
 /*Buttons START*/
 .ui-button{
-  min-width: 85px;
+  min-width: 105px;
 }
 
 .ui-button.fg-button{
   min-width: 40px;
+}
+
+.top-buttons .col,
+.top-buttons .col-3 {
+  padding: 10px 15px;
+  white-space: nowrap;
+}
+
+.top-buttons .col:first-child {
+  padding: 10px 0;
+}
+
+.top-buttons .col:last-child {
+  padding: 10px 0;
+  text-align: right;
 }
 
 /*main button style*/
