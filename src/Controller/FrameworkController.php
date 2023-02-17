@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\PlanningBiblio\Framework;
 use App\Model\Position;
+use App\Model\Site;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -21,7 +22,8 @@ class FrameworkController extends BaseController
      * @Route ("/framework", name="framework.index", methods={"GET"})
      */
     public function index (Request $request, Session $session){
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
 
         // Tableaux
         $t = new Framework();
@@ -54,7 +56,8 @@ class FrameworkController extends BaseController
                 $elem['tabAffect'] = $utilisation;
 
                 if ($nbSites > 1){
-                    $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($elem['site']);
+                    $elem['multisite'] = $s->nom();
                 }
             }
         }
@@ -77,7 +80,8 @@ class FrameworkController extends BaseController
         if (is_array($groupes)) {
             foreach ($groupes as &$elem) {
                 if ($nbSites > 1) {
-                    $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($elem['site']);
+                    $elem['multisite'] = $s->nom();
                 }
             }
         }
@@ -175,7 +179,8 @@ class FrameworkController extends BaseController
         $cfgTypeGet = $request->get("cfg-type");
         $tableauNumero = $request->request->get("numero");
         $tableauGet = $request->get("numero");
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
 
         // Choix de l'onglet (cfg-type)
         if ($cfgTypeGet) {
@@ -198,8 +203,8 @@ class FrameworkController extends BaseController
 
         $multisites = array();
         if ($nbSites>1) {
-            for ($i = 1 ;$i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[$s->id()] = $s->nom();
             }
         }
 
@@ -232,7 +237,8 @@ class FrameworkController extends BaseController
         $cfgType = $request->get("cfg-type");
         $tableauNumero = $request->request->get("id");
         $tableauGet = $request->get("id");
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
 
         // Choix du tableau
         if ($tableauGet) {
@@ -255,8 +261,8 @@ class FrameworkController extends BaseController
 
         $multisites = array();
         if ($nbSites>1) {
-            for ($i = 1 ;$i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[$s->id()] = $s->nom();
             }
         }
 
@@ -626,10 +632,11 @@ class FrameworkController extends BaseController
         $id = $request->get("id");
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
 
-        if($this->config('Multisites-nombre') > 1){
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++){
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+        if(count($sites_array) > 1){
+            foreach ($sites_array as $s){
+                $multisites[$s->id()] = $s->nom();
             }
         }
 
@@ -675,10 +682,10 @@ class FrameworkController extends BaseController
         $id = $request->get("id");
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
-
-        if($this->config('Multisites-nombre') > 1){
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++){
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        if(count($sites_array) > 1){
+            foreach ($sites_array as $s){
+                $multisites[$s->id()] = $s->nom();
             }
         }
 
@@ -718,6 +725,7 @@ class FrameworkController extends BaseController
                 "groupes"    => $groupes,
                 "multisites" => $multisites,
                 "semaine"    => $semaine,
+                "nbSites"    => count($sites_array),
                 "tableaux"   => $tableaux
             )
         );

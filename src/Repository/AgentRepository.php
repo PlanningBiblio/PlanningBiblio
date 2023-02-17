@@ -17,6 +17,8 @@ use App\Model\PlanningPositionLock;
 use App\Model\PlanningPositionModel;
 use App\Model\RecurringAbsence;
 use App\Model\SaturdayWorkingHours;
+use App\Model\Site;
+use App\Model\SiteMail;
 use App\Model\Supervisor;
 use App\Model\WeekPlanning;
 use App\Model\ConfigParam;
@@ -156,8 +158,8 @@ class AgentRepository extends EntityRepository
         $by_agent_param = $entityManager->getRepository(ConfigParam::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = $entityManager->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+        $sites_array = $entityManager->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $sites_number = count($sites_array);
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
@@ -177,21 +179,20 @@ class AgentRepository extends EntityRepository
         $rights = $loggedin->droits();
 
         $sites_select = array();
-        for ($i = 1; $i <= $sites_number; $i++) {
-            $name = $entityManager->getRepository(ConfigParam::class)
-                ->findOneBy(['nom' => "Multisites-site$i"])->valeur();
+        foreach ($sites_array as $s) {
+            $name = $s->nom();
 
             if ($by_agent_param->valeur()) {
-                if (in_array($i, $managed_sites)) {
-                    $sites_select[] = array('id' => $i, 'name' => $name);
+                if (in_array($s->id(), $managed_sites)) {
+                    $sites_select[] = array('id' => $s->id(), 'name' => $s->nom());
                 }
                 continue;
             }
 
-            if (in_array(($this->needed_level1 + $i), $rights)
-                or in_array(($this->needed_level2 + $i), $rights)) {
+            if (in_array(($this->needed_level1 + $s->id()), $rights)
+                or in_array(($this->needed_level2 + $s->id()), $rights)) {
 
-                $sites_select[] = array('id' => $i, 'name' => $name);
+                $sites_select[] = array('id' => $s->id(), 'name' => $s->nom());
             }
         }
 
@@ -205,8 +206,8 @@ class AgentRepository extends EntityRepository
         $by_agent_param = $entityManager->getRepository(ConfigParam::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = $entityManager->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+        $sites_array = $entityManager->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $sites_number = count($sites_array);
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
@@ -264,8 +265,8 @@ class AgentRepository extends EntityRepository
         $by_agent_param = $entityManager->getRepository(ConfigParam::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = $entityManager->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+        $sites_array = $entityManager->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $sites_number = count($sites_array);
 
         $sites = array(1);
         if ($this->check_by_site && $sites_number > 1) {

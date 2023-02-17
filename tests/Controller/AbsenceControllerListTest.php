@@ -2,6 +2,8 @@
 
 use App\Model\Agent;
 use App\Model\Manager;
+use App\Model\Site;
+use App\Model\SiteMail;
 use App\Model\ConfigParam;
 
 use Tests\PLBWebTestCase;
@@ -41,17 +43,25 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->entityManager->flush();
     }
 
-    public function testList()
+    public function testIndex()
     {
 
         $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 1);
+        $this->builder->delete(Site::class);
 
         $client = static::createClient();
 
+        $this->builder->delete(Site::class);
+
+        $site1 = new Site();
+        $site1->nom('site_un');
+
+        $this->entityManager->persist($site1);
+        $this->entityManager->flush();
+
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'droits' => array(99,100)
+            'droits' => array(9,99,100)
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
@@ -59,7 +69,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'droits' => array(201,501,99,100)
+            'droits' => array(9,201,501,99,100)
         ));
 
         $this->createAbsenceFor($jdevoe, 2);
@@ -108,7 +118,20 @@ class AbsenceControllerListTest extends PLBWebTestCase
     public function testListMultiSites()
     {
         $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 2);
+
+        $this->builder->delete(Site::class);
+
+        $site1 = new Site();
+        $site1->nom('site_un');
+
+        $this->entityManager->persist($site1);
+        $this->entityManager->flush();
+
+        $site2 = new Site();
+        $site2->nom('site_deux');
+
+        $this->entityManager->persist($site2);
+        $this->entityManager->flush();
 
         $client = static::createClient();
 
@@ -156,7 +179,20 @@ class AbsenceControllerListTest extends PLBWebTestCase
     public function testListWithAbsencesNotificationsAgentParAgent()
     {
         $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 2);
+
+        $this->builder->delete(Site::class);
+
+        $site1 = new Site();
+        $site1->nom('site_un');
+
+        $this->entityManager->persist($site1);
+        $this->entityManager->flush();
+
+        $site2 = new Site();
+        $site2->nom('site_deux');
+
+        $this->entityManager->persist($site2);
+        $this->entityManager->flush();
 
         $client = static::createClient();
 

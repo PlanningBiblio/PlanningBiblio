@@ -1,6 +1,7 @@
 <?php
 
 use App\Model\Agent;
+use App\Model\Site;
 use App\Model\ConfigParam;
 
 use Tests\PLBWebTestCase; 
@@ -26,6 +27,7 @@ class AgentControllerTest extends PLBWebTestCase
         $this->entityManager = $entityManager;
     }
 
+
     protected function setParam($name, $value)
     {
         $GLOBALS['config'][$name] = $value;
@@ -42,7 +44,7 @@ class AgentControllerTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $GLOBALS['config']['Multisites-nombre'] = 1;
+        $this->builder->delete(Site::class);
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -113,7 +115,7 @@ class AgentControllerTest extends PLBWebTestCase
     }
 
     public function testAddFormElement() {
-        $GLOBALS['config']['Multisites-nombre'] = 1;
+        $this->builder->delete(Site::class);
         $GLOBALS['config']['Granularite'] = 30;
         $GLOBALS['config']['LDAP-Host'] = '';
         $GLOBALS['config']['LDAP-Suffix'] = '';
@@ -148,10 +150,34 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEmpty($result);
 
         //test multisites
-        $GLOBALS['config']['Multisites-nombre'] = 4;
         $GLOBALS['config']['Grannularite'] = 1;
         $GLOBALS['config']['LDAP-Host'] = '';
         $GLOBALS['config']['LDAP-Suffix'] = '';
+        $this->builder->delete(Site::class);
+        $site1 = new Site();
+        $site1->nom('site_un');
+
+        $this->entityManager->persist($site1);
+        $this->entityManager->flush();
+
+        $site2 = new Site();
+        $site2->nom('site_deux');
+
+        $this->entityManager->persist($site2);
+        $this->entityManager->flush();
+
+        $site3 = new Site();
+        $site3->nom('site_trois');
+
+        $this->entityManager->persist($site3);
+        $this->entityManager->flush();
+
+        $site4 = new Site();
+        $site4->nom('site_quatre');
+
+        $this->entityManager->persist($site4);
+        $this->entityManager->flush();
+
 
         $crawler = $client->request('GET', '/agent');
 
@@ -162,7 +188,6 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Sites', $result->text(null,false));
 
         //test LDAP host and suffix
-        $GLOBALS['config']['Multisites-nombre'] = 4;
         $GLOBALS['config']['Grannularite'] = 1;
         $GLOBALS['config']['LDAP-Host'] = '192.168.1.100';
         $GLOBALS['config']['LDAP-Suffix'] = 'dn: dc=my-domain,dc=com objectclass: dcObject objectclass: organization';
@@ -198,32 +223,46 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEquals('1h15', $result->eq(3)->text(null,false));
     }
 
-    public function testEditFormElement() {
 
-        $GLOBALS['config']['Multisites-nombre'] = 2;
+    public function testEditFormElement() {
         $GLOBALS['config']['Granularite'] = 30;
         $GLOBALS['config']['LDAP-Host'] = '';
         $GLOBALS['config']['LDAP-Suffix'] = '';
         $GLOBALS['config']['Conges-Enable'] = 1;
         $GLOBALS['config']['PlanningHebdo'] = 0;
 
+        $this->builder->delete(Site::class);
+        $site1 = new Site();
+        $site1->nom('site_un');
+
+        $this->entityManager->persist($site1);
+        $this->entityManager->flush();
+        $id_site1 = $site1->id();
+
+        $site2 = new Site();
+        $site2->nom('site_deux');
+
+        $this->entityManager->persist($site2);
+        $this->entityManager->flush();
+        $id_site2 = $site2->id();
+
         $client = static::createClient();
 
-        $jdupont = $this->builder->build(Agent::class, array(
-            'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
-            'sites' => '["1"]', 'droits' => array(100,99)
+        $makovitch = $this->builder->build(Agent::class, array(
+            'login' => 'makovitch', 'nom' => 'Dupont', 'prenom' => 'Jean',
+            'sites' => json_encode(["$id_site2"]), 'droits' => array(100,99)
         ));
 
-        $kboivin = $this->builder->build(Agent::class, array(
-            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["1"]', 'droits' => array(21,100,99,4)
+        $maverick = $this->builder->build(Agent::class, array(
+            'login' => 'maverick', 'nom' => 'Boivin', 'prenom' => 'Karel',
+            'sites' => json_encode(["$id_site1", "$id_site2"]), 'droits' => array(21,100,99,4)
         ));
 
-        $id = $jdupont->id();
+        $id = $makovitch->id();
 
         //$this->login($kboivin);
 
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($maverick, $maverick->droits());
         $crawler = $client->request('GET', "/agent/$id");
 
         $this->assertSelectorTextContains('h3', 'Dupont Jean');
@@ -272,7 +311,7 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEmpty($result->attr('checked'));
 
         $result = $crawler->filterXPath('//span[@id="login"]');
-        $this->assertEquals($result->text(null,false), 'jdupont');
+        $this->assertEquals($result->text(null,false), 'makovitch');
 
         ///////ACTIVITES/////////
 
@@ -356,5 +395,4 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Informations', $result->text(null,false));
 
     }
-
 }

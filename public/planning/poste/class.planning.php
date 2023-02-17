@@ -16,6 +16,7 @@ Utilisée par les fichiers du dossier "planning/poste"
 use App\Model\Agent;
 use App\Model\AbsenceReason;
 use App\Model\Position;
+use App\Model\Site;
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
@@ -549,7 +550,9 @@ class planning
         foreach ($perso_ids as $elem) {
             // Création du message avec date et nom de l'agent
             $agent = isset($tab[$elem]) ? $tab[$elem]['prenom'].' '.$tab[$elem]['nom'] : $oldData[$elem]['prenom'].' '.$oldData[$elem]['nom'];
-            $location = $GLOBALS['config']['Multisites-nombre'] > 1 ? '<br/>Site : <strong>' . $GLOBALS['config']["Multisites-site{$site}"] . '</strong>' : null;
+            $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+            $location = count($sites) > 1 ? '<br/>Site : <strong>' . $s->nom() . '</strong>' : null;
 
             $message=$notificationType=="nouveauPlanning"?"Validation du planning":"Modification du planning";
             $message .= "<br/><br/>Agent : <strong>$agent</strong>";

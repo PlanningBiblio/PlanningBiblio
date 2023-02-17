@@ -2,6 +2,7 @@
 
 use App\Model\ConfigParam;
 use App\Model\Agent;
+use App\Model\Site;
 use App\Model\PublicHoliday;
 
 use App\PlanningBiblio\ClosingDay;
@@ -22,7 +23,7 @@ class ClosingDayControllerTest extends PLBWebTestCase
         $builder->delete(Agent::class);
 
         $_SESSION['oups']['CSRFToken'] = '00000';
-        $GLOBALS['config']['Multisites-nombre'] = 1;
+        $builder->delete(Site::class);
 
         $client = static::createClient();
 

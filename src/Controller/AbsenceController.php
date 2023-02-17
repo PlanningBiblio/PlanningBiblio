@@ -7,6 +7,7 @@ use App\Model\AbsenceDocument;
 use App\Model\Absence;
 use App\Model\AbsenceReason;
 use App\Model\Agent;
+use App\Model\Site;
 
 use App\PlanningBiblio\Helper\HourHelper;
 
@@ -997,7 +998,8 @@ class AbsenceController extends BaseController
         }
 
         // Define access right.
-        if ($this->config('Multisites-nombre') > 1) {
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        if (count($sites_array) > 1) {
             $sites_agents = array();
             foreach ($agents_concernes as $elem) {
                 if (is_array($elem['sites'])) {
@@ -1467,7 +1469,8 @@ class AbsenceController extends BaseController
         }
 
         // Keep only managed agent on multi-sites mode
-        if ($this->config('Multisites-nombre') > 1 and !$this->config('Absences-notifications-agent-par-agent')) {
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        if (count($sites_array) > 1 and !$this->config('Absences-notifications-agent-par-agent')) {
 
             $managed_sites = array();
             for ($i = 1; $i < 31; $i++) {
@@ -1524,7 +1527,8 @@ class AbsenceController extends BaseController
         // If can validate level 2: adminN2 = true.
         $this->adminN2 = false;
         $this->admin = false;
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((200+$i), $this->droits)) {
                 $this->admin = true;
             }
@@ -1605,7 +1609,8 @@ class AbsenceController extends BaseController
 
     private function canEdit($perso_ids)
     {
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((200+$i), $this->droits) or in_array((500+$i), $this->droits)) {
                 return true;
             }

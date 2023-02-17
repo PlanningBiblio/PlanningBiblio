@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use App\Model\Site;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -89,7 +91,8 @@ class CalendarController extends BaseController
 
         //Plannings verrouillés
         $verrou = array();
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
         for ($i = 1; $i <= $nbSites; $i++){
             $verrou[$i]=array();
         }
@@ -274,12 +277,14 @@ class CalendarController extends BaseController
             // Si l'agent n'est pas absent toute la journée : affiche ses heures de présences
             $presence = array();
             if (!$absent) {
-                $site_name = $this->config('Multisites-site1');
+                $s = $GLOBALS['entityManager']->getRepository(Site::class)->find(1);
+                $site_name = $s->nom();
                 $site = 1;
                 if ($nbSites > 1 and isset($horaires[4])) {
                     $site = $horaires[4];
                     if ($site != '-1') {
-                        $site_name = $this->config("Multisites-site$site");
+                        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+                        $site_name = $s->nom();
                     } else {
                         $site_name = '';
                     }

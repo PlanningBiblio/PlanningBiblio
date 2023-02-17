@@ -38,6 +38,8 @@ session_start();
 
 $version="ics";
 
+use App\Model\Site;
+
 require_once "../include/config.php";
 require_once "../include/function.php";
 require_once "../absences/class.absences.php";
@@ -119,10 +121,12 @@ $p->fetch();
 $postes=$p->elements;
 
 // Liste des sites
-if ($config['Multisites-nombre'] > 1) {
-    $sites = array();
-    for ($i=1; $i<=$config['Multisites-nombre']; $i++) {
-        $sites[$i] = html_entity_decode($config["Multisites-site$i"], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+$db = new db();
+$db->select2("site", null, array('supprime'=>null));
+$sites = array();
+if($db->result > 1){
+    foreach($db->result as $elem){
+        $sites[$elem['id']] = $elem['nom'];
     }
 }
 

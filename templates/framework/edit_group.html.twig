@@ -9,7 +9,7 @@
       grp_nom.push("{{ elem.nom | lower }}");
     {% endfor %}
   </script>
-  {% if config('Multisites-nombre') > 1 %}
+  {% if nbSites > 1 %}
     <script type='text/JavaScript'>
       $(document).ready(function(){
         $(".hiddenOptions").hide();
@@ -45,14 +45,14 @@
               Ce nom est déjà utilisé</font>
             </td>
           </tr>
-          {% if config('Multisites-nombre') > 1 %}
+          {% if nbSites > 1 %}
             <tr>
               <td class="textAlignRight">Site</td>
               <td>
                 <select name='site' id='selectSite' class='ui-widget-content ui-corner-all' onchange="tabOptions(this)">
                   <option value=''>&nbsp;</option>
-                  {% for i in 1..config('Multisites-nombre') %}
-                    <option value="{{ i }}" {{ groupe.site == i ? "selected='selected'" : ""}}>{{ multisites[i] }}</option>
+                  {% for site in multisites %}
+                    <option value="{{ site->id() }}" {{ groupe.site == site->id() ? "selected='selected'" : ""}}>{{ site->nom() }}</option>
                   {% endfor %}
                 </select>
               </td>

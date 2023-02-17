@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use App\Model\Site;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -156,7 +158,8 @@ class HolidayInfoController extends BaseController
     {
         $droits = $GLOBALS['droits'];
 
-        for ($i = 1; $i <= $this->config('Multisites-nombre') ; $i++) {
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        for ($i = 1; $i <= count($sites_array) ; $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
                 return true;
             }

@@ -12,6 +12,7 @@ use App\Model\Position;
 use App\Model\SelectFloor;
 use App\Model\SelectGroup;
 use App\Model\Skill;
+use App\Model\Site;
 
 require_once(__DIR__ . '/../../public/postes/class.postes.php');
 require_once(__DIR__ . '/../../public/activites/class.activites.php');
@@ -55,7 +56,8 @@ class PositionController extends BaseController
             $postes[] = $poste;
         }
 
-        $nbMultisite = $this->config('Multisites-nombre');
+        $multisites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbMultisite = count($multisites);
         $this->templateParams(array(
             'multisite'     => $nbMultisite,
             'usedPositions' => $postes_utilises,
@@ -92,7 +94,8 @@ class PositionController extends BaseController
             }
 
             if ($nbMultisite>1) {
-                $site = $this->config("Multisites-site{$value->site()}") ? $this->config("Multisites-site{$value->site()}") :"-";
+                $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($value->site());
+                $site = $s->nom() ? $s->nom() :"-";
                 $new['site'] = $site;
             }
             $new['nom'] =  $value->nom();
@@ -208,14 +211,15 @@ class PositionController extends BaseController
         $db->select2("select_categories", "*", "1", "order by rang");
         $categories_list = $db->result;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $multisites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($multisites);
         $multisite = array();
         $selectedSites = array();
 
         if ($nbSites>1){
-            for ($i = 1; $i<= $nbSites; $i++) {
-                $selected = $site==$i?"selected='selected'":null;
-                $multisite[] = $this->config("Multisites-site{$i}");
+            foreach ($multisites as $s) {
+                $selected = $site==$s->id()?"selected='selected'":null;
+                $multisite[] = $s->nom();
                 $selectedSites[] = $selected;
             }
         }

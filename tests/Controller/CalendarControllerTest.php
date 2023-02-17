@@ -2,6 +2,7 @@
 
 use App\Model\Agent;
 use App\Model\Absence;
+use App\Model\Site;
 use App\Model\WeekPlanning;
 
 use Symfony\Component\DomCrawler\Crawler;
@@ -15,6 +16,7 @@ class CalendarControllerTest extends PLBWebTestCase
 {
     public function testCalendarWithMultiSites()
     {
+        global $entityManager;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
@@ -41,11 +43,31 @@ class CalendarControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent2, array(3,100));
 
-        $GLOBALS['config']['Multisites-nombre'] = 4;
-        $GLOBALS['config']['Multisites-site1'] = 'Site N°1';
-        $GLOBALS['config']['Multisites-site2'] = 'Site N°2';
-        $GLOBALS['config']['Multisites-site3'] = 'Site N°3';
-        $GLOBALS['config']['Multisites-site4'] = 'Site N°4';
+        $builder->delete(Site::class);
+        $site1 = new Site();
+        $site1->nom('Site N°1');
+
+        $entityManager->persist($site1);
+        $entityManager->flush();
+
+        $site2 = new Site();
+        $site2->nom('Site N°2');
+
+        $entityManager->persist($site2);
+        $entityManager->flush();
+
+        $site3 = new Site();
+        $site3->nom('Site N°3');
+
+        $entityManager->persist($site3);
+        $entityManager->flush();
+
+        $site4 = new Site();
+        $site4->nom('Site N°4');
+
+        $entityManager->persist($site4);
+        $entityManager->flush();
+
         $crawler = $client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',

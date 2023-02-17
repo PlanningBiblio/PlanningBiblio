@@ -64,12 +64,15 @@ class PresentSet
             // S'il y a des horaires correctement renseignés
             $siteAgent=null;
             if ($heures and !in_array($elem['id'], $absents)) {
-                if ($config['Multisites-nombre']>1) {
+                $this->db->select2("site", null, array('supprime'=>null));
+                if (count($this->db->result)>1) {
                     if (!empty($heures[4])) {
                         if ($heures[4] == -1) {
                             $siteAgent = "Tout site";
                         } else {
-                            $siteAgent=$config['Multisites-site'.$heures[4]];
+                            $this->db->select2("site", null, array('id'=>$heures[4]));
+                            $s = $this->db->result;
+                            $siteAgent=$s[0]['nom'];
                         }
                     }
                 }

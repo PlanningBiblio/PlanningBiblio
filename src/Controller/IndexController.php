@@ -9,6 +9,7 @@ use App\Model\SeparationLine;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 use App\Model\Agent;
 use App\Model\Model;
+use App\Model\Site;
 use App\PlanningBiblio\PresentSet;
 use App\PlanningBiblio\Framework;
 
@@ -505,7 +506,8 @@ class IndexController extends BaseController
 
         // Search for agents on other sites.
         $autres_sites = array();
-        if ($this->config('Multisites-nombre') > 1) {
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        if (count($sites_array) > 1) {
             $db = new \db();
             $db->select2('pl_poste', array('perso_id','date','debut','fin'), array('date' => "BETWEEN {$dates[0]} AND ".end($dates), 'site' => "<>$site"));
             if ($db->result) {

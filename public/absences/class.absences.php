@@ -32,6 +32,7 @@ require_once __DIR__."/../personnel/class.personnel.php";
 use App\Model\Agent;
 use App\Model\AbsenceReason;
 use App\Model\AbsenceDocument;
+use App\Model\Site;
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
 
@@ -801,7 +802,8 @@ class absences
       
         // Multisites, n'affiche que les agents des sites choisis
                 if (!empty($sites)) {
-                    if ($GLOBALS['config']['Multisites-nombre'] > 1) {
+                    $multisites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+                    if (count($multisites) > 1) {
                         $sitesAgent = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     } else {
                         $sitesAgent = array(1);
@@ -1106,7 +1108,8 @@ class absences
         $responsables=array();
         $droitsAbsences=array();
         //	Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
+        $multisites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        if (count($multisites)>1) {
             $db=new db();
             $db->select("personnel", "temps", "id='$perso_id'");
             $temps=json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
@@ -1150,8 +1153,8 @@ class absences
 
             // Si les jours d'absences ne concernent aucun site, on ajoute les responsables de tous les sites par sécurité
             if (empty($droitsAbsences)) {
-                for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-                    $droitsAbsences[] = $droit + $i;
+                foreach ($multisites as $multisite) {
+                    $droitsAbsences[] = $droit + $multisite->id();
                 }
             }
         }
@@ -1904,10 +1907,11 @@ class absences
         $postes=$p->elements;
     
         // Nom des sites
+        $multisites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
         $sites=array(1=>null);
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-                $sites[$i]=$GLOBALS['config']["Multisites-site$i"];
+        if (count($multisites)>1) {
+            foreach ($multisites as $multisite) {
+                $sites[$multisite->id()]=$multisite->nom();
             }
         }
 

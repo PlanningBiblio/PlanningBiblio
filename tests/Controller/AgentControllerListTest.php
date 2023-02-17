@@ -2,6 +2,7 @@
 
 use App\Model\Agent;
 use App\Model\Manager;
+use App\Model\Site;
 use App\Model\ConfigParam;
 
 use Tests\PLBWebTestCase;
@@ -39,7 +40,7 @@ class AgentControllerListTest extends PLBWebTestCase
 
     public function testListAgent()
     {
-        $this->setParam('Multisites-nombre', 1);
+        $this->builder->delete(Site::class);
         $this->builder->delete(Agent::class);
         $this->setUpPantherClient();
 
@@ -60,8 +61,11 @@ class AgentControllerListTest extends PLBWebTestCase
         $id_agent_suppr = $agent_suppr->id();
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'droits' => array(21,4,99,100), 'supprime' => 0, 'actif' => 'Actif',
+            'droits' => array(21,4,99,100), 'supprime' => 0, 'actif' => 'Actif','heures_travail'=>1.4,
+            'check_hamac' => 0, 'conges_credit' => -1.2, 'conges_reliquat' => 1.2, 'comp_time' => 0, 'conges_anticipation' => 0,
+            'conges_annuel' => 3.4,
         ));
+
         $id_kboivin = $kboivin->id();
 
         // Login with agent having rights for absences

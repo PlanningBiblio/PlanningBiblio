@@ -1,5 +1,6 @@
 <?php
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Model\Site;
 
 # Very very tricky solution but this is this fatsest
 # way to twigizing this part.
@@ -67,7 +68,8 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<td>Temps de pause</td>";
     }
 
-    if ($config['Multisites-nombre']>1) {
+    $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+    if (count($sites)>1) {
         $hours_tab .= "<td>Site</td>";
     }
   
@@ -156,11 +158,12 @@ for ($j = 0; $j < $nb_semaine; $j++) {
             $hours_tab .= '</td>';
         }
 
-        if ($config['Multisites-nombre']>1) {
+        if (count($sites)>1) {
             if ($disabled) {
                 $site=null;
                 if (isset($temps[$i-1][4])) {
-                    $site="Multisites-site".$temps[$i-1][4];
+                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($temps[$i-1][4]);
+                    $site = $s->nom();
                     $site = isset($config[$site]) ? $config[$site] : null;
 
                     $site = $temps[$i-1][4] == -1 ? 'Tout site' : $site;
@@ -169,9 +172,9 @@ for ($j = 0; $j < $nb_semaine; $j++) {
             } else {
                 $hours_tab .= "<td class='wh-timepicker'><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
                 $hours_tab .= "<option value='' class='edt-site-0'>&nbsp;</option>\n";
-                for ($l=1;$l<=$config['Multisites-nombre'];$l++) {
-                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$l) ? "selected='selected'" : null;
-                    $hours_tab .= "<option value='$l' $selected class='edt-site-$l'>{$config["Multisites-site{$l}"]}</option>\n";
+                foreach ($sites as $site) {
+                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$site->id()) ? "selected='selected'" : null;
+                    $hours_tab .= "<option value='" .$site->id() ."' $selected class='edt-site-" .$site->id() ."'>".$site->nom() ."</option>\n";
                 }
                 $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4] == -1) ? "selected='selected'" : null;
                 $hours_tab .= "<option value='-1' $selected class='edt-site--1'>Tout site</option>\n";

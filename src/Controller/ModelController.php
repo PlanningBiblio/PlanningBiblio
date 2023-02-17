@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use App\Model\Model;
 use App\Model\ModelAgent;
+use App\Model\Site;
 
 require_once(__DIR__ . '/../../public/include/db.php');
 
@@ -35,11 +36,12 @@ class ModelController extends BaseController
             }
         }
 
-        $multi_sites = $this->config('Multisites-nombre') > 1 ? 1 : 0;
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $multi_sites = count($sites_array) > 1 ? 1 : 0;
         $sites = array();
         if ($multi_sites) {
-            for ($i=1; $i < $this->config('Multisites-nombre')+1; $i++) {
-                $sites[$i] = $this->config("Multisites-site$i");
+            foreach ($sites_array as $s) {
+                $sites[$s->id()] = $s->nom();
             }
         }
 

@@ -30,9 +30,10 @@ class AjaxController extends BaseController
             ->getManagedFor($_SESSION['login_id']);
 
         $agents = array();
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
         foreach ($managed as $m) {
             if ($m->id() == $_SESSION['login_id'] ||
-                $this->config('Multisites-nombre') == 1 ||
+                count($sites_array) == 1 ||
                 ($sites && $m->inOneOfSites($sites))) {
 
                 $agents[] = array(
@@ -264,7 +265,8 @@ class AjaxController extends BaseController
               $db = new \db();
               $db->select2("pl_poste_verrou", "*", array("date"=>$date, "verrou2"=>"1"));
               // S'ils ne sont pas tous validés, vérifie si certains d'entre eux sont commencés
-              if ($db->nb < $this->config('Multisites-nombre')) {
+              $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+              if ($db->nb < count($sites_array)) {
                   // TODO : ceci peut être amélioré en cherchant en particulier si les sites non validés sont commencés, car les sites non validés et non commencés ne nous interressent pas.
                   // for($i=1;$i<=$this->config('Multisites-nombre');$i++){} // Attention, faire une première requête si $db->nb=0 pour éviter les erreurs foreach not array
                   // Le nom des sites pourrait également être retourné

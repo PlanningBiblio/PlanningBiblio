@@ -16,6 +16,8 @@ Fichier regroupant les fonctions permettant de construire le menu principal.
 Ce fichier est appelé par le fichier include/menu.php
 */
 
+use App\Model\Site;
+
 // pas de $version=acces direct au fichier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
 
@@ -68,11 +70,11 @@ class menu
             $menu[$elem['niveau1']][$elem['niveau2']]['url'] = $url;
         }
 
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            for ($i=0;$i<$GLOBALS['config']['Multisites-nombre'];$i++) {
-                $j=$i+1;
-                $menu[30][$j]['titre']=$GLOBALS['config']["Multisites-site".$j];
-                $menu[30][$j]['url']="index?site=$j";
+        $multisites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        if (count($multisites)>1) {
+            foreach ($multisites as $multisite) {
+                $menu[30][$multisite->id()]['titre']=$multisite->nom();
+                $menu[30][$multisite->id()]['url']="index?site=" .$multisite->nom();
             }
         }
 

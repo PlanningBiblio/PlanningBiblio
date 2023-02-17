@@ -7,6 +7,7 @@ use App\Model\Agent;
 use App\Model\AbsenceReason;
 use App\Model\PlanningPositionHistory;
 use App\Model\Position;
+use App\Model\Site;
 
 use App\PlanningBiblio\WorkingHours;
 
@@ -96,8 +97,10 @@ class PlanningJobController extends BaseController
 
         // Site's name
         $siteNom = null;
-        if ($this->config('Multisites-nombre') > 1) {
-            $siteNom = $this->config("Multisites-site$site");
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        if (count($sites_array) > 1) {
+            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+            $siteNom = $s->nom();
         }
 
         // List all statuses related to
@@ -171,7 +174,7 @@ class PlanningJobController extends BaseController
                 $start_with_journey = date('H:i:s', strtotime("-$j_time minutes", strtotime($debutSQL)));
                 $end_with_journey = date('H:i:s', strtotime("+$j_time minutes", strtotime($finSQL)));
 
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     $req = "SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` "
                         . "FROM `{$dbprefix}pl_poste` "
                         . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
@@ -412,7 +415,7 @@ class PlanningJobController extends BaseController
                 // This filter concerns every agents.
                 // An other filter will definitly exclude agents that
                 // are not in the requested site.
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     // index 4 is the site on which
                     // agent is working on.
                     $site_agent = !empty($temps[$jour][4]) ? $temps[$jour][4] : null;
@@ -509,7 +512,7 @@ class PlanningJobController extends BaseController
                 }
 
                 // Remove agent working on other site.
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     if (!is_array($sites) or !in_array($site, $sites)) {
                         $exclusion[$elem['id']][] = 'sites';
@@ -582,7 +585,7 @@ class PlanningJobController extends BaseController
             foreach ($autres_agents_tmp as $elem) {
                 // Remove agents that doesn't work on requested site.
                 // Same check than above, but definitly remove them.
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     if (!is_array($sites) or !in_array($site, $sites)) {
                         continue;

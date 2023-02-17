@@ -22,6 +22,8 @@ session_start();
 require_once "../../include/config.php";
 require_once "class.planning.php";
 
+use App\Model\Site;
+
 // Initialisation des variables
 $date=filter_input(INPUT_GET, 'date', FILTER_SANITIZE_STRING);
 $CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
@@ -34,7 +36,8 @@ $perso_id=$_SESSION['login_id'];
 
 // Sécurité
 // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
-$droit=($config['Multisites-nombre']>1)?(300+$site):12;
+$sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+$droit=(count($sites)>1)?(300+$site):12;
 $db=new db();
 $db->select2("personnel", "droits", array("id"=>$perso_id));
 $droits_agent=json_decode(html_entity_decode($db->result[0]['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);

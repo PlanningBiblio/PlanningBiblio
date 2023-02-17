@@ -2,6 +2,7 @@
 
 use App\Model\Agent;
 use App\Model\ConfigParam;
+use App\Model\Site;
 use App\Model\Manager;
 
 use Tests\PLBWebTestCase;
@@ -68,7 +69,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
     public function testAbsenceList()
     {
         $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 1);
+        $this->builder->delete(Site::class);
 
         $client = static::createClient();
 

@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\Agent;
+use App\Model\Site;
 
 require_once(__DIR__. '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__. '/../../public/personnel/class.personnel.php');
@@ -70,10 +71,12 @@ class WorkingHourController extends BaseController
         $p = new \personnel();
         $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
         $multisites = array();
         foreach ($sites as $site) {
-            $multisites[$site] = $this->config("Multisites-site{$site}");
+            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+            $multisites[$site] = $s->nom();
         }
 
         if ($ph_id != null) {
@@ -293,7 +296,8 @@ class WorkingHourController extends BaseController
         $remplace = null;
         $sites = array();
         $nbSemaine = $this->config('nb_semaine');
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
         $multisites = array();
 
         $managed = $this->entityManager
@@ -305,9 +309,9 @@ class WorkingHourController extends BaseController
             return $this->redirectToRoute('access-denied');
         }
 
-        for ($i = 1; $i < $nbSites+1; $i++) {
-            $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$i}");
+        foreach ($sites_array as $s) {
+            $sites[] = $s->id();
+            $multisites[$s->id()] = $s->nom();
         }
 
         $nomAgent = nom($perso_id, "prenom nom");
@@ -368,13 +372,14 @@ class WorkingHourController extends BaseController
         $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $nbSemaine = $this->config('nb_semaine');
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
         $validation = "";
         $sites = array();
         $multisites = array();
-        for ($i = 1; $i < $nbSites+1; $i++) {
-            $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$i}");
+        foreach ($sites_array as $s) {
+            $sites[] = $s->id();
+            $multisites[$s->id()] = $s->nom();
         }
         $exception_back = '/myaccount';
         if ($retour != '/myaccount') {

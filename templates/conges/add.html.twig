@@ -30,7 +30,7 @@
               <input type='hidden' id='conges-recup' value='{{ conges_recuperations }}' />
               <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
               <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
-              <input type='hidden' name="multisites" id='multisites' value="{{ config('Multisites-nombre') > 1 ? 1 : 0  }}" />
+              <input type='hidden' name="multisites" id='multisites' value="{{ nbSites > 1 ? 1 : 0  }}" />
               <input type='hidden' id='agents-multiples' value='{{ agents_multiples }}' />
 
               <table class='tableauFiches'>
@@ -70,7 +70,7 @@
                 <tr>
                   <td>&nbsp;</td>
                   <td>
-                      {% if config('Multisites-nombre') > 1 %}
+                      {% if nbSites > 1 %}
                         Sites:
                          {% for s in sites_select %}
                           <input type="checkbox" checked="checked" name="selected_sites" value="{{s.id}}" id="site_{{s.id}}" /><label for="site_{{s.id}}">{{ s.name }}</label>

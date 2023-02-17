@@ -4,6 +4,8 @@ namespace App\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Model\SiteMail;
+use App\Model\Site;
 
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, OneToMany};
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
@@ -175,7 +177,8 @@ class Agent extends PLBEntity
         }
 
         $droits = $this->droits();
-        $multisites = $GLOBALS['config']['Multisites-nombre'];
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $multisites = count($sites_array);
 
         // Right 21 (Edit personnel) gives right 4 (Show personnel)
         if (in_array(21, $droits)) {
@@ -218,9 +221,16 @@ class Agent extends PLBEntity
         $sites = json_decode($this->sites());
         if (is_array($sites)) {
             foreach ($sites as $site) {
-                $site_mail_config = "Multisites-site$site-mail";
-                if ($config[$site_mail_config]) {
-                    $site_mails = explode(';', $config[$site_mail_config]);
+                $db = new \db();
+                $db->select2("site_mail", "*", array("site_id" => $site));
+                $site_mail_config = '';
+                if($db->result){
+                    foreach ($db->result as $m){
+                        $site_mail_config .= $m['mail'] .';';
+                    }
+                }
+                if ($site_mail_config != '') {
+                    $site_mails = explode(';', $site_mail_config);
                     $site_mails = array_map('trim', $site_mails);
                     $unit_mails = array_merge($unit_mails, $site_mails);
                 }
@@ -321,7 +331,8 @@ class Agent extends PLBEntity
 
     public function managedSites($needed_l1, $needed_l2)
     {
-        $sites_number = $GLOBALS['config']['Multisites-nombre'];
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $sites_number = count($sites_array);
 
         // Module workinghour, no multisites.
         if ($needed_l1 == 1100) {

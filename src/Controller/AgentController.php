@@ -9,6 +9,8 @@ use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;
 
 use App\Model\Agent;
+use App\Model\Site;
+use App\Model\SiteMail;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -44,9 +46,15 @@ class AgentController extends BaseController
             $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             if (is_array($sites)) {
                 foreach ($sites as $elem) {
+                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($elem);
+                    $mails_array = $GLOBALS['entityManager']->getRepository(SiteMail::class)->findBy(array("site_id" => $elem));
+                    $mails_string = '';
+                    foreach($mails_array as $m){
+                        $mails_string .= $m->mail().';';
+                    }
                     $result[] = array("id" => $elem,
-                                    "name" => $this->config("Multisites-site" . $elem),
-                                    "mail" => $this->config("Multisites-site" . $elem . "-mail"));
+                                    "name" => $s->nom(),
+                                    "mail" => $mails_string);
                 }
             }
         }
@@ -61,7 +69,6 @@ class AgentController extends BaseController
      * @Route("/agent", name="agent.index", methods={"GET"})
      */
     public function index(Request $request){
-
         $actif = $request->get('actif');
         $lang = $GLOBALS['lang'];
         $droits = $GLOBALS['droits'];
@@ -87,7 +94,8 @@ class AgentController extends BaseController
         $p->fetch("nom,prenom", $actif);
         $agentsTab = $p->elements;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
 
         $agents = array();
         foreach ($agentsTab as $agent) {
@@ -111,7 +119,8 @@ class AgentController extends BaseController
                 if (!empty($agent['sites'])) {
                     foreach ($agent['sites'] as $site) {
                         if ($site) {
-                            $tmp[] = $this->config("Multisites-site{$site}");
+                            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+                            $tmp[] = $s->nom();
                         }
                     }
                 }
@@ -261,7 +270,8 @@ class AgentController extends BaseController
         // on les places dans un autre tableau pour simplifier l'affichage
         $groupes_sites = array();
 
-        if ($this->config('Multisites-nombre') > 1) {
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        if (count($sites_array) > 1) {
             for ($i = 2; $i <= 10; $i++) {
 
                 // Exception, groupe 701 = pas de gestion multisites (pour le moment)
@@ -483,8 +493,8 @@ class AgentController extends BaseController
             'titre'             => $titre,
             'conges_enabled'    => $this->config('Conges-Enable'),
             'conges_mode'       => $this->config('Conges-Mode'),
-            'multi_site'        => $this->config('Multisites-nombre') > 1 ? 1 : 0,
-            'nb_sites'          => $this->config('Multisites-nombre'),
+            'multi_site'        => count($sites_array) > 1 ? 1 : 0,
+            'nb_sites'          => count($sites_array),
             'recup_agent'       => $this->config('Recup-Agent'),
             'Hamac_csv'         => $this->config('Hamac-csv'),
             'ICS_Server1'       => $this->config('ICS-Server1'),
@@ -567,15 +577,15 @@ class AgentController extends BaseController
         }
 
         // Multi-sites
-        if ($this->config('Multisites-nombre') > 1) {
+        if (count($sites_array) > 1) {
             $sites_select = array();
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+            foreach ($sites_array as $s) {
                 $site_select = array(
-                    'id' => $i,
-                    'name' => $this->config("Multisites-site$i"),
+                    'id' => $s->id(),
+                    'name' => $s->nom(),
                     'checked' => 0
                 );
-                if ( in_array($i, $sites) ) {
+                if ( in_array($s->id(), $sites) ) {
                     $site_select['checked'] = 1;
                 }
                 $sites_select[] = $site_select;
@@ -665,10 +675,10 @@ class AgentController extends BaseController
         $this->templateParams(array('rights' => $rights));
 
         // Affichage des droits d'accès dépendant des sites (si plusieurs sites)
-        if ($this->config('Multisites-nombre') > 1) {
+        if (count($sites_array) > 1) {
             $sites_for_rights = array();
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                $sites_for_rights[] = array( 'site_name' => $this->config("Multisites-site$i") );
+            foreach ($sites_array as $s) {
+                $sites_for_rights[] = array( 'site_name' => $s->nom() );
             }
 
             $this->templateParams(array('sites_for_rights' => $sites_for_rights));
@@ -692,7 +702,7 @@ class AgentController extends BaseController
                 }
 
                 $elem['sites'] = array();
-                for ($i = 1; $i < $this->config('Multisites-nombre') +1; $i++) {
+                for ($i = 1; $i < count($sites_array) +1; $i++) {
                     $groupe_id = $elem['groupe_id'] - 1 + $i;
 
                     $checked = false;
@@ -872,7 +882,8 @@ class AgentController extends BaseController
         $arrivee = dateSQL($arrivee);
         $depart = dateSQL($depart);
 
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        for ($i = 1; $i <= count($sites_array); $i++) {
             // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
             if (in_array((300+$i), $droits) and !in_array((1000+$i), $droits)) {
                 $droits[]=1000+$i;
@@ -880,7 +891,7 @@ class AgentController extends BaseController
         }
 
         // Le droit de gestion des absences (20x) donne le droit modifier ses propres absences (6) et le droit d'ajouter des absences pour plusieurs personnes (9)
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((200+$i), $droits) or in_array((500+$i), $droits)) {
                 $droits[] = 6;
                 break;

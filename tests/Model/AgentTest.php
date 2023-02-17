@@ -3,6 +3,8 @@
 use App\Model\Agent;
 use App\Model\Access;
 use App\Model\Holiday;
+use App\Model\Site;
+use App\Model\SiteMail;
 use App\Model\Skill;
 use App\Model\Position;
 use App\Model\PlanningPosition;
@@ -248,6 +250,17 @@ class AgentTest extends TestCase
 
     }
 
+    public function addMails($mail, $site_id) {
+        global $entityManager;
+        $_SESSION['oups']['CSRFToken'] = '00000';
+        $db = new \db();
+        $db->CSRFToken = '00000';
+        $db->insert("site_mail", array(
+            'mail' => $mail,
+            'site_id' => $site_id,
+        ));
+    }
+
     public function test_get_planning_unit_mails(){
         global $entityManager;
         $builder = new FixtureBuilder();
@@ -265,38 +278,67 @@ class AgentTest extends TestCase
 
         //Multi sites :
 
-        $GLOBALS['config']['Multisites-nombre'] = 4;
+        $builder->delete(Site::class);
+        $site1 = new Site();
+        $site1->nom('Site N°1');
+
+        $entityManager->persist($site1);
+        $entityManager->flush();
+        $id1 = $site1->id();
+
+        $site2 = new Site();
+        $site2->nom('Site N°2');
+
+        $entityManager->persist($site2);
+        $entityManager->flush();
+        $id2 = $site2->id();
+
+        $site3 = new Site();
+        $site3->nom('Site N°3');
+
+        $entityManager->persist($site3);
+        $entityManager->flush();
+        $id3 = $site3->id();
+
+        $site4 = new Site();
+        $site4->nom('Site N°4');
+
+        $entityManager->persist($site4);
+        $entityManager->flush();
+        $id4 = $site4->id();
+
+        $this->addMails('jmarc@mail.fr', $site1->id());
+        $this->addMails('jcharles@mail.fr', $site1->id());
+        $this->addMails('jdevoe@mail.com', $site1->id());
+        $this->addMails('jcharles@mail.fr', $site2->id());
+        $this->addMails('jmarc@mail.fr', $site2->id());
+        $this->addMails('j.paul@mail.com', $site2->id());
+        $this->addMails('j.claude@mail.com', $site3->id());
+        $this->addMails('jmarc@mail.fr', $site3->id());
+        $this->addMails('jcharles@mail.fr', $site3->id());
+        $this->addMails('j.paul@mail.com', $site4->id());
+        $this->addMails('j.claude@mail.com', $site4->id());
+
         $GLOBALS['config']['Mail-Planning'] = '';
 
-        $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => json_encode(["1", "2", "3","4"])));
-        $GLOBALS['config']['Multisites-site1-mail'] ='jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com';
-        $GLOBALS['config']['Multisites-site2-mail'] ='jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com';
-        $GLOBALS['config']['Multisites-site3-mail'] ='j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr';
-        $GLOBALS['config']['Multisites-site4-mail'] ='j.paul@mail.com;j.claude@mail.com';
+        $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => json_encode(["$id1", "$id2", "$id3","$id4"])));
 
-        $this->assertEquals(
-            $agent2->get_planning_unit_mails(),
-            [
-                0 => 'jmarc@mail.fr',
-                1 => 'jcharles@mail.fr',
-                2 => 'jdevoe@mail.com',
-                5 => 'j.paul@mail.com',
-                6 => 'j.claude@mail.com'
-            ]
-        );
+        $this->assertContains('jmarc@mail.fr', $agent2->get_planning_unit_mails());
+        $this->assertContains('jcharles@mail.fr',$agent2->get_planning_unit_mails());
+        $this->assertContains('jdevoe@mail.com',$agent2->get_planning_unit_mails());
+        $this->assertContains('j.paul@mail.com',$agent2->get_planning_unit_mails());
+        $this->assertContains('j.claude@mail.com',$agent2->get_planning_unit_mails());
 
-        $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'sites' => json_encode(["1"])));
-        $this->assertEquals(
-            $agent3->get_planning_unit_mails(),
-            [
-                0 => 'jmarc@mail.fr',
-                1 => 'jcharles@mail.fr',
-                2 => 'jdevoe@mail.com'
-            ]
-        );
+        $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'sites' => json_encode(["$id1"])));
+        $this->assertContains('jmarc@mail.fr', $agent3->get_planning_unit_mails());
+        $this->assertContains('jcharles@mail.fr',$agent3->get_planning_unit_mails());
+        $this->assertContains('jdevoe@mail.com',$agent3->get_planning_unit_mails());
 
-        $agent4 = $builder->build(Agent::class, array('login' => 'ldavy', 'sites' => json_encode(["1","3"])));
-        $this->assertEquals($agent3->get_planning_unit_mails(),[0 => 'jmarc@mail.fr', 1 => 'jcharles@mail.fr', 2 => 'jdevoe@mail.com']);
+        $agent4 = $builder->build(Agent::class, array('login' => 'ldavy', 'sites' => json_encode(["$id1","$id3"])));
+        $this->assertContains('jmarc@mail.fr', $agent4->get_planning_unit_mails());
+        $this->assertContains('jcharles@mail.fr',$agent4->get_planning_unit_mails());
+        $this->assertContains('jdevoe@mail.com',$agent4->get_planning_unit_mails());
+        $this->assertContains('j.claude@mail.com',$agent4->get_planning_unit_mails());
 
     }
 

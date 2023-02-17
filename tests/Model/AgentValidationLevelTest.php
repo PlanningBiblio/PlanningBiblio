@@ -2,6 +2,7 @@
 
 use App\Model\Agent;
 use App\Model\Manager;
+use App\Model\Site;
 use App\Model\ConfigParam;
 
 use Tests\FixtureBuilder;
@@ -149,7 +150,7 @@ class AgentValidationLevelTest extends TestCase
     {
 
         $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 1);
+        $this->builder->delete(Site::class);
 
         $agent1 = $this->builder->build(Agent::class,
             array(
@@ -196,7 +197,19 @@ class AgentValidationLevelTest extends TestCase
     {
 
         $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 2);
+        $this->builder->delete(Site::class);
+        $site1 = new Site();
+        $site1->nom('Site N°1');
+
+        $this->entityManager->persist($site1);
+        $this->entityManager->flush();
+
+        $site2 = new Site();
+        $site2->nom('Site N°2');
+
+        $this->entityManager->persist($site2);
+        $this->entityManager->flush();
+
 
         $agent1 = $this->builder->build(Agent::class,
             array(
@@ -243,7 +256,7 @@ class AgentValidationLevelTest extends TestCase
     {
 
         $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 1);
+        $this->builder->delete(Site::class);
 
         $agent_manager = $this->builder->build(Agent::class);
         $agent1 = $this->builder->build(Agent::class);

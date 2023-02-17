@@ -11,6 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Model\AbsenceReason;
 use App\Model\SelectFloor;
 use App\Model\SelectGroup;
+use App\Model\Site;
 use App\PlanningBiblio\PresentSet;
 
 $version = 'symfony';
@@ -58,7 +59,8 @@ class StatisticController extends BaseController
         $exists_absences = false;
         $exists_samedi = false;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
 
         // Statistiques-Heures
         $heures_tab_global = array();
@@ -307,11 +309,11 @@ class StatisticController extends BaseController
 
         // passage en session du tableau pour le fichier export.php
         $_SESSION['stat_tab'] = $tab;
-        
+
         $multisites = array();
         if ($nbSites>1) {
-            for ($i=1;$i<=$nbSites;$i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[$s->id()] = $s->nom();
             }
         }
         // 		--------------------------		Affichage du tableau de résultat		--------------------
@@ -403,7 +405,8 @@ class StatisticController extends BaseController
 
         $statistiques_heures_defaut = $request->get("statistiques_heures_defaut");
         $post = $request->request->all();
-        $nbSites = $this->config("Multisites-nombre");
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
         $dbprefix = $GLOBALS["dbprefix"];
         $multisites = array();
 
@@ -723,8 +726,8 @@ class StatisticController extends BaseController
         $_SESSION['stat_tab'] = $tab;
 
         if ($nbSites > 1){
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[$s->id()] = $s->nom();
             }
         }
 
@@ -747,7 +750,8 @@ class StatisticController extends BaseController
             foreach ($elem[1] as &$poste) {
                 $site = null;
                 if ($poste["site"] > 0 and $nbSites > 1) {
-                    $site = $this->config("Multisites-site{$poste['site']}")." ";
+                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($poste['site']);
+                    $site = $s->nom()." ";
                 }
                 $etage = $poste[2] ? $poste[2] : null;
                 $siteEtage = ($site or $etage) ? "(".trim($site.$etage).")" : null;
@@ -917,7 +921,8 @@ class StatisticController extends BaseController
             $selectedSites = $_SESSION['stat_statut_sites'];
         }
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
 
         if ($nbSites > 1 and empty($selectedSites)) {
             for ($i = 1; $i <= $nbSites; $i++) {
@@ -1176,8 +1181,8 @@ class StatisticController extends BaseController
         
         $multisites = array();
         if ($nbSites > 1) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $multisites[] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[] = $s->nom();
             }
         }
 
@@ -1204,7 +1209,8 @@ class StatisticController extends BaseController
                 foreach ($elem[1] as &$poste) {
                     $site = null;
                     if ($poste["site"]>0 and $nbSites > 1) {
-                        $site = $this->config("Multisites-site{$poste['site']}")." ";
+                        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($poste['site']);
+                        $site = $s->nom()." ";
                     }
                     $etage = $poste[2]?$poste[2] : null;
                     $siteEtage = ($site or $etage)?"($site{$etage})" : null;
@@ -1427,7 +1433,8 @@ class StatisticController extends BaseController
         $finSQL = dateSQL($fin);
 
         $sites = null;
-        $nbSites = $this->config('Multisites-nombre');;
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
         if ($nbSites > 1) {
             $sites = array();
             if ($site == 0) {
@@ -1537,9 +1544,9 @@ class StatisticController extends BaseController
         $multisites = array();
         $selectedSites = array();
         if ($nbSites >1) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $selectedSites[] = $i == $site ?? $i;
-                $multisites[] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $selectedSites[] = $s->id() == $site ?? $s->id();
+                $multisites[] = $s->nom();
             }
         }
 
@@ -1582,7 +1589,8 @@ class StatisticController extends BaseController
         $fin = $request->get("fin");
         $tri = $request->get("tri");
         $post = $request->request->all();
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
         $dbprefix = $GLOBALS['dbprefix'];
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -1798,8 +1806,8 @@ class StatisticController extends BaseController
         $_SESSION['stat_tab'] = $tab;
         $multisites = array();
         if ($nbSites > 1) {
-            for ($i=1;$i<=$nbSites;$i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[$s->id()] = $s->nom();
             }
         }
 
@@ -1897,7 +1905,8 @@ class StatisticController extends BaseController
         $exists_samedi = false;
         $exists_dimanche = false;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
 
         // Statistiques-Heures
         $heures_tab_global = array();
@@ -2220,8 +2229,8 @@ class StatisticController extends BaseController
         }
 
         if ($nbSites > 1){
-            for ($i = 1 ; $i <= $nbSites; $i++) {
-                $multisites[] = $this->config("Multisites-site$i");
+            foreach ($sites_array as $s) {
+                $multisites[] = $s->nom();
             }
         }
 
@@ -2236,7 +2245,8 @@ class StatisticController extends BaseController
             foreach ($tab[$key][1] as &$poste) {
                 $site=null;
                 if ($poste["site"]>0 and $nbSites>1) {
-                    $site = $this->config("Multisites-site{$poste['site']}")." ";
+                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($poste['site']);
+                    $site = $s->nom()." ";
                 }
                 $etage = $poste[2] ? $poste[2] : null;
 
@@ -2582,10 +2592,11 @@ class StatisticController extends BaseController
             $groups = array();
         }
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
         if ($nbSites >1){
-            for($i = 1; $i <= $nbSites; $i++){
-                $multisites[] = $this->config("Multisites-site$i");
+            foreach($sites_array as $s){
+                $multisites[] = $s->nom();
             }
         }
 
@@ -2761,8 +2772,9 @@ class StatisticController extends BaseController
         $fin = $request->get("fin");
         $tri = $request->get("tri");
         $post = $request->request->all();
-        
-        $nbSites = $this->config('Multisites-nombre');
+
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites =  count($sites_array);
         $dbprefix = $GLOBALS['dbprefix'];
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -2993,8 +3005,8 @@ class StatisticController extends BaseController
         $multisites = array();
 
         if ($nbSites>1) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[$s->id()] = $s->nom();
             }
         }
         foreach ($tab as &$elem) {
@@ -3080,7 +3092,8 @@ class StatisticController extends BaseController
 
         $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = count($sites_array);
 
         if (!array_key_exists('stat_poste_postes', $_SESSION)) {
             $_SESSION['stat_poste_postes'] = null;
@@ -3154,8 +3167,8 @@ class StatisticController extends BaseController
 
         $multisites= [];
         if ($nbSites > 1){
-            for ($i = 1; $i <= $nbSites; $i++){
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s){
+                $multisites[$s->id()] = $s->nom();
             }
         }
 
@@ -3328,7 +3341,8 @@ class StatisticController extends BaseController
                 if ($nbSites >1) {
                     for ($i = 1; $i <= $nbSites; $i++) {
                         if ($tab[$key]["sites"][$i] == $tab[$key][2]) {
-                            $siteEtage[] = $this->config("Multisites-site{$i}");
+                            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($i);
+                            $siteEtage[] = $s->nom();
                             continue;
                         }
                     }

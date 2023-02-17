@@ -1,6 +1,7 @@
 <?php
 
 use App\Model\Agent;
+use App\Model\Site;
 use App\Model\Manager;
 use App\Model\ConfigParam;
 
@@ -40,21 +41,21 @@ class AbsenceControllerAddTest extends PLBWebTestCase
     public function testAdd()
     {
         $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 1);
+        $this->builder->delete(Site::class);
 
         $this->setUpPantherClient();
 
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'droits' => array(99,100)
+            'droits' => array(9,99,100)
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'droits' => array(99,100)
+            'droits' => array(9,99,100)
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'droits' => array(201,501,99,100)
+            'droits' => array(9,201,501,99,100)
         ));
 
         // Login with agent having rights for absences

@@ -12,6 +12,7 @@ use Symfony\Component\Yaml\Yaml;
 
 use App\Model\Agent;
 use App\Model\Access;
+use App\Model\Site;
 
 use ReflectionClass;
 
@@ -87,7 +88,8 @@ class ControllerAuthorizationListener
 
         $accesses = $this->permissions[$route];
 
-        $multisites = $GLOBALS['config']['Multisites-nombre'];
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $multisites = count($sites_array);
 
         // Right 21 (Edit personnel) gives right 4 (Show personnel)
         if (in_array(21, $this->droits)) {

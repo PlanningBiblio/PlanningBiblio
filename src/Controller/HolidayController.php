@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Model\Agent;
+use App\Model\Site;
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\WeekPlanningHelper;
 use App\Model\AbsenceReason;
@@ -589,6 +590,7 @@ class HolidayController extends BaseController
         }
 
         $lang = $GLOBALS['lang'];
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
         $templateParams = array(
             'admin'                 => $admin || $adminN2,
             'adminN1'               => $admin,
@@ -626,6 +628,7 @@ class HolidayController extends BaseController
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'selected_agent_id'     => $perso_id,
             'sites_select'          => $sites_select,
+            'nbSites'               => count($sites_array),
             'show_allday'           => $show_allday,
         );
 
@@ -659,7 +662,8 @@ class HolidayController extends BaseController
         $admin = false;
         $sites = array();
 
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
                 $admin = true;
                 $sites[] = $i;

@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Model\AbsenceDocument;
 use App\Model\Manager;
 use App\Model\Agent;
+use App\Model\Site;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +21,8 @@ class NotificationController extends BaseController {
      */
     public function index(Request $request){
         // Initialisation des variables
-        $nbSites = $this->config("Multisites-nombre");
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("supprime" => NULL));
+        $nbSites = $count($sites_array);
         $actif = $request->get("actif");
         $agents_liste = array();
 
@@ -73,7 +75,8 @@ class NotificationController extends BaseController {
                 if (!empty($agent['sites'])) {
                     foreach ($agent['sites'] as $site) {
                         if ($site) {
-                            $tmp[] = $this->config("Multisites-site{$site}");
+                            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+                            $tmp[] = $s->nom();
                         }
                     }
                 }
