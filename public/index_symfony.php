@@ -27,21 +27,6 @@ $path = $request->getPathInfo();
 global $base_url;
 $base_url = plannoBaseUrl($request);
 
-// Session has expired. Redirect to authentication page.
-if (empty($_SESSION['login_id']) && !in_array($path, ['/login', '/logout', '/legal-notices'])) {
-
-    $redirect = ltrim($path, '/');
-    header("Location: $base_url/login?redirURL=$redirect");
-    exit();
-}
-
-// Prevent user accessing to login page
-// if he is already authenticated.
-if (!empty($_SESSION['login_id']) && $path == '/login') {
-    header("Location: {$config['URL']}");
-    exit();
-}
-
 if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? $_ENV['TRUSTED_PROXIES'] ?? false) {
     Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
 }

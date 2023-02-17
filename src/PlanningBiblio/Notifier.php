@@ -73,6 +73,11 @@ class Notifier
         return $this;
     }
 
+    public function getTransporter()
+    {
+        return $this->transporter;
+    }
+
     public function setRecipients($recipients)
     {
         $this->recipients = $recipients;

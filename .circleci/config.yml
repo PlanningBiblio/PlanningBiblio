@@ -8,7 +8,7 @@ executors:
     parameters:
       php:
         type: string
-        default: '7.4'
+        default: '8.1'
     docker:
       - image: cimg/php:<< parameters.php >>
       - image: cimg/mariadb:10.6
@@ -66,59 +66,10 @@ jobs:
       - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
       - run: bash <(curl -s https://codecov.io/bash)
 
-  install-and-test-7-4:
-    parameters:
-      e:
-        type: executor
-    executor: << parameters.e >>
-    steps:
-      - checkout
-
-      # For google chrome.
-      - run: sudo sh -c 'echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
-      - run: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-
-      - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
-      - run: sudo -E install-php-extensions zip mysqli pdo_mysql
-      - run: sudo apt install -y google-chrome-stable
-      - run: sudo apt install -y mariadb-client
-
-      # Chrome driver.
-      - run: wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
-      - run: sudo unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            # "composer.lock" can be used if it is committed to the repo
-            - v1-dependencies-{{ checksum "composer.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run: zcat data/planningb_2110.sql.gz | mysql --host=127.0.01 --port=3306 -u plb --password=plb planningb
-      - run: cp .circleci/.env.test.local .env.test.local
-      - run: cp .circleci/.env.local .env.local
-      - run: rm -rf vendor
-      - run: composer install -n --prefer-dist
-      - run: vendor/bin/bdi detect drivers
-
-      - save_cache:
-          key: v1-dependencies-{{ checksum "composer.json" }}
-          paths:
-            - ./vendor
-
-      # run tests with phpunit or codecept
-      - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
-
 workflows:
   version: 2
   build:
     jobs:
-      - install-and-test-7-4:
-          name: php:7.4
-          e:
-            name: plb
-            php: '7.4'
       - install-and-test:
           name: php:8.0
           e:

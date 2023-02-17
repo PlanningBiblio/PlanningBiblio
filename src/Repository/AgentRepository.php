@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 
 use App\Model\Absence;
 use App\Model\Agent;
@@ -21,7 +22,7 @@ use App\Model\Supervisor;
 use App\Model\WeekPlanning;
 use App\Model\ConfigParam;
 
-class AgentRepository extends EntityRepository
+class AgentRepository extends EntityRepository implements UserLoaderInterface
 {
     private $module = 'absence';
 
@@ -34,6 +35,17 @@ class AgentRepository extends EntityRepository
     private $agent_id = null;
 
     private $check_by_site = true;
+
+    public function loadUserByUsername(string $username) {
+        return $this->loadUserByIdentifier($username);
+    }
+
+    public function loadUserByIdentifier(string $username): ?User
+    {
+        return $this->getEntityManager()
+            ->getRepository(Agent::class)
+            ->findOneBy(array('login' => $username));
+    }
 
     public function getAllSkills() {
         $entityManager = $this->getEntityManager();

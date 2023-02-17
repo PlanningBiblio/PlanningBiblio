@@ -4,6 +4,8 @@ namespace App\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, OneToMany};
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
@@ -13,7 +15,7 @@ require_once(__DIR__ . '/../../public/include/db.php');
 /**
  * @Entity(repositoryClass="App\Repository\AgentRepository") @Table(name="personnel")
  **/
-class Agent extends PLBEntity
+class Agent extends PLBEntity implements UserInterface
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
@@ -132,9 +134,37 @@ class Agent extends PLBEntity
         $this->managed = new ArrayCollection();
     }
 
+    public function getRoles() {
+
+        $roles = ['ROLE_USER'];
+
+        if ($this->id() == 1) {
+            $roles[]= 'ROLE_ADMIN';
+        }
+
+        return $roles;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    public function getSalt()
+    {
+        return $this->password;
+    }
+
     public function getManaged()
     {
         return $this->managed->toArray();
+    }
+
+    public function eraseCredentials() {
+    }
+
+    public function getUsername() {
+	return $this->login;
     }
 
     public function getManagers()
