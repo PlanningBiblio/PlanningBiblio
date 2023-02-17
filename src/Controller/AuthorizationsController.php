@@ -84,6 +84,7 @@ class AuthorizationsController extends BaseController
 
                 // CAS auth with SQL fallback.
                 case 'CAS-SQL':
+                    $auth = false;
                     if ($login and $_POST['auth'] == 'CAS'
                         and array_key_exists('login_id', $_SESSION)
                         and $login == $_SESSION['login_id']) {
