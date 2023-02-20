@@ -43,10 +43,10 @@ class IndexController extends BaseController
         // Initialisation des variables
         $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
         $this->CSRFToken = $CSRFToken;
-        $groupe=filter_input(INPUT_GET, "groupe", FILTER_SANITIZE_NUMBER_INT);
-        $site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
-        $tableau=filter_input(INPUT_GET, "tableau", FILTER_SANITIZE_NUMBER_INT);
-        $date=filter_input(INPUT_GET, "date", FILTER_SANITIZE_STRING);
+        $groupe = $request->get('groupe');
+        $site = $request->get('site');
+        $tableau = $request->get('tableau');
+        $date = $request->get('date');
 
         $this->dbprefix = $GLOBALS['dbprefix'];
 
@@ -55,7 +55,7 @@ class IndexController extends BaseController
 
         // Show all week plannings.
         if (!$request->get('date') and !empty($_SESSION['week'])) {
-          return $this->redirectToRoute('planning.week');
+          return $this->redirectToRoute('planning.week', ['site' => $site]);
         }
 
         list($date, $dateFr) = $this->setDate($date);
@@ -813,27 +813,6 @@ class IndexController extends BaseController
         $t->fetchAllGroups();
 
         return $t->elements;
-    }
-
-    private function setSite($site)
-    {
-        // Multisites: default site is 1.
-        // Site is $_GET['site'] if it is set, else we take
-        // SESSION ['site'] or agent's site.
-        if (!$site and array_key_exists("site", $_SESSION['oups'])) {
-            $site = $_SESSION['oups']['site'];
-        }
-        if (!$site) {
-            $p = new \personnel();
-            $p->fetchById($_SESSION['login_id']);
-            $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
-        }
-
-        $site = $site ? $site : 1;
-
-        $_SESSION['oups']['site']=$site;
-
-        return $site;
     }
 
     private function noWeekDataFor($datesSemaine, $site)
