@@ -32,6 +32,8 @@ class WeekPlanningController extends BaseController
         $tableau = $request->get('tableau');
         $date = $request->get('date');
 
+        $site = $this->setSite($site);
+
         $dbprefix = $GLOBALS['dbprefix'];
         $CSRFSession = $GLOBALS['CSRFSession'];
 
@@ -52,22 +54,6 @@ class WeekPlanningController extends BaseController
         $jour = $d->jour;
         $dates = $d->dates;
         $dateAlpha = dateAlpha($date);
-
-        // ------------------ TABLEAU -----------------------//
-        // Multisites : la variable $site est égale à 1 par défaut.
-        // Elle prend la valeur GET['site'] si elle existe, sinon la valeur de la SESSION ['site']
-        // En dernier lieu, la valeur du site renseignée dans la fiche de l'agent
-        if (!$site and array_key_exists('site', $_SESSION['oups'])) {
-            $site = $_SESSION['oups']['site'];
-        }
-        if (!$site) {
-            $p = new \personnel();
-            $p->fetchById($_SESSION['login_id']);
-            $site = $p->elements[0]['sites'][0] ?? 1;
-        }
-        $site = $site ? $site : 1;
-        $_SESSION['oups']['site'] = $site;
-        // ------------------ FIN TABLEAU -----------------------//
 
         global $idCellule;
         $idCellule=0;
