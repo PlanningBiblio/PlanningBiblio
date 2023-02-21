@@ -1112,6 +1112,7 @@ class AgentController extends BaseController
 
         foreach ($available_keys as $key) {
             $params[$key . '_min'] = isset($params[$key . '_min']) ? $params[$key . '_min'] : 0;
+            $params[$key] = !empty($params[$key]) ? $params[$key] : 0;
         }
 
         if ($this->config('Conges-Mode') == 'jours' ) {
