@@ -168,7 +168,7 @@ class OvertimeController extends BaseController
         }
 
         $this->templateParams(array(
-            'recup_delaidefaut'         => $this->config('Recup-DelaiDefaut'),
+            'recup_delaidefaut'         => is_int($this->config('Recup-DelaiDefaut')) ? $this->config('Recup-DelaiDefaut') : 0,
             'recup_delaititulaire1'     => $this->config('Recup-DelaiTitulaire1'),
             'recup_delaititulaire2'     => $this->config('Recup-DelaiTitulaire2'),
             'recup_delaicontractuel1'   => $this->config('Recup-DelaiContractuel1'),
