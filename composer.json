@@ -31,6 +31,7 @@
         "doctrine/orm": "^2.14",
         "ezyang/htmlpurifier": "^4.16",
         "johngrogg/ics-parser": "^3",
+        "jumbojett/openid-connect-php": "^0.9.10",
         "league/commonmark": "^2.3",
         "league/oauth2-client": "*",
         "mashape/unirest-php": "*",

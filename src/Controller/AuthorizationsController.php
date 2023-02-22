@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\PlanningBiblio\OpenIDConnect;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -188,7 +189,7 @@ class AuthorizationsController extends BaseController
 
     private function redirectCAS(Request $request, $logger)
     {
-        if (substr($this->config('Auth-Mode'), 0, 3)=="CAS"
+        if ((substr($this->config('Auth-Mode'), 0, 3) == 'CAS' or $this->config('Auth-Mode') == 'OpenIDConnect')
             and !isset($_GET['noCAS'])
             and empty($_SESSION['login_id'])
             and !isset($_POST['login'])
@@ -197,10 +198,20 @@ class AuthorizationsController extends BaseController
             $redirURL = $_GET['redirURL'] ?? '';
             $_SESSION['oups']['Auth-Mode']="CAS";
 
+            $login = null;
+
             // authCAS function redirect user to the CAS server.
             // Once authenticated, it checks if the login exists.
             // If yes, it create the session and log the action.
-            $login = authCAS($logger);
+            if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {
+                $login = authCAS($logger);
+
+            // OpenID Connect
+            } elseif ($this->config('Auth-Mode') == 'OpenIDConnect') {
+                $oidc = new OpenIDConnect();
+                $user = $oidc->auth();
+                $login = $user ? $user->email : null;
+            }
 
             // Check if user login exists in database.
             $db = new \db();
