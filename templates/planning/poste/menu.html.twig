@@ -13,7 +13,7 @@
   </form>
 
   <div id='tab_titre' class="container-fluid">
-    <div class="row justify-content-between">
+    <div class="row">
       <div id='pl-calendar' class="datepicker {{ week_view ? 'datepickerSemaine' }}"></div>
       <div class='col-xxl titreSemFixe'>
         <div id='week_planning'>
@@ -53,7 +53,7 @@
       </div>
 
       <!-- Show action icons -->
-      <div id='td_boutons' class="col-2">
+      <div id='td_boutons' class="col-2 col-lg-4">
         {% if week_view %}
           <a href='javascript:print();' title='Imprimer le planning'>
             <span class='pl-icon pl-icon-printer'></span>
