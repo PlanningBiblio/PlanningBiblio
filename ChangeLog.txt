@@ -3,6 +3,15 @@
 - Fixes
 - Plumbing
 
+*** Version 22.04.03       (2023-02-23)    ***
+- Enhancements
+MT39034: Add throttle to holiday edits #867
+
+- Fixes
+MT39491: Fix save agent save when holidays values are empty #879
+MT39958: Display the time of absence registrations #873
+
+
 *** Version 22.04.02       (2023-01-27)    ***
 - Enhancements
 Disabled notifications should not be considered as an error
