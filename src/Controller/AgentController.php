@@ -1560,7 +1560,7 @@ class AgentController extends BaseController
             'conges_credit',
             'conges_reliquat',
             'conges_anticipation',
-            'recup',
+            'comp_time',
             'conges_annuel');
 
         foreach ($available_keys as $key) {
