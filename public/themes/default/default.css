@@ -1669,6 +1669,10 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
   min-width: 40px;
 }
 
+.ui-button-icon-only {
+  min-width: 10px;
+}
+
 .top-buttons .col,
 .top-buttons .col-3 {
   padding: 10px 15px;
