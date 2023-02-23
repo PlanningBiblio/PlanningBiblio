@@ -3062,6 +3062,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $old = $elem['nom'];
             $new = html_entity_decode($elem['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
+                $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}lignes` SET `nom` = '$new' WHERE `id` = '{$elem['id']}';";
             }
         }
