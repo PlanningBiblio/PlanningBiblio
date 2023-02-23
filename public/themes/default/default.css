@@ -1356,21 +1356,6 @@ img{
   padding-right: 5px;
 }
 
-#tableAbsencesVoir_length label, #tableConges_length label, #tableAgents_length label, #tablePostes_length label, #tableModeles_length label, #table-list_length label, #table-groups_length label, #table-separations_length label, #tablePlanningHebdo_length label{
-  margin-top: 3px;
-  margin-left: 3px;
-}
-
-#tableAbsencesVoir_filter label, #tableConges_filter label, #tableAgents_filter label, #tablePostes_filter label, #tableModeles_filter label, #tablePlanningHebdo_filter label{
-  margin-top: 3px;
-  margin-right: 3px;
-}
-
-#table-list_filter label, #table-groups_filter label, #table-separations_filter label{
-  margin-bottom: 3px;
-  margin-right: 3px;
-}
-
 /*text of table header when background is blue*/
 #tableRecup_wrapper label, #tablePresenceMonCompte_length label, #tablePresenceMonCompte_filter label, #tableConges_wrapper label, #tableAbsencesVoir_wrapper label, #tableStatAbsences_wrapper label, #DataTables_Table_0_wrapper label, #AbsenceInfoTable_wrapper label, #tableAgents_wrapper label, #tableAgents_wrapper label, #tablePostes_wrapper label, #tableModeles_wrapper label, #table-groups_wrapper label, #table-separations_wrapper label, #table-list_wrapper label, #table-list_length label, #table-list_filter label, #tablePlanningHebdo_wrapper label, #tablePlanningAbsences_wrapper label{
   color: #FFF;
