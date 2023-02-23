@@ -1356,11 +1356,6 @@ img{
   padding-right: 5px;
 }
 
-/*text of table header when background is blue*/
-#tableRecup_wrapper label, #tablePresenceMonCompte_length label, #tablePresenceMonCompte_filter label, #tableConges_wrapper label, #tableAbsencesVoir_wrapper label, #tableStatAbsences_wrapper label, #DataTables_Table_0_wrapper label, #AbsenceInfoTable_wrapper label, #tableAgents_wrapper label, #tableAgents_wrapper label, #tablePostes_wrapper label, #tableModeles_wrapper label, #table-groups_wrapper label, #table-separations_wrapper label, #table-list_wrapper label, #table-list_length label, #table-list_filter label, #tablePlanningHebdo_wrapper label, #tablePlanningAbsences_wrapper label{
-  color: #FFF;
-}
-
 /* Elements "sortable" (gestion des motifs d'absences, des statuts des agents */
 ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
 ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 30px; }
@@ -1476,9 +1471,10 @@ div.presents-absents {
   padding: 5px;
 }
 
-.dataTables_wrapper .dataTables_filter input,
-.dataTables_wrapper .dataTables_length select {
-    background-color: #29485C;
+.dataTables_wrapper input,
+.dataTables_wrapper label,
+.dataTables_wrapper select,
+.CJDataTable label {
     color: #FFFFFF
 }
 
