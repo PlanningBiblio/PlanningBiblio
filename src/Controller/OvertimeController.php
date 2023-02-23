@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\PlanningBiblio\Helper\HolidayHelper;
+
 use App\Model\Agent;
+use App\Model\OverTime;
 
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Request;
@@ -297,96 +299,128 @@ class OvertimeController extends BaseController
         }
 
         if (isset($update)) {
-            // Update table 'recuperations'
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update('recuperations', $update, array('id' => $id));
-            if ($db->error) {
-                $result['type'] = 'error';
+
+            if ($this->isAlreadyModified($id)) {
                 $result['message'] = 'Une erreur est survenue lors de la validation de vos modifications.';
-            }
+                $result['message'] .= '#BR#Veuillez attendre quelques secondes avant de réessayer.';
+                $result['type'] = "error";
 
-            // Update overtime credit if it is validated
-            if (isset($update['valide']) and $update['valide'] > 0) {
-                $db = new \db();
-                $db->select('personnel', 'comp_time', "id='$perso_id'");
-                $solde_prec = $db->result[0]['comp_time'];
-                $recup_update = $solde_prec+$update['heures'];
+            } else {
 
+                // Update table 'recuperations'
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
-                $db->update('personnel', array('comp_time' => $recup_update), array('id' => $perso_id));
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->update('recuperations', array('solde_prec' => $solde_prec, 'solde_actuel' => $recup_update), array('id' => $id));
-            }
+                $db->update('recuperations', $update, array('id' => $id));
+                if ($db->error) {
+                    $result['type'] = 'error';
+                    $result['message'] = 'Une erreur est survenue lors de la validation de vos modifications.';
+                }
 
-            // Notifiy agent and managers.
-            $agent = $this->entityManager->find(Agent::class, $perso_id);
-            $nom = $agent->nom();
-            $prenom = $agent->prenom();
+                // Update overtime credit if it is validated
+                if (isset($update['valide']) and $update['valide'] > 0) {
+                    $db = new \db();
+                    $db->select('personnel', 'comp_time', "id='$perso_id'");
+                    $solde_prec = $db->result[0]['comp_time'];
+                    $recup_update = $solde_prec+$update['heures'];
 
-            if (isset($update['valide']) and $update['valide'] > 0) {
-                $sujet = $lang['overtime_subject_accepted'];
-                $notifications = 4;
-            } elseif (isset($update['valide']) and $update['valide'] < 0) {
-                $sujet = $lang['overtime_subject_refused'];
-                $notifications = 4;
-            } elseif (isset($update['valide_n1']) and $update['valide_n1'] > 0) {
-                $sujet = $lang['overtime_subject_accepted_pending'];
-                $notifications = 3;
-            } elseif (isset($update['valide_n1']) and $update['valide_n1'] < 0) {
-                $sujet = $lang['overtime_subject_refused_pending'];
-                $notifications = 3;
-            } else {
-                $sujet="Demande d'heures supplémentaires modifiée";
-                $notifications = 2;
-            }
+                    $db = new \db();
+                    $db->CSRFToken = $CSRFToken;
+                    $db->update('personnel', array('comp_time' => $recup_update), array('id' => $perso_id));
+                    $db = new \db();
+                    $db->CSRFToken = $CSRFToken;
+                    $db->update('recuperations', array('solde_prec' => $solde_prec, 'solde_actuel' => $recup_update), array('id' => $id));
+                }
 
-            $message = $sujet;
-            $message .= "<br/><br/>\n";
-            $message .= "Pour l'agent : $prenom $nom";
-            $message .= "<br/>\n";
-            $message .= "Date : ".dateFr($recup['date']);
-            $message .= "<br/>\n";
-            $message .= "Nombre d'heures : ".heure4($update['heures']);
-            if ($update['commentaires']) {
-                $message.="<br/><br/><u>Commentaires</u> :<br/>".str_replace("\n", "<br/>", $update['commentaires']);
-            }
-            if ($update['refus']) {
-                $message.="<br/><br/><u>Motif du refus</u> :<br/>".str_replace("\n", "<br/>", $update['refus']);
-            }
+                // Notifiy agent and managers.
+                $agent = $this->entityManager->find(Agent::class, $perso_id);
+                $nom = $agent->nom();
+                $prenom = $agent->prenom();
 
-            // Choix des destinataires en fonction de la configuration
-            if ($config['Absences-notifications-agent-par-agent']) {
-                $a = new \absences();
-                $a->getRecipients2(null, $perso_id, $notifications, 600, $recup['date'], $recup['date']);
-                $destinataires = $a->recipients;
-            } else {
-                $c->getResponsables($recup['date'], $recup['date'], $perso_id);
-                $responsables = $c->responsables;
+                if (isset($update['valide']) and $update['valide'] > 0) {
+                    $sujet = $lang['overtime_subject_accepted'];
+                    $notifications = 4;
+                } elseif (isset($update['valide']) and $update['valide'] < 0) {
+                    $sujet = $lang['overtime_subject_refused'];
+                    $notifications = 4;
+                } elseif (isset($update['valide_n1']) and $update['valide_n1'] > 0) {
+                    $sujet = $lang['overtime_subject_accepted_pending'];
+                    $notifications = 3;
+                } elseif (isset($update['valide_n1']) and $update['valide_n1'] < 0) {
+                    $sujet = $lang['overtime_subject_refused_pending'];
+                    $notifications = 3;
+                } else {
+                    $sujet="Demande d'heures supplémentaires modifiée";
+                    $notifications = 2;
+                }
 
-                $a = new \absences();
-                $a->getRecipients($notifications, $responsables, $agent, 'Recup');
-                $destinataires = $a->recipients;
-            }
+                $message = $sujet;
+                $message .= "<br/><br/>\n";
+                $message .= "Pour l'agent : $prenom $nom";
+                $message .= "<br/>\n";
+                $message .= "Date : ".dateFr($recup['date']);
+                $message .= "<br/>\n";
+                $message .= "Nombre d'heures : ".heure4($update['heures']);
+                if ($update['commentaires']) {
+                    $message.="<br/><br/><u>Commentaires</u> :<br/>".str_replace("\n", "<br/>", $update['commentaires']);
+                }
+                if ($update['refus']) {
+                    $message.="<br/><br/><u>Motif du refus</u> :<br/>".str_replace("\n", "<br/>", $update['refus']);
+                }
 
-            // Envoi du mail
-            $m = new \CJMail();
-            $m->subject = $sujet;
-            $m->message = $message;
-            $m->to = $destinataires;
-            $m->send();
+                // Choix des destinataires en fonction de la configuration
+                if ($this->config('Absences-notifications-agent-par-agent')) {
+                    $a = new \absences();
+                    $a->getRecipients2(null, $perso_id, $notifications, 600, $recup['date'], $recup['date']);
+                    $destinataires = $a->recipients;
+                } else {
+                    $c->getResponsables($recup['date'], $recup['date'], $perso_id);
+                    $responsables = $c->responsables;
 
-            // Si erreur d'envoi de mail, affichage de l'erreur
-            if ($m->error_CJInfo) {
-                $result['type'] = 'error';
-                $result['message'] = $m->error_CJInfo;
+                    $a = new \absences();
+                    $a->getRecipients($notifications, $responsables, $agent, 'Recup');
+                    $destinataires = $a->recipients;
+                }
+
+                // Envoi du mail
+                $m = new \CJMail();
+                $m->subject = $sujet;
+                $m->message = $message;
+                $m->to = $destinataires;
+                $m->send();
+
+                // Si erreur d'envoi de mail, affichage de l'erreur
+                if ($m->error_CJInfo) {
+                    $result['type'] = 'error';
+                    $result['message'] = $m->error_CJInfo;
+                }
             }
         }
-
         $session->getFlashBag()->add($result['type'], $result['message']);
 
         return $this->redirectToRoute('overtime.index');
+    }
+
+    private function isAlreadyModified($id) {
+
+        $overtime = $this->entityManager->getRepository(OverTime::class)->find($id);
+
+        if (!$overtime) {
+            return false;
+        }
+
+        $throttle = $this->config('post_requests_throttle') ?? 1;
+        $last_modified = $overtime->modification();
+
+        if (!$last_modified) {
+            return false;
+        }
+
+        $now = new \DateTime('now');
+        $difference = $now->getTimestamp() - $last_modified->getTimestamp();
+
+        if ($difference <= $throttle) {
+            return true;
+        }
+        return false;
     }
 }
