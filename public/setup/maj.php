@@ -2778,6 +2778,9 @@ if (version_compare($config['Version'], $v) === -1) {
 }
 
 $v="22.04.03.000"; // No DB update
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
