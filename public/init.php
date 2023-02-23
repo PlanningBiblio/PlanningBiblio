@@ -25,7 +25,7 @@ $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_
 $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSION['oups']['Auth-Mode'] : '';
 
 // Version
-$version="22.11.00.004"; // xx.xx.xx.xxx
+$version="22.11.00.005"; // xx.xx.xx.xxx
 $displayed_version="22.11.00"; // xx.xx.xx
 require_once __DIR__.'/../vendor/autoload.php';
 

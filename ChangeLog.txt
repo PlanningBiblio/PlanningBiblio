@@ -52,6 +52,18 @@ Add unit test for add and edit Agent - rights/access
 Add unit tests for Model Model
 Add unit tests for Absences information, list, add, and edit
 
+*** Version 22.10.05       (2023-02-23)    ***
+- Enhancements
+MT39895: Add throttle to overtime edits #870
+MT39034: Add throttle to holiday edits #867
+
+- Fixes
+MT39696: Set Recup-DelaiDefaut to 0 if not correctly set. #880
+MT39491: Fix save agent save when holidays values are empty #879
+MT39548: Fix models deletion #875
+MT39958: Display the time of absence registrations #873
+MT39932 - remove HTML entities from frameworks title #871
+
 *** Version 22.10.00       (2022-11-18)    ***
 - Enhancements
 Make disabled notifications should not be considered as an error
