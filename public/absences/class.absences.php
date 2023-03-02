@@ -1244,7 +1244,7 @@ class absences
             }
         }
 
-        $this->recipients=$recipients;
+        $this->recipients = array_unique(array_filter($recipients));
     }
 
 
@@ -1345,7 +1345,7 @@ class absences
         break;
     }
 
-        $this->recipients = array_unique($destinataires);
+        $this->recipients = array_unique(array_filter($destinataires));
     }
 
 
