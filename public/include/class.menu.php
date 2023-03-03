@@ -31,41 +31,48 @@ class menu
     {
     }
 
+    public function checkCondition($condition) {
+
+        if ($condition != null && $condition != '') {
+            if (substr($condition, 0, 7)=="config=") {
+                $tmp = substr($condition, 7);
+                $values = explode(";", $tmp);
+                foreach ($values as $value) {
+                    if (empty($GLOBALS['config'][$value])) {
+                        return false;
+                    }
+                }
+            } elseif (substr($condition, 0, 8)=="config!=") {
+                $tmp = substr($condition, 8);
+                $values = explode(";", $tmp);
+                foreach ($values as $value) {
+                    if (!empty($GLOBALS['config'][$value])) {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function fetch()
     {
         $menu=array();
         $db=new db();
         $db->select("menu", null, null, "ORDER BY `niveau1`,`niveau2`");
         foreach ($db->result as $elem) {
-            if ($elem['condition']) {
-                if (substr($elem['condition'], 0, 7)=="config=") {
-                    $tmp = substr($elem['condition'], 7);
-                    $values = explode(";", $tmp);
-                    foreach ($values as $value) {
-                        if (empty($GLOBALS['config'][$value])) {
-                            continue 2;
-                        }
-                    }
-                }
 
-                if (substr($elem['condition'], 0, 8)=="config!=") {
-                    $tmp = substr($elem['condition'], 8);
-                    $values = explode(";", $tmp);
-                    foreach ($values as $value) {
-                        if (!empty($GLOBALS['config'][$value])) {
-                            continue 2;
-                        }
-                    }
+            if ($this->checkCondition($elem['condition'])) {
+                if (substr($elem['url'], 0, 1) == '/') {
+                    $url = substr($elem['url'], 1);
+                } else {
+                    $url = 'index.php?page=' . $elem['url'];
                 }
-
+                $menu[$elem['niveau1']][$elem['niveau2']]['titre']=$elem['titre'];
+                $menu[$elem['niveau1']][$elem['niveau2']]['url'] = $url;
             }
-            if (substr($elem['url'], 0, 1) == '/') {
-                $url = substr($elem['url'], 1);
-            } else {
-                $url = 'index.php?page=' . $elem['url'];
-            }
-            $menu[$elem['niveau1']][$elem['niveau2']]['titre']=$elem['titre'];
-            $menu[$elem['niveau1']][$elem['niveau2']]['url'] = $url;
         }
 
         if ($GLOBALS['config']['Multisites-nombre']>1) {
