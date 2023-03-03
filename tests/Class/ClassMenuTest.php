@@ -25,13 +25,22 @@ class ClassMenuTest extends TestCase
         $GLOBALS['config']['Conges-Recuperations'] = 0;
         $this->assertEquals($menu->checkCondition('config=Conges-Enable;Conges-Recuperations'), false, 'multiple equal condition');
         $this->assertEquals($menu->checkCondition('config!=Conges-Enable;Conges-Recuperations'), false, 'multiple not equal condition');
+        $this->assertEquals($menu->checkCondition('config!=Conges-Enable&config=Conges-Recuperations'), false, 'both equal and not equal single conditions');
+        $this->assertEquals($menu->checkCondition('config=Conges-Enable&config!=Conges-Recuperations'), true, 'both equal and not equal single conditions');
 
         $GLOBALS['config']['Conges-Enable'] = 1;
         $GLOBALS['config']['Conges-Recuperations'] = 1;
         $this->assertEquals($menu->checkCondition('config=Conges-Enable;Conges-Recuperations'), true, 'multiple equal condition');
+        $this->assertEquals($menu->checkCondition('config!=Conges-Enable;Conges-Recuperations'), false, 'multiple not equal condition');
+        $this->assertEquals($menu->checkCondition('config!=Conges-Enable&config=Conges-Recuperations'), false, 'both equal and not equal single conditions');
+        $this->assertEquals($menu->checkCondition('config=Conges-Enable&config!=Conges-Recuperations'), false, 'both equal and not equal single conditions');
 
         $GLOBALS['config']['Conges-Enable'] = 0;
         $GLOBALS['config']['Conges-Recuperations'] = 0;
+        $this->assertEquals($menu->checkCondition('config=Conges-Enable;Conges-Recuperations'), false, 'multiple equal condition');
         $this->assertEquals($menu->checkCondition('config!=Conges-Enable;Conges-Recuperations'), true, 'multiple not equal condition');
+        $this->assertEquals($menu->checkCondition('config!=Conges-Enable&config=Conges-Recuperations'), false, 'both equal and not equal single conditions');
+        $this->assertEquals($menu->checkCondition('config=Conges-Enable&config!=Conges-Recuperations'), false, 'both equal and not equal single conditions');
+
     }
 }

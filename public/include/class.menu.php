@@ -31,27 +31,31 @@ class menu
     {
     }
 
-    public function checkCondition($condition) {
+    public function checkCondition($allConditions) {
 
-        if ($condition != null && $condition != '') {
-            if (substr($condition, 0, 7)=="config=") {
-                $tmp = substr($condition, 7);
-                $values = explode(";", $tmp);
-                foreach ($values as $value) {
-                    if (empty($GLOBALS['config'][$value])) {
-                        return false;
+        if ($allConditions != null && $allConditions != '') {
+
+            $conditionsArray = explode('&', $allConditions);
+            foreach ($conditionsArray as $condition) {
+                if (substr($condition, 0, 7)=="config=") {
+                    $tmp = substr($condition, 7);
+                    $values = explode(";", $tmp);
+                    foreach ($values as $value) {
+                        if (empty($GLOBALS['config'][$value])) {
+                            return false;
+                        }
                     }
-                }
-            } elseif (substr($condition, 0, 8)=="config!=") {
-                $tmp = substr($condition, 8);
-                $values = explode(";", $tmp);
-                foreach ($values as $value) {
-                    if (!empty($GLOBALS['config'][$value])) {
-                        return false;
+                } elseif (substr($condition, 0, 8)=="config!=") {
+                    $tmp = substr($condition, 8);
+                    $values = explode(";", $tmp);
+                    foreach ($values as $value) {
+                        if (!empty($GLOBALS['config'][$value])) {
+                            return false;
+                        }
                     }
+                } else {
+                    return false;
                 }
-            } else {
-                return false;
             }
         }
         return true;
