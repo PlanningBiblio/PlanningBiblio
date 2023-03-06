@@ -411,7 +411,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('50','40','Les postes','/position',NULL),
   ('50','50','Les mod&egrave;les','/model',NULL),
   ('50','60','Les tableaux','/framework',NULL),
-  ('50','70','Jours de fermeture','/closingday', 'config!=Planook'),
+  ('50','70','Jours de fermeture','/closingday', 'config!=Planook&config=Conges-Enable'),
   ('50','75','Heures de présence','/workinghour','config=PlanningHebdo'),
   ('50','77','Notifications / Validations','/notification','config=Absences-notifications-agent-par-agent'),
   ('50','80','Configuration','/config',NULL),
