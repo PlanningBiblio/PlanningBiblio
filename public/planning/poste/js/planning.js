@@ -32,8 +32,18 @@ $(document).ready(function(){
     modal: true,
     height: 300,
     width: 480,
-    open: function() {
-      setTimeout('getImportModelButtons()', 100);
+    buttons: {
+      "Annuler": function() {
+        $(this).dialog('close');
+      },
+        "Valider": function() {
+          if ($('#model').length == 0) {
+            CJInfo('Aucun modèle enregistré', 'error');
+            $(this).dialog('close');
+          } else {
+            $('#form').submit();
+          }
+      }
     },
   });
 
@@ -1458,26 +1468,6 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
     ...
   */
 }
-
-function getImportModelButtons() {
-  var myButtons = {
-    "Annuler": function() {
-      $(this).dialog('close');
-    }};
-
-  if ($('#model').length > 0) {
-    var myButtons = {
-      "Annuler": function() {
-        $(this).dialog('close');
-      },
-        "Valider": function() {
-          $('#form').submit();
-      }
-    };
-  }
-
-  $('#import-model-dialog').dialog('option', 'buttons', myButtons);
-} 
 
 //	groupe_tab : utiliser pour menudiv
 function groupe_tab(id,tab,hide,me){			// améliorer les variables (tableaux) pour plus d'évolution
