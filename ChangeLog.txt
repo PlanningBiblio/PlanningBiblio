@@ -3,6 +3,15 @@
 - Fixes
 - Plumbing
 
+*** Version 22.10.06       (2023-03-16)    ***
+- Fixes:
+MT40252: don't show the alert "please select more than 1 year" on leap years #889
+MT39878: fix undefined variable when using CAS-SQL mode and APP_DEBUG=1 #876
+MT37657: Add IF NOT EXISTS on the create table absences_documents query #882
+MT39693: Show closingday in menu only if Conges-Enable is enabled #884
+MT39992: the week view take into account the site parameter #877
+MT39412: the datefull twig filter now interpret html tags #864
+
 
 *** Version 22.10.05       (2023-02-23)    ***
 - Enhancements
