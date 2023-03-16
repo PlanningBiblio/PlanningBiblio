@@ -20,7 +20,7 @@ class AppExtension extends AbstractExtension
    public function getFilters()
     {
         return [
-            new TwigFilter('datefull', [$this, 'dateFull']),
+            new TwigFilter('datefull', [$this, 'dateFull'], ['is_safe' => ['html']]),
             new TwigFilter('datefr', [$this, 'dateFr']),
             new TwigFilter('hours', [$this, 'hours']),
             new TwigFilter('hour_from_his', [$this, 'hourFromHis']),
