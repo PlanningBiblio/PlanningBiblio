@@ -33,7 +33,7 @@
         "league/oauth2-client": "*",
         "mashape/unirest-php": "*",
         "phpdocumentor/reflection-docblock": "^5.3",
-        "phpmailer/phpmailer": ">=6.1.6",
+        "phpmailer/phpmailer": "^6.8.0",
         "phpstan/phpdoc-parser": "^1.2",
         "sensio/framework-extra-bundle": "^5.2",
         "symfony/asset": "^4.4",
