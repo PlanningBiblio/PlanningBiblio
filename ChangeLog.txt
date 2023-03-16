@@ -26,9 +26,6 @@ MT38912: Show holiday accounts for managed agents only
 MT39277: Correctly display the item "autre" on statistics/position
 Fix Overtimes unit tests
 MT39443: Fix ajax.updateCell.php to restore copy to right cell #828
-MT39412: Remove HTML entities from position's names on planning views
-MT39412: Remove HTML entities from separation line's names on planning views
-MT39412: set default value of db::sanitize_string to false
 MT39418: Simplify print.css
 MT39464: do not show refused absences under the planning
 MT38897: ignore tables for which no correction is needed in fix_encoding_issues.php
@@ -51,6 +48,18 @@ Add unit tests for Agent index
 Add unit test for add and edit Agent - rights/access
 Add unit tests for Model Model
 Add unit tests for Absences information, list, add, and edit
+
+*** Version 22.11.06       (2023-03-16)    ***
+- Fixes:
+MT40252: don't show the alert "please select more than 1 year" on leap years #889
+MT39878: fix undefined variable when using CAS-SQL mode and APP_DEBUG=1 #876
+MT37657: Add IF NOT EXISTS on the create table absences_documents query #882
+MT39693: Show closingday in menu only if Conges-Enable is enabled #884
+MT39992: the week view take into account the site parameter #877
+MT39412: the datefull twig filter now interpret html tags #864
+
+- Plumbing:
+Bump symfony/http-kernel from 4.4.48 to 4.4.50
 
 *** Version 22.10.05       (2023-02-23)    ***
 - Enhancements
