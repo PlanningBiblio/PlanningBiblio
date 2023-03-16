@@ -71,12 +71,12 @@ workflows:
   build:
     jobs:
       - install-and-test:
-          name: php:8.0
+          name: php:8.1
           e:
             name: plb
             php: '8.1'
       - install-and-test:
-          name: php:8.1
+          name: php:8.2
           e:
             name: plb
             php: '8.2'
