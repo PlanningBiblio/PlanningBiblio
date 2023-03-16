@@ -2788,6 +2788,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}menu` SET `condition` = 'config!=Planook&config=Conges-Enable' WHERE `url` = '/closingday' LIMIT 1;";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
