@@ -27,7 +27,7 @@ class InterchangeController extends BaseController
     public function index(Request $request)
     {
         $droits = $GLOBALS['droits'];
-        $can_admin = in_array(1301, $droits) ? true : false;
+        $can_admin = in_array(1501, $droits) ? true : false;
 
         $interchanges = array();
         foreach ($this->entityManager
@@ -111,7 +111,7 @@ class InterchangeController extends BaseController
             $can_accept = true;
         }
 
-        $can_validate = in_array(1301, $droits) ? true : false;
+        $can_validate = in_array(1501, $droits) ? true : false;
 
         if ($logged_in->id() != $interchange->asked()
             && $logged_in->id() != $interchange->requester()
