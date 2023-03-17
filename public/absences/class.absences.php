@@ -344,7 +344,7 @@ class absences
                 $m->send();
 
                 // Si erreur d'envoi de mail
-                if ($m->error) {
+                if ($m->error && $m->error_CJInfo) {
                     $msg2 .= "<li>".$m->error_CJInfo."</li>";
                     $msg2_type = "error";
                 }
