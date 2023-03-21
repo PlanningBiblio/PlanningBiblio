@@ -358,10 +358,6 @@ class HolidayController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        if ($this->config('Conges-Validation-N2') && $data['valide_n1'] == 0) {
-            $adminN2 = false;
-        }
-
         $this->templateParams(array('CSRFToken' => $GLOBALS['CSRFSession']));
         $valide=$data['valide']>0?true:false;
         $displayRefus = ($data['valide_n1'] < 0 and ($adminN1 or $adminN2)) ? null : "display:none;";
