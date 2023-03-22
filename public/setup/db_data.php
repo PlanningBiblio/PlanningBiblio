@@ -593,4 +593,4 @@ $sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VA
 $sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Autre', '8', '0');";
 
 //  Insertion d'un site
-$sql[]="INSERT INTO `{$dbprefix}site` (`id`, `nom`, `supprime`) VALUES ('1', 'site', NULL);";
+$sql[]="INSERT INTO `{$dbprefix}site` (`id`, `nom`, `supprime`) VALUES (1, 'site', NULL);";

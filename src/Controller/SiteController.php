@@ -161,6 +161,8 @@ class SiteController extends BaseController
                     $error = $e->getMessage();
                 }
 
+                $this->delete_mails($site->id(), $CSRFToken);
+
                 foreach($mails as $mail){
                     try{
                         $db->insert("site_mail", array('site_id' => $site->id(), 'mail' => $mail));

@@ -43,7 +43,6 @@ class CalendarControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent2, array(3,100));
 
-        $builder->delete(Site::class);
         $site1 = new Site();
         $site1->nom('Site N°1');
 
