@@ -143,6 +143,15 @@
                   <td>&nbsp;</td>
                 </tr>
 
+                {# TODO: add the validation menu when Conges-validation is enabled #}
+                <tr>
+                  <td>
+                    {% if not config('Conges-validation') %}
+                      <input type='hidden' name='valide' id='validation' value='1' />
+                    {% endif %}
+                  </td>
+                </tr>
+
                 <tr>
                   <td colspan="2" style="text-align:center;">
                     <input type="button" value="Annuler" onclick='document.location.href="/holiday/index?recup=1";' class="ui-button ui-button-type2"/>

@@ -130,6 +130,24 @@ class CompTimeController extends BaseController
 
         // Enregistrement du congés
         $data = $request->request->all();
+
+        // FIXME : this works only when Conges-validation is disabled.
+        // TODO : Handle the different levels of validation when the dropdown menu will be added to the template for config Conges-validation enabled
+        // TODO : an other (and better) way to fix this is to use the holiday controller and holiday templates for adding comp-time. It's already done for comp-time editions.
+
+        if ($request->get('valide')) {
+            $data['conges-recup'] = 1;
+            $data['conges-mode'] = $this->config('Conges-Mode');
+            $data['perso_ids'] = array($data['perso_id']);
+            $data['confirm'] = 'confirm';
+            $data['debit'] = 'recuperation';
+            $data['valide_init'] = 1;
+            $data['valide'] = $_SESSION['login_id'];
+            $data['valide_n1'] = $_SESSION['login_id'];
+            $data['validation'] = date('Y-m-d H:i:s');
+            $data['validation_n1'] = date('Y-m-d H:i:s');
+        }
+
         $c = new \conges();
         $c->CSRFToken = $CSRFToken;
         $c->add($data);
