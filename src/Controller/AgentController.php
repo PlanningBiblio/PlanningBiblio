@@ -1133,7 +1133,10 @@ class AgentController extends BaseController
     public function changeOwnPassword(Request $request)
     {
         if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
+            $response = new Response();
+            $response->setContent('CSRF token error');
+            $response->setStatusCode(400);
+            return $response;
         }
 
         $agent_id = $_SESSION['login_id'];
