@@ -1132,7 +1132,7 @@ class AgentController extends BaseController
      */
     public function changeOwnPassword(Request $request)
     {
-        if(!$this->csrf_protection($request)){
+        if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
@@ -1207,23 +1207,25 @@ class AgentController extends BaseController
         return $response;
     }
 
-    private function checkCurrentPassword($agent_id, $password) {
+    private function checkCurrentPassword($agent_id, $password)
+    {
         $isCurrentPassword = false;
         $agent = $this->entityManager->find(Agent::class, $agent_id);
         $hashedPassword = $agent->password();
+	
         if (password_verify($password, $hashedPassword)) {
             $isCurrentPassword = true;
         }
+
         return $isCurrentPassword;
     }
-
 
     /**
      * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"})
      */
     public function update_login(Request $request)
     {
-        if(!$this->csrf_protection($request)){
+        if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 

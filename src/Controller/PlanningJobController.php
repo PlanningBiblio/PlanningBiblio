@@ -811,7 +811,7 @@ class PlanningJobController extends BaseController
     public function undo(Request $request)
     {
 
-        if(!$this->csrf_protection($request)){
+        if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
@@ -885,7 +885,7 @@ class PlanningJobController extends BaseController
      */
     public function redo(Request $request)
     {
-        if(!$this->csrf_protection($request)){
+        if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
