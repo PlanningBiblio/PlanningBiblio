@@ -253,6 +253,19 @@ class Agent extends PLBEntity
 
         return false;
     }
+    public function leavingDatePassed($date)
+    {
+        $now = \DateTime::createFromFormat('Y-m-d', $date);
+
+        #TODO: This works but it is rather ugly. We probably shouldn't store "0000-00-00"
+        # in the database instead of NULL, because although it may (depending on the
+        # configuration) be permitted by MariaDB, it is not a valid date for PHP's DateTime.
+        # DateTime converts it to -0001-11-30 instead of throwing an error.
+        # See:
+        # https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
+        # https://mariadb.com/kb/en/date/
+        return ($this->depart->format('Y-m-d') != '-0001-11-30' && $this->depart < $now);
+    }
 
     public function isOnVacationOn($from, $to)
     {

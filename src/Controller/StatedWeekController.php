@@ -720,6 +720,10 @@ class StatedWeekController extends BaseController
                     $p['partially_holiday'] = $absence_times;
                 }
 
+                if ($agent->leavingDatePassed($date)) {
+                    $p['leaving_date_passed'] = 1;
+                }
+
                 $placed[] = $p;
             }
         }

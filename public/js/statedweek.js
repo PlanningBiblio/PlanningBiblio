@@ -296,6 +296,10 @@ function placeOnPlanning(agent) {
         cell.addHoliday();
       }
 
+      if (agent.leaving_date_passed) {
+        cell.addLeavingDatePassed();
+      }
+
       if (agent.partially_holiday) {
         cell.addPartialHolidays(agent.partially_holiday);
       }
@@ -367,6 +371,13 @@ $( document ).ready(function() {
       cell.addClass('absent');
       cell.children('span').addClass('absent');
       cell.append('<br/><i> - Congés</i>');
+    };
+
+    $(this).init.prototype.addLeavingDatePassed = function() {
+      cell = $(this);
+      cell.addClass('absent');
+      cell.children('span').addClass('absent');
+      cell.append('<br/><i> - Date de départ dépassée</i>');
     };
 
     $(this).init.prototype.addPartialHolidays = function(holidays) {
