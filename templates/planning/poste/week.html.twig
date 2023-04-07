@@ -82,7 +82,7 @@
             </div>
           {% endif %}
           <div class="pl-notes-div1" {{ day.notesDisplay | raw }}>
-            {{ day.notes }}
+            {{ day.notes | raw_black_listed }}
           </div>
         </div>
       {% endif %}
