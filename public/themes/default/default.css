@@ -51,17 +51,26 @@ body {
 	margin: 0px 0px 0px 0px;
 }
 
-h3{
-  margin-top:25px;
-  font-size:20pt;
+h2 {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+h3 {
+  font-size:26px;
+  font-weight: bold;
+}
+
+h4{
+  font-size:18px;
+  font-weight: bold;
 }
 
 #h3-Multisites{
-  position: absolute;
-  top: 62px;
-  left: 690px;
+  margin: 30px 20px auto;
+  background: #29495C;
+  color: #FFF;
   font-size: 20px;
-  font-weight: bold;
 }
 
 #acces_refuse {
@@ -91,13 +100,50 @@ h3{
   display:none;
 }
 
+.logo-favicon{
+  width: 48px;
+  height: 36px;
+  background:url("images/favicon.svg") no-repeat center;
+}
+
 #logo {
-	position: absolute;
-  left:10px;
-	top: 12px;
-  width: 280px;
-  height: 75px;
-	background:url("images/logo-planno.svg") no-repeat left top;
+  width: 239px;
+  height: 43px;
+  background:url("images/logo-planno.svg") no-repeat left top;
+}
+
+#mainMenu {
+  max-height: 68px;
+}
+
+#accountDiv {
+  display: block;
+  margin: 10px 25px 0 0;
+}
+
+#accountDiv div {
+  display: inline-block;
+}
+
+#accountDiv #username {
+  margin: 0 10px 0 0;
+  font-size: 19px;
+}
+
+#accountDiv #logoutIcon {
+  vertical-align: middle;
+  width: 28px;
+  height: 24px;
+}
+
+#accountDiv #myAccountDiv {
+  display: block;
+  margin: 0 42px 0 0;
+  text-align: right;
+}
+
+#accountDivReverse {
+  display: none;
 }
 
 #logo2 {
@@ -110,12 +156,6 @@ h3{
 
 #logout_img{
   text-align:right;
-  width:42px;
-}
-
-#logout_text a{
-  font-size:13pt;
-  display:none;
 }
 
 #title{
@@ -124,8 +164,8 @@ h3{
 
 #content{
   width: 90%;
-  margin: 10px auto auto auto;
-  padding: 80px 5px 5px 5px;
+  margin: 50px auto auto auto;
+  padding: 5px;
 }
 
 .content-div{
@@ -141,7 +181,6 @@ h3{
 }
 
 #content-planning{
-  margin-top: 10px;
   padding: 0 0 0 0;
 }
 
@@ -447,7 +486,7 @@ li .agent-acces-checked2{
 
 .navigation { 
   position:relative;
-  height:30px;
+  background: #FFF;
 }
 
 .popper { 
@@ -495,6 +534,17 @@ a:hover.ejsmenu2 {
   list-style: none;
 }
 
+@media only screen and (max-width: 1200px){
+  .menu_ul{
+    text-align: right;
+    width: 100%;
+    padding: 0;
+    margin:0px;
+    white-space: nowrap;
+    list-style: none;
+  }
+}
+
 .menu_li{
   display: inline;
   padding: 5px 15px;
@@ -502,6 +552,11 @@ a:hover.ejsmenu2 {
 
 .menu_li a, .menu_li a:hover{
   font-size:13pt;
+}
+
+.days_li{
+  display: inline;
+  padding: 5px 0px;
 }
 
 /* TD du menu top */
@@ -551,12 +606,6 @@ select
 	}
 
 
-#popup {
-	background-color:#FFF;
-	position:absolute;
-	z-index:10;
-	}
-
 .select-popup{
   width: auto;
   height: 20px;
@@ -564,18 +613,6 @@ select
   position: absolute;
   left: 350px;
 }
-
-#opac {
-	opacity: 0.5;
-	filter: alpha(opacity=50);		/*	Pour IE */
-	background:#000;
-	height:100%;
-	width:100%;
-	position:fixed;
-	left:0px;
-	top:0px;
-	z-index:5;
-	}
 
 .th{
   background-color:#FFD700;	
@@ -627,9 +664,6 @@ select
 
 /*		Plannings				*/
 /* Calendrier, titre (Semaine ...), Boutons de droite */
-#divcalendrier {
-  margin : 10px 0 0 0;
-}
 
 .pl-validation {
   margin: 0px 0 10px 0;
@@ -648,7 +682,7 @@ select
   color: #FFFFFF;
 }*/
 
-#planning-semaine #td_boutons{
+#planning-semaine {
   padding:30px;
 }
 
@@ -938,6 +972,11 @@ div#tabsemaine1{
   width: 100%;
 }
 
+#menudivtab1 tr, #menudivtab2 tr {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
 #menudivtab1 td{
   padding-left: 15px;
 }
@@ -1003,22 +1042,24 @@ div#tabsemaine1{
   padding: 0 15px;
 }
 
+.tableaux-cfg h4 {
+  margin: 20px 0;
+}
 
 #tab_titre{	/* /index */
   width:100%;
+  height: 145px;
   border: none;
   background-color: #29495C;
-  margin-bottom: 60px;
+  margin-bottom: 20px;
 }
 
 /* Calendrier affiché en haut des plannings */
 #pl-calendar{
   border:0;
   background: rgba(255, 255, 255, 0);
-  margin: 50px 0 0px 12px;
+  margin: 10px 0 5px 10px;
   width: 165.75px;
-  position: absolute;
-  top: 30px;
 }
 
 #pl-calendar .calendar-datepicker {
@@ -1147,7 +1188,7 @@ a:hover.menuRed, a:hover.menu {
   font-weight: normal;
   width:50%;
   text-align:left;
-  padding: 50px 0 20px 220px;
+  padding: 20px 0 10px 50px;
 }
 
 .top-button-div {
@@ -1251,9 +1292,8 @@ img{
 }
 
 #td_boutons{
-  width:25%;
   text-align:right;
-  padding:50px 20px 0 0;
+  padding:20px 20px 0 0;
 }
 
 #td_boutons .ui-state-error{
@@ -1314,11 +1354,6 @@ img{
 .textAlignRight{
   text-align: right;
   padding-right: 5px;
-}
-
-/*text of table header when background is blue*/
-#tablePresenceMonCompte_length label, #tablePresenceMonCompte_filter label, #tableConges_wrapper label, #tableAbsencesVoir_wrapper label, #tableStatAbsences_wrapper label, #DataTables_Table_0_wrapper label, #AbsenceInfoTable_wrapper label, #tableAgents_wrapper label, #tableAgents_wrapper label, #tablePostes_wrapper label, #tableModeles_wrapper label, #table-groups_wrapper label, #table-separations_wrapper label, #table-list_wrapper label, #table-list_length label, #table-list_filter label, #tablePlanningHebdo_wrapper label, #tablePlanningAbsences_wrapper label{
-  color: #FFF;
 }
 
 /* Elements "sortable" (gestion des motifs d'absences, des statuts des agents */
@@ -1395,6 +1430,10 @@ div.presents-absents {
   background-color:#F0F0F0;
 }
 
+.dataTable tbody tr.even {
+  background-color:#FFFFFF;
+}
+
 .dataTable tbody tr:hover{
   background-color: #FFD700;
 }
@@ -1424,16 +1463,30 @@ div.presents-absents {
 
 .fg-toolbar {
     color: inherit;
+    min-height: 40px;
 }
 
-.dataTables_wrapper .dataTables_filter input,
-.dataTables_wrapper .dataTables_length select {
-    background-color: #29485C;
+.dataTables_wrapper .dataTables_paginate .fg-button {
+  border: 1px solid #FFFFFF;
+  padding: 5px;
+}
+
+.dataTables_wrapper input,
+.dataTables_wrapper label,
+.dataTables_wrapper select,
+.CJDataTable label {
     color: #FFFFFF
 }
 
+table.dataTable thead tr>.dtfc-fixed-left, table.dataTable thead tr>.dtfc-fixed-right, table.dataTable tfoot tr>.dtfc-fixed-left, table.dataTable tfoot tr>.dtfc-fixed-right {
+  background-color: #466578;
+}
+
+table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fixed-right {
+  background-color:#F0F0F0;
+}
+
 .dt-buttons {
-    background-color: #FFFFFF;
     width: 100%;
     padding: 11px 0 11px 0;
     text-align: right;
@@ -1455,16 +1508,10 @@ div.presents-absents {
 }
 
 /*	Agenda	*/
-#div_agenda{
-  min-height:400px;
-  width: 72%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 #div_agenda_content{
   background-color: #FFF;
-  padding:25px 25px 25px 25px;
+  margin: 25px 0 0 0;
+  padding:25px;
   border-radius: 5px;
 }
 
@@ -1523,38 +1570,21 @@ div.presents-absents {
 }
 
 /* Agents volants */
-#date_planning.volants-title{
-  width: 600px;
-  margin: 0 auto 8  0px;
-  text-align: center;
+#detachedAgentNav {
+  margin: 20px 0 0 0;
 }
 
-.volants-header{
-  position:absolute;
-  left: 200px;
-  top: 70px;
+#detachedAgentNav a {
+  margin: 0 30px 0 0;
 }
 
-.volants-h2{
-  text-align: left;
-  padding-left: 10px;
+#content-planning #content-form {
+  margin-top: 60px;
 }
 
-.volants-a{
-  position: absolute;
-  left: 0px;
-}
-
-.volants-calendar{
-  z-index: 10;
-  position: absolute;
-  top: 100px;
-  left: 10px
-}
-
-#volants-content{
-  margin: 200px auto;
-  width: 1080px;
+#detachedAgentDiv {
+  max-width: 1080px;
+  margin: 20px auto;
 }
 
 #volants-dispo-div,
@@ -1567,8 +1597,7 @@ div.presents-absents {
   float: both;
 }
 
-#volants-buttons-div,
-#volants-calendar{
+#volants-buttons-div {
   margin-top : 45px;
 }
 
@@ -1627,18 +1656,38 @@ div.presents-absents {
     color: #29495C;
 }
 
-.wh-timepicker {
-  width: 150px;
-}
-
 .framework-timepicker {
   width: 85px;
 }
 
 /*Buttons START*/
 .ui-button{
-  min-width: 85px;
+  min-width: 105px;
 }
+
+.ui-button.fg-button{
+  min-width: 40px;
+}
+
+.ui-button-icon-only {
+  min-width: 10px;
+}
+
+.top-buttons .col,
+.top-buttons .col-3 {
+  padding: 10px 15px;
+  white-space: nowrap;
+}
+
+.top-buttons .col:first-child {
+  padding: 10px 0;
+}
+
+.top-buttons .col:last-child {
+  padding: 10px 0;
+  text-align: right;
+}
+
 /*main button style*/
 .ui-button-type1{
   border: 1px solid #FFD700;
@@ -1791,13 +1840,21 @@ table.dataTable th{
   margin: 10px auto auto auto;
 }
 
-.admin-div{
+.admin-div {
   width: 100%;
   background: #FFF;
   border-radius: 5px;
-  padding: 10px;
+  margin: 20px 0 0 0;
+  padding: 20px;
 }
 
+.admin-div select {
+  width: 200px;
+}
+
+.info-align{
+  display: inline-block;
+}
 
 #admin .ui-state-default, .ui-widget-header .ui-state-default {
     border: 2px solid #FFF;
@@ -1822,30 +1879,6 @@ table.dataTable th{
 
 .ui-widget-header .ui-state-hover a {
   color: #29495C;
-}
-
-#workhours{
-  width: 100%;
-  margin: 10px auto auto auto;
-}
-
-.workhours-header, .workhours-body{
-  border: 0px solid #000;
-  border-left: 1px solid #000;
-  border-top: 1px solid #000;
-}
-
-.workhours-header td:last-child, .workhours-body td:last-child{
-  border-right: 1px solid #000;
-}
-
-.workhours-body tr:last-child td{
-  border-bottom: 1px solid #000;
-}
-
-.workhours-header {
-  background: #29495C;
-  color: #fff;
 }
 
 #closingday{
@@ -2462,4 +2495,72 @@ table.dataTable th{
   display: inline-block;  /* For IE11/ MS Edge bug */
   pointer-events: none;
   text-decoration: none;
+}
+
+/* Working Hours / Planning Hebdo */
+
+#plHebdo-perso-id {
+  margin: 20px 0;
+}
+
+#workinghour_tables h3 {
+  margin: 40px 0 15px 0;
+}
+
+#workinghour_tables table {
+  border-spacing : 0;
+  border-collapse : collapse;
+  margin: 0 0 10px 0;
+  background: #FFF;
+}
+
+#workinghour_tables table th {
+  border: 1px solid #29495C;
+  padding: 5px 15px;
+  background: #29495C;
+  color: #FFF;
+  text-align: center;
+  min-width: 120px;
+}
+
+#workinghour_tables td {
+  border: 1px solid #29495C;
+  text-align: center;
+}
+
+#workinghour_tables td input {
+  width: 100%;
+  text-align: center;
+  border: 1px solid rgb(41, 73, 92, 0.3);
+}
+
+@media only screen and (max-width: 1550px){
+  #logo {
+    width: 48px;
+    height: 36px;
+    background:url("images/favicon.svg") no-repeat center;
+  }
+
+  #username {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 1200px){
+  #mainMenu {
+    max-height: none;
+  }
+
+  #accountDiv {
+    display: none;
+  }
+
+  #accountDivReverse {
+    display: block;
+  }
+
+  .titreSemFixe{
+    padding: 5px 0 10px 0;
+  }
+
 }

@@ -159,8 +159,8 @@ class PositionControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
         $this->assertEquals($result->attr('value'),'bureau','input for post name value is nom');
 
-        $result = $crawler->filterXPath('//td');
-        $this->assertEquals($result->eq(7)->text(null, false),'Nom du poste :','label is Nom du post');
+        $result = $crawler->filterXPath('//form[@action="/position"]');
+        $this->assertStringContainsString('Nom du poste :',$result->text(null, false),'label is Nom du post');
 
 
         $result = $crawler->filterXPath('//tr/td/table');

@@ -48,6 +48,7 @@ class DetachedAgentsController extends BaseController
         $tous = $v->tous;
 
         $this->templateParams(array(
+            'content_planning'  => true,
             'week_number'       => $w,
             'week'              => $week,
             'date'              => $date,

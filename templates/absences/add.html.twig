@@ -17,7 +17,7 @@
     </script>
     <h3>Ajouter une absence</h3>
     <div class="admin-div">
-      <table>
+      <table class="info-align">
         <tr style='vertical-align:top'>
           <td style='width:560px;'>
 
@@ -268,25 +268,26 @@
             </form>
           </td>
 
-          <td style='color:#cd1b19;'>
-            {% if abences_infos %}
-              <b>Informations congés / absences :</b><br/><br/>
-              {% for a in abences_infos %}
-                Du {{ a.debut_fr }} au {{ a.fin_fr }} : {{ a.texte }}<br/>
-              {% endfor %}
-            {% endif %}
-
-          </td>
         </tr>
       </table>
+      
+      {#Messages d'informations absences#}
+      <div class="red info-align">
+        {% if abences_infos %}
+          <b>Informations congés / absences :</b><br/>
+          {% for a in abences_infos %}
+            Du {{ a.debut_fr }} au {{ a.fin_fr }} : {{ a.texte }}<br/>
+          {% endfor %}
+        {% endif %}
 
+      </div>
       <div id="recurrence-form" title="Récurrence" class='noprint' style='display:none;'>
         <p class="validateTips">&nbsp;</p>
         <form>
           <table class='tableauFiches'>
             <tr>
               <td>
-                <label  for='recurrence-freq' >Récurrent : 
+                <label  for='recurrence-freq'>Récurrent : 
               </td>
 
               <td>

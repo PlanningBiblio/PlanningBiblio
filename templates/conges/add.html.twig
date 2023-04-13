@@ -13,7 +13,7 @@
     <h3>Poser des congés</h3>
 
     <div class="admin-div">
-      <table border='0'>
+      <table border='0' class="align-info">
         <tr style='vertical-align:top'>
           <td>
             <form name='form' action='/holiday' method='post' id='form'>
@@ -354,16 +354,16 @@
             </table>
           </form>
         </td>
-        <td class="red">
-          {% if holiday_info %}
-            <b>Informations sur les congés :</b><br/><br/>
-            {% for i in holiday_info %}
-              Du {{ i.start }} au {{ i.end }} :<br/>{{ i.texte|nl2br }}<br/><br/>
-            {% endfor %}
-          {% endif %}
-        </td>
       </tr>
     </table>
+    <div class="red align-info">
+      {% if holifay_info %}
+        <b>Informations sur les congés :</b><br/>
+        {% for i in holifay_info %}
+          Du {{ i.start }} au {{ i.end }} :<br/>{{ i.texte|nl2br }}<br/><br/>
+        {% endfor %}
+      {% endif %}
+    </div>
   </div>
 </div>
 
