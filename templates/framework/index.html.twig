@@ -32,9 +32,9 @@
 {% endblock %}
 
 {% block page %}
-  <h2>Gestion des tableaux</h2>
+  <h3>Gestion des tableaux</h3>
   <div id='tableaux-listes' class='tableaux-cfg'>
-    <h3>Liste des tableaux</h3>
+    <h4>Liste des tableaux</h4>
     <p>
       <a href="{{ asset('framework/add') }}" class='ui-button ui-button-type2'>Nouveau tableau</a>
     </p>
@@ -95,7 +95,7 @@
     {% endif %}
   </div>
   <div id='tableaux-groupes' class='tableaux-cfg' >
-    <h3>Groupes</h3>
+    <h4>Groupes</h4>
     <p>
       <input type='button' value='Nouveau groupe' class='ui-button ui-button-type2' onclick="location.href='{{ asset("framework-group/add") }}';" />
     </p>
@@ -132,7 +132,7 @@
     </table>
   </div>
   <div id='tableaux-separations' class='tableaux-cfg'>
-    <h3>Lignes de séparation</h3>
+    <h4>Lignes de séparation</h4>
     <p>
       <input type='submit' value='Nouvelle ligne' class='ui-button ui-button-type2' onclick='location.href="{{ asset('framework-line/add') }}";'/>
     </p>

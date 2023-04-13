@@ -169,42 +169,48 @@
       <div id='liste'>
         <h4 class='noprint'>Liste des demandes d'heures supplémentaires</h4>
         <form name='form' method='get' action='{{ asset("overtime") }}' class='noprint'>
-          <span style='float:left; vertical-align:top; margin-bottom:20px;'>
-            Année : <select name='annee'>
-              {% for elem in years %}
-                {% if elem[0] == year_from %}
-                  <option value="{{ elem[0] }}" selected="selected">{{ elem[1] }}</option>
-                {% else %}
-                  <option value="{{ elem[0] }}">{{ elem[1] }}</option>
+          <div class="container">
+            <span style='float:left; vertical-align:top; margin-bottom:20px;'>
+              <div class='row'>
+                <div class="col">
+                  Année : <select name='annee'>
+                    {% for elem in years %}
+                      {% if elem[0] == year_from %}
+                        <option value="{{ elem[0] }}" selected="selected">{{ elem[1] }}</option>
+                      {% else %}
+                        <option value="{{ elem[0] }}">{{ elem[1] }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+
+                {% if admin %}
+                  <div class="col">
+                    <span style='margin-left:30px;'>Agent : </span>
+                    <select name='perso_id'>
+                      {% if perso_id == 0 %}
+                        <option value='0' selected="selected">Tous</option>
+                      {% else %}
+                        <option value='0'>Tous</option>
+                      {% endif %}
+                      {% for m in managed %}
+                        {% if m.id == perso_id %}
+                          <option value="{{ m.id }}" selected>{{ m.nom }} {{ m.prenom }}</option>
+                        {% else %}
+                          <option value="{{ m.id }}">{{ m.nom }} {{ m.prenom }}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
                 {% endif %}
-              {% endfor %}
-            </select>
-
-            {% if admin %}
-              <span style='margin-left:30px;'>Agent : </span>
-              <select name='perso_id'>
-                {% if perso_id == 0 %}
-                  <option value='0' selected="selected">Tous</option>
-                {% else %}
-                  <option value='0'>Tous</option>
-                {% endif %}
-                {% for m in managed %}
-                  {% if m.id == perso_id %}
-                    <option value="{{ m.id }}" selected>{{ m.nom }} {{ m.prenom }}</option>
-                  {% else %}
-                    <option value="{{ m.id }}">{{ m.nom }} {{ m.prenom }}</option>
-                  {% endif %}
-                {% endfor %}
-              </select>
-            {% endif %}
-
-            <span style='margin-left:30px;'><input type='submit' value='Rechercher' id='button-OK' class='ui-button'/></span>
-            <span style='margin-left:30px;'><input type='button' value='Réinitialiser' id='button-Effacer' class='ui-button ui-button-type2' onclick='location.href="{{ asset('overtime') }}?reset=on"'/></span>
-          </span>
-
-          <span style='float:right; vertical-align:top; margin:0px 5px;'>
-            <button id='dialog-button' class='ui-button ui-button-type2'>Nouvelle demande</button>
-          </span>
+                <div class="col" style='margin-left:30px;'><input type='submit' value='Rechercher' id='button-OK' class='ui-button' style="margin-top: 10px;"/></div>
+                <div class="col" style='margin-left:30px;'><input type='button' value='Réinitialiser' id='button-Effacer' class='ui-button ui-button-type2' onclick='location.href="{{ asset('overtime') }}?reset=on"' style="margin-top: 10px;"/></div>
+                <div class="col" style='float:right; vertical-align:top; margin-top: 10px;'>
+                  <button id='dialog-button' class='ui-button ui-button-type2'>Nouvelle demande</button>
+                </div>
+              </div>
+            </span>
+          </div>
         </form>
 
         <table id='tableRecup' class='CJDataTable' data-sort='[[1]]'>

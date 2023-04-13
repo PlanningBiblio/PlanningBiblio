@@ -40,11 +40,11 @@ $debut = array(1, 8, 15, 22, 29, 36, 43, 50, 57, 64);
 $EDTSamedi = $this->config('PlanningHebdo') ? 0 : $this->config('EDTSamedi');
 
 if ($EDTSamedi == 1) {
-    $config['nb_semaine'] = 2;
+    $nb_semaine = 2;
     $cellule = array("Semaine standard", "Semaine<br/>avec samedi");
     $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé');
 } elseif ($EDTSamedi == 2) {
-    $this->config('nb_semaine', 3);
+    $nb_semaine = 3;
     $cellule=array("Semaine standard", "Semaine<br/>avec samedi", "Semaine<br/>ouverture restreinte");
     $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé', 'Emploi du temps en ouverture restreinte');
 }
@@ -53,26 +53,30 @@ for ($j = 0; $j < $nb_semaine; $j++) {
     if ($EDTSamedi) {
         $hours_tab .= "<br/><b>{$table_name[$j]}</b>";
     }
-    $hours_tab .= "<table border='1' cellspacing='0'>\n";
-    $hours_tab .= "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td>Heure d'arrivée</td>";
+    $hours_tab .= "<div id='workinghour_tables'>\n";
+    $hours_tab .= "<table>\n";
+    $hours_tab .= "<thead>\n";
+    $hours_tab .= "<tr><th>{$cellule[$j]}</th><th>Heure d'arrivée</th>";
     if ($config['PlanningHebdo-Pause2']) {
-        $hours_tab .= "<td>Début de pause 1</td><td>Fin de pause 1</td>";
-        $hours_tab .= "<td>Début de pause 2</td><td>Fin de pause 2</td>";
+        $hours_tab .= "<th>Début de pause 1</th><th>Fin de pause 1</th>";
+        $hours_tab .= "<th>Début de pause 2</th><th>Fin de pause 2</th>";
     } else {
-        $hours_tab .= "<td>Début de pause</td><td>Fin de pause</td>";
+        $hours_tab .= "<th>Début de pause</th><th>Fin de pause</th>";
     }
-    $hours_tab .= "<td>Heure de départ</td>";
+    $hours_tab .= "<th>Heure de départ</th>";
 
     if ($config['PlanningHebdo-PauseLibre'] && $config['PlanningHebdo']) {
-        $hours_tab .= "<td>Temps de pause</td>";
+        $hours_tab .= "<th>Temps de pause</th>";
     }
 
     if ($config['Multisites-nombre']>1) {
-        $hours_tab .= "<td>Site</td>";
+        $hours_tab .= "<th>Site</th>";
     }
   
-    $hours_tab .= "<td>Temps</td>";
+    $hours_tab .= "<th>Temps</th>";
     $hours_tab .= "</tr>\n";
+    $hours_tab .= "</thead>\n";
+    $hours_tab .= "<tbody>\n";
 
     $disabled = "disabled";
     if (in_array(21, $droits) and !$config['PlanningHebdo']) {
@@ -100,7 +104,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         // Arriving time (index 0).
         $hours_tab .= "<td>";
         $hours_tab .= "<input name='temps[{$t}][0]' $disabled ";
-        $hours_tab .= "class='planno-timepicker select$j wh-timepicker'";
+        $hours_tab .= "class='planno-timepicker select$j'";
         $t0 = isset($temps[$t][0]) ? $temps[$t][0] : '';
         $hours_tab .= "value='$t0'/>";
         $hours_tab .= "</td>\n";
@@ -108,7 +112,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         // Start of break 1.
         $hours_tab .= "<td>";
         $hours_tab .= "<input name='temps[{$t}][1]' $disabled ";
-        $hours_tab .= "class='planno-timepicker select$j wh-timepicker'";
+        $hours_tab .= "class='planno-timepicker select$j'";
         $t1 = isset($temps[$t][1]) ? $temps[$t][1] : '';
         $hours_tab .= "value='$t1'/>";
         $hours_tab .= "</td>\n";
@@ -116,7 +120,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         // End of break 1.
         $hours_tab .= "<td>";
         $hours_tab .= "<input name='temps[{$t}][2]' $disabled ";
-        $hours_tab .= "class='planno-timepicker select$j wh-timepicker'";
+        $hours_tab .= "class='planno-timepicker select$j'";
         $t2 = isset($temps[$t][2]) ? $temps[$t][2] : '';
         $hours_tab .= "value='$t2'/>";
         $hours_tab .= "</td>\n";
@@ -125,7 +129,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
             // Start of break 1.
             $hours_tab .= "<td>";
             $hours_tab .= "<input name='temps[{$t}][5]' $disabled ";
-            $hours_tab .= "class='planno-timepicker select$j wh-timepicker'";
+            $hours_tab .= "class='planno-timepicker select$j'";
             $t5 = isset($temps[$t][5]) ? $temps[$t][5] : '';
             $hours_tab .= "value='$t5'/>";
             $hours_tab .= "</td>\n";
@@ -133,7 +137,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
             // End of break 1.
             $hours_tab .= "<td>";
             $hours_tab .= "<input name='temps[{$t}][6]' $disabled ";
-            $hours_tab .= "class='planno-timepicker select$j wh-timepicker'";
+            $hours_tab .= "class='planno-timepicker select$j'";
             $t6 = isset($temps[$t][6]) ? $temps[$t][6] : '';
             $hours_tab .= "value='$t6'/>";
             $hours_tab .= "</td>\n";
@@ -142,7 +146,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         // Departure time.
         $hours_tab .= "<td>";
         $hours_tab .= "<input name='temps[{$t}][3]' $disabled ";
-        $hours_tab .= "class='planno-timepicker select$j wh-timepicker'";
+        $hours_tab .= "class='planno-timepicker select$j'";
         $t3 = isset($temps[$t][3]) ? $temps[$t][3] : '';
         $hours_tab .= "value='$t3'/>";
         $hours_tab .= "</td>\n";
@@ -151,7 +155,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
             $breaktime = isset($breaktimes[$i -1]) ? $breaktimes[$i -1] : '';
             $hours_tab .= '<td id="break_' . ($i-1) . '" data-break="' . $breaktime . '">';
             $hours_tab .= "<input name='break_{$t}' $disabled ";
-            $hours_tab .= "class='planno-break-timepicker wh-timepicker'";
+            $hours_tab .= "class='planno-break-timepicker'";
             $hours_tab .= "value='$breaktime'/>";
             $hours_tab .= '</td>';
         }
@@ -165,9 +169,9 @@ for ($j = 0; $j < $nb_semaine; $j++) {
 
                     $site = $temps[$i-1][4] == -1 ? 'Tout site' : $site;
                 }
-                $hours_tab .= "<td class='wh-timepicker'>&nbsp;$site&nbsp;</td>";
+                $hours_tab .= "<td>$site</td>";
             } else {
-                $hours_tab .= "<td class='wh-timepicker'><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
+                $hours_tab .= "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
                 $hours_tab .= "<option value='' class='edt-site-0'>&nbsp;</option>\n";
                 for ($l=1;$l<=$config['Multisites-nombre'];$l++) {
                     $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$l) ? "selected='selected'" : null;
@@ -181,7 +185,9 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<td id='heures_{$j}_$i'></td>\n";
         $hours_tab .= "</tr>\n";
     }
+    $hours_tab .= "</tbody>\n";
     $hours_tab .= "</table>\n";
+    $hours_tab .= "</div>\n";
     $hours_tab .= "Total : <font style='font-weight:bold;' id='heures$j'></font><br/><br/>\n";
 }
 

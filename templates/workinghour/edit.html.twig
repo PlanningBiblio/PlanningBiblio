@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block page %}
-  <div id="workhours">
+  <div id="content-form">
     <h3>Heures de présence</h3>
     <div class="admin-div">
       {% if not_found is defined and not_found == 1 %}
@@ -40,7 +40,7 @@
               <div id='plHebdo-perso-id'>
                 {% if managed | length > 1 and request_exception is null %}
                   <label for='perso_id'>Pour l'agent</label>
-                  <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:400px; width:206px; text-align:center;' >
+                  <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:400px; text-align:center;' >
                     <option value=''>&nbsp;</option>
                     {% for m in managed %}
                       <option value='{{ m.id }}' {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.nom }} {{ m.prenom }}</option>

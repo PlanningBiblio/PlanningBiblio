@@ -1,113 +1,115 @@
 {# workinghour/tables.html.twig #}
 
-        {% for j in 0..nbSemaine-1 %}
-          <h3>{{ cellule[j] }}</h3>
-          {% if j > 0 %}
-            {% if modifAutorisee == true %}
-              <p>
-                <input type='checkbox' name="memePlanning{{ j }}" class='memePlanning' data-id="{{ j }}" id="memePlanning{{ j }}" />
-                <label for="memePlanning{{ j }}" >Mêmes heures qu'en {{ cellule[0] }}</label>
-              </p>
-            {% else %}
-              <p style='display:none;' id="memePlanning{{ j }}" ><b>Mêmes heures qu'en {{ cellule[0] }}</b></p>
-            {% endif %}
+{% for j in 0..nbSemaine-1 %}
+  <h3>{{ cellule[j] }}</h3>
+  {% if j > 0 %}
+    {% if modifAutorisee == true %}
+      <p>
+        <input type='checkbox' name="memePlanning{{ j }}" class='memePlanning' data-id="{{ j }}" id="memePlanning{{ j }}" />
+        <label for="memePlanning{{ j }}" >Mêmes heures qu'en {{ cellule[0] }}</label>
+      </p>
+    {% else %}
+      <p style='display:none;' id="memePlanning{{ j }}" ><b>Mêmes heures qu'en {{ cellule[0] }}</b></p>
+    {% endif %}
+  {% endif %}
+  <div id="div{{ j }}">
+    <table id="tableau{{ j }}"  data-id="{{ j }}" >
+      <thead>
+        <tr>
+          <th>{{ cellule[j] }}</th>
+          <th>Heure d'arrivée</th>
+          {% if pause2_enabled == true %}
+            <th>Début de pause 1</th>
+            <th>Fin de pause 1</th>
+            <th>Début de pause 2</th>
+            <th>Fin de pause 2</th>
+          {% else %}
+            <th>Début de pause</th>
+            <th>Fin de pause</th>
           {% endif %}
-          <div id="div{{ j }}">
-            <table class="tableau" border='1' cellspacing='0' id="tableau{{ j }}"  data-id="{{ j }}" >
-              <tbody>
-                <tr style='text-align:center;' class="workhours-table">
-                  <td class="workhours-header">{{ cellule[j] }}</td>
-                  <td class="workhours-header">Heure d'arrivée</td>
-                  {% if pause2_enabled == true %}
-                    <td class="workhours-header">Début de pause 1</td>
-                    <td  class="workhours-header">Fin de pause 1</td>
-                    <td  class="workhours-header">Début de pause 2</td>
-                    <td  class="workhours-header">Fin de pause 2</td>
-                  {% else %}
-                    <td  class="workhours-header">Début de pause</td>
-                    <td  class="workhours-header">Fin de pause</td>
-                  {% endif %}
-                  <td  class="workhours-header">Heure de départ</td>
-                  {% if pauseLibre_enabled == true %}
-                    <td  class="workhours-header">Temps de pause</td>
-                  {% endif %}
-                  {% if nbSites > 1 %}
-                    <td  class="workhours-header">Site</td>
-                  {% endif %}
-                  <td  class="workhours-header">Temps</td>
-                </tr>
-                {% set disabled = 'disabled' %}
-                {% if modifAutorisee == true %}
-                  {% set disabled = '' %}
-                {% endif %}
-                {% for i in debut[j]..fin[j] %}
-                  {% set k = i-(j*7)-1 %}
-                  <tr style='text-align:center;' class="workhours-table">
-                    <td class="workhours-body">{{ jours[k] }}</td>
-                      <td class="workhours-body">
-                        <input name="temps[{{ i - 1 }}][0]"
-                           class="planno-timepicker select wh-timepicker" {{ disabled }}
-                          value="{{ temps[i-1][0] is defined and temps[i-1][0] ? temps[i-1][0] | date('H:i') : '' }}"/>
-                      </td>
-                      <td class="workhours-body">
-                        <input name="temps[{{ i - 1 }}][1]"
-                          class="planno-timepicker select wh-timepicker" {{ disabled }}
-                          value="{{ temps[i-1][1] is defined and temps[i-1][1] ? temps[i-1][1] | date('H:i') : '' }}"/>
-                      </td>
-                      <td class="workhours-body">
-                        <input name="temps[{{ i - 1 }}][2]"
-                          class="planno-timepicker select wh-timepicker" {{ disabled }}
-                          value="{{ temps[i-1][2] is defined and temps[i-1][2] ? temps[i-1][2] | date('H:i') : '' }}"/>
-                      </td>
-                      {% if pause2_enabled == true %}
-                        <td class="workhours-body">
-                          <input name="temps[{{ i - 1 }}][5]"
-                            class="planno-timepicker select wh-timepicker" {{ disabled }}
-                            value="{{ temps[i-1][5] is defined and temps[i-1][5] ? temps[i-1][5] | date('H:i') : '' }}"/>
-                        </td>
-                        <td class="workhours-body">
-                          <input name="temps[{{ i - 1 }}][6]"
-                            class="planno-timepicker select wh-timepicker" {{ disabled }}
-                            value="{{ temps[i-1][6] is defined and temps[i-1][6] ? temps[i-1][6] | date('H:i') : '' }}"/>
-                        </td>
-                      {% endif %}
-                      <td class="workhours-body">
-                        <input name="temps[{{ i - 1 }}][3]"
-                          class="planno-timepicker select wh-timepicker" {{ disabled }}
-                          value="{{ temps[i-1][3] is defined and temps[i-1][3] ? temps[i-1][3] | date('H:i') : '' }}"/>
-                      </td class="workhours-body">
-                      {% if pauseLibre_enabled == true %}
-                        <td class="workhours-body">
-                          <input name="breaktime[{{ i -1 }}]"
-                            id="breaktime[{{ i -1 }}]"
-                            class="planno-break-timepicker select wh-timepicker" {{ disabled }}
-                            value="{{ breaktime[i - 1] is defined ? breaktime[i - 1] : '' }}"/>
-                        </td>
-                      {% endif %}
-                    {% if nbSites > 1 %}
-                      <td class="workhours-body">
-                        <select name="temps[{{ i-1 }}][4]" class='select selectSite wh-timepicker' {{ disabled }} >
-                            <option value=''>&nbsp;</option>
-                          {% for site in sites %}
-                            {% if (temps is not null and temps[i-1][4] is defined and site == temps[i-1][4]) or (temps is null and sites | length == 1) %}
-                              <option value="{{ site }}" selected='selected' >{{ multisites[site] | raw }}</option>
-                            {% else %}
-                              <option value="{{ site }}">{{ multisites[site] | raw }}</option>
-                            {% endif %}
-                          {% endfor %}
-                          {% if temps[i-1][4] is defined and temps[i-1][4] == '-1' %}
-                            <option value="-1" selected='selected' >Tout site</option>
-                          {% else %}
-                            <option value="-1" >Tout site</option>
-                          {% endif %}
-                        </select>
-                      </td>
+          <th>Heure de départ</th>
+          {% if pauseLibre_enabled == true %}
+            <th>Temps de pause</th>
+          {% endif %}
+          {% if nbSites > 1 %}
+            <th>Site</th>
+          {% endif %}
+          <th>Temps</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set disabled = 'disabled' %}
+        {% if modifAutorisee == true %}
+          {% set disabled = '' %}
+        {% endif %}
+        {% for i in debut[j]..fin[j] %}
+          {% set k = i-(j*7)-1 %}
+          <tr>
+            <td>{{ jours[k] }}</td>
+            <td>
+              <input name="temps[{{ i - 1 }}][0]"
+                 class="planno-timepicker select" {{ disabled }}
+                value="{{ temps[i-1][0] is defined and temps[i-1][0] ? temps[i-1][0] | date('H:i') : '' }}"/>
+            </td>
+            <td>
+              <input name="temps[{{ i - 1 }}][1]"
+                class="planno-timepicker select" {{ disabled }}
+                value="{{ temps[i-1][1] is defined and temps[i-1][1] ? temps[i-1][1] | date('H:i') : '' }}"/>
+            </td>
+            <td>
+              <input name="temps[{{ i - 1 }}][2]"
+                class="planno-timepicker select" {{ disabled }}
+                value="{{ temps[i-1][2] is defined and temps[i-1][2] ? temps[i-1][2] | date('H:i') : '' }}"/>
+            </td>
+            {% if pause2_enabled == true %}
+              <td>
+                <input name="temps[{{ i - 1 }}][5]"
+                  class="planno-timepicker select" {{ disabled }}
+                  value="{{ temps[i-1][5] is defined and temps[i-1][5] ? temps[i-1][5] | date('H:i') : '' }}"/>
+              </td>
+              <td>
+                <input name="temps[{{ i - 1 }}][6]"
+                  class="planno-timepicker select" {{ disabled }}
+                  value="{{ temps[i-1][6] is defined and temps[i-1][6] ? temps[i-1][6] | date('H:i') : '' }}"/>
+              </td>
+            {% endif %}
+            <td>
+              <input name="temps[{{ i - 1 }}][3]"
+                class="planno-timepicker select" {{ disabled }}
+                value="{{ temps[i-1][3] is defined and temps[i-1][3] ? temps[i-1][3] | date('H:i') : '' }}"/>
+            </td>
+            {% if pauseLibre_enabled == true %}
+              <td>
+                <input name="breaktime[{{ i -1 }}]"
+                  id="breaktime[{{ i -1 }}]"
+                  class="planno-break-timepicker select" {{ disabled }}
+                  value="{{ breaktime[i - 1] is defined ? breaktime[i - 1] : '' }}"/>
+              </td>
+            {% endif %}
+            {% if nbSites > 1 %}
+              <td>
+                <select name="temps[{{ i-1 }}][4]" class="select selectSite" {{ disabled }} >
+                  <option value=''>&nbsp;</option>
+                  {% for site in sites %}
+                    {% if (temps is not null and temps[i-1][4] is defined and site == temps[i-1][4]) or (temps is null and sites | length == 1) %}
+                      <option value="{{ site }}" selected='selected' >{{ multisites[site] | raw }}</option>
+                    {% else %}
+                      <option value="{{ site }}">{{ multisites[site] | raw }}</option>
                     {% endif %}
-                    <td  class="workhours-body" id="heures_{{ j ~'_'~ i }}"></td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            Nombre d'heures : <font id = "heures_{{j}}" style="font-weight:bold;">&nbsp;</font><br/>
-          </div>
+                  {% endfor %}
+                  {% if temps[i-1][4] is defined and temps[i-1][4] == '-1' %}
+                    <option value="-1" selected='selected' >Tout site</option>
+                  {% else %}
+                    <option value="-1" >Tout site</option>
+                  {% endif %}
+                </select>
+              </td>
+            {% endif %}
+            <td id="heures_{{ j ~'_'~ i }}"></td>
+          </tr>
         {% endfor %}
+      </tbody>
+    </table>
+    Nombre d'heures : <font id = "heures_{{j}}" style="font-weight:bold;">&nbsp;</font><br/>
+  </div>
+{% endfor %}
