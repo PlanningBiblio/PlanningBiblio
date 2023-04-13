@@ -158,8 +158,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//a[@class="ui-button"]');
         $this->assertEquals('Ajouter', $result->text(null, false),'a is Ajouter');
 
-        $result = $crawler->filterXPath('//div');
-        $this->assertStringContainsString('Aucune information enregistrée.', $result->eq(7)->text(null, false),  'text no info is Aucune information enregistrée.');	
+        $this->assertSelectorTextContains('p', 'Aucune information enregistrée.');
 
         $time = strtotime('now');
         $d = date("d", strtotime("+1 day", $time));

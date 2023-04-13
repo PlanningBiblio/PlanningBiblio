@@ -13,91 +13,84 @@
   </h3>
 
   <form name='form' method='get' action='{{ asset("holiday/index") }}' class='noprint'>
-    <span style='float:left; vertical-align:top; margin-bottom:20px;'>
-      <table class='tableauStandard'>
-        <tbody>
-          <tr>
-            <td>
-              Année: 
-              <select name='annee'>
-                {% for y in years %}
-                  {% if from_year == y[0] %}
-                    <option value='{{ y[0] }}' selected="selected">{{ y[1] }}</option>
+    <div class="container top-buttons">
+      <div class="row">
+        <div class="col">
+          Année: 
+          <select name='annee'>
+            {% for y in years %}
+              {% if from_year == y[0] %}
+                <option value='{{ y[0] }}' selected="selected">{{ y[1] }}</option>
+              {% else %}
+                <option value='{{ y[0] }}'>{{ y[1] }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col">
+          Congés: 
+          <select name='congesAffiches'>
+            <option value='tous'>Tous</option>
+            {% if forthcoming %}
+              <option value='aVenir' selected="selected">A venir</option>
+            {% else %}
+              <option value='aVenir'>A venir</option>
+            {% endif %}
+          </select>
+        </div>
+
+        {% if admin %}
+          <div class="col" style='text-align:left;'>
+            <span style='padding:5px;'>Agents :
+              <select name='perso_id' id='perso_id'>
+                {% if perso_id == 0 %}
+                  <option value='0' selected="selected">Tous</option>
+                {% else %}
+                  <option value='0'>Tous</option>
+                {% endif %}
+                {% for a in managed %}
+                  {% if a.id == perso_id %}
+                    <option value='{{ a.id }}' selected="selected">{{ a.nom }} {{ a.prenom }}</option>
                   {% else %}
-                    <option value='{{ y[0] }}'>{{ y[1] }}</option>
+                    <option value='{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
                   {% endif %}
                 {% endfor %}
               </select>
-            </td>
+            </span>
 
-            <td>
-              Congés: 
-              <select name='congesAffiches'>
-                <option value='tous'>Tous</option>
-                {% if forthcoming %}
-                  <option value='aVenir' selected="selected">A venir</option>
-                {% else %}
-                  <option value='aVenir'>A venir</option>
-                {% endif %}
-              </select>
-            </td>
-
-            {% if admin %}
-              <td style='text-align:left;'>
-                <span style='padding:5px;'>Agents : 
-                  <select name='perso_id' id='perso_id'>
-                    {% if perso_id == 0 %}
-                      <option value='0' selected="selected">Tous</option>
-                    {% else %}
-                      <option value='0'>Tous</option>
-                    {% endif %}
-
-                    {% for a in managed %}
-                      {% if a.id == perso_id %}
-                        <option value='{{ a.id }}' selected="selected">{{ a.nom }} {{ a.prenom }}</option>
-                      {% else %}
-                        <option value='{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
-                      {% endif %}
-                    {% endfor %}
-                  </select>
-                </span>
-
-                <br/>
-                <span style='padding:5px;'>Agents supprimés : 
-                  {% if deleted_agents %}
-                    <input type='checkbox' checked="checked" name='supprimes' onclick="updateAgentsList(this, 'perso_id');"/>
-                  {% else %}
-                    <input type='checkbox' name='supprimes' onclick="updateAgentsList(this, 'perso_id');"/>
-                  {% endif %}
-                </span>
-              </td>
-            {% endif %}
-
-            <td>
-              <input type='submit' value='Rechercher' id='button-OK' class='ui-button'/>
-            </td>
-            <td>
-              {% if show_recovery %}
-                <a href='{{ asset("holiday/index") }}?recup=1&reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
+            <br/>
+            <span style='padding:5px;'>Agents supprimés : 
+              {% if deleted_agents %}
+                <input type='checkbox' checked="checked" name='supprimes' onclick="updateAgentsList(this, 'perso_id');"/>
               {% else %}
-                <a href='{{ asset("holiday/index") }}?reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
+                <input type='checkbox' name='supprimes' onclick="updateAgentsList(this, 'perso_id');"/>
               {% endif %}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </span>
+            </span>
+          </div>
+        {% endif %}
 
-    <span style='float:right; vertical-align:top; margin:10px 5px;'>
-      <a href='{{ asset(addlink) }}' class='ui-button ui-button-type2'>Ajouter</a>
-    </span>
-
-    {% if show_recovery %}
-      <input type='hidden' name='recup' value='1'/>
-    {% endif %}
+        <div class="col">
+          <input type='submit' value='Rechercher' id='button-OK' class='ui-button'/>
+        </div>
+        <div class="col-3">
+          {% if show_recovery %}
+            <a href='{{ asset("holiday/index") }}?recup=1&reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
+          {% else %}
+            <a href='{{ asset("holiday/index") }}?reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
+          {% endif %}
+        </div>
+        <div class="col">
+          <div class="ml-auto">
+            <a href='{{ asset(addlink) }}' class='ui-button ui-button-type2'>Ajouter</a>
+          </div>
+        </div>
+        {% if show_recovery %}
+          <input type='hidden' name='recup' value='1'/>
+        {% endif %}
+      </div>
+    </div>
   </form>
 
-  <br/>
   {% if show_recovery %}
     <table id="tableRecovery" class="CJDataTable" data-sort="[[1],[2]]">
   {% else %}

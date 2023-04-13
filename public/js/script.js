@@ -493,22 +493,6 @@ function modif_mdp(){
   document.form.submit();
 }
 
-function popup(url,width,height){
-  document.getElementById("popup").src="index.php?page="+url+"&menu=off";
-  document.getElementById("popup").style.width=width+"px";
-  document.getElementById("popup").style.height=height+"px";
-  document.getElementById("popup").style.left=((screen.width - width)/2)+"px";
-  document.getElementById("popup").style.top=((screen.height - height)/3)+"px";
-  document.getElementById("popup").style.display="";
-  document.getElementById("opac").style.display="";
-}
-
-function popup_closed(){
-  parent.document.getElementById("popup").src="";
-  parent.document.getElementById("popup").style.display="none";
-  parent.document.getElementById("opac").style.display="none";
-}
-
 function removeAccents(strAccents){
   strAccents = strAccents.split('');
   strAccentsOut = new Array();

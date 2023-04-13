@@ -55,7 +55,7 @@ class IndexController extends BaseController
 
         // Show all week plannings.
         if (!$request->get('date') and !empty($_SESSION['week'])) {
-          return $this->redirectToRoute('planning.week');
+          return $this->redirectToRoute('planning.week', ['site' => $site]);
         }
 
         list($date, $dateFr) = $this->setDate($date);
@@ -813,27 +813,6 @@ class IndexController extends BaseController
         $t->fetchAllGroups();
 
         return $t->elements;
-    }
-
-    private function setSite($site)
-    {
-        // Multisites: default site is 1.
-        // Site is $_GET['site'] if it is set, else we take
-        // SESSION ['site'] or agent's site.
-        if (!$site and array_key_exists("site", $_SESSION['oups'])) {
-            $site = $_SESSION['oups']['site'];
-        }
-        if (!$site) {
-            $p = new \personnel();
-            $p->fetchById($_SESSION['login_id']);
-            $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
-        }
-
-        $site = $site ? $site : 1;
-
-        $_SESSION['oups']['site']=$site;
-
-        return $site;
     }
 
     private function noWeekDataFor($datesSemaine, $site)

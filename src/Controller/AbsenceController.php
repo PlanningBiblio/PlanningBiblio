@@ -1337,21 +1337,13 @@ class AbsenceController extends BaseController
             // Pour chaque agent, recherche des destinataires de notification en fonction de la config. (responsables absences, responsables directs, agent).
             $ids = array_column($agents, 'perso_id'); 
             $staff_members = $this->entityManager->getRepository(Agent::class)->findById($ids);
-            $destinataires=array();
+            $destinataires = array();
             foreach ($staff_members as $member) {
                 $a = new \absences();
                 $a->getRecipients("-$workflow$notifications", $responsables, $member);
-                $destinataires=array_merge($destinataires, $a->recipients);
+                $destinataires = array_merge($destinataires, $a->recipients);
             }
-
-            // Suppresion des doublons dans les destinataires
-            $tmp = array();
-            foreach ($destinataires as $elem) {
-                if (!in_array($elem, $tmp)) {
-                    $tmp[]=$elem;
-                }
-            }
-            $destinataires=$tmp;
+            $destinataires = array_unique($destinataires);
         }
 
         // Recherche des plages de SP concernées pour ajouter cette information dans le mail.

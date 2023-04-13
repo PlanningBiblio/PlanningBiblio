@@ -344,7 +344,7 @@ class absences
                 $m->send();
 
                 // Si erreur d'envoi de mail
-                if ($m->error) {
+                if ($m->error && $m->error_CJInfo) {
                     $msg2 .= "<li>".$m->error_CJInfo."</li>";
                     $msg2_type = "error";
                 }
@@ -1244,7 +1244,7 @@ class absences
             }
         }
 
-        $this->recipients=$recipients;
+        $this->recipients = array_unique(array_filter($recipients));
     }
 
 
@@ -1345,7 +1345,7 @@ class absences
         break;
     }
 
-        $this->recipients = array_unique($destinataires);
+        $this->recipients = array_unique(array_filter($destinataires));
     }
 
 

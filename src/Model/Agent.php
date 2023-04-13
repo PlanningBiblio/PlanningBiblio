@@ -235,6 +235,10 @@ class Agent extends PLBEntity
     public function get_manager_emails() {
         $emails_string = $this->mails_responsables();
 
+        if ($emails_string == '') {
+            return array();
+        }
+
         return explode(';', $emails_string);
     }
 

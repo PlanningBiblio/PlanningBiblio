@@ -264,6 +264,7 @@ $(function(){
       // On refait le zebra, à chaque fois que le tableau est redessiné.
       // Utile en cas de suppression de ligne et d'utilisation du filtre et des tris
       "fnDrawCallback": CJDataTableStripe,
+      responsive: true,
     });
 
     // Colonnes fixes
