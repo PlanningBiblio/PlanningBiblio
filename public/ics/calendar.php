@@ -43,6 +43,7 @@ require_once "../include/function.php";
 require_once "../absences/class.absences.php";
 require_once "../personnel/class.personnel.php";
 require_once "../postes/class.postes.php";
+require_once(__DIR__ . '/../ics/class.ics.php');
 require_once __DIR__ . '/../init_entitymanager.php';
 
 $CSRFToken = CSRFToken();
@@ -52,11 +53,11 @@ if (!$config['ICS-Export']) {
     exit;
 }
 
-$url=$_SERVER['SERVER_NAME'];
 $code=filter_input(INPUT_GET, "code", FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 $login=filter_input(INPUT_GET, "login", FILTER_SANITIZE_STRING);
 $mail=filter_input(INPUT_GET, "mail", FILTER_SANITIZE_EMAIL);
+$get_absences = filter_input(INPUT_GET, 'absences', FILTER_SANITIZE_NUMBER_INT);
 
 // Définission de l'id de l'agent si l'argument login est donné
 if (!$id and $login) {
@@ -88,7 +89,6 @@ if (!$id) {
 }
 
 logs("Exportation des plages de SP pour l'agent #$id", "ICS Export", $CSRFToken);
-
 
 // N'affiche pas les calendriers des agents supprimés
 $requete_personnel = array('supprime'=>0);
@@ -226,85 +226,52 @@ if (isset($planning)) {
 
     // Complète le tableau $ical
     foreach ($tab as $elem) {
-        $debut = date("Ymd\THis", strtotime($elem['date']." ".$elem['debut']));
-        $fin = date("Ymd\THis", strtotime($elem['date']." ".$elem['fin']));
-        // Nom du poste pour SUMMARY
-        $poste = html_entity_decode($postes[$elem['poste']]['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-        // Site et étage pour LOCATION
-        $site = isset($sites) ? html_entity_decode($sites[$elem['site']], ENT_QUOTES|ENT_IGNORE, 'UTF-8') : null;
-        $etage = $postes[$elem['poste']]['etage'] ? ' ' . $postes[$elem['poste']]['etage'] : null;
-        // Validation pour LAST-MODIFIED et DSTAMP
-        $validation = gmdate("Ymd\THis\Z", strtotime($verrou[$elem['date'].'_'.$elem['site']]['date']));
-        // ORGANIZER
+
+        // Organizer
         $organizer = null;
         if (isset($agents[$verrou[$elem['date'].'_'.$elem['site']]['agent']])) {
             $tmp = $agents[$verrou[$elem['date'].'_'.$elem['site']]['agent']];
-            $organizer = html_entity_decode($tmp['prenom'].' '.$tmp['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $organizer = $tmp['prenom'] . ' ' . $tmp['nom'];
             $organizer .= ':mailto:'.$tmp['mail'];
         }
     
-        $ical[]="BEGIN:VEVENT";
-        $ical[]="UID: $id-{$elem['site']}-{$elem['poste']}-$debut-$fin@$url";
-        $ical[]="DTSTAMP:" . gmdate('Ymd').'T'. gmdate('His') . "Z";
-        $ical[]="DTSTART;TZID=$tz:$debut";
-        $ical[]="DTEND;TZID=$tz:$fin";
-        $ical[]="SUMMARY:$poste";
-        if ($organizer) {
-            $ical[]="ORGANIZER;CN=$organizer";
-        }
-        $ical[]="LOCATION:{$site}{$etage}";
-        $ical[]="STATUS:CONFIRMED";
-        $ical[]="CLASS:PUBLIC";
-        $ical[]="X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY";
-        $ical[]="TRANSP:OPAQUE";
-        $ical[]="LAST-MODIFIED:$validation";
-        $ical[]="DTSTAMP:$validation";
-        $ical[]="BEGIN:VALARM";
-        $ical[]="ACTION:DISPLAY";
-        $ical[]="DESCRIPTION:This is an event reminder";
-        $ical[]="TRIGGER:-P0DT0H10M0S";
-        $ical[]="END:VALARM";
-        $ical[]="END:VEVENT";
+        $params = [
+            'id' => $id,
+            'start' => strtotime($elem['date']." ".$elem['debut']),
+            'end' => strtotime($elem['date']." ".$elem['fin']),
+            'site' => !empty($sites[$elem['site']]) ? $sites[$elem['site']] : null,
+            'siteId' => $elem['site'],
+            'floor' => !empty($postes[$elem['poste']]['etage']) ? ' ' . $postes[$elem['poste']]['etage'] : null,
+            'position' => $postes[$elem['poste']]['nom'],
+            'positionId' => $elem['poste'],
+            'organizer' => $organizer,
+            'lastModified' => strtotime($verrou[$elem['date'].'_'.$elem['site']]['date']),
+        ];
+
+        $event = CJICS::createIcsEvent($params);
+        $ical = array_merge($ical, $event);
     }
 }
 
-if(isset($absences)){
+if (isset($absences) and $get_absences) {
+
   // Complète le tableau $ical
-  foreach($absences as $elem){
-    $debut = date("Ymd\THis", strtotime($elem['debut']));
-    $fin = date("Ymd\THis", strtotime($elem['fin']));
-    // Nom du poste pour SUMMARY
-    $motif = html_entity_decode($elem['motif'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
-    $commentaires = html_entity_decode($elem['commentaires'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
-    // Validation pour LAST-MODIFIED et DSTAMP
-    $validation = date("Ymd\THis", strtotime($elem['validation']));
-    // Demande pour CREATED
-    $demande = date("Ymd\THis", strtotime($elem['demande']));
-    // ORGANIZER
-    $organizer = null;
-    $ical[]="BEGIN:VEVENT";
-    $ical[]="UID: $id---$debut-$fin@$url";
-    $ical[]="DTSTAMP:" . gmdate('Ymd').'T'. gmdate('His') . "Z";
-    $ical[]="DTSTART;TZID=$tz:$debut";
-    $ical[]="DTEND;TZID=$tz:$fin";
-    $ical[]="SUMMARY:$motif".($commentaires?" - $commentaires":"");
-    if($organizer){
-      $ical[]="ORGANIZER;CN=$organizer";
-    }
-    $ical[]="LOCATION:INDISPO";
-    $ical[]="STATUS:".($elem['valide']?"CONFIRMED":"TENTATIVE");
-    $ical[]="CLASS:PUBLIC";
-    $ical[]="X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY";
-    $ical[]="TRANSP:OPAQUE";
-    $ical[]="CREATED:$demande";
-    $ical[]="LAST-MODIFIED:$validation";
-    $ical[]="DTSTAMP:$validation";
-    $ical[]="BEGIN:VALARM";
-    $ical[]="ACTION:DISPLAY";
-    $ical[]="DESCRIPTION:This is an event reminder";
-    $ical[]="TRIGGER:-P0DT0H10M0S";
-    $ical[]="END:VALARM";
-    $ical[]="END:VEVENT";
+
+  foreach ($absences as $elem) {
+
+    $params = [
+        'id' => $id,
+        'start' => strtotime($elem['debut']),
+        'end' => strtotime($elem['fin']),
+        'reason' => $elem['motif'],
+        'comment' => $elem['commentaires'],
+        'status' => $elem['valide'] ? 'CONFIRMED' : 'TENTATIVE',
+        'createdAt' => strtotime($elem['demande']),
+        'lastModified' => strtotime($elem['validation']),
+    ];
+ 
+    $event = CJICS::createIcsEvent($params);
+    $ical = array_merge($ical, $event);
   }
 }
 
