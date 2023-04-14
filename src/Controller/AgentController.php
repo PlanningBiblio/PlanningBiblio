@@ -393,8 +393,8 @@ class AgentController extends BaseController
             $mail = null;
             $statut = null;
             $categorie = null;
-            $check_hamac = 1;
-            $check_ics = array(1,1,1);
+            $check_hamac = 0;
+            $check_ics = array(0,0,0);
             $service = null;
             $heuresHebdo = null;
             $heuresTravail = null;
