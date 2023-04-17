@@ -1,53 +1,16 @@
-*** Unreleased ***
-- Enhancements
-MT39277: Include deleted agents in statistics by position
-MT37569: adapt holiday reseting cron jobs
-MT39194: Add param CAS-LoginAttribute which can be used when the UID should not be used as login
-MT39474: change the background color for mandatory positions
-Remove SR warning on lunch positions : add a lunch properties on position
-MT39248: prohibit changing the password in demo mode
-
+*** Version 22.11.07       (2023-04-17)    ***
 - Fixes
-MT38757: restore access to planning and page for anonymous users
-MT38997: Fix duplicate display of absence list
-MT38997: Do not add tr1/tr2 classes on DataTable rows
-MT38997: restore odd/even lines in absences table
-MT39061: catch exceptions when parsing ICS files
-MT39079: make personnel.droits a text column
-MT39112: CAS Auth: set the required param "CAS base URL"
-Fix rowCounts error in PurgeLogTable.php
-MT39346: remove CSRF Error before login
-MT39276: Fix hours display in statistics/absence
-MT39408: Replace fetchAll with fetchAllAssociative in MSGraphClient
-MT39089: fix migrations error
-MT39022: take absences for remote working into account when notifying in plannings
-MT38746: Fix wrong URLs
-MT38912: Show holiday accounts for managed agents only
-MT39277: Correctly display the item "autre" on statistics/position
-Fix Overtimes unit tests
-MT39443: Fix ajax.updateCell.php to restore copy to right cell #828
-MT39418: Simplify print.css
-MT39464: do not show refused absences under the planning
-MT38897: ignore tables for which no correction is needed in fix_encoding_issues.php
-MT39300: update sites when changing agent on workinghour copy form
-MT39300: keep same planning checked when planning is the same
-MT39263: fix the display of holiday/add and overtime/edit forms
-MT39263: fix the display of holiday/add and overtime/edit forms
-MT39409: Fix fatal error on page /position
+MT39966: Fix comments display under plannings #900
+MT39836: interpret html tags on comments in weekly view #899
+MT40252: don't show the alert "select more than 1 year", follow up #897
+MT40456: fix error 'La demande doit être effectuée dans les 0 jours' #896
+MT39529: Fix erroneous message on absence add #883
 
-- Plumbing
-CircleCI : disable codecov on php7.4
-Symfonize recup_pose
-Symfonize agent deletion
-Remove phpunit direct depreciations
-Add test for absence right with Absences-notifications-agent-par-agent
-Added unit tests for recurring absence
-Add Unit tests for Model Agent
-Add unit tests for Closing Day Controller
-Add unit tests for Agent index
-Add unit test for add and edit Agent - rights/access
-Add unit tests for Model Model
-Add unit tests for Absences information, list, add, and edit
+- Security
+Add unit tests for password change with CSRF protection #895
+
+- Enhancements
+MT39901: Responsive Compatibility #886
 
 *** Version 22.11.06       (2023-03-16)    ***
 - Fixes:
