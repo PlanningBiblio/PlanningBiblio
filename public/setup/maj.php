@@ -2790,6 +2790,13 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="22.04.05.000";
+if (version_compare($config['Version'], $v) === -1) {
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+# MARKER
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
