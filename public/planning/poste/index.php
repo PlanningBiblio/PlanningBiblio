@@ -647,10 +647,10 @@ EOD;
     if (!empty($absences_planning)) {
         echo "<h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>\n";
         echo "<table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'><thead>\n";
-        echo "<tr><th class='tableSort'>Nom</th><th class='tableSort'>Pr&eacute;nom</th>\n";
-        echo "<th class='dataTableDateFR tableSort'>D&eacute;but</th>\n";
-        echo "<th class='dataTableDateFR tableSort'>Fin</th>\n";
-        echo "<th class='tableSort'>Motif</th></tr></thead>\n";
+        echo "<tr><th>Nom</th><th>Prénom</th>\n";
+        echo "<th class='dataTableDateFR'>D&eacute;but</th>\n";
+        echo "<th class='dataTableDateFR'>Fin</th>\n";
+        echo "<th>Motif</th></tr></thead>\n";
         echo "<tbody>\n";
         foreach ($absences_planning as $elem) {
             if ($elem['valide'] <= 0 and $config['Absences-non-validees'] == 0) {
