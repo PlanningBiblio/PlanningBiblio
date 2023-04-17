@@ -1,7 +1,17 @@
-*** Unreleased ***
-- Enhancements
+*** Version 22.10.07       (2023-04-17)    ***
 - Fixes
-- Plumbing
+MT39966: Fix comments display under plannings #900
+MT39836: interpret html tags on comments in weekly view #899
+MT40252: don't show the alert "select more than 1 year", follow up #897
+MT40456: fix error 'La demande doit être effectuée dans les 0 jours' #896
+MT39529: Fix erroneous message on absence add #883
+
+- Security
+Add unit tests for password change with CSRF protection #895
+
+- Enhancements
+MT39901: Responsive Compatibility for 22.10.xx #887
+
 
 *** Version 22.10.06       (2023-03-16)    ***
 - Fixes:
