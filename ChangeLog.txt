@@ -1,10 +1,17 @@
-*** Version 22.11.07       (2023-04-17)    ***
+*** Version 23.04.00       (2023-04-18)    ***
 - Fixes
 MT39966: Fix comments display under plannings #900
 MT39836: interpret html tags on comments in weekly view #899
 MT40252: don't show the alert "select more than 1 year", follow up #897
 MT40456: fix error 'La demande doit être effectuée dans les 0 jours' #896
 MT39529: Fix erroneous message on absence add #883
+MT40252: don't show the alert "please select more than 1 year" on leap years #889
+MT39878: fix undefined variable when using CAS-SQL mode and APP_DEBUG=1 #876
+MT37657: Add IF NOT EXISTS on the create table absences_documents query #882
+MT39693: Show closingday in menu only if Conges-Enable is enabled #884
+MT39992: the week view take into account the site parameter #877
+MT39412: the datefull twig filter now interpret html tags #864
+MT39894: disable calendar synchronizations for new agents by default #901
 
 - Security
 Add unit tests for password change with CSRF protection #895
@@ -12,17 +19,10 @@ Add unit tests for password change with CSRF protection #895
 - Enhancements
 MT39901: Responsive Compatibility #886
 
-*** Version 22.11.06       (2023-03-16)    ***
-- Fixes:
-MT40252: don't show the alert "please select more than 1 year" on leap years #889
-MT39878: fix undefined variable when using CAS-SQL mode and APP_DEBUG=1 #876
-MT37657: Add IF NOT EXISTS on the create table absences_documents query #882
-MT39693: Show closingday in menu only if Conges-Enable is enabled #884
-MT39992: the week view take into account the site parameter #877
-MT39412: the datefull twig filter now interpret html tags #864
-
 - Plumbing:
 Bump symfony/http-kernel from 4.4.48 to 4.4.50
+20230131 depreciations #862
+
 
 *** Version 22.10.05       (2023-02-23)    ***
 - Enhancements
