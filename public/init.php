@@ -27,7 +27,8 @@ $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']
 
 // Version
 $version="22.04.05.000"; // xx.xx.xx.xxx
-$displayed_version="22.04.04"; // xx.xx.xx
+$displayed_version = preg_replace('/(\d*\.\d*\.\d*).*/','\1', $version);
+
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
