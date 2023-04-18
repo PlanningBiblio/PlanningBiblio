@@ -1,3 +1,7 @@
+*** Version 22.10.08       (2023-04-18)    ***
+- Fixes
+MT39894: disable calendar synchronizations for new agents by default #901
+
 *** Version 22.10.07       (2023-04-17)    ***
 - Fixes
 MT39966: Fix comments display under plannings #900
