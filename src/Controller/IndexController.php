@@ -41,7 +41,7 @@ class IndexController extends BaseController
     public function index(Request $request)
     {
         // Initialisation des variables
-        $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
+        $CSRFToken = $request->get('CSRFToken');
         $this->CSRFToken = $CSRFToken;
         $groupe = $request->get('groupe');
         $site = $request->get('site');
@@ -1007,8 +1007,8 @@ class IndexController extends BaseController
         $notes = $p->notes;
         $notesTextarea = $p->notesTextarea;
         $notesValidation = $p->validation;
-        $notesDisplay = trim($notes) ? null : 'style=display:none;';
-        $notesSuppression = ($notesValidation and !trim($notes))
+        $notesDisplay = trim(strval($notes)) ? null : 'style=display:none;';
+        $notesSuppression = ($notesValidation and !trim(strval($notes)))
             ? 'Suppression du commentaire : ' : null;
 
         return array(

@@ -167,6 +167,9 @@ class AppExtension extends AbstractExtension
 
     public function htmlFilter($html)
     {
+	if (!$html)
+	  return $html;
+
         foreach ($this->blacklistedTags as $tag) {
             $html = preg_replace("/<$tag.*?>(.*)?<\/$tag>/im","$1",$html);
         }

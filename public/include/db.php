@@ -76,6 +76,10 @@ class db
         if (!$this->conn) {
             $this->connect();
         }
+
+	if (is_null($str))
+	  return $str;
+
         $str=mysqli_real_escape_string($this->conn, $str);
         return $str;
     }
@@ -364,7 +368,9 @@ class db
                 } elseif (substr($set[$field], 0, 7)==="CONCAT(") {
                     $tmp[]="`{$field}`={$set[$field]}";
                 } else {
-                    $set[$field]=mysqli_real_escape_string($this->conn, $set[$field]);
+                    $set[$field] = !is_null($set[$field]) ?
+			mysqli_real_escape_string($this->conn, $set[$field])
+			: $set[$field];
                     $tmp[]="`{$field}`='{$set[$field]}'";
                 }
             }
@@ -397,7 +403,9 @@ class db
             $keys=array_keys($where);
             $tmp=array();
             foreach ($keys as $key) {
-                $value=mysqli_real_escape_string($this->conn, $where[$key]);
+                $value = !is_null($where[$key])
+		    ? mysqli_real_escape_string($this->conn, $where[$key])
+		    : $where[$key];
                 $tmp[]=$this->makeSearch($key, $value);
             }
             $where=implode(" AND ", $tmp);
@@ -425,8 +433,10 @@ class db
             $fields=array_keys($values[0]);
             for ($i=0;$i<count($values);$i++) {
                 foreach ($fields as $elem) {
-                    $values[$i][$elem]=mysqli_real_escape_string($this->conn, $values[$i][$elem]);
-                }
+                    $values[$i][$elem] = !is_null($values[$i][$elem])
+			? mysqli_real_escape_string($this->conn, $values[$i][$elem])
+			: $values[$i][$elem];
+		}
             }
             $fields=implode("`,`", $fields);
 
@@ -436,7 +446,9 @@ class db
         } else {
             $fields=array_keys($values);
             foreach ($fields as $elem) {
-                $values[$elem]=mysqli_real_escape_string($this->conn, $values[$elem]);
+                $values[$elem] = !is_null($values[$elem])
+		    ? mysqli_real_escape_string($this->conn, $values[$elem])
+		    : $values[$elem];
             }
             $fields=implode("`,`", $fields);
             $tab[]="'".implode("','", $values)."'";
@@ -462,7 +474,7 @@ class db
         }
 
         // BETWEEN
-        if (substr($value, 0, 7)=="BETWEEN") {
+        if (substr(strval($value), 0, 7)=="BETWEEN") {
             $tmp=trim(substr($value, 7));
             $tmp=explode("AND", $tmp);
             $value1=htmlentities(trim($tmp[0]), ENT_QUOTES | ENT_IGNORE, "UTF-8", false);
@@ -473,7 +485,7 @@ class db
         }
 
         // IN
-        elseif (substr($value, 0, 2)=="IN") {
+        elseif (substr(strval($value), 0, 2)=="IN") {
             $tmp=trim(substr($value, 2));
             $tmp=explode(",", $tmp);
 
@@ -486,7 +498,7 @@ class db
             return "{$key} IN ('$values')";
         }
 
-        elseif (substr($value, 0, 6)=="NOT IN") {
+        elseif (substr(strval($value), 0, 6)=="NOT IN") {
             $tmp=trim(substr($value, 6));
             $tmp=explode(",", $tmp);
 
