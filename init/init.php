@@ -12,7 +12,7 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 // Version
 $version="22.10.07.000"; // xx.xx.xx.xxx
 $GLOBALS['version'] = $version;
-$displayed_version="22.10.06"; // xx.xx.xx
+$displayed_version = preg_replace('/(\d*\.\d*\.\d*).*/','\1', $version);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
