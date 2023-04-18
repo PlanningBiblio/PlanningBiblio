@@ -393,8 +393,8 @@ class AgentController extends BaseController
             $mail = null;
             $statut = null;
             $categorie = null;
-            $check_hamac = 1;
-            $check_ics = array(1,1,1);
+            $check_hamac = 0;
+            $check_ics = array(0,0,0);
             $service = null;
             $heuresHebdo = null;
             $heuresTravail = null;
@@ -595,7 +595,7 @@ class AgentController extends BaseController
         }
 
         if ($this->config('ICS-Server1')) {
-            $ics_pattern = !empty($this->config('ICS-Pattern1')) ? $this->config('ICS-Pattern1') : 'Serveur ICS N&deg;1';
+            $ics_pattern = !empty($this->config('ICS-Pattern1')) ? $this->config('ICS-Pattern1') : 'Serveur ICS N°1';
             $this->templateParams(array(
                 'ics_pattern'     => $ics_pattern,
                 'check_ics'       => !empty($check_ics[0]) ? 1 : 0,
@@ -603,7 +603,7 @@ class AgentController extends BaseController
         }
 
         if ($this->config('ICS-Server2')) {
-            $ics_pattern = !empty($this->config('ICS-Pattern2')) ? $this->config('ICS-Pattern2') : 'Serveur ICS N&deg;2';
+            $ics_pattern = !empty($this->config('ICS-Pattern2')) ? $this->config('ICS-Pattern2') : 'Serveur ICS N°2';
             $this->templateParams(array(
                 'ics_pattern2'     => $ics_pattern,
                 'check_ics2'       => !empty($check_ics[1]) ? 1 : 0,
@@ -612,9 +612,11 @@ class AgentController extends BaseController
 
         // URL du flux ICS à importer
         if ($this->config('ICS-Server3')) {
+            $ics_pattern = !empty($this->config('ICS-Pattern3')) ? $this->config('ICS-Pattern3') : 'Serveur ICS N°3';
             $this->templateParams(array(
-                'check_ics3' => !empty($check_ics[2]) ? 1 : 0,
-                'url_ics'    => $url_ics,
+                'ics_pattern3'     => $ics_pattern,
+                'check_ics3'       => !empty($check_ics[2]) ? 1 : 0,
+                'url_ics'          => $url_ics,
             ));
         }
 
