@@ -55,7 +55,7 @@ sed -i "s/$from/$to/g" 'public/setup/db_data.php'
 
 git diff
 
-sed -i "/# MARKER/i\$v=\"$to\";\nif (version_compare(\$config['Version'], \$v) === -1) {\n\n\    \$sql[] = \"UPDATE \`{\$dbprefix}config\` SET \`valeur\`='\$v' WHERE \`nom\`='Version';\";\n}" 'public/setup/maj.php'
+sed -i "/# MARKER/i\$v=\"$to\";\n\nif (version_compare(\$config['Version'], \$v) === -1) {\n\n\    \$sql[] = \"UPDATE \`{\$dbprefix}config\` SET \`valeur\`='\$v' WHERE \`nom\`='Version';\";\n}" 'public/setup/maj.php'
 
 vi public/setup/maj.php +/MARKER
 

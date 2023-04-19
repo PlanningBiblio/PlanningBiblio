@@ -1,6 +1,6 @@
 <?php
 
-    $version = '23.05.00.000';
+    $version = '23.05.00.001';
 
     $file = __DIR__ . '/../public' . $_SERVER['REQUEST_URI'];
     $file = str_replace("?version=$version", '', $file);
