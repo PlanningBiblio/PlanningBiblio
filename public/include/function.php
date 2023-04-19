@@ -654,6 +654,14 @@ function cmp_jour($a, $b)
     return ($a['jour'] > $b['jour']) ? 1 : -1;
 }
 
+function cmp_debut_fin($a, $b)
+{
+    if ($a['debut'] == $b['debut']) {
+        return ($a['fin'] > $b['fin']) ? 1 : -1;
+    }
+    return ($a['debut'] > $b['debut']) ? 1 : -1;
+}
+
 function cmp_debut_fin_nom($a, $b)
 {
     if ($a['debut'] == $b['debut']) {
