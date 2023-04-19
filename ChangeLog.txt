@@ -1,3 +1,6 @@
+*** Version 23.04.01       (2023-04-19)    ***
+MT40694_1: Restore cmp_debut_fin function
+
 *** Version 23.04.00       (2023-04-18)    ***
 - Fixes
 MT39966: Fix comments display under plannings #900

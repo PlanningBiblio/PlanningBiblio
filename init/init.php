@@ -10,7 +10,7 @@ $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_
 $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSION['oups']['Auth-Mode'] : '';
 
 // Version
-$version="23.04.00.000"; // xx.xx.xx.xxx
+$version="23.04.01.000"; // xx.xx.xx.xxx
 $GLOBALS['version'] = $version;
 $displayed_version = preg_replace('/(\d*\.\d*\.\d*).*/','\1', $version);
 
