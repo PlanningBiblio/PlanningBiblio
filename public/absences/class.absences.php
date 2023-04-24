@@ -476,104 +476,6 @@ class absences
         return (array) $heures;
     }
   
-  
-  
-    /**
-    * @function calculTemps
-    * @param debut string, date de début au format YYYY-MM-DD [H:i:s]
-    * @param fin string, date de fin au format YYYY-MM-DD [H:i:s]
-    * @param perso_id int, id de l'agent
-    * Calcule le temps de travail d'un agent entre 2 dates.
-    * Utilisé pour calculer le nombre d'heures correspondant à une absence
-    * Ne calcule pas le temps correspondant aux jours de fermeture
-    */
-    public function calculTemps($debut, $fin, $perso_id)
-    {
-        $version=$GLOBALS['config']['Version'];
-
-        $hre_debut=substr($debut, -8);
-        $hre_fin=substr($fin, -8);
-        $hre_fin=$hre_fin=="00:00:00"?"23:59:59":$hre_fin;
-        $debut=substr($debut, 0, 10);
-        $fin=substr($fin, 0, 10);
-
-        // Calcul du nombre d'heures correspondant à une absence
-        $current=$debut;
-        $difference=0;
-
-        // Pour chaque date
-        while ($current<=$fin) {
-
-      // On ignore les jours de fermeture
-            $j = new ClosingDay();
-            $j->fetchByDate($current);
-            if (!empty($j->elements)) {
-                foreach ($j->elements as $elem) {
-                    if ($elem['fermeture']) {
-                        $current=date("Y-m-d", strtotime("+1 day", strtotime($current)));
-                        continue 2;
-                    }
-                }
-            }
-
-            $debutAbsence=$current==$debut?$hre_debut:"00:00:00";
-            $finAbsence=$current==$fin?$hre_fin:"23:59:59";
-            $debutAbsence=strtotime($debutAbsence);
-            $finAbsence=strtotime($finAbsence);
-      
-            // On consulte le planning de présence de l'agent
-            // On ne calcule pas les heures si le module planningHebdo n'est pas activé, le calcul serait faux si les emplois du temps avaient changé
-            if (!$GLOBALS['config']['PlanningHebdo']) {
-                $this->error=true;
-                $this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
-                return false;
-            }
-
-            // On consulte le planning de présence de l'agent
-            $version=$GLOBALS['version'];
-            require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
-
-            $p=new planningHebdo();
-            $p->perso_id=$perso_id;
-            $p->debut=$current;
-            $p->fin=$current;
-            $p->valide=true;
-            $p->fetch();
-            // Si le planning n'est pas validé pour l'une des dates, on retourne un message d'erreur et on arrête le calcul
-            if (empty($p->elements)) {
-                $this->error=true;
-                $this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
-                return false;
-            }
-
-            // Sinon, on calcule les heures d'absence
-            $d=new datePl($current);
-            $semaine=$d->semaine3;
-            $jour=$d->position?$d->position:7;
-            $jour=$jour+(($semaine-1)*7)-1;
-
-            $wh = new WorkingHours($p->elements[0]['temps']);
-            $temps = $wh->hoursOf($jour);
-
-            foreach ($temps as $t) {
-                $t0 = strtotime($t[0]);
-                $t1 = strtotime($t[1]);
-        
-                $debutAbsence1 = $debutAbsence > $t0 ? $debutAbsence : $t0;
-                $finAbsence1 = $finAbsence < $t1 ? $finAbsence : $t1;
-                if ($finAbsence1 > $debutAbsence1) {
-                    $difference += $finAbsence1 - $debutAbsence1;
-                }
-            }
-
-            $current=date("Y-m-d", strtotime("+1 day", strtotime($current)));
-        }
-
-        $this->minutes=$difference/60;                                      // nombre de minutes (ex 2h30 => 150)
-    $this->heures=$difference/3600;                                     // heures et centièmes (ex 2h30 => 2.50)
-    $this->heures2=heure4(number_format($this->heures, 2, '.', ''));    // heures et minutes (ex: 2h30 => 2h30)
-    }
-
     /**
     * @function calculTemps2
     * @param debut string, date de début au format YYYY-MM-DD [H:i:s]
@@ -583,8 +485,7 @@ class absences
     * @param ignoreFermeture boolean, default=false : ignorer les jours de fermeture
     * Calcule le temps de travail d'un agents entre 2 dates.
     * Utilisé pour calculer le nombre d'heures correspondant à une absence
-    * Les heures de présences sont données en paramètre dans un tableau. Offre de meilleurs performance que la fonction calculTemps
-    * lorsqu'elle est executée pour plusieurs agents
+    * Les heures de présences sont données en paramètre dans un tableau afin d'obtenir de meilleurs performance qu si elles étaient recherchées au sein de la fonction (évite les requêtes dans les boucles).
     */
     public function calculTemps2()
     {
@@ -645,7 +546,10 @@ class absences
                 $edt=array();
                 if ($this->edt and !empty($this->edt)) {
                     foreach ($this->edt as $elem) {
-                        if ($elem['perso_id'] == $perso_id) {
+                        if ( $elem['perso_id'] == $perso_id
+                            and $elem['debut'] <= $current
+                            and $elem['fin'] >= $current
+                            ) {
                             $edt=$elem;
                             break;
                         }

@@ -21,6 +21,7 @@ require_once __DIR__ . "/../../public/include/db.php";
 require_once __DIR__ . "/../../public/include/horaires.php";
 include_once __DIR__ . '/../../public/statistiques/class.statistiques.php';
 include_once __DIR__ . '/../../public/absences/class.absences.php';
+include_once __DIR__ . '/../../public/planningHebdo/class.planningHebdo.php';
 include_once __DIR__ . '/../../public/postes/class.postes.php';
 
 class StatisticController extends BaseController
@@ -1455,6 +1456,17 @@ class StatisticController extends BaseController
         }
         sort($motifs);
 
+        // Recherche de tous les plannings de présence
+        $edt = array();
+        $ph = new \planningHebdo();
+        $ph->debut = $debutSQL;
+        $ph->fin = $finSQL;
+        $ph->valide = true;
+        $ph->fetch();
+        if ($ph->elements and !empty($ph->elements)) {
+            $edt = $ph->elements;
+        }
+
         // Regroupe les absences par agent et par motif
         // Et ajoute les heures correspondantes
         $tab = array();
@@ -1492,8 +1504,14 @@ class StatisticController extends BaseController
 
             // Ajout des heures d'absences
             if ($afficheHeures) {
+
                 $a = new \absences();
-                $a->calculTemps($elem['debut'], $elem['fin'], $elem['perso_id']);
+                $a->debut = $elem['debut'];
+                $a->fin = $elem['fin'];
+                $a->perso_id = $elem['perso_id'];
+                $a->edt = $edt;
+                $a->ignoreFermeture = true;
+                $a->calculTemps2();
                 $heures = $a->heures;
 
                 // heures agent pour le motif courant
