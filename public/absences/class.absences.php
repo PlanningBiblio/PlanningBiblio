@@ -574,7 +574,7 @@ class absences
             }
       
 
-            $wh = new WorkingHours($edt['temps']);
+            $wh = new WorkingHours($edt['temps'], $edt['breaktime']);
             $temps = $wh->hoursOf($jour);
 
             foreach ($temps as $t) {
@@ -592,8 +592,8 @@ class absences
         }
 
         $this->minutes=$difference/60;                                      // nombre de minutes (ex 2h30 => 150)
-    $this->heures=$difference/3600;                                     // heures et centièmes (ex 2h30 => 2.50)
-    $this->heures2=heure4(number_format($this->heures, 2, '.', ''));    // heures et minutes (ex: 2h30 => 2h30)
+        $this->heures=$difference/3600;                                     // heures et centièmes (ex 2h30 => 2.50)
+        $this->heures2=heure4(number_format($this->heures, 2, '.', ''));    // heures et minutes (ex: 2h30 => 2h30)
     }
 
   
