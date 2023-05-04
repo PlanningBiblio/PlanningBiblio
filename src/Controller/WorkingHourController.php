@@ -101,10 +101,38 @@ class WorkingHourController extends BaseController
         $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
         $GLOBALS['temps'] = $temps;
 
+        $columns = [
+            "Heure d'arrivée",
+            "Début de pause",
+            "Fin de pause",
+            "Heure de départ"
+        ];
+
+        if ($this->config('Nantes')) {
+            $columns = [
+                "Heure d'arrivée AM",
+                "Heure de départ AM",
+                "Heure d'arrivée PM",
+                "Heure de départ PM"
+            ];
+        }
+
+        if ($pause2_enabled) {
+            $columns = [
+                "Heure d'arrivée",
+                "Début de pause 1",
+                "Fin de pause 1",
+                "Début de pause 2",
+                "Fin de pause 2",
+                "Heure de départ"
+            ];
+        }
+
         $this->templateParams(
             array(
                 "breaktime"      => $breaktime,
                 "cellule"        => $cellule,
+                "columns"        => $columns,
                 "debut"          => $debut,
                 "fin"            => $fin,
                 "jours"          => $jours,
@@ -118,6 +146,7 @@ class WorkingHourController extends BaseController
                 "temps"          => $temps
             )
         );
+
         return $this->output('/workinghour/tables.html.twig');
 
     }

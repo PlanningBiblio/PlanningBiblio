@@ -123,7 +123,13 @@ function calculHeures(object,num,form,tip,numero){
     }
 
     if (breaktime !== 'undefined' && breaktime > 0) {
-        diff = diff - (breaktime * 60);
+        // TODO : get config from DB/template
+        configNantes = true;
+        if (configNantes) {
+            diff = diff + (breaktime * 60);
+        } else {
+            diff = diff - (breaktime * 60);
+        }
     }
     
     heures+=diff;
@@ -912,14 +918,28 @@ $(function(){
       });
     });
 
+
+    //TODO: get config from DB/Template
+    configNantes = true;
+
+    if (configNantes) {
+        var interval = 10;
+        var maxTime = '00:20';
+        var maxHour = 0;
+    } else {
+        var interval = 15;
+        var maxTime = '02:00';
+        var maxHour = 2;
+    }
+
     $('body').on('focus',".planno-break-timepicker", function(){
       $('.planno-break-timepicker').plannoTimepicker({
-        interval: 15,
+        interval: interval,
         granularity: granularity,
         minTime: '00:00',
         minHour: '0',
-        maxTime: '02:00',
-        maxHour: '2',
+        maxTime: maxTime,
+        maxHour: maxHour,
         dynamic: false,
       });
     });

@@ -101,7 +101,12 @@ class WorkingHours
     private function substractBreak($hour, $interval)
     {
          $minutes = $interval * 60;
-         $new_hour = date('H:i:s', strtotime("- $minutes minutes $hour"));
+
+         if ($GLOBALS['config']['Nantes']) {
+             $new_hour = date('H:i:s', strtotime("+ $minutes minutes $hour"));
+         } else {
+             $new_hour = date('H:i:s', strtotime("- $minutes minutes $hour"));
+         }
 
          return $new_hour;
     }

@@ -8,6 +8,33 @@ $temps = $GLOBALS['temps'];
 $breaktimes = $GLOBALS['breaktimes'];
 $hours_tab = '';
 
+$columns = [
+    "Heure d'arrivée",
+    "Début de pause",
+    "Fin de pause",
+    "Heure de départ"
+];
+
+if ($config['Nantes']) {
+    $columns = [
+        "Heure d'arrivée AM",
+        "Heure de départ AM",
+        "Heure d'arrivée PM",
+        "Heure de départ PM"
+    ];
+}
+
+if ($config['PlanningHebdo-Pause2']) {
+    $columns = [
+        "Heure d'arrivée",
+        "Début de pause 1",
+        "Fin de pause 1",
+        "Début de pause 2",
+        "Fin de pause 2",
+        "Heure de départ"
+    ];
+}
+
 if ($config['PlanningHebdo']) {
     $holiday_helper = new HolidayHelper(array("perso_id" => $id));
     $result = $holiday_helper->getPlanning();
@@ -56,14 +83,11 @@ for ($j = 0; $j < $nb_semaine; $j++) {
     $hours_tab .= "<div id='workinghour_tables'>\n";
     $hours_tab .= "<table>\n";
     $hours_tab .= "<thead>\n";
-    $hours_tab .= "<tr><th>{$cellule[$j]}</th><th>Heure d'arrivée</th>";
-    if ($config['PlanningHebdo-Pause2']) {
-        $hours_tab .= "<th>Début de pause 1</th><th>Fin de pause 1</th>";
-        $hours_tab .= "<th>Début de pause 2</th><th>Fin de pause 2</th>";
-    } else {
-        $hours_tab .= "<th>Début de pause</th><th>Fin de pause</th>";
+    $hours_tab .= "<tr>\n";
+    $hours_tab .= "<th>{$cellule[$j]}</th>\n";
+    foreach ($columns as $column) {
+        $hours_tab .= "<th>{$column}</th>";
     }
-    $hours_tab .= "<th>Heure de départ</th>";
 
     if ($config['PlanningHebdo-PauseLibre'] && $config['PlanningHebdo']) {
         $hours_tab .= "<th>Temps de pause</th>";

@@ -17,17 +17,9 @@
       <thead>
         <tr>
           <th>{{ cellule[j] }}</th>
-          <th>Heure d'arrivée</th>
-          {% if pause2_enabled == true %}
-            <th>Début de pause 1</th>
-            <th>Fin de pause 1</th>
-            <th>Début de pause 2</th>
-            <th>Fin de pause 2</th>
-          {% else %}
-            <th>Début de pause</th>
-            <th>Fin de pause</th>
-          {% endif %}
-          <th>Heure de départ</th>
+          {% for column in columns %}
+            <th>{{ column }}</th>
+          {% endfor %}
           {% if pauseLibre_enabled == true %}
             <th>Temps de pause</th>
           {% endif %}

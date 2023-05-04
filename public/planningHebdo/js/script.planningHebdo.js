@@ -62,7 +62,43 @@ function plHebdoCalculHeures(object,num){
       hm = breaktime.split(':');
       breaktime = (parseInt(hm[0]) + (hm[1] / 60))
     }
-    
+
+    /** Nantes
+     *  TODO: test and comment
+     *  TODO: get config from DB/Template
+     */
+    configNantes = true;
+ 
+    if (configNantes) {
+        $("input[name*='breaktime["+i+"]']").prop("disabled",true)
+
+        am = diffMinutes(debut1,fin1);
+        pm = diffMinutes(debut2,fin3);    
+        pause = 0;
+        pause_am = 0;
+        pause_pm = 0;
+
+        if (am >= 180) {
+            pause_am = 10;
+        } else {
+            pause_am = 0;
+        }
+        if (pm >= 180) {
+            pause_pm = 10;
+        } else {
+            pause_pm = 0;
+        }
+
+        pause = pause_am + pause_pm;
+
+        if(pause!=0) {
+            val_pause="00:"+pause;
+            $("input[name*='breaktime["+i+"]']").val(val_pause)
+        } else {
+            $("input[name*='breaktime["+i+"]']").val('')
+        }
+    }
+
     diff=0;
     
     // Journée avec 2 pauses
@@ -106,7 +142,15 @@ function plHebdoCalculHeures(object,num){
     else if(debut3 && fin3){
       diff=diffMinutes(debut3,fin3);
     }
-    diff = diff - (breaktime * 60);
+
+    // TODO : get config from DB/template
+    configNantes = true;
+    if (configNantes) {
+        diff = diff + (breaktime * 60);
+    } else {
+        diff = diff - (breaktime * 60);
+    }
+
     heures+=diff;
     
     // Affichage du nombre d'heure pour chaque ligne
@@ -239,6 +283,17 @@ function plHebdoSupprime(id){
 }
 
 function plHebdoVerifForm(){
+
+  // TODO: Nantes get config from DB/Template
+  $configNantes = true;
+
+  if (configNantes) {
+    $.each($('input[name^=breaktime]'),function(){
+      $(this).prop("disabled",false)
+    });
+    // TODO: try $('input[name^=breaktime]').prop('disabled',false);
+  }
+
   debut=$("input[name=debut]").val().replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
   fin=$("input[name=fin]").val().replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
   id=$("input[name=id]").val();
