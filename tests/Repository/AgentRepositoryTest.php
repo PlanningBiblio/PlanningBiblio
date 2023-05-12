@@ -5,7 +5,7 @@ use Tests\FixtureBuilder;
 use PHPUnit\Framework\TestCase;
 use App\Model\Agent;
 
-class AgentTest extends TestCase
+class AgentRepositoryTest extends TestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManager
