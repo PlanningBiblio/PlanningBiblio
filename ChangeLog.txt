@@ -1,3 +1,15 @@
+*** Version 23.05.00.002   (2023-05-12)    ***
+- Fixes
+MT40836: Optimize the Planook's logo size #911
+MT40688: get better performance when displaying statistics on absences #909
+MT40725/MT38947: Fix display of groups-free position in time statistics, Follow up #906
+
+- Security
+Bump guzzlehttp/psr7 from 2.4.4 to 2.5.0 #905
+
+- Enhancements
+MT40441: Allow direct validation of compensatory time when Conges-val… #894
+
 *** Version 23.05.00.001   (2023-04-19)    ***
 MT40694_1: Restore cmp_debut_fin function
 
