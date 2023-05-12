@@ -258,20 +258,7 @@ class AjaxController extends BaseController
           $planningsEnElaboration=array();
 
             // Get comma separated sites for agent
-            if ($this->config("Multisites-nombre") > 1) {
-                $sites = "";
-                $db = new \db();
-                $db->select2("personnel", "sites", array("id"=>$perso_id));
-                if ($db->result) {
-                    $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                    if (is_array($sites)) {
-                        $sites = join(",", $sites);
-                    }
-                }
-            } else {
-                $sites = "1";
-            }
-
+            $sites = join(',', $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids));
             if ($sites != "") {
                 // Pour chaque dates
                 $date = $date_debut;
