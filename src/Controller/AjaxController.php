@@ -260,10 +260,10 @@ class AjaxController extends BaseController
           // Tableau des plannings en cours d'élaboration
           $planningsEnElaboration=array();
 
-            if ($sites != "") {
-                // Pour chaque dates
-                $date = $date_debut;
-                while ($date <= $date_fin) {
+          if ($sites != "") {
+              // Pour chaque dates
+              $date = $date_debut;
+              while ($date <= $date_fin) {
                   // Vérifie si les plannings de tous les sites sont validés
                   $db = new \db();
 
@@ -282,8 +282,8 @@ class AjaxController extends BaseController
                       }
                   }
                   $date = date("Y-m-d", strtotime($date." +1 day"));
-                }
-            }
+              }
+          }
 
           // Affichage des dates correspondantes aux plannings en cours d'élaboration
           $result["planning_started"] = implode(" ; ", $planningsEnElaboration);
