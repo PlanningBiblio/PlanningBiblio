@@ -164,6 +164,9 @@ class AjaxController extends BaseController
       $perso_ids = $request->get('perso_ids');
       $perso_ids = json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
+      // Get comma separated sites for agent
+      $sites = join(',', $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids));
+
       $fin = $fin ?? str_replace('00:00:00', '23:59:59', $debut);
       $result = array();
 
@@ -257,8 +260,6 @@ class AjaxController extends BaseController
           // Tableau des plannings en cours d'élaboration
           $planningsEnElaboration=array();
 
-            // Get comma separated sites for agent
-            $sites = join(',', $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids));
             if ($sites != "") {
                 // Pour chaque dates
                 $date = $date_debut;
