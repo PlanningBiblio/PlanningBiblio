@@ -141,6 +141,7 @@ $(function(){
   - data-sort : tri par défaut, doit être une chaine JSON du type [[0,"asc"],[1,"asc"]]. Valeur par défaut [[0,"asc"]]
   - data-stateSave : garde en mémoire l'état du tableau (tris, recherches). Valeurs : 0, false, 1 ou true. Valeur par défaut = true
   - data-length : nombre d'éléments affichés. Par défaut : 25
+  - data-responsive : Tableau responsive (les colonnes qui n'entrent pas dans le cadre sont masquées, le signe + permet d'afficher leur contenu). Par défaut : true
   
   Sur les balises th de l'entête, les classes suivantes permettent de définir le type de données contenues dans les cellules 
   pour trier correctement les colonnes :
@@ -229,6 +230,12 @@ $(function(){
       tableLength=$(this).attr("data-length")
     }
 
+    // DataTable responsive or not
+    var responsive = true;
+    if($(this).attr("data-responsive")) {
+      responsive = $(this).attr("data-responsive")
+    }
+
     // save state ?
     var saveState=true;
     if($(this).attr("data-stateSave") && ($(this).attr("data-stateSave")=="false" || $(this).attr("data-stateSave")=="0")){
@@ -264,7 +271,7 @@ $(function(){
       // On refait le zebra, à chaque fois que le tableau est redessiné.
       // Utile en cas de suppression de ligne et d'utilisation du filtre et des tris
       "fnDrawCallback": CJDataTableStripe,
-      responsive: true,
+      responsive: responsive,
     });
 
     // Colonnes fixes
