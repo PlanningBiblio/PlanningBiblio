@@ -397,7 +397,61 @@ class HolidayHelperFreeBreakTest extends TestCase
         $this->assertEquals(75, $result['minutes'], 'full day');
         $this->assertEquals('2h45', $result['hr_hours'], 'full day');
 
+        // Working hours with half days
+        $working_hours = array(
+            array('0' => '07:00:00', '1' => '', '2' => '', '3' => '11:00:00'), // Mon 22
+            array('0' => '09:00:00', '1' => '', '2' => '', '3' => '13:00:00'), // Tue 23
+            array('0' => '10:00:00', '1' => '', '2' => '', '3' => '14:00:00'), // Wed 24
+            array('0' => '11:00:00', '1' => '', '2' => '', '3' => '15:00:00'), // Thu 25
+            array('0' => '12:00:00', '1' => '', '2' => '', '3' => '16:00:00'), // Fri 26
+            array('0' => '13:00:00', '1' => '', '2' => '', '3' => '17:00:00'), // Sat 27
+            array('0' => '14:00:00', '1' => '', '2' => '', '3' => '18:00:00'), // Sun 28
+            array('0' => '15:00:00', '1' => '', '2' => '', '3' => '19:00:00'), // Mon 15
+            array('0' => '07:00:00', '1' => '', '2' => '', '3' => '12:00:00'), // Tue 16
+            array('0' => '09:00:00', '1' => '', '2' => '', '3' => '14:00:00'), // Wed 17
+            array('0' => '10:00:00', '1' => '', '2' => '', '3' => '15:00:00'), // Thu 18
+            array('0' => '12:00:00', '1' => '', '2' => '', '3' => '17:00:00'), // Fri 19
+            array('0' => '13:00:00', '1' => '', '2' => '', '3' => '18:00:00'), // Sat 20
+            array('0' => '15:00:00', '1' => '', '2' => '', '3' => '20:00:00'), // Sun 21
+        );
 
+        // Break times : From Mon 22 to Sun 28, then from Mon 15 to Sun 21
+        $breakTimes = array(1,1,1,1,1,1,1,1,2,2,2,2,2,2);
+
+        $db = new \db();
+        $db->CSRFToken = '00000';
+        $db->delete('planning_hebdo');
+        $db->insert(
+            'planning_hebdo',
+            array(
+                'perso_id' => $agent->id(),
+                'debut' => '2023-01-01',
+                'fin' => '2023-12-31',
+                'temps' => json_encode($working_hours),
+                'breaktime' => json_encode($breakTimes),
+                'valide' => 1,
+                'nb_semaine' => 2
+            )
+        );
+
+        // Check counted hours from Mon 2023-05-15 to Sun 2023-05-28
+        for ($day = 15; $day < 29; $day++) {
+            $holidayHlper = new HolidayHelper(array(
+                'start' => '2023-05-' . $day,
+                'hour_start' => '00:00:00',
+                'end' => '2023-05-' . $day,
+                'hour_end' => '23:59:59',
+                'perso_id' => $agent->id(),
+                'is_recover' => 0,
+            ));
+
+            $displayedDate = date('D, Y-m-d', strtotime('2023-05-' . $day));
+
+            $result = $holidayHlper->getCountedHours();
+            $this->assertEquals(3, $result['hours'], "Half day worked $displayedDate");
+            $this->assertEquals(00, $result['minutes'], "Half day worked $displayedDate");
+            $this->assertEquals('3h00', $result['hr_hours'], "Half day worked $displayedDate");
+        }
 
     }
 }
