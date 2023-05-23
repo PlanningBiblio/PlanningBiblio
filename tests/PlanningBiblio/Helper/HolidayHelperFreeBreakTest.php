@@ -397,7 +397,41 @@ class HolidayHelperFreeBreakTest extends TestCase
         $this->assertEquals(75, $result['minutes'], 'full day');
         $this->assertEquals('2h45', $result['hr_hours'], 'full day');
 
+        // MT 40420: Don't add the free break if the holiday is on a full day
+        $working_hours = array(
+            0 => array('0' => '14:00:00', '1' => '', '2' => '', '3' => '18:00:00'),
+        );
 
+        $_SESSION['oups']['CSRFToken'] = '00000';
+        $db = new \db();
+        $db->CSRFToken = '00000';
+        $db->delete('planning_hebdo');
+        $db->insert(
+            'planning_hebdo',
+            array(
+                'perso_id' => $agent->id(),
+                'debut' => '2023-01-01',
+                'fin' => '2023-12-31',
+                'temps' => json_encode($working_hours),
+                'breaktime' => json_encode(array(1,0,0,0,0,0)),
+                'valide' => 1,
+                'nb_semaine' => 1
+            )
+        );
+
+
+        $holidayHlper = new HolidayHelper(array(
+            'start' => '2023-05-22',
+            'hour_start' => '00:00:00',
+            'end' => '2023-05-22',
+            'hour_end' => '23:59:59',
+            'perso_id' => $agent->id(),
+            'is_recover' => 0,
+        ));
+        $result = $holidayHlper->getCountedHours();
+        $this->assertEquals(4, $result['hours'], 'MT40420');
+        $this->assertEquals(00, $result['minutes'], 'MT40420');
+        $this->assertEquals('4h00', $result['hr_hours'], 'MT40420');
 
     }
 }
