@@ -163,11 +163,9 @@ class AgentTest extends TestCase
         $this->assertEquals($agent1->getWorkingHoursOn($date2)['temps']['0']['3'], '17:15:00','check Working Hours of the agent without planningHebdo');
 
         //with planningHebdo
-        $d = date("d")+4;
-        $m = date("m");
-        $Y = date("Y");
-        $depart = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
-        $date3 = \DateTime::createFromFormat("d/m/Y", date('d/m/Y'));
+        $depart = new DateTime('+ 4 days');
+        $date3 = new DateTime();
+
         $agent2 = $builder->build(Agent::class, array('login' => 'jmarg', 'depart' => $depart));
 
         $GLOBALS['config']['PlanningHebdo'] = 1;
