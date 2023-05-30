@@ -160,14 +160,8 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('p', 'Aucune information enregistrée.');
 
-        $time = strtotime('now');
-        $d = date("d", strtotime("+1 day", $time));
-        $m_1 = date("m");
-        $m_2 = date("m", strtotime("+1 month", $time));
-        $Y = date("Y");
-
-        $start = \DateTime::createFromFormat("d/m/Y", "$d/$m_1/$Y");
-        $end = \DateTime::createFromFormat("d/m/Y", "$d/$m_2/$Y");
+        $start = new DateTime('+1 day');
+        $end = new DateTime('+1 month +1 day');
 
         $info = new HolidayInfo();
         $info->debut($start);
@@ -193,8 +187,8 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('title'),'Edit','span logo edit title is Edit');
 
         $result = $crawler->filterXPath('//tbody/tr/td');
-        $this->assertEquals($result->eq(1)->text(),"$d/$m_1/$Y",'date début is ok');
-        $this->assertEquals($result->eq(2)->text(),"$d/$m_2/$Y",'date fin is ok');
+        $this->assertEquals($result->eq(1)->text(), $start->format('d/m/Y'),'date début is ok');
+        $this->assertEquals($result->eq(2)->text(), $end->format('d/m/Y'),'date fin is ok');
         $this->assertEquals($result->eq(3)->text(),'hello','text info is ok');
     }
 }
