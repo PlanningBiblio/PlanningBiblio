@@ -93,14 +93,14 @@
               {{ ouverture | raw }}
               <table border='1' cellspacing='0' cellpadding='0' class='statistics-table'>
                 <tr class='th'>
-                  <td class='statistics-td statistics-td-topleft' style='width:200px; padding-left:8px;'>Postes</td>
-                  <td class='statistics-td statistics-td-top' style='width:300px; padding-left:8px;'>Agents</td>
-                  <td class='statistics-td statistics-td-top' style='width:300px; padding-left:8px;'>Services</td>
-                  <td class='statistics-td statistics-td-top' style='width:300px; padding-left:8px;'>Statuts</td>
+                  <td style='width:200px; padding-left:8px;'>Postes</td>
+                  <td style='width:300px; padding-left:8px;'>Agents</td>
+                  <td style='width:300px; padding-left:8px;'>Services</td>
+                  <td style='width:300px; padding-left:8px;'>Statuts</td>
                 </tr>
                 {% for elem in tab %}
                   <tr style='vertical-align:top;'>
-                    <td class='statistics-td statistics-td-left' style='padding-left:8px;'>
+                    <td style='padding-left:8px;'>
                       <table>
                         <tr>
                           <td colspan='2'><b>{{ elem[0][1] }}</b></td>
@@ -141,7 +141,7 @@
                         {% endif %}
                       </table>
                     </td>
-                    <td class='statistics-td' style='padding-left:8px;'>
+                    <td style='padding-left:8px;'>
                       <table style='width:100%;'>
                         {% for agent in elem[1] %}
                           <tr>
@@ -151,7 +151,7 @@
                         {% endfor %}
                       </table>
                     </td>
-                    <td class='statistics-td'>
+                    <td>
                       <table style='width:100%;'>
                         {% for service in elem.services %}
                           <tr>
@@ -161,7 +161,7 @@
                         {% endfor %}
                       </table>
                     </td>
-                    <td class='statistics-td'>
+                    <td>
                       <table style='width:100%;'>
                         {% for statut in elem.statuts %}
                           <tr>
