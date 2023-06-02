@@ -109,25 +109,25 @@
             {{ ouverture|raw }}
             <table border='1' cellspacing='0' cellpadding='0' class="statistics-table">
               <tr class='th'>
-                <td class="statistics-td statistics-td-topleft" style='width:200px; padding-left:8px;'>Services</td>
-                <td class="statistics-td statistics-td-top" style='width:280px; padding-left:8px;'>Postes</td>
-                <td class="statistics-td statistics-td-top" style='width:120px; padding-left:8px;'>Samedi</td>
+                <td style='width:200px; padding-left:8px;'>Services</td>
+                <td style='width:280px; padding-left:8px;'>Postes</td>
+                <td style='width:120px; padding-left:8px;'>Samedi</td>
                 {% if exists_dimanche == true %}
-                    <td class="statistics-td statistics-td-top" style='width:120px; padding-left:8px;'>Dimanche</td>
+                    <td style='width:120px; padding-left:8px;'>Dimanche</td>
                 {% endif %}
                 {% if exists_JF == true %}
-                  <td class="statistics-td statistics-td-top" style='width:120px; padding-left:8px;'>J. Fériés</td>
+                  <td style='width:120px; padding-left:8px;'>J. Fériés</td>
                 {% endif %}
                 {% if exists_absences == true %}
-                  <td class="statistics-td statistics-td-top" style='width:120px; padding-left:8px;'>Absences</td>
+                  <td style='width:120px; padding-left:8px;'>Absences</td>
                 {% endif %}
                 {% for v in heures_tab_global %}
-                  <td class="statistics-td statistics-td-top" style='width:120px; padding-left:8px;'>{{ v[2] }}</td>  
+                  <td style='width:120px; padding-left:8px;'>{{ v[2] }}</td>  
                 {% endfor %}
               </tr>
               {% for elem in tab %}
                 <tr style='vertical-align:top;'>
-                  <td class="statistics-td statistics-td-left" style='padding-left:8px;'>
+                  <td style='padding-left:8px;'>
                     <table>
                       <tr>
                         <td colspan='2'><b>{{ elem[0] | raw }}</b></td>
@@ -159,7 +159,7 @@
                       {% endif %}
                     </table>
                   </td>
-                  <td class="statistics-td" style='padding-left:8px;'>
+                  <td style='padding-left:8px;'>
                     <table>
                       {% for poste in elem[1] %}
                         <tr style='vertical-align:top;'>
@@ -172,7 +172,7 @@
                       {% endfor %}
                     </table>
                   </td>
-                  <td class="statistics-td" style='padding-left:8px;'> 
+                  <td style='padding-left:8px;'> 
                     {{ elem[3]|length }} {{ elem[3]|length>1 ? "samedis" : "samedi"  }}
                     <br/>
                     {% for samedi in elem[3] %}
@@ -180,7 +180,7 @@
                     {% endfor %}
                   </td>
                   {% if exists_dimanche == true %}
-                    <td class="statistics-td" style='padding-left:8px;'> 
+                    <td style='padding-left:8px;'> 
                       {{ elem[6]|length }} {{ elem[6]|length>1 ? "dimanches" : "dimanche"  }}
                       <br/>
                       {% for dim in elem[6] %}
@@ -189,7 +189,7 @@
                     </td> 
                   {% endif %}
                   {% if exists_JF == true %}
-                    <td class="statistics-td" style='padding-left:8px;'> 
+                    <td style='padding-left:8px;'> 
                       {{ elem[8]|length }} {{ elem[8]|length>1 ? "J. Fériés" : "J. Férié"  }}
                       <br/>
                       {% for ferie in elem[8] %}
@@ -198,7 +198,7 @@
                     </td> 
                   {% endif %}
                   {% if exists_absences == true %}
-                    <td class="statistics-td" style='padding-left:8px;'> 
+                    <td style='padding-left:8px;'> 
                       {% if elem[5] %}
                         Total : {{ elem[5] }}
                       {% endif %} 
