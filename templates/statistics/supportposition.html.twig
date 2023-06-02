@@ -89,12 +89,12 @@
             {{ ouverture | raw }}
             <table border='1' cellspacing='0' cellpadding='0' class="statistics-table">
               <tr class='th'>
-                <td class="statistics-td statistics-td-topleft" style='width:200px; padding-left:8px;'>Postes</td>
-                <td class="statistics-td statistics-td-top" style='width:300px; padding-left:8px;'>Horaires</td>
+                <td style='width:200px; padding-left:8px;'>Postes</td>
+                <td style='width:300px; padding-left:8px;'>Horaires</td>
               </tr>
               {% for elem in tab %}
                 <tr style='vertical-align:top;' class='td_renfort'>
-                  <td class="statistics-td statistics-td-left">
+                  <td>
                     <table>
                       <tr>
                         <td colspan='2'><b>{{ elem[0][1] }}</b></td>
@@ -133,7 +133,7 @@
                       {% endif %}
                     </table>
                   </td>
-                  <td class="statistics-td" style='padding-left:8px;'>
+                  <td style='padding-left:8px;'>
                     {% for date in elem[1] %}
                       <b>{{ date[3]|raw }} </b><br/>
                       {% for horaires in date[1] %}
