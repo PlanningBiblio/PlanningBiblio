@@ -519,9 +519,9 @@ function removeAccents(strAccents){
  */
 function resetICSURL(id, CSRFToken, nom){
   if(nom == undefined){
-    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL de votre calendrier ICS ?");
+    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser les URL de vos agendas ICS ?");
   } else {
-    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL du calendrier de "+nom+" ?");
+    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser les URL des agendas de "+nom+" ?");
   }
   
   if(res){
@@ -531,7 +531,8 @@ function resetICSURL(id, CSRFToken, nom){
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       success: function(result){
-        $("#url-ics").html("<a href='"+result.url+"'>"+result.url+"</a>");
+        $("#urlIcs").html("<a href='"+result.url+"'>"+result.url+"</a>");
+        $("#urlIcsWithAbsences").html("<a href='"+result.url+"&absences=1'>"+result.url+"&absences=1</a>");
         CJInfo("L'URL du calendrier a été réinitialisée avec succès","success");
       },
       error: function(result){
