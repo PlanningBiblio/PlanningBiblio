@@ -104,6 +104,13 @@ if ($config['ICS-Interval'] != '' && intval($config['ICS-Interval'])) {
     $icsInterval = $config['ICS-Interval'];
 }
 
+$interval_get = filter_input(INPUT_GET, 'interval', FILTER_SANITIZE_NUMBER_INT);
+error_log("intval_get: $interval_get\n");
+if ($interval_get != '' && intval($interval_get)) {
+    $icsInterval = $interval_get;
+}
+error_log("icsInterval: $icsInterval\n");
+
 $db=new db();
 $db->selectInnerJoin(
     array("pl_poste","perso_id"),
