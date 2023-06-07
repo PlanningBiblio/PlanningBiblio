@@ -99,6 +99,11 @@ if ($config['ICS-Code']) {
     $requete_personnel["code_ics"] = $code;
 }
 
+$icsInterval = null;
+if ($config['ICS-Interval'] != '' && intval($config['ICS-Interval'])) {
+    $icsInterval = $config['ICS-Interval'];
+}
+
 $db=new db();
 $db->selectInnerJoin(
     array("pl_poste","perso_id"),
@@ -107,7 +112,7 @@ $db->selectInnerJoin(
     array(),
   array("perso_id"=>$id),
     $requete_personnel,
-    "AND `date` > DATE_SUB(curdate(), INTERVAL 1 MONTH) ORDER BY `date` DESC, `debut` DESC, `fin` DESC"
+    ($icsInterval ? "AND `date` > DATE_SUB(curdate(), INTERVAL $icsInterval DAY) " : '') . "ORDER BY `date` DESC, `debut` DESC, `fin` DESC"
 );
 if ($db->result) {
     $planning = $db->result;
@@ -129,7 +134,7 @@ if ($config['Multisites-nombre'] > 1) {
 // Recherche des plannings verrouillés pour exclure les plages concernant des plannings en attente
 $verrou = array();
 $db = new db();
-$db->select2("pl_poste_verrou", null, array('verrou2'=>'1'), "AND `date` > DATE_SUB(curdate(), INTERVAL 1 MONTH)");
+$db->select2("pl_poste_verrou", null, array('verrou2'=>'1'), ($icsInterval ? "AND `date` > DATE_SUB(curdate(), INTERVAL $icsInterval DAY) " : ''));
 if ($db->result) {
     foreach ($db->result as $elem) {
         $verrou[$elem['date'].'_'.$elem['site']] = array('date'=>$elem['validation2'], 'agent'=>$elem['perso2']);
@@ -140,7 +145,7 @@ if ($db->result) {
 $a=new absences();
 $a->valide = true;
 $a->documents = false;
-$a->fetch("`debut`,`fin`", $id, date('Y-m-d',strtotime(date('Y-m-d').' - 1 months')), date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
+$a->fetch("`debut`,`fin`", $id, ($icsInterval ? date('Y-m-d',strtotime(date('Y-m-d') . " - $icsInterval days")) : '0000-00-00 00:00:00'), date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
 $absences=$a->elements;
 
 // Recherche des congés (si le module est activé)
@@ -148,7 +153,7 @@ if ($config['Conges-Enable']) {
     require_once "../conges/class.conges.php";
     $c = new conges();
     $c->perso_id = $id;
-    $c->debut = date('Y-m-d',strtotime(date('Y-m-d').' - 1 months'));
+    $c->debut = ($icsInterval ? date('Y-m-d',strtotime(date('Y-m-d') . " - $icsInterval days")) : '0000-00-00 00:00:00');
     $c->fin = date('Y-m-d', strtotime(date('Y-m-d').' + 2 years'));
     $c->valide = true;
     $c->fetch();
