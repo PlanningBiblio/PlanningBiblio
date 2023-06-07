@@ -214,18 +214,20 @@ class PlanningJobController extends BaseController
                     }
                 }
 
-                $req="SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` "
-                    . "FROM `{$dbprefix}pl_poste` "
-                    . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
-                    . "WHERE `{$dbprefix}pl_poste`.`debut`<'$end_with_journey' AND `{$dbprefix}pl_poste`.`fin`>'$start_with_journey' "
-                    . "AND `{$dbprefix}pl_poste`.`poste` IN (" . join(",", $autres_postes) . ") "
-                    . "AND `{$dbprefix}pl_poste`.`site` = $site "
-                    . "AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
-                $db = new \db();
-                $db->query($req);
-                if ($db->result) {
-                    foreach ($db->result as $elem) {
-                        $journey[] = $elem['perso_id'];
+                if (!empty($autres_postes)) {
+                    $req = "SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` "
+                        . "FROM `{$dbprefix}pl_poste` "
+                        . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
+                        . "WHERE `{$dbprefix}pl_poste`.`debut`<'$end_with_journey' AND `{$dbprefix}pl_poste`.`fin`>'$start_with_journey' "
+                        . "AND `{$dbprefix}pl_poste`.`poste` IN (" . join(",", $autres_postes) . ") "
+                        . "AND `{$dbprefix}pl_poste`.`site` = $site "
+                        . "AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
+                    $db = new \db();
+                    $db->query($req);
+                    if ($db->result) {
+                        foreach ($db->result as $elem) {
+                            $journey[] = $elem['perso_id'];
+                        }
                     }
                 }
             }
