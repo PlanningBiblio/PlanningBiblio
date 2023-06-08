@@ -442,6 +442,14 @@ class IndexController extends BaseController
                 'date'=>"BETWEEN{$start}AND{$end}")
             );
 
+            // Table pl_poste_verrou (Locked Plannings)
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete('pl_poste_verrou', array(
+                'site' => $site,
+                'date'=>"BETWEEN{$start}AND{$end}")
+            );
+
             return $this->redirectToRoute('index');
         }
 
