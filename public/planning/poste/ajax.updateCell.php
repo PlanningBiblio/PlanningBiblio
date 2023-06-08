@@ -321,6 +321,12 @@ for ($i=0;$i<count($tab);$i++) {
     $tab[$i]["statut"]=removeAccents($tab[$i]["statut"]);
     $tab[$i]["service"]=removeAccents($tab[$i]["service"]);
 
+    // Color the logged in agent.
+    $tab[$i]['color'] = null;
+    if (!empty($config['Affichage-Agent']) and $tab[$i]['perso_id'] == $_SESSION['login_id']) {
+      $tab[$i]['color'] = filter_var($config['Affichage-Agent'], FILTER_CALLBACK, ['options' => 'sanitize_color']);
+    }
+
     // Ajout des Sans Repas (SR)
     if ($sansRepas === true or in_array($tab[$i]['perso_id'], $sansRepas)) {
         $tab[$i]["sr"] = 1;
@@ -357,6 +363,7 @@ Résultat :
     [prenom] => Prénom
     [statut] => Statut
     [service] => Service
+    [color] => Color
     [activites] => activite_activite1 activite_activite2 (activités de l'agents précédées de activite_ et séparées par des espaces, pour appliquer les classes .activite_xxx)
     [perso_id] => 86
     [absent] => 0/1/2 ( 0 = pas d'absence ; 1 = absence validée ; 2 = absence non validée )

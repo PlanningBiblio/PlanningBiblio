@@ -37,6 +37,14 @@ function sanitize_array_unsafe($n)
     return filter_var($n, FILTER_UNSAFE_RAW);
 }
 
+function sanitize_color($input) {
+    if (preg_match_all('/#(?:[0-9a-fA-F]{6})/', $input, $matches)) {
+        return $input;
+    }
+
+    return null;
+}
+
 function sanitize_dateFr($input)
 {
     $reponse_filtre = null;

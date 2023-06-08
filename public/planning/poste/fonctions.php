@@ -129,6 +129,13 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                 }
                 $classe[$i]=implode(" ", $class_tmp);
 
+                // Color the logged in agent.
+                $color[$i] = null;
+                if (!empty($GLOBALS['config']['Affichage-Agent']) and $elem['perso_id'] == $_SESSION['login_id']) {
+                    $color[$i] = filter_var($GLOBALS['config']['Affichage-Agent'], FILTER_CALLBACK, ['options' => 'sanitize_color']);
+                    $color[$i] = "style='background-color:{$color[$i]};'";
+                }
+
                 // Création d'une balise span avec les classes cellSpan, et agent_ de façon à les repérer et agir dessus à partir de la fonction JS bataille_navale.
                 $span="<span class='cellSpan agent_{$elem['perso_id']}' title='$title' >$resultat</span>";
 
@@ -142,7 +149,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
     oncontextmenu='cellule={$GLOBALS['idCellule']}'
     data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$GLOBALS['idCellule']}' data-perso-id='0'>";
     for ($i=0;$i<count($resultats);$i++) {
-        $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]} pl-cellule-perso-{$resultats[$i]['perso_id']}' data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
+        $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]} pl-cellule-perso-{$resultats[$i]['perso_id']}' {$color[$i]} data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
     }
 
     $cellule .= '<a class="pl-icon arrow-right" href="#"></a>';
