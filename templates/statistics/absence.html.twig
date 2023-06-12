@@ -19,7 +19,7 @@
                 <select name='site'>
                   <option value='0'>Tous</option>
                   {% for i in 1..nbSites %}
-                    {% if i in selectedSites %}
+                    {% if i == site %}
                       <option value='{{ i }}' selected = 'selected'> {{ multisites[i-1] | raw }}</option>
                     {% else %}
                       <option value='{{ i }}'> {{ multisites[i-1] | raw }}</option>
