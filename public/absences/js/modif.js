@@ -239,16 +239,17 @@ $(function() {
 
   $("#recurrence-checkbox").change(function() {
     if($("#recurrence-checkbox").prop('checked')){
-      if($('#recurrence-hidden').val()){
-        $('#recurrence-info').show();
-      } else {
-        $("#recurrence-form").dialog( "open" );
-      }
       if (
         $('input[name="fin"]').val() != '' &&
         $('input[name="fin"]').val() != $('input[name="debut"]').val()
       ) {
         $("#recurrence-enddate-alert").dialog("open");
+      } else {
+        if($('#recurrence-hidden').val()){
+          $('#recurrence-info').show();
+        } else {
+          $("#recurrence-form").dialog( "open" );
+        }
       }
     } else {
       $('#recurrence-info').hide();
@@ -395,6 +396,13 @@ $(function() {
       },
       "Non": function() {
         $(this).dialog("close");
+      }
+    },
+    close: function() {
+      if($('#recurrence-hidden').val()){
+        $('#recurrence-info').show();
+      } else {
+        $("#recurrence-form").dialog( "open" );
       }
     }
   });
