@@ -244,8 +244,10 @@ $(function() {
       } else {
         $("#recurrence-form").dialog( "open" );
       }
-      if($('input[name="fin"]').val() != '' &&
-         $('input[name="fin"]').val() != $('input[name="debut"]').val()) {
+      if (
+        $('input[name="fin"]').val() != '' &&
+        $('input[name="fin"]').val() != $('input[name="debut"]').val()
+      ) {
         $("#recurrence-enddate-alert").dialog("open");
       }
     } else {
@@ -254,9 +256,11 @@ $(function() {
   });
 
   $('input[name="fin"]').change(function() {
-    if($("#recurrence-checkbox").prop('checked') &&
-       $('input[name="fin"]').val() != '' &&
-       $('input[name="fin"]').val() != $('input[name="debut"]').val()) {
+    if (
+      $("#recurrence-checkbox").prop('checked') &&
+      $('input[name="fin"]').val() != '' &&
+      $('input[name="fin"]').val() != $('input[name="debut"]').val()
+    ) {
       $("#recurrence-enddate-alert").dialog("open");
     }
   });
