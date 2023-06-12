@@ -1583,7 +1583,7 @@ class StatisticController extends BaseController
           "motifs"          => $motifs,
           "multisites"      => $multisites,
           "nbSites"         => $nbSites,
-          "selectedSites"   => $selectedSites,
+          "site"            => $site,
           "tab"             => $tab,
           "totaux"          => $totaux
         ));
