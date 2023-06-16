@@ -38,7 +38,7 @@ function sanitize_array_unsafe($n)
 }
 
 function sanitize_color($input) {
-    if (preg_match_all('/#(?:[0-9a-fA-F]{6})/', $input, $matches)) {
+    if (preg_match_all('/^#(?:[0-9a-fA-F]{6})$/', $input, $matches)) {
         return $input;
     }
 
