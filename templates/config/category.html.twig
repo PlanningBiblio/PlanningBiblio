@@ -62,6 +62,8 @@
             <input type='password' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' {{ v.extra|raw }} style='width:400px;'/>
           {% elseif v.type == 'date' %}
             <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value="{{ v.valeur }}" {{ v.extra|raw }} style='width:400px;' class='datepicker'/>
+          {% elseif v.type == 'color' %}
+            <input type='color' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' {{ v.extra|raw }} style='width:400px;'/>
           {% endif %}
         </td>
         <td>{{ v.commentaires | raw }}</td>
