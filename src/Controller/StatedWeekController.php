@@ -237,6 +237,10 @@ class StatedWeekController extends BaseController
                 continue;
             }
 
+            if ($agent->leavingDatePassed($date)) {
+                continue;
+            }
+
             $available = array(
                 'fullname'          => $agent->nom() . ' ' . $agent->prenom(),
                 'id'                => $agent->id(),
