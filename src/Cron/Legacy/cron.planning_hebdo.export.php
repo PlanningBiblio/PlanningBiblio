@@ -16,10 +16,6 @@ Export les heures de présences vers un fichier CSV
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
 */
 
-$CSVFile = "/tmp/export-planno-edt.csv";
-$days_before = 15;
-$days_after = 60;
-
 session_start();
 
 $version = 'cron';
@@ -30,6 +26,11 @@ chdir(__DIR__ . '/../../../public');
 require_once(__DIR__ . '/../../../public/include/config.php');
 require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
 require_once(__DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php');
+
+$CSVFile = $config['PlanningHebdo-ExportFile'] ?? '/tmp/export-planno-edt.csv';
+$days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;
+$days_after = $config['PlanningHebdo-ExportDaysAfter'] ?? 60;
+$agentIdentifier = $config['PlanningHebdo-ExportAgentId'] ?? 'matricule';
 
 $CSRFToken = CSRFToken();
 
@@ -96,13 +97,13 @@ while ($current < $end) {
     if (!empty($p->elements)) {
         foreach ($p->elements as $elem) {
 
-            // Récupération de l'ID Harpege de l'agent
-            // Si l'agent n'a pas d'ID Harpège, on ne l'importe pas (donc continue) = Demande de la société Bodet
-            // TODO : Voir si nous devons rendre ceci paramètrable : utilisation du champ matricule, login, email ou id. Pour Lille, se sera le champ matricule
-            if (empty($agents[$elem["perso_id"]]['matricule'])) {
+            // Récupération de l'dentifiant de l'agent (ex : login, adresse email ou ID Harpege renseigné dans le champ "matricule")
+            // Si l'identifiant n'est pas renseigné dans Planno (ex : champ matricule vide), nous n'importons pas l'agent (donc continue) (Demande initiale de la société Bodet Software)
+            if (empty($agents[$elem["perso_id"]][$agentIdentifier])) {
                 continue;
             }
-            $agent_id = $agents[$elem["perso_id"]]['matricule'];
+
+            $agent_id = $agents[$elem["perso_id"]][$agentIdentifier];
 
             // Mise en forme du tableau temps
             /** Le tableau $elem["temps"][$jour] est constitué comme suit :

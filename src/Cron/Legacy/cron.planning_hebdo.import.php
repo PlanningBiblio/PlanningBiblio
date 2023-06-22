@@ -26,6 +26,8 @@ chdir(__DIR__ . '/../../../public');
 require_once(__DIR__ . '/../../../public/include/config.php');
 require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
 
+$agentIdentifier = $config['PlanningHebdo-ImportAgentId'] ?? 'login';
+
 $CSRFToken = CSRFToken();
 
 // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
@@ -54,7 +56,7 @@ $p->fetch();
 $agents = array();
 if (!empty($p->elements)) {
     foreach ($p->elements as $elem) {
-        $agents[$elem['login']] = $elem;
+        $agents[$elem[$agentIdentifier]] = $elem;
     }
 }
 
