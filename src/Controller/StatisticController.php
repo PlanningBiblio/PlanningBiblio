@@ -2734,6 +2734,18 @@ class StatisticController extends BaseController
             } 
         }
 
+        // Groups for export
+        $group_keys = array();
+
+        if ($selection_groupe and !empty($groups)) {
+            foreach ($groups as $g) {
+                $group_keys[] = array(
+                    'id' => $g->id(), 
+                    'name' => $g->valeur(),
+                );
+            }
+        }
+
         // passage en session du tableau pour le fichier export.php
         $_SESSION['stat_tab'] = $tab;
         $_SESSION['stat_heures'] = $heures;
@@ -2743,6 +2755,7 @@ class StatisticController extends BaseController
         $_SESSION['oups']['stat_nbAgents'] = $nbAgents;
         $_SESSION['oups']['stat_groupesHeures'] = $totauxGroupesHeures;
         $_SESSION['oups']['stat_groupesPerso'] = $totauxGroupesPerso;
+        $_SESSION['oups']['stat_groupes'] = $group_keys;
 
         $this->templateParams(array(
             'debutFr'             => $debutFr,
