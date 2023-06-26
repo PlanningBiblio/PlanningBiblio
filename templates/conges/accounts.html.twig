@@ -99,91 +99,91 @@
           <tr style='vertical-align:top;'>
             <td>{{ a.agent }}</td>
             <td class='aRight nowrap'>
-              {{ a.conge_annuel | hours }}
+              {{ a.conge_annuel }}
               {% if hours_to_days %}
                 <br />{{ a.conge_annuel | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.conge_initial | hours }}
+              {{ a.conge_initial }}
               {% if hours_to_days %}
                 <br />{{ a.conge_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.conge_utilise | hours }}
+              {{ a.conge_utilise }}
               {% if hours_to_days %}
                 <br />{{ a.conge_utilise | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.conge_restant | hours }}
+              {{ a.conge_restant }}
               {% if hours_to_days %}
                 <br />{{ a.conge_restant | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.reliquat_initial | hours }}
+              {{ a.reliquat_initial }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.reliquat_utilise | hours }}
+              {{ a.reliquat_utilise }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_utilise | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.reliquat_restant | hours }}
+              {{ a.reliquat_restant }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_restant | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.recup_initial | hours }}
+              {{ a.recup_initial }}
               {% if hours_to_days %}
                 <br />{{ a.recup_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.recup_utilise | hours }}
+              {{ a.recup_utilise }}
               {% if hours_to_days %}
                 <br />{{ a.recup_utilise | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.recup_restant | hours }}
+              {{ a.recup_restant }}
               {% if hours_to_days %}
                 <br />{{ a.recup_restant | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.anticipation_initial | hours }}
+              {{ a.anticipation_initial }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.anticipation_utilise | hours }}
+              {{ a.anticipation_utilise }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_utilise | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.anticipation_restant | hours }}
+              {{ a.anticipation_restant }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_restant | hoursToDays(a.id) }}
               {% endif %}
@@ -195,91 +195,91 @@
           <tr style='vertical-align:top;' class='orange'>
             <td>{{ a.agent }}</td>
             <td class='aRight nowrap'>
-              {{ a.conge_annuel | hours }}
+              {{ a.conge_annuel }}
               {% if hours_to_days %}
                 <br />{{ a.conge_annuel | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.conge_initial | hours }}
+              {{ a.conge_initial }}
               {% if hours_to_days %}
                 <br />{{ a.conge_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap {$elem['conge_classe']}'>
-              {{ a.conge_demande | hours }}
+              {{ a.conge_demande }}
               {% if hours_to_days %}
                 <br />{{ a.conge_demande | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap {$elem['conge_classe']}'>
-              {{ a.conge_en_attente | hours }}
+              {{ a.conge_en_attente }}
               {% if hours_to_days %}
                 <br />{{ a.conge_en_attente | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.reliquat_initial | hours }}
+              {{ a.reliquat_initial }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap {$elem['reliquat_classe']}'>
-              {{ a.reliquat_demande | hours }}
+              {{ a.reliquat_demande }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_demande | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap {$elem['reliquat_classe']}'>
-              {{ a.reliquat_en_attente | hours }}
+              {{ a.reliquat_en_attente }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_en_attente | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.recup_initial | hours }}
+              {{ a.recup_initial }}
               {% if hours_to_days %}
                 <br />{{ a.recup_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap {$elem['recup_classe']}'>
-              {{ a.recup_demande | hours }}
+              {{ a.recup_demande }}
               {% if hours_to_days %}
                 <br />{{ a.recup_demande | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap {$elem['recup_classe']}'>
-              {{ a.recup_en_attente | hours }}
+              {{ a.recup_en_attente }}
               {% if hours_to_days %}
                 <br />{{ a.recup_en_attente | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap'>
-              {{ a.anticipation_initial | hours }}
+              {{ a.anticipation_initial }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap {$elem['anticipation_classe']}'>
-              {{ a.anticipation_demande | hours }}
+              {{ a.anticipation_demande }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_demande | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
             <td class='aRight nowrap {$elem['anticipation_classe']}'>
-              {{ a.anticipation_en_attente | hours }}
+              {{ a.anticipation_en_attente }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_en_attente | hoursToDays(a.id) }}
               {% endif %}

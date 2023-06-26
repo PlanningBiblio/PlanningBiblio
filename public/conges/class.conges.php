@@ -711,9 +711,10 @@ class conges
 
         // Calcul des crédits utilisés et demandés en attente de validation
         $perso_ids=array_keys($tab);
+        $helper = new HolidayHelper();
         foreach ($perso_ids as $perso_id) {
 
-      // Initilisation
+            // Initialisation
             $tab[$perso_id]['conge_initial'] = isset($tab[$perso_id]['conge_initial']) ? $tab[$perso_id]['conge_initial'] : 0;
             $tab[$perso_id]['conge_restant'] = isset($tab[$perso_id]['conge_restant']) ? $tab[$perso_id]['conge_restant'] : 0;
             $tab[$perso_id]['reliquat_initial'] = isset($tab[$perso_id]['reliquat_initial']) ? $tab[$perso_id]['reliquat_initial'] : 0;
@@ -740,8 +741,19 @@ class conges
             $tab[$perso_id]['reliquat_classe']=$tab[$perso_id]['reliquat_demande']!=$tab[$perso_id]['reliquat_utilise']?"bold":null;
             $tab[$perso_id]['recup_classe']=$tab[$perso_id]['recup_demande']!=$tab[$perso_id]['recup_utilise']?"bold":null;
             $tab[$perso_id]['anticipation_classe']=$tab[$perso_id]['anticipation_demande']!=$tab[$perso_id]['anticipation_utilise']?"bold":null;
-        }
 
+            foreach ($tab[$perso_id] as $key => $value) {
+                if ($key != 'nom' && $key != 'prenom' && $key != 'agent') {
+                    if ($value == 0) {
+                        $tab[$perso_id][$key] = '';
+                    } elseif ($GLOBALS['config']['Conges-Mode'] == 'jours') {
+                        $tab[$perso_id][$key] = $helper->HumanReadableDuration($tab[$perso_id][$key]);
+                    } else {
+                        $tab[$perso_id][$key] = heure4($tab[$perso_id][$key]);
+                    }
+                }
+            }
+        }
         $this->elements=$tab;
     }
 
