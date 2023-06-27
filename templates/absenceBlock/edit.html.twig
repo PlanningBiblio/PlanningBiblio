@@ -1,0 +1,59 @@
+{# absenceBlock/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+    <div id="content-form">
+        <h3>Blocage d'absences</h3>
+        
+        <div class="admin-div">
+            {% if id %}
+                <h4>Modifications des blocages d'absences</h4>
+            {% else %}
+                <h4>Ajout d'un blocage d'absence</h4>
+            {% endif %}
+
+            <form id='form' method='POST' action='{{ asset('absence/block') }}' name='form' onsubmit='return verif_form("start=date1;end=date2;text");'>
+                <input type="hidden" name="_token" value="{{ csrf_token('csrf') }}"/>
+                <input type='hidden' name='id' value='{{ id }}'/>
+
+                <table class='tableauFiches'>
+                <tr>
+                    <td><label >Date de début</label> </td>
+                    <td>
+                    <input type='text' name='start' value='{{ start }}' style='width:100%;' class='datepicker'/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><label>Date de fin</label></td>
+                    <td>
+                    <input type='text' name='end' value='{{ end }}' style='width:100%;' class='datepicker'/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><label>Commentaire</label></td>
+                    <td>
+                    <textarea name='text' rows='3' cols='25' class='ui-widget-content ui-corner-all'>{{ text }}</textarea>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+
+                <tr>
+                    <td colspan='2' style='text-align:center;'>
+                    <a href='{{ asset('absence/block') }}' class='ui-button ui-button-type2' style='margin-left:30px;'>Annuler</a>
+                    {% if id %}
+                        <a href='javascript:deleteAbsenceBlock({{ id }});' class='ui-button ui-button-type3' style='margin-left:30px;'>Supprimer</a>
+                    {% endif %}
+                    <input type='submit' value='Valider' class='ui-button' style='margin-left:30px;'/>
+                    </td>
+                </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+{% endblock %}

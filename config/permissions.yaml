@@ -13,6 +13,16 @@
     - 100
 "absence.statuses":
     - 100
+"absence.block.add":
+    - 301
+"absence.block.delete":
+    - 301
+"absence.block.edit":
+    - 301
+"absence.block.index":
+    - 301
+"absence.block.update":
+    - 301
 "absences.document.index":
     - 100
 "absences.document.delete":

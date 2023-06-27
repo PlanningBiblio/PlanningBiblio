@@ -300,7 +300,7 @@ class AbsenceController extends BaseController
     }
 
     /**
-     * @Route("/absence/{id}", name="absence.edit", methods={"GET"})
+     * @Route("/absence/{id<\d+>}", name="absence.edit", methods={"GET"})
      */
     public function edit(Request $request)
     {

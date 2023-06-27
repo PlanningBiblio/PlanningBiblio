@@ -49,6 +49,14 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   KEY `groupe`(`groupe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
+$sql[]="CREATE TABLE `{$dbprefix}absence_blocks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `start` date NOT NULL DEFAULT '0000-00-00',
+  `end` date NOT NULL DEFAULT '0000-00-00',
+  `comment` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+
 $sql[]="CREATE TABLE `{$dbprefix}absences_infos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `debut` date NOT NULL DEFAULT '0000-00-00',
