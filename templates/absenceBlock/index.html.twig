@@ -1,0 +1,44 @@
+{# absenceBlock/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+    <h3>Blocage d'absences</h3>
+
+    <div class='top-button-div'>
+        <a href='{{ asset("absence/block/add") }}' class='ui-button'>Ajouter</a>
+    </div>
+
+    {% if block %}
+        <form id="form" method="POST">
+            <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
+            <table class='CJDataTable' data-sort='[[1,"asc"],[2,"asc"]]' id='AbsenceBlockTable'>
+                <thead>
+                    <tr>
+                        <th class='dataTableNoSort'></th>
+                        <th class='dataTableDateFR'>Début</th>
+                        <th class='dataTableDateFR'>Fin</th>
+                        <th>Commentaire</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for elem in block %}
+                        <tr>
+                            <td>
+                                <a href='{{ asset('absence/block/') }}{{elem.id}}'>
+                                    <span class='pl-icon pl-icon-edit' title='Éditer'></span>
+                                </a>
+                                <a href='javascript:deleteAbsenceBlock({{elem.id}});'><span class='pl-icon pl-icon-dropblack' title='Supprimer' /></a>
+                            </td>
+                            <td>{{ elem.start | date("d/m/Y") }}</td>
+                            <td>{{ elem.end | date("d/m/Y")  }}</td>
+                            <td>{{ elem.comment | nl2br }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    {% else %}
+        <p>Aucun blocage enregistré.</p>
+    {% endif %}
+{% endblock %}
