@@ -314,6 +314,8 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab` (
   `nom` text NOT NULL,
   `site` INT(2) NOT NULL DEFAULT 1,
   `supprime` TIMESTAMP NULL DEFAULT NULL ,
+  `copy` INT(11) DEFAULT NULL,
+  `updated_at` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 

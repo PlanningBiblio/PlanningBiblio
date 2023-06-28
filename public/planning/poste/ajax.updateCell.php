@@ -14,8 +14,11 @@ page /index pour placer les agents
 Cette page est appelée par la function JavaScript "bataille_navale" utilisé par le fichier planning/poste/menudiv.php
 */
 
-use App\Model\Position;
+use App\Model\PlanningPosition;
 use App\Model\PlanningPositionHistory;
+use App\Model\PlanningPositionTab;
+use App\Model\PlanningPositionTabAffectation;
+use App\Model\Position;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 
 ini_set("display_errors", 0);
@@ -125,6 +128,40 @@ if (is_numeric($perso_id) and $perso_id == 0) {
 else {
     // si ni barrer, ni ajouter : on remplace
     if ($barrer == 0 and !$ajouter) {
+
+        // Check if planning exists
+        $planning = $entityManager->getRepository(PlanningPosition::class)->findBy(array(
+            'date' => \DateTime::createFromFormat('Y-m-d', $date),
+            'site' => $site,
+        ));
+
+        // Manage framework assignment
+        if (empty($planning)) {
+            $em = $entityManager->getRepository(PlanningPositionTabAffectation::class)->findBy(array(
+                'date' => \DateTime::createFromFormat('Y-m-d', $date),
+                'site' => $site,
+            ));
+            $framework_id = $em[0]->tableau();
+
+            $em = $entityManager->getRepository(PlanningPositionTab::class)->findBy(array(
+                'tableau' => $framework_id,
+            ));
+            $framework = $em[0];
+
+            // TODO : get the latest copy
+            // TODO : create a table to manage copies (the filed may be insufficient)
+            /*
+            if not copy : create a copy and assign the copy
+            if copes :
+               if updated_at origin > updated_at lastest copy : create a new copy and assign it
+               else : assign the lastest copy
+            */
+            // TEST
+            ob_start();
+            var_dump($framework);
+            $c = ob_get_clean();
+            error_log($c);
+        }
 
         // History
         if ($logaction) {

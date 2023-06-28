@@ -28,4 +28,9 @@ class PlanningPositionTab extends PLBEntity
     /** @Column(type="datetime") **/
     protected $supprime;
 
+    /** @Column(type="integer") **/
+    protected $copy;
+
+    /** @Column(type="datetime") **/
+    protected $updated_at;
 }

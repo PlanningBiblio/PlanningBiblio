@@ -14,7 +14,7 @@ class BaseHelper
     {
         $this->entityManager = $GLOBALS['entityManager'];
 
-        $this->dispatcher = $GLOBALS['dispatcher'];
+        $this->dispatcher = $GLOBALS['dispatcher'] ?? null;
 
         $this->config = $GLOBALS['config'];
     }
