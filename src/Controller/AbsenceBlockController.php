@@ -23,8 +23,6 @@ class AbsenceBlockController extends BaseController
 
         $query = $queryBuilder->select(array('a'))
             ->from(AbsenceBlock::class, 'a')
-            ->where('a.end >= :today')
-            ->setParameter('today', $today)
             ->orderBy('a.start', 'ASC', 'a.end', 'ASC')
             ->getQuery();
 
@@ -115,6 +113,15 @@ class AbsenceBlockController extends BaseController
      */
     public function delete(Request $request, Session $session)
     {
+
+        // TODO: Pour la suppression, la spec demande d'ajouter le bouton de
+        // suppression dans le tableau d'index.
+        // Mais aussi de conserver le bouton de suppression lors de l'édition
+        // Je ne crois pas qu'il y ait d'endroits dans Planno avec les deux
+        // Lequel faut-il garder ?
+        // (s'il faut garder les deux, il faut gérer une suppression en mode
+        // post de formulaire, et une supression en mode appel ajax)
+
         $submittedToken = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
             $session->getFlashBag()->add('error', 'CSRF Token Error');
@@ -132,6 +139,4 @@ class AbsenceBlockController extends BaseController
         $session->getFlashBag()->add('notice', $flash);
         return $this->redirectToRoute('absence.block.index');
     }
-
-
 }

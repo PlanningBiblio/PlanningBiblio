@@ -16,7 +16,7 @@
                     <th class='dataTableNoSort'></th>
                     <th class='dataTableDateFR'>Début</th>
                     <th class='dataTableDateFR'>Fin</th>
-                    <th>Texte</th>
+                    <th>Commentaire</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,8 +24,9 @@
                     <tr>
                         <td>
                             <a href='{{ asset('absence/block/') }}{{elem.id}}'>
-                                <span class='pl-icon pl-icon-edit' title='Edit'></span>
+                                <span class='pl-icon pl-icon-edit' title='Éditer'></span>
                             </a>
+                            <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
                         </td>
                         <td>{{ elem.start | date("d/m/Y") }}</td>
                         <td>{{ elem.end | date("d/m/Y")  }}</td>
