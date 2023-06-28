@@ -120,7 +120,9 @@ class AbsenceBlockController extends BaseController
         // Je ne crois pas qu'il y ait d'endroits dans Planno avec les deux
         // Lequel faut-il garder ?
         // (s'il faut garder les deux, il faut gérer une suppression en mode
-        // post de formulaire, et une supression en mode appel ajax)
+        // post de formulaire, et une suppression en mode appel ajax)
+
+        // TODO 2: différence entre csrf_protection et isCsrfTokenValid ?
 
         $submittedToken = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
