@@ -1403,11 +1403,17 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
           });
         }
 
+        // Color the logged in agent.
+        var color = result[i]['color'];
+        if (color) {
+            color = "style='background-color:"+color+";'";
+        }
+
         // Création d'une balise span avec les classes cellSpan et agent_ de façon à les repérer et agir dessus 
         debut=debut.replace(":","");
         fin=fin.replace(":","");
         var span="<span class='cellSpan pl-highlight agent_"+perso_id+"' title='"+title+"'>"+agent+"</span>";
-        var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='majPersoOrigine("+perso_id+");'>"+span+"</div>"
+        var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' "+color+" data-perso-id='"+perso_id+"' oncontextmenu='majPersoOrigine("+perso_id+");'>"+span+"</div>"
         // oncontextmenu='majPersoOrigine("+perso_id+");' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
         $("#td"+cellule).append(div);
 

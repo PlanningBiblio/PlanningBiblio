@@ -141,6 +141,11 @@ class ConfigController extends BaseController
                 if (is_array($value)) {
                     $value = json_encode($value);
                 }
+
+                if ($cp->type() == 'color') {
+                    $value = filter_var($value, FILTER_CALLBACK, ['options' => 'sanitize_color']);
+                }
+
                 try {
                     $cp->valeur($value);
                     $this->entityManager->persist($cp);
