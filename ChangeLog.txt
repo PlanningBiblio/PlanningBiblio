@@ -1,3 +1,24 @@
+*** Version 23.05.00.003   (2023-06-29)    ***
+- Fixes
+MT41151: Allow /holiday/accounts to be displayed in days #930
+MT41068: Fix absence statistics display when PlanningHebdo is disabled #928
+MT41169: Add the background color on Datatable's select #926
+MT41168: Fix the site selection on statistics / absences #925
+MT40199: Remove the padlock when deleting plannings #923
+MT39946: Fix time format parameter for ajax call in absence add #920
+MT41131: Fix typo in templates/conges/add.html.twig #919
+MT41094: Don't check journey time between areas when there is only one area #918
+MT41069: Show borders of all cells in statistics tables #917
+MT41036: Fix malformed dates on unit tests #915
+MT40945: Fix the logo's link #914
+MT31709: Verify only the agent sites when checking for started plannings #892
+
+- Enhancements
+MT41142: Color the logged in agent #924
+MT41030: Allow to narrow ICS exports to a number of days in the past #922
+MT41028: Show an alert when a recurring absence is added and the enddate is set #921
+MT40851: Make Statistics/time table not responsive. #912
+
 *** Version 23.05.00.002   (2023-05-12)    ***
 - Fixes
 MT40836: Optimize the Planook's logo size #911

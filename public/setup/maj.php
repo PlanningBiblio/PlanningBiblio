@@ -3170,6 +3170,22 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+
+$v="23.05.00.003";
+
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT40668: Export ICS des absences
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = REPLACE(`valeur`, 'Planning Biblio', 'Planno') WHERE `nom` ='Mail-Signature';"; 
+
+    // MT41030: Allow to narrow ICS exports to a number of days in the past #922
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` ( `nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('ICS-Interval', 'text', '365', 'Restriction de la période à exporter : renseigner le nombre de jours à rechercher dans le passé. Les événements à venir sont toujours exportés. Si le champ n\'est pas renseigné, tous les événements seront recherchés.', 'ICS', '', NULL, '80');";
+
+    // MT41142: Color the logged in agent #924
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` ( `nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('Affichage-Agent', 'color', '#FFF3B3', 'Couleur des cellules de l\'agent connecté', 'Affichage', '', NULL, '40');";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage
