@@ -33,7 +33,7 @@
         </tr>
       </table>
       <br/>
-      <table id='tableStatAbsences' class='CJDataTable' data-fixedColumns='3'>
+      <table id='tableStatAbsences' class='CJDataTable' data-fixedColumns='3' data-responsive="false">
         <thead>
           <tr>
             {% if afficheHeures == true %}
@@ -79,16 +79,16 @@
                 {% else %}
                   <td class='center nowrap no-hover'> - </td>
                 {% endif %}  
-                {% if attribute(elem, motif) is defined %}
-                  {% if afficheHeures == true %}
+                {% if afficheHeures == true %}
+                  {% if attribute(elem, motif) is defined %}
                     {% if elem[motif].heures == 'Erreur' %}
                       <td class='center nowrap bg-yellow' title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
                     {% else %}
                       <td class='center nowrap bg-yellow '>{{ elem[motif].heures }}</td>
                     {% endif %}
+                  {% else %}
+                    <td class="no-hover"></td>
                   {% endif %}
-                {% else %}
-                  <td class="no-hover"></td>
                 {% endif %}
               {% endfor %}
             </tr>
