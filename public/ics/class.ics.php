@@ -110,7 +110,7 @@ class CJICS
         $event[] = 'X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY';
         $event[] = 'TRANSP:OPAQUE';
 
-        if ($createdAT) {
+        if ($createdAt) {
             $event[] = "CREATED:$createdAt";
         }
 
