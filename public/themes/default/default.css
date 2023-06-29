@@ -1953,24 +1953,23 @@ table.dataTable th{
   width: 100%;
 }
 
-.statistics-td{
+.statistics-table td {
   border-right: 1px solid #999999;
   border-bottom: 1px solid #999999; 
-  border-top: 0px solid red;
-  border-left: 0px solid red;
 }
 
-.statistics-td-topleft{
-  border-top: 1px solid #999999;
+.statistics-table tr td:first-child {
   border-left: 1px solid #999999;
 }
 
-.statistics-td-top{
+.statistics-table tr:first-child td {
   border-top: 1px solid #999999;
 }
 
-.statistics-td-left{
-  border-left: 1px solid #999999;
+.statistics-table table td,
+.statistics-table table td:first-child,
+.statistics-table table tr:first-child td {
+  border: initial;
 }
 
 .statistics-table tr:first-child td:first-child{
