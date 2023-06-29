@@ -1647,9 +1647,9 @@ function refresh_poste(){
     dataType: "json",
     data: {"date": $("#date").val(), "site": $("#site").val()},
     success: function(result){
-      if(result!=validation){
+      if (validation && result != validation) {
 	window.location.reload(false);
-      }else{
+      } else {
 	setTimeout("refresh_poste()",30000);
       }
     },
