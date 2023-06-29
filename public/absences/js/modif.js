@@ -962,8 +962,8 @@ function verif_absences(ctrl_form){
   debut=debut.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
   fin=fin.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
 
-  hre_debut=document.form.hre_debut.value;
-  hre_fin=document.form.hre_fin.value;
+  hre_debut=document.form.hre_debut.value + ':00';
+  hre_fin=document.form.hre_fin.value + ':00';
   hre_debut=hre_debut?hre_debut:"00:00:00";
   hre_fin=hre_fin?hre_fin:"23:59:59";
   debut=debut+" "+hre_debut;
