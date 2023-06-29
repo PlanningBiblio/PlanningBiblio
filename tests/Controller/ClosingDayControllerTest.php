@@ -34,30 +34,20 @@ class ClosingDayControllerTest extends PLBWebTestCase
         );
         $this->logInAgent($agent, array(99, 25, 100));
 
-        $d1 = date("d")+3;
-        $d2 = date("d")+6;
-        $m = date("m");
-        $Y = date("Y");
-        if(date('n')<9){
-            $Y1 = $Y-1;
-            $Y2 = $Y+1;
-        } else{
-            $Y1 = $Y+1;
-            $Y2 = $Y+2;
-        }
+        $date1 = new DateTime('+3 days');
+        $date2 = new DateTime('+6 days');
 
-        $date1 = \DateTime::createFromFormat("d/m/Y", "$d1/$m/$Y");
-        $date2 = \DateTime::createFromFormat("d/m/Y", "$d2/$m/$Y");
+        $y = date("Y");
         if(date('n')<9){
-            $annee = "$Y1-$Y";
+            $y1 = $y-1;
+            $y2 = $y+1;
+            $annee = "$y1-$y";
+            $annee2 = "$y-$y2";
         } else{
-            $annee = "$Y-$Y1";
-        }
-
-        if(date('n')<9){
-            $annee2 = "$Y-$Y2";
-        } else{
-            $annee2 = "$Y1-$Y2";
+            $y1 = $y+1;
+            $y2 = $y+2;
+            $annee = "$y-$y1";
+            $annee2 = "$y1-$y2";
         }
 
         $builder->delete(PublicHoliday::class);

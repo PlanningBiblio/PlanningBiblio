@@ -28,10 +28,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $client = static::createClient();
         $_SESSION['oups']['CSRFToken'] = '00000';
 
-        $d = date("d")+1;
-        $m = date("m");
-        $Y = date("Y");
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
+        $date = new DateTime('+1 day');
 
         $overTime = new OverTime();
         $overTime->date($date);
@@ -99,10 +96,8 @@ class OvertimeControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEmpty($result,'span logo edit title doesnt exist');
 
-        $d = date("d")+1;
-        $m = date("m");
-        $Y = date("Y");
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
+        $y = date("Y");
+        $date = new DateTime('+1 day');
 
         $overTime = new OverTime();
         $overTime->date($date);
@@ -118,10 +113,10 @@ class OvertimeControllerTest extends PLBWebTestCase
         $entityManager->flush();
 
         if (date('m') < 9) {
-            $Y = $Y -1;
+            $y = $y -1;
         }
 
-        $crawler = $client->request('GET', "/overtime?annee=$Y&perso_id=" .$agent->id());
+        $crawler = $client->request('GET', "/overtime?annee=$y&perso_id=" .$agent->id());
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Modifier','span logo edit title is Modifier');
@@ -131,8 +126,8 @@ class OvertimeControllerTest extends PLBWebTestCase
         $this->assertStringContainsString($date->format('d/m/Y'), $result->text(null, false), 'Date is ok');
         $this->assertStringContainsString('0h30', $result->text(null, false), 'heures is 0h30');
 
-        $Y2 = $Y - 1;
-        $crawler = $client->request('GET', "/overtime?annee=$Y2&perso_id=" .$agent->id());
+        $y2 = $y - 1;
+        $crawler = $client->request('GET', "/overtime?annee=$y2&perso_id=" .$agent->id());
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEmpty($result,'span logo edit title doesnt exist');
@@ -164,7 +159,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $entityManager->persist($overTime2);
         $entityManager->flush();
 
-        $crawler = $client->request('GET', "/overtime?annee=$Y&perso_id=" .$agent_no_overtime->id());
+        $crawler = $client->request('GET', "/overtime?annee=$y&perso_id=" .$agent_no_overtime->id());
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Modifier','span logo edit title is Modifier');
@@ -192,10 +187,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
         $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
 
-        $d = date("d")+1;
-        $m = date("m");
-        $Y = date("Y");
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
+        $date = new DateTime('+1 day');
 
         $overTime = new OverTime();
         $overTime->date($date);
