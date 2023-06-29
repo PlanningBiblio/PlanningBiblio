@@ -354,4 +354,25 @@ class AgentRepository extends EntityRepository
 
         return $agents;
     }
+
+    /* Returns an array of sites for the given agents */
+    public function getSitesForAgents($agent_ids = array())
+    {
+        if ($GLOBALS['config']['Multisites-nombre'] == 1) {
+            return array("1");
+        }
+
+        $entityManager = $this->getEntityManager();
+        $agents = $entityManager->getRepository(Agent::class)->findBy(array('id' => $agent_ids));
+        $sites_array = array();
+        foreach ($agents as $agent) {
+            $agent_sites = json_decode(html_entity_decode($agent->sites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            if (is_array($agent_sites)) {
+                $sites_array = array_merge($sites_array, $agent_sites);
+            }
+        }
+        $sites_array = array_unique($sites_array);
+        $sites_array = array_values($sites_array);
+        return $sites_array;
+    }
 }
