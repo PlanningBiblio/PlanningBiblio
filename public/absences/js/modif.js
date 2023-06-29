@@ -239,13 +239,30 @@ $(function() {
 
   $("#recurrence-checkbox").change(function() {
     if($("#recurrence-checkbox").prop('checked')){
-      if($('#recurrence-hidden').val()){
-        $('#recurrence-info').show();
+      if (
+        $('input[name="fin"]').val() != '' &&
+        $('input[name="fin"]').val() != $('input[name="debut"]').val()
+      ) {
+        $("#recurrence-enddate-alert").dialog("open");
       } else {
-        $("#recurrence-form").dialog( "open" );
+        if($('#recurrence-hidden').val()){
+          $('#recurrence-info').show();
+        } else {
+          $("#recurrence-form").dialog( "open" );
+        }
       }
     } else {
       $('#recurrence-info').hide();
+    }
+  });
+
+  $('input[name="fin"]').change(function() {
+    if (
+      $("#recurrence-checkbox").prop('checked') &&
+      $('input[name="fin"]').val() != '' &&
+      $('input[name="fin"]').val() != $('input[name="debut"]').val()
+    ) {
+      $("#recurrence-enddate-alert").dialog("open");
     }
   });
 
@@ -363,6 +380,29 @@ $(function() {
     buttons: {
       "Fermer": function() {
         $( this ).dialog( "close" );
+      }
+    }
+  });
+
+  $("#recurrence-enddate-alert").dialog({
+    autoOpen: false,
+    height: 200,
+    width: 650,
+    modal: true,
+    buttons: {
+      "Oui": function() {
+        $(this).dialog("close");
+        $('input[name="fin"]').val("");
+      },
+      "Non": function() {
+        $(this).dialog("close");
+      }
+    },
+    close: function() {
+      if($('#recurrence-hidden').val()){
+        $('#recurrence-info').show();
+      } else {
+        $("#recurrence-form").dialog( "open" );
       }
     }
   });
