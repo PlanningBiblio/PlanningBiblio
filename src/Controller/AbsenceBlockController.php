@@ -122,7 +122,12 @@ class AbsenceBlockController extends BaseController
         // (s'il faut garder les deux, il faut gérer une suppression en mode
         // post de formulaire, et une suppression en mode appel ajax)
 
+        // => Garder les deux, ne pas faire d'ajax pour l'index, mais un seul formulaire qui englobe tous liens et récupérer l'id 
+
         // TODO 2: différence entre csrf_protection et isCsrfTokenValid ?
+        // => Utiliser csrf_protection
+
+
 
         $submittedToken = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
