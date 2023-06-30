@@ -17,7 +17,6 @@ Cette page est appelée par la function JavaScript "bataille_navale" utilisé pa
 use App\Model\PlanningPosition;
 use App\Model\PlanningPositionHistory;
 use App\Model\PlanningPositionTab;
-use App\Model\PlanningPositionTabAffectation;
 use App\Model\Position;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 use App\PlanningBiblio\Framework;
@@ -136,54 +135,10 @@ else {
             'site' => $site,
         ));
 
-        // Manage framework assignment
+        // Assign a copy of the framework
         // TODO : implement CSRF Protection
         if (empty($planning)) {
-            // Get assigned framework
-            $assignment = $entityManager->getRepository(PlanningPositionTabAffectation::class)->findOneBy(array(
-                'date' => \DateTime::createFromFormat('Y-m-d', $date),
-                'site' => $site,
-            ));
-
-            $frameworkId = $assignment->tableau();
-
-            $framework = $entityManager->getRepository(PlanningPositionTab::class)->findOneBy(array(
-                'tableau' => $frameworkId,
-            ));
-
-            // If the assigned framework is not a copy
-            if (!$framework->copy()) {
-
-                $newFramework = null;
-    
-                // Find the latest copy
-                $copy = $entityManager->getRepository(PlanningPositionTab::class)->findOneBy(
-                    array('copy' => $frameworkId),
-                    array('updated_at' => 'DESC'),
-                );
-
-                // If copies exist, we use the last one if the framework has not been modified since its creation
-                if (!empty($copy)) {
-                    if ($framework->updated_at() < $copy->updated_at()) {
-                        $newFramework = $copy->tableau();
-                    }
-                }
-
-                // If there is no available copies, we create a new one
-                if (!$newFramework) {
-                    $newFramework = Framework::copy($frameworkId);
-                }
-
-                // Assign the copy
-                // As $entityManager->flush() is used in the previous function (Framework::copy), we have to use $entityManager->getRepository again
-                $assignment = $entityManager->getRepository(PlanningPositionTabAffectation::class)->findOneBy(array(
-                    'date' => \DateTime::createFromFormat('Y-m-d', $date),
-                    'site' => $site,
-                ));
-
-                $assignment->tableau($newFramework);
-                $entityManager->flush();
-            }
+            Framework::assignACopy($date, $site);
         }
 
         // History

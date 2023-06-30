@@ -6,6 +6,7 @@ use App\Model\PlanningPositionCells;
 use App\Model\PlanningPositionHours;
 use App\Model\PlanningPositionLines;
 use App\Model\PlanningPositionTab;
+use App\Model\PlanningPositionTabAffectation;
 
 require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 require_once(__DIR__ . '/../../init/init_entitymanager.php');
@@ -21,7 +22,60 @@ class Framework
     public $numbers=null;
     public $supprime=null;
 
-    public static function copy($id) {
+
+    public static function assignACopy($date, $site)
+    {
+        $em = $GLOBALS['entityManager'];
+
+        // Get assigned framework
+        $assignment = $em->getRepository(PlanningPositionTabAffectation::class)->findOneBy(array(
+            'date' => \DateTime::createFromFormat('Y-m-d', $date),
+            'site' => $site,
+        ));
+    
+        $frameworkId = $assignment->tableau();
+    
+        $framework = $em->getRepository(PlanningPositionTab::class)->findOneBy(array(
+            'tableau' => $frameworkId,
+        ));
+    
+        // If the assigned framework is not a copy
+        if (!$framework->copy()) {
+    
+            $newFramework = null;
+    
+            // Find the latest copy
+            $copy = $em->getRepository(PlanningPositionTab::class)->findOneBy(
+                array('copy' => $frameworkId),
+                array('updated_at' => 'DESC'),
+            );
+    
+            // If copies exist, we use the last one if the framework has not been modified since its creation
+            if (!empty($copy)) {
+                if ($framework->updated_at() < $copy->updated_at()) {
+                    $newFramework = $copy->tableau();
+                }
+            }
+    
+            // If there is no available copies, we create a new one
+            if (!$newFramework) {
+                $newFramework = Framework::copy($frameworkId);
+            }
+    
+            // Assign the copy
+            // As $em->flush() is used in the previous function (Framework::copy), we have to use $em->getRepository again
+            $assignment = $em->getRepository(PlanningPositionTabAffectation::class)->findOneBy(array(
+                'date' => \DateTime::createFromFormat('Y-m-d', $date),
+                'site' => $site,
+            ));
+    
+            $assignment->tableau($newFramework);
+            $em->flush();
+        }
+    }
+
+    public static function copy($id)
+    {
         $em = $GLOBALS['entityManager'];
 
         // Get framework elements
