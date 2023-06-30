@@ -58,6 +58,7 @@ class Framework
         $copy->copy($id);
         $copy->updated_at(New \DateTime());
         $entityManager->persist($copy);
+        $entityManager->flush();
 
         // Cells
         foreach ($cells as $cell) {
@@ -67,6 +68,7 @@ class Framework
             $new->ligne($cell->ligne());
             $new->colonne($cell->colonne());
             $entityManager->persist($new);
+            $entityManager->flush();
         }
 
         // Hours
@@ -77,6 +79,7 @@ class Framework
             $new->debut($hour->debut());
             $new->fin($hour->fin());
             $entityManager->persist($new);
+            $entityManager->flush();
         }
 
         // Lines
@@ -88,7 +91,10 @@ class Framework
             $new->poste($line->poste());
             $new->type($line->type());
             $entityManager->persist($new);
+            $entityManager->flush();
         }
+
+        return $next;
     }
 
     public function deleteGroup()
