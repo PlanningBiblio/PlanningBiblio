@@ -148,25 +148,30 @@ else {
             $assignmentId = $assignment->id();
             $frameworkId = $assignment->tableau();
 
-            $em = $entityManager->getRepository(PlanningPositionTab::class)->findBy(array(
+            $framework = $entityManager->getRepository(PlanningPositionTab::class)->findOneBy(array(
                 'tableau' => $frameworkId,
             ));
-            $framework = $em[0];
 
             // If the assigned framework is not a copy
             if (!$framework->copy()) {
 
-                // Look for framework copies
-                $copies = $entityManager->getRepository(PlanningPositionTab::class)->findBy(array(
-                    'copy' => $frameworkId,
-                ));
+                $newFramework = null;
     
-                // If there are copies, then use the last one if the framework has not been modified since the creation of this copy
-                if (!empty($copies)) {
-                    // TODO : get the latest copy
+                // Find the latest copy
+                $copy = $entityManager->getRepository(PlanningPositionTab::class)->findOneBy(
+                    array('copy' => $frameworkId),
+                    array('updated_at' => 'DESC'),
+                );
 
-                // If there is no copy, then create a copy
-                } else {
+                // If copies exist, we use the last one if the framework has not been modified since its creation
+                if (!empty($copy)) {
+                    if ($framework->updated_at() < $copy->updated_at()) {
+                        $newFramework = $copy->tableau();
+                    }
+                }
+
+                // If there is no available copies, we create a new one
+                if (!$newFramework) {
                     $newFramework = Framework::copy($frameworkId);
                 }
 
@@ -179,9 +184,11 @@ else {
                 // J'ai l'impression que nous ne respectons pas les bonnes pratiques de Doctrine, ce qui peut en être la cause
                 // @see https://symfony.com/doc/4.4/doctrine.html
                 // En attendant, je supprime la première entrée
-                $firstAssignment = $entityManager->getRepository(PlanningPositionTabAffectation::class)->find($assignmentId);
-                $entityManager->remove($firstAssignment);
-                $entityManager->flush();
+                //$firstAssignment = $entityManager->getRepository(PlanningPositionTabAffectation::class)->find($assignmentId);
+                //$entityManager->remove($firstAssignment);
+                //$entityManager->flush();
+                // FIXME updated : il créé un doublon la première fois mais fait bien les modifications les fois suivantes (sur les autres jours de la semaine qui utilisent le même framework d'origine)
+                // La suppression est donc gênant car ça retire l'affectation pour les jours suivants
             }
         }
 
