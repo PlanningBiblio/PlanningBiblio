@@ -22,32 +22,31 @@ class Framework
     public $supprime=null;
 
     public static function copy($id) {
-        $entityManager = $GLOBALS['entityManager'];
+        $em = $GLOBALS['entityManager'];
 
         // Get framework elements
         // Framework
-        $em = $entityManager->getRepository(PlanningPositionTab::class)->findBy(array(
+        $framework = $em->getRepository(PlanningPositionTab::class)->findOneBy(array(
             'tableau' => $id,
         ));
-        $framework = $em[0];
 
         // Cells
-        $cells = $entityManager->getRepository(PlanningPositionCells::class)->findBy(array(
+        $cells = $em->getRepository(PlanningPositionCells::class)->findBy(array(
             'numero' => $id,
         ));
 
         // Hours
-        $hours = $entityManager->getRepository(PlanningPositionHours::class)->findBy(array(
+        $hours = $em->getRepository(PlanningPositionHours::class)->findBy(array(
             'numero' => $id,
         ));
 
         // Lines
-        $lines = $entityManager->getRepository(PlanningPositionLines::class)->findBy(array(
+        $lines = $em->getRepository(PlanningPositionLines::class)->findBy(array(
             'numero' => $id,
         ));
 
         // Find the next Framework ID (field "tableau")
-        $next = $entityManager->getRepository(PlanningPositionTab::class)->nextTableId();
+        $next = $em->getRepository(PlanningPositionTab::class)->nextTableId();
 
         // Create the copy
         // Framework's copy
@@ -57,8 +56,8 @@ class Framework
         $copy->site($framework->site());
         $copy->copy($id);
         $copy->updated_at(New \DateTime());
-        $entityManager->persist($copy);
-        $entityManager->flush();
+        $em->persist($copy);
+        $em->flush();
 
         // Cells
         foreach ($cells as $cell) {
@@ -67,8 +66,8 @@ class Framework
             $new->tableau($cell->tableau());
             $new->ligne($cell->ligne());
             $new->colonne($cell->colonne());
-            $entityManager->persist($new);
-            $entityManager->flush();
+            $em->persist($new);
+            $em->flush();
         }
 
         // Hours
@@ -78,8 +77,8 @@ class Framework
             $new->tableau($hour->tableau());
             $new->debut($hour->debut());
             $new->fin($hour->fin());
-            $entityManager->persist($new);
-            $entityManager->flush();
+            $em->persist($new);
+            $em->flush();
         }
 
         // Lines
@@ -90,8 +89,8 @@ class Framework
             $new->ligne($line->ligne());
             $new->poste($line->poste());
             $new->type($line->type());
-            $entityManager->persist($new);
-            $entityManager->flush();
+            $em->persist($new);
+            $em->flush();
         }
 
         return $next;

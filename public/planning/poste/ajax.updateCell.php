@@ -145,7 +145,6 @@ else {
                 'site' => $site,
             ));
 
-            $assignmentId = $assignment->id();
             $frameworkId = $assignment->tableau();
 
             $framework = $entityManager->getRepository(PlanningPositionTab::class)->findOneBy(array(
@@ -176,19 +175,14 @@ else {
                 }
 
                 // Assign the copy
+                // As $entityManager->flush() is used in the previous function (Framework::copy), we have to use $entityManager->getRepository again
+                $assignment = $entityManager->getRepository(PlanningPositionTabAffectation::class)->findOneBy(array(
+                    'date' => \DateTime::createFromFormat('Y-m-d', $date),
+                    'site' => $site,
+                ));
+
                 $assignment->tableau($newFramework);
-                $entityManager->persist($assignment);
                 $entityManager->flush();
-                
-                // FIXME : The lines above create a new entry instead of updating the first one.
-                // J'ai l'impression que nous ne respectons pas les bonnes pratiques de Doctrine, ce qui peut en être la cause
-                // @see https://symfony.com/doc/4.4/doctrine.html
-                // En attendant, je supprime la première entrée
-                //$firstAssignment = $entityManager->getRepository(PlanningPositionTabAffectation::class)->find($assignmentId);
-                //$entityManager->remove($firstAssignment);
-                //$entityManager->flush();
-                // FIXME updated : il créé un doublon la première fois mais fait bien les modifications les fois suivantes (sur les autres jours de la semaine qui utilisent le même framework d'origine)
-                // La suppression est donc gênant car ça retire l'affectation pour les jours suivants
             }
         }
 
