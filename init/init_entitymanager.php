@@ -18,6 +18,8 @@ use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Model\Extensions\TablePrefix;
 
+$config = $GLOBALS['config'];
+
 // Instanciating entity manager.
 $entitiesPath = array(__DIR__.'/../src/Entity');
 $emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);

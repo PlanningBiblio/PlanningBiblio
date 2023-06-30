@@ -20,6 +20,7 @@ use App\Model\PlanningPositionTab;
 use App\Model\PlanningPositionTabAffectation;
 use App\Model\Position;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
+use App\PlanningBiblio\Framework;
 
 ini_set("display_errors", 0);
 
@@ -136,7 +137,9 @@ else {
         ));
 
         // Manage framework assignment
+        // TODO : implement CSRF Protection
         if (empty($planning)) {
+            // Get assigned framework
             $em = $entityManager->getRepository(PlanningPositionTabAffectation::class)->findBy(array(
                 'date' => \DateTime::createFromFormat('Y-m-d', $date),
                 'site' => $site,
@@ -148,19 +151,40 @@ else {
             ));
             $framework = $em[0];
 
-            // TODO : get the latest copy
-            // TODO : create a table to manage copies (the filed may be insufficient)
-            /*
-            if not copy : create a copy and assign the copy
-            if copes :
-               if updated_at origin > updated_at lastest copy : create a new copy and assign it
-               else : assign the lastest copy
-            */
-            // TEST
-            ob_start();
-            var_dump($framework);
-            $c = ob_get_clean();
-            error_log($c);
+            
+            // If the assigned framework is not a copy
+            if (!$framework->copy()) {
+
+                // Look for framework copies
+                $copies = $entityManager->getRepository(PlanningPositionTab::class)->findBy(array(
+                    'copy' => $framework_id,
+                ));
+    
+                // If there is no copy, then create a copy
+                if (empty($copies)) {
+                    Framework::copy($framework_id);
+                }
+
+                // TODO : get the latest copy
+                // TODO : create a table to manage copies (the filed may be insufficient)
+                /*
+                if not copy : create a copy and assign the copy
+                if copes :
+                   if updated_at origin > updated_at lastest copy : create a new copy and assign it
+                   else : assign the lastest copy
+                */
+                // TEST
+                ob_start();
+                echo "\n";
+                echo "Next : \n";
+                var_dump($next);
+                echo "Origin : \n";
+                var_dump($framework);
+                echo "Copies : \n";
+                var_dump($copies);
+                $c = ob_get_clean();
+                error_log($c);
+            }
         }
 
         // History

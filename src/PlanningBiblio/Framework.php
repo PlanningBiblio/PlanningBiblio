@@ -2,7 +2,13 @@
 
 namespace App\PlanningBiblio;
 
+use App\Model\PlanningPositionCells;
+use App\Model\PlanningPositionHours;
+use App\Model\PlanningPositionLines;
+use App\Model\PlanningPositionTab;
+
 require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
+require_once(__DIR__ . '/../../init/init_entitymanager.php');
 
 class Framework
 {
@@ -14,6 +20,76 @@ class Framework
     public $number=null;
     public $numbers=null;
     public $supprime=null;
+
+    public static function copy($id) {
+        $entityManager = $GLOBALS['entityManager'];
+
+        // Get framework elements
+        // Framework
+        $em = $entityManager->getRepository(PlanningPositionTab::class)->findBy(array(
+            'tableau' => $id,
+        ));
+        $framework = $em[0];
+
+        // Cells
+        $cells = $entityManager->getRepository(PlanningPositionCells::class)->findBy(array(
+            'numero' => $id,
+        ));
+
+        // Hours
+        $hours = $entityManager->getRepository(PlanningPositionHours::class)->findBy(array(
+            'numero' => $id,
+        ));
+
+        // Lines
+        $lines = $entityManager->getRepository(PlanningPositionLines::class)->findBy(array(
+            'numero' => $id,
+        ));
+
+        // Find the next Framework ID (field "tableau")
+        $next = $entityManager->getRepository(PlanningPositionTab::class)->nextTableId();
+
+        // Create the copy
+        // Framework's copy
+        $copy = new PlanningPositionTab();
+        $copy->tableau($next);
+        $copy->nom($framework->nom());
+        $copy->site($framework->site());
+        $copy->copy($id);
+        $copy->updated_at(New \DateTime());
+        $entityManager->persist($copy);
+
+        // Cells
+        foreach ($cells as $cell) {
+            $new = new PlanningPositionCells();
+            $new->numero($next);
+            $new->tableau($cell->tableau());
+            $new->ligne($cell->ligne());
+            $new->colonne($cell->colonne());
+            $entityManager->persist($new);
+        }
+
+        // Hours
+        foreach ($hours as $hour) {
+            $new = new PlanningPositionHours();
+            $new->numero($next);
+            $new->tableau($hour->tableau());
+            $new->debut($hour->debut());
+            $new->fin($hour->fin());
+            $entityManager->persist($new);
+        }
+
+        // Lines
+        foreach ($lines as $line) {
+            $new = new PlanningPositionLines();
+            $new->numero($next);
+            $new->tableau($line->tableau());
+            $new->ligne($line->ligne());
+            $new->poste($line->poste());
+            $new->type($line->type());
+            $entityManager->persist($new);
+        }
+    }
 
     public function deleteGroup()
     {
