@@ -50,18 +50,14 @@
       // Enregistrement des données en ajax 
       $.ajax({
         url: url('framework-table/save-line'),
-        type: "post",
+        type: 'post',
         data: data,
-        success: function(){
-          CJInfo("Le tableau a été enregistré","highlight");
+        success: function() {
+          CJInfo('Le tableau a été enregistré', 'highlight');
           return true;
         },
-        error: function(request, status, error){
-          if (request.responseText == '"used"') {
-            CJInfo('Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.','error');
-          } else {
-            CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.","error");
-          }
+        error: function(request, status, error) {
+          CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.", 'error');
           return false;
         }
       });
@@ -77,11 +73,10 @@
   {% endif %}
 
   {% if used %}
-    <p class="ui-state-error-text" style="text-align:center">Ce tableau est utilisé sur un planning et ne peut être édité</p>
+    <p class="ui-state-error-text" style="text-align:center">Ce tableau est utilisé. Vos modifications peuvent impacter les modèles qui utilisent ce tableau.</p>
   {% endif %}
-  <input type='hidden' name='used' id='used' value="{{ used }}" />
 
-  <div id='tabs' class='ui-tabs' data-active="{{ cfgType }}" {% if used %}data-disabled="[1, 2]"{% endif %}>
+  <div id="tabs" class="ui-tabs" data-active="{{ cfgType }}" >
     <ul>
       <li class="admin">
         <a href='#div_infos' id='infos'>Infos générales</a>
@@ -116,7 +111,7 @@
               <tr>
                 <td>Affecter au site :</td>
                 <td>
-                  <select id='site' style='width:300px;' {% if used %}disabled{% endif %}>
+                  <select id="site" style="width:300px;" >
                     <option value=''>&nbsp;</option>
                     {% for i in 1..nbSites %}
                        <option value='{{ i }}' {{ (i == site) ? "selected='selected'":" "}} >{{ multisites[i] }}</option>
@@ -130,7 +125,7 @@
             <tr>
               <td>Nombre de tableaux :</td>
               <td>
-                <select name='nombre' id='nombre' style='width:300px;' {% if used %}disabled{% endif %}>
+                <select name="nombre" id="nombre" style="width:300px;" >
                   {% for i in 1..16 %}
                     <option value='{{ i }}' {{ (i == nombre) ? "selected='selected'":" "}} >{{ i }}</option>
                   {% endfor %}

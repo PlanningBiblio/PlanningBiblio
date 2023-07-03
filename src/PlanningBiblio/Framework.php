@@ -403,15 +403,10 @@ class Framework
     public function is_used()
     {
         $db = new \db();
-        $db->select('pl_poste_tab_affect', null, "tableau = $this->id");
+        $db->select('pl_poste_modeles_tab', null, "tableau = $this->id");
+
         if ($db->result) {
-            foreach ($db->result as $elem) {
-                $db2 = new \db();
-                $db2->select2('pl_poste', null, ['date' => $elem['date'], 'site' => $elem['site'], 'perso_id' => '>0']);
-                if ($db2->result) {
-                    return true;
-                }
-            }
+            return true;
         }
 
         return false;
