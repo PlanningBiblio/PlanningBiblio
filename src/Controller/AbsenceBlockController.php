@@ -70,8 +70,7 @@ class AbsenceBlockController extends BaseController
      */
     public function update(Request $request, Session $session)
     {
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
+        if (!$this->csrf_protection($request)) {
             $session->getFlashBag()->add('error', 'CSRF Token Error');
             return $this->redirectToRoute('absence.block.index');
         }
@@ -113,24 +112,7 @@ class AbsenceBlockController extends BaseController
      */
     public function delete(Request $request, Session $session)
     {
-
-        // TODO: Pour la suppression, la spec demande d'ajouter le bouton de
-        // suppression dans le tableau d'index.
-        // Mais aussi de conserver le bouton de suppression lors de l'édition
-        // Je ne crois pas qu'il y ait d'endroits dans Planno avec les deux
-        // Lequel faut-il garder ?
-        // (s'il faut garder les deux, il faut gérer une suppression en mode
-        // post de formulaire, et une suppression en mode appel ajax)
-
-        // => Garder les deux, ne pas faire d'ajax pour l'index, mais un seul formulaire qui englobe tous liens et récupérer l'id 
-
-        // TODO 2: différence entre csrf_protection et isCsrfTokenValid ?
-        // => Utiliser csrf_protection
-
-
-
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
+        if (!$this->csrf_protection($request)) {
             $session->getFlashBag()->add('error', 'CSRF Token Error');
             return $this->redirectToRoute('absence.block.index');
         }

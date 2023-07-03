@@ -405,6 +405,7 @@ function deleteAbsenceInfo(id) {
 function deleteAbsenceBlock(id) {
     if (confirm("Êtes-vous sûr(e) de vouloir supprimer ce blocage ?")) {
         $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
+        $('#form').prepend("<input type='hidden' name='id' value='" + id + "' />");
         $('#form').submit();
     }
 }

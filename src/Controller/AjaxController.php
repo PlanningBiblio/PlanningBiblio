@@ -296,6 +296,7 @@ class AjaxController extends BaseController
       if ($this->config('Absences-blocage') == 1) {
           $absenceBlockHelper = new AbsenceBlockHelper();
           $result['has_block'] = $absenceBlockHelper->hasBlock($debut, $fin);
+        error_log('has_block: ' . $result['has_block']);
       }
 
       $result = json_encode($result);

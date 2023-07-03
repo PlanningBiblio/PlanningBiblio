@@ -21,20 +21,18 @@ class AbsenceBlockHelper extends BaseHelper
         }
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $result = $queryBuilder->select('COUNT(b.id)')
+        $query = $queryBuilder->select('COUNT(b.id) AS blockscount')
             ->from(AbsenceBlock::class,'b')
-            ->where('b.start > :end')
-            ->orWhere('b.end < :start')
+            ->where('b.start <= :start AND b.end >= :end') // OUTSIDE
+            ->orWhere('b.start <= :start AND b.end <= :end') // "ON THE LEFT"
+            ->orWhere('b.start >= :start AND b.end <= :end') // INSIDE
+            ->orWhere('b.start >= :start AND b.end >= :end') // "ON THE RIGHT"
             ->setParameters(array('start' => $start, 'end' => $end))
-            ->getQuery()
-            ->getResult();
-
-        if ($result) {
-            if ($result[0] >= 1) {
-                return 0;
-            } else {
-                return 1;
-            }
+            ->getQuery();
+        $result = $query->getResult();
+        foreach ($result as $elem) {
+            error_log("result " . $elem['blockscount']);
+            return $elem['blockscount'];
         }
         return -1;
     }
