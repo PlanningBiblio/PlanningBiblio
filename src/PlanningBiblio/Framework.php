@@ -209,18 +209,21 @@ class Framework
      */
     public function fetchAll()
     {
+        $date = date('Y-m-d H:i:s', strtotime('- 1 year'));
+        $delete = $this->supprime ? ">=$date" : null;
+
         $db = new \db();
-        if ($this->supprime) {
-            $date=date("Y-m-d H:i:s", strtotime("- 1 year"));
-            $db->select2("pl_poste_tab", null, array("supprime"=>">=$date"));
-        } else {
-            $db->select2("pl_poste_tab", null, array("supprime"=>null));
-        }
-        $tab=$db->result;
+        $db->select2('pl_poste_tab', null, array(
+            'supprime' => $delete,
+            'copy' => null,
+            ));
+
+        $tab = $db->result;
+
         if (is_array($tab)) {
-            usort($tab, "cmp_nom");
+            usort($tab, 'cmp_nom');
         }
-        $this->elements=$tab;
+        $this->elements = $tab;
     }
 
     public function fetchAllGroups()

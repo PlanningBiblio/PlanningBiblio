@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Model\AbsenceReason;
 use App\Model\SelectFloor;
 use App\Model\PlanningPositionHistory;
+use App\Model\PlanningPositionTab;
 use App\Model\SeparationLine;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 use App\Model\Agent;
@@ -146,10 +147,18 @@ class IndexController extends BaseController
         // Framework choice.
         $tab = 0;
         if ($show_framework_select) {
-            $db = new \db();
-            $db->select2("pl_poste_tab", "*", array("supprime"=>null), "order by `nom` DESC");
-            $frameworks = $db->result;
 
+            $frameworks = $this->entityManager->getRepository(PlanningPositionTab::class)->findBy(
+                array(
+                    'site' => $site,
+                    'copy' => null,
+                    'supprime' => null,
+                ),
+                array(
+                    'nom' => 'ASC'
+                ),
+            );
+            
             $this->templateParams(array(
                     'frameworks' => $frameworks,
                     'no_week_planning' => $pasDeDonneesSemaine,
