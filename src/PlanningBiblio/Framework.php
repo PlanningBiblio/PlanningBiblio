@@ -23,26 +23,29 @@ class Framework
     public $supprime=null;
 
 
-    public static function assignACopy($date, $site)
+    public static function assignACopy($date, $site, $frameworkId = 0)
     {
         $em = $GLOBALS['entityManager'];
 
         // Get assigned framework
-        $assignment = $em->getRepository(PlanningPositionTabAffectation::class)->findOneBy(array(
-            'date' => \DateTime::createFromFormat('Y-m-d', $date),
-            'site' => $site,
-        ));
-    
-        $frameworkId = $assignment->tableau();
+        if (!$frameworkId) {
+            $assignment = $em->getRepository(PlanningPositionTabAffectation::class)->findOneBy(array(
+                'date' => \DateTime::createFromFormat('Y-m-d', $date),
+                'site' => $site,
+            ));
+        
+            $frameworkId = $assignment->tableau();
+        }
     
         $framework = $em->getRepository(PlanningPositionTab::class)->findOneBy(array(
             'tableau' => $frameworkId,
         ));
     
+        $newFrameworkId = 0;
+
         // If the assigned framework is not a copy
         if (!$framework->copy()) {
     
-            $newFramework = null;
     
             // Find the latest copy
             $copy = $em->getRepository(PlanningPositionTab::class)->findOneBy(
@@ -53,13 +56,13 @@ class Framework
             // If copies exist, we use the last one if the framework has not been modified since its creation
             if (!empty($copy)) {
                 if ($framework->updated_at() < $copy->updated_at()) {
-                    $newFramework = $copy->tableau();
+                    $newFrameworkId = $copy->tableau();
                 }
             }
     
             // If there is no available copies, we create a new one
-            if (!$newFramework) {
-                $newFramework = Framework::copy($frameworkId);
+            if (!$newFrameworkId) {
+                $newFrameworkId = Framework::copy($frameworkId);
             }
     
             // Assign the copy
@@ -69,9 +72,23 @@ class Framework
                 'site' => $site,
             ));
     
-            $assignment->tableau($newFramework);
-            $em->flush();
+            // Change assignment if exists (when the planning is created by using a framework)
+            if (!empty($assignment)) {
+                $assignment->tableau($newFrameworkId);
+                $em->flush();
+
+            // Add assignment if not exists (when the planning is created by importing a model)
+            } else {
+                $assignment = new PlanningPositionTabAffectation();
+                $assignment->date(\DateTime::createFromFormat('Y-m-d', $date));
+                $assignment->site($site);
+                $assignment->tableau($newFrameworkId);
+                $em->persist($assignment);
+                $em->flush();
+            }
         }
+
+        return $newFrameworkId;
     }
 
     public static function copy($id)

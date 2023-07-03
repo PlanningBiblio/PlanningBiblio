@@ -586,10 +586,8 @@ class IndexController extends BaseController
             $postes = array();
             $horaires = array();
             if ($db->result) {
-                $tableau=$db->result[0]['tableau'];
-                $db=new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->insert("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
+                $tableau = $db->result[0]['tableau'];
+                $tableau = Framework::assignACopy($elem, $site, $tableau);
 
                 // N'importe pas les agents placés sur des postes supprimés (si tableau modifié)
                 $db = new \db();
