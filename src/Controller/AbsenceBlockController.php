@@ -17,16 +17,13 @@ class AbsenceBlockController extends BaseController
      */
     public function index(Request $request, Session $session)
     {
-        $today = date('Y-m-d');
+        $blocks = $this->entityManager->getRepository(AbsenceBlock::class)
+            ->findBy(
+                array(),
+                array('start' => 'ASC', 'end' => 'ASC'),
+            );
 
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-
-        $query = $queryBuilder->select(array('a'))
-            ->from(AbsenceBlock::class, 'a')
-            ->orderBy('a.start', 'ASC', 'a.end', 'ASC')
-            ->getQuery();
-
-        $this->templateParams( array('block' => $query->getResult()) );
+        $this->templateParams( array('block' => $blocks) );
 
         return $this->output('absenceBlock/index.html.twig');
     }
@@ -47,13 +44,13 @@ class AbsenceBlockController extends BaseController
     }
 
     /**
-     * @Route("/absence/block/{id}", name="absence.block.edit", methods={"GET"})
+     * @Route("/absence/block/{id<\d+>}", name="absence.block.edit", methods={"GET"})
      */
     public function edit(Request $request)
     {
         $id = $request->get('id');
 
-        $block = $this->entityManager->getRepository(AbsenceBlock::class)->findOneById($id);
+        $block = $this->entityManager->getRepository(AbsenceBlock::class)->find($id);
 
         $this->templateParams(array(
             'id'    => $id,
