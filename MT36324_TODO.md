@@ -1,9 +1,15 @@
 # General
 
-* update pl_poste_tab.updated_at when a framework is modified (check diff before-after to decide if it's modified or not)
+* OK, DONE update pl_poste_tab.updated_at when a framework is modified (check diff before-after to decide if it's modified or not)
 * CSRF protection on public/planning/poste/ajax.updateCell.php
+* CSRF protection on src/Controler/FrameworkController.php
 * atomic update which create an affect copies for all plannings created before this patch
+* An other idea : 
+-- make transparent copies when changing frameworks
+-- no difference on planning and models management
+-- when importing a model : popup "We found a new version of the framework, do you want to use it ?" with options : "use it now", "use it and update the model" and "use it and copy the model"
 
+ 
 # Models
 
 * OK It seems to work correctly for models which are created with an original framework.

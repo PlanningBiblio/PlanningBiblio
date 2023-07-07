@@ -357,7 +357,7 @@ class Framework
 
         $diff=intval($number)-intval($length);
         if ($diff==0) {
-            return;
+            return false;
         }
 
         if ($diff>0) {
@@ -381,6 +381,8 @@ class Framework
                 $i++;
             }
         }
+
+        return true;
     }
 
     public function update($post)

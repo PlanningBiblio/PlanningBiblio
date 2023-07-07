@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\PlanningBiblio\Framework;
+use App\Model\PlanningPositionTab;
 use App\Model\Position;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -112,6 +113,16 @@ class FrameworkController extends BaseController
      * @Route ("/framework/info", name="framework.save_table_info", methods={"POST"})
      */
     public function saveInfo(Request $request, Session $session){
+
+/**
+// TODO : CSRF Protection
+// TODO : CSRF Protection
+// TODO : CSRF Protection
+// TODO : CSRF Protection
+// USE FlashBags and redirectToRoute instead of ajax queries
+       if (!$this->csrf_protection($request)) {
+        }
+*/
         $post = $request->request->all();
         $id = $post["id"];
         $CSRFToken = $post["CSRFToken"];
@@ -122,7 +133,7 @@ class FrameworkController extends BaseController
         // Ajout
         if (!$id) {
 
-        // Recherche du numero de tableau à utiliser
+            // Recherche du numero de tableau à utiliser
             $db = new \db();
             $db->select2("pl_poste_tab", array(array("name" => "MAX(tableau)", "as" => "numero")));
             $numero = $db->result[0]["numero"]+1;
@@ -143,29 +154,35 @@ class FrameworkController extends BaseController
             $t->setNumbers($nombre);
 
             return $this->json((int) $numero);
-        } else {  // Modification
+
+        // Modification
+        } else {
             $t = new Framework();
             $t->id = $id;
             $t->CSRFToken = $CSRFToken;
-            $t->setNumbers($nombre);
+            $diff = $t->setNumbers($nombre);
 
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update("pl_poste_tab", array("nom" => trim($nom)), array("tableau" => $id));
+            $framework = $this->entityManager->getRepository(PlanningPositionTab::class)->findOneBy(
+                array('tableau' => $id)
+            );
 
+            $framework->nom(trim($nom));
             if ($site) {
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->update('pl_poste_tab', array('site' => $site), array('tableau' => $id));
+                $framework->site($site);
             }
+            if ($diff) {
+                $framework->updated_at(new \DateTime());
+            }
+            $this->entityManager->flush();
 
             return $this->json('OK');
         }
     }
-     /**
-     * @Route ("/framework/add", name="framework.add_table", methods={"GET"})
-     */
-     public function addTable (Request $request, Session $session){
+
+    /**
+    * @Route ("/framework/add", name="framework.add_table", methods={"GET"})
+    */
+    public function addTable (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
         $cfgType = $request->get("cfg-type");
         $cfgTypeGet = $request->get("cfg-type");
@@ -218,8 +235,8 @@ class FrameworkController extends BaseController
         );
 
         return $this->output('framework/edit_tab.html.twig');
+    }
 
-     }
     /**
      * @Route ("/framework/{id}", name="framework.edit_table", methods={"GET"})
      */
@@ -344,6 +361,16 @@ class FrameworkController extends BaseController
      * @Route ("/framework", name="framework.save_table", methods={"POST"})
      */
     public function saveTable (Request $request, Session $session){
+
+/**
+// TODO : CSRF Protection
+// TODO : CSRF Protection
+// TODO : CSRF Protection
+// TODO : CSRF Protection
+// USE FlashBags and redirectToRoute instead of ajax queries
+       if (!$this->csrf_protection($request)) {
+        }
+*/
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableauNumero = $post['numero'];
@@ -380,15 +407,26 @@ class FrameworkController extends BaseController
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->insert("pl_poste_horaires", $values);
+
             if (!$db->error) {
-                $msg = "Les horaires ont été modifiés avec succès";
-                $msgType = "success";
+                $session->getFlashBag()->add('notice', 'Les horaires ont été modifiés avec succès');
             } else {
-                $msg = "Une erreur est survenue lors de l'enregistrement des horaires";
-                $msgType = "error";
+                $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'enregistrement des horaires");
             }
 
-            return $this->redirectToRoute('framework.edit_table', array("id" => $tableauNumero, "cfg-type"=> $post['cfg-type'], "msg" => $msg, "msgType" => $msgType));
+            // TODO : control if there are differences before changing updated_at
+            $diff = true;
+
+            if ($diff) {
+                $framework = $this->entityManager->getRepository(PlanningPositionTab::class)->findOneBy(
+                    array('tableau' => $tableauNumero)
+                );
+
+                $framework->updated_at(new \DateTime());
+                $this->entityManager->flush();
+            }
+
+            return $this->redirectToRoute('framework.edit_table', array('id' => $tableauNumero, 'cfg-type' => $post['cfg-type']));
         }
     }
 
@@ -396,6 +434,16 @@ class FrameworkController extends BaseController
      * @Route ("framework-table/save-line", name="framework.save_table_line", methods={"POST"})
      */
     public function saveTableLine(Request $request, Session $session){
+
+/**
+// TODO : CSRF Protection
+// TODO : CSRF Protection
+// TODO : CSRF Protection
+// TODO : CSRF Protection
+// USE FlashBags and redirectToRoute instead of ajax queries
+       if (!$this->csrf_protection($request)) {
+        }
+*/
         $form_post = $request->request->all();
         $CSRFToken = $form_post['CSRFToken'];
         $tableauNumero = $form_post['id'];
@@ -480,10 +528,22 @@ class FrameworkController extends BaseController
             }
         }
 
+        // TODO : control if there are differences before changing updated_at
+        $diff = true;
+
+        if ($diff) {
+            $framework = $this->entityManager->getRepository(PlanningPositionTab::class)->findOneBy(
+                array('tableau' => $tableauNumero)
+            );
+
+            $framework->updated_at(new \DateTime());
+            $this->entityManager->flush();
+        }
+
         return $this->json('ok');
     }
 
-     /**
+    /**
      * @Route ("/framework", name="framework.delete_table", methods={"DELETE"})
      */
     public function deleteTable (Request $request, Session $session){
@@ -534,8 +594,8 @@ class FrameworkController extends BaseController
     }
 
     /**
-    * @Route ("/framework/restore_table", name="framework.restore_table", methods={"POST"})
-    */
+     * @Route ("/framework/restore_table", name="framework.restore_table", methods={"POST"})
+     */
     public function restoreTable (Request $request, Session $session) {
         $CSRFToken = $request->get("CSRFToken");
         $id = $request->get("id");
