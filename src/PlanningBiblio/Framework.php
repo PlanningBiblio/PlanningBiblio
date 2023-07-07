@@ -36,56 +36,56 @@ class Framework
         
             $frameworkId = $assignment->tableau();
         }
-    
+
         $framework = $em->getRepository(PlanningPositionTab::class)->findOneBy(array(
             'tableau' => $frameworkId,
         ));
-    
-        $newFrameworkId = 0;
 
-        // If the assigned framework is not a copy
-        if (!$framework->copy()) {
-    
-    
-            // Find the latest copy
-            $copy = $em->getRepository(PlanningPositionTab::class)->findOneBy(
-                array('copy' => $frameworkId),
-                array('updated_at' => 'DESC'),
+        // If the assigned framework is a copy, we look for a more recent copy
+        if ($framework->copy()) {
+
+            // Find the origin
+            $framework = $em->getRepository(PlanningPositionTab::class)->findOneBy(
+                array('tableau' => $framework->copy()),
             );
-    
-            // If copies exist, we use the last one if the framework has not been modified since its creation
-            if (!empty($copy)) {
-                if ($framework->updated_at() < $copy->updated_at()) {
-                    $newFrameworkId = $copy->tableau();
-                }
-            }
-    
-            // If there is no available copies, we create a new one
-            if (!$newFrameworkId) {
-                $newFrameworkId = Framework::copy($frameworkId);
-            }
-    
-            // Assign the copy
-            // As $em->flush() is used in the previous function (Framework::copy), we have to use $em->getRepository again
-            $assignment = $em->getRepository(PlanningPositionTabAffectation::class)->findOneBy(array(
-                'date' => \DateTime::createFromFormat('Y-m-d', $date),
-                'site' => $site,
-            ));
-    
-            // Change assignment if exists (when the planning is created by using a framework)
-            if (!empty($assignment)) {
-                $assignment->tableau($newFrameworkId);
-                $em->flush();
 
-            // Add assignment if not exists (when the planning is created by importing a model)
-            } else {
-                $assignment = new PlanningPositionTabAffectation();
-                $assignment->date(\DateTime::createFromFormat('Y-m-d', $date));
-                $assignment->site($site);
-                $assignment->tableau($newFrameworkId);
-                $em->persist($assignment);
-                $em->flush();
-            }
+            $frameworkId = $framework->tableau();
+        }
+
+        // Find the latest copy
+        $copy = $em->getRepository(PlanningPositionTab::class)->findOneBy(
+            array('copy' => $frameworkId),
+            array('updated_at' => 'DESC'),
+        );
+
+        // If copies exist, we use the last one if the framework has not been modified since its creation
+        if (!empty($copy) and ($framework->updated_at() < $copy->updated_at())) {
+            $newFrameworkId = $copy->tableau();
+
+        // If there is no available copies, we create a new one
+        } else {
+            $newFrameworkId = Framework::copy($frameworkId);
+        }
+    
+        // Assign the copy
+        $assignment = $em->getRepository(PlanningPositionTabAffectation::class)->findOneBy(array(
+            'date' => \DateTime::createFromFormat('Y-m-d', $date),
+            'site' => $site,
+        ));
+
+        // Change assignment if exists (when the planning is created by using a framework)
+        if (!empty($assignment)) {
+            $assignment->tableau($newFrameworkId);
+            $em->flush();
+
+        // Add assignment if not exists (when the planning is created by importing a model)
+        } else {
+            $assignment = new PlanningPositionTabAffectation();
+            $assignment->date(\DateTime::createFromFormat('Y-m-d', $date));
+            $assignment->site($site);
+            $assignment->tableau($newFrameworkId);
+            $em->persist($assignment);
+            $em->flush();
         }
 
         return $newFrameworkId;

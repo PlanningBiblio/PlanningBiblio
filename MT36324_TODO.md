@@ -6,10 +6,10 @@
 
 # Models
 
-* It ssems to work correctly for models which are created with an original framework.
-* 1./ But when we load a model created from a framework's copy, the framework is not loaded.
-* 2./ We want the modifications made on frameworks affect the models, but the modification are made on original frameworks, never on copies which are not editable. 
-In this case, we can't make it work
+* OK It seems to work correctly for models which are created with an original framework.
+* OK, FIXED 1./ But when we load a model created from a framework's copy, the framework is not loaded.
+* OK, FIXED by going back to the origin then getting the latest copy 2./ We want the modifications made on frameworks affect the models, but the modification are made on original frameworks, never on copies which are not editable. 
+OK, FIXED In this case, we can't make it work
 
 --> Try this : 
 * the latest copy take the place of the original framework. The origin will be not modified, the latest copy can be modify. The models are reaffected to the latest copy.
