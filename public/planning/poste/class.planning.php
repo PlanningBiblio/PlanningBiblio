@@ -278,7 +278,7 @@ class planning
         
                 $nom = $elem['nom'];
                 if ($elem['prenom']) {
-                    $nom.=" ".substr($elem['prenom'], 0, 1).".";
+                    $nom.=" ".mb_substr($elem['prenom'], 0, 1).".";
                 }
 
                 // Si sans repas, on ajoute (SR) à l'affichage
