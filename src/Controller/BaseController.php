@@ -21,7 +21,7 @@ class BaseController extends AbstractController
 
     private $config = array();
 
-    private $logger;
+    protected $logger;
 
     protected $notifier;
 
