@@ -4,7 +4,10 @@ namespace App\PlanningBiblio;
 
 require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 
-class Framework
+use App\Model\PlanningPositionTabAffectation;
+use App\PlanningBiblio\Helper\BaseHelper;
+
+class Framework extends BaseHelper
 {
     public $CSRFToken = null;
     public $elements=array();
@@ -169,6 +172,20 @@ class Framework
             }
         }
         $this->elements=$tabs;
+    }
+
+    public function getFromDate(String $date, int $site = 1)
+    {
+        $framework = $this->entityManager->getRepository(PlanningPositionTabAffectation::class)->findOneBy(
+            array(
+                'date' => \DateTime::createFromFormat('Y-m-d', $date),
+                'site' => $site,
+            ));
+
+        $this->id = $framework->tableau();
+        $this->get();
+
+        return $this->elements;
     }
 
     public function getNumbers()

@@ -2,6 +2,10 @@
 
 namespace App\PlanningBiblio\Helper;
 
+require_once(__DIR__ . '/../../../public/include/config.php');
+require_once(__DIR__ . '/../../../init/init_entitymanager.php');
+require_once(__DIR__ . '/../../../init/init_plugins.php');
+
 class BaseHelper
 {
     protected $entityManager;
@@ -14,7 +18,7 @@ class BaseHelper
     {
         $this->entityManager = $GLOBALS['entityManager'];
 
-        $this->dispatcher = $GLOBALS['dispatcher'];
+        $this->dispatcher = $GLOBALS['dispatcher'] ?? null;
 
         $this->config = $GLOBALS['config'];
     }

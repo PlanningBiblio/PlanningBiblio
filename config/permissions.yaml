@@ -203,8 +203,10 @@
     - 21
 "notification.save":
     - 21
+"minizinc.oneday":
+    - 301
 "minizinc.tryme":
-    - 100
+    - 301
 "model.add":
     - 301
 "model.import":
