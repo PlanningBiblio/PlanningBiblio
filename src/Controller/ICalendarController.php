@@ -29,9 +29,9 @@ class ICalendarController extends BaseController
         $id = $request->get('id');
         $login = $request->get('login');
         $mail = $request->get('mail');
-        $get_absences = $request->get('get_absences');
+        $get_absences = $request->get('absences');
 
-        // Définission de l'id de l'agent si l'argument login est donné
+        // Définition de l'id de l'agent si l'argument login est donné
         if (!$id and $login) {
             $db = new \db();
             $db->select2('personnel', 'id', array('login'=>$login));
@@ -42,7 +42,7 @@ class ICalendarController extends BaseController
             }
         }
 
-        // Définission de l'id de l'agent si l'argument mail est donné
+        // Définition de l'id de l'agent si l'argument mail est donné
         if (!$id and $mail) {
             $db = new \db();
             $db->select2('personnel', 'id', array('mail'=>$mail));
@@ -223,7 +223,7 @@ class ICalendarController extends BaseController
                     'lastModified' => strtotime($verrou[$elem['date'].'_'.$elem['site']]['date']),
                 ];
 
-                $event = CJICS::createIcsEvent($params);
+                $event = \CJICS::createIcsEvent($params);
                 $ical = array_merge($ical, $event);
             }
         }
@@ -238,14 +238,14 @@ class ICalendarController extends BaseController
                 'id' => $id,
                 'start' => strtotime($elem['debut']),
                 'end' => strtotime($elem['fin']),
-                'reason' => $elem['motif'],
+                'reason' => isset($elem['motif']) ? $elem['motif'] : '', // FIXME ?
                 'comment' => $elem['commentaires'],
                 'status' => $elem['valide'] ? 'CONFIRMED' : 'TENTATIVE',
-                'createdAt' => strtotime($elem['demande']),
+                'createdAt' => isset($elem['demande']) ? strtotime($elem['demande']) : null, // FIXME ?
                 'lastModified' => strtotime($elem['validation']),
             ];
          
-            $event = CJICS::createIcsEvent($params);
+            $event = \CJICS::createIcsEvent($params);
             $ical = array_merge($ical, $event);
           }
         }
@@ -256,14 +256,15 @@ class ICalendarController extends BaseController
 
         $response = new Response();
         $response->setContent($ical);
-        $response->headers->set('Content-Type', 'text/calendar');
+        #$response->headers->set('Content-Type', 'text/calendar');
+        $response->headers->set('Content-Type', 'text/plain');
         return $response;
 
     }
 
     private function returnError($error)
     {
-        print "returnError $error";
+#        print "returnError $error";
         $this->logger->error($error);
         $response = new Response();
         $response->setContent(json_encode(array('error' => $error)));
