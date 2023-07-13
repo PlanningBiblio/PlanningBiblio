@@ -1,5 +1,10 @@
 <?php
 
+/**
+TODO : pas de saut de ligne avant le ]
+TODO : toute les lignes d'un même tableau doivent avoir la même longueur
+*/
+
 namespace App\Command;
 
 require_once(__DIR__ . '/../../public/include/config.php');
@@ -74,11 +79,13 @@ class MiniZincOneDayCommand extends Command
             $j = 1;
             if (!empty($f['horaires'])) {
                 foreach ($f['horaires'] as $h) {
-                    $data .= "$j, {$h['debut']}, {$h['fin']}|\n";
+                    $data .= "$j, '{$h['debut']}', '{$h['fin']}'|\n";
                     $j++;
                 }
             }
             $data .= "];\n\n";
+
+            $data .= "NumberOfColumns$i = " . ($j - 1) . ";\n\n";
 
             // Positions
             $data .= "positions$i=[|\n";
@@ -93,6 +100,8 @@ class MiniZincOneDayCommand extends Command
                 }
             }
             $data .= "];\n\n";
+
+            $data .= "NumberOfRows$i = " . ($j - 1) . ";\n\n";
 
             // Grey Cells
             $data .= "greys$i=[|\n";
@@ -146,11 +155,11 @@ class MiniZincOneDayCommand extends Command
         $agents = $this->entityManager->getRepository(Agent::class)->findBy(array('id' => $ids));
 
         // Add Agents to the MiniZinc data file
-        $data .= "agents=[|\n";
+        $agentIds = array();
         foreach ($agents as $a) {
-            $data .= $a->id() . "|\n";
+            $agentIds[] = $a->id();
         }
-        $data .= "];\n\n";
+        $data .= 'Agents={' . implode(',', $agentIds) . "};\n\n";
 
         // Add Agents Skills to the MiniZinc data file
         $data .= "agentSkills=[|\n";
@@ -167,7 +176,7 @@ class MiniZincOneDayCommand extends Command
             $data .= $w->agentId;
             foreach ($w->workingHours as $wh) {
                 if (!empty($wh)) {
-                    $data .= ", $wh";
+                    $data .= ", '$wh'";
                 }
             }
             $data .= "|\n";

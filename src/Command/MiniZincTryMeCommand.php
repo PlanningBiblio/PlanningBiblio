@@ -43,7 +43,7 @@ class MiniZincTryMeCommand extends Command
 
         $a = $input->getOption('a') ? '-a' : null;
 
-        $process = Process::fromShellCommandline(__DIR__ . "/../../minizinc/current/bin/minizinc $a " . __DIR__ . '/../../minizinc/model.mzn');
+        $process = Process::fromShellCommandline(__DIR__ . "/../../minizinc/current/bin/minizinc $a " . __DIR__ . '/../../minizinc/Model/example.mzn');
 
         try {
             $process->mustRun();
