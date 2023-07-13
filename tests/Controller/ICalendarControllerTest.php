@@ -23,46 +23,37 @@ class ICalendarControllerTest extends PLBWebTestCase
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
-        $GLOBALS['config']['PlanningHebdo'] = 0;
         $_SERVER['SERVER_NAME'] = 'planno.local';
 
         $agent = $builder->build(
             Agent::class,
             array(
                 'login' => 'jdoenv', 'nom' => 'Doenv', 'prenom' => 'Jean', 'actif' => 'Actif', 'mail' => 'jdoenv@example.com',
-                'temps' => json_encode(
-                    array(
-                        "0" => ["09:00:00","12:30:00","13:15:00","17:15:00","2"],
-                        "1" => ["09:00:00","12:30:00","13:15:00","17:15:00","3"],
-                        "2" => ["10:00:00","13:30:00","15:15:00","18:15:00","-1"],
-                        "3" => ["11:00:00","14:30:00","15:15:00","18:15:00","-1"],
-                        "4" => ["11:00:00","14:30:00","15:15:00","18:15:00","1"],
-                    )
-                ),
-                'sites' => json_encode(["1", "2", "3","4"])
             )
         );
         $client = static::createClient(); 
 
-        # $this->logInAgent($agent, array(3,100));
-
-#        $GLOBALS['config']['Multisites-nombre'] = 1;
-#        $GLOBALS['config']['Multisites-site1'] = 'Site N°1';
         $GLOBALS['config']['ICS-Code'] = 0;
 
         // ICS-Export disabled
         $response = $client->request('GET', "/ical");
         $content = json_decode($client->getResponse()->getContent());
+        $code = $client->getResponse()->getStatusCode();
+        $this->assertEquals($code, '403', 'status code is 403');
         $this->assertEquals($content->{'error'}, "L'exportation ICS est désactivée", 'ICS-Export is disabled');
 
         // Agent id not provided 
         $GLOBALS['config']['ICS-Export'] = 1;
         $response = $client->request('GET', "/ical");
         $content = json_decode($client->getResponse()->getContent());
+        $code = $client->getResponse()->getStatusCode();
+        $this->assertEquals($code, '400', 'status code is 400');
         $this->assertEquals($content->{'error'}, "L'id de l'agent n'est pas fourni", 'Agent ID not provided');
 
         // Unknown id
-        // TODO: What are we supposed to do in this case?
+        $response = $client->request('GET', "/ical", array("id" => 42));
+        $content = json_decode($client->getResponse()->getContent());
+        $this->assertEquals($content->{'error'}, "id inconnu", 'Unknown agent ID');
 
         // Agent id provided
         $client->request('GET', "/ical", array("id" => $agent->id()));
@@ -95,33 +86,38 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->assertEquals($code, '200', 'status code is 200');
         $this->assertEquals($content[1], 'X-WR-CALNAME:Service Public Doenv J', 'ICS export matches the agent email');
 
-        // TODO: Check public service
-
-
-        // Test holiday
-        $GLOBALS['config']['Conges-Enable'] = 1; 
-        $holiday_id = $this->createHolidayFor($agent);
+         // Test planning position
+        $this->createPlanningPositionFor($agent);
         $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
 #print($client->getResponse()->getContent());
+        $content = explode("\n", $client->getResponse()->getContent());
+        $this->assertEquals($content[27], 'SUMMARY:Accueil', 'ICS export with planning position');
+   
+        // Test holiday
+        $GLOBALS['config']['Conges-Enable'] = 1; 
+        $this->createHolidayFor($agent);
+        $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $client->getResponse()->getContent());
         $this->assertEquals($content[27], 'SUMMARY: ICS holiday test', 'ICS export with holiday');
 
         // Test absence
-        $holiday_id = $this->createAbsenceFor($agent);
+        $this->createAbsenceFor($agent);
         $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $client->getResponse()->getContent());
         $this->assertEquals($content[27], 'SUMMARY:ICS absence test ', 'ICS export with absence');
-        
+
+       
         // TODO: With interval in config
 
         // TODO: With interval in URL
 
-        // With code (boucler sur les tests précédents avec et sans le code en paramètre)
+        // With code
         $GLOBALS['config']['ICS-Code'] = 1;
         $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
-        print($client->getResponse()->getContent());
-        $content = explode("\n", $client->getResponse()->getContent());
-        $this->assertEquals($content[27], 'SUMMARY:ICS absence test ', 'ICS export with absence');
+        $content = json_decode($client->getResponse()->getContent());
+        $code = $client->getResponse()->getStatusCode();
+        $this->assertEquals($code, '401', 'status code is 401');
+        $this->assertEquals($content->{'error'}, "Accès refusé", 'Access denied when code is needed but wrong or missing');
         
 
 
@@ -129,6 +125,48 @@ print("\nend\n");
 
     }
 
+    private function createPlanningPositionFor($agent)
+    {
+        $date = new DateTime('now + 3 day');
+        $now = new DateTime();
+
+        $db = new \db();
+
+        $db->CSRFToken = $this->CSRFToken;
+        $insert = array(
+            "date"       => $date->format('Y-m-d'),
+            "debut"      => '11:00:00', 
+            "fin"        => '12:00:00', 
+            "poste"      => 1, 
+            "site"       => 1, 
+            "perso_id"   => $agent->id(),
+            "chgt_login" => 1, 
+            "chgt_time"  => $now->format('Y-m-d')
+        );
+        $db->insert("pl_poste", $insert);
+
+        $insert = array(
+            "date"        => $date->format('Y-m-d'),
+            "verrou"      => 1, 
+            "validation"  => 1, 
+            "perso"       => $agent->id(), 
+            "verrou2"     => 1, 
+            "validation2" => $now->format('Y-m-d'),
+            "perso2"      => $agent->id(), 
+            "vivier"      => $now->format('Y-m-d'),
+            "site"        => 1
+        );
+        $db->insert("pl_poste_verrou", $insert);
+
+        $insert = array(
+            "id" => 1,
+            "nom"        => "Accueil",
+        );
+        $db->insert("postes", $insert);
+
+
+
+    }
     private function createHolidayFor($agent)
     {
         $date = new DateTime('now + 3 day');

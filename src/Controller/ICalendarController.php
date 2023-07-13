@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Model\Agent;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ class ICalendarController extends BaseController
     public function index(Request $request, Session $session){
 
         if (!$this->config('ICS-Export')) {
-            return $this->returnError("L'exportation ICS est désactivée");
+            return $this->returnError("L'exportation ICS est désactivée", 403);
         }
 
         $interval_get = $request->get('interval');
@@ -31,40 +32,51 @@ class ICalendarController extends BaseController
         $mail = $request->get('mail');
         $get_absences = $request->get('absences');
 
+        $agent = null;
+
         // Définition de l'id de l'agent si l'argument login est donné
         if (!$id and $login) {
-            $db = new \db();
-            $db->select2('personnel', 'id', array('login'=>$login));
-            if ($db->result) {
-                $id = $db->result[0]['id'];
+            $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(array('login' => $login));
+            if ($agent) {
+                $id = $agent->id();
             } else {
-                return $this->returnError("Impossible de trouver l'id associé au login $login");
+                return $this->returnError("Impossible de trouver l'id associé au login $login", 400);
             }
         }
 
         // Définition de l'id de l'agent si l'argument mail est donné
         if (!$id and $mail) {
-            $db = new \db();
-            $db->select2('personnel', 'id', array('mail'=>$mail));
-            if ($db->result) {
-                $id = $db->result[0]['id'];
+            $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(array('mail' => $mail));
+            if ($agent) {
+                $id = $agent->id();
             } else {
-                return $this->returnError("Impossible de trouver l'id associé au mail $mail");
+                return $this->returnError("Impossible de trouver l'id associé au mail $mail", 400);
             }
         }
 
+        if (!$agent && $id) {
+            $agent = $this->entityManager->getRepository(Agent::class)->find($id);
+            if ($agent) {
+                $id = $agent->id();
+            } else {
+                return $this->returnError("id inconnu", 400);
+            }
+
+        }
+
         if (!$id) {
-            return $this->returnError("L'id de l'agent n'est pas fourni");
+            return $this->returnError("L'id de l'agent n'est pas fourni", 400);
+        }
+
+        if ($this->config('ICS-Code')) {
+            $agent_ics_code = $agent->code_ics();
+            if ($agent_ics_code != $code) {
+                return $this->returnError("Accès refusé", 401);
+            }
         }
 
         // N'affiche pas les calendriers des agents supprimés
         $requete_personnel = array('supprime'=>0);
-
-        // Recherche des plages de service public de l'agent
-        // Si les exports ICS sont protégés par des codes
-        if ($this->config('ICS-Code')) {
-            $requete_personnel["code_ics"] = $code;
-        }
 
         $icsInterval = null;
         if ($this->config('ICS-Interval') != '' && intval($this->config('ICS-Interval'))) {
@@ -81,8 +93,8 @@ class ICalendarController extends BaseController
             array("personnel","id"),
             array("date", "debut", "fin", "poste", 'site', 'absent', 'supprime'),
             array(),
-          array("perso_id"=>$id),
-            $requete_personnel,
+            array("perso_id"=>$id),
+            array(),
             ($icsInterval ? "AND `date` > DATE_SUB(curdate(), INTERVAL $icsInterval DAY) " : '') . "ORDER BY `date` DESC, `debut` DESC, `fin` DESC"
         );
         if ($db->result) {
@@ -111,7 +123,6 @@ class ICalendarController extends BaseController
                 $verrou[$elem['date'].'_'.$elem['site']] = array('date' => $elem['validation2'], 'agent' => $elem['perso2']);
             }
         }
-
         // Recherche des absences
         $a = new \absences();
         $a->valide = true;
@@ -170,6 +181,7 @@ class ICalendarController extends BaseController
         if (isset($planning)) {
             // Exclusion des planning non validés
             foreach ($planning as $elem) {
+
                 if (!array_key_exists($elem['date'].'_'.$elem['site'], $verrou)) {
                     continue;
                 }
@@ -262,13 +274,14 @@ class ICalendarController extends BaseController
 
     }
 
-    private function returnError($error)
+    private function returnError($error, $status = 200)
     {
 #        print "returnError $error";
         $this->logger->error($error);
         $response = new Response();
         $response->setContent(json_encode(array('error' => $error)));
-        $response->headers->set('Content-Type', 'application/json');
+        $response->setStatusCode($status);
+        $response->headers->set('Content-Type', 'application/json; charset=utf-8');
         return $response;
     }
 }
