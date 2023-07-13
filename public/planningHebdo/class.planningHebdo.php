@@ -271,7 +271,7 @@ class planningHebdo
 
         // Valide
         if ($this->valide) {
-            $filter.=" AND `valide`<>0";
+            $filter.=" AND `valide` > '0'";
         }
   
         // Ignore actuels (pour l'import)

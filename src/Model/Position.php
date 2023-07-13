@@ -50,4 +50,10 @@ class Position extends PLBEntity
 
     /** @Column(type="datetime")**/
     protected $supprime;
+
+    public function skills()
+    {
+        return $this->activites;
+    }
+
 }

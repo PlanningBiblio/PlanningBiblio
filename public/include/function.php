@@ -741,6 +741,11 @@ function cmp_perso_debut_fin($a, $b)
     return ($a['perso_id'] > $b['perso_id']) ? 1 : -1;
 }
 
+function cmp_perso_id($a, $b)
+{
+    return ($a['perso_id'] > $b['perso_id']) ? 1 : -1;
+}
+
 function cmp_prenom_nom($a, $b)
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");

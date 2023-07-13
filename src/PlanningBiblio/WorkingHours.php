@@ -107,4 +107,41 @@ class WorkingHours
          return $new_hour;
     }
 
+    /**
+     * getByDate
+     @param String $date
+     @param int $perso_id, optional. If not provided, the function will return working hours for everybody.
+     @return array of working hours for the given date, indexed by perso_id, with agentId, workingHours and breakTime
+     TODO: Handle working hours recorded in the agent files (param PlanningHebdo disabled)
+     */
+    public static function getByDate($date, $perso_id = null) {
+        $wh = new \planningHebdo();
+        if ($perso_id) {
+            $wh->perso_id =  $date;
+        }
+        $wh->debut =  $date;
+        $wh->fin =  $date;
+        $wh->valide = true;
+        $wh->fetch();
+        $workingHours = $wh->elements;
+
+        usort($workingHours, 'cmp_perso_id');
+
+        $d = new \datePl($date);
+        $week = $d->semaine3;
+
+        $day = $d->position ? $d->position : 7;
+        $day = $day + (($week - 1) * 7) - 1;
+
+        $result = array();
+        foreach ($workingHours as $elem) {
+            $result[$elem['perso_id']] = (object) array(
+                'agentId' => $elem['perso_id'],
+                'workingHours' => $elem['temps'][$day] ?? [],
+                'breakTime' => $elem['breaktime'][$day] ?? 0,
+            );
+       } 
+
+       return $result;
+    }
 }

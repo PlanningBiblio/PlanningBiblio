@@ -2,7 +2,14 @@
 
 namespace App\Command;
 
+require_once(__DIR__ . '/../../public/include/config.php');
+require_once(__DIR__ . '/../../init/init_entitymanager.php');
+
+use App\Model\Agent;
+use App\Model\Position;
 use App\PlanningBiblio\Framework;
+use App\PlanningBiblio\WorkingHours;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,6 +24,15 @@ class MiniZincOneDayCommand extends Command
 {
     protected static $defaultName = 'MiniZinc:OneDay';
     protected static $defaultDescription = 'Add a short description for your command';
+
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+
+        parent::__construct();
+    }
 
     protected function configure(): void
     {
@@ -47,6 +63,9 @@ class MiniZincOneDayCommand extends Command
         // MiniZinc Tables (Hours, Positions and Grey Cells)
         $data = '';
 
+        // Store all used positions to link skills
+        $usedPositions = array();
+
         $i = 1;
         foreach ($framework as $f) {
 
@@ -67,6 +86,7 @@ class MiniZincOneDayCommand extends Command
             if (!empty($f['lignes'])) {
                 foreach ($f['lignes'] as $l) {
                     if ($l['type'] == 'poste') {
+                        $usedPositions[] = $l['poste'];
                         $data .= "$j, {$l['poste']}|\n";
                         $j++;
                     }
@@ -89,7 +109,72 @@ class MiniZincOneDayCommand extends Command
 
             $i++;
         }
-        
+
+        // Positions and Skills
+        $positions = $this->entityManager->getRepository(Position::class)->findBy(array('id' => $usedPositions));
+        $data .= "positionSkills=[|\n";
+        foreach ($positions as $p) {
+            $skills = implode(', ', $p->skills());
+            $data .= $p->id() . ', ' . $skills . "|\n";
+        }
+        $data .= "];\n\n";
+
+
+        // Agents and Skills
+        $qb = $this->entityManager->createQueryBuilder();
+
+        $query = $qb->select('a.id')
+            ->from(Agent::class,'a')
+            ->where('a.id > 2')
+            ->andWhere($qb->expr()->eq('a.supprime', $qb->expr()->literal('0')))
+            ->andWhere($qb->expr()->orX(
+                'a.depart >= :date',
+                $qb->expr()->eq('a.depart', $qb->expr()->literal('0000-00-00'))
+            ))
+            ->andWhere('a.arrivee <= :date')
+            ->setParameters(array('date' => $date))
+            ->getQuery();
+        $result = $query->getResult();
+
+        $ids = array();
+        if (is_array($result)) {
+            foreach ($result as $elem) {
+                $ids[] = $elem['id'];
+            }
+        }
+
+        $agents = $this->entityManager->getRepository(Agent::class)->findBy(array('id' => $ids));
+
+        // Add Agents to the MiniZinc data file
+        $data .= "agents=[|\n";
+        foreach ($agents as $a) {
+            $data .= $a->id() . "|\n";
+        }
+        $data .= "];\n\n";
+
+        // Add Agents Skills to the MiniZinc data file
+        $data .= "agentSkills=[|\n";
+        foreach ($agents as $a) {
+            $skills = implode(', ', $a->skills());
+            $data .= $a->id() . ', ' . $skills . "|\n";
+        }
+        $data .= "];\n\n";
+
+        // Agents Working Hours
+        $workingHours = WorkingHours::getByDate($date);
+        $data .= "workingHours=[|\n";
+        foreach ($workingHours as $w) {
+            $data .= $w->agentId;
+            foreach ($w->workingHours as $wh) {
+                if (!empty($wh)) {
+                    $data .= ", $wh";
+                }
+            }
+            $data .= "|\n";
+        }
+        $data .= "];\n\n";
+
+
         $filesystem = new Filesystem();
         $file = __DIR__ . '/../../var/MiniZinc/data.dzn';
 
