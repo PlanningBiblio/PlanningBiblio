@@ -24,6 +24,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class MiniZincOneDayCommand extends Command
 {
@@ -75,58 +77,59 @@ class MiniZincOneDayCommand extends Command
         foreach ($framework as $f) {
 
             // Hours
-            $data .= "hours$i=[|\n";
-            $j = 1;
+            $tab = array();
             if (!empty($f['horaires'])) {
+                $j = 1;
                 foreach ($f['horaires'] as $h) {
-                    $data .= "$j, '{$h['debut']}', '{$h['fin']}'|\n";
+                    $tab[] = "$j, '{$h['debut']}', '{$h['fin']}'";
                     $j++;
                 }
             }
-            $data .= "];\n\n";
+            // $data .= $this->mZArray("Hours$i", $tab);
 
             $data .= "NumberOfColumns$i = " . ($j - 1) . ";\n\n";
 
             // Positions
-            $data .= "positions$i=[|\n";
-            $j = 1;
+            $tab = array();
             if (!empty($f['lignes'])) {
+                $j = 1;
                 foreach ($f['lignes'] as $l) {
                     if ($l['type'] == 'poste') {
                         $usedPositions[] = $l['poste'];
-                        $data .= "$j, {$l['poste']}|\n";
+                        $tab[] = "$j, {$l['poste']}";
                         $j++;
                     }
                 }
             }
-            $data .= "];\n\n";
+            // $data .= $this->mZArray("Positions$i", $tab);
 
             $data .= "NumberOfRows$i = " . ($j - 1) . ";\n\n";
 
             // Grey Cells
-            $data .= "greys$i=[|\n";
-            $j = 1;
+            $tab = array();
             if (!empty($f['cellules_grises'])) {
+                $j = 1;
                 foreach ($f['cellules_grises'] as $g) {
-                    $tab = explode('_', $g);
-                    $tab[0]++;
-                    $data .= "$j, {$tab[0]}, {$tab[1]}|\n";
+                    $tmp = explode('_', $g);
+                    $tmp[0]++;
+                    $tab[] = "$j, {$tmp[0]}, {$tmp[1]}";
                     $j++;
                 }
             }
-            $data .= "];\n\n";
+            // $data .= $this->mZArray("Greys$i", $tab);
 
             $i++;
         }
 
         // Positions and Skills
         $positions = $this->entityManager->getRepository(Position::class)->findBy(array('id' => $usedPositions));
-        $data .= "positionSkills=[|\n";
+
+        $tab = array(); 
         foreach ($positions as $p) {
             $skills = implode(', ', $p->skills());
-            $data .= $p->id() . ', ' . $skills . "|\n";
+            $tab[] = $p->id() . ', ' . $skills;
         }
-        $data .= "];\n\n";
+        // $data .= $this->mZArray('PositionSkills', $tab);
 
 
         // Agents and Skills
@@ -162,30 +165,34 @@ class MiniZincOneDayCommand extends Command
         $data .= 'Agents={' . implode(',', $agentIds) . "};\n\n";
 
         // Add Agents Skills to the MiniZinc data file
-        $data .= "agentSkills=[|\n";
+        $tab = array();
         foreach ($agents as $a) {
             $skills = implode(', ', $a->skills());
-            $data .= $a->id() . ', ' . $skills . "|\n";
+            $tab[] = $a->id() . ', ' . $skills;
         }
-        $data .= "];\n\n";
+
+        // $data .= $this->mZArray("AgentSkills", $tab);
 
         // Agents Working Hours
         $workingHours = WorkingHours::getByDate($date);
-        $data .= "workingHours=[|\n";
+
+        $tab = array();
         foreach ($workingHours as $w) {
-            $data .= $w->agentId;
+            $tmp = $w->agentId;
             foreach ($w->workingHours as $wh) {
                 if (!empty($wh)) {
-                    $data .= ", '$wh'";
+                    $tmp .= ", '$wh'";
                 }
             }
-            $data .= "|\n";
+            $tab[] = $tmp;
         }
-        $data .= "];\n\n";
+        // $data .= $this->mZArray("WorkingHours", $tab);
 
+        // Write the MiniZinc data file
+        $path = __DIR__ . '/../../';
 
         $filesystem = new Filesystem();
-        $file = __DIR__ . '/../../var/MiniZinc/data.dzn';
+        $file = "{$path}var/MiniZinc/data.dzn";
 
         try {
             $filesystem->dumpFile($file, $data);
@@ -195,6 +202,26 @@ class MiniZincOneDayCommand extends Command
 
         $io->success("The file $file has been created");
 
+        // Execute MiniZinc
+        $process = Process::fromShellCommandline("{$path}minizinc/current/bin/minizinc {$path}minizinc/Model/OneDay.mzn -d {$path}var/MiniZinc/data.dzn");
+
+        try {
+            $process->mustRun();
+            $io->success($process->getOutput());
+        } catch (ProcessFailedException $exception) {
+            $io->error($exception->getMessage());
+        }
+
         return 0;
     }
+
+    /**
+     * mZArray create a MiniZinc array from a PHP array
+     * @param String $var : variable name
+     * @param Array $array : PHP array
+     * @return String : MiniZinc array
+     */
+    private function mZArray(String $var, Array $array) {
+        return "$var =\n[| " . implode("\n | ", $array) . "\n |];\n\n";
+    } 
 }

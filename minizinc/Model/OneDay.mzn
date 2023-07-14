@@ -5,13 +5,19 @@ include "alldifferent.mzn";
 
 % we use the first table to start (prefix 1)
 int: NumberOfColumns1;
+int: NumberOfColumns2;
+int: NumberOfColumns3;
+
 int: NumberOfRows1;
+int: NumberOfRows2;
+int: NumberOfRows3;
 
-set of int: ColumnRange = 1..NumberOfColumns;
-set of int: RowRange = 1..NumberOfRows;
-enum Agents;
+set of int: ColumnRange = 1..NumberOfColumns1;
+set of int: RowRange = 1..NumberOfRows1;
 
-array[1..NumberOfRows, 1..NumberOfColumns] of var Agents: table;
+set of int: Agents;
+
+array[1..NumberOfRows1, 1..NumberOfColumns1] of var Agents: table;
 
 % Ne pas placer un agent sur plusieurs postes en même temps
 % = Tous différents sur une même colonne
@@ -29,7 +35,7 @@ constraint forall(i in RowRange)(
 
 
 constraint forall(i in RowRange, j in 1..3)(
-  table[i,NumberOfColumns] != Agents[j]);
+  table[i,NumberOfColumns1] != Agents[j]);
   
 constraint forall(i in RowRange, j in 4..5)(
   table[i,1] != Agents[j]);
