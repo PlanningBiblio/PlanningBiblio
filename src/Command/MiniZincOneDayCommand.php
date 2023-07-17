@@ -1,8 +1,15 @@
 <?php
 
 /**
-TODO : pas de saut de ligne avant le ]
-TODO : toute les lignes d'un même tableau doivent avoir la même longueur
+TODO : data.dzn : toute les lignes d'un même tableau doivent avoir la même longueur
+TODO : make it compatible with the undo/redo functions
+TODO : gestion du sans repas
+TODO : vérification des heures de présence
+TODO : vérification des activités
+TODO : ne pas remplir les cellules grisées
+TODO : autoriser des cellules vides 
+TODO : Ne pas imposer all_differents sur une même ligne, mais l'appliquer si possible.
+TODO : gestion de tous les tableaux
 */
 
 namespace App\Command;
@@ -11,6 +18,7 @@ require_once(__DIR__ . '/../../public/include/config.php');
 require_once(__DIR__ . '/../../init/init_entitymanager.php');
 
 use App\Model\Agent;
+use App\Model\PlanningPosition;
 use App\Model\Position;
 use App\PlanningBiblio\Framework;
 use App\PlanningBiblio\WorkingHours;
@@ -47,6 +55,7 @@ class MiniZincOneDayCommand extends Command
             ->setDescription(self::$defaultDescription)
             ->addArgument('date', InputArgument::REQUIRED, 'Date')
             ->addArgument('site', InputArgument::REQUIRED, 'Site')
+            ->addArgument('login', InputArgument::OPTIONAL, 'Login')
         ;
     }
 
@@ -54,6 +63,7 @@ class MiniZincOneDayCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $date = $input->getArgument('date');
+        $login = $input->getArgument('login');
         $site = $input->getArgument('site');
 
         if ($date) {
@@ -64,8 +74,19 @@ class MiniZincOneDayCommand extends Command
             $io->note(sprintf('You passed an argument: site = %s', $site));
         }
 
+        if ($login) {
+            $io->note(sprintf('You passed an argument: login = %s', $login));
+        } else {
+            $login = 999999999;
+            $io->note(sprintf('Using default login : %s', $login));
+        }
+
         $f = new Framework();
         $framework = $f->getFromDate($date, $site);
+
+        // Hours and positions for Planno
+        $hours = array();
+        $positions = array();
 
         // MiniZinc Tables (Hours, Positions and Grey Cells)
         $data = '';
@@ -79,6 +100,11 @@ class MiniZincOneDayCommand extends Command
             // Hours
             $tab = array();
             if (!empty($f['horaires'])) {
+
+                // Hours for Planno
+                $hours[$i] = $f['horaires'];
+
+                // Hours for MiniZinc
                 $j = 1;
                 foreach ($f['horaires'] as $h) {
                     $tab[] = "$j, '{$h['debut']}', '{$h['fin']}'";
@@ -90,11 +116,18 @@ class MiniZincOneDayCommand extends Command
             $data .= "NumberOfColumns$i = " . ($j - 1) . ";\n\n";
 
             // Positions
+            $positions[$i] = array();
+
             $tab = array();
             if (!empty($f['lignes'])) {
                 $j = 1;
                 foreach ($f['lignes'] as $l) {
                     if ($l['type'] == 'poste') {
+
+                        // Positions for Planno
+                        $positions[$i][] = $l['poste'];
+
+                        // Positions for MiniZinc
                         $usedPositions[] = $l['poste'];
                         $tab[] = "$j, {$l['poste']}";
                         $j++;
@@ -122,10 +155,10 @@ class MiniZincOneDayCommand extends Command
         }
 
         // Positions and Skills
-        $positions = $this->entityManager->getRepository(Position::class)->findBy(array('id' => $usedPositions));
+        $positionSkills = $this->entityManager->getRepository(Position::class)->findBy(array('id' => $usedPositions));
 
         $tab = array(); 
-        foreach ($positions as $p) {
+        foreach ($positionSkills as $p) {
             $skills = implode(', ', $p->skills());
             $tab[] = $p->id() . ', ' . $skills;
         }
@@ -198,18 +231,83 @@ class MiniZincOneDayCommand extends Command
             $filesystem->dumpFile($file, $data);
         } catch (IOExceptionInterface $exception) {
             $io->error("An error occurred while creating the file $file");
+            return 1;
         }
 
         $io->success("The file $file has been created");
 
         // Execute MiniZinc
-        $process = Process::fromShellCommandline("{$path}minizinc/current/bin/minizinc {$path}minizinc/Model/OneDay.mzn -d {$path}var/MiniZinc/data.dzn");
+        $process = Process::fromShellCommandline("{$path}minizinc/current/bin/minizinc {$path}src/MiniZinc/Model/OneDay.mzn -d {$path}var/MiniZinc/data.dzn --json-stream");
 
         try {
             $process->mustRun();
-            $io->success($process->getOutput());
         } catch (ProcessFailedException $exception) {
             $io->error($exception->getMessage());
+            return 1;
+        }
+
+        $output = json_decode($process->getOutput());
+
+        if ($output->type != 'solution') {
+            $io->error('No solution found');
+            return 1;
+        }
+       
+        $solution = $this->phpArray($output->output->dzn);
+        
+        $result = json_encode(array(
+            'solution' => $solution,
+            'hours' => $hours,
+            'positions' => $positions,
+        ));
+
+        $io->success("\n###RESULT###\n" . $result);
+
+        $date = \Datetime::createFromFormat('Y-m-d', $date);
+
+        $p = $this->entityManager->getRepository(PlanningPosition::class)->findBy(array(
+            'date' => $date,
+            'site' => $site,
+        ));
+
+        // Check if the planning is empty
+        if (!empty($p)) {
+            $io->error('The planning is not empty');
+            return 1;
+        }
+
+        // Complete the planning
+        $i = 0;
+        foreach ($solution as $row) {
+
+            // TODO: We are only using the first table for the moment ($position[1] and $hours[1])
+            $position = $positions[1][$i];
+
+            $j = 0;
+            foreach ($row as $column) {
+
+                $agent = $column;
+                $start = \Datetime::createFromFormat('H:i:s', $hours[1][$j]['debut']);
+                $end = \Datetime::createFromFormat('H:i:s', $hours[1][$j]['fin']);
+
+                $p = new PlanningPosition();
+                $p->date($date);
+                $p->perso_id($agent);
+                $p->poste($position);
+                $p->absent(0);     // TODO Add default value on model
+                $p->chgt_login($login);
+                $p->chgt_time(new \DateTime()); // TODO Add default value on model
+                $p->debut($start);
+                $p->fin($end);
+                $p->site($site);
+    
+                $this->entityManager->persist($p);
+                $this->entityManager->flush();
+
+                $j++;
+            }
+
+            $i++;
         }
 
         return 0;
@@ -221,7 +319,28 @@ class MiniZincOneDayCommand extends Command
      * @param Array $array : PHP array
      * @return String : MiniZinc array
      */
-    private function mZArray(String $var, Array $array) {
+    private function mZArray(String $var, Array $array)
+    {
         return "$var =\n[| " . implode("\n | ", $array) . "\n |];\n\n";
     } 
+
+    private function phpArray(String $input)
+    {
+        $output = explode("\n", $input);
+
+        $last = array_key_last($output);
+        unset($output[0]);
+        unset($output[$last - 1]);
+        unset($output[$last]);
+
+	$func = function(String $input) : Array {
+            $var = str_replace(array('[','|',' '), null, $input);
+            return (explode(',', $var));
+        };
+
+        $output = array_map($func, $output);
+
+        return $output;
+    }
+
 }

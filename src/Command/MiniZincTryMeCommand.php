@@ -28,22 +28,10 @@ class MiniZincTryMeCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-/**
-        $arg1 = $input->getArgument('arg1');
-
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
-        }
-        if ($input->getOption('option1')) {
-            // ...
-        }
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
-*/
 
         $a = $input->getOption('a') ? '-a' : null;
 
-        $process = Process::fromShellCommandline(__DIR__ . "/../../minizinc/current/bin/minizinc $a " . __DIR__ . '/../../minizinc/Model/example.mzn');
+        $process = Process::fromShellCommandline(__DIR__ . "/../../minizinc/current/bin/minizinc $a " . __DIR__ . '/../../src/MiniZinc/Model/example.mzn');
 
         try {
             $process->mustRun();

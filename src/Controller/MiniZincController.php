@@ -21,6 +21,8 @@ class MiniZincController extends BaseController
     public function oneDay(KernelInterface $kernel, Request $request): Response
     {
 
+        // TODO : Add CSRF Protection, change method to POST
+
         $session = $request->getSession();
 
         $application = new Application($kernel);
@@ -29,6 +31,7 @@ class MiniZincController extends BaseController
         $input = new ArrayInput([
             'command' => 'MiniZinc:OneDay',
             'date' => $session->get('date'),
+            'login' => $session->get('loginId'),
             'site' => $session->get('site'),
         ]);
 
@@ -37,7 +40,13 @@ class MiniZincController extends BaseController
 
         $content = nl2br($output->fetch());
 
-        return new Response($content);
+        $result = explode('###RESULT###', $content);
+
+        if (!empty($result[1])) {
+            return new Response($result[1]);
+        }
+
+        return new Response('{}');
     }
 
     /**

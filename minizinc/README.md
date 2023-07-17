@@ -12,5 +12,5 @@ export QT_PLUGIN_PATH=~/www/planno/minizinc/current/plugins:$QT_PLUGIN_PATH
 ## Try
 
 ```
-minizinc ~/www/planno/minizinc/Model/example.mzn
+~/www/planno/minizinc/current/bin/minizinc ~/www/planno/src/MiniZinc/Model/example.mzn
 ```

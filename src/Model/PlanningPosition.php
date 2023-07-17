@@ -25,7 +25,7 @@ class PlanningPosition extends PLBEntity
     /** @Column(type="integer") **/
     protected $poste;
 
-    /** @Column(type="string") **/
+    /** @Column(type="string", options={"default" : "0"}) **/
     protected $absent;
 
     /** @Column(type="integer") **/
