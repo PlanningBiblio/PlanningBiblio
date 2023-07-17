@@ -89,7 +89,6 @@ class ICalendarControllerTest extends PLBWebTestCase
          // Test planning position
         $this->createPlanningPositionFor($agent);
         $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
-#print($client->getResponse()->getContent());
         $content = explode("\n", $client->getResponse()->getContent());
         $this->assertEquals($content[27], 'SUMMARY:Accueil', 'ICS export with planning position');
    
@@ -106,10 +105,16 @@ class ICalendarControllerTest extends PLBWebTestCase
         $content = explode("\n", $client->getResponse()->getContent());
         $this->assertEquals($content[27], 'SUMMARY:ICS absence test ', 'ICS export with absence');
 
-       
-        // TODO: With interval in config
+        // With interval in URL
+        $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1, "interval" => 1));
+        $content = explode("\n", $client->getResponse()->getContent());
+        $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
 
-        // TODO: With interval in URL
+        // With interval in config
+        $GLOBALS['config']['ICS-Interval'] = 1; 
+        $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $content = explode("\n", $client->getResponse()->getContent());
+        $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
 
         // With code
         $GLOBALS['config']['ICS-Code'] = 1;
@@ -118,16 +123,11 @@ class ICalendarControllerTest extends PLBWebTestCase
         $code = $client->getResponse()->getStatusCode();
         $this->assertEquals($code, '401', 'status code is 401');
         $this->assertEquals($content->{'error'}, "Accès refusé", 'Access denied when code is needed but wrong or missing');
-        
-
-
-print("\nend\n");
-
     }
 
     private function createPlanningPositionFor($agent)
     {
-        $date = new DateTime('now + 3 day');
+        $date = new DateTime('now - 3 day');
         $now = new DateTime();
 
         $db = new \db();
@@ -169,7 +169,7 @@ print("\nend\n");
     }
     private function createHolidayFor($agent)
     {
-        $date = new DateTime('now + 3 day');
+        $date = new DateTime('now - 3 day');
 
         $data = array(
             'debut'         => $date->format('d/m/Y'),
@@ -200,7 +200,7 @@ print("\nend\n");
         // Function absence->add has not access to session.
         $_SESSION['login_id'] = 1;
 
-        $date = new DateTime('now + 3 day');
+        $date = new DateTime('now - 3 day');
 
         $absence = new \absences();
         $absence->debut = $date->format('Y-m-d');
