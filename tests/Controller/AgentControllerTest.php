@@ -127,16 +127,16 @@ class AgentControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//table[@id="tableAgents"]/thead');
-        $this->assertStringContainsString('Nom', $result->text(null,false));
-        $this->assertStringContainsString('Prénom', $result->text(null,false));
-        $this->assertStringContainsString('Heures', $result->text(null,false));
-        $this->assertStringContainsString('Statut', $result->text(null,false));
-        $this->assertStringContainsString('Service', $result->text(null,false));
-        $this->assertStringContainsString('Arrivée', $result->text(null,false));
-        $this->assertStringContainsString('Départ', $result->text(null,false));
-        $this->assertStringContainsString('Accès', $result->text(null,false));
+        $this->assertStringContainsString('Nom', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Prénom', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Heures', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Statut', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Service', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Arrivée', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Départ', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Accès', $result->text('Node does not exist', false));
 
-        $this->assertStringNotContainsString('Sites', $result->text(null,false));
+        $this->assertStringNotContainsString('Sites', $result->text('Node does not exist', false));
 
         $this->assertDirectoryDoesNotExist('//input[@value="Import LDAP"]');
 
@@ -156,7 +156,7 @@ class AgentControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//table[@id="tableAgents"]/thead');
 
-        $this->assertStringContainsString('Sites', $result->text(null,false));
+        $this->assertStringContainsString('Sites', $result->text('Node does not exist', false));
 
         //test LDAP host and suffix
         $GLOBALS['config']['Multisites-nombre'] = 4;
@@ -175,24 +175,24 @@ class AgentControllerTest extends PLBWebTestCase
         $GLOBALS['config']['Granularite'] = 30;
 
         $result = $crawler->filterXPath('//select[@name="heures_travail"]/option');
-        $this->assertEquals('1h00', $result->eq(2)->text(null,false));
-        $this->assertEquals('1h30', $result->eq(3)->text(null,false));
+        $this->assertEquals('1h00', $result->eq(2)->text('Node does not exist', false));
+        $this->assertEquals('1h30', $result->eq(3)->text('Node does not exist', false));
 
         $GLOBALS['config']['Granularite'] = 5;
 
         $crawler = $this->client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//select[@name="heures_travail"]/option');
-        $this->assertEquals('1h00', $result->eq(2)->text(null,false));
-        $this->assertEquals('1h05', $result->eq(3)->text(null,false));
+        $this->assertEquals('1h00', $result->eq(2)->text('Node does not exist', false));
+        $this->assertEquals('1h05', $result->eq(3)->text('Node does not exist', false));
 
         $GLOBALS['config']['Granularite'] = 15;
 
         $crawler = $this->client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//select[@name="heures_travail"]/option');
-        $this->assertEquals('1h00', $result->eq(2)->text(null,false));
-        $this->assertEquals('1h15', $result->eq(3)->text(null,false));
+        $this->assertEquals('1h00', $result->eq(2)->text('Node does not exist', false));
+        $this->assertEquals('1h15', $result->eq(3)->text('Node does not exist', false));
     }
 
     public function testEditFormElement() {
@@ -227,32 +227,32 @@ class AgentControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//div[@class="ui-tabs"]/ul/li');
 
-        $this->assertEquals('Infos générales', $result->eq(0)->text(null,false));
-        $this->assertEquals('Activités', $result->eq(1)->text(null,false));
-        $this->assertEquals('Heures de présence', $result->eq(2)->text(null,false));
-        $this->assertEquals('Congés', $result->eq(3)->text(null,false));
-        $this->assertEquals('Droits d\'accès', $result->eq(4)->text(null,false));
-        $this->assertEquals('Annuler', $result->eq(5)->text(null,false));
-        $this->assertEquals('Valider', $result->eq(6)->text(null,false));
+        $this->assertEquals('Infos générales', $result->eq(0)->text('Node does not exist', false));
+        $this->assertEquals('Activités', $result->eq(1)->text('Node does not exist', false));
+        $this->assertEquals('Heures de présence', $result->eq(2)->text('Node does not exist', false));
+        $this->assertEquals('Congés', $result->eq(3)->text('Node does not exist', false));
+        $this->assertEquals('Droits d\'accès', $result->eq(4)->text('Node does not exist', false));
+        $this->assertEquals('Annuler', $result->eq(5)->text('Node does not exist', false));
+        $this->assertEquals('Valider', $result->eq(6)->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//table[@style="width:90%;"]');
 
-        $this->assertStringContainsString('Nom :', $result->text(null,false));
-        $this->assertStringContainsString('Prénom :', $result->text(null,false));
-        $this->assertStringContainsString('E-mail :', $result->text(null,false));
-        $this->assertStringContainsString('Statut :', $result->text(null,false));
-        $this->assertStringContainsString('Contrat :', $result->text(null,false));
-        $this->assertStringContainsString('Service de rattachement:', $result->text(null,false));
-        $this->assertStringContainsString('Heures de service public par semaine:', $result->text(null,false));
-        $this->assertStringContainsString('Heures de travail par semaine:', $result->text(null,false));
-        $this->assertStringContainsString('Service public / Administratif :', $result->text(null,false));
-        $this->assertStringContainsString('Sites :', $result->text(null,false));
-        $this->assertStringContainsString('Date d\'arrivée', $result->text(null,false));
-        $this->assertStringContainsString('Date de départ', $result->text(null,false));
-        $this->assertStringContainsString('Matricule :', $result->text(null,false));
-        $this->assertStringContainsString('E-mails des responsables :', $result->text(null,false));
-        $this->assertStringContainsString('Informations :', $result->text(null,false));
-        $this->assertStringContainsString('Login :', $result->text(null,false));
+        $this->assertStringContainsString('Nom :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Prénom :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('E-mail :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Statut :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Contrat :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Service de rattachement:', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Heures de service public par semaine:', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Heures de travail par semaine:', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Service public / Administratif :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Sites :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Date d\'arrivée', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Date de départ', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Matricule :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('E-mails des responsables :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Informations :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Login :', $result->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//input[@name="nom"]');
         $this->assertEquals('Dupont', $result->attr('value'));
@@ -267,17 +267,17 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEmpty($result->attr('checked'));
 
         $result = $crawler->filterXPath('//span[@id="login"]');
-        $this->assertEquals($result->text(null,false), 'jdupont');
+        $this->assertEquals($result->text('Node does not exist', false), 'jdupont');
 
         ///////ACTIVITES/////////
 
         $result = $crawler->filterXPath('//b');
-        $this->assertEquals('Activités disponibles', $result->text(null,false));
+        $this->assertEquals('Activités disponibles', $result->text('Node does not exist', false));
 
-        $this->assertEquals('Activités attribuées', $result->eq(1)->text(null,false));
+        $this->assertEquals('Activités attribuées', $result->eq(1)->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//div[@id="dispo_div"]');
-        $this->assertStringContainsString('Assistance audiovisuel', $result->text(null,false));
+        $this->assertStringContainsString('Assistance audiovisuel', $result->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//td[@style="text-align:center;padding-top:100px;"]/input[@type="button"]');
         $this->assertEquals('Attribuer >>', $result->attr('value'));
@@ -289,66 +289,66 @@ class AgentControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//div[@id="temps"]');
 
-        $this->assertStringContainsString('Heure d\'arrivée', $result->text(null,false));
-        $this->assertStringContainsString('Début de pause', $result->text(null,false));
-        $this->assertStringContainsString('Fin de pause', $result->text(null,false));
-        $this->assertStringContainsString('Heure de départ', $result->text(null,false));
-        $this->assertStringContainsString('Site', $result->text(null,false));
-        $this->assertStringContainsString('Temps', $result->text(null,false));
+        $this->assertStringContainsString('Heure d\'arrivée', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Début de pause', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Fin de pause', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Heure de départ', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Site', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Temps', $result->text('Node does not exist', false));
 
-        $this->assertStringContainsString('Lundi', $result->text(null,false));
-        $this->assertStringContainsString('Mardi', $result->text(null,false));
-        $this->assertStringContainsString('Mercredi', $result->text(null,false));
-        $this->assertStringContainsString('Jeudi', $result->text(null,false));
-        $this->assertStringContainsString('Vendredi', $result->text(null,false));
-        $this->assertStringContainsString('Samedi', $result->text(null,false));
+        $this->assertStringContainsString('Lundi', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Mardi', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Mercredi', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Jeudi', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Vendredi', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Samedi', $result->text('Node does not exist', false));
 
         //////Congés/////////
 
         $result = $crawler->filterXPath('//div[@id="conges"]');
 
-        $this->assertStringContainsString('Nombre d\'heures de congés par an :', $result->text(null,false));
-        $this->assertStringContainsString('Crédit d\'heures de congés actuel :', $result->text(null,false));
-        $this->assertStringContainsString('Reliquat de congés :', $result->text(null,false));
-        $this->assertStringContainsString('Solde débiteur :', $result->text(null,false));
-        $this->assertStringContainsString('Récupérations :', $result->text(null,false));
+        $this->assertStringContainsString('Nombre d\'heures de congés par an :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Crédit d\'heures de congés actuel :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Reliquat de congés :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Solde débiteur :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Récupérations :', $result->text('Node does not exist', false));
 
         //////Rights/////////
 
         $result = $crawler->filterXPath('//div[@id="access"]/h3');
 
-        $this->assertEquals('Absences', $result->eq(1)->text(null,false));
-        $this->assertEquals('Agendas', $result->eq(2)->text(null,false));
-        $this->assertEquals('Agents', $result->eq(3)->text(null,false));
-        $this->assertEquals('Planning', $result->eq(4)->text(null,false));
-        $this->assertEquals('Postes', $result->eq(5)->text(null,false));
-        $this->assertEquals('Statistiques', $result->eq(6)->text(null,false));
-        $this->assertEquals('Divers', $result->eq(7)->text(null,false));
+        $this->assertEquals('Absences', $result->eq(1)->text('Node does not exist', false));
+        $this->assertEquals('Agendas', $result->eq(2)->text('Node does not exist', false));
+        $this->assertEquals('Agents', $result->eq(3)->text('Node does not exist', false));
+        $this->assertEquals('Planning', $result->eq(4)->text('Node does not exist', false));
+        $this->assertEquals('Postes', $result->eq(5)->text('Node does not exist', false));
+        $this->assertEquals('Statistiques', $result->eq(6)->text('Node does not exist', false));
+        $this->assertEquals('Divers', $result->eq(7)->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//div[@id="access"]/table/tbody/tr/td/h3');
-        $this->assertEquals('Absences', $result->eq(0)->text(null,false));
-        $this->assertEquals('Congés', $result->eq(1)->text(null,false));
-        $this->assertEquals('Planning', $result->eq(2)->text(null,false));
+        $this->assertEquals('Absences', $result->eq(0)->text('Node does not exist', false));
+        $this->assertEquals('Congés', $result->eq(1)->text('Node does not exist', false));
+        $this->assertEquals('Planning', $result->eq(2)->text('Node does not exist', false));
 
         $result = $crawler->filterXPath("//div[@id='access']");
-        $this->assertStringContainsString('Modifier ses propres absences', $result->text(null,false));
-        $this->assertStringContainsString('Enregistrement d\'absences pour plusieurs agents', $result->text(null,false));
-        $this->assertStringContainsString('Gestion des absences, validation niveau 1', $result->text(null,false));
-        $this->assertStringContainsString('Gestion des absences, pièces justificatives', $result->text(null,false));
-        $this->assertStringContainsString('Voir les agendas de tous', $result->text(null,false));
-        $this->assertStringContainsString('Voir les fiches des agents', $result->text(null,false));
-        $this->assertStringContainsString('Gestion des agents', $result->text(null,false));
-        $this->assertStringContainsString('Gestion des congés, validation niveau 1', $result->text(null,false));
-        $this->assertStringContainsString('Gestion des congés, validation niveau 2', $result->text(null,false));
-        $this->assertStringContainsString('Modification des plannings', $result->text(null,false));
-        $this->assertStringContainsString('Griser les cellules des plannings', $result->text(null,false));
-        $this->assertStringContainsString('Modification des commentaires des plannings', $result->text(null,false));
-        $this->assertStringContainsString('Configuration des tableaux', $result->text(null,false));
-        $this->assertStringContainsString('Gestion des postes', $result->text(null,false));
-        $this->assertStringContainsString('Accès aux statistiques', $result->text(null,false));
-        $this->assertStringContainsString('Accès aux statistiques Présents / Absents', $result->text(null,false));
-        $this->assertStringContainsString('Gestion des jours fériés', $result->text(null,false));
-        $this->assertStringContainsString('Informations', $result->text(null,false));
+        $this->assertStringContainsString('Modifier ses propres absences', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Enregistrement d\'absences pour plusieurs agents', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Gestion des absences, validation niveau 1', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Gestion des absences, pièces justificatives', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Voir les agendas de tous', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Voir les fiches des agents', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Gestion des agents', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Gestion des congés, validation niveau 1', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Gestion des congés, validation niveau 2', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Modification des plannings', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Griser les cellules des plannings', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Modification des commentaires des plannings', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Configuration des tableaux', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Gestion des postes', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Accès aux statistiques', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Accès aux statistiques Présents / Absents', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Gestion des jours fériés', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Informations', $result->text('Node does not exist', false));
 
     }
 

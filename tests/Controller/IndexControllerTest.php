@@ -40,7 +40,7 @@ class IndexControllerTest extends PLBWebTestCase
         $crawler = $client->request('GET', "/index", array('date' => "$y-$m-$d", 'CSRFToken' => '00000'));
 
         $result = $crawler->filterXPath('//div[@class="decalage-gauche"]/p');
-        $this->assertEquals($result->text(),"Le planning n'est pas prêt.",'test index with no planning');
+        $this->assertEquals($result->text('Node does not exist', false),"Le planning n'est pas prêt.",'test index with no planning');
 
         $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$y");
 
@@ -72,6 +72,6 @@ class IndexControllerTest extends PLBWebTestCase
         $crawler = $client->request('GET', "/index", array('date' => "$y-$m-$d", 'CSRFToken' => '00000'));
 
         $result = $crawler->filterXPath('//div[@class="decalage-gauche"]/font');
-        $this->assertEquals($result->text(),"Le planning du $d/$m/$y n'est pas validé !",'test index with no lock planning');
+        $this->assertEquals($result->text('Node does not exist', false),"Le planning du $d/$m/$y n'est pas validé !",'test index with no lock planning');
     }
 }

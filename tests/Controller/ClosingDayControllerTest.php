@@ -80,12 +80,12 @@ class ClosingDayControllerTest extends PLBWebTestCase
         $crawler = $client->request('GET', "/closingday");
 
         $result = $crawler->filterXPath('//h3');
-        $this->assertEquals($result->text(null,false),"Jours fériés et jours de fermeture");
+        $this->assertEquals($result->text('Node does not exist', false),"Jours fériés et jours de fermeture");
 
         $result = $crawler->filterXPath('//form[@name="form1"]');
-        $this->assertStringContainsString("Sélectionnez l'année à paramétrer",$result->text(null,false));
-        $this->assertStringContainsString($annee,$result->text(null,false));
-        $this->assertStringContainsString($annee2,$result->text(null,false));
+        $this->assertStringContainsString("Sélectionnez l'année à paramétrer",$result->text('Node does not exist', false));
+        $this->assertStringContainsString($annee,$result->text('Node does not exist', false));
+        $this->assertStringContainsString($annee2,$result->text('Node does not exist', false));
 
         $result = $crawler->filterXPath("//input[@value='public_holiday_1']");
         $this->assertNotEmpty($result);
