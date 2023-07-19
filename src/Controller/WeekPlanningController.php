@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 include_once(__DIR__ . '/../../public/planning/poste/class.planning.php');
 include_once(__DIR__ . '/../../public/absences/class.absences.php');
 include_once(__DIR__ . '/../../public/conges/class.conges.php');
-include_once(__DIR__ . '/../../public/activites/class.activites.php');
 include_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 include_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 
@@ -106,9 +105,7 @@ class WeekPlanningController extends BaseController
 
         // Récupération des activités pour appliquer
         // les classes aux lignes postes en fonction de celles-ci.
-        $a = new \activites();
-        $a->fetch();
-        $activites = $a->elements;
+        $activites = $entityManager->getRepository(Skill::class)->all();
 
         // Récupération des catégories pour appliquer
         // les classes aux lignes postes en fonction de celles-ci.

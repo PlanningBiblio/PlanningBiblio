@@ -9,6 +9,7 @@ use App\Model\SeparationLine;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 use App\Model\Agent;
 use App\Model\Model;
+use App\Model\Skill;
 use App\PlanningBiblio\PresentSet;
 use App\PlanningBiblio\Framework;
 
@@ -22,7 +23,6 @@ require_once(__DIR__ . '/../../public/planning/poste/class.planning.php');
 require_once(__DIR__ . '/../../public/planning/volants/class.volants.php');
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
-require_once(__DIR__ . '/../../public/activites/class.activites.php');
 require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
@@ -928,11 +928,11 @@ class IndexController extends BaseController
 
     private function getSkills()
     {
-        $a = new \activites();
+        $a = $this->entityManager->getRepository(Skill::class);
         $a->deleted = true;
-        $a->fetch();
+        $a = $a->all();
 
-        return $a->elements;
+        return $a;
     }
 
     private function getCategories()
