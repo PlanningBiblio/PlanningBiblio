@@ -205,6 +205,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->setParam('Recup-Uneparjour', 1);
         $crawler = $this->client->request('GET', '/holiday/new');
 
+        $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
         $result = $crawler->filterXPath('//td[@id="validation-statuses"]');
         $this->assertStringContainsString('Demandé', $result->text('Node does not exist', true), 'test statut');
         $this->assertStringContainsString('Acceptée (En attente de validation hiérarchique)', $result->text('Node does not exist', true), 'test statut');
