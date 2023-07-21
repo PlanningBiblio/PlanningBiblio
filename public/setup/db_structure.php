@@ -119,6 +119,14 @@ $sql[]="CREATE TABLE `{$dbprefix}config` (
   UNIQUE KEY `nom` (`nom`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
+$sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}doctrine_migration_versions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `version` TEXT COLLATE utf8mb4_unicode_ci NOT NULL,
+  `executed_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `execution_time` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00', 
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+
 $sql[]="CREATE TABLE `{$dbprefix}heures_absences` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
   `semaine` DATE,
