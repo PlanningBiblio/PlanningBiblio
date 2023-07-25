@@ -1,4 +1,10 @@
 <?php
+
+require_once __DIR__.'/../vendor/autoload.php';
+
+use App\Model\Access;
+use App\Model\Agent;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 $session = new Session();
@@ -13,13 +19,6 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $version="23.05.00.004"; // xx.xx.xx.xxx
 $GLOBALS['version'] = $version;
 $displayed_version = preg_replace('/(\d*\.\d*\.\d*).*/','\1', $version);
-
-require_once __DIR__.'/../vendor/autoload.php';
-
-use Symfony\Component\HttpFoundation\Request;
-
-use App\Model\Agent;
-use App\Model\Access;
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists(__DIR__.'/../.env.local')) {

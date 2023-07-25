@@ -6,7 +6,7 @@ use App\Model\Cron;
 
 class Crontab {
 
-    public static $crons_dir = __DIR__ . '/../../src/Cron/Legacy/';
+    private $crons_dir = __DIR__ . '/../../src/Cron/Legacy/';
 
     private $executable_crons = array();
 
@@ -51,6 +51,27 @@ class Crontab {
     public function crons()
     {
         return $this->executable_crons;
+    }
+
+    public function execute()
+    {
+        if (php_sapi_name() != 'cli') {
+
+            $crons = $this->crons();
+
+            foreach ($crons as $cron) {
+                include($this->crons_dir . $cron->command());
+                $this->update_cron($cron);
+            }
+
+            // Absences : Met à jour la table absences avec les événements récurrents sans date de fin (J + 2ans)
+            // 1 fois par jour
+            require_once __DIR__ . '/../../public/absences/class.absences.php';
+
+            $a = new \absences();
+            $a->CSRFToken = $GLOBALS['CSRFSession'];
+            $a->ics_update_table();
+        }
     }
 
     public static function update_cron($cron)

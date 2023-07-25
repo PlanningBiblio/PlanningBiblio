@@ -12,9 +12,6 @@ if (!file_exists(__DIR__ . "/../.env.test.local")) {
     die("Unable to find the .env.test.local file\n");
 }
 
-global $base_url;
-$base_url = 'http://test.planno';
-
 $dotenv = new Dotenv(false);
 $dotenv->load(__DIR__ . "/../.env.test.local");
 $database_url = $_ENV['DATABASE_URL'];
@@ -52,9 +49,7 @@ if ($dbconn) {
 }
 
 include_once(__DIR__ . '/../init/init.php');
-include_once(__DIR__.'/../init/init_menu.php');
 include_once(__DIR__.'/../init/init_templates.php');
-include_once(__DIR__.'/../init/common.php');
 
 $entitiesPath = array('src/Model');
 $emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);

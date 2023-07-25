@@ -1,14 +1,13 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-
-require_once(__DIR__ . '/../../public/include/class.menu.php');
+use App\PlanningBiblio\Menu;
 
 class ClassMenuTest extends TestCase
 {
     public function testMenuContent()
     {
-        $menu = new menu();
+        $menu = new Menu();
         $this->assertEquals($menu->checkCondition('random string'), false, 'random string is false');
         $this->assertEquals($menu->checkCondition(null), true, 'null condition is true');
         $this->assertEquals($menu->checkCondition(''), true, 'empty condition is true');

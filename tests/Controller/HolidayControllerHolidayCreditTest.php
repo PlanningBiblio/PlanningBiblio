@@ -31,16 +31,14 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $client = static::createClient();
-
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $jdevoe_id = $jdevoe->id();
         $url = "/ajax/holiday-credit?debut=24/01/2022&fin=24/01/2022&hre_debut=00:00:00&hre_fin=23:59:59&perso_id=$jdevoe_id&start_halfday=morning&end_halfday=morning";
 
-        $client->request('GET', $url);
-        $response = $client->getResponse()->getContent();
+        $this->client->request('GET', $url);
+        $response = $this->client->getResponse()->getContent();
         $result = json_decode($response);
 
         $this->assertEquals($result->days, 0.5, 'Morning Holiday equals a half day');
@@ -51,8 +49,8 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
 
         $url = "/ajax/holiday-credit?debut=24/01/2022&fin=24/01/2022&hre_debut=00:00:00&hre_fin=23:59:59&perso_id=$jdevoe_id&start_halfday=fullday&end_halfday=fullday";
 
-        $client->request('GET', $url);
-        $response = $client->getResponse()->getContent();
+        $this->client->request('GET', $url);
+        $response = $this->client->getResponse()->getContent();
         $result = json_decode($response);
 
         $this->assertEquals($result->days, 1, 'Morning Holiday equals one day');

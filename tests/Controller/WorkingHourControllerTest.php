@@ -8,35 +8,28 @@ use Tests\FixtureBuilder;
 class WorkingHourControllerTest extends PLBWebTestCase
 {
     public function testAccessWorkingHoursList() {
-        $client = static::createClient();
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
 
         // Anonymous user.
-        $client->request('GET', '/workinghour');
-        $response = $client->getResponse()->getContent();
-        $this->assertEquals(
-            403,
-            $client->getResponse()->getStatusCode(),
-            'Anonymous users get forbiden access'
-        );
+        $this->client->request('GET', '/workinghour');
+        $response = $this->client->getResponse()->getContent();
+        $this->assertEquals(302, $this->client->getResponse()->getStatusCode(), 'Anonymous users are redirected to the login page');
 
         // User without rights.
         $this->logInAgent($agent, array(100));
-        $client->request('GET', '/workinghour');
-        $response = $client->getResponse()->getContent();
+        $this->client->request('GET', '/workinghour');
+        $response = $this->client->getResponse()->getContent();
         $this->assertEquals(
             200,
-            $client->getResponse()->getStatusCode(),
+            $this->client->getResponse()->getStatusCode(),
             'Users without exepected rights get access'
         );
     }
 
     public function testWorkingHoursValidationRights() {
-        $client = static::createClient();
-
         $builder = new FixtureBuilder();
         $greg = $builder->build(Agent::class, array('login' => 'greg'));
         $greg_workinghours = array(
@@ -67,7 +60,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
         $GLOBALS['config']['PlanningHebdo-Agents'] = 0;
 
         $this->logInAgent($greg, array(100));
-        $crawler = $client->request('GET', "/workinghour/$greg_wh_id");
+        $crawler = $this->client->request('GET', "/workinghour/$greg_wh_id");
         $status = $crawler
             ->filterXPath('//div[@id="content"]/div[@id="content-form"]/div[@class="admin-div"]/div[@id="working_hours"]/form/p/span')
             ->text();
@@ -76,7 +69,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
         // Agent that can validate level 1
         $joe = $builder->build(Agent::class, array('login' => 'joe'));
         $this->logInAgent($joe, array(100, 1101));
-        $crawler = $client->request('GET', "/workinghour/$greg_wh_id");
+        $crawler = $this->client->request('GET', "/workinghour/$greg_wh_id");
 
         $statuses = array();
         foreach ($crawler->filterXPath('//select[@name="validation"]/option') as $option) {
@@ -90,7 +83,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
         // Agent that can validate level 2
         $bob = $builder->build(Agent::class, array('login' => 'bob'));
         $this->logInAgent($bob, array(100, 1101, 1201));
-        $crawler = $client->request('GET', "/workinghour/$greg_wh_id");
+        $crawler = $this->client->request('GET', "/workinghour/$greg_wh_id");
 
         $statuses = array();
         foreach ($crawler->filterXPath('//select[@name="validation"]/option') as $option) {
@@ -105,7 +98,6 @@ class WorkingHourControllerTest extends PLBWebTestCase
     }
 
     public function testCreateOwnWorkingHours() {
-        $client = static::createClient();
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
@@ -114,17 +106,16 @@ class WorkingHourControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'test'));
 
         $this->logInAgent($agent, array(100));
-        $client->request('GET', '/workinghour/add');
-        $client->followRedirect();
+        $this->client->request('GET', '/workinghour/add');
+        $this->client->followRedirect();
         $this->assertEquals(
             403,
-            $client->getResponse()->getStatusCode(),
+            $this->client->getResponse()->getStatusCode(),
             'With PlanningHebdo-Agents disabled, users without right cannot create own working hours'
         );
     }
 
     public function testEditOtherAgentsWorkingHours() {
-        $client = static::createClient();
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
@@ -159,11 +150,11 @@ class WorkingHourControllerTest extends PLBWebTestCase
         );
 
         $this->logInAgent($loggedin_agent, array(100));
-        $client->request('GET', "/workinghour/$greg_wh_id");
-        $client->followRedirect();
+        $this->client->request('GET', "/workinghour/$greg_wh_id");
+        $this->client->followRedirect();
         $this->assertEquals(
             403,
-            $client->getResponse()->getStatusCode(),
+            $this->client->getResponse()->getStatusCode(),
             'Users without right cannot access working hours of other agents'
         );
     }
