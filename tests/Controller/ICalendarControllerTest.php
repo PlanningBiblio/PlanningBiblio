@@ -1,7 +1,10 @@
 <?php
 
-use App\Model\Agent;
 use App\Model\Absence;
+use App\Model\Agent;
+use App\Model\PlanningPosition;
+use App\Model\PlanningPositionLock;
+use App\Model\Position;
 use App\Model\WeekPlanning;
 
 use Tests\PLBWebTestCase;
@@ -9,29 +12,35 @@ use Tests\FixtureBuilder;
 
 class ICalendarControllerTest extends PLBWebTestCase
 {
+    private $builder;
+    private $entityManager;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        global $entityManager;
+
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
+        $this->builder = new FixtureBuilder();
+        $this->entityManager = $entityManager;
     }
 
 
     public function testICalendar()
     {
-        $builder = new FixtureBuilder();
-        $builder->delete(Agent::class);
+        $this->builder->delete(Agent::class);
 
         $_SERVER['SERVER_NAME'] = 'planno.local';
 
-        $agent = $builder->build(
+        $agent = $this->builder->build(
             Agent::class,
             array(
                 'login' => 'jdoenv', 'nom' => 'Doenv', 'prenom' => 'Jean', 'actif' => 'Actif', 'mail' => 'jdoenv@example.com',
             )
         );
-        $deletedagent = $builder->build(
+        $deletedagent = $this->builder->build(
             Agent::class,
             array(
                 'login' => 'deletedagent', 'nom' => 'Deleted', 'prenom' => 'Agent', 'actif' => 'Inactif', 'supprime' => 1, 'mail' => 'deletedagent@example.com',
@@ -97,7 +106,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->createPlanningPositionFor($agent);
         $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $client->getResponse()->getContent());
-        $this->assertEquals($content[27], 'SUMMARY:Accueil', 'ICS export with planning position');
+        $this->assertEquals($content[27], 'SUMMARY:Rangement 4', 'ICS export with planning position');
 
         // Test holiday
         $GLOBALS['config']['Conges-Enable'] = 1;
@@ -112,14 +121,6 @@ class ICalendarControllerTest extends PLBWebTestCase
         $content = explode("\n", $client->getResponse()->getContent());
         $this->assertEquals($content[27], 'SUMMARY:ICS absence test ', 'ICS export with absence');
 
-        // No exports for deleted agent
-        $this->createPlanningPositionFor($deletedagent);
-        $this->createHolidayFor($deletedagent);
-        $this->createAbsenceFor($deletedagent);
-        $client->request('GET', "/ical", array("id" => $deletedagent->id(), "absences" => 1));
-        $content = explode("\n", $client->getResponse()->getContent());
-        $this->assertEquals(sizeof($content), 23, 'No exports for deleted agents');
-
         // With interval in URL
         $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1, "interval" => 1));
         $content = explode("\n", $client->getResponse()->getContent());
@@ -130,6 +131,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $client->getResponse()->getContent());
         $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
+        $GLOBALS['config']['ICS-Interval'] = 0;
 
         // With code
         $GLOBALS['config']['ICS-Code'] = 1;
@@ -138,6 +140,15 @@ class ICalendarControllerTest extends PLBWebTestCase
         $code = $client->getResponse()->getStatusCode();
         $this->assertEquals($code, '401', 'status code is 401');
         $this->assertEquals($content->{'error'}, "Accès refusé", 'Access denied when code is needed but wrong or missing');
+        $GLOBALS['config']['ICS-Code'] = 0;
+
+        // No exports for deleted agent
+        $this->createPlanningPositionFor($deletedagent);
+        $this->createHolidayFor($deletedagent);
+        $this->createAbsenceFor($deletedagent);
+        $client->request('GET', "/ical", array("id" => $deletedagent->id(), "absences" => 1));
+        $content = explode("\n", $client->getResponse()->getContent());
+        $this->assertEquals(sizeof($content), 23, 'No exports for deleted agents');
     }
 
     private function createPlanningPositionFor($agent)
@@ -145,43 +156,42 @@ class ICalendarControllerTest extends PLBWebTestCase
         $date = new DateTime('now - 3 day');
         $now = new DateTime();
 
-        $db = new \db();
+        $this->builder->delete(PlanningPosition::class);
+        $this->builder->delete(PlanningPositionLock::class);
 
-        $db->CSRFToken = $this->CSRFToken;
-        $insert = array(
-            "date"       => $date->format('Y-m-d'),
-            "debut"      => '11:00:00',
-            "fin"        => '12:00:00',
-            "poste"      => 1,
-            "site"       => 1,
-            "perso_id"   => $agent->id(),
-            "chgt_login" => 1,
-            "chgt_time"  => $now->format('Y-m-d')
+        $post = $this->entityManager->getRepository(Position::class)->findOneBy(array('nom' => 'Rangement 4'));
+
+        $pl_post = $this->builder->build(
+            PlanningPosition::class,
+            array(
+                'date' => $date,
+                'debut' => new DateTime('now'),
+                'fin' => new DateTime('now + 1 hour'),
+                'poste' => $post->id(),
+                'perso_id' => $agent->id(),
+                'absent' => 0,
+                'supprime' => 0,
+                'grise' => 0,
+                'site' => 1,
+            )
         );
-        $db->insert("pl_poste", $insert);
 
-        $insert = array(
-            "date"        => $date->format('Y-m-d'),
-            "verrou"      => 1,
-            "validation"  => 1,
-            "perso"       => $agent->id(),
-            "verrou2"     => 1,
-            "validation2" => $now->format('Y-m-d'),
-            "perso2"      => $agent->id(),
-            "vivier"      => $now->format('Y-m-d'),
-            "site"        => 1
+
+        $pl_post_lock = $this->builder->build
+        (
+            PlanningPositionLock::class,
+            array(
+                'date' => $date,
+                'verrou' => 0,
+                'verrou2' => 1,
+                'site' => 1,
+                'perso' => $agent->id(),
+                'perso2' => $agent->id(),
+            )
         );
-        $db->insert("pl_poste_verrou", $insert);
-
-        $insert = array(
-            "id" => 1,
-            "nom"        => "Accueil",
-        );
-        $db->insert("postes", $insert);
-
-
 
     }
+
     private function createHolidayFor($agent)
     {
         $date = new DateTime('now - 3 day');
@@ -235,6 +245,4 @@ class ICalendarControllerTest extends PLBWebTestCase
 
         return $absence->id;
     }
-
-
 }
