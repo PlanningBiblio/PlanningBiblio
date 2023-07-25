@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 include_once('init.php');
 include_once(__DIR__ . '/../init/init_menu.php');
-include_once('init_templates.php');
+include_once(__DIR__ . '/../init/init_templates.php');
 include_once(__DIR__ . '/../init/common.php');
 
 require_once(__DIR__.'/include/feries.php');
