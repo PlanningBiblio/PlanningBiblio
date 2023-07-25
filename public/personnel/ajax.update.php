@@ -17,7 +17,7 @@ Ce script est appelé par la fonction JS personnel/js/index.js : agent_list
 use App\Model\Agent;
 
 require_once(__DIR__.'/../include/config.php');
-require_once(__DIR__ . '/../init_ajax.php');
+require_once(__DIR__ . '/../../init/init_ajax.php');
 
 if (!in_array(21, $_SESSION['droits'])) {
     echo json_encode('Accès refusé');
