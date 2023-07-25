@@ -48,7 +48,7 @@ if (file_exists(__DIR__.'/lang/custom.php')) {
 }
 
 require_once(__DIR__ . '/../init/init_entitymanager.php');
-require_once(__DIR__.'/init_plugins.php');
+require_once(__DIR__ . '/../init/init_plugins.php');
 
 // Vérification de la version de la base de données
 // Si la version est différente, mise à jour de la base de données
