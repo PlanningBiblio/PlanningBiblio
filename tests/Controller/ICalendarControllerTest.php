@@ -31,6 +31,13 @@ class ICalendarControllerTest extends PLBWebTestCase
                 'login' => 'jdoenv', 'nom' => 'Doenv', 'prenom' => 'Jean', 'actif' => 'Actif', 'mail' => 'jdoenv@example.com',
             )
         );
+        $deletedagent = $builder->build(
+            Agent::class,
+            array(
+                'login' => 'deletedagent', 'nom' => 'Deleted', 'prenom' => 'Agent', 'actif' => 'Inactif', 'supprime' => 1, 'mail' => 'deletedagent@example.com',
+            )
+        );
+
         $client = static::createClient();
 
         $GLOBALS['config']['ICS-Code'] = 0;
@@ -97,13 +104,21 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->createHolidayFor($agent);
         $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $client->getResponse()->getContent());
-        $this->assertEquals($content[27], 'SUMMARY: ICS holiday test', 'ICS export with holiday');
+        $this->assertEquals($content[27], 'SUMMARY:Congé Payé ICS holiday test', 'ICS export with holiday');
 
         // Test absence
         $this->createAbsenceFor($agent);
         $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $client->getResponse()->getContent());
         $this->assertEquals($content[27], 'SUMMARY:ICS absence test ', 'ICS export with absence');
+
+        // No exports for deleted agent
+        $this->createPlanningPositionFor($deletedagent);
+        $this->createHolidayFor($deletedagent);
+        $this->createAbsenceFor($deletedagent);
+        $client->request('GET', "/ical", array("id" => $deletedagent->id(), "absences" => 1));
+        $content = explode("\n", $client->getResponse()->getContent());
+        $this->assertEquals(sizeof($content), 23, 'No exports for deleted agents');
 
         // With interval in URL
         $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1, "interval" => 1));

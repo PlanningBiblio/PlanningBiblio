@@ -21,8 +21,10 @@ class ICalendarController extends BaseController
      */
     public function index(Request $request, Session $session){
 
+        $module = 'Ical export';
+
         if (!$this->config('ICS-Export')) {
-            return $this->returnError("L'exportation ICS est désactivée", 403);
+            return $this->returnError("L'exportation ICS est désactivée", $module, 403);
         }
 
         $interval_get = $request->get('interval');
@@ -40,7 +42,7 @@ class ICalendarController extends BaseController
             if ($agent) {
                 $id = $agent->id();
             } else {
-                return $this->returnError("Impossible de trouver l'id associé au login $login", 400);
+                return $this->returnError("Impossible de trouver l'id associé au login $login", $module, 400);
             }
         }
 
@@ -50,33 +52,27 @@ class ICalendarController extends BaseController
             if ($agent) {
                 $id = $agent->id();
             } else {
-                return $this->returnError("Impossible de trouver l'id associé au mail $mail", 400);
+                return $this->returnError("Impossible de trouver l'id associé au mail $mail", $module, 400);
             }
         }
 
         if (!$agent && $id) {
             $agent = $this->entityManager->getRepository(Agent::class)->find($id);
-            if ($agent) {
-                $id = $agent->id();
-            } else {
-                return $this->returnError("id inconnu", 400);
+            if (empty($agent)) {
+                return $this->returnError("id inconnu", $module, 400);
             }
-
         }
 
         if (!$id) {
-            return $this->returnError("L'id de l'agent n'est pas fourni", 400);
+            return $this->returnError("L'id de l'agent n'est pas fourni", $module, 400);
         }
 
         if ($this->config('ICS-Code')) {
             $agent_ics_code = $agent->code_ics();
             if ($agent_ics_code != $code) {
-                return $this->returnError("Accès refusé", 401);
+                return $this->returnError("Accès refusé", $module, 401);
             }
         }
-
-        // N'affiche pas les calendriers des agents supprimés
-        $requete_personnel = array('supprime'=>0);
 
         $icsInterval = null;
         if ($this->config('ICS-Interval') != '' && intval($this->config('ICS-Interval'))) {
@@ -94,7 +90,7 @@ class ICalendarController extends BaseController
             array("date", "debut", "fin", "poste", 'site', 'absent', 'supprime'),
             array(),
             array("perso_id"=>$id),
-            array(),
+            array('supprime' => 0),
             ($icsInterval ? "AND `date` > DATE_SUB(curdate(), INTERVAL $icsInterval DAY) " : '') . "ORDER BY `date` DESC, `debut` DESC, `fin` DESC"
         );
         if ($db->result) {
@@ -250,10 +246,10 @@ class ICalendarController extends BaseController
                 'id' => $id,
                 'start' => strtotime($elem['debut']),
                 'end' => strtotime($elem['fin']),
-                'reason' => isset($elem['motif']) ? $elem['motif'] : '', // FIXME ?
+                'reason' => isset($elem['motif']) ? $elem['motif'] : 'Congé Payé',
                 'comment' => $elem['commentaires'],
                 'status' => $elem['valide'] ? 'CONFIRMED' : 'TENTATIVE',
-                'createdAt' => isset($elem['demande']) ? strtotime($elem['demande']) : null, // FIXME ?
+                'createdAt' => isset($elem['demande']) ? strtotime($elem['demande']) : null,
                 'lastModified' => strtotime($elem['validation']),
             ];
 
@@ -273,15 +269,6 @@ class ICalendarController extends BaseController
         return $response;
     }
 
-    private function returnError($error, $status = 200)
-    {
-        $this->logger->error($error);
-        $response = new Response();
-        $response->setContent(json_encode(array('error' => $error)));
-        $response->setStatusCode($status);
-        $response->headers->set('Content-Type', 'application/json; charset=utf-8');
-        return $response;
-    }
 }
 
 ?>
