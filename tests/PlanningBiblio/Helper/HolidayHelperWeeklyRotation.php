@@ -51,7 +51,7 @@ class HolidayHelperWeeklyRotation extends TestCase
 
         // Request holiday on even week.
         // The week this agent works 9h30.
-        $holidayHlper = new HolidayHelper(array(
+        $holidayHelper = new HolidayHelper(array(
             'start' => '2022-06-17',
             'hour_start' => '00:00:00',
             'end' => '2022-06-17',
@@ -59,7 +59,7 @@ class HolidayHelperWeeklyRotation extends TestCase
             'perso_id' => $agent->id(),
             'is_recover' => 0,
         ));
-        $result = $holidayHlper->getCountedHours();
+        $result = $holidayHelper->getCountedHours();
 
         $this->assertEquals(9, $result['hours'], 'request 7h on 1 day');
         $this->assertEquals(50, $result['minutes'], 'request 30 minutes on 1 day');

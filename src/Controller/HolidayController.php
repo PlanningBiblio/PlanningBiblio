@@ -96,10 +96,10 @@ class HolidayController extends BaseController
         // Si la gestion des congés et des récupérations est dissociée, on ne recherche que les infos voulues
         if ($this->config('Conges-Recuperations') == '1') {
             if ($voir_recup) {
-                $c->debit='recuperation';
+                $c->debit='recuperations';
                 $addLink = 'comptime/add';
             } else {
-                $c->debit='credit';
+                $c->debit='reliquat-conges';
             }
         }
         $this->templateParams(array('addlink' => $addLink));
@@ -317,7 +317,7 @@ class HolidayController extends BaseController
                 $msgType = "error";
 
                 $result['back_to'] = 'holiday';
-                if ($this->config('Conges-Recuperations') and $data['debit'] == 'recuperation') {
+                if ($this->config('Conges-Recuperations') and $data['debit'] == 'recuperations') {
                     $msg = "La récupération n'a pas pu être modifiée";
                     $msg .= "#BR#Veuillez attendre quelques secondes avant de réessayer";
                     $msgType = "error";
@@ -394,7 +394,7 @@ class HolidayController extends BaseController
             $balance[4] = 0;
         }
         $request_type = 'holiday';
-        if ($this->config('Conges-Recuperations') == 1 and $data['debit']=="recuperation") {
+        if ($this->config('Conges-Recuperations') == 1 and $data['debit']=="recuperations") {
             $request_type = 'recover';
         }
 
@@ -402,7 +402,7 @@ class HolidayController extends BaseController
         if ($this->config('Conges-Mode') == 'heures'
             and (!$this->config('Conges-Recuperations')
                 or $this->config('Conges-Heures')
-                or $data['debit']=="recuperation")) {
+                or $data['debit']=="recuperations")) {
             $show_allday = 1;
         }
 
@@ -894,7 +894,7 @@ class HolidayController extends BaseController
             list($hre_debut, $hre_fin) = $holidayHelper->halfDayStartEndHours();
         }
 
-        $holidayHlper = new HolidayHelper(array(
+        $holidayHelper = new HolidayHelper(array(
             'start' => $debut,
             'hour_start' => $hre_debut,
             'end' => $fin,
@@ -902,7 +902,7 @@ class HolidayController extends BaseController
             'perso_id' => $perso_id,
             'is_recover' => $is_recover
         ));
-        $result = $holidayHlper->getCountedHours();
+        $result = $holidayHelper->getCountedHours();
 
         $result['recover'] = $recover;
 
@@ -1010,7 +1010,7 @@ class HolidayController extends BaseController
 
             }
 
-            $holidayHlper = new HolidayHelper(array(
+            $holidayHelper = new HolidayHelper(array(
                 'start' => $debutSQL,
                 'hour_start' => $hre_debut,
                 'end' => $finSQL,
@@ -1018,7 +1018,7 @@ class HolidayController extends BaseController
                 'perso_id' => $perso_id,
                 'is_recover' => $is_recover
             ));
-            $result = $holidayHlper->getCountedHours();
+            $result = $holidayHelper->getCountedHours();
             $data['heures'] = $result['hours'];
             $data['minutes'] = $result['minutes'];
 
@@ -1142,7 +1142,7 @@ class HolidayController extends BaseController
         $nom = $agent->nom();
         $prenom = $agent->prenom();
 
-        $recover = ($post['debit'] == 'recuperation' && $this->config('Conges-Recuperations') == '1') ? 1 : 0;
+        $recover = ($post['debit'] == 'recuperations' && $this->config('Conges-Recuperations') == '1') ? 1 : 0;
 
         // Choix du sujet et des destinataires en fonction du degré de validation
         switch ($valide) {
@@ -1210,7 +1210,7 @@ class HolidayController extends BaseController
         );
 
         $result['back_to'] = 'holiday';
-        if ($this->config('Conges-Recuperations') and $post['debit'] == 'recuperation') {
+        if ($this->config('Conges-Recuperations') and $post['debit'] == 'recuperations') {
             $result['back_to'] = 'recover';
             $result['msg'] = "La demande de récupération a été modifiée avec succès";
         }

@@ -1189,7 +1189,7 @@ class conges
 
         $updateConges=array_merge($updateConges, array("solde_actuel"=>$credit,"reliquat_actuel"=>$reliquat,"recup_actuel"=>$recuperation,"anticipation_actuel"=>$anticipation));
 
-        $holidayHlper = new HolidayHelper(array(
+        $holidayHelper = new HolidayHelper(array(
             'start' => $data['debut'],
             'hour_start' => $data['hre_debut'],
             'end' => $data['fin'],
@@ -1197,7 +1197,7 @@ class conges
             'perso_id' => $data['perso_id'],
             'is_recover' => $data['debit'] == 'recuperation' ? true : false
         ));
-        $result = $holidayHlper->getCountedHours();
+        $result = $holidayHelper->getCountedHours();
         $regul = isset($result['rest']) ? $result['rest'] : 0;
 
         if ($regul != 0) {

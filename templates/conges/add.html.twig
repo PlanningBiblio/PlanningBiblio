@@ -198,122 +198,116 @@
 
                 <tr class="hideWhenMultipleAgents">
                   <td colspan='2' style='padding-top:20px;'>
-                    {% if conges_recuperations == 0 %}
-                      {% if reliquat != '0.00' %}
-                        Ces heures seront débitées sur le réliquat de l'année précédente puis sur : 
+                    Ces heures seront débitées sur : 
+                  </td>
+                </tr>
+
+                <tr class="hideWhenMultipleAgents">
+                  <td>&nbsp;</td>
+                  <td>
+                    <select name="debit" style="width:100%;">
+                      {% if conges_recuperations == 0 %}
+                        <option value="reliquat-recuperations-conges">Le reliquat, puis le crédit de récupérations, puis le crédit de congés</option>
+                        <option value="reliquat-conges-recuperations">Le reliquat, puis le crédit de congés, puis le crédit de récupérations</option>
+                        <option value="recuperations-conges-reliquat">Le crédit de récupérations, puis le crédit de congés, puis le reliquat</option>
+                        <option value="conges-recuperations-reliquat">Le crédit de congés, puis le crédit de récupérations, puis le reliquat</option>
+                        <option value="recuperations-reliquat-conges">Le crédit de récupérations, puis le reliquat, puis le crédit de congés</option>
+                        <option value="conges-reliquat-recuperations">Le crédit de congés, puis le reliquat, puis le crédit de récupérations</option>
                       {% else %}
-                        Ces heures seront débitées sur : 
+                        <option value="reliquat-conges">Le reliquat, puis le crédit de congés</option>
+                        <option value="conges-reliquat">Le crédit de congés, puis le reliquat</option>
                       {% endif %}
-                      </td>
-                    </tr>
+                    </select>
+                  </td>
+                </tr>
 
-                    <tr class="hideWhenMultipleAgents">
-                      <td>&nbsp;</td>
-                      <td>
-                        <select name="debit" style="width:100%;">
-                          <option value='recuperation'>Le crédit de récupérations</option>
-                          <option value='credit'>Le crédit de congés de l'année en cours</option>
-                        </select>
-                      </td>
-                    </tr>
-                    {% else %}
-                      {% if reliquat != '0.00' %}
-                        Ces heures seront débitées sur le réliquat de l'année précédente puis sur les crédits de congés de l'année en cours.
-                      {% else %}
-                        Ces heures seront débitées sur les crédits de congés de l'année en cours.
+                <tr>
+                  <td colspan='2'>
+                    <table class="hideWhenMultipleAgents" border='0'>
+                      <tr>
+                        <td style='width:348px;'>Reliquat : </td>
+                        <td id="holiday_balance" style='width:130px;'>{{ reliquat2 }} {{ reliquat_jours }}</td>
+                        <td>(après débit : <font id='reliquat4'>{{ reliquat2 }}</font>)</td>
+                      </tr>
+
+                      {% if conges_recuperations == 0 %}
+                        <tr class='balance_tr'>
+                          <td>Crédit de récupérations disponible au 
+                            <span class='balance_date'>{{ balance0 }}</span> : 
+                          </td>
+
+                          <td id='balance_before'>{{ balance1 }}</td>
+                          <td>(après débit : 
+                            <span id='recup4'>{{ balance1 }}</span>)
+                          </td>
+                        </tr>
+
+                        <tr class='balance_tr'>
+                          <td>Crédit de récupérations prévisionnel<sup>*</sup> au 
+                            <span class='balance_date'>{{ balance0 }}</span> : 
+                          </td>
+
+                          <td id='balance2_before'>{{ balance4 }}</td>
+
+                          <td>(après débit : 
+                            <span id='balance2_after'>{{ balance4 }}</span>)
+                          </td>
+                        </tr>
+                      <! --
+                        Put the comp time information but hidden.
+                        If there is rest, it will be shown.
+                      -->
+                      {% elseif conges_mode == 'jours' and conges_recuperations == 1 %}
+                        <tr class='balance_tr' style="display: none">
+                          <td>Crédit de récupérations disponible au 
+                            <span class='balance_date'>{{ balance0 }}</span> : 
+                          </td>
+
+                          <td id='balance_before'>{{ balance1 }}</td>
+                          <td>(après débit : 
+                            <span id='recup4'>{{ balance1 }}</span>)
+                          </td>
+                        </tr>
+
+                        <tr class='balance_tr' style="display: none">
+                          <td>Crédit de récupérations prévisionnel<sup>*</sup> au 
+                            <span class='balance_date'>{{ balance0 }}</span> : 
+                          </td>
+
+                          <td id='balance2_before'>{{ balance4 }}</td>
+
+                          <td>(après débit : 
+                            <span id='balance2_after'>{{ balance4 }}</span>)
+                          </td>
+                        </tr>
                       {% endif %}
-                        <input type='hidden' name='debit' value='credit' />
-                      </td>
-                    </tr>
-                    {% endif %}
 
-                    <tr>
-                      <td colspan='2'>
-                        <table class="hideWhenMultipleAgents" border='0'>
-                          <tr>
-                            <td style='width:348px;'>Reliquat : </td>
-                            <td id="holiday_balance" style='width:130px;'>{{ reliquat2 }} {{ reliquat_jours }}</td>
-                            <td>(après débit : <font id='reliquat4'>{{ reliquat2 }}</font>)</td>
-                          </tr>
+                      <tr>
+                        <td>Crédit de congés : </td>
+                        <td id="holiday_credit" >{{ credit2 }} {{ credit_jours }}</td>
+                        <td>
+                          <font id='credit3'>(après débit : <font id='credit4'>{{ credit2 }}</font>)</font>
+                        </td>
+                      </tr>
 
-                          {% if conges_recuperations == 0 %}
-                            <tr class='balance_tr'>
-                              <td>Crédit de récupérations disponible au 
-                                <span class='balance_date'>{{ balance0 }}</span> : 
-                              </td>
+                      <tr>
+                        <td>Solde débiteur : </td>
+                        <td id="holiday_debit" >{{ anticipation2 }} {{ anticipation_jours }}</td>
+                        <td><font id='anticipation3'>(après débit : <font id='anticipation4'>{{ anticipation2 }}</font>)</font>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
 
-                              <td id='balance_before'>{{ balance1 }}</td>
-                              <td>(après débit : 
-                                <span id='recup4'>{{ balance1 }}</span>)
-                              </td>
-                            </tr>
+                <tr valign='top'>
+                  <td style='padding-top:15px;' class="textAlignRight">Commentaires : </td>
+                  <td style='padding-top:15px;' colspan='2'>
+                    <textarea name='commentaires' cols='16' rows='5'></textarea>
+                  </td>
+                </tr>
 
-                            <tr class='balance_tr'>
-                              <td>Crédit de récupérations prévisionnel<sup>*</sup> au 
-                                <span class='balance_date'>{{ balance0 }}</span> : 
-                              </td>
-
-                              <td id='balance2_before'>{{ balance4 }}</td>
-
-                              <td>(après débit : 
-                                <span id='balance2_after'>{{ balance4 }}</span>)
-                              </td>
-                            </tr>
-                          <! --
-                            Put the comp time information but hidden.
-                            If there is rest, it will be shown.
-                          -->
-                          {% elseif conges_mode == 'jours' and conges_recuperations == 1 %}
-                            <tr class='balance_tr' style="display: none">
-                              <td>Crédit de récupérations disponible au 
-                                <span class='balance_date'>{{ balance0 }}</span> : 
-                              </td>
-
-                              <td id='balance_before'>{{ balance1 }}</td>
-                              <td>(après débit : 
-                                <span id='recup4'>{{ balance1 }}</span>)
-                              </td>
-                            </tr>
-
-                            <tr class='balance_tr' style="display: none">
-                              <td>Crédit de récupérations prévisionnel<sup>*</sup> au 
-                                <span class='balance_date'>{{ balance0 }}</span> : 
-                              </td>
-
-                              <td id='balance2_before'>{{ balance4 }}</td>
-
-                              <td>(après débit : 
-                                <span id='balance2_after'>{{ balance4 }}</span>)
-                              </td>
-                            </tr>
-                          {% endif %}
-
-                    <tr>
-                      <td>Crédit de congés : </td>
-                      <td id="holiday_credit" >{{ credit2 }} {{ credit_jours }}</td>
-                      <td>
-                        <font id='credit3'>(après débit : <font id='credit4'>{{ credit2 }}</font>)</font>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>Solde débiteur : </td>
-                      <td id="holiday_debit" >{{ anticipation2 }} {{ anticipation_jours }}</td>
-                      <td><font id='anticipation3'>(après débit : <font id='anticipation4'>{{ anticipation2 }}</font>)</font>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-
-              <tr valign='top'>
-                <td style='padding-top:15px;' class="textAlignRight">Commentaires : </td>
-                <td style='padding-top:15px;' colspan='2'>
-                  <textarea name='commentaires' cols='16' rows='5'></textarea>
-                </td>
-              </tr>
-
-              {% if config('Conges-validation') %}
+                {% if config('Conges-validation') %}
                   <tr id="validation-line">
                     <td class="textAlignRight">
                       <label >État </label>
@@ -332,39 +326,40 @@
                     <input type='hidden' name='valide' id='validation' value='1' />
                 {% endif %}
 
-              <tr>
-                <td>&nbsp;
-                </td>
-              </tr>
+                <tr>
+                  <td>&nbsp;
+                  </td>
+                </tr>
+  
+                <tr>
+                  <td colspan='2' style='text-align:center;'>
+                    <input id="cancel" type='button' value='Annuler' class='ui-button ui-button-type2'/>
+                    &nbsp;&nbsp;
+                    <input id="validate" type='button' value='Valider' class='ui-button' style='margin-left:20px;'/>
+                    <div id='google-calendar-div' class='inline'></div>
+                  </td>
+                </tr>
+  
+                <tr>
+                  <td colspan='2' style='padding-top:30px; font-style:italic;'>
+                    <sup>*</sup> Le crédit de récupérations prévisionnel tient compte des demandes non validées (crédits et utilisations).
+                  </td>
+                </tr>
+              </table>
+            </form>
+          </td>
+        </tr>
+      </table>
 
-              <tr>
-                <td colspan='2' style='text-align:center;'>
-                  <input id="cancel" type='button' value='Annuler' class='ui-button ui-button-type2'/>
-                  &nbsp;&nbsp;
-                  <input id="validate" type='button' value='Valider' class='ui-button' style='margin-left:20px;'/>
-                  <div id='google-calendar-div' class='inline'></div>
-                </td>
-              </tr>
-
-              <tr>
-                <td colspan='2' style='padding-top:30px; font-style:italic;'>
-                  <sup>*</sup> Le crédit de récupérations prévisionnel tient compte des demandes non validées (crédits et utilisations).
-                </td>
-              </tr>
-            </table>
-          </form>
-        </td>
-      </tr>
-    </table>
-    <div class="red align-info">
-      {% if holiday_info %}
-        <b>Informations sur les congés :</b><br/>
-        {% for i in holiday_info %}
-          Du {{ i.start }} au {{ i.end }} :<br/>{{ i.texte|nl2br }}<br/><br/>
-        {% endfor %}
-      {% endif %}
+      <div class="red align-info">
+        {% if holiday_info %}
+          <b>Informations sur les congés :</b><br/>
+          {% for i in holiday_info %}
+            Du {{ i.start }} au {{ i.end }} :<br/>{{ i.texte|nl2br }}<br/><br/>
+          {% endfor %}
+        {% endif %}
+      </div>
     </div>
   </div>
-</div>
 
 {% endblock %}

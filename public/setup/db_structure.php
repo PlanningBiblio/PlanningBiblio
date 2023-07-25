@@ -520,7 +520,7 @@ $sql[]="CREATE TABLE `{$dbprefix}conges` (
   `commentaires` TEXT,
   `refus` TEXT,
   `heures` VARCHAR(20),
-  `debit` VARCHAR(20),
+  `debit` VARCHAR(30),
   `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `saisie_par` INT NOT NULL,
   `modif` INT(11) NOT NULL DEFAULT '0',

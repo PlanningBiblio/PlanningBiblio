@@ -202,49 +202,43 @@
             </tr>
           {% endif %}
 
-          {% if conges_recuperations == 0 %}
+          {% if conges_recuperations == 1 and debit == 'recuperations' %}
             <tr>
               <td colspan='2' style='padding-top:20px;'>
-                {% if reliquat != '0.00' %}
-                  Ces heures seront débitées sur le réliquat de l'année précédente puis sur : 
-                {% else %}
+                Ces heures seront débitées sur les crédits de récupérations.
+                <input type='hidden' name='debit' value='recuperations' />
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan='2' style='padding-top:20px;'>
                   Ces heures seront débitées sur : 
-                {% endif %}
               </td>
             </tr>
             <tr>
               <td></td>
               <td>
-                <select name='debit' style='width:30%;'>
-                  {% if debit == 'recuperation' %}
-                    <option value='recuperation' selected="selected">Le crédit de récupérations</option>
+                <select name="debit" style="width:40%;">
+                  {% if conges_recuperations == 0 %}
+                    <option value="reliquat-recuperations-conges" {% if debit == 'reliquat-recuperations-conges' %} selected = "selected" {% endif %}>
+                      Le reliquat, puis le crédit de récupérations, puis le crédit de congés</option>
+                    <option value="reliquat-conges-recuperations" {% if debit == 'reliquat-conges-recuperations' %} selected = "selected" {% endif %}>
+                      Le reliquat, puis le crédit de congés, puis le crédit de récupérations</option>
+                    <option value="recuperations-conges-reliquat" {% if debit == 'recuperations-conges-reliquat' %} selected = "selected" {% endif %}>
+                      Le crédit de récupérations, puis le crédit de congés, puis le reliquat</option>
+                    <option value="conges-recuperations-reliquat" {% if debit == 'conges-recuperations-reliquat' %} selected = "selected" {% endif %}>
+                      Le crédit de congés, puis le crédit de récupérations, puis le reliquat</option>
+                    <option value="recuperations-reliquat-conges" {% if debit == 'recuperations-reliquat-conges' %} selected = "selected" {% endif %}>
+                      Le crédit de récupérations, puis le reliquat, puis le crédit de congés</option>
+                    <option value="conges-reliquat-recuperations" {% if debit == 'conges-reliquat-recuperations' %} selected = "selected" {% endif %}>
+                      Le crédit de congés, puis le reliquat, puis le crédit de récupérations</option>
                   {% else %}
-                    <option value='recuperation'>Le crédit de récupérations</option>
-                  {% endif %}
-
-                  {% if debit == 'credit' %}
-                    <option value='credit' selected="selected">Le crédit de congés de l'année en cours</option>
-                  {% else %}
-                    <option value='credit'>Le crédit de congés de l'année en cours</option>
+                    <option value="reliquat-conges" {% if debit == 'reliquat-conges' %} selected = "selected" {% endif %}>
+                      Le reliquat, puis le crédit de congés</option>
+                    <option value="conges-reliquat" {% if debit == 'conges-reliquat' %} selected = "selected" {% endif %}>
+                      Le crédit de congés, puis le reliquat</option>
                   {% endif %}
                 </select>
-              </td>
-            </tr>
-
-          {% else %}
-            <tr>
-              <td colspan='2' style='padding-top:20px;'>
-                {% if debit == 'credit' %}
-                  {% if reliquat != '0.00' %}
-                    Ces heures seront débitées sur le réliquat de l'année précédente puis sur les crédits de congés de l'année en cours.
-                  {% else %}
-                    Ces heures seront débitées sur les crédits de congés de l'année en cours.
-                  {% endif %}
-                  <input type='hidden' name='debit' value='credit' />
-                {% else %}
-                  Ces heures seront débitées sur les crédits de récupérations.
-                  <input type='hidden' name='debit' value='recuperation' />
-                {% endif %}
               </td>
             </tr>
           {% endif %}
@@ -377,7 +371,7 @@
 
           <tr>
             <td colspan='2' style='text-align:center;'>
-              {% if conges_recuperations and debit == 'recuperation' %}
+              {% if conges_recuperations and debit == 'recuperations' %}
                 <a href='{{ asset("holiday/index?recup=1") }}' class='ui-button ui-button-type2' >Annuler</a>
               {% else %}
                 <a href='{{ asset("holiday/index") }}' class='ui-button ui-button-type2' >Annuler</a>
@@ -388,7 +382,7 @@
               {% endif %}
 
               {% if delete_button %}
-                {% if conges_recuperations and debit == 'recuperation' %}
+                {% if conges_recuperations and debit == 'recuperations' %}
                   <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday/index?recup=1')" class='ui-button ui-button-type2'/>
                 {% else %}
                   <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday/index')" class='ui-button ui-button-type2'/>
@@ -402,7 +396,7 @@
             <tr>
               <td colspan='2' style='padding-top:30px; font-style:italic;'><sup>*</sup> Le crédit de récupérations prévisionnel tient compte des demandes non validées (crédits et utilisations).</td>
             </tr>
-          {% elseif debit == 'recuperation' %}
+          {% elseif debit == 'recuperations' %}
             <tr>
               <td colspan='2' style='padding-top:30px; font-style:italic;'><sup>*</sup> Le solde prévisionnel tient compte des demandes des récupérations non validées (crédits et utilisations).</td>
             </tr>

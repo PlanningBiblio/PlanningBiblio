@@ -62,6 +62,17 @@ function currentCredits() {
 
 function calculCredit(){
 
+  // Prevent exexcuting calculCredit twice
+  if (typeof(calculCreditLastUpdate) !== 'undefined') {
+    now = new Date();
+    if (calculCreditLastUpdate >= new Date(now.getTime() - 300)) {
+      calculCreditLastUpdate = new Date();
+      return 0;
+    }
+  }
+
+  calculCreditLastUpdate = new Date();
+
   $("#erreurCalcul").val("false");
   $("#nbJours").text('');
   $("#nbHeures").text('');
@@ -220,6 +231,18 @@ function calculRegul() {
 }
 
 function calculRestes(){
+
+  // Prevent exexcuting calculReste twice
+  if (typeof(calculResteLastUpdate) !== 'undefined') {
+    now = new Date();
+    if (calculResteLastUpdate >= new Date(now.getTime() - 300)) {
+      calculResteLastUpdate = new Date();
+      return 0;
+    }
+  }
+
+  calculResteLastUpdate = new Date();
+
   heures=document.form.elements["heures"].value+"."+document.form.elements["minutes"].value;
   reliquat=document.form.elements["reliquat"].value;
   recuperation=document.form.elements["recuperation"].value;
@@ -228,158 +251,63 @@ function calculRestes(){
   anticipation=document.form.elements["anticipation"].value;
   debit=document.form.elements["debit"].value;
 
-  heures = parseFloat(heures.replace(' ',''));
-  reliquat = parseFloat(reliquat.replace(' ',''));
-  recuperation = parseFloat(recuperation.replace(' ',''));
-  credit = parseFloat(credit.replace(' ',''));
-  anticipation = parseFloat(anticipation.replace(' ',''));
+  var o = Object.create({
+    heures: parseFloat(heures.replace(' ','')),
+    reliquat: parseFloat(reliquat.replace(' ','')),
+    recuperations: parseFloat(recuperation.replace(' ','')),
+    conges: parseFloat(credit.replace(' ','')),
+    anticipation: parseFloat(anticipation.replace(' ',''))
+    });
 
   var congesRecup = $('#conges-recup').val();
   var congesMode = $('#conges-mode').val();
 
-  // Si les récupérations et les congés sont gérés de la même façon
-  if(congesRecup == 0){
     
-    // Calcul du reliquat après décompte
-    reste=0;
-    reliquat=reliquat-heures;
-    if(reliquat<0){
-      reste=-reliquat;
-      reliquat=0;
-    }
-
-    reste2=0;
-    // Calcul du crédit de récupération
-    if(debit=="recuperation"){
-      recuperation=recuperation-reste;
-      recuperation_prev = recuperation_prev - reste;
-      if(recuperation<0){
-        reste2=-recuperation;
-        recuperation=0;
-      }
-
-      if(recuperation_prev < 0){
-        recuperation_prev = 0;
-      }
-    }
-    
-    // Calcul du crédit de congés
-    else if(debit=="credit"){
-      credit=credit-reste;
-      if(credit<0){
-        reste2=-credit;
-        credit=0;
-      }
-    }
-    
-    // Si après tous les débits, il reste des heures, on débit le crédit restant
-    reste3=0;
-    if(reste2){
-      if(debit=="recuperation"){
-        credit=credit-reste2;
-        if(credit<0){
-          reste3=-credit;
-          credit=0;
-        }
-      }
-      else if(debit=="credit"){
-        recuperation=recuperation-reste2;
-        recuperation_prev = recuperation_prev - reste2;
-        if(recuperation<0){
-          reste3=-recuperation;
-          recuperation=0;
-        }
-        if(recuperation_prev < 0){
-          recuperation_prev = 0;
-        }
-      }
-    }
-    
-    if(reste3){
-      anticipation=parseFloat(anticipation)+reste3;
-    }
-  }
-
-  // Si les récupérations et les congés ne sont pas gérés de la même façon
-  else{
-    // Calcul du crédit de récupération
-    if(debit=="recuperation"){
-      recuperation = recuperation - heures;
-      recuperation_prev = recuperation_prev - heures;
-
-      $('.recup-alert').remove();
-      if(recuperation < 0){
-        CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
-        $(".balance_tr").effect("highlight",null,4000);
-      }
-    }
-
-    // Calcul du crédit de congés
-    else if(debit=="credit"){
-
-      // Calcul du reliquat après décompte
-      reste=0;
-      reliquat=reliquat-heures;
-      if(reliquat<0){
-        reste=-reliquat;
-        reliquat=0;
-      }
-        
-      // Calcul du crédit de congés
-      credit=credit-reste;
-      if(credit<0){
-        reste=-credit;
-        credit=0;
-      } else {
-        reste = 0;
-      }
-      
-      // Anticipation
-      if(reste){
-        anticipation=parseFloat(anticipation)+reste;
-      }
-
-    }
+  o = intermediateCalculationOfRemainders(o, debit, 1);
+  o = intermediateCalculationOfRemainders(o, debit, 2);
+  o = intermediateCalculationOfRemainders(o, debit, 3);
+  if (congesRecup == 0) {
+    o = intermediateCalculationOfRemainders(o, debit, 4);
   }
 
   // Affichage
-  $("#recup4").text(heure4(recuperation));
+  $("#recup4").text(heure4(o.recuperations));
   $("#balance2_after").text(heure4(recuperation_prev));
   if (congesMode == 'jours') {
-    day_reliquat = reliquat / 7;
+    day_reliquat = o.reliquat / 7;
     day_reliquat = Math.round(day_reliquat * 2) / 2;
     day_reliquat = day_reliquat > 1 ? day_reliquat + ' jours' : day_reliquat + ' jour';
     $("#reliquat4").text(day_reliquat);
 
-    day_credit = credit / 7;
+    day_credit = o.conges / 7;
     day_credit = Math.round(day_credit * 2) / 2;
     day_credit = day_credit > 1 ? day_credit + ' jours' : day_credit + ' jour';
     $("#credit4").text(day_credit);
 
-    day_anticipation = anticipation / 7;
+    day_anticipation = o.anticipation / 7;
     day_anticipation = Math.round(day_anticipation * 2) / 2;
     day_anticipation = day_anticipation > 1 ? day_anticipation + ' jours' : day_anticipation + ' jour';
     $("#anticipation4").text(day_anticipation);
   } else {
-    $("#reliquat4").text(heure4(reliquat));
-    $("#credit4").text(heure4(credit));
-    $("#anticipation4").text(heure4(anticipation));
+    $("#reliquat4").text(heure4(o.reliquat));
+    $("#credit4").text(heure4(o.conges));
+    $("#anticipation4").text(heure4(o.anticipation));
     if ($('#hours_per_day').val()) {
       var hours_per_day = $('#hours_per_day').val();
-      if (reliquat != 0) {
-        days= hours_to_days(reliquat, hours_per_day);
+      if (o.reliquat != 0) {
+        days= hours_to_days(o.reliquat, hours_per_day);
         $("#reliquat4").append(days);
       }
-      if (credit != 0) {
-        days= hours_to_days(credit, hours_per_day);
+      if (o.conges != 0) {
+        days= hours_to_days(o.conges, hours_per_day);
         $("#credit4").append(days);
       }
-      if (anticipation != 0) {
-        days= hours_to_days(anticipation, hours_per_day);
+      if (o.anticipation != 0) {
+        days= hours_to_days(o.anticipation, hours_per_day);
         $("#anticipation4").append(days);
       }
-      if (recuperation != 0) {
-        days= hours_to_days(recuperation, hours_per_day);
+      if (o.recuperations != 0) {
+        days= hours_to_days(o.recuperations, hours_per_day);
         $("#recup4").append(days);
       }
       if (recuperation_prev != 0) {
@@ -430,6 +358,35 @@ function hours_to_days(hours, hours_per_day) {
   days = Math.round(days * 100) / 100;
   days = days > 1 || days < -1 ? ' / ' + days + ' jours' : ' / ' + days + ' jour';
   return days;
+}
+
+function intermediateCalculationOfRemainders(o, debit, count) {
+
+  // Nothing to remove : return
+  if (o.heures == 0) {
+    return o;
+  }
+
+  var tmp = debit.split('-');
+  debit = tmp[count - 1];
+ 
+  // Debit is undefined means that it is the last possible calculation : anticipation
+  if (typeof(debit) == 'undefined') {
+    o.anticipation += o.heures;
+    o.heures = 0;
+    return o;
+  } 
+
+  // Remove hours from the selected "debit" 
+  if (o[debit] - o.heures <= 0) {
+    o.heures = o.heures - o[debit];
+    o[debit] = 0;
+  } else {
+    o[debit] = o[debit] - o.heures;
+    o.heures = 0;
+  }
+
+  return o;
 }
 
 function supprimeConges(retour){
