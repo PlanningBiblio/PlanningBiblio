@@ -21,7 +21,7 @@ Inclut à la fin le fichier footer.php
 
 use Symfony\Component\HttpFoundation\Request;
 
-include_once('init.php');
+include_once(__DIR__ . '/../init/init.php');
 include_once(__DIR__ . '/../init/init_menu.php');
 include_once(__DIR__ . '/../init/init_templates.php');
 include_once(__DIR__ . '/../init/common.php');

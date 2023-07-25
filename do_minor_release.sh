@@ -48,7 +48,6 @@ echo "Releasing from version $from to $to";
 
 vi ChangeLog.txt
 
-sed -i "s/$from/$to/g" 'public/init.php'
 sed -i "s/$from/$to/g" 'init/init.php'
 sed -i "s/$from/$to/g" 'public/router.php'
 sed -i "s/$from/$to/g" 'public/setup/db_data.php'
@@ -65,6 +64,6 @@ if [ "$(ls 'public/setup/atomicupdate/')" ]; then
     echo "Warning: public/setup/atomicupdate is not empty. Did you forgot to remove some files?";
 fi
 
-git add ChangeLog.txt public/init.php init/init.php public/router.php public/setup/db_data.php public/setup/maj.php
+git add ChangeLog.txt init/init.php public/router.php public/setup/db_data.php public/setup/maj.php
 
 git status
