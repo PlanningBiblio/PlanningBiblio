@@ -24,11 +24,9 @@ class SkillControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(5));
 
-        $client = static::createClient();
-        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
+        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
 
-        $client->request('POST', '/skill', array('nom' => 'securite', '_token' => $token));
-
+        $this->client->request('POST', '/skill', array('nom' => 'securite', '_token' => $token));
 
         $skill = $entityManager->getRepository(Skill::class)->findOneBy(array('nom' => 'securite'));
 
@@ -47,10 +45,7 @@ class SkillControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(5));
 
-        $client = static::createClient();
-
-
-        $crawler = $client->request('GET', '/skill/add');
+        $crawler = $this->client->request('GET', '/skill/add');
 
         $this->assertSelectorTextContains('h3', 'Ajout d\'une activité');
 
@@ -79,8 +74,6 @@ class SkillControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(5));
 
-        $client = static::createClient();
-
         $skill = new Skill();
         $skill->nom('security');
 
@@ -89,7 +82,7 @@ class SkillControllerTest extends PLBWebTestCase
 
         $id = $skill->id();
 
-        $crawler = $client->request('GET', "/skill/$id");
+        $crawler = $this->client->request('GET', "/skill/$id");
 
         $this->assertSelectorTextContains('h3', 'Modification de l\'activité');
 
@@ -115,10 +108,7 @@ class SkillControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Skill::class);
 
-
         $this->logInAgent($agent, array(5));
-
-        $client = static::createClient();
 
         $skill = new Skill();
         $skill->nom('security');
@@ -126,7 +116,7 @@ class SkillControllerTest extends PLBWebTestCase
         $entityManager->persist($skill);
         $entityManager->flush();
 
-        $crawler = $client->request('GET', "/skill");
+        $crawler = $this->client->request('GET', "/skill");
 
         $this->assertSelectorTextContains('h3', 'Liste des activités');
 

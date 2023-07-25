@@ -1,35 +1,10 @@
 <?php
-/**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : include/class.menu.inc
-Création : 22 juillet 2013
-Dernière modification : 22 juin 2017
-@author Jérôme Combes <jerome@planningbiblio.fr>
+namespace App\PlanningBiblio;
 
-Description :
-Fichier regroupant les fonctions permettant de construire le menu principal.
-
-Ce fichier est appelé par le fichier include/menu.php
-*/
-
-// pas de $version=acces direct au fichier => Accès refusé
-$version = $GLOBALS['version'] ?? null;
-
-if (!isset($version)) {
-    include_once "accessDenied.php";
-}
-
-class menu
+class Menu
 {
-    public $elements=array();
-
-    public function __construct()
-    {
-    }
+    public $elements = array();
 
     public function checkCondition($allConditions) {
 
@@ -63,8 +38,8 @@ class menu
 
     public function fetch()
     {
-        $menu=array();
-        $db=new db();
+        $menu = array();
+        $db = new \db();
         $db->select("menu", null, null, "ORDER BY `niveau1`,`niveau2`");
         foreach ($db->result as $elem) {
 
@@ -88,5 +63,49 @@ class menu
         }
 
         $this->elements=$menu;
+    }
+
+    public function get()
+    {
+        $this->fetch();
+        $elements = $this->elements;
+        
+        $menu_entries = array();
+        $menu_js = array();
+        
+        $keys = array_keys($elements);
+        sort($keys);
+        
+        foreach ($keys as $key) {
+            $menu_entries[] = array(
+                'key' => $key,
+                'url' => $elements[$key][0]['url'],
+                'title' => $elements[$key][0]['titre']
+                );
+        
+            $menu_js[$key] = array(
+                'key' => $key,
+                'items' => array()
+                );
+        
+            $keys2 = array_keys($elements[$key]);
+            sort($keys2);
+            unset($keys2[0]);
+        
+            $i=0;
+            foreach ($keys2 as $key2) {
+                $menu_js[$key]['items'][$i] = array(
+                    'key' => $key,
+                    'url' => $elements[$key][$key2]['url'],
+                    'title' => $elements[$key][$key2]['titre']
+                    );
+                $i++;
+            }
+        }
+
+        return array(
+            'menu_entries' => $menu_entries,
+            'menu_js' => $menu_js,
+            );
     }
 }

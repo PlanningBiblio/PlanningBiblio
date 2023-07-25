@@ -43,7 +43,6 @@ class BaseController extends AbstractController
         $this->logger = $logger;
 
         $this->permissions = $GLOBALS['droits'];
-
     }
 
     public function setNotifier(Notifier $notifier) {
@@ -119,14 +118,6 @@ class BaseController extends AbstractController
             return false;
         }
         return true;
-    }
-
-    /**
-     * @Route("/index.php", name="default", methods={"GET"})
-     */
-    protected function default_route()
-    {
-      // Named route used to redirect to old index.php
     }
 
     protected function returnError($error, $module = 'Planno', $status = 200)

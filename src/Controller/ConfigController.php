@@ -18,12 +18,15 @@ class ConfigController extends BaseController
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
-        $url = plannoBaseUrl($request);
+        $url = $this->entityManager->getRepository(ConfigParam::class)->findOneBy(
+            array('nom' => 'URL')
+        );
 
         $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
             array(),
             array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
         );
+
         $elements = array();
         foreach ($configParams as $cp) {
 
@@ -42,10 +45,6 @@ class ConfigController extends BaseController
                 'extra'       => $cp->extra(),
             );
 
-
-            if ($elem['nom'] == 'URL' ) {
-                $elem['valeur'] = $url;
-            }
             if ($cp->type() == "password") {
                 $elem['valeur']=decrypt($elem['valeur']);
             }
@@ -78,7 +77,7 @@ class ConfigController extends BaseController
                     break;
             }
             $elem['commentaires'] = str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
-            $elem['commentaires'] = str_replace("[SERVER]", $url, $elem['commentaires']);
+            $elem['commentaires'] = str_replace("[SERVER]", $url->valeur(), $elem['commentaires']);
             $category = str_replace('_', '', $elem['categorie']);
             $elements[$category][$cp->nom()] = $elem;
         }

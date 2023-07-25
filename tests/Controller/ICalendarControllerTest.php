@@ -47,97 +47,95 @@ class ICalendarControllerTest extends PLBWebTestCase
             )
         );
 
-        $client = static::createClient();
-
         $GLOBALS['config']['ICS-Code'] = 0;
 
         // ICS-Export disabled
-        $response = $client->request('GET', "/ical");
-        $content = json_decode($client->getResponse()->getContent());
-        $code = $client->getResponse()->getStatusCode();
+        $response = $this->client->request('GET', "/ical");
+        $content = json_decode($this->client->getResponse()->getContent());
+        $code = $this->client->getResponse()->getStatusCode();
         $this->assertEquals($code, '403', 'status code is 403');
         $this->assertEquals($content->{'error'}, "L'exportation ICS est désactivée", 'ICS-Export is disabled');
 
         // Agent id not provided
         $GLOBALS['config']['ICS-Export'] = 1;
-        $response = $client->request('GET', "/ical");
-        $content = json_decode($client->getResponse()->getContent());
-        $code = $client->getResponse()->getStatusCode();
+        $response = $this->client->request('GET', "/ical");
+        $content = json_decode($this->client->getResponse()->getContent());
+        $code = $this->client->getResponse()->getStatusCode();
         $this->assertEquals($code, '400', 'status code is 400');
         $this->assertEquals($content->{'error'}, "L'id de l'agent n'est pas fourni", 'Agent ID not provided');
 
         // Unknown id
-        $response = $client->request('GET', "/ical", array("id" => 42));
-        $content = json_decode($client->getResponse()->getContent());
+        $response = $this->client->request('GET', "/ical", array("id" => 42));
+        $content = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals($content->{'error'}, "id inconnu", 'Unknown agent ID');
 
         // Agent id provided
-        $client->request('GET', "/ical", array("id" => $agent->id()));
-        $content = explode("\n", $client->getResponse()->getContent());
-        $code = $client->getResponse()->getStatusCode();
+        $this->client->request('GET', "/ical", array("id" => $agent->id()));
+        $content = explode("\n", $this->client->getResponse()->getContent());
+        $code = $this->client->getResponse()->getStatusCode();
         $this->assertEquals($code, '200', 'status code is 200');
         $this->assertEquals($content[1], 'X-WR-CALNAME:Service Public Doenv J', 'ICS export matches the agent id');
 
         // Unknown login
-        $client->request('GET', "/ical", array("login" => 'unkown.login'));
-        $content = json_decode($client->getResponse()->getContent());
+        $this->client->request('GET', "/ical", array("login" => 'unkown.login'));
+        $content = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals($content->{'error'}, "Impossible de trouver l'id associé au login unkown.login", 'Unknown login');
 
         // Login provided
-        $client->request('GET', "/ical", array("login" => 'jdoenv'));
-        $content = explode("\n", $client->getResponse()->getContent());
-        $code = $client->getResponse()->getStatusCode();
+        $this->client->request('GET', "/ical", array("login" => 'jdoenv'));
+        $content = explode("\n", $this->client->getResponse()->getContent());
+        $code = $this->client->getResponse()->getStatusCode();
         $this->assertEquals($code, '200', 'status code is 200');
         $this->assertEquals($content[1], 'X-WR-CALNAME:Service Public Doenv J', 'ICS export matches the agent login');
 
         // Unknown email
-        $client->request('GET', "/ical", array("mail" => 'unkown.email@example.com'));
-        $content = json_decode($client->getResponse()->getContent());
+        $this->client->request('GET', "/ical", array("mail" => 'unkown.email@example.com'));
+        $content = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals($content->{'error'}, "Impossible de trouver l'id associé au mail unkown.email@example.com", 'Unknown email');
 
         // Email provided
-        $client->request('GET', "/ical", array("mail" => 'jdoenv@example.com'));
-        $content = explode("\n", $client->getResponse()->getContent());
-        $code = $client->getResponse()->getStatusCode();
+        $this->client->request('GET', "/ical", array("mail" => 'jdoenv@example.com'));
+        $content = explode("\n", $this->client->getResponse()->getContent());
+        $code = $this->client->getResponse()->getStatusCode();
         $this->assertEquals($code, '200', 'status code is 200');
         $this->assertEquals($content[1], 'X-WR-CALNAME:Service Public Doenv J', 'ICS export matches the agent email');
 
          // Test planning position
         $this->createPlanningPositionFor($agent);
-        $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
-        $content = explode("\n", $client->getResponse()->getContent());
+        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals($content[27], 'SUMMARY:Rangement 4', 'ICS export with planning position');
 
         // Test holiday
         $GLOBALS['config']['Conges-Enable'] = 1;
         $this->createHolidayFor($agent);
-        $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
-        $content = explode("\n", $client->getResponse()->getContent());
+        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals($content[27], 'SUMMARY:Congé Payé ICS holiday test', 'ICS export with holiday');
 
         // Test absence
         $this->createAbsenceFor($agent);
-        $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
-        $content = explode("\n", $client->getResponse()->getContent());
+        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals($content[27], 'SUMMARY:ICS absence test ', 'ICS export with absence');
 
         // With interval in URL
-        $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1, "interval" => 1));
-        $content = explode("\n", $client->getResponse()->getContent());
+        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1, "interval" => 1));
+        $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
 
         // With interval in config
         $GLOBALS['config']['ICS-Interval'] = 1;
-        $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
-        $content = explode("\n", $client->getResponse()->getContent());
+        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
         $GLOBALS['config']['ICS-Interval'] = 0;
 
         // With code
         $GLOBALS['config']['ICS-Code'] = 1;
-        $client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
-        $content = json_decode($client->getResponse()->getContent());
-        $code = $client->getResponse()->getStatusCode();
+        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $content = json_decode($this->client->getResponse()->getContent());
+        $code = $this->client->getResponse()->getStatusCode();
         $this->assertEquals($code, '401', 'status code is 401');
         $this->assertEquals($content->{'error'}, "Accès refusé", 'Access denied when code is needed but wrong or missing');
         $GLOBALS['config']['ICS-Code'] = 0;
@@ -146,8 +144,8 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->createPlanningPositionFor($deletedagent);
         $this->createHolidayFor($deletedagent);
         $this->createAbsenceFor($deletedagent);
-        $client->request('GET', "/ical", array("id" => $deletedagent->id(), "absences" => 1));
-        $content = explode("\n", $client->getResponse()->getContent());
+        $this->client->request('GET', "/ical", array("id" => $deletedagent->id(), "absences" => 1));
+        $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals(sizeof($content), 23, 'No exports for deleted agents');
     }
 
