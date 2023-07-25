@@ -122,6 +122,10 @@ class AuthorizationsController extends BaseController
                 $_SESSION['login_nom'] = $db->result[0]['nom'];
                 $_SESSION['login_prenom'] = $db->result[0]['prenom'];
 
+                // Symfony Session
+                $session = $request->getSession();
+                $session->set('loginId', $db->result[0]['id']);
+
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->update("personnel", array("last_login"=>date("Y-m-d H:i:s")), array("id"=>$_SESSION['login_id']));
@@ -149,6 +153,10 @@ class AuthorizationsController extends BaseController
     public function logout(Request $request)
     {
         session_destroy();
+
+        // Symfony Session
+        $session = $request->getSession();
+        $session->invalidate();
 
         $authArgs = null;
         if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {

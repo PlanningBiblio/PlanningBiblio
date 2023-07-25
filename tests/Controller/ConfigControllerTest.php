@@ -8,12 +8,17 @@ use Tests\FixtureBuilder;
 class ConfigControllerTest extends PLBWebTestCase
 {
     public function testAccessWithNonLoggedIn() {
-        $client = static::createClient();
+        $this->client->request('GET', '/config');
 
-        $client->request('GET', '/config');
+        $response = $this->client->getResponse()->getContent();
+        $this->assertEquals(302, $this->client->getResponse()->getStatusCode(), 'Anonymous users are redirected to the login page');
+        $this->assertMatchesRegularExpression('/refresh/', $response);
+        $this->assertMatchesRegularExpression('/content/', $response);
+        $this->assertMatchesRegularExpression('/url/', $response);
+        $this->assertMatchesRegularExpression('/login/', $response);
+        $this->assertMatchesRegularExpression('/redirURL/', $response);
+        $this->assertMatchesRegularExpression('/config/', $response);
 
-        $response = $client->getResponse()->getContent();
-        $this->assertMatchesRegularExpression('/Accès refusé/', $response);
     }
 
     public function testAccessWithAuthorizedUser() {
@@ -24,11 +29,9 @@ class ConfigControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(20));
 
-        $client = static::createClient();
+        $this->client->request('GET', '/config');
 
-        $client->request('GET', '/config');
-
-        $response = $client->getResponse()->getContent();
+        $response = $this->client->getResponse()->getContent();
         $this->assertMatchesRegularExpression(
             '/<h3>Configuration<\/h3>/',
             $response

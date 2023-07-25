@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../public/init.php');
+require_once(__DIR__ . '/../init/init.php');
 require_once(__DIR__ . '/../public/include/db.php');
 
 $tables = array (

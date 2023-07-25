@@ -14,7 +14,7 @@ Description :
 Enregistre la demande de récupération
 */
 
-include(__DIR__.'/../init_ajax.php');
+require_once(__DIR__ . '/../../init/init_ajax.php');
 include "class.conges.php";
 
 use App\Model\Agent;
