@@ -229,7 +229,7 @@ php -r "unlink('composer.phar');"
 # Run database update
 grep "\$version=\"$version\";" init/init.php
 if [[ $? != 0 ]]; then
-    php -f public/index.php
+    php -f init/init.php
 fi
 
 echo ""

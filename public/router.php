@@ -13,4 +13,4 @@
         return true;
     }
 
-    include(__DIR__ . '/index_symfony.php');
+    include(__DIR__ . '/index.php');

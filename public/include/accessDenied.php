@@ -39,7 +39,7 @@ if (empty($config)) {
 $theme=$config['Affichage-theme'];
 
 // Lien proposé pour le retour à l'application
-$link="<a href='{$path}index.php'>Retour à l'application</a>";
+$link="<a href='{$path}'>Retour à l'application</a>";
 ?>
 
 <!DOCTYPE html>
