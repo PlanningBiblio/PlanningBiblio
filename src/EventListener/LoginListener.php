@@ -16,7 +16,7 @@ class LoginListener
         $route = ltrim($route, '/');
         $session = $event->getRequest()->getSession();
 
-        if (in_array($route, ['login', 'logout', 'legal-notices'])) {
+        if (in_array($route, ['login', 'logout', 'legal-notices', 'ical'])) {
             return;
         }
 

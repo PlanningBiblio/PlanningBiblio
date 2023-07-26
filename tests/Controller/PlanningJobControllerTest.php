@@ -146,9 +146,6 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->logInAgent($kboivin, $kboivin->droits());
 
-        $client = static::createClient();
-
-
         // Create WeekPlanning
         $builder->delete(WeekPlanning::class);
 
@@ -173,9 +170,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'groupe' => 1
         ));
 
-        $crawler = $client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
+        $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
 
         $result = explode('["callback":protected]', $response);
 
@@ -267,9 +264,6 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->logInAgent($kboivin, $kboivin->droits());
 
-        $client = static::createClient();
-
-
         // Create Holiday
         $builder->delete(Holiday::class);
 
@@ -294,9 +288,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $this->createWeekPlanningFor($abreton);
         $this->createWeekPlanningFor($kboivin);
 
-        $crawler = $client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
+        $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
 
         $result = explode('["callback":protected]', $response);
 
@@ -384,8 +378,6 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->logInAgent($kboivin, $kboivin->droits());
 
-        $client = static::createClient();
-
         // Create WeekPlanning
         $builder->delete(WeekPlanning::class);
 
@@ -393,9 +385,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $this->createWeekPlanningFor($abreton);
         $this->createWeekPlanningFor($kboivin);
 
-        $crawler = $client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
+        $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
 
         $result = explode('["callback":protected]', $response);
 
@@ -483,8 +475,6 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->logInAgent($kboivin, $kboivin->droits());
 
-        $client = static::createClient();
-
         // Create WeekPlanning
         $builder->delete(WeekPlanning::class);
 
@@ -514,9 +504,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'nb_semaine' => 1
         ));
 
-        $crawler = $client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
+        $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
 
         $result = explode('["callback":protected]', $response);
 
