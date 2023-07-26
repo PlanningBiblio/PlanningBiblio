@@ -12,6 +12,7 @@ use Tests\FixtureBuilder;
 
 class AbsenceInfoControllerTest extends PLBWebTestCase
 {
+
     public function testAdd()
     {
         global $entityManager;
@@ -21,16 +22,14 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(AbsenceInfo::class);
 
-
         $this->logInAgent($agent, array(201));
 
-        $client = static::createClient();
-        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
+        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
 
         $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
         $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
 
-        $client->request('POST', '/absences/info', array('start' => '05/10/2022', 'end' => '10/10/2022', 'text' => 'salut', '_token' => $token));
+        $this->client->request('POST', '/absences/info', array('start' => '05/10/2022', 'end' => '10/10/2022', 'text' => 'salut', '_token' => $token));
 
 
         $info = $entityManager->getRepository(AbsenceInfo::class)->findOneBy(array('texte' => 'salut'));
@@ -48,13 +47,9 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
 
-
         $this->logInAgent($agent, array(201));
 
-        $client = static::createClient();
-
-
-        $crawler = $client->request('GET', '/absences/info/add');
+        $crawler = $this->client->request('GET', '/absences/info/add');
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
 
@@ -92,10 +87,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(AbsenceInfo::class);
 
-
         $this->logInAgent($agent, array(201));
-
-        $client = static::createClient();
 
         $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
         $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
@@ -110,7 +102,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $id = $info->id();
 
-        $crawler = $client->request('GET', "/absences/info/$id");
+        $crawler = $this->client->request('GET', "/absences/info/$id");
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
 
@@ -151,8 +143,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $builder->delete(AbsenceInfo::class);
         $this->logInAgent($agent, array(201));
 
-        $client = static::createClient();
-        $crawler = $client->request('GET', "/absences/info");
+        $crawler = $this->client->request('GET', "/absences/info");
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
 
@@ -173,7 +164,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $entityManager->flush();
 
 
-        $crawler = $client->request('GET', "/absences/info");
+        $crawler = $this->client->request('GET', "/absences/info");
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
 

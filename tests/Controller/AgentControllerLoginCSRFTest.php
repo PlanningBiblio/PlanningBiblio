@@ -54,11 +54,9 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,99,21,401,601));
 
-        $client = static::createClient();
+        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('');
 
-        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('');
-
-        $crawler = $client->request('POST', '/ajax/update_agent_login', array(
+        $crawler = $this->client->request('POST', '/ajax/update_agent_login', array(
             'id' => $agent->id(),
             'login' => 'login_2',
         ));
@@ -84,11 +82,9 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,99,21,401,601));
 
-        $client = static::createClient();
+        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('');
 
-        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('');
-
-        $crawler = $client->request('POST', '/ajax/update_agent_login', array(
+        $crawler = $this->client->request('POST', '/ajax/update_agent_login', array(
             'id' => $agent->id(),
             'login' => 'login_2',
             '_token' => $token,

@@ -18,8 +18,6 @@ class CalendarControllerTest extends PLBWebTestCase
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
-
-        $client = static::createClient();
         $GLOBALS['config']['PlanningHebdo'] = 0;
 
         $agent2 = $builder->build(
@@ -46,7 +44,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $GLOBALS['config']['Multisites-site2'] = 'Site N°2';
         $GLOBALS['config']['Multisites-site3'] = 'Site N°3';
         $GLOBALS['config']['Multisites-site4'] = 'Site N°4';
-        $crawler = $client->request('GET', "/calendar", array(
+        $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
             'perso_id' => $agent2->id(),
@@ -71,8 +69,6 @@ class CalendarControllerTest extends PLBWebTestCase
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'actif' => 'Actif'));
         $this->logInAgent($agent, array(3, 100));
-
-        $client = static::createClient();
 
         $GLOBALS['config']['PlanningHebdo'] = 1;
 
@@ -100,9 +96,7 @@ class CalendarControllerTest extends PLBWebTestCase
             )
         );
 
-
-        $client = static::createClient();
-        $crawler = $client->request('GET', "/calendar", array(
+        $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
             'perso_id' => $agent->id(),
@@ -128,8 +122,6 @@ class CalendarControllerTest extends PLBWebTestCase
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
-
-        $client = static::createClient();
 
         $GLOBALS['config']['PlanningHebdo'] = 0;
         $GLOBALS['config']['Absences-validation'] = 1;
@@ -158,7 +150,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $validation = \DateTime::createFromFormat("d/m/Y H:i:s", '28/09/2022 08:00:00');
         $off = $builder->build(Absence::class, array('debut' => $start, 'motif' => 'malade', 'fin' => $end, 'perso_id' => $agent2->id(), 'validation' => $validation, 'valide' => 1, 'supprime' => 0, 'groupe' => '1'));
 
-        $crawler = $client->request('GET', "/calendar", array(
+        $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
             'perso_id' => $agent2->id(),
@@ -185,8 +177,6 @@ class CalendarControllerTest extends PLBWebTestCase
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
-        $client = static::createClient();
-
         $GLOBALS['config']['PlanningHebdo'] = 0;
 
         $agent2 = $builder->build(
@@ -207,7 +197,7 @@ class CalendarControllerTest extends PLBWebTestCase
         );
 
         $this->logInAgent($agent2, array(3,100));
-        $crawler = $client->request('GET', "/calendar", array(
+        $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
             'perso_id' => $agent2->id(),
@@ -236,9 +226,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'actif' => 'Actif'));
         $this->logInAgent($agent, array(3, 100));
 
-
-        $client = static::createClient();
-        $crawler = $client->request('GET', "/calendar", array(
+        $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '27/09/2022',
             'perso_id' => $agent->id(),
@@ -255,8 +243,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Jeudi', $result->text(null, false), 'Jeudi');
         $this->assertStringContainsString('Vendredi', $result->text(null, false), 'Vendredi');
 
-        $client = static::createClient();
-        $crawler = $client->request('GET', "/calendar", array(
+        $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
             'perso_id' => $agent->id(),
@@ -281,9 +268,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'actif' => 'Inactif', 'supprime' => 1));
         $this->logInAgent($agent, array(3, 100));
 
-
-        $client = static::createClient();
-        $crawler = $client->request('GET', "/calendar", array(
+        $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
             'perso_id' => $agent->id(),
