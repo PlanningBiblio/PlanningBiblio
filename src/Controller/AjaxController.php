@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Model\AbsenceReason;
 use App\Model\Agent;
+use App\PlanningBiblio\Helper\AbsenceBlockHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -297,6 +298,11 @@ class AjaxController extends BaseController
           ->getValidationLevelFor($_SESSION['login_id']);
 
       $result['admin'] = ($adminN1 or $adminN2);
+
+      if ($this->config('Absences-blocage') == 1) {
+          $absenceBlockHelper = new AbsenceBlockHelper();
+          $result['has_block'] = $absenceBlockHelper->hasBlock($debut, $fin);
+      }
 
       $result = json_encode($result);
 

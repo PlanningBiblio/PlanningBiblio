@@ -1034,6 +1034,17 @@ function verif_absences(ctrl_form){
         }
       }
 
+      if (result['has_block'] >= 1 && retour == true) {
+        if (admin == true) {
+          if (!confirm("Vous essayer de placer une absence sur une période bloquée.\nVoulez-vous continuer ?")){
+            retour = false;
+          }
+        } else {
+          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car elles rentrent en conflit avec une période bloquée.", "error");
+          retour = false;
+        }
+      }
+
       // Contrôle si les agents apparaissent dans des plannings validés
       // Pour chaque agent
       if (retour == true) {

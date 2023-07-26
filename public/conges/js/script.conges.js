@@ -560,6 +560,17 @@ function verifConges(){
         }
       }
 
+      if (result['has_block'] >= 1 && valid == true) {
+        if (admin == true) {
+          if (!confirm("Vous essayer de placer un congé sur une période bloquée.\nVoulez-vous continuer ?")){
+            valid = false;
+          }
+        } else {
+          CJInfo("Vous ne pouvez pas enregistrer de congés pour les dates suivantes car elles rentrent en conflit avec une période bloquée.", "error");
+          valid = false;
+        }
+      }
+
       // Contrôle si les agents apparaissent dans des plannings validés
       // Pour chaque agent
       if (valid == true) {
