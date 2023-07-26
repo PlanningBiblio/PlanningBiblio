@@ -154,6 +154,10 @@ class AuthorizationsController extends BaseController
     {
         session_destroy();
 
+        // Symfony Session
+        $session = $request->getSession();
+        $session->invalidate();
+
         $authArgs = null;
         if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {
             $authArgs = $_SESSION['oups']['Auth-Mode'] == 'CAS' ? null: '?noCAS';

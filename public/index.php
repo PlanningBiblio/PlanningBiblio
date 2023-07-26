@@ -21,15 +21,9 @@ include_once(__DIR__.'/../init/init.php');
 include_once(__DIR__.'/../init/init_menu.php');
 include_once(__DIR__.'/../init/init_templates.php');
 
+// TODO : move this to src/EventListener/CronListener.php
 if (!empty($_SESSION['login_id'])) {
     require_once(__DIR__.'/include/cron.php');
-}
-
-// TODO : move this to src/EventListener/LogoutListener.php
-// Prevent user accessing to login page if he is already authenticated.
-if (!empty($_SESSION['login_id']) && $path == '/login') {
-    header("Location: {$config['URL']}");
-    exit();
 }
 /**
  * End of Planno additions
