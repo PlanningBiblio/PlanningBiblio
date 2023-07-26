@@ -37,7 +37,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                 $nom_affiche=$elem['nom'];
                 $title = $elem['nom'];
                 if ($elem['prenom']) {
-                    $nom_affiche.=" ".substr($elem['prenom'], 0, 1).".";
+                    $nom_affiche.=" ".mb_substr($elem['prenom'], 0, 1).".";
                     $title .= ' ' . $elem['prenom'];
                 }
 
