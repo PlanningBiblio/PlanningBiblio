@@ -20,16 +20,10 @@ if ($_SERVER['APP_DEBUG']) {
 include_once(__DIR__.'/../init/init.php');
 include_once(__DIR__.'/../init/init_menu.php');
 include_once(__DIR__.'/../init/init_templates.php');
-include_once(__DIR__ . '/../init/common.php');
 
 if (!empty($_SESSION['login_id'])) {
     require_once(__DIR__.'/include/cron.php');
 }
-
-// TODO : move this to src/EventListener/UrlListener.php
-$request = Request::createFromGlobals();
-$path = $request->getPathInfo();
-$base_url = plannoBaseUrl($request);
 
 // TODO : move this to src/EventListener/LogoutListener.php
 // Prevent user accessing to login page if he is already authenticated.

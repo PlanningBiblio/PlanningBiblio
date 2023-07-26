@@ -32,6 +32,10 @@ services:
         calls:
             - setNotifier: ['@notifier']
 
+    App\EventListener\UrlListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 120 }
+
     App\EventListener\LoginListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request, priority: 100 }

@@ -9,9 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
-class LoginListener
+class UrlListener
 {
-
     public function __construct(EntityManagerInterface $em)
     {
         $this->entityManager = $em;
@@ -19,21 +18,21 @@ class LoginListener
 
     public function onKernelRequest(GetResponseEvent $event)
     {
-        $url = $this->entityManager
+        $config = $this->entityManager
             ->getRepository(ConfigParam::class)
             ->findOneBy(array('nom' => 'URL'));
 
-        $route = $event->getRequest()->getPathInfo();
-        $route = ltrim($route, '/');
-        $session = $event->getRequest()->getSession();
+        $request = $event->getRequest();
 
-        if (in_array($route, ['login', 'logout', 'legal-notices', 'ical'])) {
-            return;
-        }
+        $request::setTrustedProxies(
+            array($request->server->get('REMOTE_ADDR')),
+            Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
 
-        if (empty($session->get('loginId'))) {
-            $redirect = !empty($route) ? "?redirURL=$route" : null;
-            $event->setResponse(new RedirectResponse($url->valeur() . '/login' . $redirect));
+        $url = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
+
+        if ($config->valeur() != $url) {
+            $config->valeur($url);
+            $this->entityManager->flush();
         }
     }
 }
