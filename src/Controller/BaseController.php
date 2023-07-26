@@ -6,6 +6,7 @@ use App\PlanningBiblio\Notifier;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,7 +22,7 @@ class BaseController extends AbstractController
 
     private $config = array();
 
-    private $logger;
+    protected $logger;
 
     protected $notifier;
 
@@ -126,6 +127,16 @@ class BaseController extends AbstractController
     protected function default_route()
     {
       // Named route used to redirect to old index.php
+    }
+
+    protected function returnError($error, $module = 'Planno', $status = 200)
+    {
+        $this->logger->error($module . ':' . $error);
+        $response = new Response();
+        $response->setContent(json_encode(array('error' => $error)));
+        $response->setStatusCode($status);
+        $response->headers->set('Content-Type', 'application/json; charset=utf-8');
+        return $response;
     }
 
 }

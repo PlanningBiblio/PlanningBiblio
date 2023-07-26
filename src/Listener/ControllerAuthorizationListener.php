@@ -44,7 +44,7 @@ class ControllerAuthorizationListener
         $page = rtrim($page, '/add');
         $page = rtrim($page, '/');
 
-        if (in_array($page, ['/login', '/logout', '/legal-notices'])) {
+        if (in_array($page, ['/login', '/logout', '/legal-notices', '/ical'])) {
             return;
         }
 
