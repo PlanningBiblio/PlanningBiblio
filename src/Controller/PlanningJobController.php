@@ -77,9 +77,6 @@ class PlanningJobController extends BaseController
         }
 
         // Check logged-in rights.
-        $url = explode("?", $_SERVER['REQUEST_URI']);
-        $url = $url[0];
-
         if (!$this->canManagePlanning($site)) {
             return $this->json('forbiden');
         }
@@ -417,8 +414,8 @@ class PlanningJobController extends BaseController
                 if ($this->config('Multisites-nombre') > 1) {
                     // index 4 is the site on which
                     // agent is working on.
-                    $site_agent = !empty($temps[$jour][4]) ? $temps[$jour][4] : null;
 
+                    $site_agent = !empty($temps[$jour][4]) ? $temps[$jour][4] : null;
                     // If agent has not site and
                     // he is not excluded for other 
                     // reason, so exclude it.
@@ -551,7 +548,6 @@ class PlanningJobController extends BaseController
                         } else {
                             $motifExclusion[$elem['id']][]="wrong_cat";
                         }
-
                     }
                 }
             }
@@ -559,7 +555,6 @@ class PlanningJobController extends BaseController
 
         // $agents_tous == All availables agents.
         $agents_tous = $agents_dispo;
-
 
         // Looking for unavailables agents.
         foreach ($agents_dispo as $elem) {
