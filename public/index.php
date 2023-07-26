@@ -26,20 +26,12 @@ if (!empty($_SESSION['login_id'])) {
     require_once(__DIR__.'/include/cron.php');
 }
 
+// TODO : move this to src/EventListener/UrlListener.php
 $request = Request::createFromGlobals();
 $path = $request->getPathInfo();
 $base_url = plannoBaseUrl($request);
 
-// Session has expired. Redirect to authentication page.
-if (empty($_SESSION['login_id']) && !in_array($path, ['/login', '/logout', '/legal-notices'])) {
-
-    $redirect = ltrim($path, '/');
-    $redirect = !empty($redirect) ? "?redirURL=$redirect" : null;
-
-    header("Location: $base_url/login{$redirect}");
-    exit();
-}
-
+// TODO : move this to src/EventListener/LogoutListener.php
 // Prevent user accessing to login page if he is already authenticated.
 if (!empty($_SESSION['login_id']) && $path == '/login') {
     header("Location: {$config['URL']}");
