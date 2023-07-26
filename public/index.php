@@ -24,19 +24,19 @@ if ($_SERVER['APP_DEBUG']) {
 
 $request = Request::createFromGlobals();
 $path = $request->getPathInfo();
-global $base_url;
 $base_url = plannoBaseUrl($request);
 
 // Session has expired. Redirect to authentication page.
 if (empty($_SESSION['login_id']) && !in_array($path, ['/login', '/logout', '/legal-notices'])) {
 
     $redirect = ltrim($path, '/');
-    header("Location: $base_url/login?redirURL=$redirect");
+    $redirect = !empty($redirect) ? "?redirURL=$redirect" : null;
+
+    header("Location: $base_url/login{$redirect}");
     exit();
 }
 
-// Prevent user accessing to login page
-// if he is already authenticated.
+// Prevent user accessing to login page if he is already authenticated.
 if (!empty($_SESSION['login_id']) && $path == '/login') {
     header("Location: {$config['URL']}");
     exit();
