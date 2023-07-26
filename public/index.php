@@ -18,7 +18,6 @@ if ($_SERVER['APP_DEBUG']) {
  * TODO : includes and init files should be deleted
  */
 include_once(__DIR__.'/../init/init.php');
-include_once(__DIR__.'/../init/init_menu.php');
 include_once(__DIR__.'/../init/init_templates.php');
 
 // TODO : move this to src/EventListener/CronListener.php
