@@ -32,7 +32,7 @@ services:
         calls:
             - setNotifier: ['@notifier']
 
-    App\Listener\ControllerAuthorizationListener:
+    App\EventListener\ControllerAuthorizationListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 

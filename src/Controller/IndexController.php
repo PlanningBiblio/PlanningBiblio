@@ -36,7 +36,7 @@ class IndexController extends BaseController
     private $dbprefix;
 
     /**
-     * @Route("/", methods={"GET"})
+     * @Route("/", name="home", methods={"GET"})
      * @Route("/index", name="index", methods={"GET"})
      */
     public function index(Request $request)
