@@ -49,7 +49,6 @@ if ($dbconn) {
 }
 
 include_once(__DIR__ . '/../init/init.php');
-include_once(__DIR__.'/../init/init_menu.php');
 include_once(__DIR__.'/../init/init_templates.php');
 
 $entitiesPath = array('src/Model');
