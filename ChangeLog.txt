@@ -1,3 +1,7 @@
+*** Version 22.10.11       (2023-07-26)    ***
+- Fixes
+MT41411: Use utf8-aware function mb_substr (instead of substr) in plannings #934
+
 *** Version 22.10.10       (2023-06-29)    ***
 - Fixes
 MT41151: Allow /holiday/accounts to be displayed in days #930
