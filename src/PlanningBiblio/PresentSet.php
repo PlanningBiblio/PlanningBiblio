@@ -32,15 +32,14 @@ class PresentSet
 
         // if module PlanningHebdo: search related plannings.
         if ($config['PlanningHebdo']) {
-            include "planningHebdo/planning.php";
+            require_once(__DIR__ . '/../../public/planningHebdo/planning.php');
         }
 
         $presents = array();
         foreach ($this->db->result as $elem) {
             $heures = null;
-            $week_number = 0;
-
             $temps = array();
+            $week_number = 0;
 
             if ($config['PlanningHebdo']) {
                 if (array_key_exists($elem['id'], $tempsPlanningHebdo)) {
@@ -74,7 +73,6 @@ class PresentSet
                     }
                 }
                 $siteAgent=$siteAgent?$siteAgent.", ":null;
-
 
                 $horaires=null;
                 if (!$heures[1] and !$heures[2]) {		// Pas de pause le midi
