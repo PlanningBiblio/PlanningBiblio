@@ -25,7 +25,7 @@ $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_
 $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSION['oups']['Auth-Mode'] : '';
 
 // Version
-$version="23.05.00.003"; // xx.xx.xx.xxx
+$version="23.05.00.004"; // xx.xx.xx.xxx
 $displayed_version = preg_replace('/(\d*\.\d*\.\d*).*/','\1', $version);
 
 require_once __DIR__.'/../vendor/autoload.php';

@@ -1,3 +1,16 @@
+*** Version 23.05.00.004   (2023-07-26)    ***
+- Enhancements
+MT41027: Add absence block #932
+
+- Fixes
+MT41411: Use utf8-aware function mb_substr (instead of substr) in plannings #934
+
+- Plumbing
+MT41498: ICS export symfonization #935
+Added unit tests for context menu #845
+Add unit tests for PresentSet class #841
+Unit test model AbsenceDocument #840
+
 *** Version 23.05.00.003   (2023-06-29)    ***
 - Fixes
 MT41151: Allow /holiday/accounts to be displayed in days #930
