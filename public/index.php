@@ -14,16 +14,10 @@ if ($_SERVER['APP_DEBUG']) {
 
 /**
  * Start of Planno additions
- * TODO : All these checks must be done in listeners
  * TODO : includes and init files should be deleted
  */
 include_once(__DIR__.'/../init/init.php');
 include_once(__DIR__.'/../init/init_templates.php');
-
-// TODO : move this to src/EventListener/CronListener.php
-if (!empty($_SESSION['login_id'])) {
-    require_once(__DIR__.'/include/cron.php');
-}
 /**
  * End of Planno additions
  */

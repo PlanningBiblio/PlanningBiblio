@@ -32,14 +32,23 @@ services:
         calls:
             - setNotifier: ['@notifier']
 
+    # The URL Listener defines the requested URL in the config table
     App\EventListener\UrlListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request, priority: 120 }
 
+    # The Login Listener redirects the user to the login page if his session is not open
+    # It also redirects the user to the home page if he tries to access the login page while his session is open
     App\EventListener\LoginListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request, priority: 100 }
 
+    # The Cron Listener checks if cron jobs are pending execution and launches them
+    App\EventListener\CronListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 80 }
+
+    # The Authorization Listener checks the user's rights and redirects him to the access denied page if the rights do not match
     App\EventListener\ControllerAuthorizationListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
