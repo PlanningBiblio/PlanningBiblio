@@ -41,7 +41,6 @@ class PLBWebTestCase extends PantherTestCase
     {
         $this->client = static::createPantherClient(
             array(
-                'router' => 'router.php',
                 '--no-sandbox',
                 '--disable-dev-shm-usage',
                 '--headless'
