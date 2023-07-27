@@ -227,6 +227,7 @@ class AbsenceController extends BaseController
             'agents_multiples'      => $this->agents_multiples,
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'fullday_checked'       => $this->config('Absences-journeeEntiere'),
+            'hideAlertOnRecurringAbsences' => $this->preference('hideAlertOnRecurringAbsences'),
             'loggedin_id'           => $_SESSION['login_id'],
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],

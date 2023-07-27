@@ -211,6 +211,8 @@
     - 301
 "model.form":
     - 100
+"preferences.index":
+    - 100
 "planning.delete":
     - 100
 "planning.week":

@@ -241,7 +241,8 @@ $(function() {
     if($("#recurrence-checkbox").prop('checked')){
       if (
         $('input[name="fin"]').val() != '' &&
-        $('input[name="fin"]').val() != $('input[name="debut"]').val()
+        $('input[name="fin"]').val() != $('input[name="debut"]').val() &&
+        $('#hideAlertOnRecurringAbsences').val() != 1
       ) {
         $("#recurrence-enddate-alert").dialog("open");
       } else {
@@ -260,7 +261,8 @@ $(function() {
     if (
       $("#recurrence-checkbox").prop('checked') &&
       $('input[name="fin"]').val() != '' &&
-      $('input[name="fin"]').val() != $('input[name="debut"]').val()
+      $('input[name="fin"]').val() != $('input[name="debut"]').val() &&
+      $('#hideAlertOnRecurringAbsences').val() != 1
     ) {
       $("#recurrence-enddate-alert").dialog("open");
     }
@@ -386,7 +388,7 @@ $(function() {
 
   $("#recurrence-enddate-alert").dialog({
     autoOpen: false,
-    height: 200,
+    height: 250,
     width: 650,
     modal: true,
     buttons: {
@@ -403,6 +405,16 @@ $(function() {
         $('#recurrence-info').show();
       } else {
         $("#recurrence-form").dialog( "open" );
+      }
+      if ($('#hideAlertOnRecurringAbsencesCheckbox').is(':checked')) {
+        $.ajax({
+          url: url('preferences'),
+          data: { perso_id: $('#login_id').val(), pref: 'hideAlertOnRecurringAbsences', _token: $('#_token').val() },
+          method: 'POST',
+          error: function(xhr, ajaxOptions, thrownError) {
+            console.log("Error saving user preference hideAlertOnRecurringAbsences");
+          }
+        });
       }
     }
   });

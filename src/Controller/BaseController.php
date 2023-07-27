@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\PlanningBiblio\Notifier;
+use App\Model\UserPreference;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +44,6 @@ class BaseController extends AbstractController
         $this->logger = $logger;
 
         $this->permissions = $GLOBALS['droits'];
-
     }
 
     public function setNotifier(Notifier $notifier) {
@@ -109,6 +109,21 @@ class BaseController extends AbstractController
         }
 
         return $this->config[$key];
+    }
+
+    protected function preference($key) {
+
+        if (!isset($key)) {
+            return null;
+        }
+
+        $preference = $this->entityManager->getRepository(UserPreference::class)->findOneBy(array('perso_id' => $_SESSION['login_id'], 'pref' => $key));
+
+        if (!$preference) {
+            return null;
+        }
+
+        return $preference->value();
     }
 
     protected function csrf_protection(Request $request)
