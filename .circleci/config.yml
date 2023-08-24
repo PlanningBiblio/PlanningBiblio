@@ -34,8 +34,16 @@ jobs:
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
       - run: sudo -E install-php-extensions zip mysqli pdo_mysql
       - run: sudo apt install -y google-chrome-stable
+      # MT41778: Install and remove to get dependencies
+      - run: sudo apt remove -y google-chrome-stable
       - run: sudo apt install -y mariadb-client
       - run: sudo pecl install xdebug
+
+      # MT41778 : Download Google Chrome from an archive to be sure to have version v114
+      - run: wget -O /tmp/googlechrome.zip https://github.com/PlanningBiblio/googlechrome/archive/refs/heads/v114.zip
+      - run: unzip -o /tmp/googlechrome.zip
+      - run: sudo dpkg -i googlechrome-114/google-chrome-stable_current_amd64.deb
+      - run: rm -rf googlechrome-114
 
       # Chrome driver.
       - run: wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
