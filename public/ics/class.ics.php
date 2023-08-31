@@ -209,7 +209,7 @@ class CJICS
         // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
         try {
             $ical   = new ICal($src);
-            $events = $ical->cal['VEVENT'];
+            $events = !empty($ical->cal['VEVENT']) ? $ical->cal['VEVENT'] : array();
         } catch(Exception $e) {
             if ($this->logs) {
                 $error = $e->getMessage();
