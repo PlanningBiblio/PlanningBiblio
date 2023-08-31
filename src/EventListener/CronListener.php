@@ -3,12 +3,12 @@
 namespace App\EventListener;
 
 use App\Cron\Crontab;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class CronListener
 {
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
 
         $session = $event->getRequest()->getSession();
