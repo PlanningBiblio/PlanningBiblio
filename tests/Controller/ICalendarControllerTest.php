@@ -30,6 +30,8 @@ class ICalendarControllerTest extends PLBWebTestCase
 
     public function testICalendar()
     {
+        $_SESSION['login_id'] = 1;
+
         $this->builder->delete(Agent::class);
 
         $_SERVER['SERVER_NAME'] = 'planno.local';
@@ -192,6 +194,8 @@ class ICalendarControllerTest extends PLBWebTestCase
 
     private function createHolidayFor($agent)
     {
+        $_SESSION['login_id'] = 1;
+
         $date = new DateTime('now - 3 day');
 
         $data = array(

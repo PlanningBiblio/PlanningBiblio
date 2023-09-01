@@ -43,6 +43,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
     public function testList()
     {
+        $_SESSION['login_id'] = 1;
 
         $this->setParam('Absences-notifications-agent-par-agent', 0);
         $this->setParam('Multisites-nombre', 1);
@@ -217,6 +218,8 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
     private function createAbsenceFor($agent, $status = 0)
     {
+        $_SESSION['login_id'] = 1;
+
         $date = new DateTime('now + 3 day');
 
         $absence = new \absences();

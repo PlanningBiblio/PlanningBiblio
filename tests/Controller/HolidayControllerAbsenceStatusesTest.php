@@ -42,6 +42,8 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN2AbsenceRightN1AndN2()
     {
+        $_SESSION['login_id'] = 1;
+
         $this->setParam('Conges-Validation-N2', 0);
 
         $client = static::createClient();
@@ -70,6 +72,8 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
 
     private function createHolidayFor($agent)
     {
+        $_SESSION['login_id'] = 1;
+
         $date = new DateTime('now + 3 day');
 
         $data = array(

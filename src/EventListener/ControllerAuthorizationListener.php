@@ -3,7 +3,7 @@
 namespace App\EventListener;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Doctrine\Common\Annotations\Reader;
@@ -37,7 +37,7 @@ class ControllerAuthorizationListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         $page = $event->getRequest()->getPathInfo();
         $page = preg_replace('/([a-z-\/]*).*/', "$1", $page);
@@ -54,7 +54,7 @@ class ControllerAuthorizationListener
 
         $route = $event->getRequest()->attributes->get('_route');
 
-        if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
+        if (!empty($_SESSION['oups']['Auth-Mode']) and $_SESSION['oups']['Auth-Mode'] == 'Anonyme' ) {
             if (in_array($page, $this->anonymous_pages)) {
                 return;
             }
