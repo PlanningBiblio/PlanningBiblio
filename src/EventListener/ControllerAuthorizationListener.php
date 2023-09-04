@@ -116,8 +116,8 @@ class ControllerAuthorizationListener
         return false;
     }
 
-    private function triggerAccessDenied(GetResponseEvent $event){
-
+    private function triggerAccessDenied(RequestEvent $event)
+    {
         $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
 
         $response = new Response();
