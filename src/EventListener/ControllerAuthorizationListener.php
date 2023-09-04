@@ -3,11 +3,11 @@
 namespace App\EventListener;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Yaml\Yaml;
 
 use App\Model\Agent;
@@ -116,7 +116,7 @@ class ControllerAuthorizationListener
         return false;
     }
 
-    private function triggerAccessDenied(GetResponseEvent $event){
+    private function triggerAccessDenied(RequestEvent $event){
 
         $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
 

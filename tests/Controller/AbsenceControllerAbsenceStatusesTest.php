@@ -595,9 +595,6 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     private function createAbsenceFor($agent, $status = 0)
     {
-        // Function absence->add has not access to session.
-        $_SESSION['login_id'] = 1;
-
         $date = new DateTime('now + 3 day');
 
         $absence = new \absences();

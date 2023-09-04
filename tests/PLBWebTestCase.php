@@ -16,6 +16,8 @@ class PLBWebTestCase extends PantherTestCase
     protected function setUp(): void
     {
         $this->client = static::createClient();
+        $_SESSION['oups']['Auth-Mode'] = 'SQL';
+        $_SESSION['login_id'] = 1;
     }
 
     protected function logInAgent($agent, $rights = array(99, 100)) {
