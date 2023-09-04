@@ -54,7 +54,7 @@ class ControllerAuthorizationListener
 
         $route = $event->getRequest()->attributes->get('_route');
 
-        if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
+        if (array_key_exists("Auth-Mode", $_SESSION['oups']) && $_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
             if (in_array($page, $this->anonymous_pages)) {
                 return;
             }
