@@ -283,12 +283,22 @@ class CJICS
             } elseif ($elem['STATUS']=="CONFIRMED") {
                 // Check if it is an invitation from someone else (or including attendees)
                 // And check if the owner of this calendar accepted it
-                if (!empty($elem['ATTENDEE'])) {
-                    $attendees = explode('CUTYPE=', $elem['ATTENDEE']);
-                    foreach ($attendees as $attendee) {
-                        if (!empty($attendee) and strpos($attendee, $email)) {
-                            if (strpos($attendee, 'PARTSTAT=ACCEPTED')) {
+
+                if (!empty($elem['ATTENDEE_array'])) {
+
+                    foreach ($elem['ATTENDEE_array'] as $key => $value) {
+
+                        if (!empty($value)
+                            and is_string($value)
+                            and strpos($value, $email)) {
+
+                            $attendee_agent = $elem['ATTENDEE_array'][$key - 1] ?? array();
+
+                            if (!empty($attendee_agent['PARTSTAT'])
+                                and $attendee_agent['PARTSTAT'] == 'ACCEPTED') {
+
                                 $add = true;
+                                break;
                             }
                         }
                     }
