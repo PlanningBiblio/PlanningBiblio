@@ -35,7 +35,6 @@
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpmailer/phpmailer": "^6.8.0",
         "phpstan/phpdoc-parser": "^1.2",
-        "sensio/framework-extra-bundle": "^5.2",
         "symfony/asset": "^5.4",
         "symfony/config": "^5.4",
         "symfony/console": "^5.4",
@@ -66,7 +65,6 @@
     },
     "require-dev": {
         "dbrekelmans/bdi": "^1.0",
-        "friendsofphp/php-cs-fixer": "^2.13",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "^5.4",
         "symfony/css-selector": "^5.4",
