@@ -47,7 +47,7 @@
         "symfony/http-foundation": "^5.4",
         "symfony/lock": "^5.4",
         "symfony/monolog-bundle": "*",
-        "symfony/panther": "^1.1",
+        "symfony/panther": "^2.1",
         "symfony/process": "^5.4",
         "symfony/property-access": "^5.4",
         "symfony/property-info": "^5.4",
@@ -65,7 +65,6 @@
         "twig/markdown-extra": "^3.4"
     },
     "require-dev": {
-        "php-webdriver/webdriver": "^1.13.1",
         "dbrekelmans/bdi": "^1.0",
         "friendsofphp/php-cs-fixer": "^2.13",
         "phpunit/phpunit": "^9.5",
