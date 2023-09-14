@@ -17,7 +17,10 @@ class AppExtension extends AbstractExtension
 
     private $blacklistedTags = ['script'];
 
-   public function getFilters()
+    /**
+     * @return array
+    */
+    public function getFilters()
     {
         return [
             new TwigFilter('datefull', [$this, 'dateFull'], ['is_safe' => ['html']]),
@@ -29,6 +32,9 @@ class AppExtension extends AbstractExtension
         ];
     }
 
+    /**
+    * @return array
+    */
     public function getFunctions()
     {
         return [

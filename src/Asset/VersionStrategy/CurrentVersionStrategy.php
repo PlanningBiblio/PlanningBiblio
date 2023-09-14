@@ -13,11 +13,17 @@ class CurrentVersionStrategy implements VersionStrategyInterface
         $this->version = $GLOBALS['version'];
     }
 
+    /**
+     * @return string
+     */
     public function getVersion($path)
     {
         return $this->version;
     }
 
+    /**
+     * @return string
+     */
     public function applyVersion($path)
     {
         if (substr($path, 0, 3) == 'js/'
