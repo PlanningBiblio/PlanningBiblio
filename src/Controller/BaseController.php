@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Model\ConfigParam;
 use App\PlanningBiblio\Notifier;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,11 +39,16 @@ class BaseController extends AbstractController
 
         $this->dispatcher = $GLOBALS['dispatcher'];
 
-        $this->config = $GLOBALS['config'];
-
         $this->logger = $logger;
 
         $this->permissions = $GLOBALS['droits'];
+
+        $url = $this->entityManager->getRepository(ConfigParam::class)->findOneBy(
+            array('nom' => 'URL')
+        );
+
+        $GLOBALS['config']['URL'] = $url->valeur();
+        $this->config = $GLOBALS['config'];
     }
 
     public function setNotifier(Notifier $notifier) {
