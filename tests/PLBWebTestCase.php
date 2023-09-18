@@ -62,6 +62,7 @@ class PLBWebTestCase extends PantherTestCase
 
         $crawler = $this->client->request('GET', '/login');
 
+        $this->client->waitForVisibility('html');
         $form = $crawler->selectButton('Valider')->form();
         $form['login'] = $agent->login();
         $form['password'] = 'MyPass';
@@ -73,9 +74,15 @@ class PLBWebTestCase extends PantherTestCase
 
     protected function logout()
     {
-        $this->client->waitForVisibility('html');
-        $this->client->request('GET', '/logout');
-        $this->client->waitForVisibility('html');
+    //    $this->client->request('GET', '/logout');
+        if (session_status() == PHP_SESSION_ACTIVE) {
+            session_destroy();
+    
+            // Symfony Session
+            $session = $request->getSession();
+            $session->invalidate();
+        }
+
     }
 
 
