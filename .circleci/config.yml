@@ -37,7 +37,7 @@ jobs:
       # MT41778: Install and remove to get dependencies
       - run: sudo apt remove -y google-chrome-stable
       - run: sudo apt install -y mariadb-client
-      - run: sudo pecl install xdebug
+#      - run: sudo pecl install xdebug
 
       # MT41778 : Download Google Chrome from an archive to be sure to have version v114
       - run: wget -O /tmp/googlechrome.zip https://github.com/PlanningBiblio/googlechrome/archive/refs/heads/v114.zip
@@ -71,7 +71,7 @@ jobs:
 
       # run tests with phpunit or codecept
 #      - run: echo 'xdebug.mode=coverage' | sudo tee -a /etc/php.d/circleci.ini
-      - run: ./vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/Controller/AgentControllerListTest.php
+      - run: ./vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/
 #      - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
 #      - run: bash <(curl -s https://codecov.io/bash)
 
