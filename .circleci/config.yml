@@ -18,6 +18,8 @@ executors:
           MYSQL_USER: plb
           MYSQL_PASSWORD: plb
 
+    working_directory: /mnt/ramdisk
+
 jobs:
   install-and-test:
     parameters:
