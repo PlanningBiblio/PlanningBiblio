@@ -73,7 +73,9 @@ class PLBWebTestCase extends PantherTestCase
 
     protected function logout()
     {
+        $this->client->waitForVisibility('html');
         $this->client->request('GET', '/logout');
+        $this->client->waitForVisibility('html');
     }
 
 
