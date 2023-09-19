@@ -1130,7 +1130,8 @@ class StatisticController extends BaseController
                                         }
                         
                                         if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $heures_tab[$tmp[0].'-'.$tmp[1]][] = $elem['date'];
+                                            $tmp[2] = heure3($tmp[0])."-".heure3($tmp[1]);
+                                            $heures_tab[$tmp[2]][] = $elem['date'];
                                             if (!in_array($tmp, $heures_tab_global)) {
                                                 $heures_tab_global[] = $tmp;
                                             }
