@@ -344,12 +344,12 @@ class db
 
     public function update($table, $set, $where="1")
     {
-        if (!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
+ /*       if (!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
             $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
             error_log($this->error);
             return false;
         }
-  
+  */
         $this->connect();
         $dbprefix=$this->dbprefix;
 
