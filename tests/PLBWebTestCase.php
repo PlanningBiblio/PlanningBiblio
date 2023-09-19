@@ -45,9 +45,24 @@ class PLBWebTestCase extends PantherTestCase
             array(
                 '--no-sandbox',
                 '--disable-dev-shm-usage',
-                '--headless'
+                '--headless',
+                '--disable-gpu'
             )
         );
+
+/**
+        // Set up the necessary dependencies for headless Chrome
+        $options = new \Facebook\WebDriver\Chrome\ChromeOptions();
+        $options->addArguments(['--headless', '--disable-gpu']);
+    
+        $capabilities = \WebDriverCapabilityType::merge(
+            \WebDriverCapabilityType::chrome(),
+            ['chromeOptions' => $options]
+        );
+    
+        // Set up the WebDriver using the desired capabilities
+        $webDriver = \RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
+*/
     }
 
     protected function login($agent)
