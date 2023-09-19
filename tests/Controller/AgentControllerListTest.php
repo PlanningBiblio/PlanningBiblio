@@ -39,6 +39,24 @@ class AgentControllerListTest extends PLBWebTestCase
 
     public function testListAgent()
     {
+        // Set up the necessary dependencies for headless Chrome
+        $options = new \Facebook\WebDriver\Chrome\ChromeOptions();
+        $options->addArguments(['--headless', '--disable-gpu']);
+    
+        $capabilities = \WebDriverCapabilityType::merge(
+            \WebDriverCapabilityType::chrome(),
+            ['chromeOptions' => $options]
+        );
+    
+        // Set up the WebDriver using the desired capabilities
+        $webDriver = \RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
+    
+        // Perform the test actions
+        // ...
+
+
+
+
         $this->setParam('Multisites-nombre', 1);
         $this->builder->delete(Agent::class);
         $this->setUpPantherClient();
