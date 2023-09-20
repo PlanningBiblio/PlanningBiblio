@@ -186,7 +186,7 @@
                   {% endif %}
                   {% for v in heures_tab_global %}
                     <td>
-                      {% if elem[7][v[2]] is not empty %}
+                      {% if elem[7][v[2]] is defined and elem[7][v[2]] is not empty %}
                         Nb {{ v[2] }} :
                         {{ elem[7][v[2]] | length -1 }}
                         {% for k,c in elem[7][v[2]].count %}
