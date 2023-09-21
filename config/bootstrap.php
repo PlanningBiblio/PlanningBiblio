@@ -15,7 +15,6 @@ if (is_array($env = @include dirname(__DIR__).'/.env.local.php')) {
 } else {
     $path = dirname(__DIR__).'/.env';
     $dotenv = new Dotenv();
-    $dotenv->usePutenv(false);
 
     // load all the .env files
     if (method_exists($dotenv, 'loadEnv')) {

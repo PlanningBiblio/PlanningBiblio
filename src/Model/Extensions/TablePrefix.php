@@ -15,7 +15,7 @@ class TablePrefix implements EventSubscriber
     }
 
     /**
-     * @return string[]
+     * @return array
      */
     public function getSubscribedEvents()
     {

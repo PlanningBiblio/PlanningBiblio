@@ -1,6 +1,3 @@
 framework:
     router:
         strict_requirements: true
-        utf8: true
-    session:
-        storage_factory_id: session.storage.factory.php_bridge
