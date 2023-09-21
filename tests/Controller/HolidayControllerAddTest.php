@@ -133,6 +133,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertStringContainsString('Demi-journée(s)',$result->text('Node does not exist', true),'test Conges-demi-journees');
 
         //test with Conges-validation
+        $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
         $result = $crawler->filterXPath('//body');
         $this->assertStringContainsString('Demandé',$result->text('Node does not exist', true),'test Conges-validation');
 
