@@ -2,16 +2,23 @@
 
 namespace Tests;
 
-use Symfony\Component\Panther\PantherTestCase;
-
-use Facebook\WebDriver\WebDriverSelect;
-use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverSelect;
+use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\Panther\PantherTestCase;
 
 class PLBWebTestCase extends PantherTestCase
 {
     public $client;
+
+    protected function setUp(): void
+    {
+        $this->client = static::createClient();
+        $_SESSION['oups']['Auth-Mode'] = 'SQL';
+        $_SESSION['login_id'] = 1;
+    }
 
     protected function logInAgent($agent, $rights = array(99, 100)) {
         $_SESSION['login_id'] = $agent->id();
@@ -23,13 +30,19 @@ class PLBWebTestCase extends PantherTestCase
         $entityManager->flush();
 
         $GLOBALS['droits'] = $rights;
+
+        $session = self::$container->get('session');
+        $session->set('loginId', $agent->id());
+        $session->save();
+    
+        $cookie = new Cookie($session->getName(), $session->getId());
+        $this->client->getCookieJar()->set($cookie);
     }
 
     protected function setUpPantherClient()
     {
         $this->client = static::createPantherClient(
             array(
-                'router' => 'router.php',
                 '--no-sandbox',
                 '--disable-dev-shm-usage',
                 '--headless'

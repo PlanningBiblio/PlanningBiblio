@@ -53,13 +53,12 @@ class AgentControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, $agent->droits());
 
-        $client = static::createClient();
         $_SESSION['oups']['CSRFToken'] = '00000';
 
         $start = date('d/m/Y', strtotime(' -3 day'));
         $end = date('d/m/Y', strtotime(' +3 day'));
 
-        $client->request(
+        $this->client->request(
             'POST',
             '/agent',
             array(
@@ -119,15 +118,13 @@ class AgentControllerTest extends PLBWebTestCase
         $GLOBALS['config']['LDAP-Suffix'] = '';
 
 
-        $client = static::createClient();
-
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
             'sites' => '["1"]', 'droits' => array(21,100,99,4)
         ));
 
         $this->logInAgent($kboivin, $kboivin->droits());
-        $crawler = $client->request('GET', '/agent');
+        $crawler = $this->client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//table[@id="tableAgents"]/thead');
         $this->assertStringContainsString('Nom', $result->text(null,false));
@@ -153,7 +150,7 @@ class AgentControllerTest extends PLBWebTestCase
         $GLOBALS['config']['LDAP-Host'] = '';
         $GLOBALS['config']['LDAP-Suffix'] = '';
 
-        $crawler = $client->request('GET', '/agent');
+        $crawler = $this->client->request('GET', '/agent');
 
         $this->assertDirectoryDoesNotExist('//input[@value="Import LDAP"]');
 
@@ -167,7 +164,7 @@ class AgentControllerTest extends PLBWebTestCase
         $GLOBALS['config']['LDAP-Host'] = '192.168.1.100';
         $GLOBALS['config']['LDAP-Suffix'] = 'dn: dc=my-domain,dc=com objectclass: dcObject objectclass: organization';
 
-        $crawler = $client->request('GET', '/agent');
+        $crawler = $this->client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//input[@class="ui-button ui-button-type2"]');
 
@@ -183,7 +180,7 @@ class AgentControllerTest extends PLBWebTestCase
 
         $GLOBALS['config']['Granularite'] = 5;
 
-        $crawler = $client->request('GET', '/agent');
+        $crawler = $this->client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//select[@name="heures_travail"]/option');
         $this->assertEquals('1h00', $result->eq(2)->text(null,false));
@@ -191,7 +188,7 @@ class AgentControllerTest extends PLBWebTestCase
 
         $GLOBALS['config']['Granularite'] = 15;
 
-        $crawler = $client->request('GET', '/agent');
+        $crawler = $this->client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//select[@name="heures_travail"]/option');
         $this->assertEquals('1h00', $result->eq(2)->text(null,false));
@@ -206,8 +203,6 @@ class AgentControllerTest extends PLBWebTestCase
         $GLOBALS['config']['LDAP-Suffix'] = '';
         $GLOBALS['config']['Conges-Enable'] = 1;
         $GLOBALS['config']['PlanningHebdo'] = 0;
-
-        $client = static::createClient();
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
@@ -224,7 +219,7 @@ class AgentControllerTest extends PLBWebTestCase
         //$this->login($kboivin);
 
         $this->logInAgent($kboivin, $kboivin->droits());
-        $crawler = $client->request('GET', "/agent/$id");
+        $crawler = $this->client->request('GET', "/agent/$id");
 
         $this->assertSelectorTextContains('h3', 'Dupont Jean');
 

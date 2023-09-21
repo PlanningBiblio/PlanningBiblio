@@ -17,7 +17,10 @@ class AppExtension extends AbstractExtension
 
     private $blacklistedTags = ['script'];
 
-   public function getFilters()
+    /**
+     * @return array
+    */
+    public function getFilters()
     {
         return [
             new TwigFilter('datefull', [$this, 'dateFull'], ['is_safe' => ['html']]),
@@ -29,6 +32,9 @@ class AppExtension extends AbstractExtension
         ];
     }
 
+    /**
+    * @return array
+    */
     public function getFunctions()
     {
         return [
@@ -127,9 +133,9 @@ class AppExtension extends AbstractExtension
 
     public function menuIsActive($menu, $requested_url)
     {
-        $base_url = $GLOBALS['base_url'];
+        $config = $GLOBALS['config'];
 
-        if(strpos($requested_url, "$base_url/$menu") !== false){
+        if(strpos($requested_url, "{$config['URL']}/$menu") !== false){
             return true;
         }
 
@@ -141,7 +147,7 @@ class AppExtension extends AbstractExtension
                 'workinghour', 'config', 'notification');
 
             foreach ($admin_pages as $page) {
-                if(strpos($requested_url, "$base_url/$page") !== false){
+                if(strpos($requested_url, "{$config['URL']}/$page") !== false){
                     return true;
                 }
             }

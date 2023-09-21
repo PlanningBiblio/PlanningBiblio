@@ -32,13 +32,11 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $client = static::createClient();
-
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
 
         $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id())));
 
-        $client->request('POST', '/holiday', $data);
+        $this->client->request('POST', '/holiday', $data);
 
         $jdevoe_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
             array('perso_id' => $jdevoe->id())
@@ -59,14 +57,12 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $client = static::createClient();
-
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id()), 'start_halfday' => 'morning', 'end_halfday' => 'morning'));
 
-        $client->request('POST', '/holiday', $data);
+        $this->client->request('POST', '/holiday', $data);
 
         $jdevoe_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
             array('perso_id' => $jdevoe->id())
@@ -87,14 +83,12 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $client = static::createClient();
-
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id()), 'start_halfday' => 'afternoon', 'end_halfday' => 'afternoon'));
 
-        $client->request('POST', '/holiday', $data);
+        $this->client->request('POST', '/holiday', $data);
 
         $jdevoe_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
             array('perso_id' => $jdevoe->id())
@@ -115,8 +109,6 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $client = static::createClient();
-
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $abreton = $this->builder->build(Agent::class, array('login' => 'abreton'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
@@ -124,7 +116,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
 
         $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id(), $abreton->id()), 'start_halfday' => 'afternoon', 'end_halfday' => 'afternoon'));
 
-        $client->request('POST', '/holiday', $data);
+        $this->client->request('POST', '/holiday', $data);
 
         $jdevoe_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
             array('perso_id' => $jdevoe->id())
@@ -159,8 +151,6 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $client = static::createClient();
-
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
@@ -171,7 +161,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
             'fin' => '28/01/2022',
         ));
 
-        $client->request('POST', '/holiday', $data);
+        $this->client->request('POST', '/holiday', $data);
 
         $jdevoe_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
             array('perso_id' => $jdevoe->id())

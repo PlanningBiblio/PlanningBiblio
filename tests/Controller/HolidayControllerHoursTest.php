@@ -33,8 +33,6 @@ class HolidayControllerHoursTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $client = static::createClient();
-
         $jdevoe = $this->builder->build(Agent::class,
             array(
                 'login' => 'jdevoe',
@@ -52,7 +50,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
             'valide_n1' => 0
         ));
 
-        $client->request('POST', '/holiday', $data);
+        $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
             array('perso_id' => $jdevoe->id())
@@ -84,8 +82,6 @@ class HolidayControllerHoursTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $client = static::createClient();
-
         $jdevoe = $this->builder->build(Agent::class,
             array(
                 'login' => 'jdevoe',
@@ -99,7 +95,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
 
         $data = $this->getHolidayData(array('perso_id' => $jdevoe->id()));
 
-        $client->request('POST', '/holiday', $data);
+        $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
             array('perso_id' => $jdevoe->id())
@@ -131,8 +127,6 @@ class HolidayControllerHoursTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $client = static::createClient();
-
         $jdevoe = $this->builder->build(Agent::class,
             array(
                 'login' => 'jdevoe',
@@ -151,7 +145,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
             'allday' => '',
         ));
 
-        $client->request('POST', '/holiday', $data);
+        $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
             array('perso_id' => $jdevoe->id())
@@ -184,8 +178,6 @@ class HolidayControllerHoursTest extends PLBWebTestCase
     {
         global $entityManager;
 
-        $client = static::createClient();
-
         $jdevoe = $this->builder->build(Agent::class,
             array(
                 'login' => 'jdevoe',
@@ -202,7 +194,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
             'debit' => 'recuperation',
         ));
 
-        $client->request('POST', '/holiday', $data);
+        $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
             array('perso_id' => $jdevoe->id())

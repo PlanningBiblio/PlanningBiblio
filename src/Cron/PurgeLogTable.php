@@ -28,6 +28,9 @@ Example: php bin/console PlanningBiblio:PurgeLogTable \"12 MONTH\"
         $this->addOption('stdout', null, InputOption::VALUE_OPTIONAL, 'Output result in stdout', false);
     }
 
+    /**
+     * @return int
+     */
     public function execute (InputInterface $input, OutputInterface $output) {
 
         if (!$this->lock()) {

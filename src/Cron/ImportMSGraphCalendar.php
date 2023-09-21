@@ -22,6 +22,9 @@ class ImportMSGraphCalendar extends Command {
         $this->addOption('stdout', null, InputOption::VALUE_OPTIONAL, 'Also output logs in stdout', false);
     }
 
+    /**
+     * @return int
+     */
     public function execute (InputInterface $input, OutputInterface $output) {
 
         if (!$this->lock()) {

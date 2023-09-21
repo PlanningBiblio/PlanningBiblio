@@ -22,13 +22,11 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,401,601));
 
-        $client = static::createClient();
-
         $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
         $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
 
         $_SESSION['oups']['CSRFToken'] = '00000';
-        $client->request('POST', '/holiday-info', array('debut' => '05/10/2022 00:00:00', 'fin' => '10/10/2022 00:00:00', 'texte' => 'salut', 'CSRFToken' => '00000'));
+        $this->client->request('POST', '/holiday-info', array('debut' => '05/10/2022 00:00:00', 'fin' => '10/10/2022 00:00:00', 'texte' => 'salut', 'CSRFToken' => '00000'));
         $info = $entityManager->getRepository(HolidayInfo::class)->findOneBy(array('texte' => 'salut'));
 
         $this->assertEquals('2022-10-05', $info->debut()->format('Y-m-d'), "debut is ok");
@@ -50,10 +48,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,401,601));
 
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/holiday-info/add');
-
+        $crawler = $this->client->request('GET', '/holiday-info/add');
 
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
         $this->assertSelectorTextContains('h4', 'Ajout d\'une information');
@@ -92,8 +87,6 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,401,601));
 
-        $client = static::createClient();
-
         $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
         $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
 
@@ -108,10 +101,9 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $id = $info->id();
 
-        $crawler = $client->request('GET', "/holiday-info/$id");
+        $crawler = $this->client->request('GET', "/holiday-info/$id");
 
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
-
 
         $this->assertSelectorTextContains('h4', 'Modification des informations sur les congés');
 
@@ -150,8 +142,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $builder->delete(HolidayInfo::class);
         $this->logInAgent($agent, array(100,401,601));
 
-        $client = static::createClient();
-        $crawler = $client->request('GET', "/holiday-info");
+        $crawler = $this->client->request('GET', "/holiday-info");
 
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
 
@@ -171,8 +162,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $entityManager->persist($info);
         $entityManager->flush();
 
-
-        $crawler = $client->request('GET', "/holiday-info");
+        $crawler = $this->client->request('GET', "/holiday-info");
 
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
 

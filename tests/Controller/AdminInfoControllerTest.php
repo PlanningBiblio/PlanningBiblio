@@ -24,10 +24,9 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(23));
 
-        $client = static::createClient();
-        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
+        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
 
-        $client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'salut', '_token' => $token));
+        $this->client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'salut', '_token' => $token));
         
 
         $info = $entityManager->getRepository(AdminInfo::class)->findOneBy(array('debut' => '20211005', 'fin' => '20211010'));
@@ -52,10 +51,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(23));
 
-        $client = static::createClient();
-        
-        
-        $client->request('GET', '/admin/info/add');
+        $this->client->request('GET', '/admin/info/add');
 
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
 
@@ -63,7 +59,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
  
         
         $crawler = new Crawler();
-        $crawler = $client->request('GET', '/admin/info/add');
+        $crawler = $this->client->request('GET', '/admin/info/add');
 
         $result=$crawler->filter('label')->eq(0);
         $this->assertEquals($result->text(),'Date de début','label 1 is Date de début');
@@ -102,8 +98,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(23));
 
-        $client = static::createClient();
-
         $info = new AdminInfo();
         $info->debut('20221005');
         $info->fin('20221010');
@@ -114,7 +108,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $id = $info->id();
         
-        $crawler = $client->request('GET', "/admin/info/$id");
+        $crawler = $this->client->request('GET', "/admin/info/$id");
 
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
 

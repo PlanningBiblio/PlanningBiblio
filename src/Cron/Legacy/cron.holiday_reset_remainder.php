@@ -1,24 +1,21 @@
 <?php
 /**
-Planning Biblio, Plugin Conges Version 2.8
+Planno
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2013-2018 Jérôme Combes
 
-Fichier : conges/cron.jan1.php
 Création : 13 août 2013
-Dernière modification : 10 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
-Fichier executant des taches planifiées au 1er janvier pour le plugin Conges.
-Page appelée par le fichier include/cron.php
-Supprime le reliquat à tous les agents
+Tâche planifiée de suppression des reliquats de congés
 */
 
 require_once(__DIR__ . '/../../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
 require_once(__DIR__ . '/../../../public/include/db.php');
+
+$CSRFSession = $GLOBALS['CSRFSession'];
 
 // Ajout d'une ligne d'information dans le tableau des congés
 $p=new personnel();
