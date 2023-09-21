@@ -105,10 +105,10 @@ class FrameworkControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/framework");
 
-        $result = $crawler->filterXPath('//h2');
-        $this->assertEquals($result->text(),"Gestion des tableaux");
-
         $result = $crawler->filterXPath('//h3');
+        $this->assertEquals($result->eq(0)->text(),"Gestion des tableaux");
+
+        $result = $crawler->filterXPath('//h4');
         $this->assertEquals($result->eq(0)->text(),"Liste des tableaux");
 
         $result = $crawler->filterXPath('//td[@id="td-tableau-1-nom"]');
@@ -171,10 +171,10 @@ class FrameworkControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/framework");
 
-        $result = $crawler->filterXPath('//h2');
+        $result = $crawler->filterXPath('//h3');
         $this->assertEquals($result->text(),"Gestion des tableaux");
 
-        $result = $crawler->filterXPath('//h3');
+        $result = $crawler->filterXPath('//h4');
         $this->assertEquals($result->eq(2)->text(),"Lignes de séparation");
 
         $result = $crawler->filterXPath('//td[@id="td-ligne-5-nom"]');
@@ -263,10 +263,10 @@ class FrameworkControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/framework");
 
-        $result = $crawler->filterXPath('//h2');
+        $result = $crawler->filterXPath('//h3');
         $this->assertEquals($result->text(),"Gestion des tableaux");
 
-        $result = $crawler->filterXPath('//h3');
+        $result = $crawler->filterXPath('//h4');
         $this->assertEquals($result->eq(1)->text(),"Groupes");
 
         $result = $crawler->filterXPath('//td[@id="td-groupe-1-nom"]');
