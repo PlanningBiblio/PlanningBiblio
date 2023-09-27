@@ -737,7 +737,7 @@ class AgentController extends BaseController
 
             if ($this->config('Conges-Mode') == 'jours' ) {
                 $event = new OnTransformLeaveHours($conges);
-                $this->dispatcher->dispatch($event::ACTION, $event);
+                $this->dispatcher->dispatch($event, $event::ACTION);
 
                 if ($event->hasResponse()) {
                     $response = $event->response();
@@ -1584,7 +1584,7 @@ class AgentController extends BaseController
 
         if ($this->config('Conges-Mode') == 'jours' ) {
             $event = new OnTransformLeaveDays($params);
-            $this->dispatcher->dispatch($event::ACTION, $event);
+            $this->dispatcher->dispatch($event, $event::ACTION);
 
             if ($event->hasResponse()) {
                 $credits = $event->response();
