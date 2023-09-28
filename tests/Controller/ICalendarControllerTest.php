@@ -104,31 +104,31 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->createPlanningPositionFor($agent);
         $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals($content[27], 'SUMMARY:Rangement 4', 'ICS export with planning position');
+        $this->assertEquals($content[29], 'SUMMARY:Rangement 4', 'ICS export with planning position');
 
         // Test holiday
         $GLOBALS['config']['Conges-Enable'] = 1;
         $this->createHolidayFor($agent);
         $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals($content[27], 'SUMMARY:Congé Payé ICS holiday test', 'ICS export with holiday');
+        $this->assertEquals($content[29], 'SUMMARY:Congé Payé ICS holiday test', 'ICS export with holiday');
 
         // Test absence
         $this->createAbsenceFor($agent);
         $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals($content[27], 'SUMMARY:ICS absence test ', 'ICS export with absence');
+        $this->assertEquals($content[29], 'SUMMARY:ICS absence test ', 'ICS export with absence');
 
         // With interval in URL
         $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1, "interval" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
+        $this->assertEquals(sizeof($content), 25, 'Older than 1 day is not exported due to ICS-Interval config');
 
         // With interval in config
         $GLOBALS['config']['ICS-Interval'] = 1;
         $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
+        $this->assertEquals(sizeof($content), 25, 'Older than 1 day is not exported due to ICS-Interval config');
         $GLOBALS['config']['ICS-Interval'] = 0;
 
         // With code
@@ -146,7 +146,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->createAbsenceFor($deletedagent);
         $this->client->request('GET', "/ical", array("id" => $deletedagent->id(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals(sizeof($content), 23, 'No exports for deleted agents');
+        $this->assertEquals(sizeof($content), 25, 'No exports for deleted agents');
     }
 
     private function createPlanningPositionFor($agent)
