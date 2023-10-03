@@ -386,8 +386,8 @@ $(function() {
 
   $("#recurrence-enddate-alert").dialog({
     autoOpen: false,
-    height: 200,
-    width: 650,
+    height: 180,
+    width: 600,
     modal: true,
     buttons: {
       "Oui": function() {
