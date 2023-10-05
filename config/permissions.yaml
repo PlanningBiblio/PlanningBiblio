@@ -51,14 +51,18 @@
     - 21
 "agent.edit":
     - 4
-"agent.import":
-    - 21
 "agent.index":
     - 4
-"agent.password":
-    - 100
 "agent.ldap":
     - 21
+"agent.ldap.import":
+    - 21
+"agent.ldif":
+    - 21
+"agent.ldif.import":
+    - 21
+"agent.password":
+    - 100
 "agent.save":
     - 4
 "ajax.agentsites":
