@@ -41,8 +41,23 @@ class LoginListener
 
         // Redirect to the login page if there is no session
         if (empty($session->get('loginId'))) {
-            $redirect = !empty($route) ? "?redirURL=$route" : null;
-            $event->setResponse(new RedirectResponse($url->valeur() . '/login' . $redirect));
+
+            $routeParams = array();
+
+            // SSO ticket
+            $ticket = $event->getRequest()->get('ticket');
+            if ($ticket) {
+                $routeParams[] = 'ticket=' . $ticket;
+            }
+
+            // Requested route
+            if (!empty($route)) {
+                $routeParams[] = 'redirURL=' . $route;
+            }
+
+            $routeParams = !empty($routeParams) ? '?' . implode('&', $routeParams) : null;
+
+            $event->setResponse(new RedirectResponse($url->valeur() . '/login' . $routeParams));
         }
     }
 }
