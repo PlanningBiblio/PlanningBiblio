@@ -22,7 +22,7 @@ class AuthorizationsController extends BaseController
     public function login(Request $request, LoggerInterface $logger = null)
     {
 
-        $error = $this->redirectCAS($logger);
+        $error = $this->redirectCAS($request, $logger);
 
         $IPBlocker = loginFailedWait();
         if ($IPBlocker > 0) {
@@ -52,7 +52,7 @@ class AuthorizationsController extends BaseController
      */
     public function check_login(Request $request, LoggerInterface $logger = null)
     {
-        $this->redirectCAS($logger);
+        $this->redirectCAS($request, $logger);
 
         $login = $request->get('login');
         $password = $request->get('password');
@@ -112,6 +112,7 @@ class AuthorizationsController extends BaseController
         $_SESSION['oups']['CSRFToken'] = $CSRFToken;
 
         $error = '';
+
         if ($auth) {
             // Log login and client IP if success login.
             loginSuccess($login, $CSRFToken);
@@ -185,7 +186,7 @@ class AuthorizationsController extends BaseController
         return new Response($content, 403);
     }
 
-    private function redirectCAS($logger)
+    private function redirectCAS(Request $request, $logger)
     {
         if (substr($this->config('Auth-Mode'), 0, 3)=="CAS"
             and !isset($_GET['noCAS'])
@@ -217,6 +218,10 @@ class AuthorizationsController extends BaseController
             $_SESSION['login_id']=$db->result[0]['id'];
             $_SESSION['login_nom']=$db->result[0]['nom'];
             $_SESSION['login_prenom']=$db->result[0]['prenom'];
+
+            // Symfony Session
+            $session = $request->getSession();
+            $session->set('loginId', $db->result[0]['id']);
 
             // Create CSRF Token
             $CSRFToken = CSRFToken();
