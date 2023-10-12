@@ -231,7 +231,7 @@ if (isset($planning)) {
         // Nom du poste pour SUMMARY
         $poste = html_entity_decode($postes[$elem['poste']]['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         // Site et étage pour LOCATION
-        $site = isset($sites) ? html_entity_decode($sites[$elem['site']], ENT_QUOTES|ENT_IGNORE, 'UTF-8') : null;
+        $site = isset($sites[$elem['site']]) ? html_entity_decode($sites[$elem['site']], ENT_QUOTES|ENT_IGNORE, 'UTF-8') : null;
         $etage = $postes[$elem['poste']]['etage'] ? ' ' . $postes[$elem['poste']]['etage'] : null;
         // Validation pour LAST-MODIFIED et DSTAMP
         $validation = gmdate("Ymd\THis\Z", strtotime($verrou[$elem['date'].'_'.$elem['site']]['date']));
