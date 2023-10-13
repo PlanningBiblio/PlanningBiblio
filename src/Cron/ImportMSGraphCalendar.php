@@ -46,6 +46,8 @@ class ImportMSGraphCalendar extends Command {
         $graph_client->retrieveEvents();
 
         $this->release();
+
+        return 0;
     }
 }
 
