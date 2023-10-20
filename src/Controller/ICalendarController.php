@@ -154,8 +154,6 @@ class ICalendarController extends BaseController
         $ical[]="PRODID:Planning-Biblio-Calendar";
         $ical[]="VERSION:2.0";
         $ical[]="METHOD:PUBLISH";
-        $ical[]="X-PUBLISHED-TTL:PT15M";
-        $ical[]="REFRESH-INTERVAL;VALUE=DURATION:PT15M";
         $ical[]="BEGIN:VTIMEZONE";
         $ical[]="TZID:$tz";
         $ical[]="BEGIN:STANDARD";
