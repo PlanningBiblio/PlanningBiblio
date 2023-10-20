@@ -85,6 +85,5 @@ if ($msg2) {
 }
 ?>
 
-<div id='opac' style='display:none'></div>
 <div style='position:relative;top:30px;' class='noprint'>
 </div>
