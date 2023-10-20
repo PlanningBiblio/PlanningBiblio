@@ -494,10 +494,11 @@ function verifConges(){
   var hre_debut=$("#hre_debut_select").val();
   var hre_fin=$("#hre_fin_select").val();
   var id=$("#id").val();
-  hre_debut=hre_debut?hre_debut:"00:00:00";
-  hre_fin=hre_fin?hre_fin:"23:59:59";
-  debut=debut+" "+hre_debut;
-  fin=fin+" "+hre_fin;
+
+  hre_debut = hre_debut ? hre_debut + ':00' : '00:00:00';
+  hre_fin = hre_fin ? hre_fin + ':00' : '23:59:59';
+  debut = debut + ' ' + hre_debut;
+  fin = fin + ' ' + hre_fin;
 
   // Vérifions si les dates sont correctement saisies
   if($("#debut").val()==""){
