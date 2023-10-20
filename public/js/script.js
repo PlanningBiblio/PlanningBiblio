@@ -773,14 +773,14 @@ function all_day(){
     $('#hre_debut').hide();
     $('#hre_fin').hide();
 
+    $('input[name="hre_debut"]').val('');
+    $('input[name="hre_fin"]').val('');
+
     return false;
   }
 
   $('#hre_debut').show();
   $('#hre_fin').show();
-
-  $('input[name="hre_debut"]').val('');
-  $('input[name="hre_fin"]').val('');
 }
 //	--------------------------------	FIN Absences		---------------------------------	//
 //	--------------------------------	Aide			---------------------------------	//
