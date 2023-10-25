@@ -144,7 +144,7 @@
         {% if config('Absences-planning') == 2 and absences_planning | length > 0 %}
           <h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
 
-          <table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'>
+          <table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0, "asc"],[1, "asc"]]'>
             <thead>
               <tr>
                 <th>Nom</th>
@@ -169,46 +169,30 @@
         {% endif %}
 
         {% if config('Absences-planning') in [3,4] %}
-          <div class='decalage-gauche'>
-            <table class='tableauStandard' style='width:auto'>
+          <h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des présents et absents</h3>
+
+          <table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0, "asc"],[1, "asc"]]' data-stateSave="0">
+            <thead>
               <tr>
-                <td>
-                  <h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3>
-                </td>
-                {% if absences_planning | length > 0 %}
-                  <td>
-                    <h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>
+                <th>Agent</th>
+                <th>Présence</th>
+                <th>Absences</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in presents %}
+                <tr>
+                  <td>{{ p.nom }}</td>
+                  <td style='padding-left:15px;'>{{ p.site }}{{ p.heures }}</td>
+                  <td style='padding-left:15px;'>
+                    {% for a in p.absences %}
+                      {{ a.motif }}{{ a.heures }}{{ a.nonValidee }}<br/>
+                    {% endfor %}
                   </td>
-                {% endif %}
-              </tr>
-
-              <tr style='vertical-align:top;'>
-                <td>
-                  <table cellspacing='0'>
-                    {% for p in presents %}
-                      <tr class="{{ p.class }}">
-                        <td>{{ p.nom }}</td>
-                        <td style='padding-left:15px;'>{{ p.site }}{{ p.heures }}</td>
-                      </tr>
-                    {% endfor %}
-                  </table>
-                </td>
-
-                <td>
-                  <table cellspacing='0'>
-                    {% for a in absences_planning %}
-                      <tr class="{{ a.class }}">
-                        <td>{{ a.nom }} {{ a.prenom }}</td>
-                        <td style='padding-left:15px;'>
-                          {{ a.motif }}{{ a.heures }}{{ a.nonValidee }}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </div>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         {% endif %}
       {% endif %}
     {% endif %}

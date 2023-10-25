@@ -359,48 +359,80 @@ class IndexController extends BaseController
             $this->templateParams(array('tabs' => $tabs));
 
             // Affichage des absences
-            if ($this->config('Absences-planning')) {
-
+            if (in_array($this->config('Absences-planning'), [1,2])) {
                 $this->templateParams(array('absences_planning' => $absences_planning));
+            }
 
-                if (in_array($this->config('Absences-planning'), [3,4])) {
+            // Affichage des présences et absences
+            if (in_array($this->config('Absences-planning'), [3,4])) {
 
-                    $heures=null;
-                    $presents=array();
-                    $absents=array(2); // 2 = Remove "Everybody" user
+                $heures=null;
+                $presents=array();
+                $absents=array(2); // 2 = Remove "Everybody" user
 
-                    // Excludes those who are absent
-                    // all the day
-                    if (!empty($absences_planning)) {
-                        foreach ($absences_planning as $elem) {
-                            if ($elem['debut'] <= $date . ' 00:00:00'
-                                and $elem['fin'] >= $date . ' 23:59:59'
-                                and $elem['valide'] > 0) {
-                                $absents[]=$elem['perso_id'];
-                            }
+                // Excludes those who are absent
+                // all the day
+                if (!empty($absences_planning)) {
+                    foreach ($absences_planning as $elem) {
+                        if ($elem['debut'] <= $date . ' 00:00:00'
+                            and $elem['fin'] >= $date . ' 23:59:59'
+                            and $elem['valide'] > 0) {
+                            $absents[]=$elem['perso_id'];
                         }
                     }
-
-                    // Looking for agents to exclude
-                    // because they don't work this day
-                    $db = new \db();
-                    $dateSQL=$db->escapeString($date);
-
-                    // Filter by site if required
-                    $siteFilter = $this->config('Absences-planning') == 4 ? $site : 0;
-
-                    $presentset = new PresentSet($dateSQL, $d, $absents, $db, $siteFilter);
-                    $presents = $presentset->all();
-
-                    // Presents list
-                    $class = 'tr1';
-                    foreach ($presents as $index => $elem) {
-                        $class = $class == 'tr1' ? 'tr2' : 'tr1';
-                        $presents[$index]['class'] = $class;
-                        $presents[$index]['heures'] = html_entity_decode($elem['heures']);
-                    }
-                    $this->templateParams(array('presents' => $presents));
                 }
+
+                // Looking for agents to exclude
+                // because they don't work this day
+                $db = new \db();
+                $dateSQL=$db->escapeString($date);
+
+                // Filter by site if required
+                $siteFilter = $this->config('Absences-planning') == 4 ? $site : 0;
+
+                $presentset = new PresentSet($dateSQL, $d, $absents, $db, $siteFilter);
+                $presents = $presentset->all();
+
+                // Merge presences and absences
+                $presentIds = array();
+
+                // Add absences to people who are in present list
+                foreach ($presents as &$elem) {
+                    $presentIds[] = $elem['id'];
+                    $elem['absences'] = array();
+                    foreach ($absences_planning as &$abs) {
+                        if ($abs['perso_id'] == $elem['id']) {
+                            $elem['absences'][] = $abs;
+                            $abs['done'] = true;
+                        }
+                    }
+                }
+
+                // Add absences to people who are not in present list
+                foreach ($absences_planning as &$abs) {
+                    if (!isset($abs['done'])) {
+                        if (in_array($abs['perso_id'], $presentIds)) {
+                            foreach ($presents as &$elem) {
+                                if ($abs['perso_id'] == $elem['id']) {
+                                    $elem['absences'][] = $abs;
+                                    break;
+                                }
+                            }
+                        } else {
+                            $presents[] = array(
+                                'id' => $abs['perso_id'],
+                                'nom' => $abs['nom'] . ' ' . $abs['prenom'],
+                                'prenom' => $abs['prenom'],
+                                'heures' => null,
+                                'site' => null,
+                                'absences' => array($abs),
+                            );
+                            $presentIds[] = $abs['perso_id'];
+                        }
+                    }
+                }
+
+                $this->templateParams(array('presents' => $presents));
             }
         }
 
