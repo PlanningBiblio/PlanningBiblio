@@ -18,7 +18,7 @@ objectclass: inetOrgPerson
 cn: Robert Smith
 cn: Robert J Smith
 cn: bob smith
-sn: smith
+sn: Smith
 givenname: Robert
 uid: rjsmith
 userpassword: rJsmitH
@@ -43,8 +43,8 @@ supannempid: 11111112
 dn: uid=jdoe,ou=people,dc=example,dc=com
 objectClass: inetOrgPerson
 cn: John Doe
-sn: John
-givenname: Doe
+sn: Doe
+givenname: John
 uid: jdoe
 mail: john.doe2@example.com
 supannempid: 11111113
