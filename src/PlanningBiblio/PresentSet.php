@@ -10,12 +10,13 @@ class PresentSet
     private $db;
 
     // Fix me. You shoud find another way to get db object.
-    function __construct($date, $date_planning, $absents, $db)
+    function __construct($date, $date_planning, $absents, $db, $site = 0)
     {
         $this->date = $date;
         $this->date_planning = $date_planning;
         $this->absents = $absents;
         $this->db = $db;
+        $this->site = $site;
     }
 
     public function all()
@@ -28,7 +29,7 @@ class PresentSet
         $semaine3 = $date_planning->semaine3;
         $absents = $this->absents;
 
-        $this->db->select("personnel", "*", "`actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00')", "ORDER BY `nom`,`prenom`");
+        $this->db->select("personnel", "*", "`actif` LIKE 'Actif' AND (`depart` >= $date OR `depart` = '0000-00-00')", "ORDER BY `nom`,`prenom`");
 
         // if module PlanningHebdo: search related plannings.
         if ($config['PlanningHebdo']) {
@@ -37,6 +38,14 @@ class PresentSet
 
         $presents = array();
         foreach ($this->db->result as $elem) {
+            // Exclude agents who are not working on the request site
+            if ($config['Multisites-nombre'] > 1 and $this->site != 0 ) {
+                $agentSites = json_decode($elem['sites']);
+                if (!is_array($agentSites) or !in_array($this->site, $agentSites)) {
+                    continue;
+                }
+            }
+
             $heures = null;
             $temps = array();
             $week_number = 0;

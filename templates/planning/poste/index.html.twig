@@ -168,7 +168,7 @@
           </table>
         {% endif %}
 
-        {% if config('Absences-planning') == 3 %}
+        {% if config('Absences-planning') in [3,4] %}
           <div class='decalage-gauche'>
             <table class='tableauStandard' style='width:auto'>
               <tr>

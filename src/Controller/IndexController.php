@@ -363,12 +363,12 @@ class IndexController extends BaseController
 
                 $this->templateParams(array('absences_planning' => $absences_planning));
 
-                if ($this->config('Absences-planning') == 3) {
+                if (in_array($this->config('Absences-planning'), [3,4])) {
 
                     $heures=null;
                     $presents=array();
                     $absents=array(2); // 2 = Remove "Everybody" user
-                
+
                     // Excludes those who are absent
                     // all the day
                     if (!empty($absences_planning)) {
@@ -380,15 +380,18 @@ class IndexController extends BaseController
                             }
                         }
                     }
-                
+
                     // Looking for agents to exclude
                     // because they don't work this day
                     $db = new \db();
                     $dateSQL=$db->escapeString($date);
-                
-                    $presentset = new PresentSet($dateSQL, $d, $absents, $db);
+
+                    // Filter by site if required
+                    $siteFilter = $this->config('Absences-planning') == 4 ? $site : 0;
+
+                    $presentset = new PresentSet($dateSQL, $d, $absents, $db, $siteFilter);
                     $presents = $presentset->all();
-                
+
                     // Presents list
                     $class = 'tr1';
                     foreach ($presents as $index => $elem) {
@@ -399,7 +402,6 @@ class IndexController extends BaseController
                     $this->templateParams(array('presents' => $presents));
                 }
             }
-                
         }
 
         return $this->output('planning/poste/index.html.twig');
