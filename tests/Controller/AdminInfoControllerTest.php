@@ -62,13 +62,13 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/admin/info/add');
 
         $result=$crawler->filter('label')->eq(0);
-        $this->assertEquals($result->text(),'Date de début','label 1 is Date de début');
+        $this->assertEquals($result->text('Node does not exist', false), 'Date de début','label 1 is Date de début');
 
         $result=$crawler->filter('label')->eq(1);
-        $this->assertEquals($result->text(),'Date de fin','label 2 is Date de fin');
+        $this->assertEquals($result->text('Node does not exist', false), 'Date de fin','label 2 is Date de fin');
 
         $result = $crawler->filter('label')->eq(2);
-        $this->assertEquals($result->text(),'Texte','label 3 is Texte');
+        $this->assertEquals($result->text('Node does not exist', false), 'Texte','label 3 is Texte');
 
         $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
         $this->assertEquals($class->attr('href'),'/admin/info','href a>span>Annuler is admin/info');
@@ -118,13 +118,13 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->assertSelectorTextContains('textarea', 'salut');
  
         $result=$crawler->filter('label')->eq(0);
-        $this->assertEquals($result->text(),'Date de début','label 1 is Date de début');
+        $this->assertEquals($result->text('Node does not exist', false), 'Date de début','label 1 is Date de début');
 
         $result=$crawler->filter('label')->eq(1);
-        $this->assertEquals($result->text(),'Date de fin','label 2 is Date de fin');
+        $this->assertEquals($result->text('Node does not exist', false), 'Date de fin','label 2 is Date de fin');
 
         $result = $crawler->filter('label')->eq(2);
-        $this->assertEquals($result->text(),'Texte','label 3 is Texte');
+        $this->assertEquals($result->text('Node does not exist', false), 'Texte','label 3 is Texte');
 
         $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1"]');
         $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');

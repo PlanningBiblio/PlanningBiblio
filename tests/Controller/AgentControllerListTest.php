@@ -83,24 +83,24 @@ class AgentControllerListTest extends PLBWebTestCase
         $this->assertTrue(in_array('Supprimé', $list));
 
         $result = $crawler->filterXPath('//table[@id="tableAgents"]/thead');
-        $this->assertStringContainsString('Nom', $result->text());
-        $this->assertStringContainsString('Prénom', $result->text());
-        $this->assertStringContainsString('Heures', $result->text());
-        $this->assertStringContainsString('Statut', $result->text());
-        $this->assertStringContainsString('Service', $result->text());
-        $this->assertStringContainsString('Arrivée', $result->text());
-        $this->assertStringContainsString('Départ', $result->text());
-        $this->assertStringContainsString('Accès', $result->text());
+        $this->assertStringContainsString('Nom', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Prénom', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Heures', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Statut', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Service', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Arrivée', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Départ', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Accès', $result->text('Node does not exist', true));
 
         $result = $crawler->filterXPath('//table[@id="tableAgents"]');
-        $this->assertStringContainsString('Boivin', $result->text());
-        $this->assertStringContainsString('Karel', $result->text());
-        $this->assertStringContainsString('Breton', $result->text());
-        $this->assertStringContainsString('Aubert', $result->text());
-        $this->assertStringContainsString('Devoe', $result->text());
-        $this->assertStringContainsString('John', $result->text());
-        $this->assertStringContainsString('Suppr', $result->text());
-        $this->assertStringContainsString('Bientôt', $result->text());
+        $this->assertStringContainsString('Boivin', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Karel', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Breton', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Aubert', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Devoe', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('John', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Suppr', $result->text('Node does not exist', true));
+        $this->assertStringContainsString('Bientôt', $result->text('Node does not exist', true));
 
         //TEST SELECTION
 

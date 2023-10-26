@@ -54,13 +54,13 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertSelectorTextContains('h4', 'Ajout d\'une information');
 
         $result=$crawler->filter('label')->eq(0);
-        $this->assertEquals($result->text(null, false),'Date de début : ','label 1 is Date de début');
+        $this->assertEquals($result->text('Node does not exist', false), 'Date de début : ','label 1 is Date de début');
 
         $result=$crawler->filter('label')->eq(1);
-        $this->assertEquals($result->text(null, false),'Date de fin : ','label 2 is Date de fin');
+        $this->assertEquals($result->text('Node does not exist', false), 'Date de fin : ','label 2 is Date de fin');
 
         $result = $crawler->filter('label')->eq(2);
-        $this->assertEquals($result->text(null, false),'Texte : ','label 3 is Texte');
+        $this->assertEquals($result->text('Node does not exist', false), 'Texte : ','label 3 is Texte');
 
         $result = $crawler->filterXPath('//input[@class="datepicker"]');
         $this->assertEquals($result->eq(0)->attr('name'),'debut','input datepicker name is start');
@@ -73,7 +73,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
 
         $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2 ui-widget ui-button-type1 ui-corner-all ui-button-text-only"]/span');
-        $this->assertEquals($result->text(null, false),'Annuler','a/span button is Annuler');
+        $this->assertEquals($result->text('Node does not exist', false), 'Annuler','a/span button is Annuler');
     }
 
     public function testFormEdit()
@@ -108,9 +108,9 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertSelectorTextContains('h4', 'Modification des informations sur les congés');
 
         $result=$crawler->filter('label');
-        $this->assertEquals($result->eq(0)->text(null, false),'Date de début : ','label 1 is Date de début');
-        $this->assertEquals($result->eq(1)->text(null, false),'Date de fin : ','label 2 is Date de fin');
-        $this->assertEquals($result->eq(2)->text(null, false),'Texte : ','label 3 is Texte');
+        $this->assertEquals($result->eq(0)->text('Node does not exist', false), 'Date de début : ','label 1 is Date de début');
+        $this->assertEquals($result->eq(1)->text('Node does not exist', false), 'Date de fin : ','label 2 is Date de fin');
+        $this->assertEquals($result->eq(2)->text('Node does not exist', false), 'Texte : ','label 3 is Texte');
 
         $class = $crawler->filterXPath('//input[@name="debut"]');
         $this->assertEquals($class->attr('value'),'05/10/2022','input submit start is 05/10/2022');
@@ -119,16 +119,16 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($class->attr('value'),'10/10/2022','input submit end is 10/10/2022');
 
         $class = $crawler->filterXPath('//textarea');
-        $this->assertEquals($class->text(null, false),'salut','input submit text is salut');
+        $this->assertEquals($class->text('Node does not exist', false), 'salut','input submit text is salut');
 
         $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1 ui-corner-all"]');
         $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
 
         $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2 ui-widget ui-button-type1 ui-corner-all ui-button-text-only"]/span');
-        $this->assertEquals($result->text(null, false),'Annuler','a/span button is Annuler');
+        $this->assertEquals($result->text('Node does not exist', false), 'Annuler','a/span button is Annuler');
 
         $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type3 ui-widget ui-button-type1 ui-corner-all ui-button-text-only"]/span');
-        $this->assertEquals($class->text(null, false),'Supprimer','a button is Supprimer');
+        $this->assertEquals($class->text('Node does not exist', false), 'Supprimer','a button is Supprimer');
     }
 
     public function testHolidayInfoList()
@@ -147,7 +147,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
 
         $result = $crawler->filterXPath('//a[@class="ui-button"]');
-        $this->assertEquals('Ajouter', $result->text(null, false),'a is Ajouter');
+        $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
 
         $this->assertSelectorTextContains('p', 'Aucune information enregistrée.');
 
@@ -167,11 +167,11 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
 
         $result = $crawler->filterXPath('//a[@class="ui-button"]');
-        $this->assertEquals('Ajouter', $result->text(null, false),'a is Ajouter');
+        $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
 
         $result = $crawler->filterXPath('//th[@class="dataTableDateFR"]');
-        $this->assertEquals($result->eq(0)->text(null, false),'Début','table title id Début');
-        $this->assertEquals($result->eq(1)->text(null, false),'Fin','table title is Fin');
+        $this->assertEquals($result->eq(0)->text('Node does not exist', false), 'Début','table title id Début');
+        $this->assertEquals($result->eq(1)->text('Node does not exist', false), 'Fin','table title is Fin');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Edit','span logo edit title is Edit');
