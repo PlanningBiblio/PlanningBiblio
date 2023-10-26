@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Model\Agent;
@@ -65,7 +66,7 @@ class OvertimeControllerTest extends PLBWebTestCase
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
-        $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
+        $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'John'));
         $this->logInAgent($agent, array(100));
 
         $crawler = $this->client->request('GET', "/overtime?annee=2022&perso_id=" .$agent->id());
@@ -114,7 +115,10 @@ class OvertimeControllerTest extends PLBWebTestCase
             $y = $y -1;
         }
 
-        $crawler = $this->client->request('GET', "/overtime?annee=$y&perso_id=" .$agent->id());
+        $crawler = $this->client->request('GET', '/overtime', array(
+            'annee' => "$y",
+            'perso_id' => $agent->id(),
+        ));
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Modifier','span logo edit title is Modifier');
