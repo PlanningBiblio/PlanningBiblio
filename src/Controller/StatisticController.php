@@ -742,6 +742,7 @@ class StatisticController extends BaseController
                         $jour = floatval($elem["sites"][$i])/$nbJours;
                         $hebdo = $jour*$joursParSemaine;
                         $elem["sites"][$i] = heure4($elem["sites"][$i]);
+                        $elem["site_hebdo"][$i] = heure4($hebdo);
                     }
                 }
             }
@@ -2251,6 +2252,18 @@ class StatisticController extends BaseController
             $tab[$key][2] = heure4($tab[$key][2]);
             $tab[$key]['hebdo'] = heure4($hebdo);
 
+            if ($nbSites > 1) {
+                for ($i = 1;$i <= $nbSites; $i++) {
+                    if ($tab[$key]["sites"][$i]) {
+                        // Calcul des moyennes
+                        $jour = $tab[$key]["sites"][$i]/$nbJours;
+                        $hebdo = $jour*$joursParSemaine;
+                    }
+                    $tab[$key]["sites"][$i] = heure4($tab[$key]["sites"][$i]);
+                    $tab[$key]["site_hebdo"][$i] = heure4($hebdo);
+                }
+            }
+
             foreach ($tab[$key][1] as &$poste) {
                 $site=null;
                 if ($poste["site"]>0 and $nbSites>1) {
@@ -3050,6 +3063,7 @@ class StatisticController extends BaseController
                         $jour = $elem["sites"][$i] / $nbJours;
                         $hebdo = $jour * $joursParSemaine;
                         $elem["sites"][$i] = heure4($elem["sites"][$i]);
+                        $elem["site_hebdo"][$i] = heure4($hebdo);
                     }
                 }
             }
