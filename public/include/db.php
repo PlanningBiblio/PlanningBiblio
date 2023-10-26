@@ -109,7 +109,7 @@ class db
                         $result[$key]=filter_var($value, FILTER_UNSAFE_RAW);
                     } else {
                         if ($this->sanitize_string) {
-                            $result[$key] = filter_var($value, FILTER_SANITIZE_STRING);
+                            $result[$key] = htmlspecialchars(strval($value));
                         } else {
                             $result[$key] = filter_var($value, FILTER_UNSAFE_RAW);
                         }   
@@ -617,7 +617,7 @@ class dbh
         for ($i=0;$i<$this->nb;$i++) {
             $result=array();
             foreach ($tmp[$i] as $key => $value) {
-                $result[$key]=filter_var($value, FILTER_SANITIZE_STRING);
+                $result[$key] = htmlspecialchars(strval($value));
             }
             $this->result[]=$result;
         }

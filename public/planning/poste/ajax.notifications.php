@@ -17,15 +17,16 @@ Page appelée en ajax lors du click sur les cadenas de la page /index
 (événement $("#icon-lock").click, page planning/poste/js/planning.js)
 */
 
-session_start();
-require_once "../../include/config.php";
-require_once "class.planning.php";
 require_once(__DIR__ . '/../../../init/init_ajax.php');
+require_once('class.planning.php');
 
 // Initialisation des variables
-$CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
-$date=filter_input(INPUT_GET, "date", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
-$site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
+$CSRFToken = $request->get('CSRFToken');
+$date = $request->get('date');
+$site = $request->get('site');
+
+$date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateSQL'));
+$site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
 
 // Envoi des notification
 if ($config['Planning-Notifications']) {

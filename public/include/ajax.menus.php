@@ -19,14 +19,12 @@ TODO: Les groupes peuvent être supprimés s'ils sont attachés à des postes su
 TODO: Faire en sorte de conserver les ID dans la base de données et façon à les utiliser comme clé.
 */
 
-ini_set('display_errors', 0);
+require_once(__DIR__ . '/../../init/init_ajax.php');
 
-session_start();
+$CSRFToken = $request->get('CSRFToken');
+$menu = $request->get('menu');
+$option = $request->get('option');
 
-include "config.php";
-$CSRFToken=trim(filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING));
-$menu = FILTER_INPUT(INPUT_POST, 'menu', FILTER_SANITIZE_STRING);
-$option = FILTER_INPUT(INPUT_POST, 'option', FILTER_SANITIZE_STRING);
 $tab = $_POST['tab'];
 
 // New method to use for updating menus

@@ -14,16 +14,17 @@ Description :
 Enregistre dans la base de donées les notes en bas des plannings
 */
 
-session_start();
-ini_set('display_errors', 0);
-include_once "../../include/config.php";
-include_once "class.planning.php";
+require_once(__DIR__ . '/../../../init/init_ajax.php');
+require_once('class.planning.php');
 
-$CSRFToken=filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
-$date=filter_input(INPUT_POST, "date", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
-$site=filter_input(INPUT_POST, "site", FILTER_SANITIZE_NUMBER_INT);
-$text=filter_input(INPUT_POST, "text", FILTER_SANITIZE_STRING);
-$text=urldecode($text);
+$CSRFToken = $request->get('CSRFToken');
+$date = $request->get('date');
+$site = $request->get('site');
+$text = $request->get('text');
+
+$date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateSQL'));
+$site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
+$text = urldecode($text);
 
 // Sécurité : droits d'accès à la page
 $required1 = 300 + $site; // Droits de modifier les plannings du sites N° $site

@@ -18,21 +18,19 @@ Script appelé par $( "#pl-appelDispo-form" ).dialog({ Envoyer ]), planning/post
 
 ini_set("display_errors", 0);
 
-session_start();
-
 // Includes
-require_once "../../include/config.php";
-require_once "../../include/function.php";
+require_once(__DIR__ . '/../../../init/init_ajax.php');
+require_once(__DIR__ . '/../../include/function.php');
 
-$CSRFToken=filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
-$site=filter_input(INPUT_POST, "site", FILTER_SANITIZE_STRING);
-$poste=filter_input(INPUT_POST, "poste", FILTER_SANITIZE_STRING);
-$date=filter_input(INPUT_POST, "date", FILTER_SANITIZE_STRING);
-$debut=filter_input(INPUT_POST, "debut", FILTER_SANITIZE_STRING);
-$fin=filter_input(INPUT_POST, "fin", FILTER_SANITIZE_STRING);
-$agents=filter_input(INPUT_POST, "agents", FILTER_SANITIZE_STRING);
-$sujet=filter_input(INPUT_POST, "sujet", FILTER_SANITIZE_STRING);
-$message=filter_input(INPUT_POST, "message", FILTER_SANITIZE_STRING);
+$CSRFToken = $request->get('CSRFToken');
+$site = $request->get('site');
+$poste = $request->get('poste');
+$date = $request->get('date');
+$debut = $request->get('debut');
+$fin = $request->get('fin');
+$agents = $request->get('agents');
+$sujet = $request->get('sujet');
+$message = $request->get('message');
 
 $agents=html_entity_decode($agents, ENT_QUOTES|ENT_IGNORE, "UTF-8");
 $agents=json_decode($agents, true);

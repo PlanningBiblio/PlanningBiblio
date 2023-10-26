@@ -71,18 +71,23 @@ echo $favicon;
 <body>
 
 <?php
+
 // Affichage des messages d'erreur ou de confirmation venant de la page précedente
-$msg=filter_input(INPUT_GET, "msg", FILTER_SANITIZE_STRING);
-$msgType=filter_input(INPUT_GET, "msgType", FILTER_SANITIZE_STRING);
+
+$msg = $request->get('msg');
+$msgType = $request->get('msgType');
+
 if ($msg) {
     echo "<script type='text/JavaScript'>CJInfo('$msg','$msgType');</script>\n";
 }
 
-$msg2=filter_input(INPUT_GET, "msg2", FILTER_SANITIZE_STRING);
-$msg2Type=filter_input(INPUT_GET, "msg2Type", FILTER_SANITIZE_STRING);
+$msg2 = $request->get('msg2');
+$msg2Type = $request->get('msg2Type');
+
 if ($msg2) {
     echo "<script type='text/JavaScript'>CJInfo('$msg2','$msg2Type',82,15000);</script>\n";
 }
+
 ?>
 
 <div id='opac' style='display:none'></div>

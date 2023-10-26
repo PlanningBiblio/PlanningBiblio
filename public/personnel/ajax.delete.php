@@ -15,13 +15,11 @@ Les agents ne sont pas supprimés définitivement, ils sont marqués comme suppr
 Ce script est appelé par la fonction JS personnel/js/index.js : agent_list
 */
 
-session_start();
+require_once(__DIR__.'/../../init/init_ajax.php');
+require_once('class.personnel.php');
 
-require_once(__DIR__.'/../include/config.php');
-require_once "class.personnel.php";
-
-$list = filter_input(INPUT_POST, 'list', FILTER_SANITIZE_STRING);
-$CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
+$list = $request->get('list');
+$CSRFToken = $request->get('CSRFToken');
 
 $list = html_entity_decode($list, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
