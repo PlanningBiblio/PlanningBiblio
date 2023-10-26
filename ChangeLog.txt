@@ -1,3 +1,34 @@
+*** Version 23.11.00.000   (2023-10-26)    ***
+- Fixes
+MT41027: Add absence block, correctly define absence hours #961
+MT42098: importMSGraphCalendar return 0 on success #957
+MT42339: Handle SSO tickets in the Login Listener #955
+MT41956: Fix weekly averages in agent and service statitics #947
+MT41957: Fix hours statistics by status #946
+MT41845: Check invitation acceptance when importing ICS events #943
+MT41894: Fix warning undefined array key VEVENT when importing ics calendars #942
+MT41650: Use utf8-aware function mb_substr (instead of substr) in plannings #937
+MT41312: fix statistic by time export #931
+
+- Documentation
+MT41027: Documentation of the absence blocking function #941
+
+- Enhancements
+MT40642: Add LDIF import capabilities #954
+MT41028: Change the warning message for reccuring absences with end date #951
+
+- Plumbing
+Bump composer/composer from 1.10.26 to 1.10.27 #950
+MT42179: Upgrade symfony from version 4.4 to 5.4 #948
+MT39367: Remove FILTER_SANITIZE_STRING depreciations #823
+Added unit tests for Legal notices #843
+Add unit tests for Framework Controller #836
+Added test for WorkingHour right with Absences-notifications-agent-par-agent #793
+Added test for holiday right with Absences-notifications-agent-par-agent #792
+Add unit tests for Add Holiday Controller #790
+Add Unit test for Add Overtime Controller #750
+MT41281: Move planning_hebdo cron files to src/Cron #389
+
 *** Version 23.05.00.004   (2023-07-26)    ***
 - Enhancements
 MT41027: Add absence block #932
