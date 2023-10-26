@@ -296,6 +296,8 @@ class OvertimeController extends BaseController
             }
 
             $update['refus'] = $refus;
+        } else {
+            $update['refus'] = '';
         }
 
         if (isset($update)) {
