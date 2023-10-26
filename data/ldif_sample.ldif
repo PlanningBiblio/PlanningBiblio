@@ -1,0 +1,50 @@
+version: 1
+
+dn: dc=example,dc=com
+dc: example
+description: My wonderful company whose name is incredibly large
+and requires two lines and a blank space.
+objectClass: dcObject
+objectClass: organization
+o: Example, Inc.
+
+dn: ou=people, dc=example,dc=com
+ou: people
+description: All people in organisation
+objectclass: organizationalunit
+
+dn: cn=Robert Smith,ou=people,dc=example,dc=com
+objectclass: inetOrgPerson
+cn: Robert Smith
+cn: Robert J Smith
+cn: bob smith
+sn: Smith
+givenname: Robert
+uid: rjsmith
+userpassword: rJsmitH
+carlicense: HISCAR 123
+homephone: 555-111-2222
+supannempid: 11111111
+mail: robert.smith@example.com
+
+dn: uid=sbrown200,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+description: Sally Brown from engineering.  Sally is responsibl
+ e for designing the blue prints and testing the structural int
+ egrity of the design.
+cn: Sally Brown
+sn: Brown
+givenname: Sally
+uid: sbrown20
+uid: sbrown200
+mail: sbrown2@example.com
+supannempid: 11111112
+
+dn: uid=jdoe,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+cn: John Doe
+sn: Doe
+givenname: John
+uid: jdoe
+mail: john.doe2@example.com
+supannempid: 11111113

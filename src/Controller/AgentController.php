@@ -7,6 +7,7 @@ use App\PlanningBiblio\Event\OnTransformLeaveDays;
 use App\PlanningBiblio\Event\OnTransformLeaveHours;
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;
+use App\PlanningBiblio\Ldif2Array;
 
 use App\Model\Agent;
 
@@ -66,8 +67,9 @@ class AgentController extends BaseController
         $lang = $GLOBALS['lang'];
         $droits = $GLOBALS['droits'];
         $login_id = $_SESSION['login_id'];
-        $LDAP_host = $this->config('LDAP-Host');
-        $LDAP_suf = $this->config('LDAP-Suffix');
+
+        $ldapBouton = ($this->config('LDAP-Host') and $this->config('LDAP-Suffix'));
+        $ldifBouton = ($this->config('LDIF-File'));
 
         if (!$actif) {
             $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
@@ -194,8 +196,8 @@ class AgentController extends BaseController
             "contracts"              => $contrats,
             "hours"                  => $hours,
             "lang"                   => $lang,
-            "LDAP_host"              => $LDAP_host,
-            "LDAP_suf"               => $LDAP_suf,
+            "ldapBouton"             => $ldapBouton,
+            "ldifBouton"             => $ldifBouton,
             "login_id"               => $login_id,
             "nbSites"                => $nbSites,
             "positionsCompleteNames" => $postes_completNoms_json,
@@ -1274,13 +1276,12 @@ class AgentController extends BaseController
     /**
      * @Route("/agent/ldap", name="agent.ldap", methods={"GET"})
      */
-    public function ldap_search(Request $request)
+    public function ldap_index(Request $request)
     {
-        // FIXME use request object
-        $rechercheLdap = $request->get('recherche-ldap');
+        $searchTerm = $request->get('searchTerm');
 
         $results = array();
-        if ($rechercheLdap) {
+        if ($searchTerm) {
             $infos = array();
             if (!$this->config('LDAP-Port')) {
                 // Default LDAP port.
@@ -1298,7 +1299,7 @@ class AgentController extends BaseController
             $ldap_id_attribute = $this->config('LDAP-ID-Attribute');
 
             // Add search values into filter.
-            $filter = "(&{$filter}(|({$ldap_id_attribute}=*$rechercheLdap*)(givenname=*$rechercheLdap*)(sn=*$rechercheLdap*)(mail=*$rechercheLdap*)))";
+            $filter = "(&{$filter}(|({$ldap_id_attribute}=*$searchTerm*)(givenname=*$searchTerm*)(sn=*$searchTerm*)(mail=*$searchTerm*)))";
 
             // Connect to LDAP server
             $url = $this->config('LDAP-Protocol') .'://'
@@ -1384,16 +1385,19 @@ class AgentController extends BaseController
         }
 
         $this->templateParams(array(
-            'search_term'   => $rechercheLdap,
             'CSRFSession'   => $GLOBALS['CSRFSession'],
+            'action'        => 'agent/ldap',
+            'title1'        => "Importation des agents à partir de l'annuaire LDAP",
+            'title2'        => "Importation de nouveaux agents à partir de l'annuaire LDAP",
+            'searchTerm'    => $searchTerm,
             'results'       => $results
         ));
 
-        return $this->output('agents/ldap-search.html.twig');
+        return $this->output('agents/import-form.html.twig');
     }
 
     /**
-     * @Route("/agent/ldap", name="agent.import", methods={"POST"})
+     * @Route("/agent/ldap", name="agent.ldap.import", methods={"POST"})
      */
     public function ldap_import(Request $request, Session $session)
     {
@@ -1407,7 +1411,7 @@ class AgentController extends BaseController
         $erreurs = false;
 
         $post = $request->request->all();
-        $recherche = $post["recherche"];
+        $searchTerm = $post["searchTerm"];
 
         // Get selected agents uid.
         $uids = array();
@@ -1420,8 +1424,7 @@ class AgentController extends BaseController
             return $this->redirectToRoute(
                 'agent.ldap',
                 array(
-                    'import-type' => 'ldap',
-                    'recherche-ldap' => $recherche
+                    'searchTerm' => $searchTerm,
                 ),
                 //Response::HTTP_MOVED_PERMANENTLY // = 301
             );
@@ -1510,11 +1513,201 @@ class AgentController extends BaseController
         return $this->redirectToRoute(
             'agent.ldap',
             array(
-                'import-type' => 'ldap',
-                'recherche-ldap' => $recherche
+                'searchTerm' => $searchTerm,
             ),
             //Response::HTTP_MOVED_PERMANENTLY // = 301
         );
+    }
+
+
+    /**
+     * @Route("/agent/ldif", name="agent.ldif", methods={"GET"})
+     */
+    public function ldif_index(Request $request)
+    {
+        $searchTerm = $request->get('searchTerm');
+
+        $results = $this->ldif_search($searchTerm);
+
+        // Ignore already imported agents
+        $agents = $this->entityManager->getRepository(Agent::class)->getAgentsList(1);
+
+        foreach ($results as $key => $value) {
+            foreach ($agents as $agent) {
+                if ($agent->login() == $key) {
+                    unset($results[$key]);
+                }
+            }
+        }
+
+        $this->templateParams(array(
+            'CSRFSession'   => $GLOBALS['CSRFSession'],
+            'action'        => 'agent/ldif',
+            'title1'        => "Importation des agents à partir d'un fichier LDIF",
+            'title2'        => "Importation de nouveaux agents à partir d'un fichier LDIF",
+            'searchTerm'    => $searchTerm,
+            'results'       => $results
+        ));
+
+        return $this->output('agents/import-form.html.twig');
+    }
+
+
+    /**
+     * @Route("/agent/ldif", name="agent.ldif.import", methods={"POST"})
+     */
+    public function ldif_import(Request $request, Session $session)
+    {
+        $CSRFToken = $request->get('CSRFToken');
+        $erreurs = false;
+
+        $post = $request->request->all();
+        $searchTerm = $post["searchTerm"];
+
+        // Get selected agents uid.
+        $uids = array();
+        if (array_key_exists("chk", $post)) {
+            foreach ($post["chk"] as $elem) {
+                $uids[] = $elem;
+            }
+        } else {
+            $session->getFlashBag()->add('error', "Aucun agent n'est sélectionné");
+            return $this->redirectToRoute(
+                'agent.ldif',
+                array(
+                    'searchTerm' => $searchTerm,
+                ),
+            );
+        }
+
+        // Préparation de la requête pour insérer les données dans la base de données
+        $req = "INSERT INTO `{$GLOBALS['dbprefix']}personnel` (`login`,`nom`,`prenom`,`mail`,`matricule`,`password`,`droits`,`arrivee`,`postes`,`actif`,`commentaires`) ";
+        $req .= "VALUES (:login, :nom, :prenom, :mail, :matricule, :password, :droits, :arrivee, :postes, :actif, :commentaires);";
+        $db = new \dbh();
+        $db->CSRFToken = $CSRFToken;
+        $db->prepare($req);
+
+        $results = $this->ldif_search(['uid' => $uids]);
+
+        foreach ($results as $elem) {
+            $values = array(
+                ':login'        => $elem['login'],
+                ':nom'          => $elem['sn'],
+                ':prenom'       => $elem['givenname'],
+                ':mail'         => $elem['mail'],
+                ':matricule'    => $elem['matricule'],
+                ':arrivee'      => date('Y-m-d H:i:s'),
+                ':password'     => 'LDIF import, the password is not stored',
+                ':droits'       => '[99,100]',
+                ':postes'       => '[]',
+                ':actif'        => 'Actif',
+                ':commentaires' => 'Importation LDIF ' . date('Y-m-d H:i:s'),
+            );
+
+            // Execution de la requête (insertion dans la base de données)
+            $db->execute($values);
+            if ($db->error) {
+                $erreurs=true;
+            }
+        }
+
+        if ($erreurs) {
+            $session->getFlashBag()->add('error', "Il y a eu des erreurs pendant l'importation.#BR#Veuillez vérifier la liste des agents");
+        } else {
+            $session->getFlashBag()->add('notice', 'Les agents ont été importés avec succès');
+        }
+
+        return $this->redirectToRoute(
+            'agent.ldif',
+            array(
+                'searchTerm' => $searchTerm,
+            ),
+        );
+    }
+
+
+    private function ldif_search($searchTerms) {
+
+        // Return an empty list if $searchTerms is empty (as for an LDAP search)
+        if (empty($searchTerms)) {
+            return array();
+        }
+
+        // If $searchTerms is an array, the attribute to use is specified in array key and there can be multiple search terms (people selected for import)
+        if (is_array($searchTerms)) {
+            $attributes = array_keys($searchTerms);
+            $searchTerms = $searchTerms[$attributes[0]];
+
+        // If $searchTerms is a string, we search one term in all defined attributes (first search)
+        } else {
+            // Define attributes to uses for searches
+            $attributes = array(
+                'cn',
+                'givenname',
+                'mail',
+                'uid',
+                $this->config('LDIF-ID-Attribute'),
+            );
+ 
+            // Add an extra attribute (optional)
+            if ($this->config('LDIF-Matricule')) {
+                $attributes[] = $this->config('LDIF-Matricule');
+            }
+ 
+             $searchTerms = array($searchTerms);
+        }
+
+        $results = array();
+
+        // Parse the LDIF file
+        $ld = new Ldif2Array($this->config('LDIF-File'), true);
+
+        foreach ($ld->entries as $elem) {
+            $keep = false;
+
+            foreach ($searchTerms as $searchTerm) {
+
+                foreach ($attributes as $attr) {
+                    if (isset($elem[$attr])) {
+                        if (is_array($elem[$attr])) {
+                            foreach ($elem[$attr] as $value) {
+                                if (str_contains(strtolower($value), $searchTerm)) {
+                                    $keep = true;
+                                    break 2;
+                                }
+                            }
+                        } else {
+                            if (str_contains(strtolower($elem[$attr]), $searchTerm)) {
+                                $keep = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+   
+                if ($keep) {
+                    $result = $elem;
+    
+                    foreach ($attributes as $attr) {
+                        if (isset($result[$attr])) {
+                            if (is_array($result[$attr])) {
+                                $result[$attr] = $result[$attr][0];
+                            }
+                        } else {
+                            $result[$attr] = null;
+                        }
+                    }
+                    $id = $result[$this->config('LDIF-ID-Attribute')];
+                    $result['id'] = $id;
+                    $result['login'] = $result[$this->config('LDIF-ID-Attribute')];
+                    $result['matricule'] = $result[$this->config('LDIF-Matricule')] ?? null;
+       
+                    $results[$id] = $result;
+                }
+            }
+        }
+
+        return $results;
     }
 
     /**

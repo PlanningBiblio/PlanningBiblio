@@ -24,8 +24,11 @@
         <td>
           {% if rights21 %}
           <input type='button' value='Ajouter' onclick="location.href='{{ asset('agent/add') }}';" class='ui-button'/>
-            {% if LDAP_host and LDAP_suf %}
+            {% if ldapBouton %}
               <input type='button' value='Import LDAP' onclick='location.href="{{ asset('agent/ldap') }}";' class='ui-button ui-button-type2' style='margin-left:21px;'/>
+            {% endif %}
+            {% if ldifBouton %}
+              <input type='button' value='Import LDIF' onclick='location.href="{{ asset('agent/ldif') }}";' class='ui-button ui-button-type2' style='margin-left:21px;'/>
             {% endif %}
           {% endif %}
         </td>
