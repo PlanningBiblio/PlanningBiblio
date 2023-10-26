@@ -3206,6 +3206,17 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+
+$v="23.10.00.000";
+
+if (version_compare($config['Version'], $v) === -1) {
+
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDIF-File', 'text', '', '', 'Emplacement d\'un fichier LDIF pour l\'importation des agents', 'LDIF', 10);";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDIF-ID-Attribute', 'enum', 'uid', 'uid,samaccountname,supannaliaslogin', 'Attribut d\'authentification (OpenLDAP : uid, Active Directory : samaccountname)', 'LDIF', 20);";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDIF-Matricule', 'text', '', '', 'Attribut à importer dans le champ matricule (optionnel)', 'LDIF', 30);";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage
