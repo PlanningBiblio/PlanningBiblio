@@ -1,3 +1,7 @@
+*** Version 23.11.00.000   (2023-10-27)    ***
+- Plumbing
+MT41281: Move planning_hebdo cron files to src/Cron #389
+
 *** Version 23.11.00.000   (2023-10-26)    ***
 - Fixes
 MT41027: Add absence block, correctly define absence hours #961
