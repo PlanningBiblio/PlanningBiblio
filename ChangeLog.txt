@@ -1,3 +1,18 @@
+*** Version 22.10.12       (2023-10-27)    ***
+- Fixes
+MT41027: Add absence block, correctly define absence hours #961
+MT42098: importMSGraphCalendar return 0 on success #957
+MT42170: Fix undefined array key in public/ics/calendar.php (for 22.10 and 23.04) #956
+MT41956: Fix weekly averages in agent and service statitics #947
+MT41957: Fix hours statistics by status #946
+MT41845: Check invitation acceptance when importing ICS events #943
+MT41894: Fix warning undefined array key VEVENT when importing ics calendars #942
+MT41650: Use utf8-aware function mb_substr (instead of substr) in plannings #937
+MT41312: fix statistic by time export #931
+
+- Plumbing
+MT42179: Upgrade symfony from version 4.4 to 5.4 #948
+
 *** Version 22.10.11       (2023-07-26)    ***
 - Fixes
 MT41411: Use utf8-aware function mb_substr (instead of substr) in plannings #934
