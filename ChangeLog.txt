@@ -1,5 +1,8 @@
-*** Version 23.10.00 (2023-10-26)    ***
+*** Version 23.10.01 (2023-10-27)    ***
+- Plumbing
+MT41281: Move planning_hebdo cron files to src/Cron #389
 
+*** Version 23.10.06 (2023-10-26)    ***
 - Enhancements
 MT41027: Add absence block #932
 MT40642: Add LDIF import capabilities #954
