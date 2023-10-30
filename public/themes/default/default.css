@@ -270,6 +270,11 @@ h4{
   background:url("images/icon/add_black_18dp.svg") no-repeat center;
 }
 
+.pl-icon-add-white {
+  background:url("images/icon/add_black_18dp.svg") no-repeat center;
+  filter: invert(100%);
+}
+
 .pl-icon-copy {
   background:url("images/icon/content_copy_black_18dp.svg") no-repeat center;
 }
