@@ -47,9 +47,10 @@ function CJErrorHighlight(e, type, icon) {
     }
     return e.each(function() {
         $(this).addClass('ui-widget');
+
         var alertHtml = '<div class="ui-state-' + type + ' ui-corner-all" style="padding:0 .7em;">';
         alertHtml += '<p style="text-align:center;">';
-        alertHtml += '<span class="pl-icon ' + icon + '" style="float:left;margin-right: .3em;"></span>';
+        alertHtml += '<span class="ui-icon ' + icon + '" style="float:left;margin-right: .3em;"></span>';
         alertHtml += $(this).html();
         alertHtml += '</p>';
         alertHtml += '</div>';

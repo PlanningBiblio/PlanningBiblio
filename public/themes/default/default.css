@@ -73,6 +73,11 @@ h4{
   font-size: 20px;
 }
 
+.ui-state-error p,
+.ui-state-highlight p {
+    margin-top: 15px;
+}
+
 #acces_refuse {
   margin: 60px 0 80px 0;
   width:100%;
@@ -1660,8 +1665,20 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
     color: #29495C;
 }
 
+/* Frameworks */
 .framework-timepicker {
   width: 85px;
+}
+
+#div_infos .important,
+#div_horaires .important {
+  width: 500px;
+  margin: auto;
+}
+
+#div_lignes .highlight {
+  width: 530px;
+  margin: 40px auto auto;
 }
 
 /*Buttons START*/
