@@ -27,7 +27,7 @@ function annuler(nb){
 	  history.go(-nb);
   }
 }
-	
+
 // Fonction permettant d'afficher les heures correspondantes à chaque tableau d'emploi du temps
 // lors de la modification d'un select ou au chargement d'une page
 function calculHeures(object,num,form,tip,numero){
@@ -36,7 +36,7 @@ function calculHeures(object,num,form,tip,numero){
   // tip : Affichage qui sera mis à jour
   debut=numero*7;
   fin=debut+7;
-  
+
   heures=0;
   elements=document.forms[form].elements;
   
@@ -397,7 +397,7 @@ function deleteAbsenceDocument(id) {
 
 function deleteAbsenceInfo(id) {
     if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
+        $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");
         $('#form').submit();
     }
 }
@@ -412,7 +412,7 @@ function deleteAbsenceBlock(id) {
 
 function deleteAdminInfo(id) {
     if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
+        $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");
         $('#form').submit();
     }
 }
