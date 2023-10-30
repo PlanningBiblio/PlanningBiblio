@@ -277,6 +277,6 @@ $(function(){
 });
 
 $(document).ready(function(){
-  errorHighlight($(".important"),"error");
-  errorHighlight($(".highlight"),"highlight");
+  CJErrorHighlight($(".important"),"error");
+  CJErrorHighlight($(".highlight"),"highlight");
 });

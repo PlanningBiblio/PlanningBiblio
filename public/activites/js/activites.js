@@ -15,5 +15,5 @@ Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 */
 
 $(document).ready(function(){
-  errorHighlight($(".important"),"highlight");
+  CJErrorHighlight($(".important"),"highlight");
 });
