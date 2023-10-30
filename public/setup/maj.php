@@ -2203,13 +2203,8 @@ if (version_compare($config['Version'], $v) === -1) {
 $v="20.11.00.010";
 if (version_compare($config['Version'], $v) === -1) {
 
-    if (!column_exists("{$dbprefix}postes", 'teleworking')) {
-        $sql[] = "ALTER TABLE `{$dbprefix}postes` ADD COLUMN `teleworking` ENUM('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' AFTER `statistiques`;";
-    }
-    if (!column_exists("{$dbprefix}select_abs", 'teleworking')) {
-        $sql[] = "ALTER TABLE `{$dbprefix}select_abs` ADD COLUMN `teleworking` INT(1) NOT NULL DEFAULT '0' AFTER `notification_workflow`;";
-    }
-
+    $sql[] = "ALTER TABLE `{$dbprefix}postes` ADD COLUMN IF NOT EXISTS `teleworking` ENUM('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' AFTER `statistiques`;";
+    $sql[] = "ALTER TABLE `{$dbprefix}select_abs` ADD COLUMN IF NOT EXISTS `teleworking` INT(1) NOT NULL DEFAULT '0' AFTER `notification_workflow`;";
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
@@ -2961,21 +2956,10 @@ $v="22.11.00.000";
 if (version_compare($config['Version'], $v) === -1) {
     // MT 35062. New validation schema.
 
-    if (!column_exists("{$dbprefix}responsables", 'notification_level1')) {
-        $sql[] = "ALTER TABLE `{$dbprefix}responsables` CHANGE IF EXISTS `notification` `notification_level1` INT(1) NOT NULL DEFAULT '0'";
-    }
-
-    if (!column_exists("{$dbprefix}responsables", 'notification_level2')) {
-        $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN IF NOT EXISTS `notification_level2` INT(1) NOT NULL DEFAULT '0' AFTER `notification_level1`";
-    }
-
-    if (!column_exists("{$dbprefix}responsables", 'level1')) {
-        $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN IF NOT EXISTS `level1` INT(1) NOT NULL DEFAULT '1' AFTER `responsable`";
-    }
-
-    if (!column_exists("{$dbprefix}responsables", 'level2')) {
-        $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN IF NOT EXISTS `level2` INT(1) NOT NULL DEFAULT '0' AFTER `level1`";
-    }
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` CHANGE IF EXISTS `notification` `notification_level1` INT(1) NOT NULL DEFAULT '0'";
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN IF NOT EXISTS `notification_level2` INT(1) NOT NULL DEFAULT '0' AFTER `notification_level1`";
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN IF NOT EXISTS `level1` INT(1) NOT NULL DEFAULT '1' AFTER `responsable`";
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN IF NOT EXISTS `level2` INT(1) NOT NULL DEFAULT '0' AFTER `level1`";
 
     $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Absences-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"L\'absence doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Absences', 'La validation niveau 2 des absences peut se faire directement ou doit attendre la validation niveau 1', '31')";
 
@@ -3334,18 +3318,6 @@ function serializeToJson($table, $field, $id='id', $where=null, $CSRFToken)
             }
         }
     }
-}
-
-function column_exists($table_name, $column_name) {
-    $db=new db();
-    $db->sanitize_string = true;
-    $db->query("SHOW COLUMNS FROM `$table_name` WHERE Field = '$column_name'");
-
-    if ($db->nb > 0) {
-        return true;
-    }
-
-    return false;
 }
 
 exit;

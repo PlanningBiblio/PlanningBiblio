@@ -512,8 +512,9 @@ foreach ($sql as $queries) {
     $db->sanitize_string = true;
     $db->query($queries);
     if ($db->error) {
+        print "\033[31m[KO]\e[0m\n";
         print $db->error . "\n";
         continue;
     }
-    print "Ok\n";
+    print "\033[32m[OK]\e[0m\n";
 }
