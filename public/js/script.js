@@ -27,7 +27,7 @@ function annuler(nb){
 	  history.go(-nb);
   }
 }
-	
+
 // Fonction permettant d'afficher les heures correspondantes à chaque tableau d'emploi du temps
 // lors de la modification d'un select ou au chargement d'une page
 function calculHeures(object,num,form,tip,numero){
@@ -36,7 +36,7 @@ function calculHeures(object,num,form,tip,numero){
   // tip : Affichage qui sera mis à jour
   debut=numero*7;
   fin=debut+7;
-  
+
   heures=0;
   elements=document.forms[form].elements;
   
@@ -397,14 +397,22 @@ function deleteAbsenceDocument(id) {
 
 function deleteAbsenceInfo(id) {
     if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
+        $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");
+        $('#form').submit();
+    }
+}
+
+function deleteAbsenceBlock(id) {
+    if (confirm("Êtes-vous sûr(e) de vouloir supprimer ce blocage ?")) {
         $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
+        $('#form').prepend("<input type='hidden' name='id' value='" + id + "' />");
         $('#form').submit();
     }
 }
 
 function deleteAdminInfo(id) {
     if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
+        $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");
         $('#form').submit();
     }
 }
@@ -497,9 +505,9 @@ function removeAccents(strAccents){
  */
 function resetICSURL(id, CSRFToken, nom){
   if(nom == undefined){
-    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL de votre calendrier ICS ?");
+    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser les URL de vos agendas ICS ?");
   } else {
-    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL du calendrier de "+nom+" ?");
+    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser les URL des agendas de "+nom+" ?");
   }
   
   if(res){
@@ -509,7 +517,8 @@ function resetICSURL(id, CSRFToken, nom){
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       success: function(result){
-        $("#url-ics").html("<a href='"+result.url+"'>"+result.url+"</a>");
+        $("#urlIcs").html("<a href='"+result.url+"'>"+result.url+"</a>");
+        $("#urlIcsWithAbsences").html("<a href='"+result.url+"&absences=1'>"+result.url+"&absences=1</a>");
         CJInfo("L'URL du calendrier a été réinitialisée avec succès","success");
       },
       error: function(result){
