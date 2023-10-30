@@ -34,6 +34,8 @@ foreach ($tables as $table) {
             $old = $elem[$field];
 
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            // Since release 23.10, db::select adds html entities, we can then obtain doubly encoded strings
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
             if ($new != $old) {
                 $new = addslashes($new);
@@ -50,8 +52,10 @@ foreach ($sql as $queries) {
     $db->sanitize_string = true;
     $db->query($queries);
     if ($db->error) {
+        print "\033[31m[KO]\e[0m\n";
         print $db->error . "\n";
         continue;
     }
-    print "Ok\n";
+    print "\033[32m[OK]\e[0m\n";
+
 }
