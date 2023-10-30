@@ -418,28 +418,6 @@ function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 he
   return f-d;
 }
 
-//function to create error and alert dialogs
-function errorHighlight(e, type, icon) {
-    if (!icon) {
-        if (type === 'highlight') {
-            icon = 'ui-icon-info';
-        } else {
-            icon = 'ui-icon-alert';
-        }
-    }
-    return e.each(function() {
-        $(this).addClass('ui-widget');
-        var alertHtml = '<div class="ui-state-' + type + ' ui-corner-all" style="padding:0 .7em;">';
-        alertHtml += '<p style="text-align:center;">';
-        alertHtml += '<span class="pl-icon ' + icon + '" style="float:left;margin-right: .3em;"></span>';
-        alertHtml += $(this).html();
-        alertHtml += '</p>';
-        alertHtml += '</div>';
-
-        $(this).html(alertHtml);
-    });
-}
-
 function heureFr(heure){
   heure=heure.toString();
   heure=heure.replace(/([0-9]*):([0-9]*):([0-9]*)/,"$1h$2");
@@ -483,7 +461,7 @@ function information(message,type,top,time){
   }
   $("#JSInformation").remove();
   $("body").append("<div id='JSInformation'>"+message+"</div>");
-  errorHighlight($("#JSInformation"),type);
+  CJErrorHighlight($("#JSInformation"),type);
   position($("#JSInformation"),top,"center");
   timeoutJSInfo=window.setTimeout("$('#JSInformation').remove()",time);
 }
@@ -616,7 +594,7 @@ function updateTips( text , type) {
 
   $(".validateTips").html(text);
 
-  errorHighlight( $(".validateTips"), type);
+  CJErrorHighlight( $(".validateTips"), type);
 }
 
 function verif_date(d){

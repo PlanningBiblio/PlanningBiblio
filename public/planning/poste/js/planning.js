@@ -1694,7 +1694,7 @@ function verif_categorieA(){
       else {
 	$("#planningTips").html("<div class='noprint'>Attention, pas d&apos;agent de cat&eacute;gorie A en fin de service.</div>");
 	$("#planningTips").show();
-	errorHighlight($("#planningTips"),"error");
+	CJErrorHighlight($("#planningTips"),"error");
       }
     }
   });
