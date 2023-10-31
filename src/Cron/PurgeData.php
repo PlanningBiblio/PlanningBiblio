@@ -56,6 +56,8 @@ Example: php bin/console PlanningBiblio:PurgeData \"5\"
         $dataPurger->purge();
 
         $this->release();
+
+        return 0;
     }
 }
 
