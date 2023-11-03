@@ -1038,6 +1038,11 @@ function heure4($heure, $return0=false)
         $heure = number_format($hre, 2, '.', '');
     } else {
         if (is_numeric($heure)) {
+            $negative = false;
+            if ($heure < 0) {
+                $negative = true;
+                $heure = abs($heure);
+            }
             $hre = floor($heure);
             $centiemes = $heure - $hre;
             $minutes = $centiemes * 0.6;
@@ -1051,6 +1056,9 @@ function heure4($heure, $return0=false)
                 $hre -= $minutes;
             }
             $heure = number_format($hre, 2, 'h', ' ');
+            if ($negative == true) {
+                $heure = '-' . $heure;
+            }
         }
     }
     return $heure;
