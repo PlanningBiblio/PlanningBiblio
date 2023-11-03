@@ -18,6 +18,21 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 
 class AjaxController extends BaseController
 {
+
+    /**
+     * @Route("/ajax/sanitize-html", name="ajax.sanitizehtml", methods={"POST"})
+     */
+    public function ajax_sanitize_html(Request $request)
+    {
+        $text = $request->get('text');
+        $response = new Response();
+        $sanitized = sanitize_html($text);
+        $response->setContent($sanitized);
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
     /**
      * @Route("/ajax/agents-by-sites", name="ajax.agentsbysites", methods={"GET"})
      */

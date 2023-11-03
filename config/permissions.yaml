@@ -95,6 +95,8 @@
     - 100
 "ajax.update_agent_login":
     - 21
+"ajax.sanitizehtml":
+    - 100
 "calendar.index":
     - 100
 "config.index":

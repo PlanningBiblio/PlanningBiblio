@@ -29,6 +29,7 @@
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.14",
+        "ezyang/htmlpurifier": "^4.16",
         "league/commonmark": "^2.3",
         "league/oauth2-client": "*",
         "mashape/unirest-php": "*",
