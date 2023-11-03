@@ -21,6 +21,12 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
+function sanitize_html($input) {
+    $config = HTMLPurifier_Config::createDefault();
+    $purifier = new HTMLPurifier($config);
+    return $purifier->purify($input);
+}
+
 function sanitize_array_unsafe($n)
 {
     if (is_array($n)) {
