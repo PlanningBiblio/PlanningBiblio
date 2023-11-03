@@ -147,6 +147,23 @@ $(document).ready(function(){
     csrftoken = $('#CSRFSession').val();
 
     $.ajax({
+        url: url('ajax/sanitize-html'),
+        type: "POST",
+        dataType: "html",
+        async: false,
+        data: {text: name},
+        success: function(result){
+            $('form[name="save-model-form"] input[name="name"]').val(result);
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+            CJInfo("Impossible d'enregistrer le modèle", "error");
+            return;
+        }
+    });
+
+    name = $('form[name="save-model-form"] input[name="name"]').val()
+
+    $.ajax({
       url: url('model-add'),
       type: 'post',
       //dataType: 'json',
