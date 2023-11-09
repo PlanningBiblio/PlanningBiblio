@@ -110,7 +110,7 @@ class AdminInfoController extends BaseController
     }
 
     /**
-     * @Route("/admin/info", name="admin.info.delete", methods={"DEL"})
+     * @Route("/admin/info", name="admin.info.delete", methods={"DELETE"})
      */
     public function delete(Request $request, Session $session)
     {
