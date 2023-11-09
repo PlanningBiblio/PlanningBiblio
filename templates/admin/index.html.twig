@@ -3,11 +3,11 @@
 {% block page %}
   <h3>Administration</h3>
   <ul>
-    {% if userCan('23') %}
+    {% if userCan('23') and not config('Planook') %}
       <li><a href='{{ asset("admin/info") }}'>Informations</a></li>
     {% endif %}
 
-    {% if userCan('5') %}
+    {% if userCan('5') and not config('Planook') %}
       <li><a href='{{ asset("skill") }}'>Les activités</a></li>
     {% endif %}
 
@@ -27,7 +27,7 @@
       <li><a href='{{ asset("framework") }}'>Les tableaux</a></li>
     {% endif %}
 
-    {% if userCan('25') %}
+    {% if userCan('25') and config('Conges-Enable') %}
       <li><a href='{{ asset("closingday") }}'>Jours de fermeture</a></li>
     {% endif %}
 
