@@ -8,7 +8,7 @@
       if (confirm("Etes vous sûr de vouloir supprimer cet élément ?")) {
         $.ajax({
           url: url('model/' + id),
-          type: "DEL",
+          type: 'DELETE',
           success: function(data) {
             window.location.reload(false);
           },

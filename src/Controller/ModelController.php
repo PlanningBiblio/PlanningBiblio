@@ -152,7 +152,7 @@ class ModelController extends BaseController
 
 
     /**
-     * @Route("/model/{id}", name="model.delete", methods={"DEL"})
+     * @Route("/model/{id}", name="model.delete", methods={"DELETE"})
      */
     public function delete(Request $request, Session $session)
     {

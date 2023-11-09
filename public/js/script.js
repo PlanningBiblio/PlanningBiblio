@@ -397,14 +397,14 @@ function deleteAbsenceDocument(id) {
 
 function deleteAbsenceInfo(id) {
     if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");
+        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
         $('#form').submit();
     }
 }
 
 function deleteAdminInfo(id) {
     if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");
+        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
         $('#form').submit();
     }
 }
