@@ -324,7 +324,7 @@ class StatisticController extends BaseController
 
             foreach ($tab as &$elem) {
                 // Calcul des moyennes
-                $jour = $elem[2]/$nbJours;
+                $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
 
                 $heures = 0;
                 foreach ($elem[3] as &$samedi) {
@@ -730,7 +730,7 @@ class StatisticController extends BaseController
         }
 
         foreach ($tab as &$elem) {
-            $jour = $elem[2]/$nbJours;
+            $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
             $hebdo = $jour*$joursParSemaine;
             $elem[2] = heure4($elem[2]);
             $elem["hebdo"] = heure4($hebdo);
@@ -739,7 +739,7 @@ class StatisticController extends BaseController
                 for ($i = 1; $i <= $nbSites; $i++) {
                     if ($elem["sites"][$i]) {
                         // Calcul des moyennes
-                        $jour = floatval($elem["sites"][$i])/$nbJours;
+                        $jour = ($nbJours > 0) ? floatval($elem['sites'][$i]) / $nbJours : 0;
                         $hebdo = $jour*$joursParSemaine;
                         $elem["sites"][$i] = heure4($elem["sites"][$i]);
                         $elem["site_hebdo"][$i] = heure4($hebdo);
@@ -1186,7 +1186,7 @@ class StatisticController extends BaseController
 
         if($tab){
             foreach ($tab as &$elem) {
-                $jour = $elem[2]/$nbJours;
+                $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
                 $hebdo = $jour*$joursParSemaine;
                 $elem[2] = heure4($elem[2]);
                 $elem["jour"] = $jour;
@@ -1196,7 +1196,7 @@ class StatisticController extends BaseController
                     for ($i = 1;$i <= $nbSites; $i++) {
                         if ($elem["sites"][$i]) {
                             // Calcul des moyennes
-                            $jour = $elem["sites"][$i]/$nbJours;
+                            $jour = ($nbJours > 0) ? floatval($elem['sites'][$i]) / $nbJours : 0;
                             $hebdo = $jour*$joursParSemaine;
                         }
                         $elem["sites"][$i] = heure4($elem["sites"][$i]);
@@ -1834,7 +1834,7 @@ class StatisticController extends BaseController
             $nbJours = $db->nb;
 
             foreach ($tab as &$elem) {
-                $jour=$elem[2]/$nbJours;
+                $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
                 $hebdo=$jour*$joursParSemaine;
                 $total_heures+=$elem[2];
                 $total_jour+=$jour;
@@ -2247,7 +2247,8 @@ class StatisticController extends BaseController
 
         foreach ($tab as $key => $elem) {
             // Calcul des moyennes
-            $jour = $tab[$key][2]/$nbJours;
+            $jour = ($nbJours > 0) ? $tab[$key][2] / $nbJours : 0;
+
             $hebdo = $jour*$joursParSemaine;
 
             $tab[$key][2] = heure4($tab[$key][2]);
@@ -2257,7 +2258,7 @@ class StatisticController extends BaseController
                 for ($i = 1;$i <= $nbSites; $i++) {
                     if ($tab[$key]["sites"][$i]) {
                         // Calcul des moyennes
-                        $jour = $tab[$key]["sites"][$i]/$nbJours;
+                        $jour = ($nbJours > 0) ? floatval($tab[$key]['sites'][$i]) / $nbJours : 0;
                         $hebdo = $jour*$joursParSemaine;
                     }
                     $tab[$key]["sites"][$i] = heure4($tab[$key]["sites"][$i]);
@@ -3064,7 +3065,7 @@ class StatisticController extends BaseController
                 $siteEtage = null;
             }
     
-            $jour = floatval($elem[2])/$nbJours;
+            $jour = ($nbJours > 0) ? floatval($elem[2]) / $nbJours : 0;
             $hebdo = $jour*$joursParSemaine;
             $elem["jour"] = heure4(round($jour, 2));
             $elem["hebdo"] = heure4(round($hebdo, 2));
@@ -3074,7 +3075,7 @@ class StatisticController extends BaseController
                 for ($i = 1; $i <= $nbSites; $i++) {
                     if ($elem["sites"][$i] and $elem["sites"][$i] != $elem[2]) {
                         // Calcul des moyennes
-                        $jour = $elem["sites"][$i] / $nbJours;
+                        $jour = ($nbJours > 0) ? floatval($elem['sites'][$i]) / $nbJours : 0;
                         $hebdo = $jour * $joursParSemaine;
                         $elem["sites"][$i] = heure4($elem["sites"][$i]);
                         $elem["site_hebdo"][$i] = heure4($hebdo);
@@ -3387,7 +3388,7 @@ class StatisticController extends BaseController
                 } else {
                     $siteEtage=null;
                 }
-                $jour = $tab[$key][2] / $nbJours;
+                $jour = ($nbJours > 0) ? $tab[$key][2] / $nbJours : 0;
                 $hebdo = $jour*$joursParSemaine;
                 $av_jour = null;
                 $av_hebdo = null;
@@ -3395,7 +3396,7 @@ class StatisticController extends BaseController
                 if ($nbSites>1) {
                     for ($i = 1 ; $i <= $nbSites; $i++) {
                         $total = $tab[$key]["sites"][$i];
-                        $av_jour = $total / $nbJours;
+                        $av_jour = ($nbJours > 0) ? $total / $nbJours : 0;
                         $average = $av_jour * $joursParSemaine;
                         $tab[$key]["sites"][$i] = array(
                             'total' => $total,
