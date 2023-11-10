@@ -12,6 +12,9 @@
 	<ol>
 	<li><a href='#abs_voir'>Voir les absences</a></li>
 	<li><a href='#abs_ajouter'>Ajouter une absence</a></li>
+	<li><a href='#abs_recu1'>Ajouter une absence récurrente</a></li>
+	<li><a href='#abs_recu2'>Modifier une absence récurrente</a></li>
+	<li><a href='#abs_recu3'>Supprimer une absence récurrente</a></li>
 	<li><a href='#abs_block'>Bloquer les absences</a></li>
 	<li><a href='#abs_infos'>Informations</a></li>
 	</ol>
@@ -88,7 +91,7 @@
 <h4>1.1) Voir les absences</h4>
 <u><strong>Si vous n'avez pas le droit de gérer les absences :</strong></u><br/>
 Vous pouvez voir la liste de vos absences entre 2 dates.<br/>
-Sélectionnez la date de début et la date de fin à l'aide des calendriers puis validez en cliquant sur "OK".<br/>
+Sélectionnez la date de début et la date de fin à l'aide des calendriers puis validez en cliquant sur le bouton "Rechercher".<br/>
 La liste de vos absences durant cette période s'affiche avec les dates de début, de fin, le motif de l'absence et un commentaire éventuel.<br/><br/>
 Si vous avez le droit de modifier vos absences, vous pouvez cliquer sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span> 
 sur la ligne de l'absence que vous souhaitez modifier, vous verrez alors apparaître le détail de l'absence et vous pourrez la modifier.<br/>
@@ -115,10 +118,67 @@ Le menu "Absences / Ajouter une absence" vous permet d'enregistrer les absences 
 Choisissez les agents concernés par l'absence dans le menu déroulant nommé "Ajoutez un agent".<br/>
 Choisissez les dates de début et de fin à l'aide des calendriers, si besoin : les heures 
 de début et de fin, le motif de l'absence (ex: Formation) et un commentaire éventuel.<br/>
+Si les absences doivent être validées, choisissez le niveau de validation dans le champ "État".<br/> 
 Cliquez sur "Valider".<br/>
 
+
+<a name='abs_recu1'></a>
+<h4>1.3) Ajouter une absence récurrente</h4>
+Pour créer une absence récurrente, compléter le formulaire d'ajout d'absence et cocher la case "Récurrence".<br/>
+ATTENTION : la date de fin de série ne doit pas être renseignée dans la champ "Date de fin" du formulaire d'absence. Elle pourra être choisie dans la formulaire dédié à la création de la règle de récurrence.<br/>
+<br/>
+Créez votre règle de récurrence en choisissant vos options :
+<ul>
+  <li><u>Récurrent</u> : Choisissez la fréquence parmi "Tous les jours", "Toutes les semaines" et "Tous les mois"</li>
+  <li><u>Répétez tous les</u> : Choisissez la fréquence de répétition.<br/>
+Si vous avez choisi "Toutes les semaines" dans le champ précédent et que vous choisissez "1" dans celui-ci, l'absence se répétera toutes les semaines.<br/>
+Si vous choisissez "2", l'absence se répétera toutes les deux semaines.</li>
+  <li><u>Répéter le</u> : S'affiche si vous avez choisi "Toutes les semaines" dans le premier champ : Choisissez le jour de répétition.<br/>
+Exemple "Ma" pour une répétition tous les mardis. Vous pouvez choisir plusieurs jours si l'absence doit se répéter plusieurs fois chaque semaine.</li>
+  <li><u>Répéter chaque</u> : S'affiche si vous avez choisi "Tous les mois" dans le premier champ : Choisissez parmi "Jour du mois" et "Jour de la semaine".<br/>
+Si vous choisissez "Jour du mois" et que la première occurrence est le 2 du mois, l'absence se répétera le 2 de chaque mois.<br/>
+Si vous choisissez "Jour de la semaine" et que la première occurrence est le 3<sup>ème</sup> mardi du mois, l'absence se répétera le 3<sup>ème</sup> mardi de chaque mois.<br/>
+  <li><u>Fin</u> : Choisissiez la fin de la série parmi "Jamais", "Après X répétitions" et "Le ...".<br/>
+Si vous choisissez "Jamais" : l'absence se répétera sans cesse. Planno créera tous les évènements sur les 2 ans à venir et en ajoutera régulièrement de façon à maintenir les 2 ans d'avance.<br/>
+Si vous choisissez "Après X répétitions", l'absence s'arrêtera après le nombre d'occurrences défini.<br/>
+Si vous choisissez "Le ...", l'absence s'arrêtera après la date choisie.<br/>
+Quelque soit l'option choisie pour la fin de récurrence, vous pourrez à tout moment arrêter une série en cliquant sur l’occurrence de votre choix, puis en cliquant sur le bouton "Supprimer".<br/>
+Vous pourrez alors choisir de supprimer l'occurrence choisie, l'occurrence choisie ainsi que toutes celles qui suivent ou toute la série.</li>
+  <li><u>Résumé</u> : Votre règle de récurrence s'affiche en langage humain. Le texte s'adapte à chaque modification effectuée dans le formulaire.</li>
+  <li>Cliquez sur "Enregistrer" pour valider votre règle de récurrence.</li>
+</ul>
+
+
+<a name='abs_recu2'></a>
+<h4>1.4) Modifier une absence récurrente</h4>
+Depuis la liste des absences, les absences récurrentes se distinguent avec une icône représentant une flèche tournante.<br/>
+Les absences récurrentes sont modifiables comme les autres absences mais la règle de récurrence n'est pas modifiable.<br/>
+Si vous devez modifier cette règle, supprimez l'absence et créez-en une nouvelle.<br/>
+Lors de la suppression de l'absence, vous serez invité à choisir l'étendu de la suppression. Vous pourrez choisir de supprimer l'occurrence choisie et les suivantes. Ce choix s'adapte bien à la situation actuelle.<br/>
+<br/>
+Si vous devez modifier un autre élément comme le motif, le commentaire ou le niveau de validation, une fenêtre de confirmation s'affiche lors de la validation et vous propose les choix suivants :
+<ul>
+  <li><u>Uniquement cet évènement</u> : En choisissant cette option, seule l'occurrence choisie sera modifiée. Une exception sera ajoutée à la série afin de conserver intactes les autres occurrences.</li>
+  <li><u>Cet évènement et les suivants</u> : En choisissant cette option, l'occurrence choisie et les suivantes seront modifiées, les occurrences précédentes seront conservées.</li>
+  <li><u>Tous les évènements</u> : En choisissant cette option, toute la série sera modifiée du début à la fin et quelque soit l'occurrence choisie.</li>
+</ul>
+
+
+<a name='abs_recu3'></a>
+<h4>1.5) Supprimer une absence récurrente</h4>
+Depuis la liste des absences, les absences récurrentes se distinguent avec une icône représentant une flèche tournante.<br/>
+Pour supprimer une absence récurrente, choisissez une occurrence dans la liste. Le choix de l'occurrence est important si vous ne souhaitez pas supprimer toute la série.<br/>
+Cliquez sur l'icône d'édition sur la ligne de l'occurrence, puis cliquez sur le bouton "Supprimer" dans le formulaire.<br/>
+Une fenêtre de confirmation s'affiche et vous propose les choix suivants :
+<ul>
+  <li><u>Uniquement cet évènement</u> : En choisissant cette option, l'occurrence choisie sera supprimée, le reste de la série sera conservé.</li>
+  <li><u>Cet évènement et les suivants</u> : En choisissant cette option, l'occurrence choisie et les suivantes seront supprimées, les occurrences précédentes seront conservées.</li>
+  <li><u>Tous les évènements</u> : En choisissant cette option, toute la série sera supprimée du début à la fin et quelque soit l'occurrence choisie.</li>
+</ul>
+
+
 <a name='abs_block'></a>
-<h4>1.3) Bloquer les absences</h4>
+<h4>1.6) Bloquer les absences</h4>
 Les gestionnaires plannings peuvent définir des périodes pendant lesquelles les enregistrements d'absences et de congés sont bloqués.<br/>
 Ceci leur permet de travailler sur les plannings sans être gênés par les nouvelles demandes d'absences.<br/>
 <br/>
@@ -148,7 +208,7 @@ Avec un compte ayant les droits de création et modification des plannings :
 </ul>
 
 <a name='abs_infos'></a>
-<h4>1.4) Informations</h4>
+<h4>1.7) Informations</h4>
 Le menu "Absences / Informations" permet aux agents ayant le droit de gérer les absences de diffuser des messages aux personnes voulant prendre des congés pendant une période définie.<br/>
 Sélectionnez la date de début et de fin et le message à communiquer dans le champ "texte".<br/>
 Validez puis confirmez.<br/>
