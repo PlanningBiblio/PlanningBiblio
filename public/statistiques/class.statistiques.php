@@ -68,7 +68,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
     }
 
     foreach ($tab as $elem) {
-        $jour = $elem[2] / $nbJours;
+        $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
         $hebdo = $jour * $joursParSemaine;
         foreach ($elem[1] as $poste) {
             $cellules=array();
@@ -82,7 +82,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             $cellules[]=number_format($hebdo, 2, ',', ' ');	// moyenne hebdo
             if ($GLOBALS['config']['Multisites-nombre']>1) {
                 for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-                    $jour=$elem["sites"][$i]/$nbJours;
+                    $jour = ($nbJours > 0) ? $elem['sites'][$i] / $nbJours : 0;
                     $cellules[]=number_format($elem["sites"][$i], 2, ',', ' ');
                     $cellules[]=number_format($hebdo, 2, ',', ' ');
                 }

@@ -73,7 +73,7 @@ switch ($nom) {
         $lignes[]="Les agents";
         $lignes[]=implode($separateur, array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo","Nom de l'agent","Prénom de l'agent","Heures par agent"));
         foreach ($tab as $elem) {
-            $jour=$elem[2]/$nbJours;
+            $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
             $hebdo=$jour*$joursParSemaine;
             foreach ($elem[1] as $agent) {
                 $cellules=array();
@@ -92,7 +92,7 @@ switch ($nom) {
         $lignes[]=null;
         $lignes[]="Les services";
         foreach ($tab as $elem) {
-            $jour=$elem[2]/$nbJours;
+            $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
             $hebdo=$jour*$joursParSemaine;
             foreach ($elem["services"] as $service) {
                 $cellules=array();
@@ -110,7 +110,7 @@ switch ($nom) {
         $lignes[]=null;
         $lignes[]="Les statuts";
         foreach ($tab as $elem) {
-            $jour=$elem[2]/$nbJours;
+            $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
             $hebdo=$jour*$joursParSemaine;
             foreach ($elem["statuts"] as $statut) {
                 $cellules=array();
@@ -131,7 +131,7 @@ switch ($nom) {
         $lignes=array("Statistiques par poste (synthèse) du $debut au $fin",null);
         $lignes[]=implode($separateur, array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo"));
         foreach ($tab as $elem) {
-            $jour=$elem[2]/$nbJours;
+            $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
             $hebdo=$jour*$joursParSemaine;
             $total_heures+=$elem[2];
             $total_jour+=$jour;
@@ -152,7 +152,7 @@ switch ($nom) {
         $lignes=array("Poste de renfort du $debut au $fin",null);
         $lignes[]=implode($separateur, array("Poste","Etage","Heures","Moyenne jour","Moyenne hebdo","Jours","Heures par jour","Début","Fin","Heures"));
         foreach ($tab as $elem) {
-            $jour=$elem[2]/$nbJours;
+            $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
             $hebdo=$jour*$joursParSemaine;
             foreach ($elem[1] as $date) {
                 foreach ($date[1] as $horaires) {
