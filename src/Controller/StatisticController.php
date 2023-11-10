@@ -2072,7 +2072,18 @@ class StatisticController extends BaseController
                 } else {
                     foreach ($agents_list as $elem) {
                         if ($elem['id'] == $agent) {    // on créé un tableau avec le nom et le prénom de l'agent.
-                            $agent_tab = array($agent, $elem['nom'], $elem['prenom']);
+
+                            $assignedSites = json_decode($elem['sites']);
+                            if (!is_array($assignedSites)) {
+                                $assignedSites = array();
+                            }
+
+                            $agent_tab = array(
+                                $agent,
+                                $elem['nom'],
+                                $elem['prenom'],
+                                'assignedSites' => $assignedSites,
+                            );
                             break;
                         }
                     }
@@ -2215,6 +2226,16 @@ class StatisticController extends BaseController
         $ouverture = $s->ouvertureTexte;
 
         sort($heures_tab_global);
+
+        // Remove agents who are never selected and not in selected sites
+        if ($this->config('Multisites-nombre') > 1) {
+            foreach($tab as $key => $value) {
+               if (empty($value[1])
+                   and empty(array_intersect($selectedSites, $value[0]['assignedSites']))) {
+                   unset($tab[$key]);
+               }
+            }
+        }
 
         // Agents who are never selected (for export)
         $neverSelected = array();
