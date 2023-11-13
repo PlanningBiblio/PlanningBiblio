@@ -141,8 +141,8 @@ class planningHebdo
             $nomAgent = nom($perso_id, "prenom nom");
             $sujet="Nouveau planning de présence, ".html_entity_decode($nomAgent, ENT_QUOTES|ENT_IGNORE, "UTF-8");
             $message=$nomAgent;
-            $message.=" a enregistré un nouveau planning de présence dans l'application Planning Biblio<br/>";
-            $message.="Rendez-vous dans le menu administration / Plannings de présence de votre application Planning Biblio pour le valider.";
+            $message.=" a enregistré un nouveau planning de présence dans l'application Planno<br/>";
+            $message.="Rendez-vous dans le menu administration / Heures de présence de votre application Planno pour le valider.";
 
             // Envoi du mail
             $m=new CJMail();
@@ -583,12 +583,12 @@ class planningHebdo
                 $sujet="Validation d'un planning de présence, ".html_entity_decode($nomAgent, ENT_QUOTES|ENT_IGNORE, "UTF-8");
                 $message="Un planning de présence de ";
                 $message.=$nomAgent;
-                $message.=" a été validé dans l'application Planning Biblio<br/>";
+                $message.=" a été validé dans l'application Planno<br/>";
             } else {
                 $sujet="Modification d'un planning de présence, ".html_entity_decode($nomAgent, ENT_QUOTES|ENT_IGNORE, "UTF-8");
                 $message="Un planning de présence de ";
                 $message.=$nomAgent;
-                $message.=" a été modifié dans l'application Planning Biblio<br/>";
+                $message.=" a été modifié dans l'application Planno<br/>";
             }
 
             // Envoi du mail

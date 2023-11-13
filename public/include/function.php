@@ -243,7 +243,7 @@ class CJMail implements NotificationTransporterInterface
 
         /* Préparation du sujet */
         $this->subject = stripslashes($this->subject);
-        $this->subject = "Planning : " . $this->subject;
+        $this->subject = "Planno : " . $this->subject;
 
         /* Préparation du message, html, doctype, signature */
         $message="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";

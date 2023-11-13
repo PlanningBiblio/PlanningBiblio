@@ -622,7 +622,7 @@ class AgentController extends BaseController
             ));
         }
 
-        // URL du fichier ICS Planning Biblio
+        // URL du fichier ICS Planno
         if ($id and isset($ics)) {
             if ($this->config('ICS-Code')) {
             }
@@ -993,7 +993,7 @@ class AgentController extends BaseController
             $login = $db->result[0]['login'];
 
             // Envoi du mail
-            $message = "Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
+            $message = "Votre mot de passe Planno a été modifié";
             $message.= "<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
 
             $m = new \CJMail();
