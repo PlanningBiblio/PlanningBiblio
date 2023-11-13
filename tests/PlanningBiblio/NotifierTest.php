@@ -44,7 +44,7 @@ class NotifierTest extends TestCase
 	$notifier->setRecipients('joe@bar.com');
         $notifier->setMessageCode('create_account');
         $notifier->send();
-        $expected = 'Votre compte Planning Biblio a été créé :
+        $expected = 'Votre compte Planno a été créé :
             <ul><li>Login : %login</li><li>Mot de passe : %password</li></ul>';
 
         $this->assertEquals($expected, $notifier->body, 'Get body without placeholders replacements');
@@ -53,7 +53,7 @@ class NotifierTest extends TestCase
             'password' => 'foo'
         ));
         $notifier->send();
-        $expected = 'Votre compte Planning Biblio a été créé :
+        $expected = 'Votre compte Planno a été créé :
             <ul><li>Login : joe</li><li>Mot de passe : foo</li></ul>';
 
         $this->assertEquals($expected, $notifier->body, 'Get body with placeholders replacements');

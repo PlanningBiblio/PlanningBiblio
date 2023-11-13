@@ -102,8 +102,8 @@ class AjaxController extends BaseController
             $GLOBALS['config']['Mail-Planning'] = $planning;
 
             $m=new \CJMail();
-            $m->subject="Message de test, Planning Biblio";
-            $m->message="Message de test, Planning Biblio<br/><br/>La messagerie de votre application Planning Biblio est correctement param&eacute;tr&eacute;e.";
+            $m->subject="Message de test";
+            $m->message="Message de test.<br/><br/>La messagerie de votre application Planno est correctement paramétrée.";
             $m->to=$planning;
             $m->send();
 
