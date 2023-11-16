@@ -1058,6 +1058,7 @@ if (version_compare($config['Version'], $v) === -1) {
         foreach ($db->result as $elem) {
             $update = false;
             $droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $droits = html_entity_decode($droits, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $droits = (array) json_decode($droits, true);
             foreach ($droits as $k => $val) {
                 if ($val == 1) {
@@ -1121,6 +1122,7 @@ if (version_compare($config['Version'], $v) === -1) {
         foreach ($db->result as $elem) {
             $update = false;
             $droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $droits = html_entity_decode($droits, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $droits = (array) json_decode($droits, true);
             foreach ($droits as $k => $val) {
                 if ($val == 24) {
@@ -1304,6 +1306,7 @@ if (version_compare($config['Version'], $v) === -1) {
                 foreach ($db->result as $elem) {
                     $update = false;
                     $conges_droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                    $conges_droits = html_entity_decode($conges_droits, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
                     $conges_droits = (array) json_decode($conges_droits, true);
                     foreach ($conges_droits as $key => $value) {
                         if ($value == 7) {
@@ -1963,6 +1966,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $id = $elem['id'];
             $old = $elem['nom'];
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
                 $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}activites` SET `nom` = '$new' WHERE `id` = '$id';";
@@ -2012,6 +2016,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $id = $elem['id'];
             $old = $elem['valeur'];
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
                 $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}select_etages` SET `valeur` = '$new' WHERE `id` = '$id';";
@@ -2027,6 +2032,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $id = $elem['id'];
             $old = $elem['valeur'];
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
                 $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}select_groupes` SET `valeur` = '$new' WHERE `id` = '$id';";
@@ -2042,6 +2048,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $id = $elem['id'];
             $old = $elem['nom'];
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
                 $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}postes` SET `nom` = '$new' WHERE `id` = '$id';";
@@ -2057,6 +2064,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $id = $elem['id'];
             $old = $elem['etage'];
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
                 $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}postes` SET `etage` = '$new' WHERE `id` = '$id';";
@@ -2072,6 +2080,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $id = $elem['id'];
             $old = $elem['groupe'];
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
                 $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}postes` SET `groupe` = '$new' WHERE `id` = '$id';";
@@ -2099,6 +2108,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $id = $elem['id'];
             $old = $elem['nom'];
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
                 $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}jours_feries` SET `nom` = '$new' WHERE `id` = '$id';";
@@ -2115,6 +2125,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $id = $elem['id'];
             $old = $elem['commentaire'];
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
                 $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}jours_feries` SET `commentaire` = '$new' WHERE `id` = '$id';";
@@ -2285,6 +2296,7 @@ if (version_compare($config['Version'], $v) === -1) {
     if ($db->result) {
         foreach ($db->result as $elem) {
             $nom = html_entity_decode($elem['nom']);
+            $nom = html_entity_decode($nom);
             $sql[] = "UPDATE `{$dbprefix}pl_poste_modeles_tab` SET `nom` = '$nom' WHERE `id` = '{$elem['id']}';";
         }
     }
@@ -2461,6 +2473,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $floors[$old] = $id;
 
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
             if ($new != $old) {
                 $new = addslashes($new);
@@ -2481,6 +2494,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $groups[$old] = $id;
 
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
             if ($new != $old) {
                 $new = addslashes($new);
@@ -2539,9 +2553,9 @@ if (version_compare($config['Version'], $v) === -1) {
     $db->select2('planning_hebdo');
     if($db->result){
         foreach ($db->result as $workinghours) {
-            $hours = json_decode(html_entity_decode(
-                $workinghours['temps'],
-                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $new = html_entity_decode($workinghours['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $hours = json_decode($new, true);
 
             foreach ($hours as $day => $times) {
                 foreach ($times as $i => $time) {
@@ -2559,9 +2573,9 @@ if (version_compare($config['Version'], $v) === -1) {
     $db->select2('personnel');
     if($db->result){
         foreach ($db->result as $agent) {
-            $hours = json_decode(html_entity_decode(
-                $agent['temps'],
-                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $new = html_entity_decode($agent['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $hours = json_decode($new, true);
 
             if (!$hours) {
                 continue;
@@ -2620,6 +2634,7 @@ if (version_compare($config['Version'], $v) === -1) {
     if ($db->result) {
         foreach ($db->result as $elem) {
             $new = html_entity_decode($elem['texte'], ENT_QUOTES|ENT_IGNORE, "UTF-8");
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, "UTF-8");
             $new = addslashes($new);
             $sql[] = "UPDATE `{$dbprefix}conges_infos` SET `texte` = '$new' where `id` = '{$elem['id']}';";
         }
@@ -2634,6 +2649,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $id = $elem['id'];
             $old = $elem['valeur'];
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $new = str_replace(array('"', "'"), ' ', $new);
             if ($new != $old) {
                 $sql[] = "UPDATE `{$dbprefix}select_services` SET `valeur` = '$new' WHERE `id` = '$id';";
@@ -2649,6 +2665,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $id = $elem['id'];
             $old = $elem['valeur'];
             $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $new = str_replace(array('"', "'"), ' ', $new);
             if ($new != $old) {
                 $sql[] = "UPDATE `{$dbprefix}select_statuts` SET `valeur` = '$new' WHERE `id` = '$id';";
@@ -2665,8 +2682,10 @@ if (version_compare($config['Version'], $v) === -1) {
             $oldservice = $elem['service'];
             $oldstatut = $elem['statut'];
             $newservice = html_entity_decode($oldservice, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $newservice = html_entity_decode($newservice, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $newservice = str_replace(array('"', "'"), ' ', $newservice);
             $newstatut = html_entity_decode($oldstatut, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $newstatut = html_entity_decode($newstatut, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $newstatut = str_replace(array('"', "'"), ' ', $newstatut);
 
             if ($newservice != $oldservice) {
@@ -2703,9 +2722,9 @@ if (version_compare($config['Version'], $v) === -1) {
     $db->select2('planning_hebdo');
     if($db->result){
         foreach ($db->result as $workinghours) {
-            $hours = json_decode(html_entity_decode(
-                $workinghours['temps'],
-                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $new = html_entity_decode($workinghours['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $hours = json_decode($new, true);
 
             foreach ($hours as $day => $times) {
                 foreach ($times as $i => $time) {
@@ -2725,9 +2744,9 @@ if (version_compare($config['Version'], $v) === -1) {
     $db->select2('personnel');
     if($db->result){
         foreach ($db->result as $agent) {
-            $hours = json_decode(html_entity_decode(
-                $agent['temps'],
-                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $new = html_entity_decode($agent['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $hours = json_decode($new, true);
 
             if (!$hours) {
                 continue;
@@ -2783,9 +2802,9 @@ if (version_compare($config['Version'], $v) === -1) {
     $db->select2('personnel');
     if($db->result){
         foreach ($db->result as $agent) {
-            $hours = json_decode(html_entity_decode(
-                $agent['temps'],
-                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $new = html_entity_decode($agent['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $hours = json_decode($new, true);
 
             if (!$hours) {
                 continue;
@@ -2822,7 +2841,9 @@ if (version_compare($config['Version'], $v) === -1) {
         foreach ($db->result as $tab) {
             $id = $tab['id'];
             $old = $tab['nom'];
-            $new = addslashes(html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+            $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = addslashes($new);
             if ($new != $old) {
                 $sql[] = "UPDATE `{$dbprefix}pl_poste_tab` SET `nom` = '$new' WHERE `id` = '$id';";
             }
@@ -2975,9 +2996,9 @@ if (version_compare($config['Version'], $v) === -1) {
     $db->select2('personnel');
     if($db->result){
         foreach ($db->result as $agent) {
-            $hours = json_decode(html_entity_decode(
-                $agent['temps'],
-                ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $new = html_entity_decode($agent['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $hours = json_decode($new, true);
 
             if (!$hours) {
                 continue;
@@ -3045,6 +3066,7 @@ if (version_compare($config['Version'], $v) === -1) {
         foreach ($db->result as $elem) {
             $old = $elem['nom'];
             $new = html_entity_decode($elem['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
                 $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}lignes` SET `nom` = '$new' WHERE `id` = '{$elem['id']}';";
@@ -3095,6 +3117,7 @@ if (version_compare($config['Version'], $v) === -1) {
         foreach ($db->result as $elem) {
             $old = $elem['poste'];
             $new = html_entity_decode($elem['poste'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($new, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if ($new != $old) {
                 $new = addslashes($new);
                 $sql[] = "UPDATE `{$dbprefix}pl_poste_lignes` SET `poste` = '$new' WHERE `id` = '{$elem['id']}';";
@@ -3110,8 +3133,10 @@ if (version_compare($config['Version'], $v) === -1) {
         foreach ($db->result as $elem) {
             $oldLastName = $elem['nom'];
             $newLastName = html_entity_decode($elem['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $newLastName = html_entity_decode($newLastName, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $oldFirstName = $elem['prenom'];
             $newFirstName = html_entity_decode($elem['prenom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $newFirstName = html_entity_decode($newFirstName, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             if (($newLastName != $oldLastName) or ($newFirstName != $oldFirstName)) {
                 $newLastName = addslashes($newLastName);
                 $newFirstName = addslashes($newFirstName);
@@ -3345,7 +3370,9 @@ function serializeToJson($table, $field, $id='id', $where=null, $CSRFToken)
         foreach ($db->result as $elem) {
             $value = $elem[$field];
             if ($value) {
-                $value = unserialize(html_entity_decode($value, ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+                $value = html_entity_decode($value, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                $value = html_entity_decode($value, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                $value = unserialize($value);
                 if (is_array($value)) {
                     $value = json_encode($value);
                     $dbh->execute(array(':key'=>$elem[$id], ':value'=>$value));
