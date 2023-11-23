@@ -166,6 +166,11 @@ class AuthorizationsController extends BaseController
             return $this->redirect($cas_url);
         }
 
+        if ($this->config('Auth-Mode') == 'OpenIDConnect') {
+            $oidc = new OpenIDConnect();
+            $oidc->logout();
+        }
+
         return $this->redirect($this->config('URL') . "/login$authArgs");
     }
 
