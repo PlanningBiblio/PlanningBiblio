@@ -1,3 +1,6 @@
+*** Version 23.10.03 (2023-11-30)    ***
+MT42693: Disable Absence Block on Planook config #969 (Follow-up)
+
 *** Version 23.10.02 (2023-11-30)    ***
 - Fixes
 MT42019: Use HTML Purifier to sanitize planning comments and model names #977
