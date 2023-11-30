@@ -1,4 +1,16 @@
-*** Version 23.11.00.000   (2023-10-27)    ***
+*** Version 23.11.00.002   (2023-11-30)    ***
+- Enhancements
+MT42530 : Filter by site the list of presents displayed under the schedules
+
+- Fixes
+MT40171: Rename Planning Biblio to Planno
+MT42596: Escape teleworking reasons on planning context menu
+MT42693: Disable Absence Block on Planook config
+MT41900: Replace HTTP method DEL with DELETE
+MT40009: Fix comp time display in 'My Account' when negative
+MT42019: Use HTML Purifier to sanitize planning comments and model names
+
+*** Version 23.11.00.001   (2023-10-27)    ***
 - Plumbing
 MT41281: Move planning_hebdo cron files to src/Cron #389
 
