@@ -1,3 +1,12 @@
+*** Version 23.10.02 (2023-11-30)    ***
+- Fixes
+MT42019: Use HTML Purifier to sanitize planning comments and model names #977
+MT40171: Rename Planning Biblio to Planno #974
+MT42596: Escape teleworking reasons on planning context menu #971
+MT42693: Disable Absence Block on Planook config #969
+MT41900: Replace HTTP method DEL with DELETE #968
+MT40009: Fix comp time display in 'My Account' when negative #966
+
 *** Version 23.10.01 (2023-10-27)    ***
 - Plumbing
 MT41281: Move planning_hebdo cron files to src/Cron #389
