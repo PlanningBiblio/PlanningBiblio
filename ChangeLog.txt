@@ -1,3 +1,9 @@
+*** Version 22.10.13       (2023-11-30)    ***
+- Fixes
+MT42019: Use HTML Purifier to sanitize planning comments and model names #977
+MT42596: Escape teleworking reasons on planning context menu #971
+MT41900: Replace HTTP method DEL with DELETE #968
+
 *** Version 22.10.12       (2023-10-27)    ***
 - Fixes
 MT41027: Add absence block, correctly define absence hours #961
