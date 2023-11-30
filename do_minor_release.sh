@@ -7,9 +7,9 @@ usage() {
 Do a minor Planno release
 
     --from version
-        Version number to upgrade from (ex: 22.11.00.007)
+        Version number to upgrade from (ex: 22.11.01)
     --to version
-        Version number to upgrade to (ex: 22.11.00.008)
+        Version number to upgrade to (ex: 22.11.02)
     -h | --help
         Show help
 EOF
@@ -55,7 +55,7 @@ sed -i "s/$from/$to/g" 'public/setup/db_data.php'
 
 git diff
 
-sed -i "/# MARKER/i\$v=\"$to\";\nif (version_compare(\$config['Version'], \$v) === -1) {\n\n\    \$sql[] = \"UPDATE \`{\$dbprefix}config\` SET \`valeur\`='\$v' WHERE \`nom\`='Version';\";\n}" 'public/setup/maj.php'
+sed -i "/# MARKER/i\ \n\$v=\"$to.000\";\n\nif (version_compare(\$config['Version'], \$v) === -1) {\n\n\    \$sql[] = \"UPDATE \`{\$dbprefix}config\` SET \`valeur\`='\$v' WHERE \`nom\`='Version';\";\n}" 'public/setup/maj.php'
 
 vi public/setup/maj.php +/MARKER
 
