@@ -13,6 +13,7 @@
 -- -- Granularité non-forcée :
 -- UPDATE config SET type='enum2' WHERE nom='Granularite';
 -- -- Absences
+-- UPDATE config SET type='boolean' WHERE nom='Absences-blocage';
 -- UPDATE config SET type='boolean' WHERE nom='Absences-planningVide';
 -- UPDATE config SET type='boolean' WHERE nom='Absences-apresValidation';
 -- UPDATE config SET type='boolean' WHERE nom='Absences-adminSeulement';

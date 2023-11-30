@@ -14,6 +14,7 @@
 -- -- Granularité forcée sur 30 minutes :
 -- UPDATE config SET valeur='30', type='info' WHERE nom='Granularite';
 -- -- Absences
+-- UPDATE config SET valeur='0', type='info' WHERE nom='Absences-blocage';
 -- UPDATE config SET valeur='1', type='info' WHERE nom='Absences-planningVide';
 -- UPDATE config SET valeur='1', type='info' WHERE nom='Absences-apresValidation';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Absences-adminSeulement';
