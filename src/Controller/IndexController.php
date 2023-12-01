@@ -77,6 +77,7 @@ class IndexController extends BaseController
             = $this->getLockingData($date, $site);
         $messages_infos = $this->getInfoMessages($date);
         $affSem = $this->getWeekData($site, $semaine, $semaine3);
+        $cycle = '('. $semaine3 .')';
 
         // Positions, skills...
         $activites = $this->getSkills();
@@ -123,7 +124,9 @@ class IndexController extends BaseController
             'end' => $d->dates[6],
             'endHr' => dateFr($d->dates[6]),
             'dateFr' => $dateFr,
-            'affSem' => $affSem, 'day' => $jour,
+            'affSem' => $affSem,
+            'cycle' => $cycle,
+            'day' => $jour,
             'public_holiday' => jour_ferie($date),
             'messages_infos' => $messages_infos,
             'not_ready'      => $not_ready,
