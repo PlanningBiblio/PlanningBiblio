@@ -412,6 +412,14 @@ class planning
         $teleworking_reasons = $entityManager->getRepository(AbsenceReason::class)
             ->getRemoteWorkingDescriptions();
     
+        if (!empty($teleworking_reasons)) {
+            $db = new \db();
+            foreach ($teleworking_reasons as &$elem) {
+                $elem = $db->escapeString($elem);
+            }
+            $teleworking_reasons = implode("','", $teleworking_reasons);
+        }
+
         // Recherche des informations dans la table pl_poste pour la date $this->date
         $date=$this->date;
         $site=$this->site;
@@ -436,7 +444,7 @@ class planning
             $position = isset($postes[$elem['poste']]) ? $postes[$elem['poste']] : null;
             if ($position && $position['teleworking'] == 1) {
                 $teleworking_exception = (!empty($teleworking_reasons))
-                    ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')"
+                    ? "AND `motif` NOT IN ('$teleworking_reasons')"
                     : null;
 
                 $filter .= " $teleworking_exception";
