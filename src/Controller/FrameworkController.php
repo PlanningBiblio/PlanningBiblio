@@ -874,7 +874,7 @@ class FrameworkController extends BaseController
             // Enregistrement du nouveau tableau
             $db2 = new \db();
             $db2->CSRFToken = $CSRFToken;
-            $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
+            $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site, "origin" => $numero1));
 
             //		Copie des lignes
             $values = array();
