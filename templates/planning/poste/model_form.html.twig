@@ -23,8 +23,8 @@
           Sélectionnez le modèle à importer
           <br />
           <br />
-          <select name='model' id='model'>
-            <option value=''>&nbsp;</option>
+          <select name='model' id='model' onchange='checkFramework();'>
+            <option value='0'>&nbsp;</option>
             {% for m in models %}
               <option value='{{ m.model_id }}'>{{ m.nom }}{% if m.isWeek %} (semaine){% endif %}</option>
             {% endfor %}
@@ -40,6 +40,17 @@
         </div>
 
     {% endif %}
+
+    <div id="framework-copy-div" style="margin: 20px auto; display:none;">
+      Les tableaux utilisés par ce modèle ont été modifiés.<br/>
+      Voulez-vous adapter le modèle en conséquence ?
+      <input type="checkbox" id="framework-copy-checkbox" name="framework-copy" onclick="modelCopy();" />
+    </div>
+
+    <div id="model-copy-div" style="margin: 20px auto; display:none;">
+      Souhaitez-vous conserver une copie du modèle d'origine ?
+      <input type="checkbox" id="model-copy-checkbox" name="model-copy" />
+    </div>
 
     <div style="margin: 20px auto;">
       Importer les absents ?
