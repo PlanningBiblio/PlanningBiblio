@@ -30,7 +30,7 @@ $(document).ready(function(){
   import_model = $( '#import-model-dialog' ).dialog({
     autoOpen: false,
     modal: true,
-    height: 300,
+    height: 400,
     width: 480,
     buttons: {
       "Annuler": function() {
@@ -676,6 +676,37 @@ $(function() {
 
 
 // Fonctions JavaScript
+
+// MT36324: check framework copies
+function checkFramework() {
+  model = $('#model').val();
+
+  $('#model-copy-div').hide();
+  $('#framework-copy-checkbox').attr('checked', false);
+  $('#model-copy-checkbox').attr('checked', false);
+
+  $.ajax({
+    url: url('model/'+model+'/framework'),
+    type: 'get',
+    dataType: 'json',
+    success: function(result) {
+      if (result.copy) {
+        $('#framework-copy-div').show();
+      } else {
+        $('#framework-copy-div').hide();
+        $('#model-copy-div').hide();
+      }
+    }
+  });
+}
+
+function modelCopy() {
+  if($('#framework-copy-checkbox').prop('checked')) {
+    $('#model-copy-div').show();
+  } else {
+    $('#model-copy-div').hide();
+  }
+}
 
 function initContextMenu(data) {
   $("body").append("<div id='menudiv1'></div>");

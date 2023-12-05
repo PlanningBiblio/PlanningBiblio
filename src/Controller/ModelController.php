@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use App\Model\Model;
 use App\Model\ModelAgent;
+use App\Model\PlanningPositionTab;
 
 require_once(__DIR__ . '/../../public/include/db.php');
 
@@ -136,7 +137,7 @@ class ModelController extends BaseController
     }
 
     /**
-     * @Route("/model/{id}", name="model.edit", methods={"GET"})
+     * @Route("/model/{id<\d+>}", name="model.edit", methods={"GET"})
      */
     public function edit(Request $request)
     {
@@ -152,7 +153,7 @@ class ModelController extends BaseController
 
 
     /**
-     * @Route("/model/{id}", name="model.delete", methods={"DELETE"})
+     * @Route("/model/{id<\d+>}", name="model.delete", methods={"DELETE"})
      */
     public function delete(Request $request, Session $session)
     {
@@ -176,6 +177,35 @@ class ModelController extends BaseController
         $session->getFlashBag()->add('notice', 'Modèle supprimé');
         return $this->json(array('id' => $id));
     }
+
+    /**
+     * @Route("/model/{id<\d+>}/framework", name="model.framework", methods={"GET"})
+     */
+    public function frameworks(Request $request, Session $session)
+    {
+
+        $em = $this->entityManager->getRepository(Model::class)
+            ->findOneBy(
+                array('model_id' => $request->get('id'))
+            );
+        $framework = $em ? $em->tableau() : 0;
+
+        $em = $this->entityManager->getRepository(PlanningPositionTab::class)
+            ->findOneBy(
+                array('origin' => $framework, 'supprime' => null),
+                array('updated_at' => 'desc')
+            );
+        $latestCopy = $em ? $em->tableau() : 0;
+
+        $content = array('copy' => $latestCopy);
+
+        $response = new Response();
+        $response->setContent(json_encode($content));
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
 
   public function save_model($nom, $date, $semaine, $site, $CSRFToken)
   {
