@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controller\Traits;
+namespace App\Trait;
 
 use App\PlanningBiblio\ValidationAwareEntity;
 use App\Model\Agent;
 
-trait EntityValidationStatuses
+trait EntityValidationStatusesTrait
 {
     public function setStatusesParams($agent_ids, $module, $entity_id = null)
     {
