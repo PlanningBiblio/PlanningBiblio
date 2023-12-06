@@ -17,6 +17,9 @@ require_once(__DIR__ . '/../../public/include/db.php');
 
 class ModelController extends BaseController
 {
+
+    use \App\Trait\FrameworkTrait;
+
     /**
      * @Route("/model", name="model.index", methods={"GET"})
      */
@@ -183,21 +186,9 @@ class ModelController extends BaseController
      */
     public function frameworks(Request $request, Session $session)
     {
+        $lastCopy = $this->getLatestFrameworkCopy($request->get('id'));
 
-        $em = $this->entityManager->getRepository(Model::class)
-            ->findOneBy(
-                array('model_id' => $request->get('id'))
-            );
-        $framework = $em ? $em->tableau() : 0;
-
-        $em = $this->entityManager->getRepository(PlanningPositionTab::class)
-            ->findOneBy(
-                array('origin' => $framework, 'supprime' => null),
-                array('updated_at' => 'desc')
-            );
-        $latestCopy = $em ? $em->tableau() : 0;
-
-        $content = array('copy' => $latestCopy);
+        $content = array('copy' => $lastCopy->copiesExist);
 
         $response = new Response();
         $response->setContent(json_encode($content));
