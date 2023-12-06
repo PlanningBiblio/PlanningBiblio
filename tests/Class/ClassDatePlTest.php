@@ -7,9 +7,11 @@ class ClassDatePlTest extends TestCase
 {
     public function testDatePl()
     {
-        // MT42875: week cycle should not be reset on new year when nb_semaine is not 2 or 4
+        // Setup
         $savDateDebutPlHebdo = $GLOBALS['config']['dateDebutPlHebdo'];
         $savNb_semaine = $GLOBALS['config']['nb_semaine'];
+
+        // MT42875: week cycle should not be reset on new year when nb_semaine is not 2 or 4
         $GLOBALS['config']['dateDebutPlHebdo'] = '11/06/2018';
         $GLOBALS['config']['nb_semaine'] = 2;
         $datePl = new DatePl('2023-12-25');
@@ -37,6 +39,7 @@ class ClassDatePlTest extends TestCase
         $datePl = new DatePl('2024-01-01');
         $this->assertEquals(2, $datePl->semaine3, 'nb_semaine=6 : Week 2 in the cycle (week cycle is not reset on new year)');
 
+        // Teardown
         $GLOBALS['config']['dateDebutPlHebdo'] = $savDateDebutPlHebdo;
         $GLOBALS['config']['nb_semaine'] = $savNb_semaine;
     }
