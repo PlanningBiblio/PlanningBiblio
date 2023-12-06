@@ -113,7 +113,7 @@ class datePl
         return $this->getCycleNumber($interval, $nb_semaine);
     }
 
-    private function getCycleNumber($weeknumber, $cycles) {
+    public function getCycleNumber($weeknumber, $cycles) {
         $weekcycle = 0;
 
         for ($i = 1; $i <= $weeknumber; $i++) {
@@ -126,7 +126,7 @@ class datePl
         return $weekcycle;
     }
 
-    private function getNumberOfWeeksSinceStartDate($date) {
+    public function getNumberOfWeeksSinceStartDate($date) {
         $position=date("w", strtotime(dateSQL($GLOBALS['config']['dateDebutPlHebdo'])))-1;
         $position=$position==-1?6:$position;
         $dateFrom=new dateTime(dateSQL($GLOBALS['config']['dateDebutPlHebdo']));
