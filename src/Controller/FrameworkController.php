@@ -840,48 +840,41 @@ class FrameworkController extends BaseController
     public function copyTable (Request $request, Session $session){
 
         // Initilisation des variables
-        $confirm = $request->get('confirm');
         $CSRFToken = $request->get('CSRFToken');
         $nom = trim($request->get('nom'));
         $numero1 = $request->get('id');
-        $confirm = filter_var($confirm, FILTER_CALLBACK, array("options"=>"sanitize_on"));
         $dbprefix = $GLOBALS['dbprefix'];
 
-        if ($confirm) {
-            //		Copie des horaires
-            $values = array();
-            $db = new \db();
-            $db->select2("pl_poste_horaires", array("debut","fin","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`debut`,`fin`");
-            if ($db->result) {
-                $db2 = new \db();
-                $db2->select2("pl_poste_tab", array(array("name"=>"MAX(tableau)","as"=>"tableau"),"site"));
-                $numero2 = $db2->result[0]['tableau']+1;
-                foreach ($db->result as $elem) {
-                    if (array_key_exists('tableau', $elem)) {
-                        $values[] = array(":debut"=>$elem['debut'], ":fin"=>$elem['fin'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
-                    }
+        //		Copie des horaires
+        $values = array();
+        $db = new \db();
+        $db->select2("pl_poste_horaires", array("debut","fin","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`debut`,`fin`");
+        if ($db->result) {
+            $db2 = new \db();
+            $db2->select2("pl_poste_tab", array(array("name"=>"MAX(tableau)","as"=>"tableau"),"site"));
+            $numero2 = $db2->result[0]['tableau']+1;
+            foreach ($db->result as $elem) {
+                if (array_key_exists('tableau', $elem)) {
+                    $values[] = array(":debut"=>$elem['debut'], ":fin"=>$elem['fin'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
                 }
-                $req = "INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES (:debut, :fin, :tableau, :numero);";
-                $db2 = new \dbh();
-                $db2->CSRFToken = $CSRFToken;
-                $db2->prepare($req);
-                foreach ($values as $elem) {
-                    $db2->execute($elem);
-                }
-
-                // Récupération du site
-                $db2 = new \db();
-                $db2->select2("pl_poste_tab", "site", array("tableau"=>$numero1));
-                $site=$db2->result[0]["site"];
-
-                // Enregistrement du nouveau tableau
-                $db2 = new \db();
-                $db2->CSRFToken = $CSRFToken;
-                $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
-            } else {		// par sécurité, si pas d'horaires à  copier, on stop le script pour éviter d'avoir une incohérence dans les numéros de tableaux
-               return new RedirectResponse($this->config('URL')."/index.php?page=planning/postes_cfg/modif.php&cfg-type=horaires&numero={$numero1}");
-
             }
+            $req = "INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES (:debut, :fin, :tableau, :numero);";
+            $db2 = new \dbh();
+            $db2->CSRFToken = $CSRFToken;
+            $db2->prepare($req);
+            foreach ($values as $elem) {
+                $db2->execute($elem);
+            }
+
+            // Récupération du site
+            $db2 = new \db();
+            $db2->select2("pl_poste_tab", "site", array("tableau"=>$numero1));
+            $site=$db2->result[0]["site"];
+
+            // Enregistrement du nouveau tableau
+            $db2 = new \db();
+            $db2->CSRFToken = $CSRFToken;
+            $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
 
             //		Copie des lignes
             $values = array();
