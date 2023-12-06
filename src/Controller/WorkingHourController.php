@@ -16,7 +16,7 @@ require_once(__DIR__. '/../../public/personnel/class.personnel.php');
 
 class WorkingHourController extends BaseController
 {
-    use \App\Controller\Traits\EntityValidationStatuses;
+    use \App\Trait\EntityValidationStatusesTrait;
 
     private $imported = false;
     private $adminN1 = false;
