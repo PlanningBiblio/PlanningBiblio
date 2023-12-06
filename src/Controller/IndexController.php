@@ -31,6 +31,7 @@ require_once(__DIR__ . '/../../public/include/function.php');
 
 class IndexController extends BaseController
 {
+    use \App\Trait\FrameworkTrait;
 
     private $CSRFToken;
 
@@ -518,11 +519,17 @@ class IndexController extends BaseController
         $site = $request->get('site');
         $get_absents = $request->get('absents');
         $model_id = $request->get('model');
+        $frameworkCopy = $request->get('framework-copy');
+        $modelCopy = $request->get('model-copy');
         $droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
 
         if (!in_array((300+$site), $droits)) {
             return $this->output('access-denied.html.twig');
+        }
+
+        // MT36324: Copy the model if requested
+        if ($modelCopy) {
         }
 
         $model = $this->entityManager
@@ -614,6 +621,11 @@ class IndexController extends BaseController
                 ->getRemoteWorkingDescriptions();
         }
 
+        // MT36324: Use the latest framework copy if requested
+        if ($frameworkCopy) {
+            $frameworkCopies = $this->getLatestFrameworkCopy($model_id);
+        }
+
         $i=0;
         foreach ($dates as $elem) {
             $i++; // Key of the day (1=Monday, 2=Tuesday ...) start with 1.
@@ -628,41 +640,56 @@ class IndexController extends BaseController
             $db->CSRFToken = $CSRFToken;
             $db->delete('pl_poste_tab_affect', array('date' => $elem, 'site' => $site));
 
-            // Import frameworf
+            // Import the framework
+            $framework = 0;
+
             // if it's a week model.
             if ($model->isWeek()) {
-                $db = new \db();
-                $db->select2('pl_poste_modeles_tab', '*', array('model_id'=>$model_id, 'site'=>$site, 'jour'=>$i));
+                if ($frameworkCopy) {
+                    $framework = $frameworkCopies->copies[$i-1];
+                } else {
+                    $db = new \db();
+                    $db->select2('pl_poste_modeles_tab', '*', array('model_id'=>$model_id, 'site'=>$site, 'jour'=>$i));
+                    if ($db->result) {
+                        $framework = $db->result[0]['tableau'];
+                    }
+                }
             // Model for one day.
             } else {
-                $db = new \db();
-                $db->select2('pl_poste_modeles_tab', '*', array('model_id'=>$model_id, 'site'=>$site));
+                if ($frameworkCopy) {
+                    $framework = $frameworkCopies->copies[0];
+                } else {
+                    $db = new \db();
+                    $db->select2('pl_poste_modeles_tab', '*', array('model_id'=>$model_id, 'site'=>$site));
+                    if ($db->result) {
+                        $framework = $db->result[0]['tableau'];
+                    }
+                }
             }
 
-            $postes = array();
-            $horaires = array();
-            if ($db->result) {
-                $tableau=$db->result[0]['tableau'];
+            $positions = array();
+            $schedules = array();
+
+            if ($framework) {
                 $db=new \db();
                 $db->CSRFToken = $CSRFToken;
-                $db->insert("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
+                $db->insert("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$framework ,"site"=>$site ));
 
                 // N'importe pas les agents placés sur des postes supprimés (si tableau modifié)
                 $db = new \db();
-                $db->select2('pl_poste_lignes', 'poste', array('type'=>'poste', 'numero'=>$tableau));
+                $db->select2('pl_poste_lignes', array('tableau', 'poste'), array('type'=>'poste', 'numero'=>$framework));
                 if ($db->result) {
                     foreach ($db->result as $elem2) {
-                        $postes[] = $elem2['poste'];
+                        $positions[] = array('table' => $elem2['tableau'], 'position' => $elem2['poste']);
                     }
                 }
 
-                // Do not import agents that are
-                // on deleted time renges.
+                // Do not import agents that are on deleted time renges.
                 $db = new \db();
-                $db->select2('pl_poste_horaires', array('debut','fin'), array('numero'=>$tableau));
+                $db->select2('pl_poste_horaires', array('tableau','debut','fin'), array('numero'=>$framework));
                 if ($db->result) {
                     foreach ($db->result as $elem2) {
-                        $horaires[] = array('debut'=>$elem2['debut'], 'fin'=>$elem2['fin']);
+                        $schedules[] = array('table' => $elem2['tableau'], 'start'=>$elem2['debut'], 'end'=>$elem2['fin']);
                     }
                 }
             }
@@ -689,7 +716,7 @@ class IndexController extends BaseController
                     $value = array();
 
                     // Do not import agents if the cell does not exist
-                    if (!$this->positionExists($elem2, $postes, $horaires)) {
+                    if (!$this->positionExists($elem2, $positions, $schedules)) {
                         continue;
                     }
 
@@ -1297,19 +1324,23 @@ class IndexController extends BaseController
         return $hiddenTables;
     }
 
-    private function positionExists($agent, $postes, $horaires)
+    private function positionExists($model, $positions, $schedules)
     {
-        if (!in_array($agent['poste'], $postes)) {
-            return false;
-        }
-
-        foreach ($horaires as $h) {
-            if ($h['debut'] == $agent['debut'] and $h['fin'] == $agent['fin']) {
-                return true;
+        $frameworkKeys = array();
+        foreach ($positions as $position) {
+            foreach ($schedules as $timeSlot) {
+                if ($position['table'] == $timeSlot['table']) {
+                    $frameworkKeys[] = $position['position'] . '-' . $timeSlot['start'] . '-' . $timeSlot['end'];
+                }
             }
         }
 
-        return false;
+        $modelKey = $model['poste'] . '-' . $model['debut'] . '-' . $model['fin'];
+        if (!in_array($modelKey, $frameworkKeys)) {
+            return false;
+        }
+
+        return true;
     }
 
 }
