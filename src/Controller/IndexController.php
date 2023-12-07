@@ -32,6 +32,7 @@ require_once(__DIR__ . '/../../public/include/function.php');
 class IndexController extends BaseController
 {
     use \App\Trait\FrameworkTrait;
+    use \App\Trait\ModelTrait;
 
     private $CSRFToken;
 
@@ -508,6 +509,11 @@ class IndexController extends BaseController
     #[Route(path: '/modelimport', name: 'model.import', methods: ['POST'])]
     public function model_import(Request $request, Session $session)
     {
+
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');;
         $site = $request->get('site');
@@ -520,10 +526,6 @@ class IndexController extends BaseController
 
         if (!in_array((300+$site), $droits)) {
             return $this->output('access-denied.html.twig');
-        }
-
-        // MT36324: Copy the model if requested
-        if ($modelCopy) {
         }
 
         $model = $this->entityManager
@@ -639,7 +641,7 @@ class IndexController extends BaseController
 
             // if it's a week model.
             if ($model->isWeek()) {
-                if ($frameworkCopy) {
+                if ($frameworkCopy and !empty($frameworkCopies->copies[$i-1])) {
                     $framework = $frameworkCopies->copies[$i-1];
                 } else {
                     $db = new \db();
@@ -815,6 +817,29 @@ class IndexController extends BaseController
                 }
             }
         }
+
+        // MT36324: Save the new model
+        if ($frameworkCopy) {
+            $currentName = $model->nom();
+
+            if ($modelCopy) {
+                // Rename the current model if a copy is requested
+                $newName = $currentName . ' (Avant adaptation du ' . date('d/m/Y, H:i:s') . ')';
+                $renamedModel =  $this->entityManager->getRepository(Model::class)->findBy(array('model_id' => $model->model_id()));
+                foreach ($renamedModel as $elem) {
+                    $elem->nom($newName);
+                    $elem->adapted_at(new \DateTime());
+                }
+                $this->entityManager->flush();
+            } else {
+                // Delete the current model
+                $this->delete_model($model, $CSRFToken);
+            }
+
+            // Save the new model
+            $this->save_model($currentName, $date, $model->isWeek(), $site, $CSRFToken, $model->model_id());
+        }
+
         return $this->redirectToRoute('index', array('date' => $date));
     }
 
