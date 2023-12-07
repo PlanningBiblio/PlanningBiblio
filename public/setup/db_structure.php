@@ -314,6 +314,9 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_modeles_tab` (
   `jour` INT NOT NULL,
   `tableau` INT NOT NULL,
   `site` INT(1) NOT NULL DEFAULT '1',
+  `origin` INT(11) DEFAULT NULL,
+  `adapted_at` DATETIME DEFAULT NULL,
+  `updated_at` DATETIME DEFAULT SYSDATE(),
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
