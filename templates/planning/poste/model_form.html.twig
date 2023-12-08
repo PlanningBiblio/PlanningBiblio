@@ -23,7 +23,7 @@
           Sélectionnez le modèle à importer
           <br />
           <br />
-          <select name='model' id='model' onchange='checkFramework();'>
+          <select name='model' id='model' onchange='checkFrameworks();'>
             <option value='0'>&nbsp;</option>
             {% for m in models %}
               <option value='{{ m.model_id }}'>{{ m.nom }}{% if m.isWeek %} (semaine){% endif %}</option>

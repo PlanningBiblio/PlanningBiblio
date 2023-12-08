@@ -830,7 +830,7 @@ class IndexController extends BaseController
 
             if ($modelCopy) {
                 // Rename the current model if a copy is requested
-                $newName = $currentName . ' (Avant adaptation du ' . date('d/m/Y, H:i:s') . ')';
+                $newName = $currentName . ' (avant adaptation du ' . date('d/m/Y, H:i:s') . ')';
                 $renamedModel =  $this->entityManager->getRepository(Model::class)->findBy(array('model_id' => $model->model_id()));
                 foreach ($renamedModel as $elem) {
                     $elem->nom($newName);
