@@ -677,7 +677,7 @@ $(function() {
 // Fonctions JavaScript
 
 // MT36324: check framework copies
-function checkFramework() {
+function checkFrameworks() {
   model = $('#model').val();
 
   $('#model-copy-div').hide();
@@ -685,7 +685,7 @@ function checkFramework() {
   $('#model-copy-checkbox').attr('checked', false);
 
   $.ajax({
-    url: url('model/'+model+'/framework'),
+    url: url('model/'+model+'/frameworks'),
     type: 'get',
     dataType: 'json',
     success: function(result) {

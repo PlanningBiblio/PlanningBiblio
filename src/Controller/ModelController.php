@@ -161,7 +161,7 @@ class ModelController extends BaseController
     }
 
     /**
-     * @Route("/model/{id<\d+>}/framework", name="model.framework", methods={"GET"})
+     * @Route("/model/{id<\d+>}/frameworks", name="model.frameworks", methods={"GET"})
      */
     public function frameworks(Request $request, Session $session)
     {
