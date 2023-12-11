@@ -17,6 +17,23 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
+function cellule_animation($agents, $debut, $fin, $colspan)
+{
+    $GLOBALS['idCellule']++;
+
+    $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center; font-weight:bold;'
+    data-start='$debut' data-end='$fin' data-situation='0' data-cell='{$GLOBALS['idCellule']}' data-perso-id='0'>";
+
+    $i = 0;
+    foreach ($agents as $elem) {
+        $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv pl-cellule-perso-{$elem}' data-perso-id='{$elem}' style='padding: 2px;'>".nom($elem)."</div>";
+        $i++;
+    }
+
+    $cellule.="</td>\n";
+    return $cellule;
+}
+
 function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
 {
     $resultats=array();

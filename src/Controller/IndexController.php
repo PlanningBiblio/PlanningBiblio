@@ -30,6 +30,7 @@ require_once(__DIR__ . '/../../public/include/function.php');
 
 class IndexController extends BaseController
 {
+    use \App\Trait\PlanningJobTrait;
 
     private $CSRFToken;
 
@@ -354,6 +355,13 @@ class IndexController extends BaseController
                     }
                 }
                 $j++;
+            }
+
+            // Look for animations
+            list($animationTables, $animationsAgents) = $this->getAnimationTables($absences, $tabs, $debut, $fin, $j);
+
+            foreach ($animationTables as $animationTable) {
+                $tabs[] = $animationTable;
             }
 
             $this->templateParams(array('tabs' => $tabs));
