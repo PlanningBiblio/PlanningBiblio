@@ -135,7 +135,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         $this->assertEquals(date('d/m/Y'), $result->eq(24)->text());
   
         // Edit Sally's record
-        $editLinks = $crawler->filter('.agent-list-link');
+        $editLinks = $crawler->filter('a:has(> span.pl-icon-edit)');
         $crawler = $this->client->request('GET', $editLinks->eq(1)->attr('href'));
         $crawler = $this->client->refreshCrawler();
 
@@ -167,7 +167,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
 
         // Edit John's record
         $crawler = $this->client->request('GET', '/agent');
-        $editLinks = $crawler->filter('.agent-list-link');
+        $editLinks = $crawler->filter('a:has(> span.pl-icon-edit)');
         $crawler = $this->client->request('GET', $editLinks->eq(2)->attr('href'));
         $crawler = $this->client->refreshCrawler();
 
