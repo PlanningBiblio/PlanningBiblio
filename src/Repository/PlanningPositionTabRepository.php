@@ -14,6 +14,22 @@ use App\Model\PlanningPositionTabGroup;
 
 class PlanningPositionTabRepository extends EntityRepository
 {
+    public function maxTableId()
+    {
+        $entityManager = $this->getEntityManager();
+
+        $qb = $entityManager->createQueryBuilder();
+        $qb->select('MAX(a.tableau) as maxTableId')
+            ->from(PlanningPositionTab::class, 'a');
+        return $qb->getQuery()->getSingleResult();
+    }
+
+    public function nextTableId()
+    {
+        $maxTableId = $this->maxTableId();
+        return intval($maxTableId['maxTableId']) + 1;
+    }
+
     public function purge($id)
     {
         $planningPositionTab = $this->find($id);

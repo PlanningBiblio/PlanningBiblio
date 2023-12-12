@@ -3,7 +3,11 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\PlanningBiblio\Framework;
+use App\Model\PlanningPositionCells;
+use App\Model\PlanningPositionHours;
 use App\Model\PlanningPositionLines;
+use App\Model\PlanningPositionTab;
 use App\Model\Position;
 use App\PlanningBiblio\Framework;
 
@@ -801,86 +805,90 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework/copy/{id}', name: 'framework.copy_table', methods: ['GET', 'POST'])]
-    public function copyTable (Request $request, Session $session){
+    public function frameworkCopy(Request $request, Session $session)
+    {
 
-        // Initilisation des variables
-        $CSRFToken = $request->get('CSRFToken');
-        $nom = trim($request->get('nom'));
-        $numero1 = $request->get('id');
-        $dbprefix = $GLOBALS['dbprefix'];
-
-        //		Copie des horaires
-        $values = array();
-        $db = new \db();
-        $db->select2("pl_poste_horaires", array("debut","fin","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`debut`,`fin`");
-        if ($db->result) {
-            $db2 = new \db();
-            $db2->select2("pl_poste_tab", array(array("name"=>"MAX(tableau)","as"=>"tableau"),"site"));
-            $numero2 = $db2->result[0]['tableau']+1;
-            foreach ($db->result as $elem) {
-                if (array_key_exists('tableau', $elem)) {
-                    $values[] = array(":debut"=>$elem['debut'], ":fin"=>$elem['fin'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
-                }
-            }
-            $req = "INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES (:debut, :fin, :tableau, :numero);";
-            $db2 = new \dbh();
-            $db2->CSRFToken = $CSRFToken;
-            $db2->prepare($req);
-            foreach ($values as $elem) {
-                $db2->execute($elem);
-            }
-
-            // Récupération du site
-            $db2 = new \db();
-            $db2->select2("pl_poste_tab", "site", array("tableau"=>$numero1));
-            $site=$db2->result[0]["site"];
-
-            // Enregistrement du nouveau tableau
-            $db2 = new \db();
-            $db2->CSRFToken = $CSRFToken;
-            $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site, "origin" => $numero1));
-
-            //		Copie des lignes
-            $values = array();
-            $db->select2("pl_poste_lignes", array("tableau","ligne","poste","type"), array("numero"=>$numero1), "ORDER BY `tableau`,`ligne`");
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    if (array_key_exists('ligne', $elem)) {
-                        $values[] = array(":tableau"=>$elem['tableau'], ":ligne"=>$elem['ligne'], ":poste"=>$elem['poste'], ":type"=>$elem['type'],
-            "numero"=>$numero2);
-                    }
-                }
-                $req = "INSERT INTO `{$dbprefix}pl_poste_lignes` (`tableau`,`ligne`,`poste`,`type`,`numero`) ";
-                $req .= "VALUES (:tableau, :ligne, :poste, :type, :numero)";
-                $db2 = new \dbh();
-                $db2->CSRFToken = $CSRFToken;
-                $db2->prepare($req);
-                foreach ($values as $elem) {
-                    $db2->execute($elem);
-                }
-            }
-
-            //		Copie des cellules grises
-            $values = array();
-            $db->select2("pl_poste_cellules", array("ligne","colonne","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`ligne`,`colonne`");
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    if (array_key_exists('ligne', $elem) and array_key_exists('colonne', $elem)) {
-                        $values[] = array(":ligne"=>$elem['ligne'], ":colonne"=>$elem['colonne'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
-                    }
-                }
-                $req = "INSERT INTO `{$dbprefix}pl_poste_cellules` (`ligne`,`colonne`,`tableau`,`numero`) ";
-                $req .= "VALUES (:ligne, :colonne, :tableau, :numero)";
-                $db2 = new \dbh();
-                $db2->CSRFToken = $CSRFToken;
-                $db2->prepare($req);
-                foreach ($values as $elem) {
-                    $db2->execute($elem);
-                }
-            }
-
-            // Retour à  la page principale
-            return $this->redirectToRoute('framework.index', array("cfg-type" => "horaires", "numero" => $numero2 ));
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
         }
+
+        $id = $request->get('id');
+        $frameworkUpdate = $request->get('framework-update');
+        $newName = $request->get('nom');
+
+        // Set original ID only if it's an update
+        $origin = $frameworkUpdate ? $id : null;
+
+        // Get framework elements
+        // Framework
+        $em = $this->entityManager->getRepository(PlanningPositionTab::class)->findBy(array(
+            'tableau' => $id,
+        ));
+        $framework = $em[0];
+
+        // Cells
+        $cells = $this->entityManager->getRepository(PlanningPositionCells::class)->findBy(array(
+            'numero' => $id,
+        ));
+
+        // Hours
+        $hours = $this->entityManager->getRepository(PlanningPositionHours::class)->findBy(array(
+            'numero' => $id,
+        ));
+
+        // Lines
+        $lines = $this->entityManager->getRepository(PlanningPositionLines::class)->findBy(array(
+            'numero' => $id,
+        ));
+
+        // Find the next Framework ID (field "tableau")
+        $next = $this->entityManager->getRepository(PlanningPositionTab::class)->nextTableId();
+
+        // Create the copy
+        // Framework's copy
+        $copy = new PlanningPositionTab();
+        $copy->tableau($next);
+        $copy->nom($newName);
+        $copy->site($framework->site());
+        $copy->origin($origin);
+        $copy->updated_at(New \DateTime());
+        $this->entityManager->persist($copy);
+        $this->entityManager->flush();
+
+        // Cells
+        foreach ($cells as $cell) {
+            $new = new PlanningPositionCells();
+            $new->numero($next);
+            $new->tableau($cell->tableau());
+            $new->ligne($cell->ligne());
+            $new->colonne($cell->colonne());
+            $this->entityManager->persist($new);
+            $this->entityManager->flush();
+        }
+
+        // Hours
+        foreach ($hours as $hour) {
+            $new = new PlanningPositionHours();
+            $new->numero($next);
+            $new->tableau($hour->tableau());
+            $new->debut($hour->debut());
+            $new->fin($hour->fin());
+            $this->entityManager->persist($new);
+            $this->entityManager->flush();
+        }
+
+        // Lines
+        foreach ($lines as $line) {
+            $new = new PlanningPositionLines();
+            $new->numero($next);
+            $new->tableau($line->tableau());
+            $new->ligne($line->ligne());
+            $new->poste($line->poste());
+            $new->type($line->type());
+            $this->entityManager->persist($new);
+            $this->entityManager->flush();
+        }
+
+        return $this->redirectToRoute('framework.index');
     }
 }

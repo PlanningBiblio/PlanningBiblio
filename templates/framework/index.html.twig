@@ -167,8 +167,8 @@
 
   <div id="copy-div" style="display: none;">
     <h3>Copie du tableau</h3>
-    <form name='form' id="copy-form" action="" method='get'>
-      <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
+    <form name="form" id="copy-form" action="" method="post">
+      <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
       <input type='hidden' name='menu' value='off' />
       <input type='hidden' name='numero' id='numero' value="" />
       Nom du nouveau tableau<br/>
