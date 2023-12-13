@@ -54,26 +54,26 @@
           </tr>
         </thead>
         <tbody>
-          {% for elem in tableaux %}
-            <tr id='tr-tableau-{{ elem.tableau }}' >
+          {% for framework in frameworks %}
+            <tr id='tr-tableau-{{ framework.tableau }}' >
               <td style='white-space:nowrap;'>
-                <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ elem.tableau }}' class='chk1'/>
-                <input type='hidden' name='numero' id='numero' value ="{{ elem.tableau }}" />
-                <a href="{{ asset('framework') }}/{{ elem.tableau }}">
+                <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ framework.tableau }}' class='chk1'/>
+                <input type='hidden' name='numero' id='numero' value ="{{ framework.tableau }}" />
+                <a href="{{ asset('framework') }}/{{ framework.tableau }}">
                   <span class='pl-icon pl-icon-edit' title='Modifier'></span>
                 </a>
-                <a href="" class="copy-table" data-id ="{{ elem.tableau }}">
-                  <span class='pl-icon pl-icon-copy' id="copy-tab-link{{ elem.tableau }}" title='Copier' style="border: none;"></span>
+                <a href="" class="copy-table" data-id ="{{ framework.tableau }}">
+                  <span class='pl-icon pl-icon-copy' id="copy-tab-link{{ framework.tableau }}" title='Copier' style="border: none;"></span>
                 </a>
-                <a href='javascript:supprimeTableau({{ elem.tableau }});'>
+                <a href='javascript:supprimeTableau({{ framework.tableau }});'>
                   <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
                 </a>
               </td>
-              <td id='td-tableau-{{ elem.tableau }}-nom'>{{ elem.nom | raw }}</td>
+              <td id='td-tableau-{{ framework.tableau }}-nom'>{{ framework.nom | raw }}</td>
               {% if nbSites > 1 %}
-                <td>{{ elem.multisite }}
+                <td>{{ framework.siteName }}
               {% endif %}
-              <td>{{ elem.tabAffect }}</td>
+              <td>{{ framework.assignment }}</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -82,13 +82,13 @@
     <p>
       <input type='button' value='Supprimer la sélection' class='ui-button ui-button-type3' onclick="supprime_select('chk1','{{ asset("framework-batch_delete") }}');">
     </p>
-    {% if tableauxSupprimes is not empty %}
+    {% if deletedFrameworks is not empty %}
       <p style='margin-top:30px;'>
         Récupération d'un tableau supprimé
         <select id='tableauxSupprimes'>
           <option value=''>&nbsp;</option>
-            {% for item in tableauxSupprimes %}
-              <option value='{{ item.tableau }}'>{{ item.nom }}&nbsp;(utilisation : {{ item.tabAffect }})</option>
+            {% for framework in deletedFrameworks %}
+              <option value='{{ framework.tableau }}'>{{ framework.nom }}&nbsp;(utilisation : {{ framework.assignment }})</option>
             {% endfor %}
         </select>
       </p>
