@@ -115,7 +115,7 @@
                 <td>Affecter au site :</td>
                 <td>
                   <select name="site" style="width:300px;">
-                    <option value=''>&nbsp;</option>
+                    <option value='1'>&nbsp;</option>
                     {% for i in 1..nbSites %}
                        <option value='{{ i }}' {{ (i == site) ? "selected='selected'":" "}} >{{ multisites[i] }}</option>
                     {% endfor %}

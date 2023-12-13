@@ -150,63 +150,6 @@ class Framework
         $this->elements=$tabs;
     }
 
-    public function getNumbers()
-    {
-        $db = new \db();
-        $db->select2("pl_poste_horaires", "tableau", array("numero"=>$this->id), "group by tableau");
-        if (!$db->result) {
-            return;
-        }
-
-        $numbers=array();
-        foreach ($db->result as $elem) {
-            $numbers[]=$elem['tableau'];
-        }
-        $length=count($numbers);
-        sort($numbers);
-        $next=$numbers[$length-1]+1;
-    
-        $this->length=$length;
-        $this->next=$next;
-        $this->numbers=$numbers;
-    }
-
-    public function setNumbers($number)
-    {
-        $this->getNumbers();
-        $length=$this->length;
-        $next=$this->next;
-        $numbers=$this->numbers;
-        $id=$this->id;
-
-        $diff=intval($number)-intval($length);
-        if ($diff==0) {
-            return;
-        }
-
-        if ($diff>0) {
-            for ($i=$next;$i<($diff+$next);$i++) {
-                $horaires=array("debut"=>"09:00:00","fin"=>"10:00:00","tableau"=>$i,"numero"=>$id);
-                $db = new \db();
-                $db->CSRFToken = $this->CSRFToken;
-                $db->insert("pl_poste_horaires", $horaires);
-            }
-        }
-
-        if ($diff<0) {
-            $i=$number;
-            while ($numbers[$i]) {
-                $db = new \db();
-                $db->CSRFToken = $this->CSRFToken;
-                $db->delete("pl_poste_horaires", array("tableau"=>$numbers[$i], "numero"=>$id));
-                $db = new \db();
-                $db->CSRFToken = $this->CSRFToken;
-                $db->delete("pl_poste_lignes", array("tableau"=>$numbers[$i], "numero"=>$id));
-                $i++;
-            }
-        }
-    }
-
     public function update($post)
     {
         //		Update
