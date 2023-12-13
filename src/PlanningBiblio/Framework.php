@@ -226,8 +226,17 @@ class Framework
 
     public function is_used()
     {
+        
+        // MT36324 / TODO, See if the function is still necessary and if it has to be replaced by :
+        // $db->select('pl_poste_tab_affect', null, "tableau = $this->id");
+        // if ($db->result) {
+        //       return true;
+        // }
+        // return false;
+
         $db = new \db();
         $db->select('pl_poste_tab_affect', null, "tableau = $this->id");
+
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $db2 = new \db();
