@@ -26,6 +26,8 @@ trait FrameworkTrait
             $deleted = date('Y-m-d H:i:s', strtotime('- 1 year'));
             $qb->andWhere('f.supprime >= :deleted')
                 ->setParameter('deleted', $deleted);
+        } else {
+            $qb->andWhere('f.supprime is NULL');
         }
 
         $frameworks = $qb->getQuery()->getResult();

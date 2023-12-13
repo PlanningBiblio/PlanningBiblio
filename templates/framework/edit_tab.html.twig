@@ -50,18 +50,14 @@
       // Enregistrement des données en ajax 
       $.ajax({
         url: url('framework-table/save-line'),
-        type: "post",
+        type: 'post',
         data: data,
-        success: function(){
-          CJInfo("Le tableau a été enregistré","highlight");
+        success: function() {
+          CJInfo('Le tableau a été enregistré', 'highlight');
           return true;
         },
-        error: function(request, status, error){
-          if (request.responseText == '"used"') {
-            CJInfo('Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.','error');
-          } else {
-            CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.","error");
-          }
+        error: function(request, status, error) {
+          CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.", 'error');
           return false;
         }
       });
@@ -77,11 +73,11 @@
   {% endif %}
 
   {% if used %}
-    <p class="ui-state-error-text" style="text-align:center">Ce tableau est utilisé sur un planning et ne peut être édité</p>
+    <p class="ui-state-error-text" style="text-align:center">Ce tableau est utilisé, vos modifications peuvent impacter les modèles qui l'utilisent.</p>
   {% endif %}
-  <input type='hidden' name='used' id='used' value="{{ used }}" />
+  <input type='hidden' name='used' id='used' value="{{ used }}" /> {# MT36324 / TODO : see if it is still necessary #}
 
-  <div id='tabs' class='ui-tabs' data-active="{{ cfgType }}" {% if used %}data-disabled="[1, 2]"{% endif %}>
+  <div id="tabs" class="ui-tabs" data-active="{{ cfgType }}">
     <ul>
       <li class="admin">
         <a href='#div_infos' id='infos'>Infos générales</a>
@@ -96,27 +92,29 @@
         <a href='{{ asset("framework")}}' >Retour</a>
       </li>
       <li class='ui-tab-submit admin'>
-        <a href='javascript:tableauxInfos();' class='tableaux-valide'>Valider</a>
+        <a href="javascript:$('#framework-info-form').submit();" class="tableaux-valide">Valider</a>
       </li>
     </ul>
 
     <div id='div_infos'>
       <div style='min-height:350px;'>
-        <form name='form' action="{{ asset('index.php') }}" method='get'>
+        <form name='framework-info-form' id="framework-info-form" action="{{ asset('framework/info') }}" method='post'>
+          <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+          <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
           <input type='hidden' name='id' id='id' value="{{ tableauNumero }}" />
           <h3>Informations générales</h3>
           <table class='tableauFiche'>
             <tr>
               <td>Nom :</td>
               <td>
-                <input type='text' id='nom' value="{{ tableauNom }}"  style='width:300px;'/>
+                <input type='text' name="name" value="{{ tableauNom }}" style="width:300px;"/>
               </td>
             </tr>
             {% if nbSites > 1 %}
               <tr>
                 <td>Affecter au site :</td>
                 <td>
-                  <select id='site' style='width:300px;' {% if used %}disabled{% endif %}>
+                  <select name="site" style="width:300px;">
                     <option value=''>&nbsp;</option>
                     {% for i in 1..nbSites %}
                        <option value='{{ i }}' {{ (i == site) ? "selected='selected'":" "}} >{{ multisites[i] }}</option>
@@ -130,7 +128,7 @@
             <tr>
               <td>Nombre de tableaux :</td>
               <td>
-                <select name='nombre' id='nombre' style='width:300px;' {% if used %}disabled{% endif %}>
+                <select name="nombre" id="nombre" style="width:300px;">
                   {% for i in 1..16 %}
                     <option value='{{ i }}' {{ (i == nombre) ? "selected='selected'":" "}} >{{ i }}</option>
                   {% endfor %}
@@ -146,6 +144,7 @@
     <div id='div_horaires' style='display:none;'>
       <div style='min-height:350px;'>
         <form name='form2' action="{{ asset('framework') }}" method='post'>
+          <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
           <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}" />
           <input type='hidden' name='cfg-type' value='1' />
           <input type='hidden' name='numero' value="{{ tableauNumero }}" />
