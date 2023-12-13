@@ -14,9 +14,7 @@
             <select name='tableau' class='ui-widget-content ui-corner-all'>
               <option value=''>&nbsp;</option>
                 {% for framework in frameworks %}
-                  {% if framework.site == site %}
-                    <option value='{{ framework.tableau }}'>{{ framework.nom }}</option>
-                  {% endif %}
+                  <option value='{{ framework.tableau }}'>{{ framework.nom }}</option>
                 {% endfor %}
             </select>
           </td>

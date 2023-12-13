@@ -150,9 +150,7 @@ class IndexController extends BaseController
         // Framework choice.
         $tab = 0;
         if ($show_framework_select) {
-            $db = new \db();
-            $db->select2("pl_poste_tab", "*", array("supprime"=>null), "order by `nom` DESC");
-            $frameworks = $db->result;
+            $frameworks = $this->getAllFrameworks($site);
 
             $this->templateParams(array(
                     'frameworks' => $frameworks,

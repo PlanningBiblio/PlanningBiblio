@@ -7,6 +7,32 @@ use App\Model\PlanningPositionTab;
 
 trait FrameworkTrait
 {
+
+    protected function getAllFrameworks(String $site = 'all', $deleted = false)
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('f')
+            ->from(PlanningPositionTab::class, 'f')
+            ->where('f.updated is NULL')
+            ->orderBy('f.nom', 'ASC');
+
+        if ($site != 'all') {
+            $site = (int) $site;
+            $qb->andWhere('f.site = :site')
+                ->setParameter('site', $site);
+        }
+
+        if ($deleted) {
+            $deleted = date('Y-m-d H:i:s', strtotime('- 1 year'));
+            $qb->andWhere('f.supprime >= :deleted')
+                ->setParameter('deleted', $deleted);
+        }
+
+        $frameworks = $qb->getQuery()->getResult();
+
+        return $frameworks;
+    }
+
     protected function getLatestFrameworkCopy(int $modelId)
     {
         $copiesExist = false;

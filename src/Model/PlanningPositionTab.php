@@ -31,6 +31,13 @@ class PlanningPositionTab extends PLBEntity
     /** @Column(type="integer") **/
     protected $origin;
 
+    /** @Column(type="boolean") **/
+    protected $updated;
+
     /** @Column(type="datetime") **/
     protected $updated_at;
+
+    protected $assignment;
+
+    protected $siteName;
 }
