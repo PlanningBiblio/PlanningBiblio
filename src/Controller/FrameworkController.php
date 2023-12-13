@@ -125,47 +125,36 @@ class FrameworkController extends BaseController
         $id = $request->get('id');
         $name = trim($request->get('name'));
         $numberOfTables = $request->get('nombre');
-        $site = $request->get('site');
+        $site = $request->get('site', 1);
 
-        // Ajout
+        // Create a new framework
         if (!$id) {
 
-        // Recherche du numero de tableau à utiliser
-            $db = new \db();
-            $db->select2("pl_poste_tab", array(array("name" => "MAX(tableau)", "as" => "numero")));
-            $numero = $db->result[0]["numero"]+1;
+            // Find the new ID
+            $id = $this->entityManager->getRepository(PlanningPositionTab::class)->nextTableId();
 
-            // Insertion dans la table pl_poste_tab
-            $insert = array("nom" => $name, "tableau" => $numero, "site" => "1");
-            if ($site) {
-                $insert["site"] = $site;
-            }
-        
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert("pl_poste_tab", $insert);
+            // Save the new framework
+            $framework = new PlanningPositionTab();
+            $framework->nom($name);
+            $framework->tableau($id);
+            $framework->site($site);
+            $this->entityManager->persist($framework);
+            $this->entityManager->flush();
 
-            $t = new Framework();
-            $t->id = $numero;
-            $t->CSRFToken = $CSRFToken;
-            $t->setNumbers($numbeOfTables);
+            // Create the tables
+            $this->createTables($id, $numberOfTables);
 
             $session->getFlashBag()->add('notice', 'Le tableau a été créé');
-            return $this->redirectToRoute('framework.edit_table', ['id' => $numero]);
+            return $this->redirectToRoute('framework.edit_table', ['id' => $id]);
 
-        } else {  // Modification
+        // Update an existing framework
+        } else {
 
             $framework = $this->entityManager->getRepository(PlanningPositionTab::class)->findOneBy(
                 array('tableau' => $id)
             );
 
-            $qb = $this->entityManager->createQueryBuilder();
-            $qb->select('h')
-                ->from(PlanningPositionHours::class, 'h')
-                ->where('h.numero = :id')
-                ->groupBy('h.tableau')
-                ->setParameter('id', $id);
-            $originalNumberOfTables = count($qb->getQuery()->getResult());
+            $originalNumberOfTables = $this->getNumberOfTables($id);
 
             // MT36324 / TODO : Add an "if is used" control to create a copy only if it's used
             // If the framework is used and if something else than the name is changed, we create a hidden copy
@@ -175,13 +164,10 @@ class FrameworkController extends BaseController
                 $id = $this->frameworkCopy($id, $name, true);
             }
 
-            $t = new Framework();
-            $t->id = $id;
-            $t->CSRFToken = $CSRFToken;
+            $this->createTables($id, $numberOfTables);
 
             // MT36324 / TODO : Create a copy, then update the copy
             // MT36324 / TODO : Prohibit modification of the site
-            $t->setNumbers($numberOfTables);
 
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
@@ -296,10 +282,7 @@ class FrameworkController extends BaseController
         }
 
         // Nombre de tableaux
-        $t = new Framework();
-        $t->id = $tableauNumero;
-        $t->getNumbers();
-        $nombre = $t->length;
+        $nombre = $this->getNumberOfTables($tableauNumero);
         $site = 1;
 
         // Site
@@ -869,6 +852,60 @@ class FrameworkController extends BaseController
         );
 
         return $this->redirectToRoute('framework.index');
+    }
+
+    private function createTables($id, $number)
+    {
+        $length = $this->getNumberOfTables($id);
+
+        $diff = intval($number) - intval($length);
+
+        if ($diff == 0) {
+            return;
+        }
+
+        if ($diff > 0) {
+            for ($i = $length + 1; $i < ($diff + $length + 1); $i++) {
+                $hours = new PlanningPositionHours();
+                $hours->debut(\DateTime::createFromFormat('H:i:s', '09:00:00'));
+                $hours->fin(\DateTime::createFromFormat('H:i:s', '10:00:00'));
+                $hours->numero($id);
+                $hours->tableau($i);
+                $this->entityManager->persist($hours);
+                $this->entityManager->flush();
+            }
+        }
+
+        if ($diff < 0) {
+            for ($i = $length; $i > ($length + $diff); $i--) {
+                $hours = $this->entityManager->getRepository(PlanningPositionHours::class)
+                    ->findBy(['numero' => $id, 'tableau' => $i]);
+                foreach ($hours as $hour) {
+                    $this->entityManager->remove($hour);
+                    $this->entityManager->flush();
+                }
+
+                $lines = $this->entityManager->getRepository(PlanningPositionLines::class)
+                    ->findBy(['numero' => $id, 'tableau' => $i]);
+                foreach ($lines as $line) {
+                    $this->entityManager->remove($line);
+                    $this->entityManager->flush();
+                }
+            }
+        }
+    }
+
+
+    private function getNumberOfTables($id)
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('h')
+            ->from(PlanningPositionHours::class, 'h')
+            ->where('h.numero = :numero')
+            ->groupBy('h.tableau')
+            ->setParameter('numero', $id);
+
+        return count($qb->getQuery()->getResult());
     }
 
     private function frameworkCopy(int $id, String $newName, $frameworkUpdate = false)
