@@ -24,7 +24,6 @@ class FrameworkController extends BaseController
 {
     use \App\Trait\FrameworkTrait;
 
-
     /**
      * @Route ("/framework", name="framework.index", methods={"GET"})
      */
@@ -117,12 +116,16 @@ class FrameworkController extends BaseController
      * @Route ("/framework/info", name="framework.save_table_info", methods={"POST"})
      */
     public function saveInfo(Request $request, Session $session){
-        $post = $request->request->all();
-        $id = $post["id"];
-        $CSRFToken = $post["CSRFToken"];
-        $nombre = $post["nombre"];
-        $nom = $post["nom"];
-        $site = $post["site"];
+
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $CSRFToken = $request->get('CSRFToken');
+        $id = $request->get('id');
+        $name = trim($request->get('name'));
+        $numberOfTables = $request->get('nombre');
+        $site = $request->get('site');
 
         // Ajout
         if (!$id) {
@@ -133,7 +136,7 @@ class FrameworkController extends BaseController
             $numero = $db->result[0]["numero"]+1;
 
             // Insertion dans la table pl_poste_tab
-            $insert = array("nom" => trim($nom), "tableau" => $numero, "site" => "1");
+            $insert = array("nom" => $name, "tableau" => $numero, "site" => "1");
             if ($site) {
                 $insert["site"] = $site;
             }
@@ -145,30 +148,54 @@ class FrameworkController extends BaseController
             $t = new Framework();
             $t->id = $numero;
             $t->CSRFToken = $CSRFToken;
-            $t->setNumbers($nombre);
+            $t->setNumbers($numbeOfTables);
 
-            return $this->json((int) $numero);
+            $session->getFlashBag()->add('notice', 'Le tableau a été créé');
+            return $this->redirectToRoute('framework.edit_table', ['id' => $numero]);
+
         } else {  // Modification
+
+            $framework = $this->entityManager->getRepository(PlanningPositionTab::class)->findOneBy(
+                array('tableau' => $id)
+            );
+
+            $qb = $this->entityManager->createQueryBuilder();
+            $qb->select('h')
+                ->from(PlanningPositionHours::class, 'h')
+                ->where('h.numero = :id')
+                ->groupBy('h.tableau')
+                ->setParameter('id', $id);
+            $originalNumberOfTables = count($qb->getQuery()->getResult());
+
+            // MT36324 / TODO : Add an "if is used" control to create a copy only if it's used
+            // If the framework is used and if something else than the name is changed, we create a hidden copy
+            if ($site != $framework->site()
+                or $numberOfTables != $originalNumberOfTables) {
+
+                $id = $this->frameworkCopy($id, $name, true);
+            }
+
             $t = new Framework();
             $t->id = $id;
             $t->CSRFToken = $CSRFToken;
 
-            $not_used = $t->is_used() ? false : true;
-            if ($not_used) {
-                $t->setNumbers($nombre);
-            }
+            // MT36324 / TODO : Create a copy, then update the copy
+            // MT36324 / TODO : Prohibit modification of the site
+            $t->setNumbers($numberOfTables);
 
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->update("pl_poste_tab", array("nom" => trim($nom)), array("tableau" => $id));
+            $db->update("pl_poste_tab", array("nom" => $name), array("tableau" => $id));
 
-            if ($site && $not_used) {
+            // MT36324 / TODO : Create a copy, then update the copy
+            if ($site) {
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->update('pl_poste_tab', array('site' => $site), array('tableau' => $id));
             }
 
-            return $this->json('OK');
+            $session->getFlashBag()->add('notice', 'Les modifications ont été enregistrées');
+            return $this->redirectToRoute('framework.edit_table', ['id' => $id]);
         }
     }
      /**
@@ -233,6 +260,9 @@ class FrameworkController extends BaseController
      * @Route ("/framework/{id}", name="framework.edit_table", methods={"GET"})
      */
     public function editTable (Request $request, Session $session){
+
+        // MT36324 / TODO : Prohibit access to updated frameworks (when the field updated is not null)
+
         $CSRFToken = $GLOBALS['CSRFSession'];
         $cfgType = $request->get("cfg-type");
         $tableauNumero = $request->request->get("id");
@@ -271,11 +301,6 @@ class FrameworkController extends BaseController
         $t->getNumbers();
         $nombre = $t->length;
         $site = 1;
-
-        if ($t->is_used()) {
-            $cfgType = 'infos';
-        }
-
 
         // Site
         if ($nbSites > 1 && $tableauNumero) {
@@ -347,7 +372,7 @@ class FrameworkController extends BaseController
                 "tableauNumero" => $tableauNumero,
                 "tableaux"      => $tableaux,
                 "tabs"          => $tabs,
-                'used'          => $t->is_used() ? 1 : 0
+                'used'          => $t->is_used(), // MT36324 / TODO : see if it's still necessary, Maybe to display an alert
             )
         );
 
@@ -358,22 +383,16 @@ class FrameworkController extends BaseController
      * @Route ("/framework", name="framework.save_table", methods={"POST"})
      */
     public function saveTable (Request $request, Session $session){
+
+        // MT36324 / TODO : Add CSRF protection
+
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableauNumero = $post['numero'];
 
-        $framework = new Framework();
-        $framework->id = $tableauNumero;
-        if ($framework->is_used()) {
-            return $this->redirectToRoute('framework.edit_table',
-                array(
-                    'id' => $tableauNumero,
-                    'cfg-type' => 0,
-                    'msg' => 'Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.',
-                    'msgType' => 'error'
-                ));
-        }
-
+        // MT36324 / TODO : Create a copy, then update the copy
+ 
+        // MT36324 / TODO : See if the following control is needed, remove it otherwise
         if (isset($post['action'])) {
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
@@ -422,16 +441,15 @@ class FrameworkController extends BaseController
      * @Route ("framework-table/save-line", name="framework.save_table_line", methods={"POST"})
      */
     public function saveTableLine(Request $request, Session $session){
+
+        // MT36324 / TODO : Add CSRF protection
+
         $form_post = $request->request->all();
         $CSRFToken = $form_post['CSRFToken'];
         $tableauNumero = $form_post['id'];
         $dbprefix = $GLOBALS['dbprefix'];
 
-        $framework = new Framework();
-        $framework->id = $tableauNumero;
-        if ($framework->is_used()) {
-            return $this->json('used', 403);
-        }
+        // MT36324 / TODO : Create a copy, then update the copy
 
         // Suppression des infos concernant ce tableau dans la table pl_poste_lignes
         $db = new \db();
@@ -836,31 +854,34 @@ class FrameworkController extends BaseController
 
 
     /**
-     * @Route ("/framework/copy/{id}", name="framework.copy_table", methods={"GET", "POST"})
+     * @Route ("/framework/copy/{id}", name="framework.copy_table", methods={"POST"})
      */
-    public function frameworkCopy(Request $request, Session $session)
+    public function frameworkCopyRoute(Request $request, Session $session)
     {
 
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
-        $id = $request->get('id');
-        $frameworkUpdate = $request->get('framework-update');
-        $newName = $request->get('nom');
+        $this->frameworkCopy(
+            $request->get('id'),
+            $request->get('nom')
+        );
 
-        // We add the original ID only if it's an update
-        $origin = $frameworkUpdate ? $id : null;
+        return $this->redirectToRoute('framework.index');
+    }
 
+    private function frameworkCopy(int $id, String $newName, $frameworkUpdate = false)
+    {
         // Get framework elements
-        // Framework
         $em = $this->entityManager->getRepository(PlanningPositionTab::class)->findBy(array(
             'tableau' => $id,
         ));
         $framework = $em[0];
 
-        // If it's an updated, we set the updated field to true on the original framework to hide it
+        // If it's an updated
         if ($frameworkUpdate) {
+            // We set the updated field to true on the original framework to hide it
             $framework->updated(true);
             $this->entityManager->flush();
         }
@@ -889,7 +910,7 @@ class FrameworkController extends BaseController
         $copy->tableau($next);
         $copy->nom($newName);
         $copy->site($framework->site());
-        $copy->origin($origin);
+        $copy->origin($id);
         $copy->updated_at(New \DateTime());
         $this->entityManager->persist($copy);
         $this->entityManager->flush();
@@ -928,6 +949,7 @@ class FrameworkController extends BaseController
             $this->entityManager->flush();
         }
 
-        return $this->redirectToRoute('framework.index');
+        // Return the new ID
+        return $next;
     }
 }

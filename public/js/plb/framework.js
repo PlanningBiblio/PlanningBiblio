@@ -210,44 +210,17 @@ function supprime_select(classe,page){
   }
 }
 
-function tableauxInfos(){
-  $.ajax({
-    url: url('framework/info'),
-    type: "post",
-    dataType: "json",
-    data: {id:$("#id").val(), nom:$("#nom").val(), nombre:$("#nombre").val(), site:$("#site").val(), CSRFToken:$("#CSRFSession").val()},
-    success: function(result){
-      var msg=encodeURIComponent("Les informations ont été modifiées avec succès");
-      if($("#id").val()){
-        location.href= url('framework/' + $('#id').val() + '?cfg-type=0&msg=' + msg + '&msgType=success');
-      }else{
-        location.href= url('framework/' + result + '?cfg-type=0&msg=' + msg + '&msgType=success');
-      }
-    },
-    error: function(result){
-      CJInfo("Une erreur est survenue lors de la modification des informations\n"+result.responseText,"error");
-    }
-  });
-}
-
 $(function(){
-  used = $('#used').val();
   // Adaptation du bouton de validation en fonction de l'onglet actif (page index.php)
   $("#infos").click(function(){
-    $(".tableaux-valide").attr("href","javascript:tableauxInfos();");
+    $(".tableaux-valide").attr("href","javascript:$('#framework-info-form').submit();");
   });
 
   $("#horaires").click(function(){
-    if (used == 1) {
-      return false;
-    }
     $(".tableaux-valide").attr("href","javascript:document.form2.submit();");
   });
 
   $("#lignes").click(function(){
-    if (used == 1) {
-      return false;
-    }
     $(".tableaux-valide").attr("href","javascript:configLignes();");
   });
 
