@@ -22,56 +22,56 @@ require_once(__DIR__ . '/../../public/postes/class.postes.php');
 
 class FrameworkController extends BaseController
 {
+    use \App\Trait\FrameworkTrait;
+
+
     #[Route(path: '/framework', name: 'framework.index', methods: ['GET'])]
     public function index (Request $request, Session $session){
         $nbSites = $this->config('Multisites-nombre');
 
-        // Tableaux
-        $t = new Framework();
-        $t->fetchAll();
-        $tableaux = $t->elements;
+        // Frameworks
+        $frameworks = $this->getAllFrameworks();
 
-        // Tableaux supprimés
-        $t = new Framework();
-        $t->supprime = true;
-        $t->fetchAll();
-        $tableauxSupprimes = $t->elements;
+        // Deleted Frameworks
+        $deletedFrameworks = $this->getAllFrameworks('all', true);
 
         // Dernières utilisations des tableaux
-        $tabAffect = array();
+        $assignments = array();
         $db = new \db();
         $db->select2("pl_poste_tab_affect", null, null, "order by `date` asc");
         if ($db->result) {
             foreach ($db->result as $elem) {
-                $tabAffect[$elem['tableau']] = $elem['date'];
+                $assignments[$elem['tableau']] = $elem['date'];
             }
         }
 
-        if($tableaux){
-            foreach ($tableaux as &$elem) {
-                if (array_key_exists($elem['tableau'], $tabAffect)) {
-                    $utilisation=dateFr($tabAffect[$elem['tableau']]);
+        if(!empty($frameworks)){
+            foreach ($frameworks as &$framework) {
+                if (array_key_exists($framework->tableau(), $assignments)) {
+                    $utilisation = dateFr($assignments[$framework->tableau()]);
                 } else {
-                    $utilisation="Jamais";
+                    $utilisation = 'Jamais';
                 }
-                $elem['tabAffect'] = $utilisation;
+                $framework->assignment($utilisation);
 
-                if ($nbSites > 1){
-                    $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                if ($nbSites > 1) {
+                    $framework->siteName($this->config("Multisites-site{$framework->site()}"));
                 }
             }
         }
+
         // Récupération de tableaux supprimés dans l'année
-        if (!empty($tableauxSupprimes)) {
-            foreach ($tableauxSupprimes as &$elem) {
-                if (array_key_exists($elem['tableau'], $tabAffect)) {
-                    $utilisation=dateFr($tabAffect[$elem['tableau']]);
+        if (!empty($deletedFrameworks)) {
+            foreach ($deletedFrameworks as &$framework) {
+                if (array_key_exists($framework->tableau(), $assignments)) {
+                    $utilisation = dateFr($assignments[$framework->tableau()]);
                 } else {
-                    $utilisation="Jamais";
+                    $utilisation = 'Jamais';
                 }
-                $elem['tabAffect'] = $utilisation;
+                $framework->assignment($utilisation);
             }
         }
+
         //		Groupes
         $t = new Framework();
         $t->fetchAllGroups();
@@ -99,12 +99,12 @@ class FrameworkController extends BaseController
 
         $this->templateParams(
             array(
-                "groupes"           => $groupes,
-                "lignes"            => $lignes,
-                "nbSites"           => $nbSites,
-                "numero1"           => null,
-                "tableaux"          => $tableaux,
-                "tableauxSupprimes" => $tableauxSupprimes
+                'groupes'           => $groupes,
+                'lignes'            => $lignes,
+                'nbSites'           => $nbSites,
+                'numero1'           => null,
+                'frameworks'        => $frameworks,
+                'deletedFrameworks' => $deletedFrameworks
             )
         );
 
@@ -604,9 +604,7 @@ class FrameworkController extends BaseController
         }
 
         //	Recherche des tableaux
-        $t = new Framework();
-        $t->fetchAll();
-        $tableaux = $t->elements;
+        $frameworks = $this->getAllFrameworks();
 
         //	Recherche des groupes
         $t = new Framework();
@@ -623,14 +621,14 @@ class FrameworkController extends BaseController
 
         $this->templateParams(
             array(
-                "champs"     => $champs,
-                "CSRFToken"  => $CSRFToken,
-                "id"         => null,
-                "groupe"     => $groupe,
-                "groupes"    => $groupes,
-                "multisites" => $multisites,
-                "semaine"    => $semaine,
-                "tableaux"   => $tableaux
+                'champs'     => $champs,
+                'CSRFToken'  => $CSRFToken,
+                'id'         => null,
+                'groupe'     => $groupe,
+                'groupes'    => $groupes,
+                'multisites' => $multisites,
+                'semaine'    => $semaine,
+                'frameworks' => $frameworks
             )
         );
 
@@ -651,9 +649,7 @@ class FrameworkController extends BaseController
         }
 
         //	Recherche des tableaux
-        $t = new Framework();
-        $t->fetchAll();
-        $tableaux = $t->elements;
+        $frameworks = $this->getAllFrameworks();
 
         //	Recherche des groupes
         $t = new Framework();
@@ -679,14 +675,14 @@ class FrameworkController extends BaseController
 
         $this->templateParams(
             array(
-                "champs"     => $champs,
-                "CSRFToken"  => $CSRFToken,
-                "id"         => $id,
-                "groupe"     => $groupe,
-                "groupes"    => $groupes,
-                "multisites" => $multisites,
-                "semaine"    => $semaine,
-                "tableaux"   => $tableaux
+                'champs'     => $champs,
+                'CSRFToken'  => $CSRFToken,
+                'id'         => $id,
+                'groupe'     => $groupe,
+                'groupes'    => $groupes,
+                'multisites' => $multisites,
+                'semaine'    => $semaine,
+                'frameworks' => $frameworks
             )
         );
 
@@ -816,7 +812,7 @@ class FrameworkController extends BaseController
         $frameworkUpdate = $request->get('framework-update');
         $newName = $request->get('nom');
 
-        // Set original ID only if it's an update
+        // We add the original ID only if it's an update
         $origin = $frameworkUpdate ? $id : null;
 
         // Get framework elements
@@ -825,6 +821,12 @@ class FrameworkController extends BaseController
             'tableau' => $id,
         ));
         $framework = $em[0];
+
+        // If it's an updated, we set the updated field to true on the original framework to hide it
+        if ($frameworkUpdate) {
+            $framework->updated(true);
+            $this->entityManager->flush();
+        }
 
         // Cells
         $cells = $this->entityManager->getRepository(PlanningPositionCells::class)->findBy(array(

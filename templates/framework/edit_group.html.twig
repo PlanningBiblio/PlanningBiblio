@@ -69,11 +69,11 @@
               <td>
                 <select name="{{ jour }}" id="{{ jour }}" class='ui-widget-content ui-corner-all'>
                   <option value=''>&nbsp;</option>
-                  {% for tab in tableaux %}
+                  {% for framework in frameworks %}
                     {% if id is null %}
-                      <option value="{{ tab.tableau }}" class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
+                      <option value="{{ framework.tableau }}" class='optionSite{{framework.site}} hiddenOptions'>{{ framework.nom }}</option>
                     {% else %}
-                      <option value="{{ tab.tableau }}" {{ tab.tableau == groupe[jour] ? "selected='selected'" : ""}} class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
+                      <option value="{{ framework.tableau }}" {{ framework.tableau == groupe[jour] ? "selected='selected'" : ""}} class='optionSite{{framework.site}} hiddenOptions'>{{ framework.nom }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>
