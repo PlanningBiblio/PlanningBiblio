@@ -24,7 +24,7 @@ class ControllerAuthorizationListener
 
     protected $entityManager;
 
-    protected $anonymous_pages = array('/index', '/week', '/help');
+    protected $anonymous_pages = array('', '/index', '/week', '/help');
 
     public function __construct(\Twig\Environment $twig, EntityManagerInterface $em)
     {
