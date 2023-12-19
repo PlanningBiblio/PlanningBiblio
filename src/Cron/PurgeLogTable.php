@@ -49,6 +49,8 @@ Example: php bin/console PlanningBiblio:PurgeLogTable \"12 MONTH\"
         $logger = new Logger($em, $input->getOption('stdout'));
         $logger->log("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)", "PurgeLogTable");
         $this->release();
+
+        return 0;
     }
 }
 

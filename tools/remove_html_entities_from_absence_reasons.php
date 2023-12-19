@@ -14,6 +14,10 @@ $tables = array(
         'name' => 'select_abs',
         'field' => 'valeur',
     ),
+    array(
+        'name' => 'infos',
+        'field' => 'texte',
+    ),
 );
 
 
