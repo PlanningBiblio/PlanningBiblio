@@ -53,14 +53,6 @@ $page = $request->getPathInfo();
 
 $login = $request->get('login');
 
-// Login Anonyme
-if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and empty($_SESSION["login_id"])) {
-    $_SESSION['login_id']=999999999;
-    $_SESSION['login_nom']="Anonyme";
-    $_SESSION['login_prenom']="";
-    $_SESSION['oups']["Auth-Mode"]="Anonyme";
-}
-
 // Sécurité CSRFToken
 $CSRFSession = isset($_SESSION['oups']['CSRFToken']) ? $_SESSION['oups']['CSRFToken'] : null;
 $_SESSION['PLdate']=array_key_exists("PLdate", $_SESSION)?$_SESSION['PLdate']:date("Y-m-d");

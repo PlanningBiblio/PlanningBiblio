@@ -24,9 +24,8 @@ class LoginListener
 
         $session = $event->getRequest()->getSession();
 
-        $url = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(array('nom' => 'URL'));
+        $config = $this->entityManager->getRepository(ConfigParam::class);
+        $url = $config->findOneBy(array('nom' => 'URL'));
 
         // Prevent user accessing to login page if he is already authenticated
         if (!empty($session->get('loginId')) and $route == 'login') {
@@ -48,6 +47,18 @@ class LoginListener
             $ticket = $event->getRequest()->get('ticket');
             if ($ticket) {
                 $routeParams[] = 'ticket=' . $ticket;
+            }
+
+            // Anonymous login
+            $login = $event->getRequest()->get('login');
+            if ($login and $login === "anonyme" and $config->findOneBy(array('nom' => 'Auth-Anonyme'))->valeur()) {
+                $_SESSION['login_id']=999999999;
+                $_SESSION['login_nom']="Anonyme";
+                $_SESSION['login_prenom']="";
+                $_SESSION['oups']["Auth-Mode"]="Anonyme";
+
+                // Symfony Session
+                $session->set('loginId', 9999999999);
             }
 
             // Requested route
