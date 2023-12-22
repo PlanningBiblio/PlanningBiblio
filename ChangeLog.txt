@@ -1,3 +1,13 @@
+*** Version 23.10.04 (2023-12-22)    ***
+- Enhancements
+MT40023: Stats/Agent: Do not show agents never selected and not in selected sites #970
+MT42470: Enhance CSS #965
+
+- Fixes
+MT42875: Week number in week cycle should not be reset on new year #980
+MT42872: add symfony/mime to display attachments #976
+MT42541: Fix migration scripts #963
+
 *** Version 23.10.03 (2023-11-30)    ***
 MT42693: Disable Absence Block on Planook config #969 (Follow-up)
 
