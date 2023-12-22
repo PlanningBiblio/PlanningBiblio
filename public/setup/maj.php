@@ -3253,7 +3253,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
  
-$v="v23.10.04.000";
+$v="23.10.04.000";
 
 if (version_compare($config['Version'], $v) === -1) {
 
