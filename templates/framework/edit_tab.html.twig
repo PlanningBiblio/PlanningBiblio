@@ -140,7 +140,7 @@
           </table>
         </form>
       </div>
-      <p class='important'>Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</p>
+      <div class="important">Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</div>
     </div>
 
     <div id='div_horaires' style='display:none;'>
@@ -206,7 +206,7 @@
           {% endif %}
        </form>
      </div>
-      <p class='important'>Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</p>
+      <div class="important">Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</div>
     </div>
 
     <div id='div_lignes' style='display:none;'>
@@ -225,7 +225,7 @@
                     Classe<sup>*</sup>
                     <input type='text' name='select_{{ tab.nom }}Classe_0' class='tr_horaires select_titre' style='text-align:center;width:120px;' value="{{ tab.classe | raw }}"/>
                     <a href="javascript:ajout('select_{{ tab.nom }}_',-1);">
-                      <span class='pl-icon pl-icon-add' title='Ajouter'></span>
+                      <span class='pl-icon pl-icon-add-white' title='Ajouter'></span>
                     </a>
                   </td>
                   {% for horaire in tab.horaires %}
@@ -271,10 +271,8 @@
           {% endif %}
         </form>
       </div>
-      <div class='highlight' style='margin-top:40px;'>
-        <p style='margin-left:30px;'>
-          <sup>* Classe CSS appliqué sur le tableau. Permet d'en personnaliser l'affichage.</sup><br/>
-        </p>
+      <div class='highlight'>
+        <sup>*</sup> Classe CSS appliqué sur le tableau. Permet d'en personnaliser l'affichage.
       </div>
     </div>
   </div>

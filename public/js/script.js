@@ -27,7 +27,7 @@ function annuler(nb){
 	  history.go(-nb);
   }
 }
-	
+
 // Fonction permettant d'afficher les heures correspondantes à chaque tableau d'emploi du temps
 // lors de la modification d'un select ou au chargement d'une page
 function calculHeures(object,num,form,tip,numero){
@@ -36,7 +36,7 @@ function calculHeures(object,num,form,tip,numero){
   // tip : Affichage qui sera mis à jour
   debut=numero*7;
   fin=debut+7;
-  
+
   heures=0;
   elements=document.forms[form].elements;
   
@@ -397,10 +397,11 @@ function deleteAbsenceDocument(id) {
 
 function deleteAbsenceInfo(id) {
     if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
+        $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");
         $('#form').submit();
     }
 }
+
 
 function deleteAbsenceBlock(id) {
     if (confirm("Êtes-vous sûr(e) de vouloir supprimer ce blocage ?")) {
@@ -412,7 +413,7 @@ function deleteAbsenceBlock(id) {
 
 function deleteAdminInfo(id) {
     if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
+        $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");
         $('#form').submit();
     }
 }
@@ -424,28 +425,6 @@ function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 he
   var f=new Date("Mon, 26 Aug 2013 "+fin);
   f=f.getTime()/60000;
   return f-d;
-}
-
-//function to create error and alert dialogs
-function errorHighlight(e, type, icon) {
-    if (!icon) {
-        if (type === 'highlight') {
-            icon = 'ui-icon-info';
-        } else {
-            icon = 'ui-icon-alert';
-        }
-    }
-    return e.each(function() {
-        $(this).addClass('ui-widget');
-        var alertHtml = '<div class="ui-state-' + type + ' ui-corner-all" style="padding:0 .7em;">';
-        alertHtml += '<p style="text-align:center;">';
-        alertHtml += '<span class="pl-icon ' + icon + '" style="float:left;margin-right: .3em;"></span>';
-        alertHtml += $(this).html();
-        alertHtml += '</p>';
-        alertHtml += '</div>';
-
-        $(this).html(alertHtml);
-    });
 }
 
 function heureFr(heure){
@@ -491,7 +470,7 @@ function information(message,type,top,time){
   }
   $("#JSInformation").remove();
   $("body").append("<div id='JSInformation'>"+message+"</div>");
-  errorHighlight($("#JSInformation"),type);
+  CJErrorHighlight($("#JSInformation"),type);
   position($("#JSInformation"),top,"center");
   timeoutJSInfo=window.setTimeout("$('#JSInformation').remove()",time);
 }
@@ -625,7 +604,7 @@ function updateTips( text , type) {
 
   $(".validateTips").html(text);
 
-  errorHighlight( $(".validateTips"), type);
+  CJErrorHighlight( $(".validateTips"), type);
 }
 
 function verif_date(d){
