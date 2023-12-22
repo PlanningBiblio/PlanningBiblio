@@ -21,6 +21,13 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
+function sanitize_html($input) {
+    // TODO: Use symfony/html-sanitizer once using symfony 6.1+
+    $config = HTMLPurifier_Config::createDefault();
+    $purifier = new HTMLPurifier($config);
+    return $purifier->purify($input);
+}
+
 function sanitize_array_unsafe($n)
 {
     if (is_array($n)) {

@@ -25,6 +25,7 @@ $text = $request->get('text');
 $date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateSQL'));
 $site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
 $text = urldecode($text);
+$text = sanitize_html($text);
 
 // Sécurité : droits d'accès à la page
 $required1 = 300 + $site; // Droits de modifier les plannings du sites N° $site

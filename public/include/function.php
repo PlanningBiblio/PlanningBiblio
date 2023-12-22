@@ -93,13 +93,13 @@ class datePl
         $interval = $this->getNumberOfWeeksSinceStartDate($this->date);
         if ($nb_semaine == 3) {
             $week_id = null;
-            if (!($interval % 3)) {
+            if (!((int) $interval % 3)) {
                 $week_id = 1;
             }
-            if (!(($interval + 2) % 3)) {
+            if (!((int) ($interval + 2) % 3)) {
                 $week_id = 2;
             }
-            if (!(($interval + 1) % 3)) {
+            if (!((int) ($interval + 1) % 3)) {
                 $week_id = 3;
             }
 
@@ -110,10 +110,10 @@ class datePl
            return $this->getCycleNumber($this->semaine, 4);
         }
 
-        return $this->getCycleNumber($this->semaine, $nb_semaine);
+        return $this->getCycleNumber($interval, $nb_semaine);
     }
 
-    private function getCycleNumber($weeknumber, $cycles) {
+    public function getCycleNumber($weeknumber, $cycles) {
         $weekcycle = 0;
 
         for ($i = 1; $i <= $weeknumber; $i++) {
@@ -126,7 +126,7 @@ class datePl
         return $weekcycle;
     }
 
-    private function getNumberOfWeeksSinceStartDate($date) {
+    public function getNumberOfWeeksSinceStartDate($date) {
         $position=date("w", strtotime(dateSQL($GLOBALS['config']['dateDebutPlHebdo'])))-1;
         $position=$position==-1?6:$position;
         $dateFrom=new dateTime(dateSQL($GLOBALS['config']['dateDebutPlHebdo']));
@@ -243,7 +243,7 @@ class CJMail implements NotificationTransporterInterface
 
         /* Préparation du sujet */
         $this->subject = stripslashes($this->subject);
-        $this->subject = "Planning : " . $this->subject;
+        $this->subject = "Planno : " . $this->subject;
 
         /* Préparation du message, html, doctype, signature */
         $message="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
@@ -1038,6 +1038,11 @@ function heure4($heure, $return0=false)
         $heure = number_format($hre, 2, '.', '');
     } else {
         if (is_numeric($heure)) {
+            $negative = false;
+            if ($heure < 0) {
+                $negative = true;
+                $heure = abs($heure);
+            }
             $hre = floor($heure);
             $centiemes = $heure - $hre;
             $minutes = $centiemes * 0.6;
@@ -1051,6 +1056,9 @@ function heure4($heure, $return0=false)
                 $hre -= $minutes;
             }
             $heure = number_format($hre, 2, 'h', ' ');
+            if ($negative == true) {
+                $heure = '-' . $heure;
+            }
         }
     }
     return $heure;

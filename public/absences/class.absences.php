@@ -659,11 +659,12 @@ class absences
         }
 
         // Don't look for teleworking absences if the position is compatible with
+        $db=new db();
         if ($this->teleworking == false ) {
             $absence_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
             $teleworking_reasons = array();
             foreach ($absence_reasons as $reason) {
-                $teleworking_reasons[] = $reason->valeur();
+                $teleworking_reasons[] = $db->escapeString($reason->valeur());
             }
 
             $filter .= " AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "') ";
@@ -695,7 +696,6 @@ class absences
       ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
       ."ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` "
       ."WHERE $dates $filter ORDER BY $sort;";
-        $db=new db();
         $db->query($req);
 
         $all=array();

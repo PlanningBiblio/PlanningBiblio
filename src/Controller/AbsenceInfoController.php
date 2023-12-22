@@ -111,7 +111,7 @@ class AbsenceInfoController extends BaseController
     }
 
     /**
-     * @Route("/absences/info", name="absences.info.delete", methods={"DEL"})
+     * @Route("/absences/info", name="absences.info.delete", methods={"DELETE"})
      */
     public function delete(Request $request, Session $session)
     {

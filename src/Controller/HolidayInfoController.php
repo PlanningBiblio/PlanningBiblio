@@ -132,7 +132,7 @@ class HolidayInfoController extends BaseController
     }
 
     /**
-     * @Route("/holiday-info", name="holiday_info.delete", methods={"DEL"})
+     * @Route("/holiday-info", name="holiday_info.delete", methods={"DELETE"})
      */
     public function delete(Request $request, Session $session)
     {

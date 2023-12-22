@@ -3224,6 +3224,20 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+
+$v="23.11.00.002";
+
+if (version_compare($config['Version'], $v) === -1) {
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '[[0,\"\"],[1,\"simple\"],[2,\"détaillé\"],[3,\"absents et présents\"],[4,\"absents et présents filtrés par site\"]]', `commentaires` = 'Choix des listes de présence et d\'absences à afficher sous les plannings' WHERE `nom` = 'Absences-planning';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = 'no-reply@planno.fr' WHERE `valeur` = 'no-reply@planningbiblio.fr';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = 'Ce message a été envoyé par Planno.\nMerci de ne pas y répondre.' WHERE `valeur` = 'Ce message a été envoyé par Planning Biblio.\nMerci de ne pas y répondre.';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'URL de Planno. A renseigner seulement si la redirection ne fonctionne pas après authentification sur le serveur CAS, si vous utilisez un Reverse Proxy par exemple.' WHERE `nom` = 'CAS-ServiceURL';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Champ Planno à utiliser pour mapper les agents.' WHERE `nom` = 'Hamac-id';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage
