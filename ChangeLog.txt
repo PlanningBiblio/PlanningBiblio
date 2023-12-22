@@ -1,3 +1,13 @@
+*** Version 23.11.00.003   (2023-12-22)    ***
+- Enhancements
+MT40023: Stats/Agent: Do not show agents never selected and not in selected sites #970
+MT42470: Enhance CSS #965
+
+- Fixes
+MT42875: Week number in week cycle should not be reset on new year #980
+MT42872: add symfony/mime to display attachments #976
+MT42541: Fix migration scripts #963
+
 *** Version 23.11.00.002   (2023-11-30)    ***
 - Enhancements
 MT42530 : Filter by site the list of presents displayed under the schedules
