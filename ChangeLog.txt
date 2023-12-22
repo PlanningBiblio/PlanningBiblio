@@ -1,3 +1,13 @@
+*** Version 23.04.07   (2023-12-22)    ***
+- Enhancements
+MT40023: Stats/Agent: Do not show agents never selected and not in selected sites #970
+MT42470: Enhance CSS #965
+
+- Fixes
+MT42875: Week number in week cycle should not be reset on new year #980
+MT42601: Fix AgentControllerLDIFTest.php #979
+MT42541: Fix migration scripts #963
+
 *** Version 23.04.06   (2023-11-30)    ***
 - Fixes
 MT42019: Use HTML Purifier to sanitize planning comments and model names #977
