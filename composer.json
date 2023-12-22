@@ -47,6 +47,7 @@
         "symfony/framework-bundle": "^5.4",
         "symfony/http-foundation": "^5.4",
         "symfony/lock": "^5.4",
+        "symfony/mime": "^5.4",
         "symfony/monolog-bundle": "*",
         "symfony/panther": "^2.1",
         "symfony/process": "^5.4",
