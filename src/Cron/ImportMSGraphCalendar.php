@@ -26,7 +26,7 @@ class ImportMSGraphCalendar extends Command {
 
         if (!$this->lock()) {
             $output->writeln('The command is already running in another process.');
-            return 0;
+            return Command::FAILURE;
         }
 
         $tenantid = $_ENV['MS_GRAPH_TENANT_ID'] ?? null;
@@ -35,7 +35,7 @@ class ImportMSGraphCalendar extends Command {
 
         if (!$tenantid || !$clientid || !$clientsecret) {
             $output->writeln('At least one of the following is not defined: MS_GRAPH_TENANT_ID, MS_GRAPH_CLIENT_ID, MS_GRAPH_CLIENT_SECRET. Please check you .env.{prod|dev}.local file.');
-            return 0;
+            return Command::FAILURE;
         }
 
         $kernel = $this->getApplication()->getKernel();
@@ -47,7 +47,7 @@ class ImportMSGraphCalendar extends Command {
 
         $this->release();
 
-        return 0;
+        return Command::SUCCESS;
     }
 }
 

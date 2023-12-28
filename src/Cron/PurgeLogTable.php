@@ -32,7 +32,7 @@ Example: php bin/console PlanningBiblio:PurgeLogTable \"12 MONTH\"
 
         if (!$this->lock()) {
             $output->writeln('The command is already running in another process.');
-            return 0;
+            return Command::FAILURE;
         }
 
         $delay = $input->getArgument('delay');
@@ -46,6 +46,8 @@ Example: php bin/console PlanningBiblio:PurgeLogTable \"12 MONTH\"
         $logger = new Logger($em, $input->getOption('stdout'));
         $logger->log("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)", "PurgeLogTable");
         $this->release();
+
+        return Command::SUCCESS;
     }
 }
 
