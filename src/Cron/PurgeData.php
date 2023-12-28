@@ -35,14 +35,14 @@ Example: php bin/console PlanningBiblio:PurgeData \"5\"
 
         if (!$this->lock()) {
             $output->writeln('The command is already running in another process.');
-            return 0;
+            return Command::FAILURE;
         }
 
         $delay = $input->getArgument('delay');
         if ($delay != null) {
             if (!is_numeric($delay)) {
                 $output->writeln('The delay argument must be a number of years.');
-                return 0;
+                return Command::FAILURE;
             }
         } else {
             $delay = 5;
@@ -56,6 +56,8 @@ Example: php bin/console PlanningBiblio:PurgeData \"5\"
         $dataPurger->purge();
 
         $this->release();
+
+        return Command::SUCCESS;
     }
 }
 
