@@ -154,14 +154,13 @@ foreach ($agents as $agent) {
     
         // Test si l'URL existe
         if (substr($url, 0, 4) == 'http') {
-            $test = get_headers($url, 1);
-            if (strstr($test[0], '404')) {
-                logs("Agent #{$agent['id']} : $url 404 Not Found", "ICS", $CSRFToken);
+            $test = @get_headers($url, 1);
+            if (empty($test) or !strstr($test[0], '200')) {
+                logs("Agent #{$agent['id']} : $url {$test[0]}", "ICS", $CSRFToken);
                 continue;
             }
         }
     
-
         // Si la case importation correspondant à ce calendrier est décochée, on ne l'importe pas et on purge les éventuels événements déjà importés.
         if (!$agent["ics_$i"]) {
             $ics=new CJICS();
