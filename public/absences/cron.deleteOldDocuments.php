@@ -5,7 +5,6 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../include/config.php';
 require_once __DIR__ . '/../init_entitymanager.php';
 require_once __DIR__ . '/../include/function.php';
-require_once __DIR__ . '/../plugins/plugins.php';
 require_once __DIR__ . '/class.absences.php';
 require_once __DIR__ . '/../personnel/class.personnel.php';
 
