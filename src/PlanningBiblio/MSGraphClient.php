@@ -42,6 +42,7 @@ class MSGraphClient
         $this->dbprefix = $_ENV['DATABASE_PREFIX'];
         $this->reason_name = $_ENV['MS_GRAPH_REASON_NAME'] ?? 'Outlook';
         $this->login_suffix = $_ENV['MS_GRAPH_LOGIN_SUFFIX'] ?? null;
+        $this->ignoredStatuses = !empty($_ENV['MS_GRAPH_IGNORED_STATUSES']) ? explode(';', $_ENV['MS_GRAPH_IGNORED_STATUSES']) : ['free', 'tentative'];
         $this->full = $full;
     }
 
@@ -115,6 +116,7 @@ class MSGraphClient
         foreach ($response->body->value as $event) {
             if (($event->start->dateTime >= $from . 'T00:00:00.0000000' && $event->end->dateTime <= $to . 'T00:00:00.0000000' ) &&
                 ($event->isOrganizer == true || $event->responseStatus->response == "accepted") &&
+                !in_array($event->showAs, $this->ignoredStatuses) &&
                  !$this->isEventEmpty($user->login(), $event->id)) {
                 $this->incomingEvents[$user->id() . $event->iCalUId]['plb_id'] = $user->id();
                 $this->incomingEvents[$user->id() . $event->iCalUId]['plb_login'] = $user->login();
