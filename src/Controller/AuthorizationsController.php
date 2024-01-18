@@ -215,7 +215,7 @@ class AuthorizationsController extends BaseController
             } elseif ($this->config('Auth-Mode') == 'OpenIDConnect') {
                 $oidc = new OpenIDConnect();
                 $user = $oidc->auth();
-                $login = $user ? $user->email : null;
+                $login = $user ? $user->login : null;
             }
 
             // Check if user login exists in database.
