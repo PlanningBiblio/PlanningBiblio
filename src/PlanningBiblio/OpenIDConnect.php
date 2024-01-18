@@ -21,6 +21,7 @@ class OpenIDConnect
         $this->cacert = $_ENV['OIDC_CACERT'];
         $this->client_id = $_ENV['OIDC_CLIENT_ID'];
         $this->client_secret = $_ENV['OIDC_CLIENT_SECRET'];
+        $this->login_attribute = !empty($_ENV['OIDC_LOGIN_ATTRIBUTE']) ? $_ENV['OIDC_LOGIN_ATTRIBUTE'] : 'email';
         $this->config = $GLOBALS['config'];
     }
 
@@ -41,6 +42,7 @@ class OpenIDConnect
             $user->firstname = $oidc->requestUserInfo('given_name');
             $user->lastname = $oidc->requestUserInfo('family_name');
             $user->email = $oidc->requestUserInfo('email');
+            $user->login = $oidc->requestUserInfo($this->login_attribute);
 
         } catch (Exception $e) {
             return false;
