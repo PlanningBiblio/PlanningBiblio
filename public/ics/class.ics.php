@@ -51,6 +51,7 @@ class CJICS
     public $logs=null;
     public $number = 0;
     public $pattern=null;
+    public $desc = true;
     public $perso_id=0;
     public $status = 'CONFIRMED';
     public $src=null;
@@ -464,16 +465,23 @@ class CJICS
                     $motif_autre = $elem['SUMMARY'];
                 }
 
-                // Si SUMMARY est enregistré dans le champ motif, on ne le met pas dans le champ description
+                // The DESCRIPTION is added to the comment field depending on the configuration
+                $description = null;
+                if ($this->desc) {
+                    $description = !empty($elem['DESCRIPTION']) ? str_replace("\\n", "\n", $elem['DESCRIPTION']) : '';
+                }
+
+                // If SUMMARY is stored in the "Absence Reason" field, we do not add it to the comment field
                 if ($this->pattern == '[SUMMARY]') {
-                    $commentaires = !empty($elem['DESCRIPTION']) ? $elem['DESCRIPTION'] : '';
+                    $commentaires = !empty($description) ? $description : '';
+                // Else, SUMMARY and DESCRIPTION are stored in the comment field
                 } else {
                     $commentaires = !empty($elem['SUMMARY']) ? $elem['SUMMARY'] : '';
-                    if ($commentaires and !empty($elem['DESCRIPTION'])) {
+                    if ($commentaires and !empty($description)) {
                         $commentaires .= "<br/>\n";
                     }
-                    if (!empty($elem["DESCRIPTION"])) {
-                        $commentaires .= $elem['DESCRIPTION'];
+                    if (!empty($description)) {
+                        $commentaires .= $description;
                     }
                 }
 
