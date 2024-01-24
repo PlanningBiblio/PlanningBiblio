@@ -1,3 +1,11 @@
+*** Version 23.04.08   (2024-01-24)    ***
+- Fixes
+MT42815: Escape teleworking reasons when sending planning notifications #978
+MT43036: Fix a calculation error on statistics per agent #983
+MT43082: src/Cron commands return 0 on success and 1 on error #984
+MT41560 : ICS, check if the URL returns a 200 response #985
+MT43200: fix cron.deleteOldDocuments.php #986
+
 *** Version 23.04.07   (2023-12-22)    ***
 - Enhancements
 MT40023: Stats/Agent: Do not show agents never selected and not in selected sites #970
