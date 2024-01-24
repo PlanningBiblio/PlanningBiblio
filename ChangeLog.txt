@@ -1,14 +1,14 @@
 *** Version 23.11.00.004   (2024-01-23)    ***
 - Enhancements
-Implement Open ID Connect #881
+MT42600: Implement Open ID Connect #881
 MT42575: CircleCI tests with MariaDB 10.11 #964 
-MT42643 Move command PlanningBiblio:PurgeLogTable to app:purge-log-table #967
+MT42643: Move command PlanningBiblio:PurgeLogTable to app:purge-log-table #967
 
 - Fixes
 MT42815: Escape teleworking reasons when sending planning notifications #978
 MT43032: Restore anonymous login #982
 MT43036: Fix a calculation error on statistics per agent #983
-MT41560 : ICS, check if the URL returns a 200 response #985
+MT41560: ICS, check if the URL returns a 200 response #985
 MT43200: fix cron.deleteOldDocuments.php #986
 MT43250: Import MS Graph : ignore statuses free and tentative #987
 MT42522: ICS Import: import the description depending on the configuration #988
