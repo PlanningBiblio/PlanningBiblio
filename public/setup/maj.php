@@ -3316,6 +3316,23 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+ 
+$v="23.10.05.000";
+
+if (version_compare($config['Version'], $v) === -1) {
+    // Implement OpenID Connect
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = 'SQL,LDAP,LDAP-SQL,CAS,CAS-SQL,OpenIDConnect', `commentaires` = 'Méthode d\'authentification' WHERE `nom` = 'Auth-Mode';";
+
+    // MT42522
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES
+      ('ICS-Description1','boolean','1','ICS', 'Inclure la description de l\'événement importé dans le commentaire de l\'absence','23');";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES
+      ('ICS-Description2','boolean','1','ICS', 'Inclure la description de l\'événement importé dans le commentaire de l\'absence','43');";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES
+      ('ICS-Description3','boolean','1','ICS', 'Inclure la description de l\'événement importé dans le commentaire de l\'absence','48');";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage

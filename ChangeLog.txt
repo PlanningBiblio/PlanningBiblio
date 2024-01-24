@@ -1,3 +1,20 @@
+*** Version 23.10.05 (2024-01-24)    ***
+- Enhancements
+MT42600: Implement Open ID Connect #881
+MT43250: Import MS Graph : ignore statuses free and tentative #987
+MT42522: ICS Import: import the description depending on the configuration #988
+
+- Fixes
+MT42815: Escape teleworking reasons when sending planning notifications #978
+MT43032: Restore anonymous login #982
+MT43036: Fix a calculation error on statistics per agent #983
+MT43082: src/Cron commands return 0 on success and 1 on error #984
+MT41560 : ICS, check if the URL returns a 200 response #985
+MT43200: fix cron.deleteOldDocuments.php #986
+
+- Security
+MT42999: Update composer #981
+
 *** Version 23.10.04 (2023-12-22)    ***
 - Enhancements
 MT40023: Stats/Agent: Do not show agents never selected and not in selected sites #970
