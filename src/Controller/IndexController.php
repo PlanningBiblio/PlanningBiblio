@@ -516,10 +516,10 @@ class IndexController extends BaseController
         $autres_sites = array();
         if ($this->config('Multisites-nombre') > 1) {
             $db = new \db();
-            $db->select2('pl_poste', array('perso_id','date','debut','fin'), array('date' => "BETWEEN {$dates[0]} AND ".end($dates), 'site' => "<>$site"));
+            $db->select2('pl_poste', array('perso_id','date','debut','fin','poste'), array('date' => "BETWEEN {$dates[0]} AND ".end($dates), 'site' => "<>$site"));
             if ($db->result) {
                 foreach ($db->result as $as) {
-                    $autres_sites[$as['perso_id'].'_'.$as['date']][] = array('debut' => $as['debut'], 'fin' => $as['fin']);
+                    $autres_sites[$as['perso_id'].'_'.$as['date']][] = array('debut' => $as['debut'], 'fin' => $as['fin'], 'poste' => $as['poste']);
                 }
             }
         }
@@ -551,17 +551,24 @@ class IndexController extends BaseController
             }
         }
 
-        if (!$get_absents) {
-            // Get all possitions.
-            $db = new \db();
-            $db->select('postes', '*');
-            $all_positions = array();
-            if ($db->result) {
-                foreach ($db->result as $position) {
-                    $all_positions[$position['id']] = $position;
+        // Get all possitions.
+        $all_positions = array();
+
+        // Get blocking positions
+        $blockingPositions = array();
+
+        $db = new \db();
+        $db->select('postes', '*');
+        if ($db->result) {
+            foreach ($db->result as $position) {
+                $all_positions[$position['id']] = $position;
+                if ($position['bloquant']) {
+                    $blockingPositions[] = $position['id'];
                 }
             }
+        }
 
+        if (!$get_absents) {
             // Get teleworking reasons
             $teleworking_reasons = $this->entityManager->getRepository(AbsenceReason::class)
                 ->getRemoteWorkingDescriptions();
@@ -649,8 +656,11 @@ class IndexController extends BaseController
                     // Do not import agents placed on other site
                     if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
                         foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
-                            if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
-                                continue 2;
+                            if (in_array($as['poste'], $blockingPositions)
+                                and in_array($elem2['poste'], $blockingPositions) ) {
+                                if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
+                                    continue 2;
+                                }
                             }
                         }
                     }
