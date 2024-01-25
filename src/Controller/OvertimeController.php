@@ -224,8 +224,11 @@ class OvertimeController extends BaseController
         $recup['saisie_par_nom'] = nom($recup['saisie_par']);
         $recup['time'] = gmdate('H:i', floor($recup['heures'] * 3600));
         $recup['editable'] = $recup['valide'] <= 0 ? 1 : 0;
-        $recup['save'] = ((($adminN1 or $adminN2) and $recup['valide']<=0)
-            or $recup['valide'] == 0) ? 1 : 0;
+        $recup['save'] = (
+            ($adminN2 and $recup['valide'] <= 0 )  // Level 2 off or refused
+            or (($adminN1 or $adminN2) and $recup['valide'] = 0) // Level 2 off
+            or $recup['valide_n1'] == 0 // Level 1 off
+            ) ? 1 : 0;
 
         $this->templateParams(array(
             'agent'     => $agent,
