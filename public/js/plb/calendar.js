@@ -18,5 +18,5 @@ $(document).ready(function() {
   });
 
   // Formatting error messages
-  errorHighlight($('.information'), 'error');
+  CJErrorHighlight($('.information'), 'error');
 });
