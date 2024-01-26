@@ -1,3 +1,8 @@
+*** Version 23.04.08   (2024-01-26)    ***
+- Fixes
+MT43165: deny overtime change when validated level 1 #989
+MT43231: Import agents if there is conflict on non-blocking positions #991
+
 *** Version 23.04.08   (2024-01-24)    ***
 - Fixes
 MT42815: Escape teleworking reasons when sending planning notifications #978
