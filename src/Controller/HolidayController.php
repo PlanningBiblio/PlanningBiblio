@@ -865,6 +865,7 @@ class HolidayController extends BaseController
     public function checkCredit(Request $request)
     {
         // Initilisation des variables
+        $id = $request->get('id');
         $debut =dateSQL($request->get('debut'));
         $fin =dateSQL($request->get('fin'));
         $start_halfday= $request->get('start_halfday');
@@ -879,7 +880,7 @@ class HolidayController extends BaseController
         list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
 
         $c = new \conges();
-        $recover = $c->calculCreditRecup($perso_id, $debut);
+        $recover = $c->calculCreditRecup($perso_id, $debut, $id);
 
         // If halfday is checked, starting and
         // ending hours depends on agent's working hours
