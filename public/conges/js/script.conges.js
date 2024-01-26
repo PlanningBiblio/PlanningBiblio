@@ -69,6 +69,7 @@ function calculCredit(){
   if( ! $('input[name=debut]').length) { return; }
   if (multipleAgentsSelected()) { return; }
 
+  id = $('#id').val();
   debut=document.form.elements["debut"].value;
   fin=document.form.elements["fin"].value;
   hre_debut=document.form.elements["hre_debut"].value;
@@ -91,6 +92,7 @@ function calculCredit(){
   hre_fin=hre_fin?hre_fin:"23:59:59";
 
   data = {
+    id: id,
     debut: debut,
     fin: fin,
     hre_debut: hre_debut,
@@ -133,11 +135,6 @@ function calculCredit(){
         if(congesRecup == 0 && balance_estimated < 0 ){
           balance_estimated = 0;
         }
-
-        if (congesRecup != 0) {
-          $(".balance_tr").hide();
-        }
-
 
         $('#recuperation').val(balance);
         $('.balance_date').text(dateFr(balance_date));

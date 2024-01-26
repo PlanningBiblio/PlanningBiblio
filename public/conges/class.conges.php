@@ -181,7 +181,7 @@ class conges
     * Calcule les crédits de récupération disponible pour l'agent $perso_id à la date $date
     * Les crédits obtenus à des dates supérieures sont déduits
     */
-    public function calculCreditRecup($perso_id, $date = null)
+    public function calculCreditRecup($perso_id, $date = null, $id = null)
     {
         if (!$date) {
             $date = date('Y-m-d');
@@ -194,14 +194,24 @@ class conges
         $balance1 = (float) $db->result[0]['comp_time'];
 
         // Date à laquelle le compteur doit être remis à zéro
-        $reset_date = strtotime("09/01");
-        if ($reset_date <= time()) {
-            $reset_date = strtotime('+1 year', $reset_date);
+        $reset_date = null;
+
+        $db = new db();
+        $db->select2('cron', array('dom', 'mon', 'disabled'), array('command' => 'cron.holiday_reset_comp_time.php'), 'limit 1');
+        if ($db->result and $db->result[0]['disabled'] == 0 and is_numeric($db->result[0]['dom']) and is_numeric($db->result[0]['mon'])) {
+            $dom = $db->result[0]['dom'];
+            $mon = $db->result[0]['mon'];
+            $reset_date = strtotime("$mon/$dom");
+
+            if ($reset_date <= time()) {
+                $reset_date = strtotime('+1 year', $reset_date);
+            }
+
+            $reset_date = date('Y-m-d', $reset_date);
         }
-        $reset_date = date('Y-m-d', $reset_date);
 
         // Mise à zéro du compte si la date choisie est après la remise à zéro
-        if ($date >= $reset_date) {
+        if ($reset_date and $date >= $reset_date) {
             $balance1 = 0;
         }
     
@@ -225,7 +235,7 @@ class conges
             // On adapte les compteurs avec les enregistrements de la table récupération
             // - si la date choisie est inférieure à la date de remise à zéro
             // - ou si la date de l'enregistrement est supérieure ou égale à la date de remise à zéro
-            if ($date < $reset_date or $elem['date'] >= $reset_date) {
+            if ((($date < $reset_date) or ! $reset_date) or $elem['date'] >= $reset_date) {
 
                 // On ajoute les demandes de crédits non validées au solde prévisionnel
                 if ($elem['valide'] == 0 and ($elem['valide_n1'] >= 0 or $GLOBALS['config']['Conges-Validation-N2'] == 0)) {
@@ -233,7 +243,7 @@ class conges
                 }
 
                 // On ajoute les crédits validés aux compteurs si la date choisie est supérieure à la date de remise à zéro
-                if ($elem['valide'] > 0 and $date >= $reset_date) {
+                if ($reset_date and $elem['valide'] > 0 and $date >= $reset_date) {
                     $balance1 += (float) $elem['heures'];
                     $balance3 += (float) $elem['heures'];
                 }
@@ -255,16 +265,22 @@ class conges
             $last = $last['date'];
         }
 
+        $queryFilter = array('perso_id' => $perso_id, 'debit' => 'recuperation', 'supprime' => '0', 'information' => '0');
+
+        if ($id) {
+            $queryFilter = array_merge($queryFilter, array('id' => "<>$id"));
+        }
+
         $db = new db();
-        $db->select2('conges', null, array('perso_id' => $perso_id, 'debit' => 'recuperation'));
+        $db->select2('conges', null, $queryFilter);
         $leave_tab = $db->result;
 
         // On déduit les demandes de récupérations non-validées au solde prévisionnel
-        if (!empty($leave_tab)) {
+        if ($reset_date and !empty($leave_tab)) {
             foreach ($leave_tab as $elem) {
 
                 // On adapte le compteur prévisionnel avec les enregistrements de la table congés
-                // - si la date choisie est inférieure à la date de remise à zéro
+                // - si la date choisie est inférieure à la date de remise à zéro ou s'il n'y a pas de remise à zéro
                 // - ou si la date de l'enregistrement est supérieure ou égale à la date de remise à zéro
                 if ($date < $reset_date or $elem['debut'] >= $reset_date) {
                     if ($elem['valide'] == 0 and ($elem['valide_n1'] >= 0 or $GLOBALS['config']['Conges-Validation-N2'] == 0)) {
