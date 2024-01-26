@@ -358,7 +358,7 @@ class HolidayController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        if ($this->config('Conges-Validation-N2') && $data['valide_n1'] == 0) {
+        if ($this->config('Conges-Validation-N2') && $data['valide_n1'] == 0 && $data['valide'] ==0 ) {
             $adminN2 = false;
         }
 
