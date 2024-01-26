@@ -1,3 +1,9 @@
+*** Version 23.10.06 (2024-01-26)    ***
+- Fixes
+MT43165: deny overtime change when validated level 1 #989
+MT43362: Fix ErrorHighlight error on calendar.js #990
+MT43231: Import agents if there is conflict on non-blocking positions #991
+
 *** Version 23.10.05 (2024-01-24)    ***
 - Enhancements
 MT42600: Implement Open ID Connect #881
