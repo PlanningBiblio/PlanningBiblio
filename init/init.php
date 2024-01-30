@@ -16,9 +16,8 @@ $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_
 $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSION['oups']['Auth-Mode'] : '';
 
 // Version
-$version="23.11.00.005"; // xx.xx.xx.xxx
+$version="23.11.07"; // xx.xx.xx
 $GLOBALS['version'] = $version;
-$displayed_version = preg_replace('/(\d*\.\d*\.\d*).*/','\1', $version);
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists(__DIR__.'/../.env.local')) {
