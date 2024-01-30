@@ -1,3 +1,7 @@
+*** Version 23.11.06   (2024-01-30)    ***
+- Plumbing
+MT42880: New release format (23.11.06). The last 3 digits are deleted.
+
 *** Version 23.11.00.005   (2024-01-26)    ***
 - Fixes
 MT43165: deny overtime change when validated level 1 #989
