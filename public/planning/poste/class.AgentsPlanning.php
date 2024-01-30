@@ -172,9 +172,7 @@ class AgentsPlanning {
         $db->select('absences', 'perso_id,valide', "`debut`<'$this->date $this->end' AND `fin` >'$this->date $this->start'");
 
         if ($db->result) {
-            error_log("result");
             foreach ($db->result as $elem) {
-                error_log(print_r($elem, 1));
                 if ($elem['valide'] == 0 || ($elem['valide'] > 0 && $valid == true)) {
                     $this->removeById($elem['perso_id']);
                 }
