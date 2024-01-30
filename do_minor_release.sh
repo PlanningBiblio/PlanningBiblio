@@ -6,10 +6,6 @@ usage() {
 
 Do a minor Planno release
 
-    --from version
-        Version number to upgrade from (ex: 22.11.01)
-    --to version
-        Version number to upgrade to (ex: 22.11.02)
     -h | --help
         Show help
 EOF
@@ -19,8 +15,8 @@ EOF
 # Get input args
 ##
 
-# No input or help
-if [[ -z "$1" || "$1" = "-h" || "$1" = "--help" ]]
+# Help
+if [[ "$1" = "-h" || "$1" = "--help" ]]
 then
     usage
     exit
@@ -28,14 +24,6 @@ fi
 
 while [ $1 ]; do
     case $1 in
-        --from )
-            shift
-            from=$1
-            ;;
-        --to )
-            shift
-            to=$1
-            ;;
         * )
             echo "Unknown arg $1"
             usage
@@ -44,7 +32,41 @@ while [ $1 ]; do
     shift
 done
 
+# Get current release
+from=$(grep 'version=' init/init.php | sed 's/\$version="\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/g')
+
+# Create new release number
+major=$(echo $from | sed 's/\([0-9]*\.[0-9]*\)\.\([0-9]*\)/\1/g')
+
+minor=$(echo $from | sed 's/\([0-9]*\.[0-9]*\)\.\([0-9]*\)/\2/g')
+minor=$(echo $minor | sed 's/^0*//')
+minor="$(($minor + 1))"
+minor=$(printf "%02d\n" $minor)
+
+digit2=$(echo $from | sed 's/[0-9]*\.\([0-9]*\)\.[0-9]*/\1/g')
+
+to=$major.$minor
+
+
 echo "Releasing from version $from to $to";
+
+echo "Do you want to proceed ? [yes/no]"
+read proceed 
+
+proceed=$(echo $proceed | tr '[:upper:]' '[:lower:]');
+
+if [[ $proceed != 'yes'  && $proceed != 'y' ]]; then
+    echo "Nothing changed. Bye"
+    exit;
+fi
+
+# Update Changelog
+date=$(date +%Y-%m-%d)
+
+echo "*** Version $to   ($date)    ***" > ChangeLog.tmp
+echo "" >> ChangeLog.tmp
+cat ChangeLog.txt >> ChangeLog.tmp
+mv ChangeLog.tmp ChangeLog.txt
 
 vi ChangeLog.txt
 
@@ -66,3 +88,21 @@ fi
 git add ChangeLog.txt init/init.php public/setup/db_data.php public/setup/maj.php
 
 git status
+
+
+echo "Approve changes ? [yes/no]"
+read proceed 
+
+proceed=$(echo $proceed | tr '[:upper:]' '[:lower:]');
+
+if [[ $proceed != 'yes'  && $proceed != 'y' ]]; then
+    git reset --hard
+    echo "Changes cancelled. Bye."
+    exit;
+fi
+
+git commit -m "Release v$to"
+
+if [[ $digit2 == '04' || $digit2 == '10' ]]; then
+    git tag "v$to"
+fi
