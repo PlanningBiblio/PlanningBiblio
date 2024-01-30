@@ -546,6 +546,17 @@ class IndexController extends BaseController
             $dates[0] = $date;
         }
 
+        // Remove locks from associated plannings
+        $start = $dates[0];
+        $end = end($dates);
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete('pl_poste_verrou', array(
+            'site' => $site,
+            'date'=>"BETWEEN{$start}AND{$end}")
+        );
+
         // Search for agents on other sites.
         $autres_sites = array();
         if ($this->config('Multisites-nombre') > 1) {
