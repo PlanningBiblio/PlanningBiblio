@@ -20,7 +20,7 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
 ?>
 </div> <!-- content or planningPoste -->
 <div class='footer'>
-Planno (<?php echo $GLOBALS['displayed_version']; ?>) - 
+Planno (<?php echo $GLOBALS['version']; ?>) - 
 <a href='https://www.planno.fr' target='_blank' style='font-size:9pt;'>www.planno.fr</a>
 </div>
 </body>
