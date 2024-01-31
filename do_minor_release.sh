@@ -48,9 +48,8 @@ digit2=$(echo $from | sed 's/[0-9]*\.\([0-9]*\)\.[0-9]*/\1/g')
 to=$major.$minor
 
 
-echo "Releasing from version $from to $to";
-
-echo "Do you want to proceed ? [yes/no]"
+echo -e "\e[0;33mReleasing from version $from to $to\e[0m\n"
+echo -e "\e[0;33mDo you want to proceed ? [yes/no]\e[0m\n"
 read proceed 
 
 proceed=$(echo $proceed | tr '[:upper:]' '[:lower:]');
@@ -81,30 +80,57 @@ sed -i "/# MARKER/i\ \n\$v=\"$to\";\n\nif (version_compare(\$config['Version'], 
 
 vi public/setup/maj.php +/MARKER
 
-
-# Check if public/setup/atomicupdate/ is empty
-if [ "$(ls 'public/setup/atomicupdate/')" ]; then
-    echo "Warning: public/setup/atomicupdate is not empty. Did you forgot to remove some files?";
-fi
-
 git add ChangeLog.txt public/init.php init/init.php public/router.php public/setup/db_data.php public/setup/maj.php
 
 git status
 
+# Check if public/setup/atomicupdate/ is empty
+if [ "$(ls 'public/setup/atomicupdate/')" ]; then
+    echo -e "\e[0;33mWarning: public/setup/atomicupdate is not empty. Did you forgot to remove some files?\e[0m\n"
+fi
 
-echo "Approve changes ? [yes/no]"
+echo -e "\e[0;33mApprove changes ? [yes/no]\e[0m\n"
 read proceed 
 
 proceed=$(echo $proceed | tr '[:upper:]' '[:lower:]');
 
-if [[ $proceed != 'yes'  && $proceed != 'y' ]]; then
+# Cancel
+if [[ $proceed != 'yes' && $proceed != 'y' ]]; then
     git reset --hard
     echo "Changes cancelled. Bye."
     exit;
 fi
 
+# Commit
 git commit -m "Release v$to"
 
+echo -e "\e[0;33mCommit \"Release v$to\" done\e[0m\n"
+
+# Create tag
+tag=0
 if [[ $digit2 == '04' || $digit2 == '10' ]]; then
-    git tag "v$to"
+    git tag -f "v$to"
+    echo -e "\e[0;33mTag \"v$to\" done\e[0m\n"
+    tag=1
 fi
+
+if [[ $tag == 1 ]]; then
+    echo -e "\e[0;33mDo you want to push the release commit and the tag to origin ? [yes/no]\e[0m\n"
+else
+    echo -e "\e[0;33mDo you want to push the release commit to origin ? [yes/no]\e[0m\n"
+fi
+
+# Push commit and tag
+read proceed 
+
+proceed=$(echo $proceed | tr '[:upper:]' '[:lower:]');
+
+if [[ $proceed == 'yes' || $proceed == 'y' ]]; then
+    git push origin
+
+    if [[ $tag == 1 ]]; then
+        git push origin "v$to"
+    fi
+fi
+
+echo -e "\e[0;33mDone\e[0m\n"
