@@ -498,15 +498,20 @@ class HolidayController extends BaseController
         ));
 
         $save_button = 0;
-        if ((!$valide and ($adminN1 or $adminN2)) or ($data['valide']==0 and $data['valide_n1']==0)) {
+        if ((!$valide and ($adminN1 or $adminN2)) or ($data['valide'] == 0 and $data['valide_n1'] == 0)) {
             $save_button = 1;
         }
         $this->templateParams(array('save_button' => $save_button));
+
         $delete_button = 0;
-        if (($adminN1 and $data['valide']==0) or $adminN2) {
+        if ($data['valide_n1'] == 0
+            or ($adminN1 and $data['valide'] == 0)
+            or $adminN2) {
             $delete_button = 1;
         }
+
         $this->templateParams(array('delete_button' => $delete_button));
+
         return $this->output('conges/edit.html.twig');
     }
 
