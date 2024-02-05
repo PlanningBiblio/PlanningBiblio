@@ -496,12 +496,14 @@ class AbsenceController extends BaseController
             $this->admin = $logged_in->isManagerOf($perso_ids);
         }
 
+        $acces = false;
+
         if ($this->admin or $this->adminN2) {
             $acces = true;
         }
 
         if (!$acces) {
-            $acces=(in_array(6, $this->droits) and $perso_id==$_SESSION['login_id'] and !$groupe)?true:false;
+            $acces = (in_array(6, $this->droits) and $perso_id == $_SESSION['login_id'] and empty($groupe));
         }
 
         if (!$acces) {
