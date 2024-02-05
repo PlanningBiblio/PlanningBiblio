@@ -1041,6 +1041,7 @@ div#tabsemaine1{
   position:absolute;
   right: -15px;
   top: calc(50% - 8px);
+  cursor:pointer;
 }
 
 /* Configuration des tableaux */
