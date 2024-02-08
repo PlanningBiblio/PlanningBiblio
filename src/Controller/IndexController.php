@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Model\AbsenceReason;
 use App\Model\SelectFloor;
 use App\Model\PlanningPositionHistory;
+use App\Model\PlanningPositionLock;
 use App\Model\SeparationLine;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 use App\Model\Agent;
@@ -478,12 +479,9 @@ class IndexController extends BaseController
             );
 
             // Table pl_poste_verrou (Locked Plannings)
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete('pl_poste_verrou', array(
-                'site' => $site,
-                'date'=>"BETWEEN{$start}AND{$end}")
-            );
+            $this->entityManager
+                ->getRepository(PlanningPositionLock::class)
+                ->delete($start, $end, $site);
 
             return $this->redirectToRoute('index');
         }
@@ -550,12 +548,9 @@ class IndexController extends BaseController
         $start = $dates[0];
         $end = end($dates);
 
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete('pl_poste_verrou', array(
-            'site' => $site,
-            'date'=>"BETWEEN{$start}AND{$end}")
-        );
+        $this->entityManager
+            ->getRepository(PlanningPositionLock::class)
+            ->delete($start, $end, $site);
 
         // Search for agents on other sites.
         $autres_sites = array();
