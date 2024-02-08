@@ -1440,7 +1440,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
 
       // Ajout du widget pour copier les agents dans
       // la cellule immédiatement à droite.
-      $("#td"+cellule).append('<a class="pl-icon arrow-right"></a>');
+      $("#td"+cellule).append('<a class="pl-icon arrow-right" role="button"></a>');
 
       // Suppresion de la surbrillance sur toutes les cellules une fois l'agent posté ou supprimé
       $('.pl-highlight').removeClass('pl-highlight', {duration:2500});
