@@ -1,3 +1,18 @@
+*** Version 23.11.08   (2024-02-09)    ***
+- Fixes
+MT42886: fix the calculation of the forecast credit of compensatory time #992
+MT43374: Fix check of admin level 2 rights in Holiday Controller #993
+MT35818: Remove locks from plannings before imports #994
+MT40653: Right copy does not return to top of page #999
+MT43319: allow the deletion of non-validated holiday #1000
+MT43489: Allow user to delete their own absences with the correct ACL #1001
+
+- Plumbing
+MT42880: New release format
+
+-Security
+Update dependencies
+
 *** Version 23.11.07   (2024-01-30)    ***
 - Plumbing
 MT42880: Enhance do_minor_release.sh
