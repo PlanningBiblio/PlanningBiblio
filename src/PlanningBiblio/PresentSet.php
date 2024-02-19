@@ -30,11 +30,6 @@ class PresentSet
 
         $this->db->select("personnel", "*", "`actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00')", "ORDER BY `nom`,`prenom`");
 
-        // if module PlanningHebdo: search related plannings.
-        if ($config['PlanningHebdo']) {
-            include "planningHebdo/planning.php";
-        }
-
         $presents = array();
         foreach ($this->db->result as $elem) {
             $heures = null;
@@ -43,6 +38,8 @@ class PresentSet
             $temps = array();
 
             if ($config['PlanningHebdo']) {
+                $tempsPlanningHebdo = self::getPlanningHebdo($date);
+
                 if (array_key_exists($elem['id'], $tempsPlanningHebdo)) {
                     $temps = $tempsPlanningHebdo[$elem['id']]['temps'];
                     $week_number = $tempsPlanningHebdo[$elem['id']]['nb_semaine'];
@@ -91,6 +88,28 @@ class PresentSet
         }
 
         return $presents;
+    }
+
+    private static function getPlanningHebdo($date)
+    {
+        // if module PlanningHebdo: search related plannings.
+        require_once __DIR__ . '/../../public/planningHebdo/class.planningHebdo.php';
+
+        $p = new \planningHebdo();
+        $p->debut = $date;
+        $p->fin = $date;
+        $p->valide = true;
+        $p->fetch();
+
+        $tempsPlanningHebdo = array();
+
+        if (!empty($p->elements)) {
+            foreach ($p->elements as $elem) {
+                $tempsPlanningHebdo[$elem["perso_id"]] = $elem;
+            }
+        }
+
+        return $tempsPlanningHebdo;
     }
 }
 
