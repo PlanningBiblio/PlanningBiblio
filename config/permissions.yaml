@@ -1,6 +1,37 @@
 # This file gathers the routes and the rights required to access each of them
 # This file is called by the ControllerAuthorization Listener
 
+# ACL:
+# 3     Voir l'agenda de tous
+# 4     Voir les fiches des agents
+# 5     Gestion des postes
+# 6     Modifier ses propres absences
+# 9     Enregistrement d'absences pour plusieurs agents
+# 13    Débogage
+# 17    Accès aux statistiques
+# 20    Configuration avancée
+# 21    Gestion des agents
+# 22    Configuration des tableaux
+# 23    Informations
+# 25    Gestion des jours fériés
+# 99    Tous les utilisateurs, anonyme compris
+# 100   Tous les utilisateurs sauf anonyme
+# 
+# 20x   Gestion des absences, validation niveau 1
+# 30x   Création, modification des plannings, utilisation et gestion des modèles
+# 40x   Gestion des congés, validation niveau 1
+# 50x   Gestion des absences, validation niveau 2
+# 60x   Gestion des congés, validation niveau 2
+# 701   Gestion des absences, pièces justificatives
+# 80x   Modification des commentaires des plannings
+# 90x   Griser les cellules du planning
+# 100x  Modification des plannings (sans le droits d'ajout et d'utilisation des modèles)
+# 1101  Gestion des heures de présences, validation niveau 1
+# 1201  Gestion des heures de présences, validation niveau 2
+# 1301  Accès aux statistiques Présents-Absents
+# 140x  Reserved (BSG stated weeks)
+# 150x  Display plannings
+
 "absence.add":
     - 100
 "absence.delete":

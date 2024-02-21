@@ -39,6 +39,12 @@ class WeekPlanningController extends BaseController
 
         $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
 
+        // Check if we are authorized to view the planning
+        $acl = $GLOBALS['droits'];
+        if (!in_array((1500 + $site), $acl)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         if (!$date and array_key_exists('PLdate', $_SESSION)) {
             $date = $_SESSION['PLdate'];
         } elseif (!$date and !array_key_exists('PLdate', $_SESSION)) {

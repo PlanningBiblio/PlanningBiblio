@@ -264,14 +264,9 @@ class AgentController extends BaseController
         $groupes_sites = array();
 
         if ($this->config('Multisites-nombre') > 1) {
-            for ($i = 2; $i <= 10; $i++) {
+            $aclBySite = [201, 301, 401, 501, 601, 801, 901, 1001, 1501];
 
-                // Exception, groupe 701 = pas de gestion multisites (pour le moment)
-                if ($i == 7) {
-                    continue;
-                }
-
-                $groupe = ($i * 100) + 1 ;
+            foreach ($aclBySite as $groupe) {
                 if (array_key_exists($groupe, $groupes)) {
                     $groupes_sites[] = $groupes[$groupe];
                     unset($groupes[$groupe]);
@@ -317,7 +312,6 @@ class AgentController extends BaseController
             }
         }
 
-        $acces = array();
         $postes_attribues = array();
         $recupAgents = array("Prime","Temps");
 
@@ -405,7 +399,6 @@ class AgentController extends BaseController
             $login = null;
             $temps = null;
             $postes_attribues = array();
-            $access = array();
             $matricule = null;
             $url_ics = null;
             $mailsResponsables = array();
@@ -414,6 +407,12 @@ class AgentController extends BaseController
             $sites = array();
             $titre = "Ajout d'un agent";
             $action = "ajout";
+
+            $acces = array();
+            for($i=1; $i<=$this->config('Multisites-nombre'); $i++) {
+                $acces[] = 1500 + $i;
+            }
+
             if ($_SESSION['perso_actif'] and $_SESSION['perso_actif']!="Supprim&eacute;") {
                 $actif = $_SESSION['perso_actif'];
             }// vérifie dans quel tableau on se trouve pour la valeur par défaut
@@ -879,7 +878,12 @@ class AgentController extends BaseController
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
             if (in_array((300+$i), $droits) and !in_array((1000+$i), $droits)) {
-                $droits[]=1000+$i;
+                $droits[] = 1000 + $i;
+            }
+
+            // The right to modify schedules gives the right to consult schedules
+            if (in_array((1000 + $i), $droits) and !in_array((1500 + $i), $droits)) {
+                $droits[] = 1500 + $i;
             }
         }
 
@@ -1405,10 +1409,15 @@ class AgentController extends BaseController
         $actif = 'Actif';
         $date = date("Y-m-d H:i:s");
         $commentaires = "Importation LDAP $date";
-        $droits = json_encode(array(99, 100));
         $password = "password_bidon_pas_importé_depuis_ldap";
         $postes = json_encode(array());
         $erreurs = false;
+
+        $droits = array(99, 100);
+        for($i=1; $i<=$this->config('Multisites-nombre'); $i++) {
+            $droits[] = 1500 + $i;
+        }
+        $droits = json_encode($droits);
 
         $post = $request->request->all();
         $searchTerm = $post["searchTerm"];
@@ -1580,6 +1589,13 @@ class AgentController extends BaseController
             );
         }
 
+        // Default ACL
+        $acl = array(99, 100);
+        for($i=1; $i<=$this->config('Multisites-nombre'); $i++) {
+            $acl[] = 1500 + $i;
+        }
+        $acl = json_encode($acl);
+
         // Préparation de la requête pour insérer les données dans la base de données
         $req = "INSERT INTO `{$GLOBALS['dbprefix']}personnel` (`login`,`nom`,`prenom`,`mail`,`matricule`,`password`,`droits`,`arrivee`,`postes`,`actif`,`commentaires`) ";
         $req .= "VALUES (:login, :nom, :prenom, :mail, :matricule, :password, :droits, :arrivee, :postes, :actif, :commentaires);";
@@ -1598,7 +1614,7 @@ class AgentController extends BaseController
                 ':matricule'    => $elem['matricule'],
                 ':arrivee'      => date('Y-m-d H:i:s'),
                 ':password'     => 'LDIF import, the password is not stored',
-                ':droits'       => '[99,100]',
+                ':droits'       => $acl,
                 ':postes'       => '[]',
                 ':actif'        => 'Actif',
                 ':commentaires' => 'Importation LDIF ' . date('Y-m-d H:i:s'),

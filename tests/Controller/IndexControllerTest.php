@@ -33,7 +33,7 @@ class IndexControllerTest extends PLBWebTestCase
             )
         );
 
-        $this->logInAgent($agent, array(99,100));
+        $this->logInAgent($agent, array(99,100,1501));
 
         $y = date('Y');
         $m = date('m');
@@ -70,7 +70,7 @@ class IndexControllerTest extends PLBWebTestCase
             )
         );
 
-        $this->logInAgent($agent, array(99,100));
+        $this->logInAgent($agent, array(99,100,1501));
 
         $crawler = $client->request('GET', "/index", array('date' => "$y-$m-$d", 'CSRFToken' => '00000'));
 

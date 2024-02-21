@@ -42,6 +42,7 @@ class IndexController extends BaseController
      */
     public function index(Request $request)
     {
+
         // Initialisation des variables
         $CSRFToken = $request->get('CSRFToken');
         $groupe = $request->get('groupe');
@@ -60,6 +61,14 @@ class IndexController extends BaseController
           return $this->redirectToRoute('planning.week', ['site' => $site]);
         }
 
+        $site = $this->setSite($site);
+
+        // Check if we are authorized to view the planning
+        $acl = $GLOBALS['droits'];
+        if (!in_array((1500 + $site), $acl)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         list($date, $dateFr) = $this->setDate($date);
 
         list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha)
@@ -68,7 +77,6 @@ class IndexController extends BaseController
         $_SESSION['week'] = false;
 
         $groupes = $this->getFrameworksGroup();
-        $site = $this->setSite($site);
         $pasDeDonneesSemaine = $this->noWeekDataFor($datesSemaine, $site);
         global $idCellule;
         $idCellule=0;
