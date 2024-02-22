@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\PlanningBiblio\Framework;
+use App\Model\PlanningPosition;
 use App\Model\PlanningPositionCells;
 use App\Model\PlanningPositionHours;
 use App\Model\PlanningPositionLines;
 use App\Model\PlanningPositionTab;
+use App\Model\PlanningPositionTabAffectation;
 use App\Model\Position;
 use App\PlanningBiblio\Framework;
 
@@ -156,11 +158,10 @@ class FrameworkController extends BaseController
 
             $originalNumberOfTables = $this->getNumberOfTables($id);
 
-            // MT36324 / TODO : Add an "if is used" control to create a copy only if it's used
-            // If the framework is used and if something else than the name is changed, we create a hidden copy
-            if ($site != $framework->site()
-                or $numberOfTables != $originalNumberOfTables) {
+            $isUsed = $this->getLastUsed($id, $site);
 
+            // If the framework is used and if something else than the name is changed, we create a hidden copy
+            if ($isUsed and ($site != $framework->site() or $numberOfTables != $originalNumberOfTables)) {
                 $id = $this->frameworkCopy($id, $name, true);
             }
 
@@ -374,50 +375,59 @@ class FrameworkController extends BaseController
         $tableauNumero = $post['numero'];
 
         // MT36324 / TODO : Create a copy, then update the copy
+/**
+            // MT36324 / TODO : Add an "if is used" control to create a copy only if it's used
+            // If the framework is used and if something else than the name is changed, we create a hidden copy
+            if ($site != $framework->site()
+                or $numberOfTables != $originalNumberOfTables) {
+
+                $id = $this->frameworkCopy($id, $name, true);
+            }
+
+            $this->createTables($id, $numberOfTables);
+*/
+
  
-        // MT36324 / TODO : See if the following control is needed, remove it otherwise
-        if (isset($post['action'])) {
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete("pl_poste_horaires", array("numero"=>$tableauNumero));
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete("pl_poste_horaires", array("numero"=>$tableauNumero));
 
-            $keys = array_keys($post);
+        $keys = array_keys($post);
 
-            foreach ($keys as $key) {
-                if ($key != "page" and $key != "action" and $key != "numero") {
-                    $tmp = explode("_", $key);				// debut_1_22
-                    if (array_key_exists(1, $tmp) and array_key_exists(2, $tmp)) {
-                        if (empty($tab[$tmp[1]."_".$tmp[2]])) {
-                            $tab[$tmp[1]."_".$tmp[2]] = array($tmp[1]);
-                        }	// tab[0]=tableau
-                        if ($tmp[0] == "debut") {				// tab[1]=debut
-                            $tab[$tmp[1]."_".$tmp[2]][1] = $post[$key];
-                        }
-                        if ($tmp[0] == "fin") {				// tab[2]=fin
-                            $tab[$tmp[1]."_".$tmp[2]][2] = $post[$key];
-                        }
+        foreach ($keys as $key) {
+            if ($key != "page" and $key != "action" and $key != "numero") {
+                $tmp = explode("_", $key);				// debut_1_22
+                if (array_key_exists(1, $tmp) and array_key_exists(2, $tmp)) {
+                    if (empty($tab[$tmp[1]."_".$tmp[2]])) {
+                        $tab[$tmp[1]."_".$tmp[2]] = array($tmp[1]);
+                    }	// tab[0]=tableau
+                    if ($tmp[0] == "debut") {				// tab[1]=debut
+                        $tab[$tmp[1]."_".$tmp[2]][1] = $post[$key];
+                    }
+                    if ($tmp[0] == "fin") {				// tab[2]=fin
+                        $tab[$tmp[1]."_".$tmp[2]][2] = $post[$key];
                     }
                 }
             }
-            $values = array();
-            foreach ($tab as $elem) {
-                if ($elem[1] and $elem[2]) {
-                    $values[] = array("debut"=>$elem[1], "fin"=>$elem[2], "tableau"=>$elem[0], "numero"=>$tableauNumero);
-                }
-            }
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert("pl_poste_horaires", $values);
-            if (!$db->error) {
-                $msg = "Les horaires ont été modifiés avec succès";
-                $msgType = "success";
-            } else {
-                $msg = "Une erreur est survenue lors de l'enregistrement des horaires";
-                $msgType = "error";
-            }
-
-            return $this->redirectToRoute('framework.edit_table', array("id" => $tableauNumero, "cfg-type"=> $post['cfg-type'], "msg" => $msg, "msgType" => $msgType));
         }
+        $values = array();
+        foreach ($tab as $elem) {
+            if ($elem[1] and $elem[2]) {
+                $values[] = array("debut"=>$elem[1], "fin"=>$elem[2], "tableau"=>$elem[0], "numero"=>$tableauNumero);
+            }
+        }
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert("pl_poste_horaires", $values);
+        if (!$db->error) {
+            $msg = "Les horaires ont été modifiés avec succès";
+            $msgType = "success";
+        } else {
+            $msg = "Une erreur est survenue lors de l'enregistrement des horaires";
+            $msgType = "error";
+        }
+
+        return $this->redirectToRoute('framework.edit_table', array("id" => $tableauNumero, "cfg-type"=> $post['cfg-type'], "msg" => $msg, "msgType" => $msgType));
     }
 
     /**
@@ -895,6 +905,47 @@ class FrameworkController extends BaseController
         }
     }
 
+
+    // Last assignment of the given table
+    private function getLastAssignment($id)
+    {
+        $last = $this->entityManager->getRepository(PlanningPositionTabAffectation::class)->findOneBy(
+            array('tableau' => $id),
+            array('date' => 'desc'),
+        );
+
+        $return = $last ? $last->date() : null;
+
+        return $return;
+    }
+
+    // Last used of the given table
+    private function getLastUsed($id, $site = 1)
+    {
+        $assignments = $this->entityManager->getRepository(PlanningPositionTabAffectation::class)->findBy(
+            array('tableau' => $id),
+            array('date' => 'desc'),
+        );
+
+        if (empty($assignments)) {
+            return null;
+        }
+
+        $dates = array();
+        foreach ($assignments as $assignment) {
+            $dates[] = $assignment->date();
+        }
+
+        $plannings = $this->entityManager->getRepository(PlanningPosition::class)->getByDate($dates, $site);
+
+        if (empty($plannings)) {
+            return null;
+        }
+
+        $planning = end($plannings);
+
+        return $planning['date'];
+    }
 
     private function getNumberOfTables($id)
     {
