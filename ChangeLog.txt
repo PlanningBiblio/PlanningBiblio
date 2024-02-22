@@ -1,3 +1,8 @@
+*** Version 23.11.09   (2024-02-22)    ***
+- Fixes
+MT43600: Fix error deleting informational messages #1003
+MT43534: Fix PresentSet::all when called in loop (Statistics / attendees - missing) #1004
+
 *** Version 23.11.08   (2024-02-09)    ***
 - Fixes
 MT42886: fix the calculation of the forecast credit of compensatory time #992
