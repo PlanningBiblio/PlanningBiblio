@@ -37,7 +37,7 @@ class FrameworkController extends BaseController
         // Deleted Frameworks
         $deletedFrameworks = $this->getAllFrameworks('all', true);
 
-        // Dernières utilisations des tableaux
+        // Last use of this framework
         $assignments = array();
         $db = new \db();
         $db->select2("pl_poste_tab_affect", null, null, "order by `date` asc");
@@ -50,11 +50,11 @@ class FrameworkController extends BaseController
         if(!empty($frameworks)){
             foreach ($frameworks as &$framework) {
                 if (array_key_exists($framework->tableau(), $assignments)) {
-                    $utilisation = dateFr($assignments[$framework->tableau()]);
+                    $lastUsed = dateFr($assignments[$framework->tableau()]);
                 } else {
-                    $utilisation = 'Jamais';
+                    $lastUsed = 'Jamais';
                 }
-                $framework->assignment($utilisation);
+                $framework->assignment($lastUsed);
 
                 if ($nbSites > 1) {
                     $framework->siteName($this->config("Multisites-site{$framework->site()}"));
@@ -66,11 +66,11 @@ class FrameworkController extends BaseController
         if (!empty($deletedFrameworks)) {
             foreach ($deletedFrameworks as &$framework) {
                 if (array_key_exists($framework->tableau(), $assignments)) {
-                    $utilisation = dateFr($assignments[$framework->tableau()]);
+                    $lastUsed = dateFr($assignments[$framework->tableau()]);
                 } else {
-                    $utilisation = 'Jamais';
+                    $lastUsed = 'Jamais';
                 }
-                $framework->assignment($utilisation);
+                $framework->assignment($lastUsed);
             }
         }
 
@@ -120,7 +120,6 @@ class FrameworkController extends BaseController
             return $this->redirectToRoute('access-denied');
         }
 
-        $CSRFToken = $request->get('CSRFToken');
         $id = $request->get('id');
         $name = trim($request->get('name'));
         $numberOfTables = $request->get('nombre');
@@ -144,14 +143,19 @@ class FrameworkController extends BaseController
             $this->createTables($id, $numberOfTables);
 
             $session->getFlashBag()->add('notice', 'Le tableau a été créé');
-            return $this->redirectToRoute('framework.edit_table', ['id' => $id]);
 
         // Update an existing framework
         } else {
 
-            $framework = $this->entityManager->getRepository(PlanningPositionTab::class)->findOneBy(
-                array('tableau' => $id)
-            );
+            // Get framework information
+            $framework = $this->entityManager->getRepository(PlanningPositionTab::class)->findOneBy(['tableau' => $id]);
+
+            // Prohibit modification of the site if the framework already contains lines
+            $lines = $this->entityManager->getRepository(PlanningPositionLines::class)->findBy(['numero' => $id, 'type' => 'poste']);
+
+            if (!empty($lines)) {
+                $site = $framework->site();
+            }
 
             $originalNumberOfTables = $this->getNumberOfTables($id);
 
@@ -162,26 +166,21 @@ class FrameworkController extends BaseController
                 $id = $this->frameworkCopy($id, $name, true);
             }
 
+            // Create or update the tables
             $this->createTables($id, $numberOfTables);
 
-            // MT36324 / TODO : Create a copy, then update the copy
-            // MT36324 / TODO : Prohibit modification of the site
-
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update("pl_poste_tab", array("nom" => $name), array("tableau" => $id));
-
-            // MT36324 / TODO : Create a copy, then update the copy
-            if ($site) {
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->update('pl_poste_tab', array('site' => $site), array('tableau' => $id));
-            }
+            // Change name and/or site
+            $framework->nom($name);
+            $framework->site($site);
+            $this->entityManager->flush();
 
             $session->getFlashBag()->add('notice', 'Les modifications ont été enregistrées');
-            return $this->redirectToRoute('framework.edit_table', ['id' => $id]);
         }
+
+        return $this->redirectToRoute('framework.edit_table', ['id' => $id]);
     }
+
+
      #[Route(path: '/framework/add', name: 'framework.add_table', methods: ['GET'])]
      public function addTable (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
@@ -870,7 +869,7 @@ class FrameworkController extends BaseController
     }
 
 
-    // Last assignment of the given table
+    // Last assignment of the given framework
     private function getLastAssignment($id)
     {
         $last = $this->entityManager->getRepository(PlanningPositionTabAffectation::class)->findOneBy(
@@ -883,7 +882,7 @@ class FrameworkController extends BaseController
         return $return;
     }
 
-    // Last used of the given table
+    // Last use of the given framework
     private function getLastUsed($id, $site = 1)
     {
         $assignments = $this->entityManager->getRepository(PlanningPositionTabAffectation::class)->findBy(
