@@ -180,6 +180,8 @@ class FrameworkController extends BaseController
             $session->getFlashBag()->add('notice', 'Les modifications ont été enregistrées');
         }
 
+        $session->set('frameworkActiveTab', 0);
+
         return $this->redirectToRoute('framework.edit_table', ['id' => $id]);
     }
 
@@ -188,24 +190,9 @@ class FrameworkController extends BaseController
      * @Route ("/framework/add", name="framework.add_table", methods={"GET"})
      */
      public function addTable (Request $request, Session $session){
-        $CSRFToken = $GLOBALS['CSRFSession'];
-        $cfgType = $request->get("cfg-type");
-        $cfgTypeGet = $request->get("cfg-type");
         $tableauNumero = $request->request->get("numero");
         $tableauGet = $request->get("numero");
         $nbSites = $this->config('Multisites-nombre');
-
-        // Choix de l'onglet (cfg-type)
-        if ($cfgTypeGet) {
-            $cfgType = $cfgTypeGet;
-        }
-        if (!$cfgType and in_array("cfg_type", $_SESSION)) {
-            $cfgType = $_SESSION['cfg_type'];
-        }
-        if (!$cfgType and !in_array("cfg_type", $_SESSION)) {
-            $cfgType = "infos";
-        }
-        $_SESSION['cfg_type'] = $cfgType;
 
         $tableauNom = '';
         if ($tableauNumero) {
@@ -223,8 +210,7 @@ class FrameworkController extends BaseController
 
         $this->templateParams(
             array(
-                "cfgType"       => $cfgType,
-                "CSRFToken"     => $CSRFToken,
+                "activeTab"     => 0,
                 "lignes_sep"    => null,
                 "multisites"    => $multisites,
                 "postes"        => null,
@@ -240,17 +226,17 @@ class FrameworkController extends BaseController
         );
 
         return $this->output('framework/edit_tab.html.twig');
-
      }
+
+
     /**
      * @Route ("/framework/{id}", name="framework.edit_table", methods={"GET"})
      */
-    public function editTable (Request $request, Session $session){
+    public function editTable (Request $request, Session $session)
+    {
 
         // MT36324 / TODO : Prohibit access to updated frameworks (when the field updated is not null)
 
-        $CSRFToken = $GLOBALS['CSRFSession'];
-        $cfgType = $request->get("cfg-type");
         $tableauNumero = $request->request->get("id");
         $tableauGet = $request->get("id");
         $nbSites = $this->config('Multisites-nombre');
@@ -259,12 +245,6 @@ class FrameworkController extends BaseController
         if ($tableauGet) {
             $tableauNumero = $tableauGet;
         }
-
-        // Choix de l'onglet (cfg-type)
-        if (!$cfgType and in_array("cfg_type", $_SESSION)) {
-            $cfgType = in_array("cfg_type", $_SESSION) ? $_SESSION['cfg_type'] : 'infos';
-        }
-        $_SESSION['cfg_type'] = $cfgType;
 
         // Affichage
         $tableauNom = '';
@@ -340,11 +320,9 @@ class FrameworkController extends BaseController
             }
         }
 
-
         $this->templateParams(
             array(
-                "cfgType"       => $cfgType,
-                "CSRFToken"     => $CSRFToken,
+                "activeTab"     => $session->get('frameworkActiveTab'),
                 "lignes_sep"    => $lignes_sep,
                 "multisites"    => $multisites,
                 "postes"        => $postes,
@@ -398,10 +376,12 @@ class FrameworkController extends BaseController
             $diff = true;
         }
 
-        for($i=0; $i<count($new); $i++) {
-            if(json_encode($new[$i]) != json_encode($origin[$i])) {
-                $diff = true;
-                break;
+        for($i=0; $i<=count($new); $i++) {
+            if (!empty($new[$i]) and !empty($origin[$i])) {
+                if (json_encode($new[$i]) != json_encode($origin[$i])) {
+                    $diff = true;
+                    break;
+                }
             }
         }
 
@@ -419,7 +399,6 @@ class FrameworkController extends BaseController
             $this->entityManager->getRepository(PlanningPositionHours::class)->delete($id);
     
             // Store new hours into DB
-            $values = array();
             foreach ($new as $key => $value) {
                 foreach ($value as $elem) {
                     $hours = new PlanningPositionHours();
@@ -439,7 +418,9 @@ class FrameworkController extends BaseController
             $session->getFlashBag()->add('notice', 'Aucune modification n\'a été apportée');
         }
 
-        return $this->redirectToRoute('framework.edit_table', ['id' => $id, 'cfg-type' => 1]);
+        $session->set('frameworkActiveTab', 1);
+
+        return $this->redirectToRoute('framework.edit_table', ['id' => $id]);
     }
 
 
