@@ -429,12 +429,9 @@ class FrameworkController extends BaseController
         $id = $request->get('id');
         $post = $request->request->all();
 
-        // MT36324 / TODO : Create a copy, then update the copy
-        // MT36324 / TODO : Check if there are changes before updating DB
+        $session->set('frameworkActiveTab', 2);
 
-        // Delete lines and grey cells information
-        $this->entityManager->getRepository(PlanningPositionLines::class)->delete($id);
-        $this->entityManager->getRepository(PlanningPositionCells::class)->delete($id);
+        // MT36324 / TODO : Create a copy, then update the copy
 
         // Prepare lines information
         $lines = array();
@@ -465,6 +462,93 @@ class FrameworkController extends BaseController
             }
         }
 
+        // Prepare grey cells information
+        $cells = array();
+        foreach ($post as $key => $value) {
+            if ($value and substr($key, 0, 8) == 'checkbox') {
+                $tab = explode("_", $key);
+                //1: tableau ; 2 lignes ; 3 colonnes
+                $cells[] = array(
+                    'numero'   => $id,
+                    'tableau'  => $tab[1],
+                    'ligne'    => $tab[2],
+                    'colonne'  => $tab[3]
+                );
+            }
+        }
+
+        // Looks for differences 
+        $linesOrigin = $this->entityManager->getRepository(PlanningPositionLines::class)->findBy(
+            ['numero' => $id],
+            ['tableau' => 'ASC', 'ligne' => 'ASC']
+        );
+
+        $cellsOrigin = $this->entityManager->getRepository(PlanningPositionCells::class)->findBy(
+            ['numero' => $id],
+            ['tableau' => 'ASC', 'ligne' => 'ASC', 'colonne' => 'ASC']
+        );
+
+
+        $diff = false;
+
+        if (count($lines) != count($linesOrigin)) {
+            $diff = true;
+        }
+
+        if (count($cells) != count($cellsOrigin)) {
+            $diff = true;
+        }
+
+        if (!$diff) {
+            foreach ($linesOrigin as $o) {
+                $lineExists = false;
+                foreach ($lines as $l) {
+                    if ($o->tableau() == $l['tableau']
+                        and $o->ligne() == $l['ligne']
+                        and $o->poste() == $l['poste']
+                        and $o->type() == $l['type']
+                    ) {
+                        $lineExists = true;
+                        continue 2;
+                    }
+                }
+                if (!$lineExists) {
+                    $diff = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$diff) {
+            foreach ($cellsOrigin as $o) {
+                $cellExists = false;
+                foreach ($cells as $c) {
+                    if ($o->tableau() == $c['tableau']
+                        and $o->ligne() == $c['ligne']
+                        and $o->colonne() == $c['colonne']
+                    ) {
+                        $cellExists = true;
+                        continue 2;
+                    }
+                }
+                if (!$cellExists) {
+                    $diff = true;
+                    break;
+                }
+            }
+        }
+
+        // Return if there is no difference
+        if (!$diff) {
+            $session->getFlashBag()->add('notice', 'Aucune modification n\'a été apportée');
+
+            return $this->json(['id' => $id]);
+        }
+
+        // Delete lines and grey cells information
+        $this->entityManager->getRepository(PlanningPositionLines::class)->delete($id);
+        $this->entityManager->getRepository(PlanningPositionCells::class)->delete($id);
+
         // Store lines
         foreach ($lines as $elem) {
             $line = new PlanningPositionLines();
@@ -475,21 +559,6 @@ class FrameworkController extends BaseController
             $line->type($elem['type']);
             $this->entityManager->persist($line);
             $this->entityManager->flush();
-        }
-
-        // Prepare grey cells information
-        $cells = array();
-        foreach ($post as $key => $value) {
-            if ($value and substr($key, 0, 8) == 'checkbox') {
-                $tab = explode("_", $key);
-                //1: tableau ; 2 lignes ; 3 colonnes
-                $cells[] = array(
-                    'numero'   =>$id,
-                    'tableau'  =>$tab[1],
-                    'ligne'    =>$tab[2],
-                    'colonne'  =>$tab[3]
-                );
-            }
         }
 
         // Store grey cells
@@ -503,7 +572,6 @@ class FrameworkController extends BaseController
             $this->entityManager->flush();
         }
 
-        $session->set('frameworkActiveTab', 2);
         $session->getFlashBag()->add('notice', 'Le tableau a été enregistré');
 
         return $this->json(['id' => $id]);
