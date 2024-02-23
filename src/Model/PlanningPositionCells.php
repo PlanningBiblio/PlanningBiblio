@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="pl_poste_cellules")
+ * @Entity(repositoryClass="App\Repository\PlanningPositionCellsRepository") @Table(name="pl_poste_cellules")
  **/
 class PlanningPositionCells extends PLBEntity
 {

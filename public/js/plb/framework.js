@@ -13,6 +13,45 @@ Fichier regroupant les scripts JS nécessaires aux pages /framework* (affichage 
 */
 
 
+// Validation du formulaire de modification des lignes en AJAX pour éviter le problème de limitation à 1000 éléments en post
+// N'envoie que les éléments sélectionnés et visibles
+function configLignes(){
+  tab=new Array();
+  // Récupération des titres
+  $(".select_titre").each(function(){
+    tab.push($(this).attr("name")+"="+$(this).val());
+  });
+  // Récupération des postes
+  $(".tab_select:visible").each(function(){
+    tab.push($(this).attr("name")+"="+$(this).val());
+  });
+  // Récupération des cellules grises
+  $("input[type=checkbox]:checked:visible").each(function(){
+    tab.push($(this).attr("name")+"="+$(this).val());
+  });
+  // La variable data contient tous les éléments à enregistrer
+  var token = $('#linesToken').val();
+  var data="id="+$("#id").val();
+  data+="&_token="+token;
+  for(elem in tab){
+    data+="&"+tab[elem];
+  }
+  
+  // Enregistrement des données en ajax 
+  $.ajax({
+    url: url('framework-table/save-line'),
+    type: 'post',
+    data: data,
+    success: function(result) {
+      document.location.href = url('framework/' + result.id);
+    },
+    error: function(request, status, error) {
+      CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.", 'error');
+      return false;
+    }
+  });
+}
+
 // Supprime des groupes de tableaux en cliquant sur les croix rouges
 function supprimeGroupe(id){
   var CSRFToken = $('#CSRFSession').val();
@@ -210,6 +249,7 @@ function supprime_select(classe,page){
   }
 }
 
+
 $(function(){
   // Adaptation du bouton de validation en fonction de l'onglet actif (page index.php)
   $("#infos").click(function(){
@@ -256,6 +296,11 @@ $(document).ready(function(){
   // Set the correct action on the submit button when the Hours tab is selected after page reload
   if ($('#tabs').length && $('#tabs').attr('data-active') == '1') {
     $('.tableaux-valide').attr('href', 'javascript:document.form2.submit();');
+  }
+
+  // Set the correct action on the submit button when the Lines tab is selected after page reload
+  if ($('#tabs').length && $('#tabs').attr('data-active') == '2') {
+    $('.tableaux-valide').attr('href', 'javascript:configLignes();');
   }
 
 });
