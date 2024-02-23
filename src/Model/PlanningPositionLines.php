@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="pl_poste_lignes")
+ * @Entity(repositoryClass="App\Repository\PlanningPositionLinesRepository") @Table(name="pl_poste_lignes")
  **/
 class PlanningPositionLines extends PLBEntity
 {

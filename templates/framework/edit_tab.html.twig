@@ -24,44 +24,6 @@
         $(this).closest("td").addClass(myClass);
       });
     });
-    // Validation AJAX pour éviter le problème de limitation à 1000 éléments en post
-    // N'envoie que les éléments sélectionnés et visibles
-    function configLignes(){
-      tab=new Array();
-      // Récupération des titres
-      $(".select_titre").each(function(){
-        tab.push($(this).attr("name")+"="+$(this).val());
-      });
-      // Récupération des postes
-      $(".tab_select:visible").each(function(){
-        tab.push($(this).attr("name")+"="+$(this).val());
-      });
-      // Récupération des cellules grises
-      $("input[type=checkbox]:checked:visible").each(function(){
-        tab.push($(this).attr("name")+"="+$(this).val());
-      });
-      // La variable data contient tous les éléments à enregistrer
-      var data="id="+$("#id").val();
-      data+="&CSRFToken="+$('#CSRFSession').val();
-      for(elem in tab){
-        data+="&"+tab[elem];
-      }
-      
-      // Enregistrement des données en ajax 
-      $.ajax({
-        url: url('framework-table/save-line'),
-        type: 'post',
-        data: data,
-        success: function() {
-          CJInfo('Le tableau a été enregistré', 'highlight');
-          return true;
-        },
-        error: function(request, status, error) {
-          CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.", 'error');
-          return false;
-        }
-      });
-    }
   </script>
 {% endblock %}
 
@@ -207,6 +169,7 @@
     <div id='div_lignes' style='display:none;'>
       <div style='min-height:350px;'>
         <form name='form4' action="{{ asset('index.php')}}" method='post'>
+          <input type="hidden" name="_token" value="{{ csrf_token('') }}" id="linesToken" />
           <input type='hidden' name='page' value='planning/postes_cfg/modif.php' />
           <input type='hidden' name='numero' value='{{ tableauNumero }}' />
           <h3>Configuration des lignes</h3>
