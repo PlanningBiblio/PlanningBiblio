@@ -257,4 +257,10 @@ $(function(){
 $(document).ready(function(){
   CJErrorHighlight($(".important"),"error");
   CJErrorHighlight($(".highlight"),"highlight");
+
+  // Set the correct action on the submit button when the Hours tab is selected after page reload
+  if ($('#tabs').length && $('#tabs').attr('data-active') == '1') {
+    $('.tableaux-valide').attr('href', 'javascript:document.form2.submit();');
+  }
+
 });
