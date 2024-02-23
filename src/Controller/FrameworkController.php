@@ -159,11 +159,11 @@ class FrameworkController extends BaseController
 
             $originalNumberOfTables = $this->getNumberOfTables($id);
 
-            $isUsed = $this->getLastUsed($id, $site);
+            $isUsed = $this->getLastUsed($id);
 
             // If the framework is used and if something else than the name is changed, we create a hidden copy
             if ($isUsed and ($site != $framework->site() or $numberOfTables != $originalNumberOfTables)) {
-                $id = $this->frameworkCopy($id, $name, true);
+                $id = $this->frameworkCopy($id);
             }
 
             // Create or update the tables
@@ -358,29 +358,50 @@ class FrameworkController extends BaseController
     #[Route(path: '/framework', name: 'framework.save_table', methods: ['POST'])]
     public function saveTable (Request $request, Session $session){
 
-        // MT36324 / TODO : Add CSRF protection
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
 
+        $id = $request->get('numero');
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
-        $tableauNumero = $post['numero'];
 
-        // MT36324 / TODO : Create a copy, then update the copy
-/**
-            // MT36324 / TODO : Add an "if is used" control to create a copy only if it's used
-            // If the framework is used and if something else than the name is changed, we create a hidden copy
-            if ($site != $framework->site()
-                or $numberOfTables != $originalNumberOfTables) {
+        // If the framework is used and if they are changes, we create a copy
+        $isUsed = $this->getLastUsed($id);
 
-                $id = $this->frameworkCopy($id, $name, true);
+        if ($isUsed) {
+            // Look for differences between origin and new hours
+            $repo = $this->entityManager->getRepository(PlanningPositionHours::class)->findBy(['numero' => $id], ['numero' => 'ASC', 'debut' => 'ASC', 'fin' => 'ASC']);
+
+            $origin = array();
+            foreach ($repo as $elem) {
+                $origin[$elem->tableau()][] = array($elem->debut()->format('H:i'), $elem->fin()->format('H:i'));
             }
 
-            $this->createTables($id, $numberOfTables);
-*/
+            $new = array();
+            foreach ($post as $key => $value) {
+                $keys = explode('_', $key);
+                if ($keys[0] == 'debut' and !empty($value)) {
+                    $new[$keys[1]][$keys[2]][0] = $value; 
+                }
+                if ($keys[0] == 'fin' and !empty($value)) {
+                    $new[$keys[1]][$keys[2]][1] = $value; 
+                }
+            }
+            asort($new);
 
+            $origin_json = json_encode($origin);
+            $new_json = json_encode($new);
+
+            // If origin and new are different, we create a copy, then update the copy
+            if ($origin_json != $new_json) {
+                $id = $this->frameworkCopy($id);
+            }
+        }
  
         $db = new \db();
         $db->CSRFToken = $CSRFToken;
-        $db->delete("pl_poste_horaires", array("numero"=>$tableauNumero));
+        $db->delete("pl_poste_horaires", array("numero" => $id));
 
         $keys = array_keys($post);
 
@@ -403,7 +424,7 @@ class FrameworkController extends BaseController
         $values = array();
         foreach ($tab as $elem) {
             if ($elem[1] and $elem[2]) {
-                $values[] = array("debut"=>$elem[1], "fin"=>$elem[2], "tableau"=>$elem[0], "numero"=>$tableauNumero);
+                $values[] = array("debut"=>$elem[1], "fin"=>$elem[2], "tableau"=>$elem[0], "numero" => $id);
             }
         }
         $db = new \db();
@@ -417,13 +438,15 @@ class FrameworkController extends BaseController
             $msgType = "error";
         }
 
-        return $this->redirectToRoute('framework.edit_table', array("id" => $tableauNumero, "cfg-type"=> $post['cfg-type'], "msg" => $msg, "msgType" => $msgType));
+        return $this->redirectToRoute('framework.edit_table', array("id" => $id, "cfg-type"=> $post['cfg-type'], "msg" => $msg, "msgType" => $msgType));
     }
 
     #[Route(path: 'framework-table/save-line', name: 'framework.save_table_line', methods: ['POST'])]
     public function saveTableLine(Request $request, Session $session){
 
-        // MT36324 / TODO : Add CSRF protection
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
 
         $form_post = $request->request->all();
         $CSRFToken = $form_post['CSRFToken'];
@@ -883,8 +906,10 @@ class FrameworkController extends BaseController
     }
 
     // Last use of the given framework
-    private function getLastUsed($id, $site = 1)
+    private function getLastUsed($id)
     {
+        $site = $this->entityManager->getRepository(PlanningPositionTab::class)->findOneBy(['tableau' => $id])->site();
+
         $assignments = $this->entityManager->getRepository(PlanningPositionTabAffectation::class)->findBy(
             array('tableau' => $id),
             array('date' => 'desc'),
@@ -922,16 +947,17 @@ class FrameworkController extends BaseController
         return count($qb->getQuery()->getResult());
     }
 
-    private function frameworkCopy(int $id, String $newName, $frameworkUpdate = false)
+    private function frameworkCopy(int $id, $newName = null)
     {
         // Get framework elements
-        $em = $this->entityManager->getRepository(PlanningPositionTab::class)->findBy(array(
+        $framework = $this->entityManager->getRepository(PlanningPositionTab::class)->findOneBy(array(
             'tableau' => $id,
         ));
-        $framework = $em[0];
 
-        // If it's an updated
-        if ($frameworkUpdate) {
+        // If $newName is not given, it's an update with hidden copy
+        if (!$newName) {
+            $newName = $framework->nom();
+
             // We set the updated field to true on the original framework to hide it
             $framework->updated(true);
             $this->entityManager->flush();
