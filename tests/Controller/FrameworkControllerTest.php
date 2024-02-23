@@ -58,38 +58,31 @@ class FrameworkControllerTest extends PLBWebTestCase
             )
         );
 
-        $d = date("d");
-        $m = date("m");
-        $Y = date("Y") + 1;
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
+        $date = new DateTime();
 
-        $tab1 = $this->builder->build(
-            PlanningPositionTab::class,
-            array(
-                'tableau' => '1',
-                'nom' => 'tab1',
-                'site' => '1',
-                'supprime' => $date,
-            )
-        );
-        $tab2 = $this->builder->build(
-            PlanningPositionTab::class,
-            array(
-                'tableau' => '1',
-                'nom' => 'tab2',
-                'site' => '1',
-                'supprime' => $date,
-            )
-        );
-        $tab3 = $this->builder->build(
-            PlanningPositionTab::class,
-            array(
-                'tableau' => '1',
-                'nom' => 'tab3',
-                'site' => '1',
-                'supprime' => $date,
-            )
-        );
+        $tab1 = new PlanningPositionTab();
+        $tab1->nom('tab1');
+        $tab1->tableau(2);
+        $tab1->site(1);
+        $tab1->supprime($date);
+        $this->entityManager->persist($tab1);
+        $this->entityManager->flush();
+
+        $tab2 = new PlanningPositionTab();
+        $tab2->nom('tab2');
+        $tab2->tableau(2);
+        $tab2->site(1);
+        $tab2->supprime($date);
+        $this->entityManager->persist($tab2);
+        $this->entityManager->flush();
+
+        $tab3 = new PlanningPositionTab();
+        $tab3->nom('tab3');
+        $tab3->tableau(3);
+        $tab3->site(1);
+        $tab3->supprime($date);
+        $this->entityManager->persist($tab3);
+        $this->entityManager->flush();
 
         $this->login($agent);
 
@@ -355,10 +348,7 @@ class FrameworkControllerTest extends PLBWebTestCase
             )
         );
 
-        $d = date("d");
-        $m = date("m");
-        $Y = date("Y");
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
+        $date = new DateTime();
 
         $db = new \db();
         $db->CSRFToken = '00000';
@@ -370,10 +360,7 @@ class FrameworkControllerTest extends PLBWebTestCase
 
         $db->update("pl_poste_tab", array("tableau"=>$id), array("nom"=>'tab1'));
 
-        $d = date("d");
-        $m = date("m");
-        $Y = date("Y");
-        $date = \DateTime::createFromFormat("d/m/Y H:i:s", "$d/$m/$Y 00:00:00");
+        $date = new DateTime();
 
         $tab1_affectation = $this->builder->build(
             PlanningPositionTabAffectation::class,
@@ -409,13 +396,11 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(0)->text(),'Infos générales');
         $this->assertEmpty($result->eq(0)->attr('aria-disabled'));
 
-
-
         $this->assertEquals($result->eq(1)->text(),'Horaires');
-        $this->assertEquals($result->eq(1)->attr('aria-disabled'),'true');
+        $this->assertEmpty($result->eq(1)->attr('aria-disabled'));
 
         $this->assertEquals($result->eq(2)->text(),'Lignes');
-        $this->assertEquals($result->eq(2)->attr('aria-disabled'),'true');
+        $this->assertEmpty($result->eq(2)->attr('aria-disabled'));
     }
 
     public function testEditNoAffectedTable()
@@ -440,10 +425,7 @@ class FrameworkControllerTest extends PLBWebTestCase
             )
         );
 
-        $d = date("d")-2;
-        $m = date("m");
-        $Y = date("Y");
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
+        $date = new DateTime();
 
         $db = new \db();
         $db->CSRFToken = '00000';
