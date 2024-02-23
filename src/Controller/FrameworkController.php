@@ -442,8 +442,6 @@ class FrameworkController extends BaseController
 
         $session->set('frameworkActiveTab', 2);
 
-        // MT36324 / TODO : Create a copy, then update the copy
-
         // Prepare lines information
         $lines = array();
         foreach ($post as $key => $value) {
@@ -464,7 +462,6 @@ class FrameworkController extends BaseController
                 }
 
                 $lines[] = array(
-                    'numero'  => $id, 
                     'tableau' => $tab[1], 
                     'ligne'   => $tab[2], 
                     'poste'   => $value, 
@@ -480,7 +477,6 @@ class FrameworkController extends BaseController
                 $tab = explode("_", $key);
                 //1: tableau ; 2 lignes ; 3 colonnes
                 $cells[] = array(
-                    'numero'   => $id,
                     'tableau'  => $tab[1],
                     'ligne'    => $tab[2],
                     'colonne'  => $tab[3]
@@ -556,6 +552,13 @@ class FrameworkController extends BaseController
             return $this->json(['id' => $id]);
         }
 
+        // If the framework is used and lines or celles changed, we create a copy then update the copy
+        $isUsed = $this->getLastUsed($id);
+
+        if ($isUsed) {
+            $id = $this->frameworkCopy($id);
+        }
+
         // Delete lines and grey cells information
         $this->entityManager->getRepository(PlanningPositionLines::class)->delete($id);
         $this->entityManager->getRepository(PlanningPositionCells::class)->delete($id);
@@ -563,7 +566,7 @@ class FrameworkController extends BaseController
         // Store lines
         foreach ($lines as $elem) {
             $line = new PlanningPositionLines();
-            $line->numero($elem['numero']);
+            $line->numero($id);
             $line->tableau($elem['tableau']);
             $line->ligne($elem['ligne']);
             $line->poste($elem['poste']);
@@ -575,7 +578,7 @@ class FrameworkController extends BaseController
         // Store grey cells
         foreach ($cells as $elem) {
             $cell = new PlanningPositionCells();
-            $cell->numero($elem['numero']);
+            $cell->numero($id);
             $cell->tableau($elem['tableau']);
             $cell->ligne($elem['ligne']);
             $cell->colonne($elem['colonne']);
