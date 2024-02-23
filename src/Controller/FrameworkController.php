@@ -30,6 +30,9 @@ class FrameworkController extends BaseController
      * @Route ("/framework", name="framework.index", methods={"GET"})
      */
     public function index (Request $request, Session $session){
+
+        $session->set('frameworkActiveTab', 0);
+
         $nbSites = $this->config('Multisites-nombre');
 
         // Frameworks
@@ -427,84 +430,94 @@ class FrameworkController extends BaseController
     /**
      * @Route ("framework-table/save-line", name="framework.save_table_line", methods={"POST"})
      */
-    public function saveTableLine(Request $request, Session $session){
+    public function saveTableLine(Request $request, Session $session)
+    {
 
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
-        $form_post = $request->request->all();
-        $CSRFToken = $form_post['CSRFToken'];
-        $tableauNumero = $form_post['id'];
-        $dbprefix = $GLOBALS['dbprefix'];
+        $id = $request->get('id');
+        $post = $request->request->all();
 
         // MT36324 / TODO : Create a copy, then update the copy
+        // MT36324 / TODO : Check if there are changes before updating DB
 
-        // Suppression des infos concernant ce tableau dans la table pl_poste_lignes
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete("pl_poste_lignes", array("numero" => $tableauNumero));
+        // Delete lines and grey cells information
+        $this->entityManager->getRepository(PlanningPositionLines::class)->delete($id);
+        $this->entityManager->getRepository(PlanningPositionCells::class)->delete($id);
 
-        // Insertion des données dans la table pl_poste_lignes
-        foreach ($form_post as $key => $value) {
-            if ($value and substr($key, 0, 6) == "select") {
-                $tab = explode("_", $key);  //1: tableau ; 2 lignes
-                if (substr($tab[1], -5) == "Titre") {
-                    $type = "titre";
+        // Prepare lines information
+        $lines = array();
+        foreach ($post as $key => $value) {
+            if ($value and substr($key, 0, 6) == 'select') {
+                $tab = explode('_', $key);
+                //1: tableau ; 2 lignes
+                if (substr($tab[1], -5) == 'Titre') {
+                    $type = 'titre';
                     $tab[1] = substr($tab[1], 0, -5);
-                } elseif (substr($tab[1], -6) == "Classe") {
-                    $type = "classe";
+                } elseif (substr($tab[1], -6) == 'Classe') {
+                    $type = 'classe';
                     $tab[1] = substr($tab[1], 0, -6);
-                } elseif (substr($value, -5) == "Ligne") {
-                    $type = "ligne";
+                } elseif (substr($value, -5) == 'Ligne') {
+                    $type = 'ligne';
                     $value = substr($value, 0, -5);
                 } else {
-                    $type = "poste";
+                    $type = 'poste';
                 }
 
-                $line = new PlanningPositionLines();
-                $line->numero($tableauNumero);
-                $line->tableau($tab[1]);
-                $line->ligne($tab[2]);
-                $line->poste($value);
-                $line->type($type);
-
-                $this->entityManager->persist($line);
-                $this->entityManager->flush();
-            }
-        }
-
-        // Suppression des infos concernant ce tableau dans la table pl_poste_cellules
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete("pl_poste_cellules", array("numero" => $tableauNumero));
-
-        // Insertion des données dans la table pl_poste_cellules
-        $values=array();
-        foreach ($form_post as $key => $value) {
-            if ($value and substr($key, 0, 8)=="checkbox") {
-                $tab = explode("_", $key);  //1: tableau ; 2 lignes ; 3 colonnes
-                $values[] = array(
-                    ":numero"   =>$tableauNumero,
-                    ":tableau"  =>$tab[1],
-                    ":ligne"    =>$tab[2],
-                    ":colonne"  =>$tab[3]
+                $lines[] = array(
+                    'numero'  => $id, 
+                    'tableau' => $tab[1], 
+                    'ligne'   => $tab[2], 
+                    'poste'   => $value, 
+                    'type'    => $type
                 );
             }
         }
-        if (!empty($values)) {
-            $sql="INSERT INTO `{$dbprefix}pl_poste_cellules` (`numero`,`tableau`,`ligne`,`colonne`) ";
-            $sql.="VALUES (:numero, :tableau, :ligne, :colonne)";
 
-            $db = new \dbh();
-            $db->CSRFToken = $CSRFToken;
-            $db->prepare($sql);
-            foreach ($values as $elem) {
-                $db->execute($elem);
+        // Store lines
+        foreach ($lines as $elem) {
+            $line = new PlanningPositionLines();
+            $line->numero($elem['numero']);
+            $line->tableau($elem['tableau']);
+            $line->ligne($elem['ligne']);
+            $line->poste($elem['poste']);
+            $line->type($elem['type']);
+            $this->entityManager->persist($line);
+            $this->entityManager->flush();
+        }
+
+        // Prepare grey cells information
+        $cells = array();
+        foreach ($post as $key => $value) {
+            if ($value and substr($key, 0, 8) == 'checkbox') {
+                $tab = explode("_", $key);
+                //1: tableau ; 2 lignes ; 3 colonnes
+                $cells[] = array(
+                    'numero'   =>$id,
+                    'tableau'  =>$tab[1],
+                    'ligne'    =>$tab[2],
+                    'colonne'  =>$tab[3]
+                );
             }
         }
 
-        return $this->json('ok');
+        // Store grey cells
+        foreach ($cells as $elem) {
+            $cell = new PlanningPositionCells();
+            $cell->numero($elem['numero']);
+            $cell->tableau($elem['tableau']);
+            $cell->ligne($elem['ligne']);
+            $cell->colonne($elem['colonne']);
+            $this->entityManager->persist($cell);
+            $this->entityManager->flush();
+        }
+
+        $session->set('frameworkActiveTab', 2);
+        $session->getFlashBag()->add('notice', 'Le tableau a été enregistré');
+
+        return $this->json(['id' => $id]);
     }
 
      /**
