@@ -100,7 +100,6 @@
       <div style='min-height:350px;'>
         <form name='framework-info-form' id="framework-info-form" action="{{ asset('framework/info') }}" method='post'>
           <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
-          <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
           <input type='hidden' name='id' id='id' value="{{ tableauNumero }}" />
           <h3>Informations générales</h3>
           <table class='tableauFiche'>
@@ -145,7 +144,6 @@
       <div style='min-height:350px;'>
         <form name='form2' action="{{ asset('framework') }}" method='post'>
           <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
-          <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}" />
           <input type='hidden' name='cfg-type' value='1' />
           <input type='hidden' name='numero' value="{{ tableauNumero }}" />
           <h3>Configuration des horaires</h3>
