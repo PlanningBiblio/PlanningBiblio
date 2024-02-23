@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="pl_poste_horaires")
+ * @Entity(repositoryClass="App\Repository\PlanningPositionHoursRepository") @Table(name="pl_poste_horaires")
  **/
 class PlanningPositionHours extends PLBEntity
 {

@@ -373,82 +373,75 @@ class FrameworkController extends BaseController
 
         $id = $request->get('numero');
         $post = $request->request->all();
-        $CSRFToken = $post['CSRFToken'];
 
-        // If the framework is used and if they are changes, we create a copy
-        $isUsed = $this->getLastUsed($id);
+        // Look for differences between origin and new hours
+        $repo = $this->entityManager->getRepository(PlanningPositionHours::class)->findBy(['numero' => $id], ['numero' => 'ASC', 'debut' => 'ASC', 'fin' => 'ASC']);
 
-        if ($isUsed) {
-            // Look for differences between origin and new hours
-            $repo = $this->entityManager->getRepository(PlanningPositionHours::class)->findBy(['numero' => $id], ['numero' => 'ASC', 'debut' => 'ASC', 'fin' => 'ASC']);
+        $origin = array();
+        foreach ($repo as $elem) {
+            $origin[$elem->tableau()][] = array($elem->debut()->format('H:i'), $elem->fin()->format('H:i'));
+        }
 
-            $origin = array();
-            foreach ($repo as $elem) {
-                $origin[$elem->tableau()][] = array($elem->debut()->format('H:i'), $elem->fin()->format('H:i'));
-            }
-
-            $new = array();
-            foreach ($post as $key => $value) {
-                $keys = explode('_', $key);
-                if ($keys[0] == 'debut' and !empty($value)) {
-                    $new[$keys[1]][$keys[2]][0] = $value; 
-                }
-                if ($keys[0] == 'fin' and !empty($value)) {
-                    $new[$keys[1]][$keys[2]][1] = $value; 
+        $new = array();
+        foreach ($post as $key => $value) {
+            $keys = explode('_', $key);
+            if ($keys[0] == 'debut' and !empty($value)) {
+                $end = $post['fin_' . $keys[1] . '_' . $keys[2]]; 
+                if (!empty($end)) {
+                    $new[$keys[1]][] = array($value, $end); 
                 }
             }
-            asort($new);
+        }
 
-            $origin_json = json_encode($origin);
-            $new_json = json_encode($new);
+        $diff = false;
+        if (count($new) != count($origin)) {
+            $diff = true;
+        }
 
-            // If origin and new are different, we create a copy, then update the copy
-            if ($origin_json != $new_json) {
+        for($i=0; $i<count($new); $i++) {
+            if(json_encode($new[$i]) != json_encode($origin[$i])) {
+                $diff = true;
+                break;
+            }
+        }
+
+        // If hours changed
+        if ($diff) {
+
+            // If the framework is used and hours changed, we create a copy then update the copy
+            $isUsed = $this->getLastUsed($id);
+
+            if ($isUsed) {
                 $id = $this->frameworkCopy($id);
             }
-        }
- 
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete("pl_poste_horaires", array("numero" => $id));
 
-        $keys = array_keys($post);
-
-        foreach ($keys as $key) {
-            if ($key != "page" and $key != "action" and $key != "numero") {
-                $tmp = explode("_", $key);				// debut_1_22
-                if (array_key_exists(1, $tmp) and array_key_exists(2, $tmp)) {
-                    if (empty($tab[$tmp[1]."_".$tmp[2]])) {
-                        $tab[$tmp[1]."_".$tmp[2]] = array($tmp[1]);
-                    }	// tab[0]=tableau
-                    if ($tmp[0] == "debut") {				// tab[1]=debut
-                        $tab[$tmp[1]."_".$tmp[2]][1] = $post[$key];
-                    }
-                    if ($tmp[0] == "fin") {				// tab[2]=fin
-                        $tab[$tmp[1]."_".$tmp[2]][2] = $post[$key];
-                    }
+            // Delete hours from DB to create new ones
+            $this->entityManager->getRepository(PlanningPositionHours::class)->delete($id);
+    
+            // Store new hours into DB
+            $values = array();
+            foreach ($new as $key => $value) {
+                foreach ($value as $elem) {
+                    $hours = new PlanningPositionHours();
+                    $hours->debut(\DateTime::createFromFormat('H:i', $elem[0]));
+                    $hours->fin(\DateTime::createFromFormat('H:i', $elem[1]));
+                    $hours->tableau($key);
+                    $hours->numero($id);
+                    $this->entityManager->persist($hours);
+                    $this->entityManager->flush();
                 }
             }
-        }
-        $values = array();
-        foreach ($tab as $elem) {
-            if ($elem[1] and $elem[2]) {
-                $values[] = array("debut"=>$elem[1], "fin"=>$elem[2], "tableau"=>$elem[0], "numero" => $id);
-            }
-        }
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->insert("pl_poste_horaires", $values);
-        if (!$db->error) {
-            $msg = "Les horaires ont été modifiés avec succès";
-            $msgType = "success";
+    
+            $session->getFlashBag()->add('notice', 'Les horaires ont été modifiés avec succès');
+
+        // No changes
         } else {
-            $msg = "Une erreur est survenue lors de l'enregistrement des horaires";
-            $msgType = "error";
+            $session->getFlashBag()->add('notice', 'Aucune modification n\'a été apportée');
         }
 
-        return $this->redirectToRoute('framework.edit_table', array("id" => $id, "cfg-type"=> $post['cfg-type'], "msg" => $msg, "msgType" => $msgType));
+        return $this->redirectToRoute('framework.edit_table', ['id' => $id, 'cfg-type' => 1]);
     }
+
 
     /**
      * @Route ("framework-table/save-line", name="framework.save_table_line", methods={"POST"})
