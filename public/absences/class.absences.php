@@ -1890,7 +1890,7 @@ class absences
     public function update_time()
     {
         $db=new db();
-        $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['config']['dbprefix']}absences';");
+        $db->query("SHOW TABLE STATUS FROM `{$GLOBALS['config']['dbname']}` LIKE '{$GLOBALS['config']['dbprefix']}absences';");
         return $db->result[0]['Update_time'];
     }
 }
