@@ -603,7 +603,7 @@ class planningHebdo
     public function update_time()
     {
         $db=new db();
-        $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['config']['dbprefix']}planning_hebdo';");
+        $db->query("SHOW TABLE STATUS FROM `{$GLOBALS['config']['dbname']}` LIKE '{$GLOBALS['config']['dbprefix']}planning_hebdo';");
         $result = isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
         return $result;
     }
