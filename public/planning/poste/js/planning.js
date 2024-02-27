@@ -1114,7 +1114,6 @@ function contextMenuRemove(data) {
 function contextMenuEverybody(data) {
   td = $('<td>').attr({
     colspan: '2',
-    style: 'color:black;',
     onclick: 'bataille_navale("' + data.position_id + '","' + data.date + '","'
               + data.start + '","' + data.end + '",2,0,0,"' + data.site + '");',
   }).html('Tout le monde');
@@ -1361,8 +1360,13 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
 
         var title = result[i]["nom"] + ' ' + result[i]["prenom"];
         
-        var agent=result[i]["nom"]+" "+result[i]["prenom"].substr(0,1)+".";
-        var perso_id=result[i]["perso_id"];
+        var perso_id = result[i]['perso_id'];
+
+        if (perso_id == 2) {
+          var agent = result[i]['nom'];
+        } else {
+          var agent = result[i]['nom'] + ' ' + result[i]['prenom'].substr(0,1) + '.';
+        }
 
         // classes : A définir en fonction du statut, du service et des absences
         var classes="cellDiv pl-highlight pl-cellule-perso-"+perso_id;
@@ -1375,7 +1379,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         // absent == 2 : Absence non validée
         }else if(result[i]['absent'] == '2'){
           classes+=" red";
-          title = agent+=' : Absence non validée';
+          title = agent + ' : Absence non validée';
         }
 
         // congés == 1 : Congé validé
@@ -1385,7 +1389,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         // congés == 2 : Congé non validé. Mais on ne le marque pas si une absence validée est déjà marquée
         }else if(result[i]['conges'] == '2' && absence_valide==false){
           classes+=" orange";
-          title = agent+=' : Congé non validé';
+          title = agent + ' : Congé non validé';
         }
 
         // Si une absence ou un congé est validé, on efface title pour ne pas afficher XXX non validé(e)
@@ -1399,9 +1403,6 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         
         // Qualifications (activités) de l'agent
         classes+=' '+result[i]['activites'];
-
-        var agent=result[i]["nom"]+" "+result[i]["prenom"].substr(0,1)+".";
-        var perso_id=result[i]["perso_id"];
 
         // Sans Repas
         if(result[i]["sr"]){

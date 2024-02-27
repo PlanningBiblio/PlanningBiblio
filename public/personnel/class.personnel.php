@@ -84,7 +84,7 @@ class personnel
 
     public function fetch($tri="nom", $actif=null, $name=null)
     {
-        $filter=array();
+        $filter = array('id' => '<> 2');
 
         // Filtre selon le champ actif (administratif, service public)
         $actif=htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
