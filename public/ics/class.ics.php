@@ -148,15 +148,15 @@ class CJICS
         // Récupération du nom du calendrier
         $calName=$ical->calendarName();
         $calName = removeAccents($calName);
-    
+
         if (empty($calName)) {
-            return false;
+            $calName = "imported_calendar_{$this->number}_for_agent_$perso_id";
         }
 
         if ($this->logs) {
             logs("Agent #$perso_id : Purge $calName, Table: $table, src: $src", "ICS", $CSRFToken);
         }
-    
+
         if ($this->logs) {
             $db = new db();
             $db->select2($table, 'id', array('cal_name' => $calName, 'perso_id' => $perso_id));
