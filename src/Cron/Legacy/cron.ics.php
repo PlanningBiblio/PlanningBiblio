@@ -136,11 +136,22 @@ foreach ($agents as $agent) {
             $url = $agent['url_ics'];
         }
 
-        if (empty(json_decode($agent['check_ics'])[$i-1])) {
+        // If the current calendar checkbox is not checked, we do not import it and we purge the relative events already imported.
+        if (!$agent["ics_$i"]) {
             logs("Agent #{$agent['id']} : Check ICS $i is disabled", "ICS", $CSRFToken);
+
+            $ics=new CJICS();
+            $ics->src = $url;
+            $ics->number = $i;
+            $ics->perso_id = $agent["id"];
+            $ics->table = "absences";
+            $ics->logs = true;
+            $ics->CSRFToken = $CSRFToken;
+            $ics->purge();
+
             continue;
         }
-
+    
         if (!$url) {
             logs("Agent #{$agent['id']} : Impossible de constituer une URL valide", "ICS", $CSRFToken);
             continue;
@@ -159,18 +170,6 @@ foreach ($agents as $agent) {
                 logs("Agent #{$agent['id']} : $url {$test[0]}", "ICS", $CSRFToken);
                 continue;
             }
-        }
-    
-        // Si la case importation correspondant à ce calendrier est décochée, on ne l'importe pas et on purge les éventuels événements déjà importés.
-        if (!$agent["ics_$i"]) {
-            $ics=new CJICS();
-            $ics->src=$url;
-            $ics->perso_id=$agent["id"];
-            $ics->table="absences";
-            $ics->logs=true;
-            $ics->CSRFToken = $CSRFToken;
-            $ics->purge();
-            continue;
         }
     
         logs("Agent #{$agent['id']} : Importation du fichier $url", "ICS", $CSRFToken);
