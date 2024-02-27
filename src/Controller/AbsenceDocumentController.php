@@ -36,6 +36,10 @@ class AbsenceDocumentController extends BaseController
      */
     public function delete(Request $request, Session $session)
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $id = $request->get('id');
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
         $ad->deleteFile();
@@ -50,6 +54,10 @@ class AbsenceDocumentController extends BaseController
      */
     public function add(Request $request, Session $session)
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $id = $request->get('id_absence');
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
