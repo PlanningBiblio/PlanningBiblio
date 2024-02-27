@@ -72,10 +72,8 @@ class AdminInfoController extends BaseController
      */
     public function update(Request $request, Session $session)
     {
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('admin.info.index');
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
         }
 
         $id = $request->get('id');
@@ -114,10 +112,8 @@ class AdminInfoController extends BaseController
      */
     public function delete(Request $request, Session $session)
     {
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('admin.info.index');
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
         }
 
         $id = $request->get('id');

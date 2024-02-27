@@ -22,6 +22,7 @@
           <a href='{{ asset("absence") }}'>Retour à la liste des absences</a><br/><br/>
       {% else %}
         <form name='form' id='form' method='post' action='{{ asset("absence") }}' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
+          <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />
           <input type='hidden' id='admin' value='{{ admin }}' />
@@ -262,7 +263,6 @@
                   </td>
                 </tr>
 
-                <input type="hidden" name="token" value="{{ csrf_token('upload') }}" />
                 {% if absence.editable %}
                     <tr style='vertical-align:top;'>
                     <td class="textAlignRight">

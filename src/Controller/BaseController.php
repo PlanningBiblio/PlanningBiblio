@@ -121,6 +121,8 @@ class BaseController extends AbstractController
         $submittedToken = $request->request->get('_token');
 
         if (!$this->isCsrfTokenValid('', $submittedToken)) {
+            $session = $request->getSession();
+            $session->getFlashBag()->add('error', 'CSRF Token Error');
             return false;
         }
         return true;
