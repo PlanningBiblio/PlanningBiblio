@@ -25,7 +25,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $this->logInAgent($agent, array(201));
 
         $client = static::createClient();
-        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
+        $token = $client->getContainer()->get('security.csrf.token_manager')->getToken('');
 
         $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
         $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');

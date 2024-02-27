@@ -349,6 +349,7 @@ function addAbsenceDocument(id) {
     if (!file_data) { alert('Vous devez sélectionner un fichier.'); return false; }
     var form_data = new FormData();
     form_data.append('documentFile', file_data);
+    form_data.append('_token', $('#_token').val());
     $.ajax({
         url: url('absences/document/' + id),
         type: 'POST',
@@ -385,6 +386,7 @@ function deleteAbsenceDocument(id) {
         $.ajax({
             url: url('absences/document/' + id),
             type: 'DELETE',
+            data: {_token: $('#_token').val()},
             success: function(id) {
                 $("#document_" + id).fadeOut("normal", function() {
                     $(this).remove();

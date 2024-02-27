@@ -243,6 +243,10 @@ class AbsenceController extends BaseController
      */
     public function save(Request $request, Session $session)
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
         $this->session = $session;
@@ -266,11 +270,6 @@ class AbsenceController extends BaseController
 
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
-            $token = $request->get("token");
-            if (!$this->isCsrfTokenValid('upload', $token)) {
-                return new Response("Operation not allowed",  Response::HTTP_BAD_REQUEST,
-                ['content-type' => 'text/plain']);
-            }
 
             $filename = $file->getClientOriginalName();
 
