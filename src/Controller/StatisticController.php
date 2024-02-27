@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\AbsenceReason;
+use App\Model\Holiday;
 use App\Model\SelectFloor;
 use App\Model\SelectGroup;
 use App\PlanningBiblio\PresentSet;
@@ -169,11 +170,18 @@ class StatisticController extends BaseController
             $db = new \db();
             $db->select2("pl_poste", "date", array("date"=>"IN{$dates}", "site"=>"IN{$sitesSQL}"), "GROUP BY `date`;");
             $nbJours = $db->nb;
+
             // Recherche des absences dans la table absences
             $a = new \absences();
             $a->valide = true;
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB = $a->elements;
+
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
 
             //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
             //	On stock le tout dans le tableau $resultat
@@ -236,6 +244,12 @@ class StatisticController extends BaseController
                                     }
                                 }
                             }
+
+                            // Count holidays as absences
+                            if (self::countHolidays($elem, $holidays, true)) {
+                                continue;
+                            }
+
                             if ($elem['absent'] != "1") { // on compte les heures et les samedis pour lesquels l'agent n'est pas absent
                                 if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
                                     $samedi[$elem['date']][0] = $elem['date'];
@@ -524,6 +538,12 @@ class StatisticController extends BaseController
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB = $a->elements;
 
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
             // Recherche des services de chaque agent
             $db = new \db();
             $db->select2("personnel", array("id","service"));
@@ -622,6 +642,9 @@ class StatisticController extends BaseController
                                     }
                                 }
                             }
+
+                            // Count holidays as absences
+                            $elem = self::countHolidays($elem, $holidays);
 
                             if ($elem['absent']!="1") {		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
                                 // on créé un tableau par poste avec son nom, étage et la somme des heures faites par service
@@ -969,6 +992,12 @@ class StatisticController extends BaseController
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB = $a->elements;
 
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
             // Recherche des statuts de chaque agent
             $db = new \db();
             $db->select2("personnel", array("id","statut"));
@@ -1078,6 +1107,9 @@ class StatisticController extends BaseController
                                     }
                                 }
                             }
+
+                            // Count holidays as absences
+                            $elem = self::countHolidays($elem, $holidays);
 
                             if ($elem['absent'] != "1") {		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
                                 // on créé un tableau par poste avec son nom, étage et la somme des heures faites par statut
@@ -1730,6 +1762,12 @@ class StatisticController extends BaseController
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB=$a->elements;
 
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
             $req = "SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
             `{$dbprefix}pl_poste`.`date` as `date`,  `{$dbprefix}pl_poste`.`poste` as `poste`, 
             `{$dbprefix}personnel`.`nom` as `nom`, `{$dbprefix}personnel`.`prenom` as `prenom`, 
@@ -1782,6 +1820,12 @@ class StatisticController extends BaseController
                                     }
                                 }
                             }
+
+                            // Count holidays as absences
+                            if (self::countHolidays($elem, $holidays, true)) {
+                                continue;
+                            }
+
                             //	On créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
                             if (!array_key_exists($elem['perso_id'], $agents)) {
                                 $agents[$elem['perso_id']] = array($elem['perso_id'], $elem['nom'], $elem['prenom'], 0, "site"=>$elem['site']);
@@ -2018,6 +2062,12 @@ class StatisticController extends BaseController
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB = $a->elements;
 
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
             //    Recherche du nombre de jours concernés
             $db = new \db();
             $debutREQ = $db->escapeString($debutSQL);
@@ -2121,6 +2171,9 @@ class StatisticController extends BaseController
                                     }
                                 }
                             }
+
+                            // Count holidays as absences
+                            $elem = self::countHolidays($elem, $holidays);
 
                             if ($elem['absent'] != "1") {
                                 // on compte les heures et les samedis pour lesquels l'agent n'est pas absent
@@ -2526,6 +2579,12 @@ class StatisticController extends BaseController
         $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debut." 00:00:00", $fin." 23:59:59");
         $absencesDB = $a->elements;
 
+        // Look for holidays
+        $holidays = array();
+        if ($this->config('Conges-Enable')) {
+            $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59");
+        }
+
         $db = new \db();
         $debutREQ = $db->escapeString($debut);
         $finREQ = $db->escapeString($fin);
@@ -2559,6 +2618,12 @@ class StatisticController extends BaseController
                         continue 2;
                     }
                 }
+
+                // Count holidays as absences
+                if (self::countHolidays($elem, $holidays, true)) {
+                    continue;
+                }
+
                 if (!array_key_exists($elem['perso_id'], $tab)) {        // création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
                     $tab[$elem['perso_id']] = array(
                         "perso_id"     => $elem['perso_id'],
@@ -2954,6 +3019,12 @@ class StatisticController extends BaseController
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB = $a->elements;
 
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
             //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
             //	On stock le tout dans le tableau $resultat
             $postes_select = implode(",", $postes);
@@ -3017,6 +3088,11 @@ class StatisticController extends BaseController
                                     continue 2;
                                 }
                             }
+                        }
+
+                        // Count holidays as absences
+                        if (self::countHolidays($elem, $holidays, true)) {
+                            continue;
                         }
 
                         if ($poste == $elem['poste']) {
@@ -3274,6 +3350,12 @@ class StatisticController extends BaseController
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB = $a->elements;
 
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
             //    Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
             //    On stock le tout dans le tableau $resultat
             $postes_select = implode(",", $postes);
@@ -3331,6 +3413,11 @@ class StatisticController extends BaseController
                                         continue 2;
                                     }
                                 }
+                            }
+
+                            // Count holidays as absences
+                            if (self::countHolidays($elem, $holidays, true)) {
+                                continue;
                             }
 
                             // on créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
@@ -3465,4 +3552,34 @@ class StatisticController extends BaseController
         ));
         return $this->output('statistics/position.html.twig');
     }
+
+
+    // Count holidays as absences
+    private static function countHolidays($elem, $holidays, $continue = false)
+    {
+        if (!empty($holidays)) {
+            $start = \DateTime::createFromFormat('Y-m-d H:i:s', $elem['date'] . ' ' . $elem['debut']);
+            $end = \DateTime::createFromFormat('Y-m-d H:i:s', $elem['date'] . ' ' . $elem['fin']);
+
+            foreach ($holidays as $holiday) {
+                if ($holiday->perso_id() == $elem['perso_id'] 
+                    and $holiday->debut() < $end
+                    and $holiday->fin() > $start) {
+
+                    if ($continue) {
+                        return true;
+                    }
+
+                    $elem['absent'] = "1";
+                }
+            }
+        }
+
+        if ($continue) {
+            return false;
+        }
+
+        return $elem;
+    }
+
 }
