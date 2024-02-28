@@ -19,10 +19,10 @@
                 <input type='text' name='to' value='{{ to }}' class='datepicker'/>
               </td>
               <td>
-                <input type='submit' value='Rechercher' class='ui-button ui-button-type2' />
+                <input type='submit' value='Rechercher' class='ui-button ui-button-type1' />
               </td>
               <td>
-                <a href='{{ asset('statistics/attendeesmissing') }}?reset=1' class='ui-button ui-button-type2'>Réinitialiser</a>
+                <input type="button" onclick="location.href='{{ asset('statistics/attendeesmissing') }}?reset=1';" class="ui-button ui-button-type3" value="Réinitialiser" />
               </td>
             </tr>
           </table>
