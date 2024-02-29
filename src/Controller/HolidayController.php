@@ -256,7 +256,7 @@ class HolidayController extends BaseController
                 $elem['origin_end'] = str_replace("23h59", "", dateFr($data['fin'], true));
             }
 
-            $elem['nom'] = $admin ? nom($elem['perso_id'], 'nom p', $agents) : '';
+            $elem['nom'] = nom($elem['perso_id'], 'nom p', $agents);
 
             $holidays[] = $elem;
         }
