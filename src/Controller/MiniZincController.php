@@ -16,12 +16,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class MiniZincController extends BaseController
 {
     /**
-     * @Route("/minizinc/oneday", name="minizinc.oneday", methods={"GET"})
+     * @Route("/minizinc/oneday", name="minizinc.oneday", methods={"POST"})
      */
     public function oneDay(KernelInterface $kernel, Request $request): Response
     {
 
-        // TODO : Add CSRF Protection, change method to POST
+        if (!$this->csrf_protection($request)) {
+            return new Response(json_encode(['error' => 'CSRF Token Error']));
+        }
 
         $session = $request->getSession();
 
@@ -43,7 +45,7 @@ class MiniZincController extends BaseController
         $result = explode('###RESULT###', $content);
 
         if (!empty($result[1])) {
-            return new Response($result[1]);
+            return new Response(json_encode($result[1]));
         }
 
         return new Response('{}');
