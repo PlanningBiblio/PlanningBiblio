@@ -9,7 +9,7 @@
       <tr style='vertical-align:top;'>
         <td id='stat-col1'>
           <form name='form' id='form' action='{{ asset("statistics/agent") }}' method='post'>
-            <input type='hidden' name='statistiques_heures_defaut' id='statistiques_heures_defaut_hidden' value='0' />
+            <input type="hidden" name="statisticsDefaultHours" id="statisticsDefaultHours" value="{{ config('Statistiques-Heures') }}" />
             <table>
               <tr>
                 <td><label >Début</label></td>
@@ -22,7 +22,7 @@
               <tr style='vertical-align:top'>
                 <td><label >Agents</label></td>
                 <td>
-                  <select name='agents[]' multiple='multiple' size='20' onchange='verif_select("agents");' class='ui-widget-content ui-corner-all' >
+                  <select name='agent[]' multiple='multiple' size='20' onchange='verif_select("agent");' class='ui-widget-content ui-corner-all' >
                     {% if agents_list is iterable %}
                       <option value='Tous'>Tous</option>
                       {% for elem in agents_list %}
@@ -40,11 +40,11 @@
               </tr>
               <tr style='vertical-align:top;'>
                 <td>
-                  <label for='statistiques_heures' >Heures<sup>*</sup></label>
+                  <label for="statisticsHours" >Heures<sup>*</sup></label>
                 </td>
                 <td>
-                  <textarea name='statistiques_heures' rows='7' class='ui-widget-content ui-corner-all'>{{ statistiques_heures }}</textarea><br/>
-                  <a href='#' id='statistiques_heures_defaut_lien'>Charger les heures par d&eacute;faut</a>
+                  <textarea name="statisticsHours" id="statisticsHours" rows="7" class="ui-widget-content ui-corner-all">{{ statisticsHours }}</textarea><br/>
+                  <a href="javascript:statisticsGetDefaultHours()" id="statisticsDefaultHours_link">Charger les heures par défaut</a>
                 </td>
               </tr>
               {% if nbSites > 1 %}
@@ -57,9 +57,9 @@
                       <option value='Tous'>Tous</option>
                         {% for i in 1..nbSites %}
                           {% if i in selectedSites %}
-                            <option value='{{ i }}' selected='selected'>{{ multisites[i-1] | raw }}</option>
+                            <option value='{{ i }}' selected='selected'>{{ multisites[i] | raw }}</option>
                           {% else %}
-                            <option value='{{ i }}'>{{ multisites[i-1] | raw }}</option>
+                            <option value='{{ i }}'>{{ multisites[i] | raw }}</option>
                           {% endif %}
                         {% endfor %}
                     </select>
@@ -140,7 +140,7 @@
                         {% for i in 1..nbSites %}
                           {% if elem.sites[i] %}
                             <tr>
-                              <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i-1] | raw }}</u></td>
+                              <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i] | raw }}</u></td>
                             </tr>
                             <tr>
                               <td>Total</td>
@@ -160,7 +160,7 @@
                       {% for poste in elem[1] %}
                         <tr style='vertical-align:top;'>
                           <td>
-                            <b>{{ poste[1] }}</b><br/><i>{{ elem.siteEtage[poste[0]] | raw }}</i>
+                            <b>{{ poste[1] }}</b><br/><i>{{ poste.siteEtage }}</i>
                           </td>
                           <td>{{ poste[3] }}</td>
                         </tr>
@@ -207,13 +207,12 @@
 
                   {% for v in heures_tab_global %}
                     <td>
-                      {% set horaire = v[0]~'-'~v[1] %}
-                      {% if elem[7][horaire] is defined  %}
-                        Nb {{ v[2] }} :
-                        {{ elem[7][horaire] | length }}
-                        {% for h in elem[7][horaire] %}
-                          <br/> {{ h }}
-                        {% endfor %}
+                      {% if elem[7][v[2]] is defined %}
+                        Nb {{ v[2] }} : {{ elem[7][v[2]] | length - 1}}
+                        {% for k,c in elem[7][v[2]].count %}
+                          <br/>{{ k }}  
+                        {% endfor %}  
+
                       {% endif %}
                     </td>
                   {% endfor %}

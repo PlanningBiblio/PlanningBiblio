@@ -9,7 +9,7 @@
       <tr style='vertical-align:top;'>
         <td id='stat-col1'>
           <form name='form' id='form' action='{{ asset("statistics/status") }}' method='post'>
-            <input type='hidden' name='statistiques_heures_defaut' id='statistiques_heures_defaut_hidden' value='0' />
+            <input type="hidden" name="statisticsDefaultHours" id="statisticsDefaultHours" value="{{ config('Statistiques-Heures') }}" />
             <table>
               <tr>
                 <td>
@@ -32,15 +32,11 @@
                   <label>Statuts</label>
                 </td>
                 <td>
-                  <select name='statuts[]' multiple='multiple' size='20' onchange='verif_select("statuts");' class='ui-widget-content ui-corner-all' >
-                  {% if statuts_list is iterable %}
+                  <select name='status[]' multiple='multiple' size='20' onchange='verif_select("status");' class='ui-widget-content ui-corner-all' >
+                  {% if objects is iterable %}
                       <option value='Tous'>Tous</option>
-                      {% for statut in statuts_list %}
-                          {% if statut.id in statuts %}
-                              <option value='{{ statut.id }}' selected = 'selected'>{{ statut.valeur|raw }}</option>
-                          {% else %}
-                              <option value='{{ statut.id }}' >{{ statut.valeur|raw }}</option>
-                          {% endif %} 
+                      {% for o in objects %}
+                          <option value='{{ o.id }}' {{ (o.id in data) ? "selected = 'selected'" : " " }}>{{ o.valeur | raw }}</option>
                       {% endfor %}
                   {% endif %}
                   </select>
@@ -48,11 +44,11 @@
               </tr>
               <tr style='vertical-align:top;'>
                 <td>
-                  <label for='statistiques_heures' >Heures<sup>*</sup></label>
+                  <label for="statisticsHours" >Heures<sup>*</sup></label>
                 </td>
                 <td>
-                  <textarea name='statistiques_heures' rows='7' class='ui-widget-content ui-corner-all'>{{ statistiques_heures }}</textarea><br/>
-                  <a href='#' id='statistiques_heures_defaut_lien'>Charger les heures par défaut</a>
+                  <textarea name="statisticsHours" id="statisticsHours" rows="7" class="ui-widget-content ui-corner-all">{{ statisticsHours }}</textarea><br/>
+                  <a href="javascript:statisticsGetDefaultHours()" id="statisticsDefaultHours_link">Charger les heures par défaut</a>
                 </td>
               </tr>
               {% if nbSites > 1 %}
@@ -64,9 +60,7 @@
                     <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
                       <option value='Tous'>Tous</option>
                       {% for i in 1..nbSites %}
-                        {% if i in selectedSites %}
-                            <option value='{{ i }}' selected = 'selected'> {{ multisites[i-1] | raw }}</option>  
-                        {% endif %}
+                        <option value='{{ i }}' {{ (i in selectedSites)?"selected = 'selected'":" " }}>{{ multisites[i] }}</option>
                       {% endfor %}
                     </select>
                   </td>
@@ -144,7 +138,7 @@
                         {% for i in 1..nbSites %}
                             {% if elem.sites[i] is not null %}
                               <tr>
-                                <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i-1] | raw }}</u></td>
+                                <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i] | raw }}</u></td>
                               </tr>
                               <tr>
                                 <td>Total</td>
@@ -210,7 +204,7 @@
                   {% endif %}
                   {% for v in heures_tab_global %}
                     <td>
-                      {% if elem[7][v[2]] is defined and elem[7][v[2]] is not empty %}
+                      {% if elem[7][v[2]] is defined %}
                         Nb {{ v[2] }} : {{ elem[7][v[2]] | length - 1}}
                         {% for k,c in elem[7][v[2]].count %}
                           <br> {{ k }} ({{ c }})

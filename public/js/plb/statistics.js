@@ -7,9 +7,7 @@ Planning Biblio
 @desc Javascript functions used to display statistics
 */
 
-$(function(){
-  $('#statistiques_heures_defaut_lien').click(function(){
-    $('#statistiques_heures_defaut_hidden').val('1');
-    $('#form').submit();
-  });
-});
+function statisticsGetDefaultHours() {
+  var hours = $('#statisticsDefaultHours').val();
+  $('#statisticsHours').val(hours);
+}
