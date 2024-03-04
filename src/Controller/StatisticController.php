@@ -45,8 +45,6 @@ class StatisticController extends BaseController
         // Initialisation des variables :
         $debut = $request->get('debut');
         $fin = $request->get('fin');
-        $statistiques_heures = $request->get('statistiques_heures');
-        $statistiques_heures_defaut = $request->get('statistiques_heures_defaut');
         $post = $request->request->all();
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -64,17 +62,7 @@ class StatisticController extends BaseController
 
         // Statistiques-Heures
         $heures_tab_global = array();
-        if ($statistiques_heures_defaut) {
-            $statistiques_heures = $this->config('Statistiques-Heures');
-        } else {
-            if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
-                $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
-            } elseif (!$statistiques_heures and !empty($this->config('Statistiques-Heures'))) {
-                $statistiques_heures = $this->config('Statistiques-Heures');
-            }
-        }
-
-        $_SESSION['oups']['statistiques_heures'] = $statistiques_heures;
+        $statisticsHours = self::getHours($request);
 
         //		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
         if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
@@ -274,22 +262,8 @@ class StatisticController extends BaseController
                                 }
 
                                 // Statistiques-Heures
-                                if ($statistiques_heures) {
-                                    $statistiques_heures_tab = explode(';', $statistiques_heures);
-                                    foreach ($statistiques_heures_tab as $h) {
-                                        $tmp = heures($h);
-                                        if (!$tmp) {
-                                            continue;
-                                        }
-                                        $tmp[2] = heure3($tmp[0]).'-'.heure3($tmp[1]);
-                                        if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $heures_tab[$tmp[2]][] = $elem['date'];
-                                            if (!in_array($tmp, $heures_tab_global)) {
-                                                $heures_tab_global[] = $tmp;
-                                            }
-                                        }
-                                    }
-                                }
+                                list($heures_tab, $heures_tab_global) = self::getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours);
+
                             } else {				// On compte les absences
                                 if (!array_key_exists($elem['date'], $absences)) {
                                     $absences[$elem['date']][0] = $elem['date'];
@@ -332,10 +306,6 @@ class StatisticController extends BaseController
         // 		--------------------------		Affichage du tableau de résultat		--------------------
         if ($tab) {
            
-            foreach ($heures_tab_global as &$v) {
-                $v[2] = heure3($v[0]).'-'.heure3($v[1]);
-            }
-
             foreach ($tab as &$elem) {
                 // Calcul des moyennes
                 $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
@@ -373,12 +343,13 @@ class StatisticController extends BaseController
                         $absences[1] = heure4($absences[1]);
                     }
                 }
-            
+
                 // Statistiques-Heures
-                foreach ($heures_tab_global as &$v) {
-                    if (!empty($elem[7][$v])) {
-                        sort($elem[7][$v]);
-                        foreach ($elem[7][$v] as &$h) {
+                foreach ($heures_tab_global as $v) {
+                    $tmp = $v[0].'-'.$v[1];
+                    if (!empty($elem[7][$tmp])) {
+                        sort($elem[7][$tmp]);
+                        foreach ($elem[7][$tmp] as &$h) {
                             $h = dateFr($h);
                         }
                     }
@@ -399,7 +370,7 @@ class StatisticController extends BaseController
                 "nbJours"             => $nbJours,
                 "nbSites"             => $nbSites,
                 "selectedSites"       => $selectedSites,
-                "statistiques_heures" => $statistiques_heures,
+                "statisticsHours"     => $statisticsHours,
                 "tab"                 => $tab
             )
         );
@@ -414,9 +385,6 @@ class StatisticController extends BaseController
         // Initialisation des variables :
         $debut = $request->get("debut");
         $fin = $request->get("fin");
-        $statistiques_heures = $request->get("statistiques_heures");
-
-        $statistiques_heures_defaut = $request->get("statistiques_heures_defaut");
         $post = $request->request->all();
         $nbSites = $this->config("Multisites-nombre");
         $dbprefix = $GLOBALS["dbprefix"];
@@ -435,17 +403,7 @@ class StatisticController extends BaseController
 
         // Statistiques-Heures
         $heures_tab_global = array();
-        if ($statistiques_heures_defaut) {
-            $statistiques_heures = $this->config('Statistiques-Heures');
-        } else {
-            if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
-                $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
-            } elseif (!$statistiques_heures and !empty($this->config('Statistiques-Heures'))) {
-                $statistiques_heures = $this->config('Statistiques-Heures');
-            }
-        }
-
-        $_SESSION['oups']['statistiques_heures'] = $statistiques_heures;
+        $statisticsHours = self::getHours($request);
 
         if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
             $debut = $_SESSION['stat_debut'];
@@ -550,7 +508,7 @@ class StatisticController extends BaseController
             foreach ($db->result as $elem) {
                 $servId = null;
                 foreach ($services_list as $serv) {
-                    if ($serv['valeur'] == $elem['service']) {
+                    if ($serv['valeur'] == html_entity_decode($elem['service'])) {
                         $servId = $serv['id'];
                         continue;
                     }
@@ -689,23 +647,8 @@ class StatisticController extends BaseController
                                 }
 
                                 // Statistiques-Heures
-                                if ($statistiques_heures) {
-                                    $statistiques_heures_tab = explode(';', $statistiques_heures);
-                                    foreach ($statistiques_heures_tab as $h) {
-                                        $tmp = heures($h);
-                                        if (!$tmp) {
-                                            continue;
-                                        }
-                        
-                                        if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $tmp[2] = heure3($tmp[0])."-".heure3($tmp[1]);
-                                            $heures_tab[$tmp[2]][] = $elem['date'];
-                                            if (!in_array($tmp, $heures_tab_global)) {
-                                                $heures_tab_global[] = $tmp;
-                                            }
-                                        }
-                                    }
-                                }
+                                list($heures_tab, $heures_tab_global) = self::getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours);
+
                             } else {				// On compte les absences
                                 if (!array_key_exists($elem['date'], $absences)) {
                                     $absences[$elem['date']][0] = $elem['date'];
@@ -848,7 +791,7 @@ class StatisticController extends BaseController
                 "selectedSites" => $selectedSites,
                 "services" => $services,
                 "services_list" => $services_list,
-                "statistiques_heures" => $statistiques_heures,
+                "statisticsHours" => $statisticsHours,
                 "tab" => $tab,
             )
         );
@@ -863,8 +806,6 @@ class StatisticController extends BaseController
         // Initialisation des variables :
         $debut = $request->get("debut");
         $fin = $request->get("fin");
-        $statistiques_heures = $request->get("statistiques_heures");
-        $statistiques_heures_defaut = $request->get("statistiques_heures_defaut");
         $post = $request->request->all();
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -880,17 +821,7 @@ class StatisticController extends BaseController
 
         // Statistiques-Heures
         $heures_tab_global = array();
-        if ($statistiques_heures_defaut) {
-            $statistiques_heures = $this->config('Statistiques-Heures');
-        } else {
-            if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
-                $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
-            } elseif (!$statistiques_heures and !empty($this->config('Statistiques-Heures'))) {
-                $statistiques_heures = $this->config('Statistiques-Heures');
-            }
-        }
-
-        $_SESSION['oups']['statistiques_heures'] = $statistiques_heures;
+        $statisticsHours = self::getHours($request);
 
         if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
             $debut = $_SESSION['stat_debut'];
@@ -1004,7 +935,7 @@ class StatisticController extends BaseController
             foreach ($db->result as $elem) {
                 $statutId = null;
                 foreach ($statuts_list as $stat) {
-                    if ($stat['valeur'] == $elem['statut']) {
+                    if ($stat['valeur'] == html_entity_decode($elem['statut'])) {
                         $statutId = $stat['id'];
                         continue;
                     }
@@ -1152,24 +1083,10 @@ class StatisticController extends BaseController
                                     $feries[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
                                     $exists_JF = true;
                                 }
+
                                 // Statistiques-Heures
-                                if ($statistiques_heures) {
-                                    $statistiques_heures_tab = explode(';', $statistiques_heures);
-                                    foreach ($statistiques_heures_tab as $h) {
-                                        $tmp = heures($h);
-                                        if (!$tmp) {
-                                            continue;
-                                        }
-                        
-                                        if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $tmp[2] = heure3($tmp[0])."-".heure3($tmp[1]);
-                                            $heures_tab[$tmp[2]][] = $elem['date'];
-                                            if (!in_array($tmp, $heures_tab_global)) {
-                                                $heures_tab_global[] = $tmp;
-                                            }
-                                        }
-                                    }
-                                }
+                                list($heures_tab, $heures_tab_global) = self::getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours);
+
                             } else {				// On compte les absences
                                 if (!array_key_exists($elem['date'], $absences)) {
                                     $absences[$elem['date']][0] = $elem['date'];
@@ -1315,7 +1232,7 @@ class StatisticController extends BaseController
                 "nbSites"             => $nbSites,
                 "ouverture"           => $ouverture,
                 "selectedSites"       => $selectedSites,
-                "statistiques_heures" => $statistiques_heures,
+                "statisticsHours"     => $statisticsHours,
                 "statuts"             => $statuts,
                 "statuts_list"        => $statuts_list,
                 "tab"                 => $tab   
@@ -1943,8 +1860,6 @@ class StatisticController extends BaseController
         // Initialisation des variables :
         $debut = $request->get('debut');
         $fin = $request->get('fin');
-        $statistiques_heures = $request->get('statistiques_heures');
-        $statistiques_heures_defaut = $request->get('statistiques_heures_defaut');
         $post = $request->request->all();
         $dbprefix = $GLOBALS['dbprefix'];
 
@@ -1965,17 +1880,7 @@ class StatisticController extends BaseController
 
         // Statistiques-Heures
         $heures_tab_global = array();
-        if ($statistiques_heures_defaut) {
-            $statistiques_heures = $this->config('Statistiques-Heures');
-        } else {
-            if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
-                $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
-            } elseif (!$statistiques_heures and !empty($this->config('Statistiques-Heures'))) {
-                $statistiques_heures = $this->config('Statistiques-Heures');
-            }
-        }
-
-        $_SESSION['oups']['statistiques_heures'] = $statistiques_heures;
+        $statisticsHours = self::getHours($request);
 
         if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
             $debut=$_SESSION['stat_debut'];
@@ -2224,22 +2129,8 @@ class StatisticController extends BaseController
                                 }
 
                                 // Statistiques-Heures
-                                if ($statistiques_heures) {
-                                    $statistiques_heures_tab = explode(';', $statistiques_heures);
-                                    foreach ($statistiques_heures_tab as $key=>$h) {
-                                        $tmp = heures($statistiques_heures_tab[$key]);
-                                        if (!$tmp) {
-                                            continue;
-                                        }
-                                        $tmp[]= heure3($tmp[0]).'-'.heure3($tmp[1]);
-                                        if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $heures_tab[$tmp[0].'-'.$tmp[1]][] = $elem['date'];
-                                            if (!in_array($tmp, $heures_tab_global)) {
-                                                $heures_tab_global[] = $tmp;
-                                            }
-                                        }
-                                    }
-                                }
+                                list($heures_tab, $heures_tab_global) = self::getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours);
+
                             } else {
                                 // On compte les absences
                                 if (!array_key_exists($elem['date'], $absences)) {
@@ -2393,6 +2284,7 @@ class StatisticController extends BaseController
                     }
                 }
             }
+
             for ( $i = 1; $i <= $nbSites; $i++ ){
                 if ($tab[$key]['sites'][$i]){
                     $tab[$key]['sites'][$i] = heure4($tab[$key]['sites'][$i]);
@@ -2405,7 +2297,7 @@ class StatisticController extends BaseController
             "fin" => $fin,
             "agents_list" => $agents_list,
             "agents" => $agents,
-            "statistiques_heures" => $statistiques_heures,
+            "statisticsHours" => $statisticsHours,
             "nbSites" => $nbSites,
             "selectedSites" => $selectedSites,
             "multisites" => $multisites,
@@ -3554,7 +3446,9 @@ class StatisticController extends BaseController
     }
 
 
-    // Count holidays as absences
+    /**
+     * Count holidays as absences
+     */
     private static function countHolidays($elem, $holidays, $continue = false)
     {
         if (!empty($holidays)) {
@@ -3582,4 +3476,57 @@ class StatisticController extends BaseController
         return $elem;
     }
 
+
+    /**
+     * Init and give Statistics Hours
+     */
+    private function getHours($request)
+    {
+        $session = $request->getSession();
+        $hours = $request->get('statisticsHours');
+
+        if ($request->isMethod('post')) {
+            $session->set('statisticsInit', true);
+            $session->set('statisticsHours', $hours);
+        }
+
+        if (!$hours) {
+            if ($session->get('statisticsInit')) {
+                $hours = $session->get('statisticsHours');
+            } else { 
+                $hours = $this->config('Statistiques-Heures');
+            }
+        }
+
+        return $hours;
+    }
+
+    /**
+     * Give Global Hours
+     */
+    private function getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours)
+    {
+        if (!$statisticsHours) {
+            return array($heures_tab, $heures_tab_global);
+        }
+
+        $statisticsHoursTab = explode(';', $statisticsHours);
+
+        foreach ($statisticsHoursTab as $key => $h) {
+            $tmp = heures($statisticsHoursTab[$key]);
+            if (!$tmp) {
+                continue;
+            }
+
+            if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
+                $tmp[2] = heure3($tmp[0])."-".heure3($tmp[1]);
+                $heures_tab[$tmp[2]][] = $elem['date'];
+                $heures_tab[$tmp[0] . '-' . $tmp[1]][] = $elem['date'];
+                if (!in_array($tmp, $heures_tab_global)) {
+                    $heures_tab_global[] = $tmp;
+                }
+            }
+        }
+        return array($heures_tab, $heures_tab_global);
+    }
 }

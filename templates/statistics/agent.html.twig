@@ -9,7 +9,7 @@
       <tr style='vertical-align:top;'>
         <td id='stat-col1'>
           <form name='form' id='form' action='{{ asset("statistics/agent") }}' method='post'>
-            <input type='hidden' name='statistiques_heures_defaut' id='statistiques_heures_defaut_hidden' value='0' />
+            <input type="hidden" name="statisticsDefaultHours" id="statisticsDefaultHours" value="{{ config('Statistiques-Heures') }}" />
             <table>
               <tr>
                 <td><label >Début</label></td>
@@ -40,11 +40,11 @@
               </tr>
               <tr style='vertical-align:top;'>
                 <td>
-                  <label for='statistiques_heures' >Heures<sup>*</sup></label>
+                  <label for="statisticsHours" >Heures<sup>*</sup></label>
                 </td>
                 <td>
-                  <textarea name='statistiques_heures' rows='7' class='ui-widget-content ui-corner-all'>{{ statistiques_heures }}</textarea><br/>
-                  <a href='#' id='statistiques_heures_defaut_lien'>Charger les heures par d&eacute;faut</a>
+                  <textarea name="statisticsHours" id="statisticsHours" rows="7" class="ui-widget-content ui-corner-all">{{ statisticsHours }}</textarea><br/>
+                  <a href="javascript:statisticsGetDefaultHours()" id="statisticsDefaultHours_link">Charger les heures par défaut</a>
                 </td>
               </tr>
               {% if nbSites > 1 %}
@@ -207,11 +207,10 @@
 
                   {% for v in heures_tab_global %}
                     <td>
-                      {% set horaire = v[0]~'-'~v[1] %}
-                      {% if elem[7][horaire] is defined  %}
+                      {% if elem[7][v[2]] is defined %}
                         Nb {{ v[2] }} :
-                        {{ elem[7][horaire] | length }}
-                        {% for h in elem[7][horaire] %}
+                        {{ elem[7][v[2]] | length }}
+                        {% for h in elem[7][v[2]] %}
                           <br/> {{ h }}
                         {% endfor %}
                       {% endif %}
