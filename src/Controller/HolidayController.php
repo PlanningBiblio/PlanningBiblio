@@ -956,7 +956,7 @@ class HolidayController extends BaseController
         $finSQL = dateSQL($request->get('fin'));
         $is_recover = $request->get('is_recover');
         list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
-        $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $commentaires = $request->get('commentaires');
         $refus = $request->get('refus');
         $valide = $request->get('valide');
         $login_id = $_SESSION['login_id'];
