@@ -1057,9 +1057,9 @@ class conges
         $data['hre_debut']=$data['hre_debut']?$data['hre_debut']:"00:00:00";
         $data['hre_fin']=$data['hre_fin']?$data['hre_fin']:"23:59:59";
         $data['heures']=$data['heures'].".".$data['minutes'];
-        $data['commentaires']=htmlentities($data['commentaires'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $data['commentaires'] = $data['commentaires'];
         $data['halfday'] = isset($data['halfday']) && $data['halfday'] == 'on' ? 1 : 0;
-        $data['refus']=htmlentities($data['refus'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $data['refus'] = $data['refus'];
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
 

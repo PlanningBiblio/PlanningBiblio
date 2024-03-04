@@ -111,13 +111,14 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->createHolidayFor($agent);
         $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals($content[27], 'SUMMARY:Congé Payé ICS holiday test', 'ICS export with holiday');
+        $this->assertEquals('SUMMARY:Congé Payé ICS holiday test', $content[27], 'ICS export with holiday');
+        $this->assertEquals('DESCRIPTION:ICS holiday test', $content[28], 'ICS export with holiday');
 
         // Test absence
         $this->createAbsenceFor($agent);
         $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals($content[27], 'SUMMARY:ICS absence test ', 'ICS export with absence');
+        $this->assertEquals('SUMMARY:ICS absence test', $content[27], 'ICS export with absence');
 
         // With interval in URL
         $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1, "interval" => 1));
