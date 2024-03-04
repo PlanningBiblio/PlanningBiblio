@@ -72,7 +72,7 @@ class CJICS
     
         extract($params);
     
-        $comment = isset($comment) ? ' ' . $comment : null;
+        $description = $comment ?? null;
         $createdAt = isset($createdAt) ? gmdate('Ymd\THis\Z', $createdAt) : null;
         $floor = $floor ?? null;
         $organizer = $organizer ?? null;
@@ -90,7 +90,19 @@ class CJICS
         $lastModified = gmdate('Ymd\THis\Z', $lastModified);
     
         // If the site is not provide, this is an absence
-        $location = $siteId ? $site . $floor : 'INDISPO';
+        $location = $siteId ? $site . $floor : null;
+
+        $shortDescription = $description;
+        if ($shortDescription) {
+            if (strpos($shortDescription, "\r")) {
+                $shortDescription = strstr($shortDescription, "\r", true);
+            }
+            $shortDescription = ' ' . $shortDescription;
+        }
+
+        $summary = $positionOrReason . $shortDescription;
+
+        $description = str_replace("\r\n", "\\n", $description);
 
         $event = [];
     
@@ -99,7 +111,11 @@ class CJICS
         $event[] = 'DTSTAMP:' . gmdate('Ymd\THis\Z');
         $event[] = "DTSTART;TZID=$tz:$start";
         $event[] = "DTEND;TZID=$tz:$end";
-        $event[] = "SUMMARY:$positionOrReason" . $comment;
+        $event[] = self::splitLine("SUMMARY:$summary");
+
+        if ($description) {
+            $event[] = self::splitLine("DESCRIPTION:$description");
+        }
     
         if($organizer){
           $event[] = "ORGANIZER;CN=$organizer";
@@ -575,5 +591,15 @@ class CJICS
         if ($this->logs) {
             logs("Agent #$perso_id : $nb événement(s) importé(s)", "ICS", $CSRFToken);
         }
+    }
+
+    private static function splitLine($line) {
+
+        if (strlen($line) > 75) {
+            $tab = mb_str_split($line, 75);
+            $line = implode("\n ", $tab);
+        }
+
+        return $line;
     }
 }
