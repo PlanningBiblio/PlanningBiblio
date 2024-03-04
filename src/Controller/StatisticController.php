@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\AbsenceReason;
+use App\Model\Holiday;
 use App\Model\SelectFloor;
 use App\Model\SelectGroup;
 use App\PlanningBiblio\PresentSet;
@@ -36,6 +37,599 @@ class StatisticController extends BaseController
         return $this->output('statistics/index.html.twig');
     }
 
+
+    /**
+     * @Route("/statistics/agent", name="statistics.agent", methods={"GET", "POST"})
+     * @Route("/statistics/service", name="statistics.service", methods={"GET", "POST"})
+     * @Route("/statistics/status", name="statistics.status", methods={"GET", "POST"})
+     */
+    public function common(Request $request, Session $session)
+    {
+        // Initialization of variables
+        $route = $request->attributes->get('_route');
+        $type = str_replace('statistics.', '', $route);
+
+        $data = array();
+        $data_tab = null;
+        $exists_absences = false;
+        $exists_dimanche = false;
+        $exists_JF = false;
+        $exists_samedi = false;
+        $heures_tab_global = array();
+        $multisites = array();
+        $statisticsHours = self::getHours($request);
+        $tab = array();
+
+        $dbprefix = $GLOBALS['dbprefix'];
+        $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
+        $nbSites = $this->config('Multisites-nombre');
+
+        if ($nbSites > 1) {
+            for ($i = 1 ; $i <= $nbSites; $i++) {
+                $multisites[$i] = $this->config("Multisites-site$i");
+            }
+        }
+
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
+
+        $debut = filter_var($debut, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
+        $fin = filter_var($fin, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
+
+        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
+            $debut = $_SESSION['stat_debut'];
+        }
+
+        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
+            $fin = $_SESSION['stat_fin'];
+        }
+
+        if (!$debut) {
+            $debut = '01/01/' . date('Y');
+        }
+
+        if (!$fin) {
+            $fin = date('d/m/Y');
+        }
+
+        $_SESSION['stat_debut'] = $debut;
+        $_SESSION['stat_fin'] = $fin;
+
+        $debutSQL = dateFr($debut);
+        $finSQL = dateFr($fin);
+
+        $post = $request->request->all();
+
+        // Filter selected objects
+        if (!array_key_exists("stat_{$type}_{$type}", $_SESSION)) {
+            $_SESSION["stat_{$type}_{$type}"] = null;
+        }
+
+        $post_data = isset($post[$type]) ? $post[$type] : null;
+
+        if ($post_data) {
+            foreach ($post_data as $elem) {
+                $data[] = $elem;
+            }
+        } else {
+            $data = $_SESSION["stat_{$type}_{$type}"];
+        }
+
+        $_SESSION["stat_{$type}_{$type}"] = $data;
+
+        // Filter sites
+        if (!array_key_exists("stat_{$type}_sites", $_SESSION)) {
+            $_SESSION["stat_{$type}_sites"] = array();
+        }
+
+        $selectedSites = array();
+        $post_sites = isset($post['selectedSites']) ? $post['selectedSites'] : null;
+
+        if ($post_sites) {
+            foreach ($post_sites as $elem) {
+                $selectedSites[] = $elem;
+            }
+        } else {
+            $selectedSites = $_SESSION["stat_{$type}_sites"];
+        }
+
+        if ($nbSites > 1 and empty($selectedSites)) {
+            for ($i = 1; $i <= $nbSites; $i++) {
+                $selectedSites[] = $i;
+            }
+        }
+
+        $_SESSION["stat_{$type}_sites"] = $selectedSites;
+
+        // Filter sites for SQL queries
+        if ($nbSites > 1 and is_array($selectedSites)) {
+            $sitesSQL = '0,' . implode(',', $selectedSites);
+        } else {
+            $sitesSQL = '0,1';
+        }
+
+        // Teleworking
+        $teleworking_absence_reasons = array();
+        $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+        foreach ($absences_reasons as $elem) {
+            $teleworking_absence_reasons[] = $elem->valeur();
+        }
+
+        // Agents available
+        $db = new \db();
+        $db->select2('personnel', '*', array('id' => '<>2', 'actif' => 'Actif'), 'ORDER BY `nom`,`prenom`');
+        $agents_list = $db->result;
+
+        // Service and Status data
+        if (in_array($type, ['service', 'status'])) {
+
+            $table = match($type) { 
+                'service' => 'select_services',
+                'status' => 'select_statuts',
+            };
+
+            $field = match($type) { 
+                'service' => 'service',
+                'status' => 'statut',
+            };
+
+            $db = new \db();
+            $db->select2($table);
+            $objects = $db->result;
+
+            foreach ($agents_list as $elem) {
+                $id = null;
+                foreach ($objects as $o) {
+                    if ($o['valeur'] == html_entity_decode($elem[$field])) {
+                        $id = $o['id'];
+                        continue;
+                    }
+                }
+                $agents[$elem['id']] = array(
+                    'id'         => $elem['id'],
+                    'object'    => html_entity_decode($elem[$field]),
+                    'object_id' => $id
+                );
+            }
+        }
+
+
+        if (!empty($data)) {
+
+            // Look for absences
+            $a = new \absences();
+            $a->valide = true;
+            $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            $absencesDB = $a->elements;
+
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
+            //	Number of days concerned
+            $db = new \db();
+            $db->select2("pl_poste", "date", array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"), "GROUP BY `date`;");
+            $nbJours = $db->nb;
+
+            //  Get information from planning (tables pl_poste and postes)
+            //  The result is store in $resultat
+            $db = new \db();
+            $debutREQ = $db->escapeString($debutSQL);
+            $finREQ = $db->escapeString($finSQL);
+            $sitesREQ = $db->escapeString($sitesSQL);
+
+            if ($type == 'agent') {
+                $agents_select = implode(",", $data);
+                $agentsREQ = $db->escapeString($agents_select);
+            }
+
+            $req = "SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`,
+                `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`,
+                `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`,
+                `{$dbprefix}pl_poste`.`site` as `site`,
+                `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`,
+                `{$dbprefix}postes`.`teleworking` as `teleworking`
+                FROM `{$dbprefix}pl_poste`
+                INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id`
+                WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ'
+                AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1'
+                AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)";
+
+            if ($type == 'agent') {
+                $req .= "AND `{$dbprefix}pl_poste`.`perso_id` IN ($agentsREQ)";
+            }
+
+            $req .= "ORDER BY `poste_nom`,`etage`;";
+
+            $db->query($req);
+            $resultat = $db->result;
+
+            // Add service and status to $resultat for each agent
+            if (in_array($type, ['service', 'status'])) {
+                for ($i = 0; $i < count($resultat); $i++) {
+
+                    if ($resultat[$i]['perso_id'] == 0) {
+                        continue;
+                    }
+
+                    if (in_array($type, ['service', 'status'])) {
+                        $resultat[$i]['object'] = $agents[$resultat[$i]['perso_id']]['object'];
+                        $resultat[$i]['object_id'] = $agents[$resultat[$i]['perso_id']]['object_id'];
+                    }
+                }
+            }
+
+            $floors = $this->entityManager->getRepository(SelectFloor::class);
+
+            // Get information from $resultat for each agent
+            foreach ($data as $d) {
+
+                // If $tab already contains information for the current agent, we retrieve this information to complete it.
+                if (array_key_exists($d, $tab)) {
+                    $heures = $tab[$d][2];
+                    $total_absences = $tab[$d][5];
+                    $samedi = $tab[$d][3];
+                    $dimanche = $tab[$d][6];
+                    $heures_tab = $tab[$d][7];
+                    $absences = $tab[$d][4];
+                    $feries = $tab[$d][8];
+                    $sites = $tab[$d]["sites"];
+
+                // If $tab does not contains information for the current agent, we create an entry with default values.
+                // These entry is now created even if the agent is not found on schedules.
+                } else {
+
+                    if ($type == 'agent') {
+                        // Create an array with agent information
+                        foreach ($agents_list as $elem) {
+                            if ($elem['id'] == $d) {
+
+                                $assignedSites = json_decode($elem['sites']);
+                                if (!is_array($assignedSites)) {
+                                    $assignedSites = array();
+                                }
+
+                                $agent_tab = array(
+                                    $d,
+                                    $elem['nom'],
+                                    $elem['prenom'],
+                                    'assignedSites' => $assignedSites,
+                                );
+                                break;
+                            }
+                        }
+
+                        $tab[$d][0] = $agent_tab;
+                    }
+
+                    $tab[$d][1] = array();
+                    $heures = $tab[$d][2] = 0;
+                    $total_absences = $tab[$d][5] = 0;
+                    $samedi = $tab[$d][3] = array();
+                    $dimanche = $tab[$d][6] = array();
+                    $heures_tab = $tab[$d][7] = array();
+                    $absences = $tab[$d][4] = array();
+                    $feries = $tab[$d][8] = array();
+                    $sites = array();
+                    for ($i = 1; $i <= $nbSites; $i++) {
+                        $sites[$i] = 0;
+                    }
+                    $tab[$d]["sites"] = $sites;
+                }
+
+                $postes = array();
+
+
+                if (is_array($resultat)) {
+
+                    foreach ($resultat as $elem) {
+
+                        if (in_array($type, ['service', 'status'])) {
+                            if (!isset($elem['object_id']) or $d != $elem['object_id']) {
+                                continue;
+                            }
+                        }
+
+                        if (($type =='agent' and !empty($elem['perso_id']) and $d == $elem['perso_id'])
+                            or (in_array($type, ['service', 'status']) and $d == $elem['object_id'])) {
+
+                            // Look for absences (from the absence table). Set $elem['absent'] to 1 if an absence is found.
+                            if ( !empty($absencesDB[$elem['perso_id']]) ) {
+                                foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    // Ignore teleworking absences for compatible positions
+                                    if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
+                                        continue;
+                                    }
+
+                                    if ($a['debut'] < $elem['date'].' '.$elem['fin'] and $a['fin'] > $elem['date'].' '.$elem['debut']) {
+                                        $elem['absent'] = '1';
+                                    }
+                                }
+                            }
+
+                            // Count holidays as absences
+                            $elem = self::countHolidays($elem, $holidays, false);
+
+                            if ($elem['absent'] != '1') {
+                                // Count saturdays worked
+                                // We store information in the $postes array with position name, floors and total hours
+                                if (!array_key_exists($elem['poste'], $postes)) {
+                                    $postes[$elem['poste']] = array(
+                                        $elem['poste'],
+                                        $elem['poste_nom'],
+                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
+                                        0,
+                                        "site"=>$elem['site']
+                                    );
+                                }
+
+                                // Count total hours of the position (index 3)
+                                $postes[$elem['poste']][3] += diff_heures($elem['debut'], $elem['fin'], 'decimal');
+
+                                // Count total hours of the site
+                                if ($nbSites > 1) {
+                                    $sites[$elem['site']] += diff_heures($elem['debut'], $elem['fin'], 'decimal');
+                                }
+
+                                // Count total hours
+                                $heures += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                $date = new \datePl($elem['date']);
+
+                                // Saturdays. We store dates and total hours
+                                if ($date->sam == 'samedi') {
+                                    if (!array_key_exists($elem['date'], $samedi)) {
+                                        $samedi[$elem['date']][0] = $elem['date'];
+                                        $samedi[$elem['date']][1] = 0;
+                                    }
+                                    $samedi[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                    $exists_samedi = true;
+                                }
+
+                                // Sundays. We store dates and total hours
+                                if ($date->position == 0) {
+                                    if (!array_key_exists($elem['date'], $dimanche)) {
+                                        $dimanche[$elem['date']][0] = $elem['date'];
+                                        $dimanche[$elem['date']][1] = 0;
+                                    }
+                                    $dimanche[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                    $exists_dimanche = true;
+                                }
+
+                                // Public holidays. We store dates and total hours
+                                if (jour_ferie($elem['date'])) {
+                                    if (!array_key_exists($elem['date'], $feries)) {
+                                        $feries[$elem['date']][0] = $elem['date'];
+                                        $feries[$elem['date']][1] = 0;
+                                    }
+                                    $feries[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                    $exists_JF = true;
+                                }
+
+                                // Statistics on specifics time slots
+                                list($heures_tab, $heures_tab_global) = self::getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours);
+
+                            } else {
+                                // Absences
+                                if (!array_key_exists($elem['date'], $absences)) {
+                                    $absences[$elem['date']][0] = $elem['date'];
+                                    $absences[$elem['date']][1] = 0;
+                                }
+                                $absences[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                $total_absences += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                $exists_absences = true;
+                            }
+
+                            // We store all information (positions, agents, hours, absences, etc.) in $tab
+                            if ($type == 'agent') {
+                                $tab[$d] = array($agent_tab);
+                            }
+
+                            if (in_array($type, ['service', 'status'])) {
+                                $tab[$d] = array(html_entity_decode($elem['object']));
+                            }
+
+                            $tab[$d] = array_merge($tab[$d], array(
+                                $postes,
+                                $heures,
+                                $samedi,
+                                $absences,
+                                $total_absences,
+                                $dimanche,
+                                $heures_tab,
+                                $feries,
+                                "sites"=>$sites
+                            ));
+                        }
+                    }
+                }
+            }
+
+            // Remove the blanks 
+            foreach ($tab as $key => $value) {
+                if (empty($value[0])) {
+                    unset($tab[$key]);
+                }
+            }
+
+            sort($heures_tab_global);
+    
+            if ($type == 'agent') {
+                // Remove agents who are never selected and not in selected sites
+                if ($this->config('Multisites-nombre') > 1) {
+                    foreach($tab as $key => $value) {
+                        if (empty($value[1])
+                            and empty(array_intersect($selectedSites, $value[0]['assignedSites']))) {
+                            unset($tab[$key]);
+                        }
+                    }
+                }
+    
+                // Agents who are never selected (for export)
+                $neverSelected = array();
+                foreach ($tab as $elem) {
+                    if (empty($elem[1])) {
+                        $neverSelected[] = $elem[0];
+                    }
+                }
+    
+                // passage en session du tableau pour le fichier export.php
+                $_SESSION['stat_tab'] = array_merge($tab, array('neverSelected' => $neverSelected));
+    
+            } else {
+                // passage en session du tableau pour le fichier export.php
+                $_SESSION['stat_tab'] = $tab;
+            }
+    
+            foreach ($tab as $key => $value) {
+                // Calcul des moyennes
+                $jour = ($nbJours > 0) ? $value[2] / $nbJours : 0;
+                $hebdo = $jour * $joursParSemaine;
+    
+                $tab[$key][2] = heure4($value[2]);
+                $tab[$key]['jour'] = $jour;
+                $tab[$key]['hebdo'] = heure4($hebdo);
+    
+                if ($nbSites > 1) {
+                    for ($i = 1; $i <= $nbSites; $i++) {
+                        if ($value["sites"][$i]) {
+                            // Calcul des moyennes
+                            $jour = ($nbJours > 0) ? floatval($value['sites'][$i]) / $nbJours : 0;
+                            $hebdo = $jour * $joursParSemaine;
+                        }
+                        $tab[$key]["sites"][$i] = heure4($value["sites"][$i]);
+                        $tab[$key]["site_hebdo"][$i] = heure4($hebdo);
+                    }
+                }
+    
+                foreach ($tab[$key][1] as &$poste) {
+                    $site = null;
+    
+                    if ($poste["site"] > 0 and $nbSites > 1) {
+                        $site = $multisites[$poste['site']];
+                    }
+                    $etage = $poste[2] ? $poste[2] : null;
+    
+                    $siteEtage = ($site or $etage) ? '('.trim($site . ' ' . $etage).')' : null;
+                    $poste['siteEtage'] = $siteEtage;
+                    $poste[3] = heure4($poste[3]);
+                }
+    
+    
+                if ($exists_samedi) {
+                    sort($tab[$key][3]);
+    
+                    foreach ($tab[$key][3] as &$samedi) {
+                        $samedi[0] = dateFr($samedi[0]);
+                        $samedi[1] = heure4($samedi[1]);
+                    }
+                }
+    
+                if ($exists_dimanche) {
+                    sort($tab[$key][6]);
+    
+                    foreach ($tab[$key][6] as &$dimanche) {
+                        $dimanche[0] = dateFr($dimanche[0]);
+                        $dimanche[1] = heure4($dimanche[1]);
+                    }
+                }
+    
+                if ($exists_JF) {
+                    sort($tab[$key][8]);
+                    foreach ($tab[$key][8] as &$ferie) {
+                        $ferie[0] = dateFr($ferie[0]);
+                        $ferie[1] = heure4($ferie[1]);
+                    }
+                }
+    
+                if ($exists_absences) {
+                    if (!empty($tab[$key][5])) {
+                        $tab[$key][5] = heure4($tab[$key][5]);
+                    }
+    
+                    sort($tab[$key][4]);
+                    foreach ($tab[$key][4] as &$absence) {
+                        $absence[0] = dateFr($absence[0]);
+                        $absence[1] = heure4($absence[1]);
+                    }
+                }
+    
+                foreach ($heures_tab_global as $v) {
+                    if (array_key_exists($v[2], $value[7]) and !empty($value[7][$v[2]])) {
+                        sort($tab[$key][7][$v[2]]);
+                        $count = array();
+    
+                        foreach ($tab[$key][7][$v[2]] as &$h) {
+                            if (empty($count[$h])) {
+                                $count[$h] = 1;
+                            } else {
+                                $count[$h]++;
+                            }
+                        }
+                        $tab[$key][7][$v[2]]['count'] = $count;
+                        ksort($tab[$key][7][$v[2]]['count']);
+    
+                        foreach ($tab[$key][7][$v[2]]['count'] as $k => $v2) {
+                            $nk = dateFr($k);
+                            $tab[$key][7][$v[2]]['count'][$nk] = $tab[$key][7][$v[2]]['count'][$k];
+                            unset($tab[$key][7][$v[2]]['count'][$k]);
+                        }
+                    }
+                }
+    
+                for ($i = 1; $i <= $nbSites; $i++) {
+                    if ($tab[$key]['sites'][$i]) {
+                        $tab[$key]['sites'][$i] = heure4($tab[$key]['sites'][$i]);
+                    }
+                }
+            }
+        }
+
+        // Heures et jours d'ouverture au public
+        $s = new \statistiques();
+        $s->debut = $debutSQL;
+        $s->fin = $finSQL;
+        $s->joursParSemaine = $joursParSemaine;
+        $s->selectedSites = $selectedSites;
+        $s->ouverture();
+        $ouverture = $s->ouvertureTexte;
+
+        $this->templateParams(array(
+            'debut' => $debut,
+            'fin' => $fin,
+            'statisticsHours' => $statisticsHours,
+            'nbSites' => $nbSites,
+            'selectedSites' => $selectedSites,
+            'multisites' => $multisites,
+            'ouverture' => $ouverture,
+            'tab' => $tab,
+            'exists_samedi' => $exists_samedi,
+            'exists_dimanche' => $exists_dimanche,
+            'exists_JF' => $exists_JF,
+            'exists_absences' => $exists_absences,
+            'heures_tab_global' => $heures_tab_global,
+        ));
+        
+        if ($type == 'agent') {
+            $this->templateParams(array(
+                'agents' => $data,
+                'agents_list' => $agents_list,
+            ));
+        }
+
+        if (in_array($type, ['service', 'status'])) {
+            $this->templateParams(array(
+                'data' => $data,
+                'objects' => $objects,
+            ));
+        }
+
+        return $this->output("statistics/$type.html.twig");
+    }
+
+
     /**
      * @Route("/statistics/saturday", name="statistics.saturday", methods={"GET", "POST"})
      */
@@ -44,8 +638,6 @@ class StatisticController extends BaseController
         // Initialisation des variables :
         $debut = $request->get('debut');
         $fin = $request->get('fin');
-        $statistiques_heures = $request->get('statistiques_heures');
-        $statistiques_heures_defaut = $request->get('statistiques_heures_defaut');
         $post = $request->request->all();
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -63,17 +655,7 @@ class StatisticController extends BaseController
 
         // Statistiques-Heures
         $heures_tab_global = array();
-        if ($statistiques_heures_defaut) {
-            $statistiques_heures = $this->config('Statistiques-Heures');
-        } else {
-            if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
-                $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
-            } elseif (!$statistiques_heures and !empty($this->config('Statistiques-Heures'))) {
-                $statistiques_heures = $this->config('Statistiques-Heures');
-            }
-        }
-
-        $_SESSION['oups']['statistiques_heures'] = $statistiques_heures;
+        $statisticsHours = self::getHours($request);
 
         //		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
         if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
@@ -175,6 +757,12 @@ class StatisticController extends BaseController
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB = $a->elements;
 
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
             //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
             //	On stock le tout dans le tableau $resultat
             $agents_select = implode(",", $agents);
@@ -236,6 +824,12 @@ class StatisticController extends BaseController
                                     }
                                 }
                             }
+
+                            // Count holidays as absences
+                            if (self::countHolidays($elem, $holidays)) {
+                                continue;
+                            }
+
                             if ($elem['absent'] != "1") { // on compte les heures et les samedis pour lesquels l'agent n'est pas absent
                                 if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
                                     $samedi[$elem['date']][0] = $elem['date'];
@@ -260,22 +854,8 @@ class StatisticController extends BaseController
                                 }
 
                                 // Statistiques-Heures
-                                if ($statistiques_heures) {
-                                    $statistiques_heures_tab = explode(';', $statistiques_heures);
-                                    foreach ($statistiques_heures_tab as $h) {
-                                        $tmp = heures($h);
-                                        if (!$tmp) {
-                                            continue;
-                                        }
-                                        $tmp[2] = heure3($tmp[0]).'-'.heure3($tmp[1]);
-                                        if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $heures_tab[$tmp[2]][] = $elem['date'];
-                                            if (!in_array($tmp, $heures_tab_global)) {
-                                                $heures_tab_global[] = $tmp;
-                                            }
-                                        }
-                                    }
-                                }
+                                list($heures_tab, $heures_tab_global) = self::getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours);
+
                             } else {				// On compte les absences
                                 if (!array_key_exists($elem['date'], $absences)) {
                                     $absences[$elem['date']][0] = $elem['date'];
@@ -318,10 +898,6 @@ class StatisticController extends BaseController
         // 		--------------------------		Affichage du tableau de résultat		--------------------
         if ($tab) {
            
-            foreach ($heures_tab_global as &$v) {
-                $v[2] = heure3($v[0]).'-'.heure3($v[1]);
-            }
-
             foreach ($tab as &$elem) {
                 // Calcul des moyennes
                 $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
@@ -359,12 +935,13 @@ class StatisticController extends BaseController
                         $absences[1] = heure4($absences[1]);
                     }
                 }
-            
+
                 // Statistiques-Heures
-                foreach ($heures_tab_global as &$v) {
-                    if (!empty($elem[7][$v])) {
-                        sort($elem[7][$v]);
-                        foreach ($elem[7][$v] as &$h) {
+                foreach ($heures_tab_global as $v) {
+                    $tmp = $v[0].'-'.$v[1];
+                    if (!empty($elem[7][$tmp])) {
+                        sort($elem[7][$tmp]);
+                        foreach ($elem[7][$tmp] as &$h) {
                             $h = dateFr($h);
                         }
                     }
@@ -385,912 +962,14 @@ class StatisticController extends BaseController
                 "nbJours"             => $nbJours,
                 "nbSites"             => $nbSites,
                 "selectedSites"       => $selectedSites,
-                "statistiques_heures" => $statistiques_heures,
+                "statisticsHours"     => $statisticsHours,
                 "tab"                 => $tab
             )
         );
         return $this->output('statistics/saturday.html.twig');
     }
 
-    /**
-     * @Route("/statistics/service", name="statistics.service", methods={"GET", "POST"})
-     */
-    public function service(Request $request, Session $session)
-    {
-        // Initialisation des variables :
-        $debut = $request->get("debut");
-        $fin = $request->get("fin");
-        $statistiques_heures = $request->get("statistiques_heures");
 
-        $statistiques_heures_defaut = $request->get("statistiques_heures_defaut");
-        $post = $request->request->all();
-        $nbSites = $this->config("Multisites-nombre");
-        $dbprefix = $GLOBALS["dbprefix"];
-        $multisites = array();
-
-        $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-        $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-
-        $post_services = isset($post['services']) ? $post['services'] : null;
-        $post_sites = isset($post['selectedSites']) ? $post['selectedSites'] : null;
-
-        $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
-        $services_tab = null;
-        $exists_JF = false;
-        $exists_absences = false;
-
-        // Statistiques-Heures
-        $heures_tab_global = array();
-        if ($statistiques_heures_defaut) {
-            $statistiques_heures = $this->config('Statistiques-Heures');
-        } else {
-            if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
-                $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
-            } elseif (!$statistiques_heures and !empty($this->config('Statistiques-Heures'))) {
-                $statistiques_heures = $this->config('Statistiques-Heures');
-            }
-        }
-
-        $_SESSION['oups']['statistiques_heures'] = $statistiques_heures;
-
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
-        }
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
-        }
-
-        if (!$debut) {
-            $debut = "01/01/".date("Y");
-        }
-        if (!$fin) {
-            $fin = date("d/m/Y");
-        }
-
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
-
-        $debutSQL = dateFr($debut);
-        $finSQL = dateFr($fin);
-
-        // Filtre les services
-        if (!array_key_exists('stat_service_services', $_SESSION)) {
-            $_SESSION['stat_service_services'] = null;
-        }
-
-        $services = array();
-        if ($post_services) {
-            foreach ($post_services as $elem) {
-                $services[] = $elem;
-            }
-        } else {
-            $services = $_SESSION['stat_service_services'];
-        }
-        $_SESSION['stat_service_services'] = $services;
-
-
-        // Filtre les sites
-        if (!array_key_exists('stat_services_sites', $_SESSION)) {
-            $_SESSION['stat_services_sites'] = array();
-        }
-
-        $selectedSites = array();
-        if ($post_sites) {
-            foreach ($post_sites as $elem) {
-                $selectedSites[] = $elem;
-            }
-        } else {
-            $selectedSites = $_SESSION['stat_services_sites'];
-        }
-
-        if ($nbSites > 1 and empty($selectedSites)) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $selectedSites[] = $i;
-            }
-        }
-        $_SESSION['stat_services_sites'] = $selectedSites;
-
-
-        // Filtre les sites dans les requêtes SQL
-        if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL = "0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL = "0,1";
-        }
-
-        // Teleworking
-        $teleworking_absence_reasons = array();
-        $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
-        foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
-        }
-
-        $tab = array();
-
-        //		--------------		Récupération de la liste des services pour le menu déroulant		------------------------
-        $db = new \db();
-        $db->select2("select_services");
-        $services_list = $db->result;
-
-        if (!empty($services)) {
-            //	Recherche du nombre de jours concernés
-            $db = new \db();
-            $db->select2("pl_poste", "date", array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"), "GROUP BY `date`;");
-            $nbJours = $db->nb;
-
-            // Recherche des absences dans la table absences
-            $a = new \absences();
-            $a->valide = true;
-            $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
-            $absencesDB = $a->elements;
-
-            // Recherche des services de chaque agent
-            $db = new \db();
-            $db->select2("personnel", array("id","service"));
-            foreach ($db->result as $elem) {
-                $servId = null;
-                foreach ($services_list as $serv) {
-                    if ($serv['valeur'] == $elem['service']) {
-                        $servId = $serv['id'];
-                        continue;
-                    }
-                }
-                $agents[$elem['id']] = array("id"=>$elem['id'],"service"=>html_entity_decode($elem['service']),"service_id"=>$servId);
-            }
-
-            //	Recherche des infos dans pl_poste et postes pour tous les services sélectionnés
-            //	On stock le tout dans le tableau $resultat
-
-            $db = new \db();
-            $debutREQ = $db->escapeString($debutSQL);
-            $finREQ = $db->escapeString($finSQL);
-            $sitesREQ = $db->escapeString($sitesSQL);
-
-            $req = "SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
-            `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
-            `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
-            `{$dbprefix}pl_poste`.`site` as `site`,
-            `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`,
-            `{$dbprefix}postes`.`teleworking` as `teleworking` 
-            FROM `{$dbprefix}pl_poste` 
-            INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
-            WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
-            AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
-            AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)
-            ORDER BY `poste_nom`,`etage`;";
-            $db->query($req);
-            $resultat = $db->result;
-            // Ajoute le service pour chaque agents dans le tableau resultat
-            for ($i = 0; $i<count($resultat); $i++) {
-
-                if ($resultat[$i]['perso_id'] == 0) {
-                    continue;
-                }
-
-                $resultat[$i]['service'] = $agents[$resultat[$i]['perso_id']]['service'];
-                $resultat[$i]['service_id'] = $agents[$resultat[$i]['perso_id']]['service_id'];
-            }
-
-            $floors = $this->entityManager->getRepository(SelectFloor::class);
-
-            //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
-            //	pour chaque service sélectionné
-
-            foreach ($services as $service) {
-                if (array_key_exists($service, $tab)) {
-                    $heures = $tab[$service][2];
-                    $total_absences = $tab[$service][5];
-                    $samedi = $tab[$service][3];
-                    $dimanche = $tab[$service][6];
-                    $heures_tab = $tab[$service][7];
-                    $absences = $tab[$service][4];
-                    $feries = $tab[$service][8];
-                    $sites = $tab[$service]["sites"];
-                } else {
-                    $heures = 0;
-                    $total_absences = 0;
-                    $samedi = array();
-                    $dimanche = array();
-                    $absences = array();
-                    $heures_tab = array();
-                    $feries = array();
-                    for ($i = 1; $i <= $nbSites; $i++) {
-                        $sites[$i] = 0;
-                    }
-                }
-                $postes = array();
-                if (is_array($resultat)) {
-                    foreach ($resultat as $elem) {
-                        if (!isset($elem['service_id'])) {
-                            continue;
-                        }
-
-                        if ($service == $elem['service_id']) {
-                            // Vérifie à partir de la table absences si l'agent est absent
-                            // S'il est absent, on met à 1 la variable $elem['absent']
-                            if ( !empty($absencesDB[$elem['perso_id']]) ) {
-
-                                foreach ($absencesDB[$elem['perso_id']] as $a) {
-
-                                    // Ignore teleworking absences for compatible positions
-                                    if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
-                                        continue;
-                                    }
-
-                                    if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                                        $elem['absent'] = "1";
-                                    }
-                                }
-                            }
-
-                            if ($elem['absent']!="1") {		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
-                                // on créé un tableau par poste avec son nom, étage et la somme des heures faites par service
-                                if (!array_key_exists($elem['poste'], $postes)) {
-                                    $postes[$elem['poste']] = array(
-                                        $elem['poste'],
-                                        $elem['poste_nom'],
-                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
-                                        0,
-                                        "site"=>$elem['site']
-                                    );
-                                }
-                                $postes[$elem['poste']][3] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                // On compte les heures de chaque site
-                                if ($nbSites>1) {
-                                    $sites[$elem['site']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                }
-                                // On compte toutes les heures (globales)
-                                $heures += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                $d = new \datePl($elem['date']);
-                                if ($d->sam == "samedi") {	// tableau des samedis
-                                    if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
-                                        $samedi[$elem['date']][0] = $elem['date'];
-                                        $samedi[$elem['date']][1] = 0;
-                                    }
-                                    $samedi[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                }
-                                if ($d->position == 0) {		// tableau des dimanches 
-                                    if (!array_key_exists($elem['date'], $dimanche)) { 	// on stock les dates et la somme des heures faites par date
-                                        $dimanche[$elem['date']][0] = $elem['date'];
-                                        $dimanche[$elem['date']][1] = 0;
-                                    }
-                                    $dimanche[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                }
-                                if (jour_ferie($elem['date'])) {
-                                    if (!array_key_exists($elem['date'], $feries)) {
-                                        $feries[$elem['date']][0] = $elem['date'];
-                                        $feries[$elem['date']][1] = 0;
-                                    }
-                                    $feries[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                    $exists_JF = true;
-                                }
-
-                                // Statistiques-Heures
-                                if ($statistiques_heures) {
-                                    $statistiques_heures_tab = explode(';', $statistiques_heures);
-                                    foreach ($statistiques_heures_tab as $h) {
-                                        $tmp = heures($h);
-                                        if (!$tmp) {
-                                            continue;
-                                        }
-                        
-                                        if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $tmp[2] = heure3($tmp[0])."-".heure3($tmp[1]);
-                                            $heures_tab[$tmp[2]][] = $elem['date'];
-                                            if (!in_array($tmp, $heures_tab_global)) {
-                                                $heures_tab_global[] = $tmp;
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {				// On compte les absences
-                                if (!array_key_exists($elem['date'], $absences)) {
-                                    $absences[$elem['date']][0] = $elem['date'];
-                                    $absences[$elem['date']][1] = 0;
-                                }
-                                $absences[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                $total_absences += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                $exists_absences = true;
-                            }
-                            // On met dans tab tous les éléments (infos postes + services + heures)
-                            $tab[$service] = array(
-                                html_entity_decode($elem['service']), 
-                                $postes, 
-                                $heures, 
-                                $samedi, 
-                                $absences, 
-                                $total_absences, 
-                                $dimanche, 
-                                $heures_tab,
-                                $feries,
-                                "sites"=>$sites
-                            );
-                        }
-                    }
-                }
-            }
-        }
-        sort($heures_tab_global);
-        // Heures et jours d'ouverture au public
-        $s = new \statistiques();
-        $s->debut = $debutSQL;
-        $s->fin = $finSQL;
-        $s->joursParSemaine = $joursParSemaine;
-        $s->selectedSites = $selectedSites;
-        $s->ouverture();
-        $ouverture = $s->ouvertureTexte;
-
-        // passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
-
-        if ($nbSites > 1){
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
-            }
-        }
-
-        foreach ($tab as &$elem) {
-            $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-            $hebdo = $jour*$joursParSemaine;
-            $elem[2] = heure4($elem[2]);
-            $elem["hebdo"] = heure4($hebdo);
-
-            if ($nbSites > 1) {
-                for ($i = 1; $i <= $nbSites; $i++) {
-                    if ($elem["sites"][$i]) {
-                        // Calcul des moyennes
-                        $jour = ($nbJours > 0) ? floatval($elem['sites'][$i]) / $nbJours : 0;
-                        $hebdo = $jour*$joursParSemaine;
-                        $elem["sites"][$i] = heure4($elem["sites"][$i]);
-                        $elem["site_hebdo"][$i] = heure4($hebdo);
-                    }
-                }
-            }
-            foreach ($elem[1] as &$poste) {
-                $site = null;
-                if ($poste["site"] > 0 and $nbSites > 1) {
-                    $site = $this->config("Multisites-site{$poste['site']}")." ";
-                }
-                $etage = $poste[2] ? $poste[2] : null;
-                $siteEtage = ($site or $etage) ? "(".trim($site.$etage).")" : null;
-                $poste[3] = heure4($poste[3]);
-                $poste["siteEtage"] = $siteEtage;
-            }
-            sort($elem[3]);
-            foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
-                $samedi[0] = dateFr($samedi[0]);			//	date
-                $samedi[1] = heure4($samedi[1]);	// heures
-            }
-
-            if ($this->config('Dimanche')) {
-                sort($elem[6]);
-                foreach ($elem[6] as &$dimanche) {		//	Affiche les dates et heures des dimanches
-                    $dimanche[0] = dateFr($dimanche[0]);		//	date
-                    $dimanche[1] = heure4($dimanche[1]);	//	heures
-                }
-            }
-
-            if ($exists_JF) {
-                sort($elem[8]);
-                foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des jours fériés
-                    $ferie[0] = dateFr($ferie[0]);			//	date
-                    $ferie[1] = heure4($ferie[1]);	//	heures
-                }
-            }
-
-            if ($exists_absences) {
-                if ($elem[5]) {				//	Affichage du total d'heures d'absences
-                    $elem[5] = heure4($elem[5]);
-                }
-                sort($elem[4]);
-                foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
-                    $absences[0] = dateFr($absences[0]);	//	date
-                    $absences[1] = heure4($absences[1]);	// heures
-                }
-            }
-
-            foreach ($heures_tab_global as $v) {
-                if (array_key_exists($v[2], $elem[7]) and !empty($elem[7][$v[2]])) {
-                    $count = array();
-                    foreach ($elem[7][$v[2]] as $h) {
-                        if (empty($count[$h])) {
-                            $count[$h] = 1;
-                        } else {
-                            $count[$h]++;
-                        }
-                    }
-                    $elem[7][$v[2]]["count"] = $count;
-                    ksort($elem[7][$v[2]]["count"]);
-
-                    foreach ($elem[7][$v[2]]["count"] as $k => $v2) {
-                        $nk = dateFr($k);
-                        $elem[7][$v[2]]["count"][$nk] = $elem[7][$v[2]]["count"][$k];
-                        unset($elem[7][$v[2]]["count"][$k]);
-                    }
-                }
-            }
-        }
-
-        $this->templateParams(
-            array(
-                "debut" => $debut,
-                "exists_absences" => $exists_absences,
-                "exists_dimanche" => $this->config('Dimanche'),
-                "exists_JF" => $exists_JF,
-                "fin" => $fin,
-                "heures_tab_global" => $heures_tab_global,
-                "multisites" => $multisites,
-                "nbSites" => $nbSites,
-                "ouverture" => $ouverture,
-                "selectedSites" => $selectedSites,
-                "services" => $services,
-                "services_list" => $services_list,
-                "statistiques_heures" => $statistiques_heures,
-                "tab" => $tab,
-            )
-        );
-        return $this->output("statistics/service.html.twig");
-    }
-      
-    /**
-     * @Route("/statistics/status", name="statistics.status", methods={"GET", "POST"})
-     */
-    public function status( Request $request, Session $session)
-    {
-        // Initialisation des variables :
-        $debut = $request->get("debut");
-        $fin = $request->get("fin");
-        $statistiques_heures = $request->get("statistiques_heures");
-        $statistiques_heures_defaut = $request->get("statistiques_heures_defaut");
-        $post = $request->request->all();
-
-        $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-        $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-
-        $post_statuts = isset($post['statuts']) ? $post['statuts'] : null;
-        $post_sites = isset($post['selectedSites']) ? $post['selectedSites'] : null;
-
-        $joursParSemaine = $this->config('Dimanche')? 7 : 6;
-        $statuts_tab = null;
-        $exists_JF = false;
-        $exists_absences = false;
-
-        // Statistiques-Heures
-        $heures_tab_global = array();
-        if ($statistiques_heures_defaut) {
-            $statistiques_heures = $this->config('Statistiques-Heures');
-        } else {
-            if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
-                $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
-            } elseif (!$statistiques_heures and !empty($this->config('Statistiques-Heures'))) {
-                $statistiques_heures = $this->config('Statistiques-Heures');
-            }
-        }
-
-        $_SESSION['oups']['statistiques_heures'] = $statistiques_heures;
-
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
-        }
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
-        }
-
-        if (!$debut) {
-            $debut = "01/01/".date("Y");
-        }
-        if (!$fin) {
-            $fin = date("d/m/Y");
-        }
-
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
-
-        $debutSQL = dateFr($debut);
-        $finSQL = dateFr($fin);
-
-        // Filtre les statuts
-        if (!array_key_exists('stat_statut_statuts', $_SESSION)) {
-            $_SESSION['stat_statut_statuts'] = null;
-        }
-
-        $statuts=array();
-        if ($post_statuts) {
-            foreach ($post_statuts as $elem) {
-                $statuts[] = $elem;
-            }
-        } else {
-            $statuts = $_SESSION['stat_statut_statuts'];
-        }
-        $_SESSION['stat_statut_statuts'] = $statuts;
-
-
-        // Filtre les sites
-        if (!array_key_exists('stat_statut_sites', $_SESSION)) {
-            $_SESSION['stat_statut_sites'] = array();
-        }
-
-        if ($post_sites) {
-            $selectedSites=array();
-            foreach ($post_sites as $elem) {
-                $selectedSites[] = $elem;
-            }
-        } else {
-            $selectedSites = $_SESSION['stat_statut_sites'];
-        }
-
-        $nbSites = $this->config('Multisites-nombre');
-
-        if ($nbSites > 1 and empty($selectedSites)) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $selectedSites[] = $i;
-            }
-        }
-        $_SESSION['stat_statut_sites'] = $selectedSites;
-
-        // Filtre les sites dans les requêtes SQL
-        if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL="0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL="0,1";
-        }
-
-        // Teleworking
-        $teleworking_absence_reasons = array();
-        $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
-        foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
-        }
-
-        $tab = array();
-
-        //		--------------		Récupération de la liste des statuts pour le menu déroulant		------------------------
-        $db = new \db();
-        $db->select2("select_statuts");
-        $statuts_list = $db->result;
-
-        if (!empty($statuts)) {
-            //	Recherche du nombre de jours concernés
-            $db = new \db();
-            $db->select2(
-                "pl_poste", 
-                "date", 
-                array(
-                    "date"=>"BETWEEN{$debutSQL}AND{$finSQL}", 
-                    "site"=>"IN{$sitesSQL}"
-                ), 
-                "GROUP BY `date`;"
-            );
-            $nbJours = $db->nb;
-
-            // Recherche des absences dans la table absences
-            $a = new \absences();
-            $a->valide = true;
-            $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
-            $absencesDB = $a->elements;
-
-            // Recherche des statuts de chaque agent
-            $db = new \db();
-            $db->select2("personnel", array("id","statut"));
-            foreach ($db->result as $elem) {
-                $statutId = null;
-                foreach ($statuts_list as $stat) {
-                    if ($stat['valeur'] == $elem['statut']) {
-                        $statutId = $stat['id'];
-                        continue;
-                    }
-                }
-                $agents[$elem['id']] = array(
-                    "id"       =>$elem['id'],
-                    "statut"   =>$elem['statut'],
-                    "statut_id"=>$statutId
-                );
-            }
-
-            //	Recherche des infos dans pl_poste et postes pour tous les statuts sélectionnés
-            //	On stock le tout dans le tableau $resultat
-
-            $db = new \db();
-            $db->selectInnerJoin(
-                array("pl_poste","poste"),
-                array("postes","id"),
-                array("debut","fin","date","perso_id","poste","absent"),
-                array(
-                    array(
-                        "name"=>"nom",
-                        "as"=>"poste_nom",
-                    ),
-                    "etage",
-                    "site",
-                    "teleworking",
-                ),
-
-                array(
-                    "date"    => "BETWEEN{$debutSQL}AND{$finSQL}", 
-                    "supprime"=> "<>1", 
-                    "site"    => "IN{$sitesSQL}"
-                ),
-                array("statistiques"=>"1"),
-                "ORDER BY `poste_nom`,`etage`"
-            );
-            $resultat = $db->result;
-
-            // Ajoute le statut pour chaque agents dans le tableau resultat
-            for ($i = 0; $i < count($resultat); $i++) {
-
-                if ($resultat[$i]['perso_id'] == 0) {
-                    continue;
-                }
-
-                $resultat[$i]['statut'] = $agents[$resultat[$i]['perso_id']]['statut'];
-                $resultat[$i]['statut_id'] = $agents[$resultat[$i]['perso_id']]['statut_id'];
-            }
-
-            $floors = $this->entityManager->getRepository(SelectFloor::class);
-
-            //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
-            //	pour chaque statut sélectionné
-
-            foreach ($statuts as $statut) {
-                if (array_key_exists($statut, $tab)) {
-                    $heures = $tab[$statut][2];
-                    $total_absences = $tab[$statut][5];
-                    $samedi = $tab[$statut][3];
-                    $dimanche = $tab[$statut][6];
-                    $absences = $tab[$statut][4];
-                    $heures_tab = $tab[$statut][7];
-                    $feries = $tab[$statut][8];
-                    $sites = $tab[$service]["sites"];
-                } else {
-                    $heures = 0;
-                    $total_absences = 0;
-                    $samedi = array();
-                    $dimanche = array();
-                    $absences = array();
-                    $heures_tab = array();
-                    $feries = array();
-                    for ($i = 1; $i <= $nbSites; $i++) {
-                        $sites[$i] = 0;
-                    }
-                }
-                $postes = array();
-                if (is_array($resultat)) {
-                    foreach ($resultat as $elem) {
-
-                        if (!isset($elem['statut_id'])) {
-                            continue;
-                        }
-
-                        if ($statut == $elem['statut_id']) {
-                            // Vérifie à partir de la table absences si l'agent est absent
-                            // S'il est absent, on met à 1 la variable $elem['absent']
-                            if ( !empty($absencesDB[$elem['perso_id']]) ) {
-
-                                foreach ($absencesDB[$elem['perso_id']] as $a) {
-
-                                    // Ignore teleworking absences for compatible positions
-                                    if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
-                                        continue;
-                                    }
-
-                                    if ($a['debut'] < $elem['date'].' '.$elem['fin'] and $a['fin'] > $elem['date']." ".$elem['debut']) {
-                                        $elem['absent'] = "1";
-                                    }
-                                }
-                            }
-
-                            if ($elem['absent'] != "1") {		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
-                                // on créé un tableau par poste avec son nom, étage et la somme des heures faites par statut
-                                if (!array_key_exists($elem['poste'], $postes)) {
-                                    $postes[$elem['poste']] = array(
-                                        $elem['poste'],
-                                        $elem['poste_nom'],
-                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
-                                        0,
-                                        "site"=>$elem['site']
-                                    );
-                                }
-                                $postes[$elem['poste']][3] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                // On compte les heures de chaque site
-                                if ($nbSites > 1) {
-                                    $sites[$elem['site']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                }
-                                // On compte toutes les heures (globales)
-                                $heures += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                $d = new \datePl($elem['date']);
-                                if ($d->sam == "samedi") {	// tableau des samedis
-                                    if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
-                                        $samedi[$elem['date']][0] = $elem['date'];
-                                        $samedi[$elem['date']][1] = 0;
-                                    }
-                                    $samedi[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                }
-                                if ($d->position==0) {		// tableau des dimanches
-                                    if (!array_key_exists($elem['date'], $dimanche)) { 	// on stock les dates et la somme des heures faites par date
-                                        $dimanche[$elem['date']][0] = $elem['date'];
-                                        $dimanche[$elem['date']][1] = 0;
-                                    }
-                                    $dimanche[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                }
-                                if (jour_ferie($elem['date'])) {
-                                    if (!array_key_exists($elem['date'], $feries)) {
-                                        $feries[$elem['date']][0] = $elem['date'];
-                                        $feries[$elem['date']][1] = 0;
-                                    }
-                                    $feries[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                    $exists_JF = true;
-                                }
-                                // Statistiques-Heures
-                                if ($statistiques_heures) {
-                                    $statistiques_heures_tab = explode(';', $statistiques_heures);
-                                    foreach ($statistiques_heures_tab as $h) {
-                                        $tmp = heures($h);
-                                        if (!$tmp) {
-                                            continue;
-                                        }
-                        
-                                        if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $tmp[2] = heure3($tmp[0])."-".heure3($tmp[1]);
-                                            $heures_tab[$tmp[2]][] = $elem['date'];
-                                            if (!in_array($tmp, $heures_tab_global)) {
-                                                $heures_tab_global[] = $tmp;
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {				// On compte les absences
-                                if (!array_key_exists($elem['date'], $absences)) {
-                                    $absences[$elem['date']][0] = $elem['date'];
-                                    $absences[$elem['date']][1] = 0;
-                                }
-                                $absences[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                $total_absences += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                $exists_absences = true;
-                            }
-                            // On met dans tab tous les éléments (infos postes + statuts + heures)
-                            $tab[$statut] = array($elem['statut'],$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$heures_tab,$feries,"sites"=>$sites);
-                        }
-                    }
-                }
-            }
-        }
-
-        sort($heures_tab_global);
-        // Heures et jours d'ouverture au public
-        $s = new \statistiques();
-        $s->debut = $debutSQL;
-        $s->fin = $finSQL;
-        $s->joursParSemaine = $joursParSemaine;
-        $s->selectedSites = $selectedSites;
-        $s->ouverture();
-        $ouverture = $s->ouvertureTexte;
-        
-        // passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
-
-        $selectedStatus = array();
-        if (is_array($statuts_list)) {
-            foreach ($statuts_list as $elem) {
-                if (!empty($statuts)) {
-                    $selectedStatus[] = in_array($elem['id'], $statuts) ?? $elem['id'];
-                }
-            }
-        }
-        
-        $multisites = array();
-        if ($nbSites > 1) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $multisites[] = $this->config("Multisites-site{$i}");
-            }
-        }
-
-        if($tab){
-            foreach ($tab as &$elem) {
-                $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-                $hebdo = $jour*$joursParSemaine;
-                $elem[2] = heure4($elem[2]);
-                $elem["jour"] = $jour;
-                $elem["hebdo"] = heure4($hebdo);
-                
-                if ($nbSites > 1) {
-                    for ($i = 1;$i <= $nbSites; $i++) {
-                        if ($elem["sites"][$i]) {
-                            // Calcul des moyennes
-                            $jour = ($nbJours > 0) ? floatval($elem['sites'][$i]) / $nbJours : 0;
-                            $hebdo = $jour*$joursParSemaine;
-                        }
-                        $elem["sites"][$i] = heure4($elem["sites"][$i]);
-                        $elem["site_hebdo"][$i] = heure4($hebdo);
-                    }
-                }
-                //	Affichage du noms des postes et des heures dans la 2eme colonne
-                foreach ($elem[1] as &$poste) {
-                    $site = null;
-                    if ($poste["site"]>0 and $nbSites > 1) {
-                        $site = $this->config("Multisites-site{$poste['site']}")." ";
-                    }
-                    $etage = $poste[2]?$poste[2] : null;
-                    $siteEtage = ($site or $etage)?"($site{$etage})" : null;
-                    $poste["siteEtage"] = $siteEtage;
-                    $poste[3] = heure4($poste[3]);
-                }
-
-                sort($elem[3]);				//	tri les samedis par dates croissantes
-                foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
-                    $samedi[0] = dateFr($samedi[0]);			//	date
-                    $samedi[1] = heure4($samedi[1]);	        // heures
-                }
-                
-                if ($this->config('Dimanche')) {
-                    sort($elem[6]);				//	tri les dimanches par dates croissantes
-                    foreach ($elem[6] as &$dimanche) {		//	Affiche les dates et heures des dimanches
-                        $dimanche[0] = dateFr($dimanche[0]);		//	date
-                        $dimanche[1] = heure4($dimanche[1]);	//	heures
-                    }
-                }
-        
-                if ($exists_JF) {
-                    sort($elem[8]);				//	tri les jours fériés par dates croissantes
-                    foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des jours fériés
-                        $ferie[0] = dateFr($ferie[0]);			//	date
-                        $ferie[1] = heure4($ferie[1]);	//	heures
-                    }
-                }
-        
-                // Absences
-                if ($exists_absences) {
-                    if ($elem[5]) {				//	Affichage du total d'heures d'absences
-                        $elem[5] = heure4($elem[5]);
-                    }
-                    sort($elem[4]);				//	tri les absences par dates croissantes
-                    foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
-                        $absences[0] = dateFr($absences[0]);		//	date
-                        $absences[1] = heure4($absences[1]);	// heures
-                    }
-                }
-        
-                // Statistiques-Heures
-                foreach ($heures_tab_global as $v) {
-                    if (array_key_exists($v[2], $elem[7]) and !empty($elem[7][$v[2]])) {
-                        $count = array();     
-                        foreach ($elem[7][$v[2]] as $h) {
-                            if (empty($count[$h])) {
-                                $count[$h] = 1;
-                            } else {
-                                $count[$h]++;
-                            }
-                        }
-                        $elem[7][$v[2]]["count"] = $count;
-                        ksort($elem[7][$v[2]]["count"]);
-                        foreach ($elem[7][$v[2]]["count"] as $k => $v2) {
-                            $nk = dateFr($k);
-                            $elem[7][$v[2]]["count"][$nk] = $elem[7][$v[2]]["count"][$k];
-                            unset($elem[7][$v[2]]["count"][$k]);
-                        }
-                    }
-                }
-            }
-        }
-        $this->templateParams(
-            array(
-                "debut"               => $debut,
-                "exists_absences"     => $exists_absences,
-                "exists_dimanche"     => $this->config('Dimanche'),
-                "exists_JF"           => $exists_JF,
-                "fin"                 => $fin,
-                "heures_tab_global"   => $heures_tab_global,
-                "multisites"          => $multisites,
-                "nbSites"             => $nbSites,
-                "ouverture"           => $ouverture,
-                "selectedSites"       => $selectedSites,
-                "statistiques_heures" => $statistiques_heures,
-                "statuts"             => $statuts,
-                "statuts_list"        => $statuts_list,
-                "tab"                 => $tab   
-            )
-        );
-        return $this->output('/statistics/status.html.twig');
-    }
     /**
      * @Route("/statistics/attendeesmissing", name="statistics.attendeesmissing", methods={"GET", "POST"})
      */
@@ -1730,6 +1409,12 @@ class StatisticController extends BaseController
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB=$a->elements;
 
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
             $req = "SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
             `{$dbprefix}pl_poste`.`date` as `date`,  `{$dbprefix}pl_poste`.`poste` as `poste`, 
             `{$dbprefix}personnel`.`nom` as `nom`, `{$dbprefix}personnel`.`prenom` as `prenom`, 
@@ -1782,6 +1467,12 @@ class StatisticController extends BaseController
                                     }
                                 }
                             }
+
+                            // Count holidays as absences
+                            if (self::countHolidays($elem, $holidays)) {
+                                continue;
+                            }
+
                             //	On créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
                             if (!array_key_exists($elem['perso_id'], $agents)) {
                                 $agents[$elem['perso_id']] = array($elem['perso_id'], $elem['nom'], $elem['prenom'], 0, "site"=>$elem['site']);
@@ -1892,482 +1583,6 @@ class StatisticController extends BaseController
         return $this->output('statistics/positionsummary.html.twig');
     }
 
-    /**
-     * @Route("/statistics/agent", name="statistics.agent", methods={"GET", "POST"})
-     */
-    public function agent(Request $request, Session $session){
-        // Initialisation des variables :
-        $debut = $request->get('debut');
-        $fin = $request->get('fin');
-        $statistiques_heures = $request->get('statistiques_heures');
-        $statistiques_heures_defaut = $request->get('statistiques_heures_defaut');
-        $post = $request->request->all();
-        $dbprefix = $GLOBALS['dbprefix'];
-
-        $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-        $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-
-        $post_agents = isset($post['agents']) ? $post['agents'] : null;
-        $post_sites = isset($post['selectedSites']) ? $post['selectedSites'] : null;
-
-        $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
-        $agent_tab = null;
-        $exists_JF = false;
-        $exists_absences = false;
-        $exists_samedi = false;
-        $exists_dimanche = false;
-
-        $nbSites = $this->config('Multisites-nombre');
-
-        // Statistiques-Heures
-        $heures_tab_global = array();
-        if ($statistiques_heures_defaut) {
-            $statistiques_heures = $this->config('Statistiques-Heures');
-        } else {
-            if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
-                $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
-            } elseif (!$statistiques_heures and !empty($this->config('Statistiques-Heures'))) {
-                $statistiques_heures = $this->config('Statistiques-Heures');
-            }
-        }
-
-        $_SESSION['oups']['statistiques_heures'] = $statistiques_heures;
-
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut=$_SESSION['stat_debut'];
-        }
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin=$_SESSION['stat_fin'];
-        }
-
-        if (!$debut) {
-            $debut = "01/01/".date("Y");
-        }
-        if (!$fin) {
-            $fin = date("d/m/Y");
-        }
-
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
-
-        $debutSQL = dateFr($debut);
-        $finSQL = dateFr($fin);
-
-        // Filtre les agents
-        if (!array_key_exists('stat_agents_agents', $_SESSION)) {
-            $_SESSION['stat_agents_agents'] = null;
-        }
-        $agents = array();
-        if ($post_agents) {
-            foreach ($post_agents as $elem) {
-                $agents[] = $elem;
-            }
-        } else {
-            $agents = $_SESSION['stat_agents_agents'];
-        }
-
-        $_SESSION['stat_agents_agents'] = $agents;
-
-        // Filtre les sites
-        if (!array_key_exists('stat_agents_sites', $_SESSION)) {
-            $_SESSION['stat_agents_sites'] = array();
-        }
-
-        $selectedSites = array();
-        if ($post_sites) {
-            foreach ($post_sites as $elem) {
-                $selectedSites[] = $elem;
-            }
-        } else {
-            $selectedSites = $_SESSION['stat_agents_sites'];
-        }
-
-        if ($nbSites > 1 and empty($selectedSites)) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $selectedSites[] = $i;
-            }
-        }
-
-        $_SESSION['stat_agents_sites'] = $selectedSites;
-
-        // Filtre les sites dans les requêtes SQL
-        if ($nbSites>1 and is_array($selectedSites)) {
-            $sitesSQL = "0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL = "0,1";
-        }
-
-        // Teleworking
-        $teleworking_absence_reasons = array();
-        $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
-        foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
-        }
-
-        $tab = array();
-
-        $db = new \db();
-        $db->select2("personnel", "*", array("actif"=>"Actif"), "ORDER BY `nom`,`prenom`");
-        $agents_list=$db->result;
-
-        if (!empty($agents)) {
-
-            // Recherche des absences dans la table absences
-            $a = new \absences();
-            $a->valide = true;
-            $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
-            $absencesDB = $a->elements;
-
-            //    Recherche du nombre de jours concernés
-            $db = new \db();
-            $debutREQ = $db->escapeString($debutSQL);
-            $finREQ = $db->escapeString($finSQL);
-            $sitesREQ = $db->escapeString($sitesSQL);
-            $db->select("pl_poste", "`date`", "`date` BETWEEN '$debutREQ' AND '$finREQ' AND `site` IN ($sitesREQ)", "GROUP BY `date`;");
-            $nbJours = $db->nb;
-
-            //    Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
-            //    On stock le tout dans le tableau $resultat
-            $agents_select = implode(",", $agents);
-            $db = new \db();
-            $debutREQ = $db->escapeString($debutSQL);
-            $finREQ = $db->escapeString($finSQL);
-            $sitesREQ = $db->escapeString($sitesSQL);
-            $agentsREQ = $db->escapeString($agents_select);
-
-            $req = "SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`,
-                `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`,
-                `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`,
-                `{$dbprefix}pl_poste`.`site` as `site`,
-                `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`,
-                `{$dbprefix}postes`.`teleworking` as `teleworking`
-                FROM `{$dbprefix}pl_poste`
-                INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id`
-                WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ'
-                AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1'
-                AND `{$dbprefix}pl_poste`.`perso_id` IN ($agentsREQ) AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)
-                ORDER BY `poste_nom`,`etage`;";
-            $db->query($req);
-            $resultat = $db->result;
-
-            $floors = $this->entityManager->getRepository(SelectFloor::class);
-
-            //    Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
-            //    pour chaques agents sélectionnés
-            foreach ($agents as $agent) {
-
-                // If $tab already contains information for the current agent, we retrieve this information to complete it.
-                if (array_key_exists($agent, $tab)) {
-                    $heures = $tab[$agent][2];
-                    $total_absences = $tab[$agent][5];
-                    $samedi = $tab[$agent][3];
-                    $dimanche = $tab[$agent][6];
-                    $heures_tab = $tab[$agent][7];
-                    $absences = $tab[$agent][4];
-                    $feries = $tab[$agent][8];
-                    $sites = $tab[$agent]["sites"];
-
-                // If $tab does not contains information for the current agent, we create an entry with default values.
-                // These entry is now created even if the agent is not found on schedules.
-                } else {
-                    foreach ($agents_list as $elem) {
-                        if ($elem['id'] == $agent) {    // on créé un tableau avec le nom et le prénom de l'agent.
-
-                            $assignedSites = json_decode($elem['sites']);
-                            if (!is_array($assignedSites)) {
-                                $assignedSites = array();
-                            }
-
-                            $agent_tab = array(
-                                $agent,
-                                $elem['nom'],
-                                $elem['prenom'],
-                                'assignedSites' => $assignedSites,
-                            );
-                            break;
-                        }
-                    }
-                    $tab[$agent][0] = $agent_tab;
-                    $tab[$agent][1] = array();
-                    $heures = $tab[$agent][2] = 0;
-                    $total_absences = $tab[$agent][5] = 0;
-                    $samedi = $tab[$agent][3] = array();
-                    $dimanche = $tab[$agent][6] = array();
-                    $heures_tab = $tab[$agent][7] = array();
-                    $absences = $tab[$agent][4] = array();
-                    $feries = $tab[$agent][8] = array();
-                    $sites = array();
-                    for ($i = 1; $i <= $nbSites; $i++) {
-                        $sites[$i] = 0;
-                    }
-                    $tab[$agent]["sites"] = $sites;
-                }
-                $postes = array();
-                if (is_array($resultat)) {
-                    foreach ($resultat as $elem) {
-                        if (!empty($elem['perso_id']) and $agent == $elem['perso_id']) {
-                            // Vérifie à partir de la table absences si l'agent est absent
-                            // S'il est absent, on met à 1 la variable $elem['absent']
-                            if ( !empty($absencesDB[$elem['perso_id']]) ) {
-                                foreach ($absencesDB[$elem['perso_id']] as $a) {
-
-                                    // Ignore teleworking absences for compatible positions
-                                    if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
-                                        continue;
-                                    }
-
-                                    if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                                        $elem['absent'] = "1";
-                                    }
-                                }
-                            }
-
-                            if ($elem['absent'] != "1") {
-                                // on compte les heures et les samedis pour lesquels l'agent n'est pas absent
-                                // on créé un tableau par poste avec son nom, étage et la somme des heures faites par agent
-                                if (!array_key_exists($elem['poste'], $postes)) {
-                                    $postes[$elem['poste']] = array(
-                                        $elem['poste'],
-                                        $elem['poste_nom'],
-                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
-                                        0,
-                                        "site"=>$elem['site']
-                                    );
-                                }
-
-                                // On compte toutes les heures pour ce poste (index 3)
-                                $postes[$elem['poste']][3] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                // On compte les heures de chaque site
-                                if ($nbSites>1) {
-                                    $sites[$elem['site']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                }
-
-                                // On compte toutes les heures (globales)
-                                $heures += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                $d = new \datePl($elem['date']);
-                                if ($d->sam =="samedi") {    // tableau des samedis
-                                    if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
-                                        $samedi[$elem['date']][0] = $elem['date'];
-                                        $samedi[$elem['date']][1] = 0;
-                                    }
-                                    $samedi[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                    $exists_samedi = true;
-                                }
-                                if ($d->position == 0) {        // tableau des dimanches
-                                    if (!array_key_exists($elem['date'], $dimanche)) {     // on stock les dates et la somme des heures faites par date
-                                        $dimanche[$elem['date']][0] = $elem['date'];
-                                        $dimanche[$elem['date']][1] = 0;
-                                    }
-                                    $dimanche[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                    $exists_dimanche = true;
-                                }
-                                if (jour_ferie($elem['date'])) {
-                                    if (!array_key_exists($elem['date'], $feries)) {
-                                        $feries[$elem['date']][0] = $elem['date'];
-                                        $feries[$elem['date']][1] = 0;
-                                    }
-                                    $feries[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                    $exists_JF = true;
-                                }
-
-                                // Statistiques-Heures
-                                if ($statistiques_heures) {
-                                    $statistiques_heures_tab = explode(';', $statistiques_heures);
-                                    foreach ($statistiques_heures_tab as $key=>$h) {
-                                        $tmp = heures($statistiques_heures_tab[$key]);
-                                        if (!$tmp) {
-                                            continue;
-                                        }
-                                        $tmp[]= heure3($tmp[0]).'-'.heure3($tmp[1]);
-                                        if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $heures_tab[$tmp[0].'-'.$tmp[1]][] = $elem['date'];
-                                            if (!in_array($tmp, $heures_tab_global)) {
-                                                $heures_tab_global[] = $tmp;
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                // On compte les absences
-                                if (!array_key_exists($elem['date'], $absences)) {
-                                    $absences[$elem['date']][0] = $elem['date'];
-                                    $absences[$elem['date']][1] = 0;
-                                }
-                                $absences[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                $total_absences += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                $exists_absences = true;
-                            }
-
-                            // On met dans tab tous les éléments (infos postes + agents + heures)
-                            $tab[$agent] = array(
-                                $agent_tab,
-                                $postes,
-                                $heures,
-                                $samedi,
-                                $absences,
-                                $total_absences,
-                                $dimanche,
-                                $heures_tab,
-                                $feries,
-                                "sites"=>$sites);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Heures et jours d'ouverture au public
-        $s = new \statistiques();
-        $s->debut = $debutSQL;
-        $s->fin = $finSQL;
-        $s->joursParSemaine = $joursParSemaine;
-        $s->selectedSites = $selectedSites;
-        $s->ouverture();
-        $ouverture = $s->ouvertureTexte;
-
-        sort($heures_tab_global);
-
-        // Remove agents who are never selected and not in selected sites
-        if ($this->config('Multisites-nombre') > 1) {
-            foreach($tab as $key => $value) {
-               if (empty($value[1])
-                   and empty(array_intersect($selectedSites, $value[0]['assignedSites']))) {
-                   unset($tab[$key]);
-               }
-            }
-        }
-
-        // Agents who are never selected (for export)
-        $neverSelected = array();
-        foreach ($tab as $elem) {
-           if (empty($elem[1])) {
-             $neverSelected[] = $elem[0];
-           }
-        }
-
-        //passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = array_merge($tab, array('neverSelected' => $neverSelected));
-
-        $selectedAgents = array();
-        $multisites = array();
-
-        if (is_array($agents_list)) {
-            foreach ($agents_list as $elem) {
-                $selected = null;
-                if ($agents) {
-                    $selectedAgents[] = in_array($elem['id'], $agents) ?? $elem;
-                }
-            }
-        }
-
-        if ($nbSites > 1){
-            for ($i = 1 ; $i <= $nbSites; $i++) {
-                $multisites[] = $this->config("Multisites-site$i");
-            }
-        }
-
-        foreach ($tab as $key => $elem) {
-            // Calcul des moyennes
-            $jour = ($nbJours > 0) ? $tab[$key][2] / $nbJours : 0;
-
-            $hebdo = $jour*$joursParSemaine;
-
-            $tab[$key][2] = heure4($tab[$key][2]);
-            $tab[$key]['hebdo'] = heure4($hebdo);
-
-            if ($nbSites > 1) {
-                for ($i = 1;$i <= $nbSites; $i++) {
-                    if ($tab[$key]["sites"][$i]) {
-                        // Calcul des moyennes
-                        $jour = ($nbJours > 0) ? floatval($tab[$key]['sites'][$i]) / $nbJours : 0;
-                        $hebdo = $jour*$joursParSemaine;
-                    }
-                    $tab[$key]["sites"][$i] = heure4($tab[$key]["sites"][$i]);
-                    $tab[$key]["site_hebdo"][$i] = heure4($hebdo);
-                }
-            }
-
-            foreach ($tab[$key][1] as &$poste) {
-                $site=null;
-                if ($poste["site"]>0 and $nbSites>1) {
-                    $site = $this->config("Multisites-site{$poste['site']}")." ";
-                }
-                $etage = $poste[2] ? $poste[2] : null;
-
-                $siteEtage = ($site or $etage) ? "(".trim($site.$etage).")" : null;
-                $tab[$key]["siteEtage"][$poste[0]]=$siteEtage;
-                $poste[3] = heure4( $poste[3] );
-            }
-
-            if ($exists_samedi) {
-                foreach ($tab[$key][3] as &$samedi) {
-                    $samedi[0] = dateFr($samedi[0]);
-                    $samedi[1] = heure4($samedi[1]);
-                }
-            }
-
-            if ($exists_dimanche) {
-                foreach ($tab[$key][6] as &$dimanche) {
-                    $dimanche[0] = dateFr($dimanche[0]);
-                    $dimanche[1] = heure4($dimanche[1]);
-                }
-            }
-
-
-            if ($exists_JF) {
-                sort($tab[$key][8]);
-                foreach ($tab[$key][8] as &$ferie) {
-                    $ferie[0] = dateFr($ferie[0]);
-                    $ferie[1] = heure4($ferie[1]);
-                }
-            }
-
-            if ($exists_absences) {
-                $tab[$key][5] = heure4($tab[$key][5]);
-                sort($tab[$key][4]);
-                foreach ($tab[$key][4] as &$absence) {
-                    $absence[0] = dateFr($absence[0]);
-                    $absence[1] = heure4($absence[1]);
-                }
-            }
-
-            foreach ($heures_tab_global as $v) {
-                $tmp = $v[0].'-'.$v[1];
-                if (!empty($tab[$key][7][$tmp])) {
-                    sort($tab[$key][7][$tmp]);
-                    foreach ($tab[$key][7][$tmp] as &$h) {
-                        $h = dateFr($h);
-                    }
-                }
-            }
-            for ( $i = 1; $i <= $nbSites; $i++ ){
-                if ($tab[$key]['sites'][$i]){
-                    $tab[$key]['sites'][$i] = heure4($tab[$key]['sites'][$i]);
-                }
-            }
-        }
-
-        $this->templateParams(array(
-            "debut" => $debut,
-            "fin" => $fin,
-            "agents_list" => $agents_list,
-            "agents" => $agents,
-            "statistiques_heures" => $statistiques_heures,
-            "nbSites" => $nbSites,
-            "selectedSites" => $selectedSites,
-            "multisites" => $multisites,
-            "ouverture" => $ouverture,
-            "tab" => $tab,
-            "exists_samedi" => $exists_samedi,
-            "exists_dimanche" => $exists_dimanche,
-            "exists_JF" => $exists_JF,
-            "exists_absences" => $exists_absences,
-            "heures_tab_global" => $heures_tab_global
-        )
-        );
-
-        return $this->output('statistics/agent.html.twig');
-    }
 
     /**
      * @Route("/statistics/time", name="statistics.time", methods={"GET", "POST"})
@@ -2526,6 +1741,12 @@ class StatisticController extends BaseController
         $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debut." 00:00:00", $fin." 23:59:59");
         $absencesDB = $a->elements;
 
+        // Look for holidays
+        $holidays = array();
+        if ($this->config('Conges-Enable')) {
+            $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+        }
+
         $db = new \db();
         $debutREQ = $db->escapeString($debut);
         $finREQ = $db->escapeString($fin);
@@ -2559,6 +1780,12 @@ class StatisticController extends BaseController
                         continue 2;
                     }
                 }
+
+                // Count holidays as absences
+                if (self::countHolidays($elem, $holidays)) {
+                    continue;
+                }
+
                 if (!array_key_exists($elem['perso_id'], $tab)) {        // création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
                     $tab[$elem['perso_id']] = array(
                         "perso_id"     => $elem['perso_id'],
@@ -2954,6 +2181,12 @@ class StatisticController extends BaseController
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB = $a->elements;
 
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
             //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
             //	On stock le tout dans le tableau $resultat
             $postes_select = implode(",", $postes);
@@ -3017,6 +2250,11 @@ class StatisticController extends BaseController
                                     continue 2;
                                 }
                             }
+                        }
+
+                        // Count holidays as absences
+                        if (self::countHolidays($elem, $holidays)) {
+                            continue;
                         }
 
                         if ($poste == $elem['poste']) {
@@ -3274,6 +2512,12 @@ class StatisticController extends BaseController
             $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
             $absencesDB = $a->elements;
 
+            // Look for holidays
+            $holidays = array();
+            if ($this->config('Conges-Enable')) {
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            }
+
             //    Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
             //    On stock le tout dans le tableau $resultat
             $postes_select = implode(",", $postes);
@@ -3331,6 +2575,11 @@ class StatisticController extends BaseController
                                         continue 2;
                                     }
                                 }
+                            }
+
+                            // Count holidays as absences
+                            if (self::countHolidays($elem, $holidays)) {
+                                continue;
                             }
 
                             // on créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
@@ -3464,5 +2713,90 @@ class StatisticController extends BaseController
             "tri" => $tri
         ));
         return $this->output('statistics/position.html.twig');
+    }
+
+
+    /**
+     * Count holidays as absences
+     */
+    private static function countHolidays($elem, $holidays, $continue = true)
+    {
+        if (!empty($holidays)) {
+            $start = \DateTime::createFromFormat('Y-m-d H:i:s', $elem['date'] . ' ' . $elem['debut']);
+            $end = \DateTime::createFromFormat('Y-m-d H:i:s', $elem['date'] . ' ' . $elem['fin']);
+
+            foreach ($holidays as $holiday) {
+                if ($holiday->perso_id() == $elem['perso_id'] 
+                    and $holiday->debut() < $end
+                    and $holiday->fin() > $start) {
+
+                    if ($continue) {
+                        return true;
+                    }
+
+                    $elem['absent'] = "1";
+                }
+            }
+        }
+
+        if ($continue) {
+            return false;
+        }
+
+        return $elem;
+    }
+
+
+    /**
+     * Init and give Statistics Hours
+     */
+    private function getHours($request)
+    {
+        $session = $request->getSession();
+        $hours = $request->get('statisticsHours');
+
+        if ($request->isMethod('post')) {
+            $session->set('statisticsInit', true);
+            $session->set('statisticsHours', $hours);
+        }
+
+        if (!$hours) {
+            if ($session->get('statisticsInit')) {
+                $hours = $session->get('statisticsHours');
+            } else { 
+                $hours = $this->config('Statistiques-Heures');
+            }
+        }
+
+        return $hours;
+    }
+
+    /**
+     * Give Hours Table
+     */
+    private function getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours)
+    {
+        if (!$statisticsHours) {
+            return array($heures_tab, $heures_tab_global);
+        }
+
+        $statisticsHoursTab = explode(';', $statisticsHours);
+
+        foreach ($statisticsHoursTab as $key => $h) {
+            $tmp = heures($statisticsHoursTab[$key]);
+            if (!$tmp) {
+                continue;
+            }
+
+            if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
+                $tmp[2] = heure3($tmp[0])."-".heure3($tmp[1]);
+                $heures_tab[$tmp[2]][] = $elem['date'];
+                $heures_tab[$tmp[0] . '-' . $tmp[1]][] = $elem['date'];
+                if (!in_array($tmp, $heures_tab_global)) {
+                    $heures_tab_global[] = $tmp;
+                }
+            }
+        }
+        return array($heures_tab, $heures_tab_global);
     }
 }
