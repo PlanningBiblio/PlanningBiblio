@@ -366,7 +366,7 @@ class AbsenceController extends BaseController
         }
 
         // Prevent non admin to edit
-        // own absence wit other agents
+        // Own absence with other agents
         if (!$admin and count($agents) > 1 and !in_array(9, $this->droits)) {
             $absence['editable'] = false;
         }
@@ -390,12 +390,6 @@ class AbsenceController extends BaseController
             $absence['editable'] = $adminN2 ? true : false;
         }
 
-        // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
-        if ($ical_key and substr($cal_name, 0, 14) != 'PlanningBiblio') {
-            $absence['editable'] = false;
-            $admin=false;
-        }
-
         // Sécurité
         // Droit 6 = modification de ses propres absences
         // Les admins ont toujours accès à cette page
@@ -405,6 +399,7 @@ class AbsenceController extends BaseController
             $agent_ids = array_map(function($a) { return $a['perso_id'];}, $agents);
             $acces = (in_array(6, $this->droits) and in_array($_SESSION['login_id'], $agent_ids)) ? true : false;
         }
+
         // Si config Absences-adminSeulement, seuls les admins ont accès à cette page
         if ($this->config('Absences-adminSeulement') and !($adminN1 or $adminN2)) {
             $acces=false;
@@ -412,6 +407,12 @@ class AbsenceController extends BaseController
 
         if ($acces && $this->config('Absences-validation') == 0) {
             $absence['editable'] = true;
+        }
+
+        // We prohibit the modification of the absence if it has been imported
+        if ($ical_key and substr($cal_name, 0, 14) != 'PlanningBiblio') {
+            $absence['editable'] = false;
+            $admin=false;
         }
 
         $managed = $this->entityManager
