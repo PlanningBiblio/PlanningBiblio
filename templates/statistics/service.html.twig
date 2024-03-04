@@ -9,7 +9,7 @@
       <tr style='vertical-align:top;'>
         <td id='stat-col1'>
           <form name='form' id='form' action='{{ asset("statistics/service")}}' method='post'>
-            <input type='hidden' name='statistiques_heures_defaut' id='statistiques_heures_defaut_hidden' value='0' />
+            <input type="hidden" name="statisticsDefaultHours" id="statisticsDefaultHours" value="{{ config('Statistiques-Heures') }}" />
             <table>
               <tr>
                 <td><label >Début</label></td>
@@ -33,10 +33,10 @@
                 </td>
               </tr>
               <tr style='vertical-align:top;'>
-                <td><label for='statistiques_heures' >Heures<sup>*</sup></label></td>
+                <td><label for="statisticsHours" >Heures<sup>*</sup></label></td>
                 <td>
-                  <textarea name='statistiques_heures' rows='7' class='ui-widget-content ui-corner-all'>{{ statistiques_heures }}</textarea><br/>
-                  <a href='#' id='statistiques_heures_defaut_lien'>Charger les heures par défaut</a>
+                  <textarea name="statisticsHours" id="statisticsHours" rows="7" class="ui-widget-content ui-corner-all">{{ statisticsHours }}</textarea><br/>
+                  <a href="javascript:statisticsGetDefaultHours()" id="statisticsDefaultHours_link">Charger les heures par défaut</a>
                 </td>
               </tr>
               {% if nbSites > 1 %}
@@ -186,9 +186,8 @@
                   {% endif %}
                   {% for v in heures_tab_global %}
                     <td>
-                      {% if elem[7][v[2]] is defined and elem[7][v[2]] is not empty %}
-                        Nb {{ v[2] }} :
-                        {{ elem[7][v[2]] | length -1 }}
+                      {% if elem[7][v[2]] is defined %}
+                        Nb {{ v[2] }} : {{ elem[7][v[2]] | length - 1}}
                         {% for k,c in elem[7][v[2]].count %}
                           <br/>{{ k }}  
                           ({{ c }})
