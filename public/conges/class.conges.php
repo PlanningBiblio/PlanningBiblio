@@ -1311,4 +1311,10 @@ class conges
         );
     }
 
+    public function update_time()
+    {
+        $db = new db();
+        $db->query("SHOW TABLE STATUS FROM `{$GLOBALS['config']['dbname']}` LIKE '{$GLOBALS['config']['dbprefix']}conges';");
+        return $db->result[0]['Update_time'];
+    }
 }
