@@ -30,6 +30,10 @@ class PresentSet
 
         $this->db->select("personnel", "*", "`actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00')", "ORDER BY `nom`,`prenom`");
 
+        if ($config['PlanningHebdo']) {
+            $tempsPlanningHebdo = self::getPlanningHebdo($date);
+        }
+
         $presents = array();
         foreach ($this->db->result as $elem) {
             $heures = null;
@@ -37,8 +41,6 @@ class PresentSet
             $week_number = 0;
 
             if ($config['PlanningHebdo']) {
-                $tempsPlanningHebdo = self::getPlanningHebdo($date);
-
                 if (array_key_exists($elem['id'], $tempsPlanningHebdo)) {
                     $temps = $tempsPlanningHebdo[$elem['id']]['temps'];
                     $week_number = $tempsPlanningHebdo[$elem['id']]['nb_semaine'];
