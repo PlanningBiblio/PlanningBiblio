@@ -2007,7 +2007,7 @@ class StatisticController extends BaseController
         $tab = array();
 
         $db = new \db();
-        $db->select2('personnel', '*', array('id' => '<>2', 'actif'=>'Actif'), 'ORDER BY `nom`,`prenom`');
+        $db->select2("personnel", "*", array("actif"=>"Actif"), "ORDER BY `nom`,`prenom`");
         $agents_list=$db->result;
 
         if (!empty($agents)) {
