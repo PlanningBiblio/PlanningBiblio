@@ -2,7 +2,7 @@
 - Fixes
 MT42041: Fix "show table status" queries #944 #1005
 MT42628: Purge calendars when their checkbox is unchecked #1006
-MT42628: Purge calendars when their checkbox is unchecked #1006
+MT41791: Do not show 'Everybody' in agent lists #1007
 MT43653: Count holidays in statistics #1009
 MT43164: Display the agent's name in the holiday list whatever the validation level #1011
 MT43770: Prohibit the modification of imported absences #1012
