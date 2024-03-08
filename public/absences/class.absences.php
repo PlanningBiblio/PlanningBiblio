@@ -389,6 +389,13 @@ class absences
         // Vérifie si la table absences a été mise à jour depuis le dernier calcul
         $aUpdate=strtotime($this->update_time());
 
+        // Vérifie si la table conges a été mise à jour depuis le dernier calcul
+        $cUpdate = 0;
+        if ($GLOBALS['config']['Conges-Enable']) {
+            $c = new conges();
+            $cUpdate = strtotime($c->update_time());
+        }
+
         // Vérifie si la table personnel a été mise à jour depuis le dernier calcul
         $p=new personnel();
         $pUpdate=strtotime($p->update_time());
@@ -399,7 +406,11 @@ class absences
 
         // Si la table absences ou la table personnel ou la table planning_hebdo a été modifiée depuis la création du tableaux des heures
         // Ou si le tableau des heures n'a pas été créé ($heuresAbsencesUpdate=0), on le (re)fait.
-        if ($aUpdate>$heuresAbsencesUpdate or $pUpdate>$heuresAbsencesUpdate or $pHUpdate>$heuresAbsencesUpdate) {
+        if ($aUpdate > $heuresAbsencesUpdate
+            or $cUpdate > $heuresAbsencesUpdate
+            or $pUpdate > $heuresAbsencesUpdate
+            or $pHUpdate > $heuresAbsencesUpdate) {
+
             // Recherche de toutes les absences
             $absences=array();
             $a =new absences();
@@ -409,6 +420,34 @@ class absences
             if ($a->elements and !empty($a->elements)) {
                 $absences=$a->elements;
             }
+
+            // Recherche de tous les congés
+            if ($cUpdate) {
+                $c = new conges();
+                $c->valide=true;
+                $c->debut = $j1;
+                $c->fin = $j7;
+                $c->fetch();
+                if (!empty($c->elements)) {
+                    foreach ($c->elements as $elem) {
+                        $absences[] = $elem;
+                    }
+                }
+            }
+
+            // Merge overlapping slots
+            foreach ($absences as $key => $value) {
+                foreach ($absences as $key2 => $value2) {
+                    if ($key != $key2 and $value['perso_id'] == $value2['perso_id']) {
+                        if ($value['debut'] < $value2['fin'] and $value['fin'] > $value2['debut']) {
+                            $absences[$key2]['debut'] = $value['debut'] <= $value2['debut'] ? $value['debut'] : $value2['debut'];
+                            $absences[$key2]['fin'] = $value['fin'] >= $value2['fin'] ? $value['fin'] : $value2['fin'];
+                            unset($absences[$key]);
+                        }
+                    }
+                }
+            }
+
             // Recherche de tous les plannings de présence
             $edt=array();
             $ph=new planningHebdo();
@@ -455,11 +494,13 @@ class absences
                     }
 
                     $heures[$perso_id]=$h;
+                }
 
-                    // On applique le pourcentage
-                    if (strpos($agents[$perso_id]["heures_hebdo"], "%")) {
-                        $pourcent=(float) str_replace("%", null, $agents[$perso_id]["heures_hebdo"]);
-                        $heures[$perso_id]=$heures[$perso_id]*$pourcent/100;
+                // On applique le pourcentage
+                foreach ($heures as $key => $value) {
+                    if (strpos($agents[$key]['heures_hebdo'], '%')) {
+                        $pourcent = (float) str_replace('%', null, $agents[$key]['heures_hebdo']);
+                        $heures[$key] = $heures[$key] * $pourcent / 100;
                     }
                 }
             }
