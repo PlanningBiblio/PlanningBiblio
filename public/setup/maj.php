@@ -3362,6 +3362,27 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+ 
+$v="23.11.10";
+
+if (version_compare($config['Version'], $v) === -1) {
+    $db = new db();
+    $db->select2('conges', ['id', 'commentaires', 'refus']);
+    
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+    
+            $comment = addslashes(html_entity_decode($elem['commentaires']));
+            $refusal = addslashes(html_entity_decode($elem['refus']));
+    
+            if ($comment != $elem['commentaires'] or $refusal != $elem['refus']) {
+                $sql[] = "UPDATE `{$dbprefix}conges` SET `commentaires` = '$comment', `refus` = '$refusal' WHERE `id` = {$elem['id']};";
+            }
+        }
+    }
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage

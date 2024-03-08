@@ -1,3 +1,22 @@
+*** Version 23.11.10   (2024-03-08)    ***
+- Fixes
+MT42041: Fix "show table status" queries #944 #1005
+MT42628: Purge calendars when their checkbox is unchecked #1006
+MT42628: Purge calendars when their checkbox is unchecked #1006
+MT43653: Count holidays in statistics #1009
+MT43164: Display the agent's name in the holiday list whatever the validation level #1011
+MT43770: Prohibit the modification of imported absences #1012
+MT43773: ICS Export: Remove line breaks from summary #1013
+
+- Security
+MT41345: Enhance CSRF protection #1008
+Update dependencies
+
+- Enhancements
+MT43743: Standardize the statistics buttons #1010
+MT43666: Optimize StatisticController #1015
+MT43804: Optimize PresentSet::all #1017
+
 *** Version 23.11.09   (2024-02-22)    ***
 - Fixes
 MT43600: Fix error deleting informational messages #1003
