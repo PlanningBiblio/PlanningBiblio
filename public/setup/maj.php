@@ -24,7 +24,7 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
 
 $CSRFToken = CSRFToken();
 
-$cli = isset($argv[0]);
+$cli = php_sapi_name() === 'cli';
 
 if ($cli) {
     echo "\033[33mMise à jour de la base de données version {$config['Version']} --> $version\e[0m\n";
@@ -3532,5 +3532,3 @@ function serializeToJson($table, $field, $id='id', $where=null, $CSRFToken)
         }
     }
 }
-
-exit;
