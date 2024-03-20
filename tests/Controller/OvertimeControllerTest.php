@@ -38,7 +38,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $overTime->saisie_par($agent->id());
         $overTime->modif('0');
         $overTime->valide_n1('0');
-        $overTime->valide('1');
+        $overTime->valide('0');
 
         $entityManager->persist($overTime);
         $entityManager->flush();
