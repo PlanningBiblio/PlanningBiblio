@@ -158,6 +158,21 @@ class CJICS
         $src = $this->src;              // Fichier ICS
         $calName = null;                // Nom du calendrier
 
+        // Test if the URL is valid
+        if (substr($src, 0, 4) == 'http') {
+            $test = @get_headers($src, 1);
+
+            if (empty($test)) {
+                logs("Agent #$perso_id : $src is not a valid URL", "ICS", $CSRFToken);
+                return false;
+            }
+
+            if (!strstr($test[0], '200')) {
+                logs("Agent #$perso_id : $src {$test[0]}", "ICS", $CSRFToken);
+                return false;
+            }
+        }
+
         // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
         $ical   = new ICal($src);
 
