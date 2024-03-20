@@ -311,15 +311,13 @@ class HolidayController extends BaseController
 
             $msgType = 'notice';
 
-            if ($this->isAlreadyModified($id)) {
-                $msg = "Le congé n'a pas pu être modifié";
-                $msg .= "#BR#Veuillez attendre quelques secondes avant de réessayer";
+            if ($data['valide'] > 0) {
+                $msg = "Le congé n'a pas pu être modifié car il a déjà été validé.";
                 $msgType = "error";
-
                 $result['back_to'] = 'holiday';
+
                 if ($this->config('Conges-Recuperations') and $data['debit'] == 'recuperation') {
-                    $msg = "La récupération n'a pas pu être modifiée";
-                    $msg .= "#BR#Veuillez attendre quelques secondes avant de réessayer";
+                    $msg = "La récupération n'a pas pu être modifiée car elle a déjà été validée.";
                     $msgType = "error";
                     $result['back_to'] = 'recover';
                 }
@@ -1253,29 +1251,5 @@ class HolidayController extends BaseController
         $message.="<p>Lien vers la demande de " . ($recover ? "récupération" : "congé") . " :<br/><a href='$url'>$url</a></p>";
 
         return $message;
-    }
-
-    private function isAlreadyModified($id) {
-
-        $holiday = $this->entityManager->getRepository(Holiday::class)->find($id);
-
-        if (!$holiday) {
-            return false;
-        }
-
-        $throttle = $this->config('post_requests_throttle') ?? 1;
-        $last_modified = $holiday->modification();
-
-        if (!$last_modified) {
-            return false;
-        }
-
-        $now = new \DateTime('now');
-        $difference = $now->getTimestamp() - $last_modified->getTimestamp();
-
-        if ($difference <= $throttle) {
-            return true;
-        }
-        return false;
     }
 }
