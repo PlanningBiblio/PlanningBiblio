@@ -305,9 +305,8 @@ class OvertimeController extends BaseController
 
         if (isset($update)) {
 
-            if ($this->isAlreadyModified($id)) {
-                $result['message'] = 'Une erreur est survenue lors de la validation de vos modifications.';
-                $result['message'] .= '#BR#Veuillez attendre quelques secondes avant de réessayer.';
+            if ($recup['valide'] > 0) {
+                $result['message'] = "Votre demande n'a pas pu être modifiée car elle a déjà été validée.";
                 $result['type'] = "error";
 
             } else {
@@ -405,27 +404,4 @@ class OvertimeController extends BaseController
         return $this->redirectToRoute('overtime.index');
     }
 
-    private function isAlreadyModified($id) {
-
-        $overtime = $this->entityManager->getRepository(OverTime::class)->find($id);
-
-        if (!$overtime) {
-            return false;
-        }
-
-        $throttle = $this->config('post_requests_throttle') ?? 1;
-        $last_modified = $overtime->modification();
-
-        if (!$last_modified) {
-            return false;
-        }
-
-        $now = new \DateTime('now');
-        $difference = $now->getTimestamp() - $last_modified->getTimestamp();
-
-        if ($difference <= $throttle) {
-            return true;
-        }
-        return false;
-    }
 }
