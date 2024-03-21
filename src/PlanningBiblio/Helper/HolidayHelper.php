@@ -131,7 +131,12 @@ class HolidayHelper extends BaseHelper
             $free_break_already_removed = false;
             $has_fixed_break = !empty($planning['times'][$day_id][1]) || !empty($planning['times'][$day_id][5]);
 
-            if (!empty($planning['breaktimes'][$day_id]) && !$has_fixed_break) {
+            // Don't add the free break if the holiday is on a full day
+            if ($debutConges == '00:00:00' && $finConges == '23:59:59') {
+                $free_break_already_removed = true;
+            }
+
+            if (!empty($planning['breaktimes'][$day_id]) && !$has_fixed_break && !$free_break_already_removed) {
 
                 $free_break_already_removed = true;
                 $free_break_start = $this->config('PlanningHebdo-DebutPauseLibre');
@@ -153,7 +158,6 @@ class HolidayHelper extends BaseHelper
                     $planning["times"][$day_id][2] = $free_break_end;
 
                 } else {
-
                     // If the holiday is in the morning, the free break is at the beginning of its period.
                     $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
                     $planning["times"][$day_id][1] = $free_break_start;
