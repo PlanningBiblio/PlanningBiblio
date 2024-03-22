@@ -1744,7 +1744,7 @@ class StatisticController extends BaseController
         // Look for holidays
         $holidays = array();
         if ($this->config('Conges-Enable')) {
-            $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59");
         }
 
         $db = new \db();
