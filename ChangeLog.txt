@@ -1,3 +1,11 @@
+*** Version 23.11.11   (2024-03-22)    ***
+- Fixes
+MT42825: Fix calculation of absence time #1018
+MT43807: Correctly display negative values in anticipation counters #1019
+MT43797: Prevent modification of validated holiday and overtime #1021
+MT43926: Test if the URL is valid in CJICS::purge #1022
+MT43653: Count holidays in statistics. Fix using wrong variable #1023
+
 *** Version 23.11.10   (2024-03-08)    ***
 - Fixes
 MT42041: Fix "show table status" queries #944 #1005
