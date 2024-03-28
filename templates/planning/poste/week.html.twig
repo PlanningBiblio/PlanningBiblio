@@ -22,11 +22,11 @@
               {% else %}
                 {% if autorisationN1 %}
                   <font class="important bold">
-                    Attention ! Le planning du {{ date | datefr }} n'est pas validé !
+                    Attention ! Le planning du {{ day.date | datefr }} n'est pas validé !
                   </font>
                 {% else %}
                   <font class="important bold">
-                    Le planning du {{ date | datefr }} n'est pas validé !
+                    Le planning du {{ day.date | datefr }} n'est pas validé !
                   </font>
                 {% endif %}
               {% endif %}
