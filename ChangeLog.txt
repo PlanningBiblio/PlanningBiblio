@@ -1,3 +1,7 @@
+*** Version 23.11.13   (2024-03-29)    ***
+- Enhancements
+MT43887: update database via composer #1020
+
 *** Version 23.11.12   (2024-03-29)    ***
 - Fixes
 MT43984: Display the correct date on non-validated schedules in week view #1024
