@@ -1,3 +1,7 @@
+*** Version 23.11.12   (2024-03-29)    ***
+- Fixes
+MT43984: Display the correct date on non-validated schedules in week view #1024
+
 *** Version 23.11.11   (2024-03-22)    ***
 - Fixes
 MT42825: Fix calculation of absence time #1018
