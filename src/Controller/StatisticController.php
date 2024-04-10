@@ -10,6 +10,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\AbsenceReason;
 use App\Model\Holiday;
+use App\Model\PlanningPosition;
+use App\Model\Position;
 use App\Model\SelectFloor;
 use App\Model\SelectGroup;
 use App\PlanningBiblio\PresentSet;
@@ -1384,14 +1386,7 @@ class StatisticController extends BaseController
         $selected = null;
 
         //		--------------		Récupération de la liste des postes pour le menu déroulant		------------------------
-        $db = new \db();
-        $db->query("SELECT * FROM `{$dbprefix}postes` WHERE `statistiques`='1' ORDER BY `etage`,`nom`;");
-        $postes_list = $db->result;
-
-        $floors = $this->entityManager->getRepository(SelectFloor::class);
-        foreach ($postes_list as $k => $v) {
-            $postes_list[$k]['etage'] = $floors->find($v['etage']) ? $floors->find($v['etage'])->valeur() : null;
-        }
+        $postes_list = self::getPositions();
 
         if (!empty($postes)) {
             //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
@@ -1442,8 +1437,8 @@ class StatisticController extends BaseController
 
                 // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
                 foreach ($postes_list as $elem) {
-                    if ($elem['id'] == $poste) {
-                        $poste_tab = array($poste, $elem['nom'], $elem['etage'], $elem['obligatoire'], $elem['teleworking']);
+                    if ($elem->id() == $poste) {
+                        $poste_tab = array($poste, $elem->nom(), $elem->etage(), $elem->obligatoire(), $elem->teleworking());
                         break;
                     }
                 }
@@ -2157,14 +2152,7 @@ class StatisticController extends BaseController
         $selected = null;
 
         //		--------------		Récupération de la liste des postes pour le menu déroulant		------------------------
-        $db = new \db();
-        $db->select2("postes", "*", array("obligatoire"=>"Renfort", "statistiques"=>"1"), "ORDER BY `etage`,`nom`");
-        $postes_list = $db->result;
-
-        $floors = $this->entityManager->getRepository(SelectFloor::class);
-        foreach ($postes_list as $k => $v) {
-            $postes_list[$k]['etage'] = $floors->find($v['etage']) ? $floors->find($v['etage'])->valeur() : null;
-        }
+        $postes_list = self::getPositions(true);
 
         if (!empty($postes)) {
             //	Recherche du nombre de jours concernés
@@ -2225,8 +2213,8 @@ class StatisticController extends BaseController
 
                 // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
                 foreach ($postes_list as $elem) {
-                    if ($elem['id'] == $poste) {
-                        $poste_tab = array($poste, $elem['nom'], $elem['etage'], $elem['obligatoire'], $elem['teleworking']);
+                    if ($elem->id() == $poste) {
+                        $poste_tab = array($poste, $elem->nom(), $elem->etage(), $elem->obligatoire(), $elem->teleworking());
                         break;
                     }
                 }
@@ -2483,8 +2471,6 @@ class StatisticController extends BaseController
 
         $tab = array();
 
-        $floors = $this->entityManager->getRepository(SelectFloor::class);
-
         // Récupération des infos sur les agents
         $p = new \personnel();
         $p->supprime = array(0,1,2);
@@ -2492,13 +2478,7 @@ class StatisticController extends BaseController
         $agents_infos = $p->elements;
 
         //-------------- Récupération de la liste des postes pour le menu déroulant ------------------------
-        $db = new \db();
-        $db->select2("postes", "*", array("statistiques"=>"1"), "ORDER BY `etage`,`nom`");
-        $postes_list = $db->result;
-
-        foreach ($postes_list as $k => $v) {
-            $postes_list[$k]['etage'] = $floors->find($v['etage']) ? $floors->find($v['etage'])->valeur() : null;
-        }
+        $postes_list = self::getPositions();
 
         if (!empty($postes)) {
             //    Recherche du nombre de jours concernés
@@ -2552,8 +2532,8 @@ class StatisticController extends BaseController
 
                 // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
                 foreach ($postes_list as $elem) {
-                    if ($elem['id'] == $poste) {
-                        $poste_tab = array($poste, $elem['nom'], $elem['etage'], $elem['obligatoire'], $elem['teleworking']);
+                    if ($elem->id() == $poste) {
+                        $poste_tab = array($poste, $elem->nom(), $elem->etage(), $elem->obligatoire(), $elem->teleworking());
                         break;
                     }
                 }
@@ -2799,4 +2779,47 @@ class StatisticController extends BaseController
         }
         return array($heures_tab, $heures_tab_global);
     }
+
+
+    /**
+     * Give used positions
+     */
+    private function getPositions($supportOnly = false)
+    {
+
+        $filter = array('statistiques' => 1);
+        if ($supportOnly) {
+            $filter['obligatoire'] = 'Renfort';
+        }
+
+        $positions = $this->entityManager->getRepository(Position::class)->findBy($filter);
+
+        $floors = $this->entityManager->getRepository(SelectFloor::class);
+
+        // Find used positions (we do not want to show positions that are never used)
+        $usedPositions = array();
+        $plannings = $this->entityManager->getRepository(PlanningPosition::class)->findAll();
+
+        foreach ($plannings as $elem) {
+            if (!in_array($elem->poste(), $usedPositions)) {
+                $usedPositions[] = $elem->poste();
+            }
+        }
+
+        $result = array();
+
+        foreach ($positions as $elem) {
+            // Keep only used positions
+            if (!in_array($elem->id(), $usedPositions)) {
+                continue;
+            }
+
+            // Add floor information
+            $elem->etage($floors->find($elem->etage()) ? $floors->find($elem->etage())->valeur() : null);
+            $result[] = $elem;
+        }
+
+        return $result;
+    }
+
 }
