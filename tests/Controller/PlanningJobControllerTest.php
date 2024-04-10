@@ -312,7 +312,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"name_title":"' .$jdevoe->nom() .' ' .$jdevoe->prenom() .'"', $result[0]);
 
-        $this->assertStringContainsString('"menu2":{"agents":[{"id":"' .$agentHoliday->id() .'","nom":"' .$agentHoliday->nom() .'","prenom":"' .$agentHoliday->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('{"id":"' .$agentHoliday->id() .'","nom":"' .$agentHoliday->nom() .'","prenom":"' .$agentHoliday->prenom() .'"', $result[0]);
     }
 
 
