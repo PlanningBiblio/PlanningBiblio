@@ -35,13 +35,7 @@
                     {% if postes_list is iterable %}
                       <option value='Tous'>Tous</option>
                       {% for poste in postes_list %}
-                        {% if postes is defined %}
-                          {% if poste.id in postes %}
-                            <option value='{{ poste.id }}' selected='selected' class='td_renfort'>{{ poste.nom }} ({{ poste.etage }})</option>
-                          {% else %}
-                            <option value='{{ poste.id }}' class='td_renfort'>{{ poste.nom }} {{ poste.etage }}</option>  
-                          {% endif %}
-                        {% endif %}
+                        <option value="{{ poste.id }}" {% if poste.id in postes %} selected="selected" {% endif %} >{{ poste.nom }} {% if poste.etage %} ({{ poste.etage }}) {% endif %}</option>
                       {% endfor %}  
                     {% endif %}
                   </select>
