@@ -383,9 +383,9 @@ class HolidayController extends BaseController
         $conges_credit = $p->elements[0]['conges_credit'];
         $conges_reliquat = $p->elements[0]['conges_reliquat'];
 
-        $credit = number_format((float) $conges_credit, 2, '.', ' ');
-        $reliquat = number_format((float) $conges_reliquat, 2, '.', ' ');
-        $anticipation = number_format((float) $conges_anticipation, 2, '.', ' ');
+        $credit = number_format($conges_credit, 2, '.', ' ');
+        $reliquat = number_format($conges_reliquat, 2, '.', ' ');
+        $anticipation = number_format($conges_anticipation, 2, '.', ' ');
         $recuperation = number_format((float) $balance[1], 2, '.', ' ');
         $recuperation2=heure4($recuperation, true);
         if ($balance[4] < 0) {
@@ -581,9 +581,9 @@ class HolidayController extends BaseController
         $conges_credit = $p->elements[0]['conges_credit'];
         $conges_reliquat = $p->elements[0]['conges_reliquat'];
 
-        $credit = number_format((float) $conges_credit, 2, '.', ' ');
-        $reliquat = number_format((float) $conges_reliquat, 2, '.', ' ');
-        $anticipation = number_format((float) $conges_anticipation, 2, '.', ' ');
+        $credit = number_format($conges_credit, 2, '.', ' ');
+        $reliquat = number_format($conges_reliquat, 2, '.', ' ');
+        $anticipation = number_format($conges_anticipation, 2, '.', ' ');
         $recuperation = number_format((float) $balance[1], 2, '.', ' ');
 
         $anticipation_jours = null;

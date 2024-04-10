@@ -1121,10 +1121,10 @@ class conges
 
         $p=new personnel();
         $p->fetchById($data['perso_id']);
-        $credit = floatval($p->elements[0]['conges_credit']);
-        $reliquat = floatval($p->elements[0]['conges_reliquat']);
-        $recuperation = floatval($p->elements[0]['comp_time']);
-        $anticipation = floatval($p->elements[0]['conges_anticipation']);
+        $credit = $p->elements[0]['conges_credit'];
+        $reliquat = $p->elements[0]['conges_reliquat'];
+        $recuperation = $p->elements[0]['comp_time'];
+        $anticipation = $p->elements[0]['conges_anticipation'];
         $heures = floatval($data['heures']);
 
         // Mise à jour des compteurs dans la table conges
@@ -1243,10 +1243,10 @@ class conges
 
         $p = new personnel();
         $p->fetchById($perso_id);
-        $credit = floatval($p->elements[0]['conges_credit']);
-        $reliquat = floatval($p->elements[0]['conges_reliquat']);
-        $recuperation = floatval($p->elements[0]['comp_time']);
-        $anticipation = floatval($p->elements[0]['conges_anticipation']);
+        $credit = $p->elements[0]['conges_credit'];
+        $reliquat = $p->elements[0]['conges_reliquat'];
+        $recuperation = $p->elements[0]['comp_time'];
+        $anticipation = $p->elements[0]['conges_anticipation'];
 
         $new_comp_time = $recuperation + $regul;
         $credits = array(
