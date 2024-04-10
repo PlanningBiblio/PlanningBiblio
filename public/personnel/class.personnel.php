@@ -201,6 +201,11 @@ class personnel
                 $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                 $this->elements[0]['sites'] = $sites ? $sites : array();
                 $this->elements[0]['mails_responsables']=explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
+                $this->elements[0]['conges_annuel'] = floatval($db->result[0]['conges_annuel']);
+                $this->elements[0]['conges_credit'] = floatval($db->result[0]['conges_credit']);
+                $this->elements[0]['conges_reliquat'] = floatval($db->result[0]['conges_reliquat']);
+                $this->elements[0]['conges_anticipation'] = floatval($db->result[0]['conges_anticipation']);
+                $this->elements[0]['comp_time'] = floatval($db->result[0]['comp_time']);
             }
         } elseif (is_array($id)) {
             $ids=implode(",", $id);
@@ -212,6 +217,11 @@ class personnel
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     $this->elements[$elem['id']]['sites'] = $sites ? $sites : array();
                     $this->elements[$elem['id']]['mails_responsables']=explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
+                    $this->elements[$elem['id']]['conges_annuel'] = floatval($elem['conges_annuel']);
+                    $this->elements[$elem['id']]['conges_credit'] = floatval($elem['conges_credit']);
+                    $this->elements[$elem['id']]['conges_reliquat'] = floatval($elem['conges_reliquat']);
+                    $this->elements[$elem['id']]['conges_anticipation'] = floatval($elem['conges_anticipation']);
+                    $this->elements[$elem['id']]['comp_time'] = floatval($elem['comp_time']);
                 }
             }
         }

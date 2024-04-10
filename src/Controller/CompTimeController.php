@@ -44,9 +44,9 @@ class CompTimeController extends BaseController
         $p->fetchById($perso_id);
         $nom = $p->elements[0]['nom'];
         $prenom = $p->elements[0]['prenom'];
-        $credit = number_format((float) $p->elements[0]['conges_credit'], 2, '.', ' ');
-        $reliquat = number_format((float) $p->elements[0]['conges_reliquat'], 2, '.', ' ');
-        $anticipation = number_format((float) $p->elements[0]['conges_anticipation'], 2, '.', ' ');
+        $credit = number_format($p->elements[0]['conges_credit'], 2, '.', ' ');
+        $reliquat = number_format($p->elements[0]['conges_reliquat'], 2, '.', ' ');
+        $anticipation = number_format($p->elements[0]['conges_anticipation'], 2, '.', ' ');
         $credit2 = heure4($credit);
         $reliquat2 = heure4($reliquat);
         $anticipation2 = heure4($anticipation);
