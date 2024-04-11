@@ -502,8 +502,9 @@ class HolidayController extends BaseController
         $this->templateParams(array('save_button' => $save_button));
 
         $delete_button = 0;
-        if ($data['valide_n1'] == 0
-            or ($adminN1 and $data['valide'] == 0)
+
+        if (($data['valide_n1'] == 0 and $data['valide'] == 0)
+            or ($data['valide'] == 0 and $adminN1)
             or $adminN2) {
             $delete_button = 1;
         }
