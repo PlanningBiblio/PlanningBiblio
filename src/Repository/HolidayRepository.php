@@ -18,6 +18,8 @@ class HolidayRepository extends EntityRepository
                 ->andWhere('h.debut < :end')
                 ->andWhere('h.fin > :start')
                 ->andWhere('h.valide > 0')
+                ->andWhere('h.information = 0')
+                ->andWhere('h.supprime = 0')
                 ->setParameter('start', $start)
                 ->setParameter('end', $end);
         $results = $builder->getQuery()->getResult();
