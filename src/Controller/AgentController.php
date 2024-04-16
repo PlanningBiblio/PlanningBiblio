@@ -333,6 +333,7 @@ class AgentController extends BaseController
             $statut = $db->result[0]['statut'];
             $categorie = $db->result[0]['categorie'];
             $check_hamac = $db->result[0]['check_hamac'];
+            $mSGraphCheck = $db->result[0]['check_ms_graph'];
             $check_ics = json_decode($db->result[0]['check_ics'], true);
             $service = $db->result[0]['service'];
             $heuresHebdo = $db->result[0]['heures_hebdo'];
@@ -396,6 +397,7 @@ class AgentController extends BaseController
             $statut = null;
             $categorie = null;
             $check_hamac = 0;
+            $mSGraphCheck = 0;
             $check_ics = array(0,0,0);
             $service = null;
             $heuresHebdo = null;
@@ -493,6 +495,8 @@ class AgentController extends BaseController
             'ICS_Server2'       => $this->config('ICS-Server2'),
             'ICS_Server3'       => $this->config('ICS-Server3'),
             'ICS_Code'          => $this->config('ICS-Code'),
+            'MSGraphConfig'     => !empty($_ENV['MS_GRAPH_CLIENT_ID']),
+            'MSGraphCheck'      => $mSGraphCheck,
             'ics'               => $ics,
             'CSRFSession'       => $CSRFSession,
             'action'            => $action,
@@ -534,7 +538,8 @@ class AgentController extends BaseController
         ));
         if ($this->config('ICS-Server1') or $this->config('ICS-Server2')
             or $this->config('ICS-Server3') or $this->config('ICS-Export')
-            or $this->config('Hamac-csv')) {
+            or $this->config('Hamac-csv')
+            or !empty($_ENV['MS_GRAPH_CLIENT_ID'])) {
             $this->templateParams(array( 'agendas_and_sync' => 1 ));
         }
 
@@ -825,6 +830,7 @@ class AgentController extends BaseController
         $actif = htmlentities($params['actif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         $action = $params['action'];
         $check_hamac = !empty($params['check_hamac']) ? 1 : 0;
+        $mSGraphCheck = !empty($request->get('MSGraph')) ? 1 : 0;
         $check_ics1 = !empty($params['check_ics1']) ? 1 : 0;
         $check_ics2 = !empty($params['check_ics2']) ? 1 : 0;
         $check_ics3 = !empty($params['check_ics3']) ? 1 : 0;
@@ -959,7 +965,8 @@ class AgentController extends BaseController
                 "matricule"=>$matricule,
                 "url_ics"=>$url_ics,
                 "check_ics"=>$check_ics,
-                "check_hamac"=>$check_hamac
+                "check_hamac"=>$check_hamac,
+                'check_ms_graph' => $mSGraphCheck,
             );
             $holidays = $this->save_holidays($params);
             $insert = array_merge($insert, $holidays);
@@ -1042,7 +1049,8 @@ class AgentController extends BaseController
                 "matricule"=>$matricule,
                 "url_ics"=>$url_ics,
                 "check_ics"=>$check_ics,
-                "check_hamac"=>$check_hamac
+                "check_hamac"=>$check_hamac,
+                'check_ms_graph' => $mSGraphCheck,
             );
             // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
             if (!strstr($actif, "Supprim")) {

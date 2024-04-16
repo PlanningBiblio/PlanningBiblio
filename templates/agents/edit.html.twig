@@ -238,6 +238,26 @@
                 </td>
               </tr>
           {% endif %}
+
+          {% if MSGraphConfig %}
+            <tr>
+              <td style="width:400px;">
+                <label for="MSGraph">Synchronisation de l'agenda Office 365 :</label>
+              </td>
+              <td>
+                {% if can_manage_agent %}
+                  <input type="checkbox" value="1" id="MSGraph" name="MSGraph" {% if MSGraphCheck %} checked="checked" {% endif %} />
+                {% else %}
+                  {% if MSGraphCheck %}
+                    <span class="agent-acces-checked2 green bold">Oui</span>
+                  {% else %}
+                    <span class="agent-acces-checked2 red">Non</span>
+                  {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+
         </table>
       </div>
 
