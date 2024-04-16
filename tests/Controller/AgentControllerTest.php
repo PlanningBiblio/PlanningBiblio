@@ -204,6 +204,8 @@ class AgentControllerTest extends PLBWebTestCase
         $GLOBALS['config']['Conges-Enable'] = 1;
         $GLOBALS['config']['PlanningHebdo'] = 0;
 
+        unset($_ENV['MS_GRAPH_CLIENT_ID']);
+
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
             'sites' => '["1"]', 'droits' => array(100,99)

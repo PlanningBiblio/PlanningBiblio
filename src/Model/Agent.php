@@ -102,6 +102,9 @@ class Agent extends PLBEntity
     /** @Column(type="integer") **/
     protected $check_hamac;
 
+    /** @Column(type="boolean") **/
+    protected $check_ms_graph;
+
     /** @Column(type="float") **/
     protected $conges_credit;
 

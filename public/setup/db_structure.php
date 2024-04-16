@@ -237,6 +237,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `url_ics` TEXT NULL DEFAULT NULL,
   `check_ics` VARCHAR(10) NULL DEFAULT '[1,1,1]',
   `check_hamac` INT(1) NOT NULL DEFAULT '1',
+  `check_ms_graph` TINYINT(1) NOT NULL DEFAULT 0,
   `conges_credit` FLOAT(10),
   `conges_reliquat` FLOAT(10),
   `conges_anticipation` FLOAT(10),
