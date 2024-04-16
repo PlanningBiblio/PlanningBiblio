@@ -63,6 +63,7 @@ jobs:
       - run: zcat data/planno_24.04.xx.sql.gz | mysql --host=127.0.01 --port=3306 -u plb --password=plb planningb
       - run: cp .circleci/.env.test.local .env.test.local
       - run: cp .circleci/.env.local .env.local
+      - run: php public/setup/updatedatabase.php
       - run: rm -rf vendor
       - run: composer install -n --prefer-dist
       - run: vendor/bin/bdi detect drivers

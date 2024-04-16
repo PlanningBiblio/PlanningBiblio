@@ -102,6 +102,8 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $GLOBALS['config']['Multisites-nombre'] = 1;
         $GLOBALS['config']['Multisites-site1'] = 'site';
 
+        unset($_ENV['MS_GRAPH_CLIENT_ID']);
+
         $builder = new FixtureBuilder();
 
         // Create post
