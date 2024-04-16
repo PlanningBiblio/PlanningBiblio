@@ -10,8 +10,7 @@
   * Runs all atmoic update files in setup/atomicupdate/
   */
 
-require_once(__DIR__ . '/../../init/init.php');
-require_once(__DIR__ . '/../include/db.php');
+require_once( __DIR__ . '/../include/config.php');
 
 $atomic_dir = __DIR__ . '/../setup/atomicupdate/*.php';
 

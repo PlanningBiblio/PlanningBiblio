@@ -69,7 +69,7 @@ class MSGraphClient
     private function getIncomingEvents() {
         $this->incomingEvents = array();
         $this->graphUsers = array();
-        $users = $this->entityManager->getRepository(Agent::class)->findBy(['supprime' => 0]);
+        $users = $this->entityManager->getRepository(Agent::class)->findBy(['supprime' => 0, 'check_ms_graph' => 1]);
         foreach ($users as $user) {
             if ($this->isGraphUser($user)) {
                 array_push($this->graphUsers, $user->id());
