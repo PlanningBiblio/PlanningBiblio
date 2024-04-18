@@ -16,7 +16,7 @@ class CurrentVersionStrategy implements VersionStrategyInterface
     /**
      * @return string
      */
-    public function getVersion($path)
+    public function getVersion(string $path): string
     {
         return $this->version;
     }
@@ -24,7 +24,7 @@ class CurrentVersionStrategy implements VersionStrategyInterface
     /**
      * @return string
      */
-    public function applyVersion($path)
+    public function applyVersion(string $path): string
     {
         if (substr($path, 0, 3) == 'js/'
             or substr($path, 0, 7) == 'themes/'
