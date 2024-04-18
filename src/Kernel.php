@@ -18,7 +18,7 @@ class Kernel extends BaseKernel
     /**
      * @return string
     */
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         return $this->getProjectDir().'/var/cache/'.$this->environment;
     }
@@ -26,7 +26,7 @@ class Kernel extends BaseKernel
     /**
      * @return string
     */
-    public function getLogDir()
+    public function getLogDir(): string
     {
         return $this->getProjectDir().'/var/log';
     }
@@ -34,7 +34,7 @@ class Kernel extends BaseKernel
     /**
      * @return iterable
      */
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         $contents = require $this->getProjectDir().'/config/bundles.php';
         foreach ($contents as $class => $envs) {
