@@ -26,9 +26,10 @@ class UrlListener
 
         $request = $event->getRequest();
 
+        // See https://github.com/symfony/symfony/pull/38954
         $request::setTrustedProxies(
             array($request->server->get('REMOTE_ADDR')),
-            Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
+            Request::HEADER_X_FORWARDED_TRAEFIK);
 
         $url = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
 
