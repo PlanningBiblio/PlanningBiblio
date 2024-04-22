@@ -12,7 +12,7 @@ class MSGraphClient
 {
 
     private $base_url = 'https://graph.microsoft.com/v1.0';
-    private $cal_name = 'PlanningBiblio-Absences-';
+    private $cal_name = 'MSGraph-';
     // Start year for full scan
     private $start_year = '2000';
 
@@ -237,8 +237,8 @@ class MSGraphClient
                     $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
                 }
                 $query = "INSERT INTO " . $this->dbprefix . "absences ";
-                $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide, etat, demande, cal_name,  ical_key, last_modified, rrule) VALUES ";
-                $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 9999,   '',   NOW(),  :cal_name, :ical_key, :last_modified, :rrule)";
+                $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide_n1, validation_n1, valide, validation, etat, demande, cal_name,  ical_key, last_modified, rrule) VALUES ";
+                $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 99999, NOW(), 99999, NOW(), '', NOW(), :cal_name, :ical_key, :last_modified, :rrule)";
                 $statement = $this->entityManager->getConnection()->prepare($query);
                 $statement->execute(array(
                     'perso_id'      => $eventArray['plb_id'],
