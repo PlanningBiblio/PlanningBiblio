@@ -8,3 +8,13 @@ framework:
         utf8: true
     session:
         storage_factory_id: session.storage.factory.php_bridge
+
+when@test:
+    framework:
+        router:
+            strict_requirements: null
+            utf8: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file
+
+

@@ -8,10 +8,14 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverSelect;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Panther\PantherTestCase;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage;
+use Tests\SessionHelper;
 
 class PLBWebTestCase extends PantherTestCase
 {
     public $client;
+    use SessionHelper;
 
     protected function setUp(): void
     {
@@ -30,8 +34,15 @@ class PLBWebTestCase extends PantherTestCase
         $entityManager->flush();
 
         $GLOBALS['droits'] = $rights;
-        $session = $this->client->getContainer()->get('session.factory')->createSession();
+        $container = self::getContainer();
+        $session = $container->get('session.factory')->createSession();
+
+        $this->client = static::createClient();
+        #$session = $this->createSession($this->client, $agent->id());
+        #$session = new Session(new MockFileSessionStorage());
+        $session->start();
         $session->set('loginId', $agent->id());
+        $session->set('login_id', $agent->id());
         $session->save();
     
         $cookie = new Cookie($session->getName(), $session->getId());
