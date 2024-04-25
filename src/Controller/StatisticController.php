@@ -549,7 +549,11 @@ class StatisticController extends BaseController
                 $resultat[$i]['service_id'] = $agents[$resultat[$i]['perso_id']]['service_id'];
             }
 
-            $floors = $this->entityManager->getRepository(SelectFloor::class);
+            $floors = array();
+            $floorsRepository = $this->entityManager->getRepository(SelectFloor::class)->findAll();
+            foreach ($floorsRepository as $f) {
+                $floors[$f->id()] = $f->valeur();
+            }
 
             //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
             //	pour chaque service sélectionné
@@ -610,7 +614,7 @@ class StatisticController extends BaseController
                                     $postes[$elem['poste']] = array(
                                         $elem['poste'],
                                         $elem['poste_nom'],
-                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
+                                        $floors[$elem['etage']] ?? null,
                                         0,
                                         "site"=>$elem['site']
                                     );
@@ -986,7 +990,11 @@ class StatisticController extends BaseController
                 $resultat[$i]['statut_id'] = $agents[$resultat[$i]['perso_id']]['statut_id'];
             }
 
-            $floors = $this->entityManager->getRepository(SelectFloor::class);
+            $floors = array();
+            $floorsRepository = $this->entityManager->getRepository(SelectFloor::class)->findAll();
+            foreach ($floorsRepository as $f) {
+                $floors[$f->id()] = $f->valeur();
+            }
 
             //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
             //	pour chaque statut sélectionné
@@ -1048,7 +1056,7 @@ class StatisticController extends BaseController
                                     $postes[$elem['poste']] = array(
                                         $elem['poste'],
                                         $elem['poste_nom'],
-                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
+                                        $floors[$elem['etage']] ?? null,
                                         0,
                                         "site"=>$elem['site']
                                     );
@@ -2005,7 +2013,11 @@ class StatisticController extends BaseController
             $db->query($req);
             $resultat = $db->result;
 
-            $floors = $this->entityManager->getRepository(SelectFloor::class);
+            $floors = array();
+            $floorsRepository = $this->entityManager->getRepository(SelectFloor::class)->findAll();
+            foreach ($floorsRepository as $f) {
+                $floors[$f->id()] = $f->valeur();
+            }
 
             //    Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
             //    pour chaques agents sélectionnés
@@ -2087,7 +2099,7 @@ class StatisticController extends BaseController
                                     $postes[$elem['poste']] = array(
                                         $elem['poste'],
                                         $elem['poste_nom'],
-                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
+                                        $floors[$elem['etage']] ?? null,
                                         0,
                                         "site"=>$elem['site']
                                     );
