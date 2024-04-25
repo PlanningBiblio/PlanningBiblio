@@ -261,7 +261,11 @@ class StatisticController extends BaseController
                 }
             }
 
-            $floors = $this->entityManager->getRepository(SelectFloor::class);
+            $floors = array();
+            $floorsRepository = $this->entityManager->getRepository(SelectFloor::class)->findAll();
+            foreach ($floorsRepository as $f) {
+                $floors[$f->id()] = $f->valeur();
+            }
 
             // Get information from $resultat for each agent
             foreach ($data as $d) {
@@ -360,7 +364,7 @@ class StatisticController extends BaseController
                                     $postes[$elem['poste']] = array(
                                         $elem['poste'],
                                         $elem['poste_nom'],
-                                        $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
+                                        $floors[$elem['etage']] ?? null,
                                         0,
                                         "site"=>$elem['site']
                                     );
