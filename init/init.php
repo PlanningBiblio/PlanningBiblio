@@ -10,7 +10,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
 $session = new Session();
 $session->start();
 
-$_SESSION['login_id'] = isset($_SESSION['login_id']) ? $_SESSION['login_id'] : '';
+$loginId = $session->get('loginId') ?? '';
+
 $_SESSION['login_nom'] = isset($_SESSION['login_nom']) ? $_SESSION['login_nom'] : '';
 $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_prenom'] : '';
 $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSION['oups']['Auth-Mode'] : '';
@@ -57,7 +58,7 @@ $CSRFSession = isset($_SESSION['oups']['CSRFToken']) ? $_SESSION['oups']['CSRFTo
 $_SESSION['PLdate']=array_key_exists("PLdate", $_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
 
 // Recupération des droits d'accès de l'agent
-$logged_in = $entityManager->find(Agent::class, $_SESSION['login_id']);
+$logged_in = $entityManager->find(Agent::class, $loginId);
 $droits = $logged_in ? $logged_in->droits() : array();
 $_SESSION['droits'] = array_merge($droits, array(99));
 

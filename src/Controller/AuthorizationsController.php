@@ -55,6 +55,8 @@ class AuthorizationsController extends BaseController
     {
         $this->redirectCAS($request, $logger);
 
+        $session = $request->getSession();
+
         $login = $request->get('login');
         $password = $request->get('password');
         $redirect_url = $request->get('redirURL') ?? '/index.php';
@@ -88,7 +90,7 @@ class AuthorizationsController extends BaseController
                     $auth = false;
                     if ($login and $_POST['auth'] == 'CAS'
                         and array_key_exists('login_id', $_SESSION)
-                        and $login == $_SESSION['login_id']) {
+                        and $login == $session->get('loginId')) {
                         $auth = true;
                     }
                     if (!$auth) {
@@ -130,7 +132,7 @@ class AuthorizationsController extends BaseController
 
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
-                $db->update("personnel", array("last_login"=>date("Y-m-d H:i:s")), array("id"=>$_SESSION['login_id']));
+                $db->update('personnel', array('last_login' => date('Y-m-d H:i:s')), array('id' => $session->get('loginId')));
                 return $this->redirect($this->config('URL') . "/$redirect_url");
             } else {
                 $error = "unknown_user";
@@ -194,9 +196,11 @@ class AuthorizationsController extends BaseController
 
     private function redirectCAS(Request $request, $logger)
     {
+        $session = $request->getSession();
+
         if ((substr($this->config('Auth-Mode'), 0, 3) == 'CAS' or $this->config('Auth-Mode') == 'OpenIDConnect')
             and !isset($_GET['noCAS'])
-            and empty($_SESSION['login_id'])
+            and empty($session->get('loginId'))
             and !isset($_POST['login'])
             and !isset($_POST['acces'])) {
 
@@ -249,7 +253,7 @@ class AuthorizationsController extends BaseController
             // Update last_login field.
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->update("personnel", array("last_login"=>date("Y-m-d H:i:s")), array("id"=>$_SESSION['login_id']));
+            $db->update('personnel', array('last_login' => date('Y-m-d H:i:s')), array('id' => $session->get('loginId')));
 
             // Redirect
             header('Location: ' . $this->config('URL') . "/$redirURL");
