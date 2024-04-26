@@ -17,7 +17,9 @@ class LegalNoticesController extends BaseController
      */
     public function index(Request $request)
     {
-        $show_menu = empty($_SESSION['login_id']) ? 0 : 1;
+        $session = $request->getSession();
+
+        $show_menu = empty($session->get('loginId')) ? 0 : 1;
 
         $this->templateParams(array(
             'show_menu' => $show_menu,

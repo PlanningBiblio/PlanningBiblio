@@ -159,7 +159,7 @@ class WorkingHourController extends BaseController
         list($adminN1, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         $notAdmin = !($adminN1 or $adminN2);
         $admin = ($adminN1 or $adminN2);
@@ -168,7 +168,7 @@ class WorkingHourController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getManagedFor($_SESSION['login_id']);
+            ->getManagedFor($session->get('loginId'));
         $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
 
         // Recherche des plannings
@@ -270,7 +270,7 @@ class WorkingHourController extends BaseController
         $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
-        $perso_id = $request->get('agent_id') ?? $_SESSION['login_id'];
+        $perso_id = $request->get('agent_id') ?? $session->get('loginId');
         $id = null;
         $action = "ajout";
 
@@ -279,7 +279,7 @@ class WorkingHourController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('workinghour')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         $this->setStatusesParams(array($perso_id), 'workinghour');
 
@@ -299,7 +299,7 @@ class WorkingHourController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getManagedFor($_SESSION['login_id']);
+            ->getManagedFor($session->get('loginId'));
 
         if (!$admin && !$this->config('PlanningHebdo-Agents') && count($managed) < 2 ) {
             return $this->redirectToRoute('access-denied');
@@ -330,7 +330,7 @@ class WorkingHourController extends BaseController
                 "is_exception"       => null,
                 "is_new"             => 1,
                 "lang"               => $lang,
-                "login_id"           => $_SESSION['login_id'],
+                "login_id"           => $session->get('loginId'),
                 "modifAutorisee"     => $modifAutorisee,
                 "multisites"         => $multisites,
                 "nbSites"            => $nbSites,
@@ -418,12 +418,12 @@ class WorkingHourController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('workinghour')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
         $admin = ($this->adminN1 or $this->adminN2);
 
         $this->setStatusesParams(array($perso_id), 'workinghour', $id);
 
-        if (!$admin && $perso_id != $_SESSION['login_id']) {
+        if (!$admin && $perso_id != $session->get('loginId')) {
             return $this->redirectToRoute('access-denied');
         }
 
@@ -469,7 +469,7 @@ class WorkingHourController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getManagedFor($_SESSION['login_id']);
+            ->getManagedFor($session->get('loginId'));
 
         // The followings variables are only used when $cle is defined, but we need to initialize them to avoid errors.
         $selected1 = false;
@@ -518,7 +518,7 @@ class WorkingHourController extends BaseController
                 "is_exception"       => $is_exception,
                 "is_new"             => $is_new,
                 "lang"               => $lang,
-                "login_id"           => $_SESSION['login_id'],
+                "login_id"           => $session->get('loginId'),
                 "modifAutorisee"     => $modifAutorisee,
                 "multisites"         => $multisites,
                 "nbSites"            => $nbSites,

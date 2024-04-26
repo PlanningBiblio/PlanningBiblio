@@ -27,6 +27,7 @@ class OvertimeController extends BaseController
      */
     public function index(Request $request)
     {
+        $session = $request->getSession();
 
         $holiday_helper = new HolidayHelper();
 
@@ -40,14 +41,14 @@ class OvertimeController extends BaseController
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         if (($admin or $adminN2) and $perso_id === null) {
             $perso_id = isset($_SESSION['oups']['recup_perso_id'])
                 ? $_SESSION['oups']['recup_perso_id']
-                : $_SESSION['login_id'];
+                : $session->get('loginId');
         } elseif ($perso_id === null) {
-            $perso_id = $_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         if (!$annee) {
@@ -58,7 +59,7 @@ class OvertimeController extends BaseController
 
         if ($reset) {
             $annee = date("m") < 9 ? date("Y") - 1 : date("Y");
-            $perso_id = $_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         $_SESSION['oups']['recup_annee'] = $annee;
@@ -83,7 +84,7 @@ class OvertimeController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($_SESSION['login_id']);
+            ->getManagedFor($session->get('loginId'));
 
         $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
 
@@ -197,7 +198,7 @@ class OvertimeController extends BaseController
      */
     public function edit(Request $request)
     {
-
+        $session = $request->getSession();
         $id = $request->get('id');
 
         $c = new \conges();
@@ -211,10 +212,10 @@ class OvertimeController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         // Prevent non manager to access other agents request.
-        if (!$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
+        if (!$adminN1 and !$adminN2 and $perso_id != $session->get('loginId')) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -276,14 +277,14 @@ class OvertimeController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
 
         // Update hours.
         $update = array(
             'heures' => $heures,
             'commentaires' => $commentaires,
-            'modif' => $_SESSION['login_id'],
+            'modif' => $session->get('loginId'),
             'modification' => date('Y-m-d H:i:s')
         );
 
@@ -291,13 +292,13 @@ class OvertimeController extends BaseController
         if ($validation !== null and ($adminN1 or $adminN2)) {
             // Validation level 1
             if ($validation == 2 or $validation == -2) {
-                $update['valide_n1'] = $validation / 2 * $_SESSION['login_id'] ;
+                $update['valide_n1'] = $validation / 2 * $session->get('loginId') ;
                 $update['validation_n1'] = date("Y-m-d H:i:s");
             }
 
             // Validation level 2
             if ($validation == 1 or $validation == -1) {
-                $update['valide'] = $validation * $_SESSION['login_id'] ;
+                $update['valide'] = $validation * $session->get('loginId') ;
                 $update['validation'] = date("Y-m-d H:i:s");
             }
 

@@ -47,8 +47,9 @@ class ControllerAuthorizationListener
         }
 
         // Droits necessaires pour consulter la page en cours
+        $loginId = $event->getRequest()->getSession()->get('loginId');
         $accesses = $this->entityManager->getRepository(Access::class)->findBy(array('page' => $page));
-        $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+        $logged_in = $this->entityManager->find(Agent::class, $loginId);
 
         $route = $event->getRequest()->attributes->get('_route');
 

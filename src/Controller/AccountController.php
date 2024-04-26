@@ -32,13 +32,13 @@ class AccountController extends BaseController
         // Informations sur l'agent
         $p = new \personnel();
         $p->CSRFToken = $CSRFSession;
-        $p->fetchById($_SESSION['login_id']);
+        $p->fetchById($session->get('loginId'));
         $sites = $p->elements[0]['sites'];
 
         // URL ICS
         $ics = null;
         if ($this->config('ICS-Export')) {
-            $ics = $p->getICSURL($_SESSION['login_id']);
+            $ics = $p->getICSURL($session->get('loginId'));
         }
 
         // Crédits (congés, récupérations)
@@ -72,7 +72,7 @@ class AccountController extends BaseController
         $agents = $a->elements;
 
         $p = new \planningHebdo();
-        $p->perso_id = $_SESSION['login_id'];
+        $p->perso_id = $session->get('loginId');
         $p->merge_exception = false;
         $p->fetch();
         $planning = $p->elements;
@@ -95,7 +95,7 @@ class AccountController extends BaseController
 
         }
 
-        $login = array("name" => $_SESSION['login_prenom'], "surname" => $_SESSION['login_nom'], "id" => $_SESSION['login_id']);
+        $login = array("name" => $_SESSION['login_prenom'], "surname" => $_SESSION['login_nom'], "id" => $session->get('loginId'));
 
         $this->templateParams(
             array(

@@ -24,7 +24,7 @@ class CalendarController extends BaseController
         if (!array_key_exists('agenda_debut', $_SESSION)){
             $_SESSION['agenda_debut'] = null;
             $_SESSION['agenda_fin'] = null;
-            $_SESSION['agenda_perso_id'] = $_SESSION['login_id'];
+            $_SESSION['agenda_perso_id'] = $session->get('loginId');
         }
 
         $debut = $debut ? $debut : $_SESSION['agenda_debut'];
@@ -34,7 +34,7 @@ class CalendarController extends BaseController
             $perso_id = $request->get('perso_id');
             $perso_id = $perso_id?$perso_id:$_SESSION['agenda_perso_id'];
         } else {
-            $perso_id = $_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         $d= new \datePl(date("Y-m-d"));

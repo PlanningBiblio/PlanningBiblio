@@ -20,21 +20,23 @@ class CompTimeController extends BaseController
      */
     public function add(Request $request)
     {
+        $session = $request->getSession();
+
         $dbprefix = $GLOBALS['dbprefix'];
         $perso_id = filter_input(INPUT_GET, 'perso_id', FILTER_SANITIZE_NUMBER_INT);
 
         if (!$perso_id) {
-            $perso_id = $_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         if (!$admin and !$adminN2) {
-            $perso_id=$_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         $c = new \conges();
@@ -67,7 +69,7 @@ class CompTimeController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($_SESSION['login_id']);
+            ->getManagedFor($session->get('loginId'));
 
         $information = array();
         $date = date("Y-m-d");
@@ -110,6 +112,8 @@ class CompTimeController extends BaseController
      */
     public function save(Request $request, Session $session)
     {
+        $session = $request->getSession();
+
         $CSRFToken = $request->get('CSRFToken');
         $perso_id = $request->get('perso_id');
 
@@ -142,8 +146,8 @@ class CompTimeController extends BaseController
             $data['confirm'] = 'confirm';
             $data['debit'] = 'recuperation';
             $data['valide_init'] = 1;
-            $data['valide'] = $_SESSION['login_id'];
-            $data['valide_n1'] = $_SESSION['login_id'];
+            $data['valide'] = $session->get('loginId');
+            $data['valide_n1'] = $session->get('loginId');
             $data['validation'] = date('Y-m-d H:i:s');
             $data['validation_n1'] = date('Y-m-d H:i:s');
         }
