@@ -68,7 +68,7 @@ class IndexController extends BaseController
         $_SESSION['week'] = false;
 
         $groupes = $this->getFrameworksGroup();
-        $site = $this->setSite($site);
+        $site = $this->setSite($request);
         $pasDeDonneesSemaine = $this->noWeekDataFor($datesSemaine, $site);
         global $idCellule;
         $idCellule=0;
@@ -221,7 +221,7 @@ class IndexController extends BaseController
             // Get framework structure, start and end hours.
             list($tabs, $debut, $fin) = $this->getFrameworkStructure($tab);
 
-            $hiddenTables = $this->getHiddenTables($tab);
+            $hiddenTables = $this->getHiddenTables($request, $tab);
 
 
             $sn=1;
@@ -460,7 +460,7 @@ class IndexController extends BaseController
 
         if ($week) {
             $history = new PlanningPositionHistoryHelper();
-            $history->delete_plannings($start, $end, $site);
+            $history->delete_plannings($session, $start, $end, $site);
 
             // Table pl_poste (agents assignment)
             $db = new \db();
@@ -487,7 +487,7 @@ class IndexController extends BaseController
         }
 
         $history = new PlanningPositionHistoryHelper();
-        $history->delete_plannings($date, $date, $site);
+        $history->delete_plannings($session, $date, $date, $site);
 
         // Table pl_poste (agents assignment)
         $db = new \db();
@@ -622,7 +622,7 @@ class IndexController extends BaseController
             $absents = array();
 
             $history = new PlanningPositionHistoryHelper();
-            $history->delete_plannings($elem, $elem, $site, 'import-model');
+            $history->delete_plannings($session, $elem, $elem, $site, 'import-model');
 
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
@@ -1281,12 +1281,14 @@ class IndexController extends BaseController
         return array($tabs, $debut, $fin);
     }
 
-    private function getHiddenTables($tab)
+    private function getHiddenTables($request, $tab)
     {
+        $session = $request->getSession();
+
         $hiddenTables = array();
         $db = new \db();
         $db->select2('hidden_tables', '*', array(
-            'perso_id' => $_SESSION['login_id'],
+            'perso_id' => $session->get('loginId'),
             'tableau' => $tab
         ));
 

@@ -121,7 +121,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
-    public function delete_plannings($start, $end, $site, $reason = 'delete-planning')
+    public function delete_plannings($session, $start, $end, $site, $reason = 'delete-planning')
     {
         $from = \DateTime::createFromFormat('Y-m-d', $start);
         $to = \DateTime::createFromFormat('Y-m-d', $end);
@@ -136,7 +136,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
                 '23:59:59',
                 $site,
                 0,
-                $_SESSION['login_id'],
+                $session->get('loginId'),
                 array()
             );
 

@@ -39,15 +39,17 @@ class AjaxController extends BaseController
      */
     public function agentsBySites(Request $request)
     {
+        $session = $request->getSession();
+
         $sites = json_decode($request->get('sites'));
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($_SESSION['login_id']);
+            ->getManagedFor($session->get('loginId'));
 
         $agents = array();
         foreach ($managed as $m) {
-            if ($m->id() == $_SESSION['login_id'] ||
+            if ($m->id() == $session->get('loginId') ||
                 $this->config('Multisites-nombre') == 1 ||
                 ($sites && $m->inOneOfSites($sites))) {
 
@@ -171,6 +173,8 @@ class AjaxController extends BaseController
      */
     public function holidayAbsenceControl(Request $request)
     {
+      $session = $request->getSession();
+
       $id = $request->get('id');
       $type = $request->get('type');
       $config_name = ($type == "holiday") ? "Conges" : "Absences";
@@ -310,7 +314,7 @@ class AjaxController extends BaseController
           ->getRepository(Agent::class)
           ->setModule($type == 'absence' ? 'absence' : 'holiday')
           ->forAgent($perso_ids[0])
-          ->getValidationLevelFor($_SESSION['login_id']);
+          ->getValidationLevelFor($session->get('loginId'));
 
       $result['admin'] = ($adminN1 or $adminN2);
 

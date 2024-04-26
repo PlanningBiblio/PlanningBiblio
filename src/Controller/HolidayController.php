@@ -28,6 +28,8 @@ class HolidayController extends BaseController
      */
     public function index(Request $request)
     {
+        $session = $request->getSession();
+
         $annee = $request->get('annee');
         $congesAffiches = $request->get('congesAffiches');
         $perso_id = $request->get('perso_id');
@@ -44,12 +46,12 @@ class HolidayController extends BaseController
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         if (($admin or $adminN2) and $perso_id==null) {
-            $perso_id=isset($_SESSION['oups']['conges_perso_id'])?$_SESSION['oups']['conges_perso_id']:$_SESSION['login_id'];
+            $perso_id = $_SESSION['oups']['conges_perso_id'] ?? $session->get('loginId');
         } elseif ($perso_id==null) {
-            $perso_id=$_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         $agents_supprimes=isset($_SESSION['oups']['conges_agents_supprimes'])?$_SESSION['oups']['conges_agents_supprimes']:false;
@@ -66,7 +68,7 @@ class HolidayController extends BaseController
 
         if ($reset) {
             $annee=date("m")<9?date("Y")-1:date("Y");
-            $perso_id=$_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
             $agents_supprimes=false;
         }
         $_SESSION['oups']['conges_annee']=$annee;
@@ -109,7 +111,7 @@ class HolidayController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($_SESSION['login_id'], $agents_supprimes);
+            ->getManagedFor($session->get('loginId'), $agents_supprimes);
         $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
 
         // Recherche des agents pour la fonction nom()
@@ -350,9 +352,9 @@ class HolidayController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
-        if (!$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
+        if (!$adminN1 and !$adminN2 and $perso_id != $session->get('loginId')) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -539,6 +541,8 @@ class HolidayController extends BaseController
      */
     public function add(Request $request)
     {
+        $session = $request->getSession();
+
         // Initialisation des variables
         $perso_id = $request->get('perso_id');
         $dbprefix = $GLOBALS['dbprefix'];
@@ -550,22 +554,22 @@ class HolidayController extends BaseController
         if ($perso_id) {
             $agentRepository->forAgent($perso_id);
         }
-        list($admin, $adminN2) = $agentRepository->getValidationLevelFor($_SESSION['login_id']);
+        list($admin, $adminN2) = $agentRepository->getValidationLevelFor($session->get('loginId'));
 
         if (!$perso_id) {
-            $perso_id = $_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         $sites_select = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedSitesFor($_SESSION['login_id']);
+            ->getManagedSitesFor($session->get('loginId'));
 
         $agents_multiples = (($admin || $adminN2) && $this->config('Conges-Recuperations') == 1);
 
         // Si pas de droits de gestion des congés, on force $perso_id = son propre ID
         if (!$admin && !$adminN2) {
-            $perso_id=$_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         // Calcul des crédits de récupération disponibles lors de l'ouverture du formulaire (date du jour)
@@ -574,7 +578,7 @@ class HolidayController extends BaseController
 
         // Initialisation des variables
         $holiday_helper = new HolidayHelper();
-        $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
+        $perso_id = $perso_id ?? $session->get('loginId');
         $p=new \personnel();
         $p->fetchById($perso_id);
         $conges_anticipation = $p->elements[0]['conges_anticipation'];
@@ -638,12 +642,12 @@ class HolidayController extends BaseController
             'anticipation2'         => $holiday_helper->HumanReadableDuration($anticipation),
             'anticipation_jours'    => $anticipation_jours,
             'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
-            'login_id'              => $_SESSION['login_id'],
+            'login_id'              => $session->get('loginId'),
             'login_nom'             => $_SESSION['login_nom'],
             'login_prenom'          => $_SESSION['login_prenom'],
             'accepted_pending_str'  => $lang['leave_dropdown_accepted_pending'],
             'refused_pending_str'   => $lang['leave_dropdown_refused_pending'],
-            'loggedin_id'           => $_SESSION['login_id'],
+            'loggedin_id'           => $session->get('loginId'),
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'selected_agent_id'     => $perso_id,
@@ -676,6 +680,7 @@ class HolidayController extends BaseController
      */
     public function account(Request $request)
     {
+        $session = $request->getSession();
 
         $droits = $GLOBALS['droits'];
         $admin = false;
@@ -737,7 +742,7 @@ class HolidayController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($_SESSION['login_id'], $agents_supprimes);
+            ->getManagedFor($session->get('loginId'), $agents_supprimes);
 
         $c = new \conges();
         if ($agents_supprimes) {
@@ -937,6 +942,8 @@ class HolidayController extends BaseController
 
     private function save($request)
     {
+        $session = $request->getSession();
+
         $perso_id = $request->get('perso_id');
         $debut = $request->get('debut');
         $fin = $request->get('fin');
@@ -957,7 +964,7 @@ class HolidayController extends BaseController
         $commentaires = $request->get('commentaires');
         $refus = $request->get('refus');
         $valide = $request->get('valide');
-        $login_id = $_SESSION['login_id'];
+        $login_id = $session->get('loginId');
         $lang = $GLOBALS['lang'];
 
         $request->request->set('valide_init', $valide);

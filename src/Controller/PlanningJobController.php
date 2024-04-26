@@ -32,6 +32,8 @@ class PlanningJobController extends BaseController
      */
     public function contextmenu(Request $request)
     {
+        $session = $request->getSession();
+
         $site = $request->get('site');
         $date = $request->get('date');
         $debut = $request->get('debut');
@@ -41,7 +43,7 @@ class PlanningJobController extends BaseController
         $poste = $request->get('poste');
         $CSRFToken = $request->get('CSRFToken');
 
-        $login_id = $_SESSION['login_id'];
+        $login_id = $session->get('loginId');
         $this->droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
         $tab_exclus = array(0);
@@ -77,7 +79,7 @@ class PlanningJobController extends BaseController
         }
 
         // Check logged-in rights.
-        if (!$this->canManagePlanning($site)) {
+        if (!$this->canManagePlanning($session, $site)) {
             return $this->json('forbiden');
         }
 
@@ -810,15 +812,16 @@ class PlanningJobController extends BaseController
      */
     public function undo(Request $request)
     {
-
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
+        $session = $request->getSession();
+
         $date = $request->get('date');
         $site = $request->get('site');
 
-        if (!$this->canManagePlanning($site)) {
+        if (!$this->canManagePlanning($session, $site)) {
             return $this->json('forbiden');
         }
 
@@ -831,7 +834,7 @@ class PlanningJobController extends BaseController
 
         $history = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)
-            ->undoable($date, $site);
+            ->undoable($request, $date, $site);
 
         // Nothing to cancel.
         if (empty($history)) {
@@ -855,7 +858,7 @@ class PlanningJobController extends BaseController
         // Means that after this undo,
         // there will be nothing more to undo,
         // because there is nothing left in history or because the last action is not made by the logged in agent
-        if (empty($history) or $history[0]['updated_by'] != $_SESSION['login_id']) {
+        if (empty($history) or $history[0]['updated_by'] != $session->get('loginId')) {
             $response['remaining_undo'] = 0;
         }
 
@@ -889,11 +892,13 @@ class PlanningJobController extends BaseController
             return $this->redirectToRoute('access-denied');
         }
 
+        $session = $request->getSession();
+
         $date = $request->get('date');
         $site = $request->get('site');
         $CSRFToken = $request->get('CSRFToken');
 
-        if (!$this->canManagePlanning($site)) {
+        if (!$this->canManagePlanning($session, $site)) {
             return $this->json('forbiden');
         }
 
@@ -906,7 +911,7 @@ class PlanningJobController extends BaseController
 
         $history = $this->entityManager
              ->getRepository(PlanningPositionHistory::class)
-             ->redoable($date, $site);
+             ->redoable($request, $date, $site);
 
         // Nothing to cancel.
         if (empty($history)) {
@@ -957,9 +962,9 @@ class PlanningJobController extends BaseController
         return $this->json($response);
     }
 
-    private function canManagePlanning($site)
+    private function canManagePlanning($session, $site)
     {
-        if (!$_SESSION['login_id']) {
+        if (!$session->get('loginId')) {
             return false;
         }
 

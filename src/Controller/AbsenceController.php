@@ -27,6 +27,8 @@ class AbsenceController extends BaseController
      */
     public function index(Request $request)
     {
+        $session = $request->getSession();
+
         $debut = $request->get('debut');
         $fin = $request->get('fin');
         $reset = $request->get('reset');
@@ -50,18 +52,18 @@ class AbsenceController extends BaseController
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         if ($admin or $adminN2) {
             $perso_id = $request->get('perso_id');
             if ($perso_id === null) {
-                $perso_id = isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id'];
+                $perso_id = $_SESSION['oups']['absences_perso_id'] ?? $session->get('loginId');
             }
         } else {
-            $perso_id = $_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
         if ($reset) {
-            $perso_id = $_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         $agents_supprimes = isset($_SESSION['oups']['absences_agents_supprimes'])?$_SESSION['oups']['absences_agents_supprimes']:false;
@@ -115,7 +117,7 @@ class AbsenceController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
-            ->getManagedFor($_SESSION['login_id']);
+            ->getManagedFor($session->get('loginId'));
 
         // Liste des agents à conserver :
         $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
@@ -182,13 +184,15 @@ class AbsenceController extends BaseController
      */
     public function add(Request $request)
     {
+        $session = $request->getSession();
+
         $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
 
         list($this->admin, $this->adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         $this->agents_multiples = (($this->admin or $this->adminN2) or in_array(9, $this->droits));
 
@@ -199,7 +203,7 @@ class AbsenceController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
-            ->getManagedFor($_SESSION['login_id']);
+            ->getManagedFor($session->get('loginId'));
 
         // If logged in agent has the permission
         // to "create absences for other agents",
@@ -227,7 +231,7 @@ class AbsenceController extends BaseController
             'agents_multiples'      => $this->agents_multiples,
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'fullday_checked'       => $this->config('Absences-journeeEntiere'),
-            'loggedin_id'           => $_SESSION['login_id'],
+            'loggedin_id'           => $session->get('loginId'),
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'reason_types'          => $this->reasonTypes(),
@@ -303,6 +307,7 @@ class AbsenceController extends BaseController
      */
     public function edit(Request $request)
     {
+        $session = $request->getSession();
 
         $id = $request->get('id');
 
@@ -329,7 +334,7 @@ class AbsenceController extends BaseController
                 ->getRepository(Agent::class)
                 ->setModule('absence')
                 ->forAgent($agent['perso_id'])
-                ->getValidationLevelFor($_SESSION['login_id']);
+                ->getValidationLevelFor($session->get('loginId'));
 
             $adminN1 = $N1 === false ? $N1 : $adminN1;
             $adminN2 = $N2 === false ? $N2 : $adminN2;
@@ -396,7 +401,7 @@ class AbsenceController extends BaseController
         if (!$acces) {
             // Les non admin ayant le droits de modifier leurs absences ont accès si l'absence les concerne
             $agent_ids = array_map(function($a) { return $a['perso_id'];}, $agents);
-            $acces = (in_array(6, $this->droits) and in_array($_SESSION['login_id'], $agent_ids)) ? true : false;
+            $acces = (in_array(6, $this->droits) and in_array($session->get('loginId'), $agent_ids));
         }
 
         // Si config Absences-adminSeulement, seuls les admins ont accès à cette page
@@ -417,7 +422,7 @@ class AbsenceController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
-            ->getManagedFor($_SESSION['login_id'], 1);
+            ->getManagedFor($session->get('loginId'), 1);
 
         // If logged in agent has the permission
         // to "create absences for other agents",
@@ -445,7 +450,7 @@ class AbsenceController extends BaseController
             'hre_debut'             => $hre_debut,
             'hre_fin'               => $hre_fin,
             'CSRFToken'             => $GLOBALS['CSRFSession'],
-            'loggedin_id'           => $_SESSION['login_id'],
+            'loggedin_id'           => $session->get('loginId'),
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'reasons'               => $this->availablesReasons(),
@@ -463,6 +468,7 @@ class AbsenceController extends BaseController
      */
     public function delete_absence(Request $request)
     {
+        $session = $request->getSession();
 
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get('id');
@@ -492,7 +498,7 @@ class AbsenceController extends BaseController
         // check if logged in agent can manage all agents in absence.
         // Else, admin = false.
         if ($this->config('Absences-notifications-agent-par-agent') and $this->admin) {
-            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+            $logged_in = $this->entityManager->find(Agent::class, $session->get('loginId'));
             $this->admin = $logged_in->isManagerOf($perso_ids);
         }
 
@@ -503,7 +509,7 @@ class AbsenceController extends BaseController
         }
 
         if (!$acces) {
-            $acces = (in_array(6, $this->droits) and $perso_id == $_SESSION['login_id'] and empty($groupe));
+            $acces = (in_array(6, $this->droits) and $perso_id == $session->get('loginId') and empty($groupe));
         }
 
         if (!$acces) {
@@ -752,22 +758,25 @@ class AbsenceController extends BaseController
         return $docsarray;
     }
 
-    private function save_new(Request $request) {
+    private function save_new(Request $request)
+    {
+        $session = $request->getSession();
+
         $perso_id = $request->get('perso_id');
         $perso_ids = array();
         if (!empty($perso_id)) {
             $perso_ids[] = $perso_id;
         } else {
-            $perso_ids = $this->filterAgents($request->get('perso_ids'));
+            $perso_ids = $this->filterAgents($request);
         }
 
         // Sécurité : Si l'agent enregistrant l'absence n'est pas admin et n'est pas dans la liste des absents ou pas autorisé à enregistrer des absences pour plusieurs agents, l'accès est refusé.
         $access = false;
         if ($this->admin) {
             $access = true;
-        } elseif (count($perso_ids) == 1 and in_array($_SESSION['login_id'], $perso_ids)) {
+        } elseif (count($perso_ids) == 1 and in_array($session->get('loginId'), $perso_ids)) {
             $access = true;
-        } elseif ($this->agents_multiples and in_array($_SESSION['login_id'], $perso_ids)) {
+        } elseif ($this->agents_multiples and in_array($session->get('loginId'), $perso_ids)) {
             $access = true;
         }
 
@@ -841,7 +850,10 @@ class AbsenceController extends BaseController
 
     }
 
-    private function update(Request $request) {
+    private function update(Request $request)
+    {
+        $session = $request->getSession();
+
         // Initialisation des variables
         $commentaires = $request->get('commentaires');
         $CSRFToken = trim($request->get('CSRFToken'));
@@ -992,7 +1004,7 @@ class AbsenceController extends BaseController
             return $this->redirectToRoute('absence.index');
         }
 
-        $acces = $this->canEdit($perso_ids);
+        $acces = $this->canEdit($session, $perso_ids);
         if (!$acces) {
             $this->session->getFlashBag()->add('error', "Accès refusé");
             return $this->redirectToRoute('absence.index');
@@ -1047,12 +1059,12 @@ class AbsenceController extends BaseController
             if ($valide == 1 or $valide == -1) {
                 $valide_n1 = $valide1_n1;
                 $validation_n1 = $validation1_n1;
-                $valide_n2 = $valide * $_SESSION['login_id'];
+                $valide_n2 = $valide * $session->get('loginId');
                 $validation_n2 = date("Y-m-d H:i:s");
             }
             // Validated or refused level 1.
             elseif ($valide == 2 or $valide == -2) {
-                $valide_n1 = ($valide / 2) * $_SESSION['login_id'];
+                $valide_n1 = ($valide / 2) * $session->get('loginId');
                 $validation_n1 = date("Y-m-d H:i:s");
             }
         }
@@ -1441,7 +1453,11 @@ class AbsenceController extends BaseController
         return $this->redirectToRoute('absence.index');
     }
 
-    private function filterAgents($perso_ids) {
+    private function filterAgents($request)
+    {
+        $session = $request->getSession();
+
+        $perso_ids = $request->get('perso_ids');
 
         $valid_ids = array();
 
@@ -1498,9 +1514,9 @@ class AbsenceController extends BaseController
         // If Absences-notifications-agent-par-agent is true,
         // delete all agents the logged in user cannot create absences for.
         if ($this->config('Absences-notifications-agent-par-agent') and !$this->adminN2) {
-            $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+            $logged_in = $this->entityManager->find(Agent::class, $session->get('loginId'));
             $accepted_ids = array_map(function($m) { return $m->perso_id()->id(); }, $logged_in->getManaged());
-            $accepted_ids[] = $_SESSION['login_id'];
+            $accepted_ids[] = $session->get('loginId');
 
             foreach ($valid_ids as $k => $v) {
                 if (!in_array($v, $accepted_ids)) {
@@ -1597,7 +1613,7 @@ class AbsenceController extends BaseController
         return $absences_infos;
     }
 
-    private function canEdit($perso_ids)
+    private function canEdit($session, $perso_ids)
     {
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             if (in_array((200+$i), $this->droits) or in_array((500+$i), $this->droits)) {
@@ -1605,11 +1621,11 @@ class AbsenceController extends BaseController
             }
         }
 
-        if ($this->edit_own_absences and count($perso_ids) == 1 and in_array($_SESSION['login_id'], $perso_ids)) {
+        if ($this->edit_own_absences and count($perso_ids) == 1 and in_array($session->get('loginId'), $perso_ids)) {
             return true;
         }
 
-        if ($this->agents_multiples and $this->edit_own_absences and in_array($_SESSION['login_id'], $perso_ids)) {
+        if ($this->agents_multiples and $this->edit_own_absences and in_array($session->get('loginId'), $perso_ids)) {
             return true;
         }
 

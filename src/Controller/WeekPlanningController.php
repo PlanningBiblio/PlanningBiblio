@@ -32,7 +32,7 @@ class WeekPlanningController extends BaseController
         $tableau = $request->get('tableau');
         $date = $request->get('date');
 
-        $site = $this->setSite($site);
+        $site = $this->setSite($request);
 
         $dbprefix = $GLOBALS['dbprefix'];
         $CSRFSession = $GLOBALS['CSRFSession'];

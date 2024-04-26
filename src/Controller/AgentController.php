@@ -61,12 +61,14 @@ class AgentController extends BaseController
     /**
      * @Route("/agent", name="agent.index", methods={"GET"})
      */
-    public function index(Request $request){
+    public function index(Request $request)
+    {
+        $session = $request->getSession();
 
         $actif = $request->get('actif');
         $lang = $GLOBALS['lang'];
         $droits = $GLOBALS['droits'];
-        $login_id = $_SESSION['login_id'];
+        $login_id = $session->get('loginId');
 
         $ldapBouton = ($this->config('LDAP-Host') and $this->config('LDAP-Suffix'));
         $ldifBouton = ($this->config('LDIF-File'));
@@ -1143,7 +1145,9 @@ class AgentController extends BaseController
             return $response;
         }
 
-        $agent_id = $_SESSION['login_id'];
+        $session = $request->getSession();
+
+        $agent_id = $session->get('loginId');
         $password = $request->get('password');
         $current_password = $request->get('current_password');
 
@@ -1202,7 +1206,9 @@ class AgentController extends BaseController
      */
     public function isCurrentPassword(Request $request)
     {
-        $agent_id = $_SESSION['login_id'];
+        $session = $request->getSession();
+
+        $agent_id = $session->get('loginId');
         $password = $request->get('password');
         $response = new Response();
 
