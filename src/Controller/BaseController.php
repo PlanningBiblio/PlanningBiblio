@@ -55,8 +55,12 @@ class BaseController extends AbstractController
         $this->notifier = $notifier;
     }
 
-    public function setSite($site)
+    public function setSite($request)
     {
+        $session = $request->getSession();
+
+        $site = $request->get('site');
+
         // setSite is used by IndexController::index and WeekController::week
 
         // Multisites: default site is 1.
@@ -69,7 +73,7 @@ class BaseController extends AbstractController
 
         if (!$site) {
             $p = new \personnel();
-            $p->fetchById($_SESSION['login_id']);
+            $p->fetchById($session->get('loginId'));
             $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
         }
 
