@@ -257,13 +257,8 @@ class CJMail implements NotificationTransporterInterface
         $this->message = $message;
     }
 
-  
-    public function send()
+    public function setPHPMailer()
     {
-        if ($this->prepare() === false) {
-            return false;
-        }
-    
         $mail = new PHPMailer();
         $mail->setLanguage('fr');
         $mail->CharSet="utf-8";
@@ -293,11 +288,23 @@ class CJMail implements NotificationTransporterInterface
             foreach ($this->to as $elem) {
                 $mail->addBCC($elem);
             }
+            $mail->addAddress($mail->From);
         } else {
             $mail->AddAddress($this->to[0]);
         }
     
         $mail->Subject = $this->subject;
+
+        return $mail;
+    }
+
+    public function send()
+    {
+        if ($this->prepare() === false) {
+            return false;
+        }
+
+        $mail = $this->setPHPMailer();
 
         if (!$mail->Send()) {
             $this->error.=$mail->ErrorInfo ."\n";
