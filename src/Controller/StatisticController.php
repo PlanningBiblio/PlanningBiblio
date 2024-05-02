@@ -250,7 +250,7 @@ class StatisticController extends BaseController
             if (in_array($type, ['service', 'status'])) {
                 for ($i = 0; $i < count($resultat); $i++) {
 
-                    if ($resultat[$i]['perso_id'] == 0) {
+                    if (!array_key_exists($resultat[$i]['perso_id'], $agents)) {
                         continue;
                     }
 
