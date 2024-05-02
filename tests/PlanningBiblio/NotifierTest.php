@@ -78,10 +78,26 @@ class NotifierTest extends TestCase
 
         $notifier = new Notifier();
 
-	$notifier->setRecipients('joe@bar.com');
+        $notifier->setRecipients('joe@bar.com');
         $notifier->setMessageCode('create_account');
-	$this->assertEquals('CJMail', get_class($notifier->getTransporter()), 'Default transporter is CJMail');
+        $this->assertEquals('CJMail', get_class($notifier->getTransporter()), 'Default transporter is CJMail');
         $this->assertEquals('', $notifier->getError(), 'No transporter error');
+    }
+
+    public function testMailRecipients()
+    {
+        $GLOBALS['config']['Mail-IsEnabled'] = 1;
+        $GLOBALS['config']['Mail-From'] = 'notifications@planno.fr';
+        $m = new CJMail();
+        $destinataires = ['alice@example.com', 'bob@example.com', 'eve@example.com'];
+        $m->to = $destinataires;
+        $mail = $m->setPHPMailer();
+        $bccAddresses = $mail->getBCCAddresses();
+        $this->assertEquals('alice@example.com', $bccAddresses[0][0], 'When multiple recipients are given, they are all in BCC (Alice)');
+        $this->assertEquals('bob@example.com', $bccAddresses[1][0], 'When multiple recipients are given, they are all in BCC (Bob)');
+        $this->assertEquals('eve@example.com', $bccAddresses[2][0], 'When multiple recipients are given, they are all in BCC (Eve)');
+        $toAddresses = $mail->getToAddresses();
+        $this->assertEquals('notifications@planno.fr', $toAddresses[0][0], 'When multiple recipients are given, Mail-From is used as TO');
     }
 
 }
