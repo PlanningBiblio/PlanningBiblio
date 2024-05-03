@@ -6,6 +6,7 @@ class WorkingHours
 {
     private $times;
     private $breaks;
+    private $free_break_already_removed;
 
     function __construct($times, $breaks = array(), $free_break_already_removed = false)
     {

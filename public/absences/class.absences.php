@@ -63,6 +63,9 @@ class absences
     public $motif_autre = null;
     public $perso_id=null;
     public $perso_ids=array();
+    public String $pj1;
+    public String $pj2;
+    public String $so;
     public $recipients=array();
     public $rrule = null;
     public $teleworking = true;

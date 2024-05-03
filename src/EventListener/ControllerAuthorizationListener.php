@@ -17,14 +17,12 @@ use ReflectionClass;
 
 class ControllerAuthorizationListener
 {
-
-    private $templateParams = array();
-
+    private $anonymous_pages = array('', '/index', '/week', '/help');
+    private Array $droits;
+    private EntityManagerInterface $entityManager;
     private $permissions = array();
-
-    protected $entityManager;
-
-    protected $anonymous_pages = array('', '/index', '/week', '/help');
+    private $templateParams = array();
+    private \Twig\ENvironment $twig;
 
     public function __construct(\Twig\Environment $twig, EntityManagerInterface $em)
     {

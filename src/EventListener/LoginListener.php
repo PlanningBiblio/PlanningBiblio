@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class LoginListener
 {
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $em)
     {

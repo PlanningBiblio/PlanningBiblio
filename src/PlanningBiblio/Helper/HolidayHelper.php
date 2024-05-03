@@ -16,6 +16,7 @@ class HolidayHelper extends BaseHelper
     public $data;
 
     private $error = false;
+    private String $message;
 
     public function __construct($data = null)
     {

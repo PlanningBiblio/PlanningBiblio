@@ -10,8 +10,6 @@ require_once(__DIR__ . '/../../public/conges/class.conges.php');
 
 class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
 {
-    protected $builder;
-
     protected function setUp(): void
     {
         parent::setUp();
