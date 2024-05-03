@@ -88,13 +88,8 @@ workflows:
             name: plb
             php: '8.1'
       - install-and-test:
-          name: php:8.2
+          name: php:8.3:mariadb10.11
           e:
             name: plb
-            php: '8.2'
-      - install-and-test:
-          name: php:8.2:mariadb10.11
-          e:
-            name: plb
-            php: '8.2'
+            php: '8.3'
             mariadb: '10.11'
