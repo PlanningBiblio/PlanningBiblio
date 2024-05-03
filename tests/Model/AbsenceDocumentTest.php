@@ -13,8 +13,8 @@ use Symfony\Component\DomCrawler\Crawler;
 class AbsenceDocumentTest extends PLBWebTestCase
 {
     public function testAdd() {
-        global $entityManager;
-        $builder = new FixtureBuilder();
+        $entityManager = $this->entityManager;
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(AbsenceDocument::class);

@@ -15,7 +15,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
     public function testAdd()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -41,7 +41,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
     public function testNewForm()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -80,7 +80,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
     public function testFormEdit()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -134,7 +134,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
     public function testAbsenceInfoList()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
         date_default_timezone_set('UTC');
 
         $builder = new FixtureBuilder();
@@ -186,6 +186,3 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(3)->text('Node does not exist', false), 'hello','text info is ok');
     }
 }
-
-
-

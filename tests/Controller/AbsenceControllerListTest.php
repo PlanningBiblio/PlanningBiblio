@@ -11,22 +11,11 @@ require_once(__DIR__ . '/../../public/absences/class.absences.php');
 
 class AbsenceControllerListTest extends PLBWebTestCase
 {
-    protected $builder;
-    protected $entityManager;
-    protected $CSRFToken;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        global $entityManager;
-        $_SESSION['oups']['CSRFToken'] = '00000';
-        $this->CSRFToken = '00000';
-
-        $this->builder = new FixtureBuilder();
         $this->builder->delete(Agent::class);
-
-        $this->entityManager = $entityManager;
     }
 
     protected function setParam($name, $value)

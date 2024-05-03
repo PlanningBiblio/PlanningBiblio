@@ -17,18 +17,10 @@ use Tests\PLBWebTestCase;
 
 class PlanningJobControllerTest extends PLBWebTestCase
 {
-
-    protected $builder;
-    protected $CSRFToken;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        $_SESSION['oups']['CSRFToken'] = '00000';
-        $this->CSRFToken = '00000';
-
-        $this->builder = new FixtureBuilder();
         $this->builder->delete(Agent::class);
     }
 

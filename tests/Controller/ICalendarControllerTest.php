@@ -12,18 +12,6 @@ use Tests\FixtureBuilder;
 
 class ICalendarControllerTest extends PLBWebTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        global $entityManager;
-
-        $_SESSION['oups']['CSRFToken'] = '00000';
-        $this->CSRFToken = '00000';
-        $this->builder = new FixtureBuilder();
-        $this->entityManager = $entityManager;
-    }
-
 
     public function testICalendar()
     {

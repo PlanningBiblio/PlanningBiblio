@@ -8,22 +8,11 @@ use Tests\FixtureBuilder;
 
 class AgentControllerTest extends PLBWebTestCase
 {
-    protected $builder;
-    protected $entityManager;
-    protected $CSRFToken;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        global $entityManager;
-        $_SESSION['oups']['CSRFToken'] = '00000';
-        $this->CSRFToken = '00000';
-
-        $this->builder = new FixtureBuilder();
         $this->builder->delete(Agent::class);
-
-        $this->entityManager = $entityManager;
     }
 
     protected function setParam($name, $value)

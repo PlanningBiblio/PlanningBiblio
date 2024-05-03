@@ -14,9 +14,9 @@ class SkillControllerTest extends PLBWebTestCase
 {
     public function testAdd()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Skill::class);
@@ -36,9 +36,9 @@ class SkillControllerTest extends PLBWebTestCase
 
     public function testNewForm()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
 
@@ -64,9 +64,9 @@ class SkillControllerTest extends PLBWebTestCase
 
     public function testFormEdit()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Skill::class);
@@ -101,9 +101,9 @@ class SkillControllerTest extends PLBWebTestCase
 
     public function testSkillList()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Skill::class);

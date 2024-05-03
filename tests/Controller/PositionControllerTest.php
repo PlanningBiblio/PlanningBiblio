@@ -14,9 +14,9 @@ class PositionControllerTest extends PLBWebTestCase
 {
     public function testAdd()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Position::class);
@@ -41,9 +41,9 @@ class PositionControllerTest extends PLBWebTestCase
 
     public function testNewForm()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
 
@@ -119,9 +119,9 @@ class PositionControllerTest extends PLBWebTestCase
 
     public function testFormEdit()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Position::class);
@@ -222,9 +222,9 @@ class PositionControllerTest extends PLBWebTestCase
 
     public function testPositionList()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Position::class);

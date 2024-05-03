@@ -10,11 +10,9 @@ class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
     public function testLoginFailedWait()
     {
         $GLOBALS['config']['IPBlocker-Attempts'] = 3;
-        $_SESSION['oups']['CSRFToken'] = 'FOO';
-        $CSRFToken = 'FOO';
         $_SERVER['REMOTE_ADDR'] = '11.11.11.11';
 
-        loginFailed('ben', $CSRFToken);
+        loginFailed('ben', $this->CSRFToken);
 
         $client = static::createClient([], ['REMOTE_ADDR' => '11.11.11.11']);
         $client->request('GET', '/login');
@@ -26,7 +24,7 @@ class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
             "One failed attempt don't block the IP"
         );
 
-        loginFailed('ben', $CSRFToken);
+        loginFailed('ben', $this->CSRFToken);
         $client->request('GET', '/login');
 
         $this->assertEquals(
@@ -35,7 +33,7 @@ class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
             "Second failed attempt don't block the IP"
         );
 
-        loginFailed('ben', $CSRFToken);
+        loginFailed('ben', $this->CSRFToken);
         $client->request('GET', '/login');
 
         $this->assertEquals(
@@ -44,7 +42,7 @@ class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
             "Third failed attempt will block the IP"
         );
 
-        loginFailed('ben', $CSRFToken);
+        loginFailed('ben', $this->CSRFToken);
         $client->request('GET', '/login');
 
         $this->assertEquals(

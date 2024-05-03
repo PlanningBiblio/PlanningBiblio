@@ -16,17 +16,11 @@ class ClosingDayControllerTest extends PLBWebTestCase
 
     public function testListClosingDay()
     {
-        global $entityManager;
-
-        $builder = new FixtureBuilder();
-        $builder->delete(Agent::class);
-
-        $_SESSION['oups']['CSRFToken'] = '00000';
-        $GLOBALS['config']['Multisites-nombre'] = 1;
+        $this->builder->delete(Agent::class);
 
         $client = static::createClient();
 
-        $agent = $builder->build(
+        $agent = $this->builder->build(
             Agent::class,
             array(
                 'login' => 'agent_test',
@@ -50,9 +44,9 @@ class ClosingDayControllerTest extends PLBWebTestCase
             $annee2 = "$y1-$y2";
         }
 
-        $builder->delete(PublicHoliday::class);
+        $this->builder->delete(PublicHoliday::class);
 
-        $public_holiday_1 = $builder->build(
+        $public_holiday_1 = $this->builder->build(
             PublicHoliday::class,
             array(
                 'annee' => $annee,
@@ -64,7 +58,7 @@ class ClosingDayControllerTest extends PLBWebTestCase
             )
         );
         $id1 = $public_holiday_1->id();
-        $public_holiday_2 = $builder->build(
+        $public_holiday_2 = $this->builder->build(
             PublicHoliday::class,
             array(
                 'annee' => $annee,

@@ -8,18 +8,15 @@ use Tests\FixtureBuilder;
 
 class HolidayControllerHalfdayTest extends PLBWebTestCase
 {
-    protected $builder;
-
     protected function setUp(): void
     {
         parent::setUp();
+
         $GLOBALS['config']['PlanningHebdo-Agents'] = 1;
         $GLOBALS['config']['Conges-Enable'] = 1;
         $GLOBALS['config']['Conges-Mode'] = 'jours';
         $GLOBALS['config']['Conges-demi-journees'] = 1;
-        $_SESSION['oups']['CSRFToken'] = '00000';
 
-        $this->builder = new FixtureBuilder();
         $this->deleteWorkingHours();
         $this->builder->delete(Agent::class);
         $this->builder->delete(Holiday::class);
@@ -30,7 +27,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
 
     public function testHolidayOneAgentOnFullDay()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
 
@@ -55,7 +52,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
 
     public function testHolidayOneAgentOnMorning()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
@@ -81,7 +78,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
 
     public function testHolidayOneAgentOnAfternoon()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
@@ -107,7 +104,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
 
     public function testHolidayManyAgentsOnAfternoon()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $abreton = $this->builder->build(Agent::class, array('login' => 'abreton'));
@@ -149,7 +146,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
 
     public function testHolidayOneAgentSeveralDays()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
