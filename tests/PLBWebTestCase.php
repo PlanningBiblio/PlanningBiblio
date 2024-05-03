@@ -20,14 +20,17 @@ class PLBWebTestCase extends PantherTestCase
     {
         global $entityManager;
 
+        $CSRFToken = '00000';
+
         $this->client = static::createClient();
-        $this->CSRFToken = '00000';
+        $this->CSRFToken = $CSRFToken;
         $this->builder = new FixtureBuilder();
         $this->entityManager = $entityManager;
 
         $_SESSION['oups']['Auth-Mode'] = 'SQL';
         $_SESSION['login_id'] = 1;
-        $_SESSION['oups']['CSRFToken'] = '00000';
+        $_SESSION['oups']['CSRFToken'] = $CSRFToken;
+        $GLOBALS['CSRFSession'] = $CSRFToken;
     }
 
     protected function logInAgent($agent, $rights = array(99, 100)) {
