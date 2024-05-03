@@ -569,6 +569,7 @@ class dbh
     public $dbprefix = null;
     public $error = null;
     public $msg = null;
+    public $nb = null;
     public $pdo = null;
     public $stmt = null;
     public $result = null;

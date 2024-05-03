@@ -27,6 +27,7 @@ class postes
 {
     public $CSRFToken = null;
     public $id=null;
+    public $elements = array();
     public $site=null;
 
     public function __construct()

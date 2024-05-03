@@ -37,7 +37,7 @@ class planningHebdo
     public $tri=null;
     public $valide=null;
     public $merge_exception = true;
-
+    public Array $recipients;
 
     public function __construct()
     {
