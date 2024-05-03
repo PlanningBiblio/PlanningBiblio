@@ -112,7 +112,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         // Create agents
         $arrivee = \DateTime::createFromFormat("d/m/Y", "01/10/2022");
-        $depart = \DateTime::createFromFormat("d/m/Y", "01/12/2022");
+        $depart = new DateTime('+ 1 year');
 
         $builder->delete(Agent::class);
         $jdevoe = $this->builder->build(Agent::class, array(
@@ -228,7 +228,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         // Create agent
         $arrivee = \DateTime::createFromFormat("d/m/Y", "01/10/2022");
-        $depart = \DateTime::createFromFormat("d/m/Y", "01/12/2022");
+        $depart = new DateTime('+ 1 year');
 
         $builder->delete(Agent::class);
         $jdevoe = $this->builder->build(Agent::class, array(
@@ -344,7 +344,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         // Create agent
         $arrivee = \DateTime::createFromFormat("d/m/Y", "01/10/2022");
-        $depart = \DateTime::createFromFormat("d/m/Y", "01/12/2022");
+        $depart = new DateTime('+ 1 year');
 
         $builder->delete(Agent::class);
         $jdevoe = $this->builder->build(Agent::class, array(
@@ -441,7 +441,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         // Create agent
         $arrivee = \DateTime::createFromFormat("d/m/Y", "01/10/2022");
-        $depart = \DateTime::createFromFormat("d/m/Y", "01/12/2022");
+        $depart = new DateTime('+ 1 year');
 
         $builder->delete(Agent::class);
         $jdevoe = $this->builder->build(Agent::class, array(
