@@ -52,6 +52,7 @@ class conges
     public $minutes=null;
     public $perso_id=null;
     public $recupId=null;
+    public $responsables = array();
     public $samedis=array();
     public $sites=array();
     public $supprime = true;

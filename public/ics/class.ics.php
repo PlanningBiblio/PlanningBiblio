@@ -72,7 +72,7 @@ class CJICS
     
         extract($params);
     
-        $description = $comment ?? null;
+        $description = $comment ?? '';
         $createdAt = isset($createdAt) ? gmdate('Ymd\THis\Z', $createdAt) : null;
         $floor = $floor ?? null;
         $organizer = $organizer ?? null;

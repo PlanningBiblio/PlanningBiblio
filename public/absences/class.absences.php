@@ -58,7 +58,10 @@ class absences
     public $id = null;
     public $ignoreFermeture=false;
     public $last_modified = null;
+    public $message = '';
     public $minutes=0;
+    public $msg2 = '';
+    public $msg2_type = '';
     public $motif = null;
     public $motif_autre = null;
     public $perso_id=null;
@@ -67,6 +70,7 @@ class absences
     public String $pj2;
     public String $so;
     public $recipients=array();
+    public $responsables = array();
     public $rrule = null;
     public $teleworking = true;
     public $validation_n1 = null;
