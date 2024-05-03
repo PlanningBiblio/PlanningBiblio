@@ -10,8 +10,6 @@ use Tests\FixtureBuilder;
 
 class HolidayControllerListTest extends PLBWebTestCase
 {
-    protected $builder;
-
     protected function setUp(): void
     {
         parent::setUp();

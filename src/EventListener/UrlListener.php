@@ -11,6 +11,8 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class UrlListener
 {
+    private EntityManagerInterface $entityManager;
+
     public function __construct(EntityManagerInterface $em)
     {
         $this->entityManager = $em;

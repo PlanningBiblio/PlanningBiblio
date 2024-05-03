@@ -12,9 +12,6 @@ use Tests\FixtureBuilder;
 
 class ICalendarControllerTest extends PLBWebTestCase
 {
-    private $builder;
-    private $entityManager;
-
     protected function setUp(): void
     {
         parent::setUp();

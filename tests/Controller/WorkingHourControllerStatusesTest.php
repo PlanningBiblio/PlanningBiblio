@@ -8,8 +8,6 @@ use Tests\FixtureBuilder;
 
 class WorkingHourControllerStatusesTest extends PLBWebTestCase
 {
-    protected $builder;
-
     protected function setUp(): void
     {
         parent::setUp();

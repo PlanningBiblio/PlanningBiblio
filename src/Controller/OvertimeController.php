@@ -19,6 +19,9 @@ include_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 class OvertimeController extends BaseController
 {
     use \App\Controller\Traits\EntityValidationStatuses;
+
+    private Array $droits;
+
     /**
      * @Route("/overtime", name="overtime.index", methods={"GET"})
      */

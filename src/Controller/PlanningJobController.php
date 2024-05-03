@@ -27,6 +27,8 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class PlanningJobController extends BaseController
 {
+    private Array $droits;
+
     /**
      * @Route("/planningjob/contextmenu", name="planningjob.contextmenu", methods={"GET"})
      */

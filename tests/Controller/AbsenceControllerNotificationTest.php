@@ -9,8 +9,6 @@ use Tests\FixtureBuilder;
 
 class AbsenceControllerNotificationTest extends PLBWebTestCase
 {
-    protected $builder;
-
     protected function setUp(): void
     {
         parent::setUp();

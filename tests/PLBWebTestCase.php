@@ -11,7 +11,10 @@ use Symfony\Component\Panther\PantherTestCase;
 
 class PLBWebTestCase extends PantherTestCase
 {
-    public $client;
+    protected $builder;
+    protected $client;
+    protected $CSRFToken;
+    protected $entityManager;
 
     protected function setUp(): void
     {
