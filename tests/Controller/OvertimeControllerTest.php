@@ -16,9 +16,9 @@ class OvertimeControllerTest extends PLBWebTestCase
 
     public function testSave()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(OverTime::class);
@@ -61,10 +61,10 @@ class OvertimeControllerTest extends PLBWebTestCase
 
     public function testIndex()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
         date_default_timezone_set('UTC');
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'John'));
         $this->logInAgent($agent, array(100));
@@ -174,9 +174,9 @@ class OvertimeControllerTest extends PLBWebTestCase
 
     public function testEdit()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'J'));
         $builder->delete(OverTime::class);

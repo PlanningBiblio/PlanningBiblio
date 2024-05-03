@@ -10,21 +10,11 @@ use Tests\FixtureBuilder;
 
 class AgentControllerLoginCSRFTest extends PLBWebTestCase
 {
-
-    protected $builder;
-    protected $entityManager;
-    protected $CSRFToken;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        global $entityManager;
-
-        $this->builder = new FixtureBuilder();
         $this->builder->delete(Agent::class);
-
-        $this->entityManager = $entityManager;
     }
 
     protected function setParam($name, $value)

@@ -14,7 +14,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
 {
     public function testAdd()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -42,7 +42,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
     public function testNewForm()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -88,7 +88,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
     public function testFormEdit()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);

@@ -12,7 +12,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 {
     public function testAdd()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -39,7 +39,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
     public function testNewForm()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -78,7 +78,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
     public function testFormEdit()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -133,7 +133,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
     public function testHolidayInfoList()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
         date_default_timezone_set('UTC');
 
         $builder = new FixtureBuilder();

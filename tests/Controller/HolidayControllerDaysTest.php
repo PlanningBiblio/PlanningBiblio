@@ -8,19 +8,16 @@ use Tests\FixtureBuilder;
 
 class HolidayControllerDaysTest extends PLBWebTestCase
 {
-    protected $builder;
-
     protected function setUp(): void
     {
         parent::setUp();
+
         $GLOBALS['config']['PlanningHebdo-Agents'] = 1;
         $GLOBALS['config']['Conges-Enable'] = 1;
         $GLOBALS['config']['Conges-Mode'] = 'jours';
         $GLOBALS['config']['Conges-demi-journees'] = 0;
         $GLOBALS['config']['Conges-Recuperations'] = 1;
-        $_SESSION['oups']['CSRFToken'] = '00000';
 
-        $this->builder = new FixtureBuilder();
         $this->deleteWorkingHours();
         $this->builder->delete(Agent::class);
         $this->builder->delete(Holiday::class);
@@ -31,7 +28,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
 
     public function testHolidayOneAgentManyDays()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $jdevoe = $this->builder->build(Agent::class,
             array(
@@ -81,7 +78,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
 
     public function testHolidayManyAgentManyDays()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $jdevoe = $this->builder->build(Agent::class,
             array(
@@ -167,7 +164,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
 
     public function testHolidayManyAgentManyDaysWithRemainingHoliday()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $jdevoe = $this->builder->build(Agent::class,
             array(

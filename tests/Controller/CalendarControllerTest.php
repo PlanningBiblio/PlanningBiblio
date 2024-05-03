@@ -9,8 +9,6 @@ use Symfony\Component\DomCrawler\Crawler;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-
-
 class CalendarControllerTest extends PLBWebTestCase
 {
     public function testCalendarWithMultiSites()

@@ -8,18 +8,15 @@ use Tests\FixtureBuilder;
 
 class HolidayControllerHolidayCreditTest extends PLBWebTestCase
 {
-    protected $builder;
-
     protected function setUp(): void
     {
         parent::setUp();
+
         $GLOBALS['config']['PlanningHebdo-Agents'] = 1;
         $GLOBALS['config']['Conges-Enable'] = 1;
         $GLOBALS['config']['Conges-Mode'] = 'jours';
         $GLOBALS['config']['Conges-demi-journees'] = 1;
-        $_SESSION['oups']['CSRFToken'] = '00000';
 
-        $this->builder = new FixtureBuilder();
         $this->deleteWorkingHours();
         $this->builder->delete(Agent::class);
 
@@ -29,7 +26,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
 
     public function testHolidayOnHalfday()
     {
-        global $entityManager;
+        $entityManager = $this->entityManager;
 
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));

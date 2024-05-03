@@ -16,17 +16,14 @@ class IndexControllerTest extends PLBWebTestCase
 {
     public function testPlanningNotReadyWithoutPermission()
     {
-        global $entityManager;
-
-        $builder = new FixtureBuilder();
-        $builder->delete(Agent::class);
-        $builder->delete(PlanningPosition::class);
-        $builder->delete(PlanningPositionTabAffectation::class);
+        $this->builder->delete(Agent::class);
+        $this->builder->delete(PlanningPosition::class);
+        $this->builder->delete(PlanningPositionTabAffectation::class);
 
 
         $client = static::createClient();
 
-        $agent = $builder->build(
+        $agent = $this->builder->build(
             Agent::class,
             array(
                 'login' => 'jdoenv',
@@ -47,7 +44,7 @@ class IndexControllerTest extends PLBWebTestCase
 
         $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$y");
 
-        $pl_post_lock = $builder->build
+        $pl_post_lock = $this->builder->build
         (
             PlanningPositionLock::class,
             array(
@@ -60,7 +57,7 @@ class IndexControllerTest extends PLBWebTestCase
             )
         );
 
-        $pl_post_tab_affect = $builder->build
+        $pl_post_tab_affect = $this->builder->build
         (
             PlanningPositionTabAffectation::class,
             array(

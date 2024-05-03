@@ -8,7 +8,7 @@ use Tests\FixtureBuilder;
 class WorkingHourControllerTest extends PLBWebTestCase
 {
     public function testAccessWorkingHoursList() {
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
 
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
@@ -30,7 +30,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
     }
 
     public function testWorkingHoursValidationRights() {
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $greg = $builder->build(Agent::class, array('login' => 'greg'));
         $greg_workinghours = array(
             0 => array('0' => '09:00:00', '1' => '', '2' => '', '3' => '17:00:00'),
@@ -98,7 +98,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
     }
 
     public function testCreateOwnWorkingHours() {
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
 
         $GLOBALS['config']['PlanningHebdo-Agents'] = 0;
@@ -116,7 +116,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
     }
 
     public function testEditOtherAgentsWorkingHours() {
-        $builder = new FixtureBuilder();
+        $builder = $this->builder;
         $builder->delete(Agent::class);
 
         $GLOBALS['config']['PlanningHebdo-Agents'] = 1;

@@ -13,14 +13,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
     {
         parent::setUp();
 
-        global $entityManager;
-        $_SESSION['oups']['CSRFToken'] = '00000';
-        $this->CSRFToken = '00000';
-
-        $this->builder = new FixtureBuilder();
         $this->builder->delete(Agent::class);
-
-        $this->entityManager = $entityManager;
 
         $GLOBALS['config']['Absences-validation'] = 1;
     }
