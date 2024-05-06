@@ -20,6 +20,9 @@ ini_set("display_errors", 0);
 
 session_start();
 
+// TEST MT43669
+error_log('MT43669 01 planning/poste/ajax.appelDispoMsg.php:24 loginId : ' . $_SESSION['login_id']);
+
 // Includes
 require_once "../../include/config.php";
 
@@ -35,5 +38,8 @@ $db->select2("config", "valeur", array("nom"=>"Planning-AppelDispoMessage"));
 if ($db->result) {
     $tab[1]=html_entity_decode($db->result[0]["valeur"], ENT_QUOTES|ENT_IGNORE, "utf-8");
 }
+
+// TEST MT43669
+error_log('MT43669 02 planning/poste/ajax.appelDispoMsg.php:43 loginId : ' . $_SESSION['login_id']);
 
 echo json_encode($tab);

@@ -260,10 +260,16 @@ class CJMail implements NotificationTransporterInterface
   
     public function send()
     {
+// TEST MT43669
+error_log('MT43669 M01 public/include/function.php:264 loginId : ' . $_SESSION['login_id']);
+
         if ($this->prepare() === false) {
             return false;
         }
     
+// TEST MT43669
+error_log('MT43669 M02 public/include/function.php:271 loginId : ' . $_SESSION['login_id']);
+
         $mail = new PHPMailer();
         $mail->setLanguage('fr');
         $mail->CharSet="utf-8";
@@ -299,7 +305,13 @@ class CJMail implements NotificationTransporterInterface
     
         $mail->Subject = $this->subject;
 
+// TEST MT43669
+error_log('MT43669 M03 public/include/function.php:309 loginId : ' . $_SESSION['login_id']);
+
         if (!$mail->Send()) {
+// TEST MT43669
+error_log('MT43669 M04 public/include/function.php:313 loginId : ' . $_SESSION['login_id']);
+
             $this->error.=$mail->ErrorInfo ."\n";
       
             // error_CJInfo: pour affichage dans CJInfo (JS)
@@ -326,10 +338,18 @@ class CJMail implements NotificationTransporterInterface
                     }
                 }
             }
+// TEST MT43669
+error_log('MT43669 M05 public/include/function.php:342 loginId : ' . $_SESSION['login_id']);
+
         } else {
+// TEST MT43669
+error_log('MT43669 M06 public/include/function.php:346 loginId : ' . $_SESSION['login_id']);
+
             // Liste des destinataires pour qui l'envoi a fonctionné (en cas de succès total)
             $this->successAddresses=$this->to;
         }
+// TEST MT43669
+error_log('MT43669 M07 public/include/function.php:352 loginId : ' . $_SESSION['login_id']);
     
         return true;
     }
