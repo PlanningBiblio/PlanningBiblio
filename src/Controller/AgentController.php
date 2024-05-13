@@ -1595,7 +1595,7 @@ class AgentController extends BaseController
         $db->CSRFToken = $CSRFToken;
         $db->prepare($req);
 
-        $results = $this->ldif_search(['uid' => $uids]);
+        $results = $this->ldif_search($uids);
 
         foreach ($results as $elem) {
             $values = array(
@@ -1641,10 +1641,11 @@ class AgentController extends BaseController
             return array();
         }
 
-        // If $searchTerms is an array, the attribute to use is specified in array key and there can be multiple search terms (people selected for import)
+        // If $searchTerms is an array, we look for selected people for import (second search). The attribute is the unique identifier.
         if (is_array($searchTerms)) {
-            $attributes = array_keys($searchTerms);
-            $searchTerms = $searchTerms[$attributes[0]];
+            $attributes = array(
+                $this->config('LDIF-ID-Attribute'),
+            );
 
         // If $searchTerms is a string, we search one term in all defined attributes (first search)
         } else {
@@ -1653,7 +1654,6 @@ class AgentController extends BaseController
                 'cn',
                 'givenname',
                 'mail',
-                'uid',
                 $this->config('LDIF-ID-Attribute'),
             );
  
@@ -1661,14 +1661,14 @@ class AgentController extends BaseController
             if ($this->config('LDIF-Matricule')) {
                 $attributes[] = $this->config('LDIF-Matricule');
             }
- 
-             $searchTerms = array($searchTerms);
+
+            $searchTerms = array($searchTerms);
         }
 
         $results = array();
 
         // Parse the LDIF file
-        $ld = new Ldif2Array($this->config('LDIF-File'), true);
+        $ld = new Ldif2Array($this->config('LDIF-File'), true, $this->config('LDIF-Encoding'));
 
         foreach ($ld->entries as $elem) {
             $keep = false;
@@ -1679,13 +1679,13 @@ class AgentController extends BaseController
                     if (isset($elem[$attr])) {
                         if (is_array($elem[$attr])) {
                             foreach ($elem[$attr] as $value) {
-                                if (str_contains(strtolower($value), $searchTerm)) {
+                                if (str_contains(strtolower($value), strtolower($searchTerm))) {
                                     $keep = true;
                                     break 2;
                                 }
                             }
                         } else {
-                            if (str_contains(strtolower($elem[$attr]), $searchTerm)) {
+                            if (str_contains(strtolower($elem[$attr]), strtolower($searchTerm))) {
                                 $keep = true;
                                 break;
                             }
@@ -1709,7 +1709,7 @@ class AgentController extends BaseController
                     $result['id'] = $id;
                     $result['login'] = $result[$this->config('LDIF-ID-Attribute')];
                     $result['matricule'] = $result[$this->config('LDIF-Matricule')] ?? null;
-       
+
                     $results[$id] = $result;
                 }
             }

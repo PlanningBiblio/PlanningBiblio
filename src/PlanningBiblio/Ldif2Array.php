@@ -36,15 +36,35 @@ class Ldif2Array {
     */
     var $entries = array();
 
+    /**
+    * encoding
+    * @type string
+    */
+    var $encoding;
+
 
     //== constructor ====================================================================
-    function __construct(/*string*/$file='', /*bool*/$process=false) {
+    function __construct(/*string*/$file='', /*bool*/$process=false, /*string*/$encoding='UTF-8') {
       $this->file = $file;
+      $this->encoding = $encoding;
       if($process) {
         $this->makeArray();
       }
     }
 
+
+    /**
+    * Convert string to UTF-8
+    * @return string
+    */
+    private function convert($string)
+    {
+        if ($this->encoding != 'UTF-8') {
+            $string = mb_convert_encoding($string, 'UTF-8', $this->encoding);
+        }
+
+        return $string;
+    }
 
     /**
     * returns the array of LDIF entries
@@ -140,15 +160,15 @@ class Ldif2Array {
                       if (!is_array($this->entries[$k1][$i])) {
                         $this->entries[$k1][$i] = array($this->entries[$k1][$i]);
                       }
-                      $this->entries[$k1][$i][] = trim($arr[1]);
+                      $this->entries[$k1][$i][] = trim($this->convert($arr[1]));
                     } else {
-                      $this->entries[$k1][$i] = trim($arr[1]);
+                      $this->entries[$k1][$i] = trim($this->convert($arr[1]));
                     }
                 } else {
                     if ($decode) { // base64 encoded, next chunk
                         $this->entries[$k1][$i] .= trim(base64_decode($v2));
                     } else {
-                        $this->entries[$k1][$i] = trim($v2);
+                        $this->entries[$k1][$i] = trim($this->convert($v2));
                     }
                 }
             }

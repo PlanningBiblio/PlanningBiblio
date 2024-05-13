@@ -232,7 +232,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `recup` text NOT NULL,
   `supprime` ENUM('0','1','2') NOT NULL DEFAULT '0',
   `mails_responsables` TEXT NOT NULL DEFAULT '',
-  `matricule` VARCHAR(100) NOT NULL DEFAULT '',
+  `matricule` VARCHAR(100) NULL DEFAULT NULL,
   `code_ics` VARCHAR(100) NULL DEFAULT NULL,
   `url_ics` TEXT NULL DEFAULT NULL,
   `check_ics` VARCHAR(10) NULL DEFAULT '[1,1,1]',
