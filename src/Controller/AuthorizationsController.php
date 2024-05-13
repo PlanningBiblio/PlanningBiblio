@@ -220,7 +220,7 @@ class AuthorizationsController extends BaseController
 
             // Check if user login exists in database.
             $db = new \db();
-            $db->select2("personnel", array("id","nom","prenom"), array("login"=>$login, "supprime"=>"0"));
+            $db->select2('personnel', array('id','nom','prenom'), array('login' => 'LIKE' . $login, 'supprime' => '0'));
 
             // If user's login doesn't exist,
             // show an unauthorized message
