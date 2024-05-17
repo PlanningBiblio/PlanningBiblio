@@ -1233,9 +1233,9 @@ if (version_compare($config['Version'], $v) === -1) {
     $db->select2('config', array('nom', 'valeur'), array('type'=>'password'));
     if ($db->result) {
         foreach ($db->result as $elem) {
-            $decrypted = decrypt_old($elem['valeur']);
-            $encrypted = encrypt($decrypted);
-            $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$encrypted' WHERE `nom`='{$elem['nom']}';";
+            // Since the end of support for PHP 7.1, we are no longer able to decrypt passwords stored before version 2.8.04
+            // Affected passwords are deleted and have to be re-entered.
+            $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='' WHERE `nom`='{$elem['nom']}';";
         }
     }
 
@@ -3477,33 +3477,6 @@ if (!$cli) {
 /**
  * Functions used for migrations
  */
-
-/**
- * Old decrypt function (release < 2.8.04)
- */
-function decrypt_old($str)
-{
-    if (!function_exists('mcrypt_create_iv')) {
-        return null;
-    }
-
-    $key="AB0972FA445DDE66178ADF76";
-    if (!empty($GLOBALS['config']['secret'])) {
-        $key = $GLOBALS['config']['secret'];
-    }
-
-    // Vérifie si la chaîne est encodée en base64
-    if (base64_encode(base64_decode($str, true)) === $str) {
-        // si oui, base64_decode
-        $str = base64_decode($str);
-    }
-
-    $str = mcrypt_decrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
-
-    $block = mcrypt_get_block_size('tripledes', 'ecb');
-    $pad = ord($str[($len = strlen($str)) - 1]);
-    return substr($str, 0, strlen($str) - $pad);
-}
 
 /**
  * serializeToJson
