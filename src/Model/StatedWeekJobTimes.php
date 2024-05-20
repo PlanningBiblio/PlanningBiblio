@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+
 /**
  * @Entity @Table(name="stated_week_planning_job_times")
  **/

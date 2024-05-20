@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, OneToMany};
 
 /**
  * @Entity @Table(name="stated_week_planning_templates")

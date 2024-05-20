@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+
 /**
  * @Entity @Table(name="hidden_sites")
  **/
