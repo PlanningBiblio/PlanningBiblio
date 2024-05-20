@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../public/planning/poste/class.planning.php');
+require_once(__DIR__ . '/../../public/planning/poste/class.AgentsPlanning.php');
 require_once(__DIR__ . '/../../public/planning/volants/class.volants.php');
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
@@ -173,6 +174,7 @@ class IndexController extends BaseController
 
         // Div planning-data : permet de transmettre les valeurs $verrou et $autorisationN1 à la fonction affichant le menudiv
         // data-validation pour les fonctions refresh_poste et verrouillage du planning
+
         // Lignes vides pour l'affichage ou non des lignes vides au chargement de la page et après validation (selon la config)
         $this->templateParams(array(
             'lignesVides'   => $this->config('Planning-lignesVides'),
@@ -224,6 +226,10 @@ class IndexController extends BaseController
             $hiddenTables = $this->getHiddenTables($tab);
 
 
+            // BSG: Front Office / Back Office Positions
+            $planning = new planning();
+            $postesFrontOffice = join(',', $planning->getPostesFrontOffice());
+
             $sn=1;
 
             $j=0;
@@ -249,6 +255,43 @@ class IndexController extends BaseController
                         $tmp[]=$value;
                         $cellules_grises[]=$k++;
                     }
+
+                    // BSG: Unplaced agents
+                    if ($j == 0) {
+                        $non_places = array();
+                        if ($config['Planning-AfficheAgentsDisponibles']) {
+                            if (!get_config('Planning-AfficheAgentsDisponibles-site') || $site == $config['Planning-AfficheAgentsDisponibles-site']) {
+                                $service = null;
+                                if (get_config('Planning-AfficheAgentsDisponibles-service')) {
+                                    $service = $config['Planning-AfficheAgentsDisponibles-service'];
+                                }
+                                $agentsite = null;
+                                if (get_config('Planning-AfficheAgentsDisponibles-site')) {
+                                    $agentsite = $config['Planning-AfficheAgentsDisponibles-site'];
+                                }
+                                $category = null;
+                                if (get_config('Planning-AfficheAgentsDisponibles-category')) {
+                                    $category = $config['Planning-AfficheAgentsDisponibles-category'];
+                                }
+    
+                                $agentsPlanning = new AgentsPlanning($date, $value['debut'], $value['fin'], $service, $agentsite, $category);
+                                $agentsPlanning->removeForAnyReason($value['debut'], $value['fin']);
+                                $agents_non_places = $agentsPlanning->getAvailables();
+                                if ($agents_non_places && is_array($agents_non_places)) {
+                                    $noms_agents_non_places = join(", ", $agentsPlanning->getNames());
+                                } else {
+                                    $noms_agents_non_places = 'Aucun';
+                                }
+                                $non_places[$key] = " <a class='non_places' href='#' title='" . $noms_agents_non_places . "'>(" . sizeof($agents_non_places) . ")</a>";
+                                // TODO: Display $non_places on template
+/*
+-            echo "<td class='sticky-line' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
++            echo "<td id='" . str_replace(':', '', $horaires['debut']) . str_replace(':', '', $horaires['fin']) . "' class='sticky-line td_horaires' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin']).$non_places."</td>";
+*/
+                            }
+                        }
+                    }
+
                     $k++;
                 }
 
