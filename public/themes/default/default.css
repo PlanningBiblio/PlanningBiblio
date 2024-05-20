@@ -273,6 +273,7 @@ h4{
 .pl-icon-add-white {
   background:url("images/icon/add_black_18dp.svg") no-repeat center;
   filter: invert(100%);
+}
 
 .pl-icon-valid {
   background:url("images/valid.png") no-repeat center/70%;
