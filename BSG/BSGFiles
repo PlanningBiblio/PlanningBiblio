@@ -5,7 +5,6 @@ public/planning/poste/ajax.getPlanningAlert.php
 public/planning/poste/ajax.hiddenSites.php
 public/planning/poste/class.AgentsPlanning.php
 public/planning/poste/overall.php
-public/setup/atomicupdate/MT40174.php
 src/Controller/InterchangeController.php
 src/Controller/StatedWeekController.php
 src/Model/HiddenSites.php

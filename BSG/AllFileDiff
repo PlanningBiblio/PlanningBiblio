@@ -17,7 +17,6 @@ public/planning/poste/class.planning.php
 public/planning/poste/fonctions.php
 public/planning/poste/js/planning.js
 public/planning/poste/overall.php
-public/setup/atomicupdate/MT40174.php
 public/setup/db_data.php
 public/setup/db_structure.php
 public/setup/maj.php

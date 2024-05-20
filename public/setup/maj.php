@@ -3649,6 +3649,9 @@ $v="24.04.00";
 
 if (version_compare($config['Version'], $v) === -1) {
 
+    // BSG: MT40174: Set interchange's group id to 1501
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '1501' WHERE `groupe` = 'Validation des échanges';";
+
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 # MARKER
