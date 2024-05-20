@@ -1497,18 +1497,19 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
   */
 }
 
+// BSG: Unaffected agents
 function updatePlanningAlert() {
-    var link = $('a.non_places');
+    var link = $('a.unaffected');
     if (!link) return;
     var date = $('#date').val();
     var site = $('#site').val();
-    $('.tableau0.tr_horaires > .td_horaires > a.non_places').each(function() {
+    $('a.unaffected').each(function() {
 	var caller = $(this);
         var horaires = $(this).attr('id');
         var debut = horaires.substr(0, 8);
         var fin = horaires.substr(8);
         $.ajax({
-            url: "planning/poste/ajax.getPlanningAlert.php",
+            url: url('planning/poste/ajax.getPlanningAlert.php'),
             dataType: "json",
             data: {date: date, site: site, debut: debut, fin: fin},
             type: "get",
@@ -1518,7 +1519,7 @@ function updatePlanningAlert() {
                 } else {
                     tooltip = result['names'].join(', ');
                 }
-	        caller.replaceWith("<a href='#' class='non_places' id='" + horaires + "' title='" + tooltip + "'> (" + result['amount'] + ")</a>");
+	        caller.replaceWith('<a id="' + horaires + '" class="unaffected" href="#" title="' + tooltip + '"> (' + result['amount'] + ')</a>');
             },
         });
     });

@@ -15,15 +15,13 @@ Affiche une alerte pour les agents magasiniers du Fonds Général s'ils ne sont 
 Script appelé par $( "#pl-appelDispo-form" ).dialog({ Envoyer ]), planning/poste/js/planning.js
 */
 
-ini_set("display_errors", 0);
+use App\Model\Agent;
 
 // Includes
-require_once "../../include/config.php";
+require_once(__DIR__ . '/../../../init/init_ajax.php');
 require_once "../../include/function.php";
 require_once "class.AgentsPlanning.php";
 include_once(__DIR__.'/../../init_ajax.php');
-
-use App\Model\Agent;
 
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
 $site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_STRING);

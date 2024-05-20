@@ -68,6 +68,9 @@
               {% for h in t.horaires %}
               <td class='sticky-line' colspan="{{ h.start_nb30 }}">
                 {{ h.start_h3 }} - {{ h.end_h3 }}
+                {% if h.unaffected %}
+                   <a id="{{ h.start }}{{ h.end }}" class="unaffected" href="#" title="{{ h.unaffected }}">({{ h.unaffectedCount }})</a>
+                {% endif %}
                 </td>
               {% endfor %}
             </tr>

@@ -843,6 +843,10 @@ div#tabsemaine1{
   font-weight:bold;
 }
 
+.tr_horaires a{
+  background: none;
+}
+
 .tr_horaires td:first-child{
   border-top-left-radius: 5px;
 }

@@ -257,43 +257,6 @@ class IndexController extends BaseController
                         $cellules_grises[]=$k++;
                     }
 
-                    // BSG: Unplaced agents
-                    if ($j == 0) {
-                        $non_places = array();
-                        if ($this->config('Planning-AfficheAgentsDisponibles')) {
-                            if (!get_config('Planning-AfficheAgentsDisponibles-site') || $site == $this->config('Planning-AfficheAgentsDisponibles-site')) {
-                                $service = null;
-                                if (get_config('Planning-AfficheAgentsDisponibles-service')) {
-                                    $service = $this->config('Planning-AfficheAgentsDisponibles-service');
-                                }
-                                $agentsite = null;
-                                if (get_config('Planning-AfficheAgentsDisponibles-site')) {
-                                    $agentsite = $this->config('Planning-AfficheAgentsDisponibles-site');
-                                }
-                                $category = null;
-                                if (get_config('Planning-AfficheAgentsDisponibles-category')) {
-                                    $category = $this->config('Planning-AfficheAgentsDisponibles-category');
-                                }
-    
-                                $agentsPlanning = new \AgentsPlanning($date, $value['debut'], $value['fin'], $service, $agentsite, $category);
-                                $agentsPlanning->removeForAnyReason($value['debut'], $value['fin']);
-                                $agents_non_places = $agentsPlanning->getAvailables();
-                                if ($agents_non_places && is_array($agents_non_places)) {
-                                    $noms_agents_non_places = join(", ", $agentsPlanning->getNames());
-                                } else {
-                                    $noms_agents_non_places = 'Aucun';
-                                }
-                                $non_places[$key] = ' <a id="' . $value['debut'] . $value['fin'] . '" class="non_places" href="#" title="' . $noms_agents_non_places . '">(' . sizeof($agents_non_places) . ')</a>';
-
-                                // TODO: Display $non_places on template
-/*
--            echo "<td class='sticky-line' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
-+            echo "<td class='sticky-line td_horaires' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin']).$non_places."</td>";
-*/
-                            }
-                        }
-                    }
-
                     $k++;
                 }
 
@@ -323,9 +286,44 @@ class IndexController extends BaseController
                 $colspan=0;
                 foreach ($tab['horaires'] as $key => $horaires) {
 
+                    $tabs[$index]['horaires'][$key]['start'] = $horaires['debut'];
+                    $tabs[$index]['horaires'][$key]['end'] = $horaires['fin'];
                     $tabs[$index]['horaires'][$key]['start_nb30'] = nb30($horaires['debut'], $horaires['fin']);
                     $tabs[$index]['horaires'][$key]['start_h3'] = heure3($horaires['debut']) ;
                     $tabs[$index]['horaires'][$key]['end_h3'] = heure3($horaires['fin']) ;
+
+                    // BSG: Unaffected agents
+                    $tabs[$index]['horaires'][$key]['unaffected'] = '';
+
+                    if ($j == 0) {
+                        if ($this->config('Planning-AfficheAgentsDisponibles')) {
+                            if (!get_config('Planning-AfficheAgentsDisponibles-site') || $site == $this->config('Planning-AfficheAgentsDisponibles-site')) {
+                                $service = null;
+                                if (get_config('Planning-AfficheAgentsDisponibles-service')) {
+                                    $service = $this->config('Planning-AfficheAgentsDisponibles-service');
+                                }
+                                $agentsite = null;
+                                if (get_config('Planning-AfficheAgentsDisponibles-site')) {
+                                    $agentsite = $this->config('Planning-AfficheAgentsDisponibles-site');
+                                }
+                                $category = null;
+                                if (get_config('Planning-AfficheAgentsDisponibles-category')) {
+                                    $category = $this->config('Planning-AfficheAgentsDisponibles-category');
+                                }
+    
+                                $agentsPlanning = new \AgentsPlanning($date, $horaires['debut'], $horaires['fin'], $service, $agentsite, $category);
+                                $agentsPlanning->removeForAnyReason($horaires['debut'], $horaires['fin']);
+                                $unaffected = $agentsPlanning->getAvailables();
+                                if ($unaffected && is_array($unaffected)) {
+                                    $unaffectedNames = join(", ", $agentsPlanning->getNames());
+                                } else {
+                                    $unaffectedNames = 'Aucun';
+                                }
+                                $tabs[$index]['horaires'][$key]['unaffected'] = $unaffectedNames;
+                                $tabs[$index]['horaires'][$key]['unaffectedCount'] = sizeof($unaffected);
+                            }
+                        }
+                    }
 
                     $colspan += nb30($horaires['debut'], $horaires['fin']);
                 }

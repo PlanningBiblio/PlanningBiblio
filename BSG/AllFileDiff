@@ -1,7 +1,5 @@
 BSG/001-Rebase-BSG-branch-on-master-20.10.00-Ignore
-public/planning/poste/enregistrer.php
 BSG/002-Rebase-BSG-branch-on-master-20.10.00-Merge
-public/planning/poste/index.php
 BSG/003-MT37993-Change-leave-credit-reset-dates-TODO
 BSG/commits
 ChangeLog.txt
