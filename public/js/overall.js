@@ -1,7 +1,7 @@
 function change_hidden(site, op) {
   login_id = $('#login_id').val();
   $.ajax({
-    url: "planning/poste/ajax.hiddenSites.php",
+    url: url('planning/poste/ajax.hiddenSites.php'),
     type: "post",
     dataType: "json",
     data: {site: site, login_id: login_id, op: op},
@@ -26,7 +26,7 @@ $( document ).ready(function() {
 
   $("#pl-calendar").change(function(){
     var date = dateFr($(this).val());
-    window.location.href="index.php?page=planning/poste/overall.php&date="+date;
+    window.location.href = url('overall/' + date);
   });
 
   $('.hideSite').on('click', function() {

@@ -1,10 +1,7 @@
 <?php
 
-
-ini_set("display_errors", 0);
-
 // Includes
-require_once(__DIR__ . '/../../init_ajax.php');
+require_once(__DIR__ . '/../../../init/init_ajax.php');
 
 use Symfony\Component\HttpFoundation\Request;
 
