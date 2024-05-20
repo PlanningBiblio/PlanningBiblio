@@ -227,7 +227,7 @@ class IndexController extends BaseController
 
 
             // BSG: Front Office / Back Office Positions
-            $planning = new planning();
+            $planning = new \planning();
             $postesFrontOffice = join(',', $planning->getPostesFrontOffice());
             $this->templateParams(array('postesFrontOffice' => $postesFrontOffice));
 
@@ -260,22 +260,22 @@ class IndexController extends BaseController
                     // BSG: Unplaced agents
                     if ($j == 0) {
                         $non_places = array();
-                        if ($config['Planning-AfficheAgentsDisponibles']) {
-                            if (!get_config('Planning-AfficheAgentsDisponibles-site') || $site == $config['Planning-AfficheAgentsDisponibles-site']) {
+                        if ($this->config('Planning-AfficheAgentsDisponibles')) {
+                            if (!get_config('Planning-AfficheAgentsDisponibles-site') || $site == $this->config('Planning-AfficheAgentsDisponibles-site')) {
                                 $service = null;
                                 if (get_config('Planning-AfficheAgentsDisponibles-service')) {
-                                    $service = $config['Planning-AfficheAgentsDisponibles-service'];
+                                    $service = $this->config('Planning-AfficheAgentsDisponibles-service');
                                 }
                                 $agentsite = null;
                                 if (get_config('Planning-AfficheAgentsDisponibles-site')) {
-                                    $agentsite = $config['Planning-AfficheAgentsDisponibles-site'];
+                                    $agentsite = $this->config('Planning-AfficheAgentsDisponibles-site');
                                 }
                                 $category = null;
                                 if (get_config('Planning-AfficheAgentsDisponibles-category')) {
-                                    $category = $config['Planning-AfficheAgentsDisponibles-category'];
+                                    $category = $this->config('Planning-AfficheAgentsDisponibles-category');
                                 }
     
-                                $agentsPlanning = new AgentsPlanning($date, $value['debut'], $value['fin'], $service, $agentsite, $category);
+                                $agentsPlanning = new \AgentsPlanning($date, $value['debut'], $value['fin'], $service, $agentsite, $category);
                                 $agentsPlanning->removeForAnyReason($value['debut'], $value['fin']);
                                 $agents_non_places = $agentsPlanning->getAvailables();
                                 if ($agents_non_places && is_array($agents_non_places)) {
@@ -283,7 +283,7 @@ class IndexController extends BaseController
                                 } else {
                                     $noms_agents_non_places = 'Aucun';
                                 }
-                                $non_places[$key] = ' <a id="' . $horaires['debut'] . $horaires['fin'] . '" class="non_places" href="#" title="' . $noms_agents_non_places . '">(' . sizeof($agents_non_places) . ')</a>';
+                                $non_places[$key] = ' <a id="' . $value['debut'] . $value['fin'] . '" class="non_places" href="#" title="' . $noms_agents_non_places . '">(' . sizeof($agents_non_places) . ')</a>';
 
                                 // TODO: Display $non_places on template
 /*
