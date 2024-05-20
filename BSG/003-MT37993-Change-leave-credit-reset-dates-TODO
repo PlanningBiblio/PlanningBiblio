@@ -1,0 +1,6 @@
+commit 3bb6869be688b235a9f7fba027616445890e19c9
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Wed Sep 7 12:25:04 2022 +0200
+
+    MT37993: Change leave credit reset dates
+--> A traiter avec la table cron

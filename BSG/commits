@@ -1,0 +1,621 @@
+commit f86073aa839adeb886dab13de6cd68190b567dc3 (HEAD -> BSG_master_20220725, origin/BSG_master_20220725)
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Tue Jan 30 17:05:23 2024 +0100
+
+    Remove error_log from class.AgentsPlanning.php
+
+commit 3ab43dcd3e0af107c7151db21189c879e72b2b99
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Jan 26 17:28:24 2024 +0100
+
+    MT42886: fix the calculation of the forecast credit of compensatory time
+--> Already on 24.04.xx
+
+commit 62dc3bd074d1c938a49cedf893448610c3964eef
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Mon Jan 29 10:15:09 2024 +0100
+
+    MT42886 (BSG): Add column disabled to the cron table
+--> Already on 24.04.xx
+
+commit d7ebfd1e302d80385fffed5b1dce7a5739d539f8
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Mon Jun 19 17:00:07 2023 +0200
+
+    MT40167: Strike agents that have left in the stated week plannings
+    
+     - Don't show an agent as available in context menu if his leaving date is
+     before the given stated week planning.
+--> Already on 24.04.xx
+
+commit 3eca5cf723c1eb03204dabbc7fbba3a02416f9c9
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Apr 28 17:23:44 2023 +0200
+
+    MT40688_2: considers free breaks to calculate absence hours
+--> Already on 24.04.xx
+
+commit 54bbfdcc82dd5128db029b2eaa87b36629cf32ec
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Mon Apr 24 18:30:28 2023 +0200
+
+    MT40688_1: get better performance when displaying statistics on absences
+--> Already on 24.04.xx
+
+commit de0ddafda57e26c51434e17681b3d4345ad26881
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Mar 31 11:05:40 2023 +0200
+
+    MT40252: don't show the alert "select more than 1 year", follow up
+    
+    This alert is still there when we chose the following dates : 2023-03-31 - 2024-03-31
+--> Already on 24.04.xx
+
+commit 0aaae4f4691a5a531af7a57e0e721ada388ecfd4
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Mon Mar 13 14:25:01 2023 +0100
+
+    MT40252: don't show the alert "please select more than 1 year" on leap years
+--> Already on 24.04.xx
+
+commit 07a56fd3d1d37323414f361d17e2f36810e8c5c8
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Mar 17 16:19:51 2023 +0100
+
+    MT40174: Set interchange's group id to 1501
+
+commit d0feb805db60ad6f5202b2f01ed24fce915f1f29
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Tue Apr 4 17:25:03 2023 +0200
+
+    MT40167: Strike agents that have left in the stated week plannings.
+    
+    Test plan:
+    
+     1) Without the patch, place an agent in a stated week planning at a given date
+    
+     2) Edit that agent to set his leaving (depart) date at a prior date
+    
+     3) Check that the agent is not striked in the stated week planning
+    
+     4) Apply the patch, and check that the agent is striked in the stated week
+        planning, with the following message: "Date de départ dépassée"
+
+commit b45f68cabc6434782d95478dda70f1994e38d6c5
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Thu Feb 16 15:24:37 2023 +0100
+
+    MT39895: Add throttle to overtime edits
+    
+    Enhance the error message
+--> Traité autrement sur 24.04.xx
+
+commit 9f3afaa000862398cbdf42b2f1b56b8f03046cc1
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Tue Feb 14 14:33:28 2023 +0100
+
+    MT39895: Add throttle to overtime edits
+    
+    Fix unit tests
+--> Traité autrement sur 24.04.xx
+
+commit 89dfd146fc6f1161f14d62c728cf8c2a4f2ba94e
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Mon Feb 13 16:35:05 2023 +0100
+
+    MT39895: Add throttle to overtime edits
+    
+    In some cases (network hiccups for example), the POST request for editing an
+    overtime can be sent twice.
+    
+    This patch adds a minimum delay between two edits of a given overtime of 1
+    second by default.
+    
+    This value can be overridden with the following setting in custom_options.php:
+    
+    $config['post_requests_throttle'] = n;
+    
+    Test plan:
+    
+    1) Set post_requests_throttle to a large enough value in custom_options.php
+       (20 seconds should be enough)
+    
+    2) Edit an overtime, check that the modification is made.
+    
+    3) Within the 20 seconds, edit this overtime again, check that the modification
+       is denied, with a message telling you to wait a few seconds before trying
+       again.
+    
+    4) After the 20 seconds are expired, edit this overtime again, and check that
+       the modification is made.
+--> Traité autrement sur 24.04.xx
+
+commit 1a5f679796bb2efc9dd05cc10787c859afd7aa04
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Tue Feb 14 14:36:16 2023 +0100
+
+    MT39034: Add throttle to holiday edits
+    
+    Check that last_modified has a value
+--> Traité autrement sur 24.04.xx
+
+commit 7928bb0976d9812770de6c11210894192ba70b90
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Mon Feb 6 15:31:16 2023 +0100
+
+    MT39034: Add throttle to holiday edits, follow up
+--> Traité autrement sur 24.04.xx
+
+commit ab80bb6f9690e2b541c1581282828939600e03a4
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Thu Feb 2 11:37:52 2023 +0100
+
+    MT39034: Add throttle to holiday edits
+    
+    In some cases (network hiccups for example), the POST request for editing an
+    holiday can be sent twice, removing twice the number of holidays for the agent.
+    
+    This patch adds a minimum delay between two edits of a given holiday of 1
+    second by default.
+    
+    This value can be overridden with the following setting in custom_options.php:
+    
+    $config['post_requests_throttle'] = n;
+    
+    Test plan:
+    
+    1) Set post_requests_throttle to a large enough value in custom_options.php
+       (20 seconds should be enough)
+    
+    2) Edit an holiday, check that the modification is made.
+    
+    3) Within the 20 seconds, edit this holiday again, check that the modification
+       is denied, with a message telling you to wait a few seconds before trying
+       again.
+    
+    4) After the 20 seconds are expired, edit this holiday again, and check that
+       the modification is made.
+--> Traité autrement sur 24.04.xx
+
+commit 48e17fa31df8724477f12438b01ca425b302cedd
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Thu Feb 23 12:21:20 2023 +0100
+
+    MT39491: Fix save agent save when holidays values are empty, follow up
+--> Already on 24.04.xx
+
+commit a4a72a7538755c4ba9d80cefbf3a4222616abef5
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Tue Feb 21 16:50:16 2023 +0100
+
+    MT39491: Fix save agent save when holidays values are empty
+    
+    Test plan:
+    
+     1) without the patch, edit an agent and blank one value or more in the
+        holidays tab.
+    
+     2) Check that saving fails.
+    
+     3) With the patch, edit an agent and blank one value or more in the
+        holidays tab.
+    
+     4) Check that saving works and that the values have been defaulted to 0.
+--> Already on 24.04.xx
+
+commit b91330190887d71a097ff55b5b437a1bb18bb633
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Tue Nov 15 15:08:58 2022 +0100
+
+    MT 38918: remove useless method getPeriodes
+--> Already on 24.04.xx
+
+commit ae05edbcc6fab1ab307ab925b649f6e76d619fbd
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Tue Nov 15 11:38:35 2022 +0100
+
+    MT38918 : delete references to planning_hebdo_tables
+--> Already on 24.04.xx
+
+commit 2c83363dfa28a103a0f58356fe5660a3905da19b
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Wed Aug 3 02:32:14 2022 +0200
+
+    PHP 8.1 compatibility
+--> Already on 24.04.xx
+
+commit 74592211de9f3cf7b004ee4acfc67f102855395d
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Tue Sep 13 13:59:24 2022 +0200
+
+    MT37327: set a specific message for recover validation, follow up
+--> Already on 24.04.xx
+
+commit 8fa3ba2349d540eca6e7e893ffd816b84f2cf65a
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Mon Aug 1 16:37:49 2022 +0200
+
+    MT37327: set a specific message for recover validation
+    
+    Change notification message to recover only if Conges-Recuperations option is
+    set to "Dissocier".
+    
+    Fixes overtime and comp time messages on add, edit, and validation.
+    
+    Fix overtime translation ("Récupération" => "Heures supplémentaires")
+--> Already on 24.04.xx
+
+commit e250f1c1b785f9dbeb2a4d8e4fe7484f175720ea
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Wed Sep 23 12:50:47 2020 +0000
+
+    MT 29961: set a specific message for recover validation
+--> Already on 24.04.xx
+
+commit 4d271f1bbd971c8bb12ab2ff3874ab5732d0cb14
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Sep 30 11:56:32 2022 +0200
+
+    MT38331 : fix sending the ICS URL by mail
+--> Already on 24.04.xx
+
+commit a201edca9dd9307c36bb11546aa4d1699526164c
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Mon Sep 12 11:38:35 2022 +0200
+
+    MT37993: Change leave credit reset dates, follow up
+--> A traiter avec la table cron
+
+commit 3bb6869be688b235a9f7fba027616445890e19c9
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Wed Sep 7 12:25:04 2022 +0200
+
+    MT37993: Change leave credit reset dates
+--> A traiter avec la table cron
+
+commit b453c3acc8b1c0fe05b8c237d19e7c1946ba9fb8
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Wed Jul 27 09:27:53 2022 +0200
+
+    MT 37353: Show translated label for comp_time
+--> Already on 24.04.xx
+
+commit b5b7411000a93ac98fb76b9b5bb613cc3bf8e0d4
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Wed Jun 15 16:22:36 2022 +0200
+
+    MT 37194: LDAP import: fix positions and rights json serialization
+--> Already on 24.04.xx
+
+commit a9bca0507037c406bb84e310472f217b6002b12c
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Tue Aug 2 12:29:47 2022 +0200
+
+    MT37666: fix error 500 on the calendar view
+--> Already on 24.04.xx
+
+commit 96337bcd183bc10abbacd7f6becf2db7808c5cbf
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Fri Jun 17 11:16:38 2022 +0200
+
+    Define morning end at 12:00 if there is no break in working hours
+--> Already on 24.04.xx
+
+commit 9d62d7415df6f49e6bbe619c93145923739f8dfc
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Jul 29 17:47:33 2022 +0200
+
+    MT37133: Fix reaching categories when status includes accent
+
+commit 59a059d917ea3a257ae098ccbd8d4b01524af402
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Wed Jul 13 14:20:19 2022 +0200
+
+    Remove absence class from time-slot and make them dropable
+
+commit 2846d09c8e1563457ff16f7b8adbe4e2b2e38da0
+Author: Jerome Combes <jerome@planningbiblio.fr>
+Date:   Fri Jun 10 14:44:39 2022 +0200
+
+    MT37144 : re-apply #351 Exclude lunch positions, follow up
+--> Déjà traité. traité autrement.
+
+commit 13ca8c522b6e1889e0c7384cf135e4f8e760efe0
+Author: Jerome Combes <jerome@planningbiblio.fr>
+Date:   Fri Jun 10 11:58:16 2022 +0200
+
+    Apply the right background and color on ".tr_horaires a" elements
+--> Ce n'est pas propre à la BSG. Pourquoi n'est-ce pas sur 24.04.xx ? Je ne l'applique pas.
+
+commit d5921b50dd866e5055f3f6db1b3b4e8077634f63
+Author: Jerome Combes <jerome@planningbiblio.fr>
+Date:   Fri Jun 10 11:44:43 2022 +0200
+
+    MT37144 : re-apply #351 Exclude lunch positions from breaktimes...
+--> Already on BSG_24.04.xx
+
+commit cc4317ce683a4df21ea56db4d92285d2712876ed
+Author: Jerome Combes <jerome@planningbiblio.fr>
+Date:   Fri Jun 10 11:29:05 2022 +0200
+
+    MT37125 : fix template/admin/model
+
+commit 76068580f367d34ad6b86fe04b2c847e1e265b60
+Author: Jerome Combes <jerome@planningbiblio.fr>
+Date:   Thu Jun 9 19:55:12 2022 +0200
+
+    Quick correction of statedweek display : validation buttons
+
+commit 55a7477b0777f16db3d682df73457aa0ded7080c
+Author: Jerome Combes <jerome@planningbiblio.fr>
+Date:   Thu Jun 9 19:32:20 2022 +0200
+
+    Quick correction of statedweek display
+
+commit 8d75a896e863dec3cf667bb94074c9f8d1a82d98
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Jan 21 16:34:04 2022 +0100
+
+    MT35426_16 Add missing permissions on statedweek and interchanges
+
+commit d60988eda220402775c4e0c9a693b008a6fcdd18
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Wed Jan 19 19:54:39 2022 +0100
+
+    MT35426_15 Use App\PlanningBiblio\Framework in the overall view
+
+commit 02f8db0b1597d6944a1cd17b316e6bc69aca03af
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Wed Jan 19 19:26:53 2022 +0100
+
+    MT35426_13 Restore timepickers on statedweek
+
+commit 2c75f19675fe1e7f525acf18e28fcf0e4d2a1392
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Wed Jan 19 18:23:40 2022 +0100
+
+    MT35426_14 Add missing permission for route statedweek.slothours
+
+commit 488ab77fc1d2298a067fcd9625e6ed14625b21de
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Wed Jan 19 17:24:55 2022 +0100
+
+    MT35426_8 Allow to affect people on different site, restore site N°2 for special jobs
+
+commit 316315974fc17f8bdd9215b306c7c45527891589
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Wed Jan 19 15:17:00 2022 +0100
+
+    MT35426_11 Change permission for route statedweek.placed (100 to allow read only access)
+
+commit 15d56aa224ed62212ba9dcf88369698abad1464b
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Sat Jan 8 17:51:49 2022 +0100
+
+    MT35426_8 Allow to affect people on different sites when working hours are generated with statedweek
+
+commit 6661b3b5311f90b5972461325adcc382c107bd30
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Sat Jan 8 17:42:27 2022 +0100
+
+    MT35426_7 Restore front-office/back-office controls on context menu
+
+commit 3d2926e7ca4b3ce5cecd0cf88f6637630e82e61f
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Sat Jan 8 16:19:10 2022 +0100
+
+    Add missing permission for route statedweek.placed
+
+commit 42541cc9a2a3625806c00cfd70ec9dcfd0194aeb
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Sat Jan 8 15:49:35 2022 +0100
+
+    Add missing "use" statement on Models
+--> Already done on BSG_24.04.xx
+
+commit 99a4cdb0efdb4025c08563f822ac5774c428b084
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Sat Jan 8 14:44:05 2022 +0100
+
+    Replace fulldate filter with datefull filter in statedweek/index template
+
+commit 3a18aeea0edb7172fc82d3f403be770c90534f02
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Sat Jan 8 14:24:11 2022 +0100
+
+    Restaure the web_profiler toolbar on dev environnement
+--> Already on 24.04.xx
+
+commit c377599efe5d0d9529b57d356bd52ab88122f46c
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Thu Dec 30 17:13:48 2021 +0100
+
+    MT27947: Display the amount of workers unaffected for a given period of time.
+    
+     - Fix amount update
+
+commit b76976e38129d63319f957a52fa015dc4834f85a
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Tue Dec 28 09:23:14 2021 +0100
+
+    MT27947: Display the amount of workers unaffected for a given period of time.
+    
+    - Fix a syntax error on planning/poste/index.php
+--> Alread fixed on BSG_24.04.xx
+
+commit 62cdfafe709740d7cf766bb4326ac84229867065
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Mon Dec 6 15:17:05 2021 +0000
+
+    Finalization of rebase from 21.10.xx
+
+commit 44f02b18b759f4a9105aba2a762f95e075cb88bf
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Thu Dec 2 15:54:12 2021 +0100
+
+    Revert "MT27502: Add a Conges-Heures configuration option"
+    
+    This reverts commit c0e4ed3130a807cd288d76f807034c917f3afe79.
+--> commit 7144e44ada8a0696c2ef06e0e31cbff9a72d1374 ignored 
+
+commit 7a21d7189a99365ef3868435fb71b8dde2235b65
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Fri Nov 26 14:28:34 2021 +0100
+
+    MT27947: Display the amount of workers unaffected for a given period of time.
+    
+     - Update all amounts
+
+commit cc077b2e73901df21e7e1e20452fa8205ec756af
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Fri Oct 8 14:37:37 2021 +0200
+
+    MT27947: Display the amount of workers unaffected for a given period of time.
+    
+     - Update amount even if cells size are different
+    
+    Example:
+    
+    First tab  : 12h-12h30 - 12h30-13h
+    Second tab : 12h       -       13h
+    
+    With this patch, updating the cell in the second tab will correctly update the
+    amount of unaffected workers in the first tab.
+
+commit 526b3edb55cdf4189620440be066389ee721c79c
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Jul 23 11:44:25 2021 +0200
+
+    MT30505 - Show absence reason on statedweek
+
+commit 7144e44ada8a0696c2ef06e0e31cbff9a72d1374
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Jul 23 10:00:35 2021 +0200
+
+    MT27502: Add a Conges-Heures configuration option
+    
+    This configuration option allows to input start and end hour for holiday
+     requests when activated, regardless of the value of Conges-Recuperations.
+    
+     Affected pages: /holiday/new and /holiday/edit
+    
+     Test-plan:
+    
+      - Update database
+    
+      - Check that the 'Journée(s) entière(s)' checkbox is not displayed in holiday
+        requests, regardless of the value of Conges-Recuperations.
+    
+      - Activate the Conges-Heures configuration option
+    
+      - Check that the 'Journée(s) entière(s)' checkbox is now displayed in holiday
+        requests, regardless of the value of Conges-Recuperations.
+    
+      - Check that 'Nombre d'heures' is correctly updated when the start or end hour
+        is modified.
+
+--> commit 7144e44ada8a0696c2ef06e0e31cbff9a72d1374 ignored (reverted)
+
+commit ece4fe2a0f13e58913faff51dec608890f1e33d4
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Jul 16 16:38:45 2021 +0200
+
+    MT27498: Front Office and Back Office position
+    
+    This patch allows to define a front or back office position for jobs.
+    
+    The alert on plannings when a worker has two periods in a row (2SP) now only
+    apply for front office positions.
+    
+    Test plan:
+     - apply the patch.
+     - check that you can set a 'front office' position for jobs.
+     - check on the planning that the 2SP alert is only displayed for consecutive
+       front office periods.
+
+commit 6fdc4434c93bed4047a05ce33a0eade5df8949bf
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Wed Mar 10 16:04:48 2021 +0000
+
+    Statedweek, fix reordering agent in jobs
+
+commit 00cd849c13bc1220f99988e031be368095361e31
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Wed Mar 10 16:02:11 2021 +0000
+
+    Add new stated_week_planning_times.start_time and end_time in db_struture
+
+commit 633c918252bbac5705eb02e1b97c1c4916d4f640
+Author: Matthias Meusburger <matthias.meusburger@biblibre.com>
+Date:   Mon Feb 22 13:57:10 2021 +0100
+
+    MT27947: Display the amount of workers unaffected for a given period of time.
+    
+     - Only display amount of unaffected workers in the first line of the first tab
+--> Already fixed on BSG_24.04.xx
+
+commit 81b3ed4d982491e051bacd18fb64a3466b59007f
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Thu Feb 11 14:46:55 2021 +0000
+
+    Exclude lunch position from breaktimes and day hours count down
+--> Already on 24.04.xx
+
+commit 630c224ed7a4e9ab643531fe89a39f5fd0d0b78c
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Fri Feb 12 13:15:29 2021 +0000
+
+    DBRev: 20.10.03.001
+
+commit e474b645dcd2855de9de272c5c64c52d4ce27d8f
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Feb 5 01:57:44 2021 +0100
+
+    Statedweeks : allow modification of hours on main columns
+
+commit 8bb9f73e8237a5e0f18df02cc670296f72cc4a4e
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Thu Feb 11 10:15:42 2021 +0000
+
+    Restore function getRequest in base controller
+
+commit 8dcedf2812feafbd3aeffa48a084a08d4d41169c
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Thu Feb 4 18:19:02 2021 +0100
+
+    MT 30502: Allow selection of students on a dedicated frame on statedweek
+    
+    In custom_options.php file :
+    - change the second entry of statedweek_times_job's table to :
+      1 => array('name' => 'moniteurs', 'description' => 'Moniteurs étudiants', 'skills' => array(), 'services_option' => '', 'status_option' => 'statedweek_status_filter'),
+    - Add the line :
+      $config['statedweek_status_filter'] = "Moniteur &eacute;tudiant";
+    
+    To change previous statedweeks, run SQL command : UPDATE stated_week_planning_job SET name='moniteurs', description='Moniteurs étudiants' WHERE name ='accueil';
+
+commit 498fba30d06f2aecb0e82c4b6c333dc79283f38b
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Sat Dec 5 11:45:15 2020 +0100
+
+    Remove warning SR on lunch positions
+--> Already on 24.04.xx
+
+commit 5cb6590e30c3f1b110fb078b46553e018357e0ff
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Fri Sep 11 14:46:26 2020 +0200
+
+    MT 29886 : optimpize statedweek template for the theme BSG
+
+commit 92ee9ce499f0975b1655ad05fcddca5b1f08b0e7
+Author: Alex Arnaud <alex.arnaud@biblibre.com>
+Date:   Tue Sep 22 13:57:31 2020 +0000
+
+    MT 29963: show partial holidays
+
+commit cd2230057d202a26acce518e8663cded2105c9d0
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Mon Oct 12 10:45:42 2020 +0200
+
+    Rebase BSG branch on master - 20.10.00
+
+
