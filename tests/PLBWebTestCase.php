@@ -30,7 +30,8 @@ class PLBWebTestCase extends PantherTestCase
         $entityManager->flush();
 
         $GLOBALS['droits'] = $rights;
-        $session = $this->client->getContainer()->get('session.factory')->createSession();
+        $crawler = $this->client->request('GET', '/login');
+        $session = $this->client->getRequest()->getSession();
         $session->set('loginId', $agent->id());
         $session->save();
     
