@@ -371,6 +371,10 @@ class OvertimeController extends BaseController
                     $message.="<br/><br/><u>Motif du refus</u> :<br/>".str_replace("\n", "<br/>", $update['refus']);
                 }
 
+                // ajout d'un lien permettant de rebondir sur la demande
+                $url = $this->config('URL') . "/overtime/$id";
+                $message.="<p>Lien vers la demande d'heures supplémentaires :<br/><a href='$url'>$url</a></p>";
+
                 // Choix des destinataires en fonction de la configuration
                 if ($this->config('Absences-notifications-agent-par-agent')) {
                     $a = new \absences();
