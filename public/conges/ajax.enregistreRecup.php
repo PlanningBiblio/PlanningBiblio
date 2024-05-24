@@ -18,6 +18,7 @@ require_once(__DIR__ . '/../../init/init_ajax.php');
 include('class.conges.php');
 
 use App\Model\Agent;
+use App\Model\OverTime;
 
 // Initialisation des variables
 $commentaires = $request->get('commentaires');
@@ -80,6 +81,21 @@ if ($db->error) {
         if ($commentaires) {
             $message.="Commentaires : ".str_replace("\n", "<br/>", $commentaires);
         }
+
+        // ajout d'un lien permettant de rebondir sur la demande
+        $overtime = $entityManager->getRepository(OverTime::class)->findOneBy(
+            array(
+                'perso_id' => $perso_id,
+                'date' => DateTime::createFromFormat('Y-m-d', $date),
+                'saisie_par' => $_SESSION['login_id'],
+            ),
+            array(
+                'id' => 'desc'
+            ),
+        );
+
+        $url = $config['URL'] . '/overtime/' . $overtime->id();
+        $message.="<p>Lien vers la demande d'heures supplémentaires :<br/><a href='$url'>$url</a></p>";
 
         // Envoi du mail
         $m=new CJMail();
