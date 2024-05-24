@@ -24,13 +24,16 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(201));
 
-        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('');
+        $crawler = $this->client->request('GET', '/absences/info/add');
+        $extract_result = $crawler->filter('#form input[name="_token"]')->extract(array('value'));
+        $token = $extract_result[0];
 
         $this->client->request('POST', '/absences/info', array('start' => '05/10/2022', 'end' => '10/10/2022', 'text' => 'salut', '_token' => $token));
 
         $info = $entityManager->getRepository(AbsenceInfo::class)->findOneBy(array('texte' => 'salut'));
         $this->assertEquals('05/10/2022', $info->debut()->format('d/m/Y'), 'debut is ok');
         $this->assertEquals('10/10/2022', $info->fin()->format('d/m/Y'), 'fin is ok');
+
         $this->assertEquals('salut', $info->texte(), 'info texte is salut');
 
     }

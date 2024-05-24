@@ -54,7 +54,9 @@ class AgentControllerPasswordTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,99,401,601));
 
-        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('');
+        $crawler = $this->client->request('GET', '/agent/' . $agent->id());
+        $extract_result = $crawler->filter('input#_token')->extract(array('value'));
+        $token = $extract_result[0];
 
         $crawler = $this->client->request('POST', '/ajax/change-own-password', array(
             'current_password' => 'Password_1',
