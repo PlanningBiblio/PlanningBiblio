@@ -225,6 +225,8 @@
     - 100
 "planning.delete":
     - 100
+"planning.overall":
+    - 99
 "planning.week":
     - 99
 "planningjob.contextmenu":
