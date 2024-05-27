@@ -14,9 +14,7 @@ require_once (__DIR__."/../../public/planningHebdo/class.planningHebdo.php");
 
 class AccountController extends BaseController
 {
-    /**
-     * @Route("/myaccount", name="account.index", methods={"GET"})
-     */
+    #[Route(path: '/myaccount', name: 'account.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         // Initialisation des variables

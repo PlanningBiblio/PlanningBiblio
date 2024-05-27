@@ -16,9 +16,7 @@ require_once(__DIR__.'/../../public/activites/class.activites.php');
 
 class SkillController extends BaseController
 {
-    /**
-     * @Route("/skill", name ="skill.index", methods={"GET"})
-     */
+    #[Route(path: '/skill', name: 'skill.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         //        Recherche des activites
@@ -98,9 +96,7 @@ class SkillController extends BaseController
         return $this->output('skill/index.html.twig');
     }
 
-    /**
-     * @Route("/skill/add", name ="skill.add", methods={"GET"})
-     */
+    #[Route(path: '/skill/add', name: 'skill.add', methods: ['GET'])]
     public function add(Request $request, Session $session){
 
         $this->templateParams(array(
@@ -110,9 +106,7 @@ class SkillController extends BaseController
         return $this->output('skill/edit.html.twig');
     }
 
-    /**
-     * @Route("/skill/{id}", name = "skill.edit", methods={"GET"})
-     */
+    #[Route(path: '/skill/{id}', name: 'skill.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session){
 
         $id =  $request->get('id');
@@ -127,9 +121,7 @@ class SkillController extends BaseController
     }
 
 
-    /**
-     * @Route("/skill", name = "skill.save", methods={"POST"})
-     */
+    #[Route(path: '/skill', name: 'skill.save', methods: ['POST'])]
     public function save(Request $request, Session $session){
         $id = $request->get('id');
         $nom = $request->get('nom');
@@ -180,10 +172,7 @@ class SkillController extends BaseController
         return $this->redirectToRoute('skill.index');
     }
 
-    /**
-     * @Route("/skill", name="skill.delete", methods={"DELETE"})
-     */
-
+    #[Route(path: '/skill', name: 'skill.delete', methods: ['DELETE'])]
     public function delete_skill(Request $request, Session $session){
 
         $id = $request->get('id');

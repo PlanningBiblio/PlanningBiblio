@@ -23,9 +23,7 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class HolidayController extends BaseController
 {
-    /**
-     * @Route("/holiday/index", name="holiday.index", methods={"GET"})
-     */
+    #[Route(path: '/holiday/index', name: 'holiday.index', methods: ['GET'])]
     public function index(Request $request)
     {
         $session = $request->getSession();
@@ -268,9 +266,7 @@ class HolidayController extends BaseController
         return $this->output('conges/index.html.twig');
     }
 
-    /**
-     * @Route("/ajax/holidays-hours-to-days", name="ajax.holidays-hours-to-days", methods={"GET"})
-     */
+    #[Route(path: '/ajax/holidays-hours-to-days', name: 'ajax.holidays-hours-to-days', methods: ['GET'])]
     public function hoursToDays(Request $request, Session $session)
     {
         $hours_to_convert = $request->get('hours_to_convert');
@@ -282,10 +278,8 @@ class HolidayController extends BaseController
         return $this->json($results);
     }
 
-    /**
-     * @Route("/holiday/edit", name="holiday.update", methods={"POST"})
-     * @Route("/holiday/edit/{id}", name="holiday.edit", methods={"GET"})
-     */
+    #[Route(path: '/holiday/edit', name: 'holiday.update', methods: ['POST'])]
+    #[Route(path: '/holiday/edit/{id}', name: 'holiday.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session)
     {
         $id = $request->get('id');
@@ -516,9 +510,7 @@ class HolidayController extends BaseController
         return $this->output('conges/edit.html.twig');
     }
 
-    /**
-     * @Route("/holiday", name="holiday.save", methods={"POST"})
-     */
+    #[Route(path: '/holiday', name: 'holiday.save', methods: ['POST'])]
     public function add_confirm(Request $request, Session $session)
     {
         $result = $this->save($request);
@@ -536,10 +528,8 @@ class HolidayController extends BaseController
         return $this->redirectToRoute('holiday.index');
     }
 
-    /**
-     * @Route("/holiday/new", name="holiday.new", methods={"GET", "POST"})
-     * @Route("/holiday/new/{perso_id}", name="holiday.new.new", methods={"GET", "POST"})
-     */
+    #[Route(path: '/holiday/new', name: 'holiday.new', methods: ['GET', 'POST'])]
+    #[Route(path: '/holiday/new/{perso_id}', name: 'holiday.new.new', methods: ['GET', 'POST'])]
     public function add(Request $request)
     {
         $session = $request->getSession();
@@ -676,9 +666,7 @@ class HolidayController extends BaseController
         return $this->output('conges/add.html.twig');
     }
 
-    /**
-     * @Route("/holiday/accounts", name="holiday.accounts", methods={"GET"})
-     */
+    #[Route(path: '/holiday/accounts', name: 'holiday.accounts', methods: ['GET'])]
     public function account(Request $request)
     {
         $session = $request->getSession();
@@ -766,9 +754,7 @@ class HolidayController extends BaseController
         return $this->output('conges/accounts.html.twig');
     }
 
-    /**
-     * @Route("/ajax/holiday-halfday-hours", name="ajax.holiday-halfday-hours", methods={"GET"})
-     */
+    #[Route(path: '/ajax/holiday-halfday-hours', name: 'ajax.holiday-halfday-hours', methods: ['GET'])]
     public function halfdayHours(Request $request)
     {
         $agent = $request->get('agent');
@@ -826,9 +812,7 @@ class HolidayController extends BaseController
         return $response;
     }
 
-    /**
-     * @Route("/ajax/check-planning", name="ajax.checkplanning", methods={"POST"})
-     */
+    #[Route(path: '/ajax/check-planning', name: 'ajax.checkplanning', methods: ['POST'])]
     public function checkPlanning(Request $request)
     {
         $perso_ids = json_decode($request->get('perso_ids'));
@@ -868,9 +852,7 @@ class HolidayController extends BaseController
         return $this->json($message);
     }
 
-    /**
-     * @Route("/ajax/holiday-credit", name="ajax.holidaycredit", methods={"GET"})
-     */
+    #[Route(path: '/ajax/holiday-credit', name: 'ajax.holidaycredit', methods: ['GET'])]
     public function checkCredit(Request $request)
     {
         // Initilisation des variables
@@ -919,9 +901,7 @@ class HolidayController extends BaseController
         return $this->json($result);
     }
 
-    /**
-     * @Route("/ajax/current-credits", name="ajax.currentcredits", methods={"get"})
-     */
+    #[Route(path: '/ajax/current-credits', name: 'ajax.currentcredits', methods: ['get'])]
     public function current_credits(Request $request)
     {
         $agent_id = $request->get('id');

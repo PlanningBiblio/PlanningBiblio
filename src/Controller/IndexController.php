@@ -36,10 +36,8 @@ class IndexController extends BaseController
 
     private $dbprefix;
 
-    /**
-     * @Route("/", name="home", methods={"GET"})
-     * @Route("/index", name="index", methods={"GET"})
-     */
+    #[Route(path: '/', name: 'home', methods: ['GET'])]
+    #[Route(path: '/index', name: 'index', methods: ['GET'])]
     public function index(Request $request)
     {
         // Initialisation des variables
@@ -440,9 +438,7 @@ class IndexController extends BaseController
         return $this->output('planning/poste/index.html.twig');
     }
 
-    /**
-     * @Route("/deleteplanning", name="planning.delete", methods={"POST"})
-     */
+    #[Route(path: '/deleteplanning', name: 'planning.delete', methods: ['POST'])]
     public function delete_planning(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
@@ -508,9 +504,7 @@ class IndexController extends BaseController
         return $this->redirectToRoute('index');
     }
 
-    /**
-     * @Route("/modelimport", name="model.import", methods={"POST"})
-     */
+    #[Route(path: '/modelimport', name: 'model.import', methods: ['POST'])]
     public function model_import(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
@@ -797,9 +791,7 @@ class IndexController extends BaseController
         return $this->redirectToRoute('index', array('date' => $date));
     }
 
-    /**
-     * @Route("/modelform", name="model.form", methods={"GET"})
-     */
+    #[Route(path: '/modelform', name: 'model.form', methods: ['GET'])]
     public function model_form(Request $request)
     {
         $CSRFToken = $request->get('CSRFToken');

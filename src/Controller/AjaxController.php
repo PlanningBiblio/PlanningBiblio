@@ -20,9 +20,7 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 class AjaxController extends BaseController
 {
 
-    /**
-     * @Route("/ajax/sanitize-html", name="ajax.sanitizehtml", methods={"POST"})
-     */
+    #[Route(path: '/ajax/sanitize-html', name: 'ajax.sanitizehtml', methods: ['POST'])]
     public function ajax_sanitize_html(Request $request)
     {
         $text = $request->get('text');
@@ -34,9 +32,7 @@ class AjaxController extends BaseController
         return $response;
     }
 
-    /**
-     * @Route("/ajax/agents-by-sites", name="ajax.agentsbysites", methods={"GET"})
-     */
+    #[Route(path: '/ajax/agents-by-sites', name: 'ajax.agentsbysites', methods: ['GET'])]
     public function agentsBySites(Request $request)
     {
         $session = $request->getSession();
@@ -64,9 +60,7 @@ class AjaxController extends BaseController
         return $this->json($agents);
     }
 
-    /**
-     * @Route("/ajax/holiday-delete", name="ajax.holidaydelete", methods={"GET"})
-     */
+    #[Route(path: '/ajax/holiday-delete', name: 'ajax.holidaydelete', methods: ['GET'])]
     public function deleteHoliday(Request $request)
     {
         $id = $request->get('id');
@@ -80,9 +74,7 @@ class AjaxController extends BaseController
         return $this->json("Holiday deleted");
     }
 
-    /**
-     * @Route("/ajax/mail-test", name="ajax.mailtest", methods={"POST"})
-     */
+    #[Route(path: '/ajax/mail-test', name: 'ajax.mailtest', methods: ['POST'])]
     public function mailTest(Request $request)
     {
 
@@ -137,9 +129,7 @@ class AjaxController extends BaseController
         }
     }
 
-    /**
-     * @Route("/ajax/edit-absence-reasons", name="ajax.editabsencereasons", methods={"POST"})
-     */
+    #[Route(path: '/ajax/edit-absence-reasons', name: 'ajax.editabsencereasons', methods: ['POST'])]
     public function editAbsenceReasons(Request $request)
     {
         $CSRFToken = $request->get('CSRFToken');
@@ -168,9 +158,7 @@ class AjaxController extends BaseController
     }
 
 
-    /**
-     * @Route("/ajax/holiday-absence-control", name="ajax.holiday.absence.control", methods={"GET"})
-     */
+    #[Route(path: '/ajax/holiday-absence-control', name: 'ajax.holiday.absence.control', methods: ['GET'])]
     public function holidayAbsenceControl(Request $request)
     {
       $session = $request->getSession();

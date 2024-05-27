@@ -16,9 +16,7 @@ require_once(__DIR__ . '/../../public/include/db.php');
 
 class ModelController extends BaseController
 {
-    /**
-     * @Route("/model", name="model.index", methods={"GET"})
-     */
+    #[Route(path: '/model', name: 'model.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         $all_models = $this->entityManager->getRepository(Model::class)->findAll();
@@ -52,9 +50,7 @@ class ModelController extends BaseController
         return $this->output('admin/model/index.html.twig');
     }
 
-    /**
-     * @Route("/model", name="model.save", methods={"POST"})
-     */
+    #[Route(path: '/model', name: 'model.save', methods: ['POST'])]
     public function save(Request $request, Session $session)
     {
         $id = $request->get('id');
@@ -81,9 +77,7 @@ class ModelController extends BaseController
         return $this->redirectToRoute('model.index');
     }
 
-    /**
-     * @Route("/model-add", name="model.add", methods={"POST", "GET"})
-     */
+    #[Route(path: '/model-add', name: 'model.add', methods: ['POST', 'GET'])]
     public function add(Request $request, Session $session)
     {
         $name = $request->get('name');
@@ -135,9 +129,7 @@ class ModelController extends BaseController
         return $response;
     }
 
-    /**
-     * @Route("/model/{id}", name="model.edit", methods={"GET"})
-     */
+    #[Route(path: '/model/{id}', name: 'model.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         $id = $request->get('id');
@@ -151,9 +143,7 @@ class ModelController extends BaseController
     }
 
 
-    /**
-     * @Route("/model/{id}", name="model.delete", methods={"DELETE"})
-     */
+    #[Route(path: '/model/{id}', name: 'model.delete', methods: ['DELETE'])]
     public function delete(Request $request, Session $session)
     {
         $id = $request->get('id');
