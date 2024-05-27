@@ -1,3 +1,20 @@
+*** Version 23.10.12   (2024-05-27)    ***
+- Fixes
+MT40420: Fix the calculation of the free break #913
+MT44093: Fix the display of holiday credits on the My Account page #1025
+MT44107: Fix PlanningJobControllerTest::testContextMenuWithAgentsIndispo #1027
+MT44125: deny the deletion of validated holiday #1028
+MT44129: HolidayRepository::get no longer return deletion information #1029
+MT44224: Fixes information about events imported from Office 365 #1034
+MT44018: Optimize statistics #1037
+MT44329: When multiple recipents are given, Mail-From is used as TO #1039
+MT44379: Add LDIF-Encoding param + Fix import #1040
+MT43652: Login case insensitive with OpenIDConnect #1041
+MT43965: Add the link to the overtime registration request in the notification email #1043
+
+- Enhancements
+MT44018: Allow to change memory_limit from .env files #1035
+
 *** Version 23.10.11   (2024-03-29)    ***
 - Fixes
 MT43984: Display the correct date on non-validated schedules in week view #1024
