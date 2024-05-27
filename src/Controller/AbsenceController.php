@@ -12,8 +12,8 @@ use App\PlanningBiblio\Helper\HourHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
@@ -22,9 +22,7 @@ class AbsenceController extends BaseController
 {
     use \App\Controller\Traits\EntityValidationStatuses;
 
-    /**
-     * @Route("/absence", name="absence.index", methods={"GET"})
-     */
+    #[Route(path: '/absence', name: 'absence.index', methods: ['GET'])]
     public function index(Request $request)
     {
         $session = $request->getSession();
@@ -179,9 +177,7 @@ class AbsenceController extends BaseController
         return $this->output('absences/index.html.twig');
     }
 
-    /**
-     * @Route("/absence/add", name="absence.add", methods={"GET"})
-     */
+    #[Route(path: '/absence/add', name: 'absence.add', methods: ['GET'])]
     public function add(Request $request)
     {
         $session = $request->getSession();
@@ -242,9 +238,7 @@ class AbsenceController extends BaseController
         return $this->output('absences/add.html.twig');
     }
 
-    /**
-     * @Route("/absence", name="absence.save", methods={"POST"})
-     */
+    #[Route(path: '/absence', name: 'absence.save', methods: ['POST'])]
     public function save(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
@@ -302,9 +296,7 @@ class AbsenceController extends BaseController
         return $this->redirectToRoute("absence.index");
     }
 
-    /**
-     * @Route("/absence/{id<\d+>}", name="absence.edit", methods={"GET"})
-     */
+    #[Route(path: '/absence/{id<\d+>}', name: 'absence.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         $session = $request->getSession();
@@ -463,9 +455,7 @@ class AbsenceController extends BaseController
         return $this->output('absences/edit.html.twig');
     }
 
-    /**
-     * @Route("/absence", name="absence.delete", methods={"DELETE"})
-     */
+    #[Route(path: '/absence', name: 'absence.delete', methods: ['DELETE'])]
     public function delete_absence(Request $request)
     {
         $session = $request->getSession();
@@ -706,9 +696,7 @@ class AbsenceController extends BaseController
         return $this->json($json_response);
     }
 
-    /**
-     * @Route("/absence-statuses", name="absence.statuses", methods={"GET"})
-     */
+    #[Route(path: '/absence-statuses', name: 'absence.statuses', methods: ['GET'])]
     public function absence_validation_statuses(Request $request)
     {
         $agent_ids = $request->get('ids') ?? array();

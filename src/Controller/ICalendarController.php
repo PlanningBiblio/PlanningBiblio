@@ -16,9 +16,7 @@ require_once(__DIR__.'/../../public/postes/class.postes.php');
 
 class ICalendarController extends BaseController
 {
-    /**
-     * @Route("ical", name = "ical.index", methods={"GET"})
-     */
+    #[Route(path: 'ical', name: 'ical.index', methods: ['GET'])]
     public function index(Request $request, Session $session){
 
         $module = 'Ical export';

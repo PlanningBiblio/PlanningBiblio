@@ -12,9 +12,7 @@ use App\Model\AbsenceInfo;
 
 class AbsenceInfoController extends BaseController
 {
-    /**
-     * @Route("/absences/info", name="absences.info.index", methods={"GET"})
-     */
+    #[Route(path: '/absences/info', name: 'absences.info.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         $today = date('Y-m-d');
@@ -33,9 +31,7 @@ class AbsenceInfoController extends BaseController
         return $this->output('absenceInfo/index.html.twig');
     }
 
-    /**
-     * @Route("/absences/info/add", name="absences.info.add", methods={"GET"})
-     */
+    #[Route(path: '/absences/info/add', name: 'absences.info.add', methods: ['GET'])]
     public function add(Request $request)
     {
         $this->templateParams(array(
@@ -48,9 +44,7 @@ class AbsenceInfoController extends BaseController
         return $this->output('absenceInfo/edit.html.twig');
     }
 
-    /**
-     * @Route("/absences/info/{id}", name="absences.info.edit", methods={"GET"})
-     */
+    #[Route(path: '/absences/info/{id}', name: 'absences.info.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         $id = $request->get('id');
@@ -67,9 +61,7 @@ class AbsenceInfoController extends BaseController
         return $this->output('absenceInfo/edit.html.twig');
     }
 
-    /**
-     * @Route("/absences/info", name="absences.info.update", methods={"POST"})
-     */
+    #[Route(path: '/absences/info', name: 'absences.info.update', methods: ['POST'])]
     public function update(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
@@ -108,9 +100,7 @@ class AbsenceInfoController extends BaseController
         return $this->redirectToRoute('absences.info.index');
     }
 
-    /**
-     * @Route("/absences/info", name="absences.info.delete", methods={"DELETE"})
-     */
+    #[Route(path: '/absences/info', name: 'absences.info.delete', methods: ['DELETE'])]
     public function delete(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {

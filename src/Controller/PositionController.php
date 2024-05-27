@@ -18,9 +18,7 @@ require_once(__DIR__ . '/../../public/activites/class.activites.php');
 
 class PositionController extends BaseController
 {
-    /**
-     * @Route("/position", name="position.index", methods={"GET"})
-     */
+    #[Route(path: '/position', name: 'position.index', methods: ['GET'])]
     public function index(Request $request)
     {
         //            Affichage de la liste des postes
@@ -112,10 +110,8 @@ class PositionController extends BaseController
         return $this->output('position/index.html.twig');
     }
 
-    /**
-     * @Route("/position/add", name="position.add", methods={"GET"})
-     * @Route("/position/{id}", name="position.edit", methods={"GET"})
-     */
+    #[Route(path: '/position/add', name: 'position.add', methods: ['GET'])]
+    #[Route(path: '/position/{id}', name: 'position.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         // Initialisation des variables
@@ -254,9 +250,7 @@ class PositionController extends BaseController
         return $this->output('position/edit.html.twig');
     }
 
-    /**
-     * @Route("/position", name="position.save", methods={"POST"})
-     */
+    #[Route(path: '/position', name: 'position.save', methods: ['POST'])]
     public function save(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
@@ -350,9 +344,7 @@ class PositionController extends BaseController
         return $this->redirectToRoute('position.index');
     }
 
-    /**
-     * @Route("/position",name="position.delete", methods={"DELETE"})
-     */
+    #[Route(path: '/position', name: 'position.delete', methods: ['DELETE'])]
      public function delete_position(Request $request, Session $session){
 
         $id = $request->get('id');

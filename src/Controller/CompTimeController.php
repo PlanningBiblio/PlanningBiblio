@@ -15,9 +15,7 @@ include_once(__DIR__ . '/../../public/conges/class.conges.php');
 
 class CompTimeController extends BaseController
 {
-    /**
-     * @Route("/comptime/add", name="comptime.add", methods={"GET"})
-     */
+    #[Route(path: '/comptime/add', name: 'comptime.add', methods: ['GET'])]
     public function add(Request $request)
     {
         $session = $request->getSession();
@@ -107,9 +105,7 @@ class CompTimeController extends BaseController
         return $this->output('comptime/add.html.twig');
     }
 
-    /**
-     * @Route("/comptime", name="comptime.save", methods={"POST"})
-     */
+    #[Route(path: '/comptime', name: 'comptime.save', methods: ['POST'])]
     public function save(Request $request, Session $session)
     {
         $session = $request->getSession();

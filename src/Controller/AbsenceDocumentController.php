@@ -15,9 +15,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AbsenceDocumentController extends BaseController
 {
-    /**
-     * @Route("/absences/document/{id}", name="absences.document.index", methods={"GET"})
-     */
+    #[Route(path: '/absences/document/{id}', name: 'absences.document.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         $id = $request->get('id');
@@ -31,9 +29,7 @@ class AbsenceDocumentController extends BaseController
         return $response;
     }
 
-    /**
-     * @Route("/absences/document/{id}", name="absences.document.delete", methods={"DELETE"})
-     */
+    #[Route(path: '/absences/document/{id}', name: 'absences.document.delete', methods: ['DELETE'])]
     public function delete(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
@@ -49,9 +45,7 @@ class AbsenceDocumentController extends BaseController
         return $response;
     }
 
-   /**
-     * @Route("/absences/document/{id_absence}", name="absences.document.add", methods={"POST"})
-     */
+   #[Route(path: '/absences/document/{id_absence}', name: 'absences.document.add', methods: ['POST'])]
     public function add(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
@@ -76,9 +70,7 @@ class AbsenceDocumentController extends BaseController
         return $response;
     }
 
-   /**
-     * @Route("/absences/documents/{id_absence}", name="absences.document.list", methods={"GET"})
-     */
+   #[Route(path: '/absences/documents/{id_absence}', name: 'absences.document.list', methods: ['GET'])]
     public function list(Request $request, Session $session)
     {
         $id = $request->get('id_absence');

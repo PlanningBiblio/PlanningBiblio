@@ -12,9 +12,7 @@ use App\PlanningBiblio\ClosingDay;
 class ClosingDayController extends BaseController
 {
 
-    /**
-     * @Route("/closingday", name="closingday.index", methods={"GET"})
-     */
+    #[Route(path: '/closingday', name: 'closingday.index', methods: ['GET'])]
     public function index(Request $request){
         // Initalisation des variables
         $annee_courante = date("n") < 9 ? (date("Y")-1)."-".(date("Y")) : (date("Y"))."-".(date("Y")+1);
@@ -89,9 +87,7 @@ class ClosingDayController extends BaseController
 
     }
 
-    /**
-     * @Route("/closingday", name="closingday.save", methods={"POST"})
-     */
+    #[Route(path: '/closingday', name: 'closingday.save', methods: ['POST'])]
     public function save(Request $request, Session $session){
         $post = $request->request->all();
         $CSRFToken = $request->get('CSRFToken');

@@ -7,7 +7,6 @@ use App\Controller\BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-
 use App\Model\AbsenceBlock;
 
 class AbsenceBlockController extends BaseController

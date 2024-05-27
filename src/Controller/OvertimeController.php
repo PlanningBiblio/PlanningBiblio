@@ -22,9 +22,7 @@ class OvertimeController extends BaseController
 
     private Array $droits;
 
-    /**
-     * @Route("/overtime", name="overtime.index", methods={"GET"})
-     */
+    #[Route(path: '/overtime', name: 'overtime.index', methods: ['GET'])]
     public function index(Request $request)
     {
         $session = $request->getSession();
@@ -193,9 +191,7 @@ class OvertimeController extends BaseController
         return $this->output('overtime/index.html.twig');
     }
 
-    /**
-     * @Route("/overtime/{id}", name="overtime.edit", methods={"GET"})
-     */
+    #[Route(path: '/overtime/{id}', name: 'overtime.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         $session = $request->getSession();
@@ -244,9 +240,7 @@ class OvertimeController extends BaseController
         return $this->output('overtime/edit.html.twig');
     }
 
-    /**
-     * @Route("/overtime", name="overtime.save", methods={"POST"})
-     */
+    #[Route(path: '/overtime', name: 'overtime.save', methods: ['POST'])]
     public function save(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
