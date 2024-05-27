@@ -58,5 +58,4 @@ services:
     App\Model\Extensions\TablePrefix:
         arguments:
             $prefix: '%env(resolve:DATABASE_PREFIX)%'
-        tags:
-            - { name: doctrine.event_subscriber }
+        public: true

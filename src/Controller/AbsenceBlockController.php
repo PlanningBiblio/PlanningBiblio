@@ -12,9 +12,7 @@ use App\Model\AbsenceBlock;
 
 class AbsenceBlockController extends BaseController
 {
-    /**
-     * @Route("/absence/block", name="absence.block.index", methods={"GET"})
-     */
+    #[Route("/absence/block", name: "absence.block.index", methods: ["GET"])]
     public function index(Request $request, Session $session)
     {
         $blocks = $this->entityManager->getRepository(AbsenceBlock::class)
@@ -28,9 +26,7 @@ class AbsenceBlockController extends BaseController
         return $this->output('absenceBlock/index.html.twig');
     }
 
-    /**
-     * @Route("/absence/block/add", name="absence.block.add", methods={"GET"})
-     */
+    #[Route("/absence/block/add", name: "absence.block.add", methods: ["GET"])]
     public function add(Request $request)
     {
         $this->templateParams(array(
@@ -43,9 +39,7 @@ class AbsenceBlockController extends BaseController
         return $this->output('absenceBlock/edit.html.twig');
     }
 
-    /**
-     * @Route("/absence/block/{id<\d+>}", name="absence.block.edit", methods={"GET"})
-     */
+    #[Route("/absence/block/{id<\d+>}", name: "absence.block.edit", methods: ["GET"])]
     public function edit(Request $request)
     {
         $id = $request->get('id');
@@ -62,9 +56,7 @@ class AbsenceBlockController extends BaseController
         return $this->output('absenceBlock/edit.html.twig');
     }
 
-    /**
-     * @Route("/absence/block", name="absence.block.update", methods={"POST"})
-     */
+    #[Route("/absence/block", name: "absence.block.update", methods: ["POST"])]
     public function update(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
@@ -104,9 +96,7 @@ class AbsenceBlockController extends BaseController
         return $this->redirectToRoute('absence.block.index');
     }
 
-    /**
-     * @Route("/absence/block", name="absence.block.delete", methods={"DELETE"})
-     */
+    #[Route("/absence/block", name: "absence.block.delete", methods: ["DELETE"])]
     public function delete(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
