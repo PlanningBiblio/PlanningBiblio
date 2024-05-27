@@ -24,7 +24,9 @@ class SkillControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(5));
 
-        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
+        $crawler = $this->client->request('GET', '/skill/add');
+        $extract_result = $crawler->filter('input[name="_token"]')->extract(array('value'));
+        $token = $extract_result[0];
 
         $this->client->request('POST', '/skill', array('nom' => 'securite', '_token' => $token));
 
