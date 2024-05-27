@@ -22,9 +22,7 @@ include_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 
 class WeekPlanningController extends BaseController
 {
-    /**
-     * @Route("/week", name="planning.week", methods={"GET"})
-     */
+    #[Route(path: '/week', name: 'planning.week', methods: ['GET'])]
     public function week(Request $request)
     {
         $groupe = $request->get('groupe');

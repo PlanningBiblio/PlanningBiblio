@@ -23,9 +23,7 @@ class WorkingHourController extends BaseController
     private $adminN2 = false;
     private $workinghours = array();
 
-    /**
-     * @Route("/ajax/workinghour-tables", name="ajax.workinghourtables", methods={"GET"})
-     */
+    #[Route(path: '/ajax/workinghour-tables', name: 'ajax.workinghourtables', methods: ['GET'])]
     public function tables(Request $request)
     {
 
@@ -123,9 +121,7 @@ class WorkingHourController extends BaseController
     }
 
 
-    /**
-     * @Route("/workinghour", name="workinghour.index", methods={"GET"})
-     */
+    #[Route(path: '/workinghour', name: 'workinghour.index', methods: ['GET'])]
     public function index(Request $request, Session $session){
         // Initialisation des variables
         $debut = $request->get("debut");
@@ -260,9 +256,7 @@ class WorkingHourController extends BaseController
         return $this->output('/workinghour/index.html.twig');
     }
 
-    /**
-     * @Route("/workinghour/add/{agent_id<\d+>?}", name="workinghour.add", methods={"GET"})
-     */
+    #[Route(path: '/workinghour/add/{agent_id<\d+>?}', name: 'workinghour.add', methods: ['GET'])]
     public function add(Request $request, Session $session) {
         // Initialisation des variables
         $retour = $request->get('retour');
@@ -353,9 +347,7 @@ class WorkingHourController extends BaseController
         return $this->output('/workinghour/edit.html.twig');
     }
 
-    /**
-     * @Route("/workinghour/{id<\d+>}", name="workinghour.edit", methods={"GET"})
-     */
+    #[Route(path: '/workinghour/{id<\d+>}', name: 'workinghour.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session){
         // Initialisation des variables
         $copy = $request->get('copy');
@@ -544,9 +536,7 @@ class WorkingHourController extends BaseController
         return $this->output('/workinghour/edit.html.twig');
     }
 
-    /**
-     * @Route("/workinghour", name="workinghour.save", methods={"POST"})
-     */
+    #[Route(path: '/workinghour', name: 'workinghour.save', methods: ['POST'])]
     public function save(Request $request, Session $session){
         $post = $request->request->all();
         $msg = null;
@@ -613,9 +603,7 @@ class WorkingHourController extends BaseController
         }
     }
 
-    /**
-     * @Route("/workinghour", name="workinghour.delete", methods={"DELETE"})
-     */
+    #[Route(path: '/workinghour', name: 'workinghour.delete', methods: ['DELETE'])]
     public function delete(Request $request, Session $session){
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get("id");

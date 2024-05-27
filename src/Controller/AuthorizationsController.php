@@ -17,9 +17,7 @@ include_once(__DIR__ . '/../../public/ldap/class.ldap.php');
 class AuthorizationsController extends BaseController
 {
 
-    /**
-     * @Route("/login", name="login", methods={"GET"})
-     */
+    #[Route(path: '/login', name: 'login', methods: ['GET'])]
     public function login(Request $request, LoggerInterface $logger = null)
     {
 
@@ -48,9 +46,7 @@ class AuthorizationsController extends BaseController
         return $this->output('login.html.twig');
     }
 
-    /**
-     * @Route("/login", name="login.check", methods={"POST"})
-     */
+    #[Route(path: '/login', name: 'login.check', methods: ['POST'])]
     public function check_login(Request $request, LoggerInterface $logger = null)
     {
         $this->redirectCAS($request, $logger);
@@ -151,9 +147,7 @@ class AuthorizationsController extends BaseController
         return $this->output('login.html.twig');
     }
 
-    /**
-     * @Route("/logout", name="logout", methods={"GET"})
-     */
+    #[Route(path: '/logout', name: 'logout', methods: ['GET'])]
     public function logout(Request $request)
     {
         session_destroy();
@@ -185,9 +179,7 @@ class AuthorizationsController extends BaseController
         return $this->redirect($this->config('URL') . "/login$authArgs");
     }
 
-    /**
-     * @Route("/access-denied", name="access-denied", methods={"GET"})
-     */
+    #[Route(path: '/access-denied', name: 'access-denied', methods: ['GET'])]
     public function denied(Request $request)
     {
         $content = $this->renderView('access-denied.html.twig');

@@ -25,9 +25,7 @@ require_once(__DIR__ . "/../../public/ldap/class.ldap.php");
 class AgentController extends BaseController
 {
 
-    /**
-     * @Route("/ajax/agent-sites", name="ajax.agentsites", methods={"GET"})
-     */
+    #[Route(path: '/ajax/agent-sites', name: 'ajax.agentsites', methods: ['GET'])]
     public function sites(Request $request)
     {
         $agent = $request->get('id');
@@ -58,9 +56,7 @@ class AgentController extends BaseController
         return $response;
     }
 
-    /**
-     * @Route("/agent", name="agent.index", methods={"GET"})
-     */
+    #[Route(path: '/agent', name: 'agent.index', methods: ['GET'])]
     public function index(Request $request)
     {
         $session = $request->getSession();
@@ -212,18 +208,14 @@ class AgentController extends BaseController
         return $this->output('/agents/index.html.twig');
     }
 
-    /**
-     * @Route("/agent/password", name="agent.password", methods={"GET"})
-     */
+    #[Route(path: '/agent/password', name: 'agent.password', methods: ['GET'])]
     public function password(Request $request)
     {
         return $this->output('/agents/password.html.twig');
     }
 
-    /**
-     * @Route("/agent/add", name="agent.add", methods={"GET"})
-     * @Route("/agent/{id<\d+>}", name="agent.edit", methods={"GET"})
-     */
+    #[Route(path: '/agent/add', name: 'agent.add', methods: ['GET'])]
+    #[Route(path: '/agent/{id<\d+>}', name: 'agent.edit', methods: ['GET'])]
     public function add(Request $request)
     {
         $id = $request->get('id');
@@ -789,9 +781,7 @@ class AgentController extends BaseController
         return $this->output('agents/edit.html.twig');
     }
 
-    /**
-     * @Route("/agent", name="agent.save", methods={"POST"})
-     */
+    #[Route(path: '/agent', name: 'agent.save', methods: ['POST'])]
     public function save(Request $request)
     {
 
@@ -1114,9 +1104,7 @@ class AgentController extends BaseController
         return $response;
     }
 
-    /**
-     * @Route("/ajax/change-own-password", name="ajax.changeownpassword", methods={"POST"})
-     */
+    #[Route(path: '/ajax/change-own-password', name: 'ajax.changeownpassword', methods: ['POST'])]
     public function changeOwnPassword(Request $request)
     {
         if (!$this->csrf_protection($request)) {
@@ -1142,9 +1130,7 @@ class AgentController extends BaseController
         }
     }
 
-    /**
-     * @Route("/ajax/check-password", name="ajax.checkpassword", methods={"GET"})
-     */
+    #[Route(path: '/ajax/check-password', name: 'ajax.checkpassword', methods: ['GET'])]
     public function check_password(Request $request)
     {
         $password = $request->get('password');
@@ -1182,9 +1168,7 @@ class AgentController extends BaseController
         return false;
     }
 
-    /**
-     * @Route("/ajax/is-current-password", name="ajax.iscurrentpassword", methods={"GET"})
-     */
+    #[Route(path: '/ajax/is-current-password', name: 'ajax.iscurrentpassword', methods: ['GET'])]
     public function isCurrentPassword(Request $request)
     {
         $session = $request->getSession();
@@ -1214,9 +1198,7 @@ class AgentController extends BaseController
         return $isCurrentPassword;
     }
 
-    /**
-     * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"})
-     */
+    #[Route(path: '/ajax/update_agent_login', name: 'ajax.update_agent_login', methods: ['POST'])]
     public function update_login(Request $request)
     {
         if (!$this->csrf_protection($request)) {
@@ -1260,9 +1242,7 @@ class AgentController extends BaseController
         return $response;
     }
 
-    /**
-     * @Route("/agent/ldap", name="agent.ldap", methods={"GET"})
-     */
+    #[Route(path: '/agent/ldap', name: 'agent.ldap', methods: ['GET'])]
     public function ldap_index(Request $request)
     {
         $searchTerm = $request->get('searchTerm');
@@ -1383,9 +1363,7 @@ class AgentController extends BaseController
         return $this->output('agents/import-form.html.twig');
     }
 
-    /**
-     * @Route("/agent/ldap", name="agent.ldap.import", methods={"POST"})
-     */
+    #[Route(path: '/agent/ldap', name: 'agent.ldap.import', methods: ['POST'])]
     public function ldap_import(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
@@ -1507,9 +1485,7 @@ class AgentController extends BaseController
     }
 
 
-    /**
-     * @Route("/agent/ldif", name="agent.ldif", methods={"GET"})
-     */
+    #[Route(path: '/agent/ldif', name: 'agent.ldif', methods: ['GET'])]
     public function ldif_index(Request $request)
     {
         $searchTerm = $request->get('searchTerm');
@@ -1540,9 +1516,7 @@ class AgentController extends BaseController
     }
 
 
-    /**
-     * @Route("/agent/ldif", name="agent.ldif.import", methods={"POST"})
-     */
+    #[Route(path: '/agent/ldif', name: 'agent.ldif.import', methods: ['POST'])]
     public function ldif_import(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
@@ -1697,9 +1671,7 @@ class AgentController extends BaseController
         return $results;
     }
 
-    /**
-     * @Route("/agent", name="agent.delete", methods={"DELETE"})
-     */
+    #[Route(path: '/agent', name: 'agent.delete', methods: ['DELETE'])]
     public function deleteAgent(Request $request, Session $session)
     {
         // Initialisation des variables

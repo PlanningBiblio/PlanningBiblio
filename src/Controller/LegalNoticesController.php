@@ -12,9 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class LegalNoticesController extends BaseController
 {
 
-    /**
-     * @Route("/legal-notices", name="legal-notices", methods={"GET"})
-     */
+    #[Route(path: '/legal-notices', name: 'legal-notices', methods: ['GET'])]
     public function index(Request $request)
     {
         $session = $request->getSession();

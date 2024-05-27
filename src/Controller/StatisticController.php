@@ -29,20 +29,16 @@ include_once __DIR__ . '/../../public/personnel/class.personnel.php';
 class StatisticController extends BaseController
 {
 
-    /**
-     * @Route("/statistics", name="statistics.index", methods={"GET"})
-     */
+    #[Route(path: '/statistics', name: 'statistics.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         return $this->output('statistics/index.html.twig');
     }
 
 
-    /**
-     * @Route("/statistics/agent", name="statistics.agent", methods={"GET", "POST"})
-     * @Route("/statistics/service", name="statistics.service", methods={"GET", "POST"})
-     * @Route("/statistics/status", name="statistics.status", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/agent', name: 'statistics.agent', methods: ['GET', 'POST'])]
+    #[Route(path: '/statistics/service', name: 'statistics.service', methods: ['GET', 'POST'])]
+    #[Route(path: '/statistics/status', name: 'statistics.status', methods: ['GET', 'POST'])]
     public function common(Request $request, Session $session)
     {
         // Initialization of variables
@@ -630,9 +626,7 @@ class StatisticController extends BaseController
     }
 
 
-    /**
-     * @Route("/statistics/saturday", name="statistics.saturday", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/saturday', name: 'statistics.saturday', methods: ['GET', 'POST'])]
     public function saturday (Request $request, Session $session)
     {
         // Initialisation des variables :
@@ -970,9 +964,7 @@ class StatisticController extends BaseController
     }
 
 
-    /**
-     * @Route("/statistics/attendeesmissing", name="statistics.attendeesmissing", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/attendeesmissing', name: 'statistics.attendeesmissing', methods: ['GET', 'POST'])]
     public function attendeesmissing( Request $request, Session $session )
     {
         $params = $request->request->all();
@@ -1074,9 +1066,7 @@ class StatisticController extends BaseController
         return $this->output('statistics/attendeesmissing.html.twig');
     }
 
-    /**
-     * @Route("/statistics/absence", name="statistics.absence", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/absence', name: 'statistics.absence', methods: ['GET', 'POST'])]
     public function absence( Request $request, Session $session )
     {
         $debut = $request->get('debut');
@@ -1271,9 +1261,7 @@ class StatisticController extends BaseController
         return $this->output('statistics/absence.html.twig');
     }
 
-    /**
-     * @Route("/statistics/positionsummary", name="statistics.positionsummary", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/positionsummary', name: 'statistics.positionsummary', methods: ['GET', 'POST'])]
     public function positionsummary(Request $request, Session $session)
     {
         //	Variables :
@@ -1584,9 +1572,7 @@ class StatisticController extends BaseController
     }
 
 
-    /**
-     * @Route("/statistics/time", name="statistics.time", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/time', name: 'statistics.time', methods: ['GET', 'POST'])]
     public function bytime(Request $request, Session $session)
     {
         //    Initialisation des variables
@@ -2045,9 +2031,7 @@ class StatisticController extends BaseController
         return $this->output('statistics/time.html.twig');
     }
 
-    /**
-     * @Route("/statistics/supportposition", name="statistics.supportposition", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/supportposition', name: 'statistics.supportposition', methods: ['GET', 'POST'])]
     public function supportposition(Request $request, Session $session)
     {
         //	Variables :
@@ -2367,9 +2351,7 @@ class StatisticController extends BaseController
         return $this->output('statistics/supportposition.html.twig');
     }
 
-    /**
-     * @Route("/statistics/position", name="statistics.position", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/position', name: 'statistics.position', methods: ['GET', 'POST'])]
     public function position(Request $request, Session $session)
     {
         // Initialisation des variables :

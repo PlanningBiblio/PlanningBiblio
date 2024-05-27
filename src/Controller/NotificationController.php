@@ -15,9 +15,7 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 
 class NotificationController extends BaseController {
 
-    /**
-     * @Route("/notification", name="notification.index", methods={"GET"})
-     */
+    #[Route(path: '/notification', name: 'notification.index', methods: ['GET'])]
     public function index(Request $request){
         // Initialisation des variables
         $nbSites = $this->config("Multisites-nombre");
@@ -101,9 +99,7 @@ class NotificationController extends BaseController {
 
     }
 
-    /**
-     * @Route("/notification", name="notification.save", methods={"POST"})
-     */
+    #[Route(path: '/notification', name: 'notification.save', methods: ['POST'])]
     public function save(Request $request){
         $agents = $request->get('agents');
         $responsables = $request->get('responsables');

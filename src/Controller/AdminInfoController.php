@@ -12,9 +12,7 @@ use App\Model\AdminInfo;
 
 class AdminInfoController extends BaseController
 {
-    /**
-     * @Route("/admin/info", name="admin.info.index", methods={"GET"})
-     */
+    #[Route(path: '/admin/info', name: 'admin.info.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         $today = date('Ymd');
@@ -33,9 +31,7 @@ class AdminInfoController extends BaseController
         return $this->output('adminInfo/index.html.twig');
     }
 
-    /**
-     * @Route("/admin/info/add", name="admin.info.addform", methods={"GET"})
-     */
+    #[Route(path: '/admin/info/add', name: 'admin.info.addform', methods: ['GET'])]
     public function addform(Request $request)
     {
         $this->templateParams(array(
@@ -48,9 +44,7 @@ class AdminInfoController extends BaseController
         return $this->output('adminInfo/edit.html.twig');
     }
 
-    /**
-     * @Route("/admin/info/{id}", name="admin.info.editform", methods={"GET"})
-     */
+    #[Route(path: '/admin/info/{id}', name: 'admin.info.editform', methods: ['GET'])]
     public function editform(Request $request)
     {
         $id = $request->get('id');
@@ -67,9 +61,7 @@ class AdminInfoController extends BaseController
         return $this->output('adminInfo/edit.html.twig');
     }
 
-    /**
-     * @Route("/admin/info", name="admin.info.update", methods={"POST"})
-     */
+    #[Route(path: '/admin/info', name: 'admin.info.update', methods: ['POST'])]
     public function update(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
@@ -107,9 +99,7 @@ class AdminInfoController extends BaseController
         return $this->redirectToRoute('admin.info.index');
     }
 
-    /**
-     * @Route("/admin/info", name="admin.info.delete", methods={"DELETE"})
-     */
+    #[Route(path: '/admin/info', name: 'admin.info.delete', methods: ['DELETE'])]
     public function delete(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {

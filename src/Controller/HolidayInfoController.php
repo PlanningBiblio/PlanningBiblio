@@ -12,9 +12,7 @@ require_once(__DIR__ . '/../../public/conges/class.conges.php');
 
 class HolidayInfoController extends BaseController
 {
-    /**
-     * @Route("/holiday-info", name="holiday_info.index", methods={"GET"})
-     */
+    #[Route(path: '/holiday-info', name: 'holiday_info.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         $CSRFSession = $GLOBALS['CSRFSession'];
@@ -44,9 +42,7 @@ class HolidayInfoController extends BaseController
         return $this->output('holidayInfo/index.html.twig');
     }
 
-    /**
-     * @Route("/holiday-info/add", name="holiday_info.add", methods={"GET"})
-     */
+    #[Route(path: '/holiday-info/add', name: 'holiday_info.add', methods: ['GET'])]
     public function add(Request $request)
     {
         if(!$this->isAdmin()){
@@ -65,9 +61,7 @@ class HolidayInfoController extends BaseController
         return $this->output('holidayInfo/edit.html.twig');
     }
 
-    /**
-     * @Route("/holiday-info/{id}", name="holiday_info.edit", methods={"GET"})
-     */
+    #[Route(path: '/holiday-info/{id}', name: 'holiday_info.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         if(!$this->isAdmin()){
@@ -94,9 +88,7 @@ class HolidayInfoController extends BaseController
         return $this->output('holidayInfo/edit.html.twig');
     }
 
-    /**
-     * @Route("/holiday-info", name="holiday_info.update", methods={"POST"})
-     */
+    #[Route(path: '/holiday-info', name: 'holiday_info.update', methods: ['POST'])]
     public function save(Request $request, Session $session)
     {
         if(!$this->isAdmin()){
@@ -131,9 +123,7 @@ class HolidayInfoController extends BaseController
         return $this->redirectToRoute('holiday_info.index');
     }
 
-    /**
-     * @Route("/holiday-info", name="holiday_info.delete", methods={"DELETE"})
-     */
+    #[Route(path: '/holiday-info', name: 'holiday_info.delete', methods: ['DELETE'])]
     public function delete(Request $request, Session $session)
     {
         if(!$this->isAdmin()){

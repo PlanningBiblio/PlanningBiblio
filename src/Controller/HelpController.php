@@ -8,9 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HelpController extends BaseController
 {
-    /**
-     * @Route("/help", name="help")
-     */
+    #[Route(path: '/help', name: 'help')]
     public function index()
     {
         return $this->output('help/index.html.twig');

@@ -10,9 +10,7 @@ use App\Model\ConfigParam;
 
 class ConfigController extends BaseController
 {
-    /**
-     * @Route("/config", name="config.index", methods={"GET"})
-     */
+    #[Route(path: '/config', name: 'config.index', methods: ['GET'])]
     public function index(Request $request)
     {
         // Temporary folder
@@ -93,9 +91,7 @@ class ConfigController extends BaseController
         return $this->output('config/index.html.twig');
     }
 
-    /**
-     * @Route("/config", name="config.update"), methods={"POST"})
-     */
+    #[Route(path: '/config', name: 'config.update')] // , methods={"POST"})
     public function update(Request $request, Session $session)
     {
         $params = $request->request->all();

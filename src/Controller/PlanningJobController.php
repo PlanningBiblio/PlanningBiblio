@@ -27,9 +27,7 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class PlanningJobController extends BaseController
 {
-    /**
-     * @Route("/planningjob/contextmenu", name="planningjob.contextmenu", methods={"GET"})
-     */
+    #[Route(path: '/planningjob/contextmenu', name: 'planningjob.contextmenu', methods: ['GET'])]
     public function contextmenu(Request $request)
     {
         $session = $request->getSession();
@@ -742,9 +740,7 @@ class PlanningJobController extends BaseController
         return $this->json($tableaux);
     }
 
-    /**
-     * @Route("/ajax/planningjob/checkcopy", name="ajax.planningjobcheckcopy", methods={"GET"})
-     */
+    #[Route(path: '/ajax/planningjob/checkcopy', name: 'ajax.planningjobcheckcopy', methods: ['GET'])]
     public function checkCopy(Request $request)
     {
         // Initilisation des variables
@@ -807,9 +803,7 @@ class PlanningJobController extends BaseController
         return $this->json($result);
     }
 
-    /**
-     * @Route("/ajax/planningjob/undo", name="planningjob.undo", methods={"POST"})
-     */
+    #[Route(path: '/ajax/planningjob/undo', name: 'planningjob.undo', methods: ['POST'])]
     public function undo(Request $request)
     {
         if (!$this->csrf_protection($request)) {
@@ -883,9 +877,7 @@ class PlanningJobController extends BaseController
         return $this->json($response);
     }
 
-    /**
-     * @Route("/ajax/planningjob/redo", name="planningjob.redo", methods={"POST"})
-     */
+    #[Route(path: '/ajax/planningjob/redo', name: 'planningjob.redo', methods: ['POST'])]
     public function redo(Request $request)
     {
         if (!$this->csrf_protection($request)) {
