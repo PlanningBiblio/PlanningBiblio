@@ -3411,6 +3411,31 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+ 
+$v="24.05.01";
+
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT44188
+    $sql[] = "ALTER TABLE `{$dbprefix}personnel` ADD COLUMN IF NOT EXISTS `check_ms_graph` TINYINT(1) NOT NULL DEFAULT 0 AFTER `check_hamac`;";
+    
+    if (!empty($_ENV['MS_GRAPH_CLIENT_ID'])) {
+        $sql[] = "UPDATE `{$dbprefix}personnel` SET `check_ms_graph` = 1 WHERE `supprime` = '0';";
+    }
+
+    // MT44224
+    $sql[] = "UPDATE `{$dbprefix}absences` SET `cal_name` = REPLACE(`cal_name`, 'PlanningBiblio-Absences-', 'MSGraph-'), `valide` = '99999', `valide_n1` = '99999', `validation` = `demande`, `validation_n1` = 
+`demande` WHERE `cal_name` like 'PlanningBiblio-Absences%' AND `ical_key` NOT LIKE '%T%_%T%Z_%T%_%Z';";
+
+    // MT44379
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDIF-Encoding', 'enum', 'UTF-8', 'UTF-8,ISO-8859-1', 'Encodage de carac
+    tères du fichier source', 'LDIF', 40);";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = 'uid,samaccountname,supannaliaslogin,employeenumber' WHERE `nom` = 'LDIF-ID-Attribute';";
+    $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `matricule` `matricule` VARCHAR(100) NULL DEFAULT NULL;";
+
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage
