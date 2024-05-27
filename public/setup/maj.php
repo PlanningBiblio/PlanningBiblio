@@ -3424,12 +3424,10 @@ if (version_compare($config['Version'], $v) === -1) {
     }
 
     // MT44224
-    $sql[] = "UPDATE `{$dbprefix}absences` SET `cal_name` = REPLACE(`cal_name`, 'PlanningBiblio-Absences-', 'MSGraph-'), `valide` = '99999', `valide_n1` = '99999', `validation` = `demande`, `validation_n1` = 
-`demande` WHERE `cal_name` like 'PlanningBiblio-Absences%' AND `ical_key` NOT LIKE '%T%_%T%Z_%T%_%Z';";
+    $sql[] = "UPDATE `{$dbprefix}absences` SET `cal_name` = REPLACE(`cal_name`, 'PlanningBiblio-Absences-', 'MSGraph-'), `valide` = '99999', `valide_n1` = '99999', `validation` = `demande`, `validation_n1` = `demande` WHERE `cal_name` like 'PlanningBiblio-Absences%' AND `ical_key` NOT LIKE '%T%_%T%Z_%T%_%Z';";
 
     // MT44379
-    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDIF-Encoding', 'enum', 'UTF-8', 'UTF-8,ISO-8859-1', 'Encodage de carac
-    tères du fichier source', 'LDIF', 40);";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDIF-Encoding', 'enum', 'UTF-8', 'UTF-8,ISO-8859-1', 'Encodage de caractères du fichier source', 'LDIF', 40);";
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = 'uid,samaccountname,supannaliaslogin,employeenumber' WHERE `nom` = 'LDIF-ID-Attribute';";
     $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `matricule` `matricule` VARCHAR(100) NULL DEFAULT NULL;";
 
