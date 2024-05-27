@@ -459,27 +459,8 @@ class AgentController extends BaseController
             'postes_completNoms_json' => $postes_completNoms_json
         ));
 
-        // Ajout des noms dans les tableaux postes attribués et dispo
-        function postesNoms($postes, $tab_noms)
-        {
-            $tmp = array();
-            if (is_array($postes)) {
-                foreach ($postes as $elem) {
-                    if (is_array($tab_noms)) {
-                        foreach ($tab_noms as $noms) {
-                            if ($elem==$noms[1]) {
-                                $tmp[] = array($elem,$noms[0]);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            usort($tmp, "cmp_1");
-            return $tmp;
-        }
-        $postes_attribues = postesNoms($postes_attribues, $postes_completNoms);
-        $postes_dispo = postesNoms($postes_dispo, $postes_completNoms);
+        $postes_attribues = $this->postesNoms($postes_attribues, $postes_completNoms);
+        $postes_dispo = $this->postesNoms($postes_dispo, $postes_completNoms);
 
         $this->templateParams(array(
             'demo'              => empty($this->config('demo')) ? 0 : 1,
@@ -1855,4 +1836,25 @@ class AgentController extends BaseController
         }
         return $login;
     }
+
+    // Ajout des noms dans les tableaux postes attribués et dispo
+    private function postesNoms($postes, $tab_noms)
+    {
+        $tmp = array();
+        if (is_array($postes)) {
+            foreach ($postes as $elem) {
+                if (is_array($tab_noms)) {
+                    foreach ($tab_noms as $noms) {
+                        if ($elem==$noms[1]) {
+                            $tmp[] = array($elem,$noms[0]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        usort($tmp, "cmp_1");
+        return $tmp;
+    }
+ 
 }

@@ -25,14 +25,14 @@
               <label>Agent :</label>
               <select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>
                 {% if perso_id == 0 %}
-                  <option value='0' selected >Tous</option>
+                  <option value='0' selected='selected'>Tous</option>
                 {% else %}
-                  <option value='0' >Tous</option>
+                  <option value='0'>Tous</option>
                 {% endif %}
 
                 {% for a in managed %}
                   {% if a.id == perso_id %}
-                    <option value="{{ a.id }}" selected>{{ a.nom }} {{ a.prenom }}</option>
+                    <option value="{{ a.id }}" selected='selected'>{{ a.nom }} {{ a.prenom }}</option>
                   {% else %}
                     <option value="{{ a.id }}">{{ a.nom }} {{ a.prenom }}</option>
                   {% endif %}
