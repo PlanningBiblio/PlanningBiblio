@@ -11,8 +11,8 @@ doctrine:
         url: '%env(resolve:DATABASE_URL)%'
     orm:
         auto_generate_proxy_classes: true
+        enable_lazy_ghost_objects: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        auto_mapping: true
         mappings:
             App\Model:
                 is_bundle: false
@@ -20,3 +20,5 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Model'
                 prefix: 'App\Model'
                 alias: App
+        controller_resolver:
+            auto_mapping: true
