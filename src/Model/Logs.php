@@ -8,21 +8,19 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/**
- * @Entity @Table(name="log")
- **/
+#[Entity] // @Table(name="log")
 class Logs extends PLBEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $msg;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $program;
 
-    /** @Column(type="datetime") */
+    #[Column(type: 'datetime')]
     protected $timestamp;
 
 }

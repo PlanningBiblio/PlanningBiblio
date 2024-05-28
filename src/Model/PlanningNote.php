@@ -8,27 +8,25 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/**
- * @Entity @Table(name="pl_notes")
- **/
+#[Entity] // @Table(name="pl_notes")
 class PlanningNote extends PLBEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="date") **/
+    #[Column(type: 'date')] // *
     protected $date;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $site;
 
-    /** @Column(type="text") */
+    #[Column(type: 'text')]
     protected $text;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $perso_id;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $timestamp;
 
 }

@@ -8,23 +8,21 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/**
- * @Entity @Table(name="pl_poste_cellules")
- **/
+#[Entity] // @Table(name="pl_poste_cellules")
 class PlanningPositionCells extends PLBEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $numero;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $tableau;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $ligne;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $colonne;
 }

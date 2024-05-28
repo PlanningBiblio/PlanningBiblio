@@ -8,16 +8,14 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/**
- * @Entity @Table(name="select_groupes")
- **/
+#[Entity] // @Table(name="select_groupes")
 class SelectGroup extends PLBEntity {
-    /** @Id @Column(type="integer", length = 11) @GeneratedValue **/
+    #[Id] // @Column(type="integer", length = 11) @GeneratedValue *
     protected $id;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $valeur;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $rang;
 }

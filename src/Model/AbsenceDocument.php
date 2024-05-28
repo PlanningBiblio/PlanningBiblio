@@ -4,23 +4,21 @@ namespace App\Model;
 
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-/**
- * @Entity @Table(name="absences_documents")
- **/
+#[Entity] // @Table(name="absences_documents")
 class AbsenceDocument extends PLBEntity
 {
     protected $upload_dir = '';
 
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $absence_id;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $filename;
 
-    /** @Column(type="datetime") */
+    #[Column(type: 'datetime')]
     protected $date;
 
     public function deleteFile() {
