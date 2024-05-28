@@ -8,44 +8,42 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/**
- * @Entity @Table(name="pl_poste")
- **/
+#[Entity] // @Table(name="pl_poste")
 class PlanningPosition extends PLBEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $perso_id;
 
-    /** @Column(type="date") **/
+    #[Column(type: 'date')] // *
     protected $date;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $poste;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $absent;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $chgt_login;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $chgt_time;
 
-    /** @Column(type="time") **/
+    #[Column(type: 'time')] // *
     protected $debut;
 
-    /** @Column(type="time") **/
+    #[Column(type: 'time')] // *
     protected $fin;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $supprime;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $site;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $grise;
 }

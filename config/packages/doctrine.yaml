@@ -16,7 +16,7 @@ doctrine:
         mappings:
             App\Model:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Model'
                 prefix: 'App\Model'
                 alias: App
