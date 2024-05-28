@@ -8,62 +8,60 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/**
- * @Entity(repositoryClass="App\Repository\WorkingHourRepository") @Table(name="planning_hebdo")
- **/
+#[Entity] // @Table(name="planning_hebdo")
 class WorkingHour extends PLBEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $perso_id;
 
-    /** @Column(type="date") **/
+    #[Column(type: 'date')] // *
     protected $debut;
 
-    /** @Column(type="date") **/
+    #[Column(type: 'date')] // *
     protected $fin;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $temps;
 
-    /** @Column(type="json") **/
+    #[Column(type: 'json')] // *
     protected $breaktime;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $saisie;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $modif;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $modification;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $valide_n1;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $validation_n1;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $valide;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $validation;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $actuel;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $remplace;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $cle;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $exception;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $nb_semaine;
 }

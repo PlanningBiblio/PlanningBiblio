@@ -10,124 +10,118 @@ require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/include/db.php');
 
-/**
- * @Entity(repositoryClass="App\Repository\AgentRepository") @Table(name="personnel")
- **/
+#[Entity(repositoryClass: \App\Repository\AgentRepository::class)] // @Table(name="personnel")
 class Agent extends PLBEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $nom;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $prenom;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $mail;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $statut;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $categorie;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $service;
 
-    /** @Column(type="date") **/
+    #[Column(type: 'date')] // *
     protected $arrivee;
 
-    /** @Column(type="date") **/
+    #[Column(type: 'date')] // *
     protected $depart;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $postes;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $actif;
 
-    /** @Column(type="json") **/
+    #[Column(type: 'json')] // *
     protected $droits;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $login;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $password;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $commentaires;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $last_login;
 
-    /** @Column(type="string", length=6) **/
+    #[Column(type: 'string', length: 6)] // *
     protected $heures_hebdo;
 
-    /** @Column(type="float") **/
+    #[Column(type: 'float')] // *
     protected $heures_travail;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $sites;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $temps;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $informations;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $recup;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $supprime;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $mails_responsables;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $matricule;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $code_ics;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $url_ics;
 
-    /** @Column(type="string", length=10) **/
+    #[Column(type: 'string', length: 10)] // *
     protected $check_ics;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $check_hamac;
 
-    /** @Column(type="boolean") **/
+    #[Column(type: 'boolean')] // *
     protected $check_ms_graph;
 
-    /** @Column(type="float") **/
+    #[Column(type: 'float')] // *
     protected $conges_credit;
 
-    /** @Column(type="float") **/
+    #[Column(type: 'float')] // *
     protected $conges_reliquat;
 
-    /** @Column(type="float") **/
+    #[Column(type: 'float')] // *
     protected $conges_anticipation;
 
-    /** @Column(type="float") **/
+    #[Column(type: 'float')] // *
     protected $comp_time;
 
-    /** @Column(type="float") **/
+    #[Column(type: 'float')] // *
     protected $conges_annuel;
 
-    /**
-     * @OneToMany(targetEntity="Manager", mappedBy="perso_id", cascade={"ALL"})
-     */
+    #[OneToMany(targetEntity: \Manager::class, mappedBy: 'perso_id', cascade: ['ALL'])]
     protected $managers;
 
-    /**
-     * @OneToMany(targetEntity="Manager", mappedBy="responsable", cascade={"ALL"})
-     */
+    #[OneToMany(targetEntity: \Manager::class, mappedBy: 'responsable', cascade: ['ALL'])]
     protected $managed;
 
     public function __construct() {

@@ -8,26 +8,24 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/**
- * @Entity @Table(name="pl_poste_lignes")
- **/
+#[Entity] // @Table(name="pl_poste_lignes")
 class PlanningPositionLines extends PLBEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $numero;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $tableau;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $ligne;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $poste;
 
-    /** @Column(type="string", columnDefinition="enum('poste', 'ligne', 'titre', 'classe')") **/
+    #[Column(type: 'string', columnDefinition: "enum('poste', 'ligne', 'titre', 'classe')")] // *
     protected $type;
 }

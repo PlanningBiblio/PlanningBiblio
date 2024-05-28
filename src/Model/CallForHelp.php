@@ -8,38 +8,36 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/**
- * @Entity @Table(name="appel_dispo")
- **/
+#[Entity] // @Table(name="appel_dispo")
 class CallForHelp extends PLBEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $site;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $poste;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $date;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $debut;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $fin;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $destinataires;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $sujet;
 
-    /** @Column(type="text") **/
+    #[Column(type: 'text')] // *
     protected $message;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $timestamp;
 }

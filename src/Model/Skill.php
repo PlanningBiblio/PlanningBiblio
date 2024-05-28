@@ -4,16 +4,14 @@ namespace App\Model;
 
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-/**
- * @Entity(repositoryClass="App\Repository\SkillRepository") @Table(name="activites")
- **/
+#[Entity(repositoryClass: \App\Repository\SkillRepository::class)] // @Table(name="activites")
 class Skill extends PLBEntity{
-    /** @Id @Column(type="integer", length = 11) @GeneratedValue **/
+    #[Id] // @Column(type="integer", length = 11) @GeneratedValue *
     protected $id;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $nom;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $supprime;
 }

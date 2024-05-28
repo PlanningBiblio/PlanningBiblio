@@ -8,77 +8,75 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/**
- * @Entity(repositoryClass="App\Repository\AbsenceRepository") @Table(name="absences")
- **/
+#[Entity(repositoryClass: \App\Repository\AbsenceRepository::class)] // @Table(name="absences")
 class Absence extends PLBEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $perso_id;
 
-    /** @Column(type="datetime") **/
+    #[Column(type: 'datetime')] // *
     protected $debut;
 
-    /** @Column(type="datetime") */
+    #[Column(type: 'datetime')]
     protected $fin;
 
-    /** @Column(type="text") */
+    #[Column(type: 'text')]
     protected $motif;
 
-    /** @Column(type="text") */
+    #[Column(type: 'text')]
     protected $motif_autre;
 
-    /** @Column(type="text") */
+    #[Column(type: 'text')]
     protected $commentaires;
 
-    /** @Column(type="text") */
+    #[Column(type: 'text')]
     protected $etat;
 
-    /** @Column(type="datetime") */
+    #[Column(type: 'datetime')]
     protected $demande;
 
-    /** @Column(type="integer") */
+    #[Column(type: 'integer')]
     protected $valide;
 
-    /** @Column(type="datetime") */
+    #[Column(type: 'datetime')]
     protected $validation;
 
-    /** @Column(type="integer") */
+    #[Column(type: 'integer')]
     protected $valide_n1;
 
-    /** @Column(type="datetime") */
+    #[Column(type: 'datetime')]
     protected $validation_n1;
 
-    /** @Column(type="integer") */
+    #[Column(type: 'integer')]
     protected $pj1;
 
-    /** @Column(type="integer") */
+    #[Column(type: 'integer')]
     protected $pj2;
 
-    /** @Column(type="integer") */
+    #[Column(type: 'integer')]
     protected $so;
 
-    /** @Column(type="string") */
+    #[Column(type: 'string')]
     protected $groupe;
 
-    /** @Column(type="text") */
+    #[Column(type: 'text')]
     protected $cal_name;
 
-    /** @Column(type="text") */
+    #[Column(type: 'text')]
     protected $ical_key;
 
-    /** @Column(type="string") */
+    #[Column(type: 'string')]
     protected $last_modified;
 
-    /** @Column(type="text") */
+    #[Column(type: 'text')]
     protected $uid;
 
-    /** @Column(type="text") */
+    #[Column(type: 'text')]
     protected $rrule;
 
-    /** @Column(type="integer") */
+    #[Column(type: 'integer')]
     protected $id_origin;
 }

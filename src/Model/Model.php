@@ -4,27 +4,25 @@ namespace App\Model;
 
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-/**
- * @Entity @Table(name="pl_poste_modeles_tab")
- **/
+#[Entity] // @Table(name="pl_poste_modeles_tab")
 class Model extends PLBEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
+    #[Id] // @Column(type="integer") @GeneratedValue *
     protected $id;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $model_id;
 
-    /** @Column(type="string") **/
+    #[Column(type: 'string')] // *
     protected $nom;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $jour;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $tableau;
 
-    /** @Column(type="integer") **/
+    #[Column(type: 'integer')] // *
     protected $site;
 
     public function isWeek()

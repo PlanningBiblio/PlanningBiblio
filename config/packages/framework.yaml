@@ -4,9 +4,8 @@ framework:
     http_method_override: false
     handle_all_throwables: false
 
-    #TODO: When ORM annotations have moved to PHP attributes:
-    #annotations:
-    #    enabled: false
+    annotations:
+        enabled: false
 
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
     # Remove or comment this section to explicitly disable session support.
@@ -24,7 +23,3 @@ framework:
 
     assets:
         version_strategy: 'App\Asset\VersionStrategy\CurrentVersionStrategy'
-
-    # Set to false once migrated to attributes
-    annotations:
-        enabled: true
