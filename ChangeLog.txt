@@ -1,3 +1,7 @@
+*** Version 23.10.13   (2024-05-31)    ***
+- Fixes
+MT44188: Choose the Office 365 calendars to import #1033
+
 *** Version 23.10.12   (2024-05-27)    ***
 - Fixes
 MT40420: Fix the calculation of the free break #913
