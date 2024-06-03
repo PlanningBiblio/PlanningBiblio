@@ -57,8 +57,6 @@
 -- UPDATE config SET valeur='0', type='info' WHERE nom='ICS-Export';
 -- -- Interdire l’ajout de serveur LDAP
 -- UPDATE config SET valeur='', type='info' WHERE nom='LDAP-Host';
--- -- Interdire l’activation de la messagerie
--- UPDATE config SET valeur='0', type='info' WHERE nom='Mail-IsEnabled';
 -- -- Désactivation des rappels
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Rappels-Actifs';
 -- -- Statistiques
