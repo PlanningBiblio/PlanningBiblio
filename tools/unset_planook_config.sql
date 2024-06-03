@@ -56,8 +56,6 @@
 -- UPDATE config SET type='boolean' WHERE nom='ICS-Export';
 -- -- Autoriser l’ajout de serveur LDAP
 -- UPDATE config SET type='text' WHERE nom='LDAP-Host';
--- -- Autoriser l’activation de la messagerie
--- UPDATE config SET type='boolean' WHERE nom='Mail-IsEnabled';
 -- -- Permettre l'activation des rappels
 -- UPDATE config SET type='boolean' WHERE nom='Rappels-Actifs';
 -- -- Statistiques
