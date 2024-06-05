@@ -3,8 +3,9 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\PlanningBiblio\Framework;
+use App\Model\PlanningPositionLines;
 use App\Model\Position;
+use App\PlanningBiblio\Framework;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -428,20 +429,13 @@ class FrameworkController extends BaseController
             return $this->json('used', 403);
         }
 
-        $post=array();
-        foreach ($_POST as $key => $value) {
-            $key = htmlspecialchars(strval($key));
-            $post[$key] = htmlspecialchars(strval($value));
-        }
-
         // Suppression des infos concernant ce tableau dans la table pl_poste_lignes
         $db = new \db();
         $db->CSRFToken = $CSRFToken;
         $db->delete("pl_poste_lignes", array("numero" => $tableauNumero));
 
         // Insertion des données dans la table pl_poste_lignes
-        $values = array();
-        foreach ($post as $key => $value) {
+        foreach ($form_post as $key => $value) {
             if ($value and substr($key, 0, 6) == "select") {
                 $tab = explode("_", $key);  //1: tableau ; 2 lignes
                 if (substr($tab[1], -5) == "Titre") {
@@ -456,24 +450,16 @@ class FrameworkController extends BaseController
                 } else {
                     $type = "poste";
                 }
-                $values[] = array(
-                    ":numero"  => $tableauNumero, 
-                    ":tableau" => $tab[1], 
-                    ":ligne"   => $tab[2], 
-                    ":poste"   => $value, 
-                    ":type"    =>$type
-                );
-            }
-        }
-        if ($values[0]) {
-            $sql = "INSERT INTO `{$dbprefix}pl_poste_lignes` (`numero`,`tableau`,`ligne`,`poste`,`type`) ";
-            $sql.="VALUES (:numero, :tableau, :ligne, :poste, :type);";
 
-            $db = new \dbh();
-            $db->CSRFToken = $CSRFToken;
-            $db->prepare($sql);
-            foreach ($values as $elem) {
-                $db->execute($elem);
+                $line = new PlanningPositionLines();
+                $line->numero($tableauNumero);
+                $line->tableau($tab[1]);
+                $line->ligne($tab[2]);
+                $line->poste($value);
+                $line->type($type);
+
+                $this->entityManager->persist($line);
+                $this->entityManager->flush();
             }
         }
 
@@ -484,7 +470,7 @@ class FrameworkController extends BaseController
 
         // Insertion des données dans la table pl_poste_cellules
         $values=array();
-        foreach ($post as $key => $value) {
+        foreach ($form_post as $key => $value) {
             if ($value and substr($key, 0, 8)=="checkbox") {
                 $tab = explode("_", $key);  //1: tableau ; 2 lignes ; 3 colonnes
                 $values[] = array(
