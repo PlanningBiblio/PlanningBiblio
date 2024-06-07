@@ -41,8 +41,8 @@
 -- UPDATE config SET type='text' WHERE nom='Hamac-csv';
 -- -- Possiblité d'activer le module Planning Hebdo
 -- UPDATE config SET type='boolean' WHERE nom='PlanningHebdo';
--- -- Ne pas forcer un même emploi du temps chaque semaine
--- UPDATE config SET type='enum' WHERE nom='nb_semaine';
+-- -- Permettre jusqu'à 10 semaines par cycle
+-- UPDATE config SET valeurs='1,2,3,4,5,6,7,8,9,10' WHERE nom='nb_semaine';
 -- UPDATE config SET type='enum2' WHERE nom='EDTSamedi';
 -- -- Ne pas interdire la 2ème pause
 -- UPDATE config SET type='boolean' WHERE nom='PlanningHebdo-Pause2';
