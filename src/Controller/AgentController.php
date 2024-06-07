@@ -430,6 +430,9 @@ class AgentController extends BaseController
         $a->fetch();
         $activites = $a->elements;
 
+        $postes_complet = array();
+        $postes_completNoms = array();
+
         foreach ($activites as $elem) {
             $postes_completNoms[] = array($elem['nom'],$elem['id']);
             $postes_complet[] = $elem['id'];
@@ -439,11 +442,9 @@ class AgentController extends BaseController
         $postes_dispo = array();
         if ($postes_attribues) {
             $postes = implode(",", $postes_attribues);    //    activités attribuées séparées par des virgules (valeur transmise à valid.php)
-            if (is_array($postes_complet)) {
-                foreach ($postes_complet as $elem) {
-                    if (!in_array($elem, $postes_attribues)) {
-                        $postes_dispo[] = $elem;
-                    }
+            foreach ($postes_complet as $elem) {
+                if (!in_array($elem, $postes_attribues)) {
+                    $postes_dispo[] = $elem;
                 }
             }
         } else {
@@ -836,18 +837,18 @@ class AgentController extends BaseController
         $check_ics3 = !empty($params['check_ics3']) ? 1 : 0;
         $check_ics = "[$check_ics1,$check_ics2,$check_ics3]";
         $droits = array_key_exists("droits", $params) ? $params['droits'] : null;
-        $categorie = trim($params['categorie']);
-        $informations = trim($params['informations']);
-        $mailsResponsables = trim(str_replace(array("\n", " "), '', $params['mailsResponsables']));
-        $matricule = trim($params['matricule']);
+        $categorie = isset($params['categorie']) ? trim($params['categorie']) : null;
+        $informations = isset($params['informations']) ? trim($params['informations']) : null;
+        $mailsResponsables = isset($params['mailsResponsables']) ? trim(str_replace(array("\n", " "), '', $params['mailsResponsables'])) : null;
+        $matricule = isset($params['matricule']) ? trim($params['matricule']) : null;
         $url_ics = isset($params['url_ics']) ? trim($params['url_ics']) : null;
         $nom = trim($params['nom']);
-        $postes = $params['postes'];
+        $postes = $params['postes'] ?? null;
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
-        $service = $params['service'];
+        $service = $params['service'] ?? null;
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
-        $statut = $params['statut'];
+        $statut = $params['statut'] ?? null;
         $temps = array_key_exists("temps", $params) ? $params['temps'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)

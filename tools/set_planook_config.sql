@@ -11,8 +11,8 @@
 -- UPDATE `config` SET `valeur` = 'planook' WHERE `nom` = 'Affichage-theme';
 -- -- Désactivation du dimanche
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Dimanche';
--- -- Granularité forcée sur 30 minutes :
--- UPDATE config SET valeur='30', type='info' WHERE nom='Granularite';
+-- -- Granularité forcée sur 15 minutes :
+-- UPDATE config SET valeur='15', type='info' WHERE nom='Granularite';
 -- -- Absences
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Absences-blocage';
 -- UPDATE config SET valeur='1', type='info' WHERE nom='Absences-planningVide';
@@ -42,8 +42,8 @@
 -- UPDATE config SET valeur='', type='info' WHERE nom='Hamac-csv';
 -- -- Désactivation du module Planning Hebdo
 -- UPDATE config SET valeur='0' , type='info' WHERE nom='PlanningHebdo';
--- -- Forcer un même emploi du temps chaque semaine
--- UPDATE config SET valeur='1' , type='info' WHERE nom='nb_semaine';
+-- -- Emploi du temps en semaines paires et impaires
+-- UPDATE config SET valeur='1', valeurs='1,2' WHERE nom='nb_semaine';
 -- UPDATE config SET valeur='0' , type='info' WHERE nom='EDTSamedi';
 -- -- Interdire la 2ème pause
 -- UPDATE config SET valeur='0', type='info' WHERE nom='PlanningHebdo-Pause2';
