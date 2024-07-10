@@ -5,7 +5,6 @@ use App\Model\Agent;
 use App\Model\PlanningPosition;
 use App\Model\PlanningPositionLock;
 use App\Model\Position;
-use App\Model\WeekPlanning;
 
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;

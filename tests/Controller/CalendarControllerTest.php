@@ -2,7 +2,7 @@
 
 use App\Model\Agent;
 use App\Model\Absence;
-use App\Model\WeekPlanning;
+use App\Model\WorkingHour;
 
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -76,7 +76,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $end = \DateTime::createFromFormat("d/m/Y H:i:s", '29/09/2022 19:00:00');
         $pl_post = $builder->build
         (
-            WeekPlanning::class,
+            WorkingHour::class,
             array(
                 'perso_id' => $agent->id(),
                 'debut' => $start,

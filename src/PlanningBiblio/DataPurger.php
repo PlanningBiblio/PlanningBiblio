@@ -26,7 +26,7 @@ use App\Model\PublicHoliday;
 use App\Model\RecurringAbsence;
 use App\Model\SaturdayWorkingHours;
 use App\Model\Skill;
-use App\Model\WeekPlanning;
+use App\Model\WorkingHour;
 use App\PlanningBiblio\Logger;
 
 use App\Model\HiddenTables;
@@ -84,7 +84,7 @@ class DataPurger
         $this->simplePurge(PublicServiceHours::class,             'semaine',   '<', $end_of_week_limit_date);
         $this->simplePurge(PublicHoliday::class,                  'jour',      '<', $three_years_limit_date);
         $this->simplePurge(SaturdayWorkingHours::class,           'semaine',   '<', $end_of_week_limit_date);
-        $this->simplePurge(WeekPlanning::class,                   'fin',       '<', $limit_date);
+        $this->simplePurge(WorkingHour::class,                    'fin',       '<', $limit_date);
 
         $this->log("Purging special cases:");
 

@@ -14,6 +14,7 @@ Page appelée par les fichiers index.php, setup/index.php et planning/poste/menu
 */
 
 use App\Model\Agent;
+use App\Model\WorkingHour;
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\NotificationTransporter\NotificationTransporterInterface;
 
@@ -396,8 +397,9 @@ function authSQL($login, $password)
 */
 function calculHeuresSP($date, $CSRFToken)
 {
-    $config=$GLOBALS['config'];
-    $version=$GLOBALS['version'];
+    $config = $GLOBALS['config'];
+    $em = $GLOBALS['entityManager'];
+    $version = $GLOBALS['version'];
 
     // Securité : Traitement pour une reponse Ajax
     if (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
@@ -437,6 +439,7 @@ function calculHeuresSP($date, $CSRFToken)
         // Si la table planning_hebdo a été modifiée depuis la création du tableaux des heures
         // Ou si les informations update_time n'existent pas ($phUpdate == null / $pUpdate == null)
         // Ou si le tableau des heures n'a pas été créé ($heuresSPUpdate=0), on le (re)fait.
+
         if ($pHUpdate>=$heuresSPUpdate or $pUpdate>=$heuresSPUpdate or $pHUpdate == null or $pUpdate == null) {
             $heuresSP=array();
     
@@ -451,6 +454,8 @@ function calculHeuresSP($date, $CSRFToken)
             $ph->fin=$j7;
             $ph->valide=true;
             $ph->fetch();
+
+            $workingHours = $em->getRepository(WorkingHour::class)->get($j1, $j7);
 
             if (!empty($p->elements)) {
                 // Pour chaque agents
@@ -488,6 +493,16 @@ function calculHeuresSP($date, $CSRFToken)
                                                 // Et heure de début et de fin de journée
                                                 if (array_key_exists($key3, $edt['temps']) and $edt['temps'][$key3][0] and $edt['temps'][$key3][3]) {
                                                     $minutesHebdo+=diff_heures($edt['temps'][$key3][0], $edt['temps'][$key3][3], "minutes");
+                                                }
+                                            }
+
+                                            // MT44884: Remove free break
+                                            foreach ($workingHours as $wh) {
+                                                if ($wh->perso_id() == $key1) {
+                                                    $breakTimes = $wh->breaktime();
+                                                    $breakTime = $breakTimes[$key3] ?? 0;
+                                                    $minutesHebdo -= (float) $breakTime * 60;
+                                                    break;
                                                 }
                                             }
                                         }
