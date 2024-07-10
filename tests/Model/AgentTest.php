@@ -6,7 +6,7 @@ use App\Model\Holiday;
 use App\Model\Skill;
 use App\Model\Position;
 use App\Model\PlanningPosition;
-use App\Model\WeekPlanning;
+use App\Model\WorkingHour;
 use App\Model\Absence;
 
 use Tests\FixtureBuilder;
@@ -171,10 +171,10 @@ class AgentTest extends TestCase
         $GLOBALS['config']['PlanningHebdo'] = 1;
         $config=$GLOBALS['config']['PlanningHebdo'];
 
-        $builder->delete(WeekPlanning::class);
+        $builder->delete(WorkingHour::class);
         $pl_post = $builder->build
         (
-            WeekPlanning::class,
+            WorkingHour::class,
             array(
                 'perso_id' => $agent2->id(),
                 'debut' => $start,
@@ -200,7 +200,7 @@ class AgentTest extends TestCase
         $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'depart' => $depart));
         $pl_post2 = $builder->build
         (
-            WeekPlanning::class,
+            WorkingHour::class,
             array(
                 'perso_id' => $agent3->id(),
                 'debut' => $start,

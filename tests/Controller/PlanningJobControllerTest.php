@@ -5,7 +5,7 @@ use App\Model\Agent;
 use App\Model\Holiday;
 use App\Model\PlanningPosition;
 use App\Model\Position;
-use App\Model\WeekPlanning;
+use App\Model\WorkingHour;
 
 use App\PlanningBiblio\WorkingHours;
 
@@ -44,7 +44,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $wh = new WorkingHours($workingHours);
 
-        $planning = $this->builder->build(WeekPlanning::class, array(
+        $planning = $this->builder->build(WorkingHour::class, array(
             'perso_id' => $agent->id(),
             'debut' => $start,
             'fin' => $end,
@@ -141,7 +141,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $this->logInAgent($kboivin, $kboivin->droits());
 
         // Create WeekPlanning
-        $builder->delete(WeekPlanning::class);
+        $builder->delete(WorkingHour::class);
 
         $this->createWeekPlanningFor($jdevoe);
         $this->createWeekPlanningFor($abreton);
@@ -276,7 +276,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
 
         // Create WeekPlanning
-        $builder->delete(WeekPlanning::class);
+        $builder->delete(WorkingHour::class);
 
         $this->createWeekPlanningFor($jdevoe);
         $this->createWeekPlanningFor($abreton);
@@ -373,7 +373,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $this->logInAgent($kboivin, $kboivin->droits());
 
         // Create WeekPlanning
-        $builder->delete(WeekPlanning::class);
+        $builder->delete(WorkingHour::class);
 
         $this->createWeekPlanningFor($jdevoe);
         $this->createWeekPlanningFor($abreton);
@@ -470,7 +470,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $this->logInAgent($kboivin, $kboivin->droits());
 
         // Create WeekPlanning
-        $builder->delete(WeekPlanning::class);
+        $builder->delete(WorkingHour::class);
 
         $this->createWeekPlanningFor($jdevoe);
         $this->createWeekPlanningFor($abreton);
@@ -488,7 +488,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             5 => array('0' => '08:00:00', '1' => '', '2' => '', '3' => '19:30:00', '2'),
         );
 
-        $planning = $this->builder->build(WeekPlanning::class, array(
+        $planning = $this->builder->build(WorkingHour::class, array(
             'perso_id' => $jdevoe->id(),
             'debut' => $start,
             'fin' => $end,
