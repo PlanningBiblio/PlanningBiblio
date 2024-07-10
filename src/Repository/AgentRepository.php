@@ -18,7 +18,7 @@ use App\Model\PlanningPositionModel;
 use App\Model\RecurringAbsence;
 use App\Model\SaturdayWorkingHours;
 use App\Model\Supervisor;
-use App\Model\WeekPlanning;
+use App\Model\WorkingHour;
 use App\Model\ConfigParam;
 
 class AgentRepository extends EntityRepository
@@ -71,7 +71,7 @@ class AgentRepository extends EntityRepository
                 PlanningPositionModel::class,
                 RecurringAbsence::class,
                 SaturdayWorkingHours::class,
-                WeekPlanning::class
+                WorkingHour::class
             ];
 
             foreach ($classes as $class) {

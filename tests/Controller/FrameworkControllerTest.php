@@ -3,7 +3,6 @@
 use App\Model\ConfigParam;
 use App\Model\Agent;
 use App\Model\Absence;
-use App\Model\WeekPlanning;
 use App\Model\PlanningPosition;
 use App\Model\PlanningPositionTab;
 use App\Model\PlanningPositionLines;

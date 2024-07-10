@@ -2,7 +2,6 @@
 
 use App\Model\Agent;
 use App\Model\Absence;
-use App\Model\WeekPlanning;
 use App\Model\PlanningPositionLock;
 use App\Model\PlanningPosition;
 use App\Model\PlanningPositionTabAffectation;

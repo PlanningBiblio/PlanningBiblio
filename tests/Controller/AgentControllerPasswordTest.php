@@ -1,6 +1,5 @@
 <?php
 use App\Model\Agent;
-use App\Model\WeekPlanning;
 use App\Model\Holiday;
 use App\Model\Absence;
 use App\Model\Position;
