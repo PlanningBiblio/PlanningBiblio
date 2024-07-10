@@ -9,9 +9,9 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="planning_hebdo")
+ * @Entity(repositoryClass="App\Repository\WorkingHourRepository") @Table(name="planning_hebdo")
  **/
-class WeekPlanning extends PLBEntity
+class WorkingHour extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
@@ -28,7 +28,7 @@ class WeekPlanning extends PLBEntity
     /** @Column(type="text") **/
     protected $temps;
 
-    /** @Column(type="text") **/
+    /** @Column(type="json") **/
     protected $breaktime;
 
     /** @Column(type="datetime") **/

@@ -1,7 +1,7 @@
 <?php
 
 use App\Model\Agent;
-use App\Model\WeekPlanning;
+use App\Model\WorkingHour;
 use App\Model\ConfigParam;
 use App\Model\Manager;
 
@@ -48,7 +48,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
         $end = new DateTime('now + 1 year');
 
         $week_planning = $this->builder->build(
-            WeekPlanning::class,
+            WorkingHour::class,
             array(
                 'perso_id' => $agent->id(),
                 'debut' => $date,
