@@ -241,6 +241,11 @@ h4{
   left: 750px;
   }
 
+  .absences-motif-div span:nth-child(5) {
+  left: 840px;
+  }
+
+
 /* Absences récurrentes */
 #recurrence-summary, #recurrence-summary-form {
   max-width:300px;
