@@ -878,7 +878,7 @@ class AgentController extends BaseController
             $db->select2("personnel", array(array("name"=>"MAX(`id`)", "as"=>"id")));
             $id = $db->result[0]['id']+1;
 
-            $login = $this->login($nom, $prenom);
+            $login = $this->login($prenom, $nom, $mail);
 
             // Demo mode
             if (!empty($this->config('demo'))) {
@@ -1794,35 +1794,67 @@ class AgentController extends BaseController
         return $credits;
     }
 
-    private function login($nom, $prenom)
+    private function login($firstname = '', $lastname = '', $mail = '')
     {
-        $prenom = trim($prenom);
-        $nom = trim($nom);
-        if ($prenom) {
-            $tmp[] = $prenom;
-        }
-        if ($nom) {
-            $tmp[] = $nom;
+
+        $firstname = trim($firstname);
+        $lastname = trim($lastname);
+        $mail = trim($mail);
+
+        $tmp = array();
+
+        switch ($this->config('Auth-LoginLayout')) {
+            case 'lastname.firstname' :
+                if ($lastname) {
+                    $tmp[] = $lastname;
+                }
+                if ($firstname) {
+                    $tmp[] = $firstname;
+                }
+                break;
+
+            case 'mail' :
+                $tmp[] = $mail;
+                break;
+
+            case 'mailPrefix' :
+                $tmp[] = preg_replace('/(.[^@]*)@.*$/i', '$1', $mail);
+                break;
+
+            default :
+                if ($firstname) {
+                    $tmp[] = $firstname;
+                }
+                if ($lastname) {
+                    $tmp[] = $lastname;
+                }
+                break;
         }
 
-        $tmp = implode('.', $tmp);
-        $login = removeAccents(strtolower($tmp));
-        $login = str_replace(" ", "-", $login);
+        $login = implode('.', $tmp);
+        $login = removeAccents(strtolower($login));
+        $login = str_replace(' ', '-', $login);
         $login = substr($login, 0, 95);
 
         $i = 1;
-        $db = new \db();
-        $db->select2("personnel", "*", array("login"=>$login));
-        while ($db->result) {
+        while ($this->entityManager->getRepository(Agent::class)->findOneBy(['login' => $login])) {
             $i++;
+
+            $tmp = explode('@', $login);
+
             if ($i == 2) {
-                $login.= "2";
+                $tmp[0] .= '2';
             } else {
-                $login = substr($login, 0, strlen($login)-1).$i;
+                $tmp[0] = substr($tmp[0], 0, strlen($tmp[0]) -1) . $i;
             }
-            $db = new \db();
-            $db->select("personnel", null, "login='$login'");
+
+            $login = $tmp[0];
+
+            if (!empty($tmp[1])) {
+                $login .= '@' . $tmp[1];
+            }
         }
+
         return $login;
     }
 }

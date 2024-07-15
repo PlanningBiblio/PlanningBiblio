@@ -51,6 +51,17 @@ class AgentRepository extends EntityRepository
         return $all_skills;
     }
 
+    public function getMaxId() {
+        $entityManager = $this->getEntityManager();
+        $id = $entityManager->createQueryBuilder()
+            ->select('MAX(a.id)')
+            ->from(Agent::class, 'a')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $id;
+    }
+
     public function purgeAll()
     {
         $agents = $this->findBy(['supprime' => '2']);
