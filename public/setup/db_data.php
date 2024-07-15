@@ -91,6 +91,12 @@ $sql[]="INSERT INTO `{$dbprefix}config` (nom,type,valeur,valeurs,commentaires,ca
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Auth-Mode','enum','SQL','Méthode d\'authentification','Authentification','SQL,LDAP,LDAP-SQL,CAS,CAS-SQL,OpenIDConnect','7');";
 $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Auth-PasswordLength', 'text', '8', 'Nombre minimum de caractères obligatoires pour le changement de mot de passe.','Authentification', '','20');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Absences-apresValidation','boolean','1','Autoriser l\'enregistrement d\'absences après validation des plannings','Absences','','10');";
+
+// UGE
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('AbsencesCumuleeAutorisee-TousLesMotifs', 'boolean', '0', "Autoriser l'enregistrement d'absences cumulées pour tous les motifs. Si ce n'est pas le cas, vous pouvez personnaliser les absences que vous souhaitez cumuler dans l'onglet Ajouter une absence (Liste des motifs d'absences).", 'Absences', '', NULL, '12');";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('Absences-PJ-autorisee', 'boolean', '0', 'Afficher ou masquer les champs Pièces justificatives et Attacher un document dans le formulaire Ajouter une absence.', 'Absences', '', NULL, '14');";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('Absences-de-superieure-un-an', 'boolean', '1', 'Afficher les absences de durée supérieure à un an.', 'Absences', '', NULL, '16');";
+
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES ('Absences-planningVide','boolean','1','Absences', 'Autoriser l\'enregistrement d\'absences sur des plannings en cours d\'élaboration','8');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Multisites-nombre','enum','1','Nombre de sites','Multisites','1,2,3,4,5,6,7,8,9,10','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Multisites-site1','text','','Nom du site N°1','Multisites','','20');";
@@ -301,6 +307,9 @@ $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `ordre`, `c
 
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES ('CAS-URI','cas','Page de connexion CAS','CAS','30');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES ('CAS-URI-Logout','cas/logout','Page de d&eacute;connexion CAS','CAS','30');";
+
+// UGE
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('CAS-ServiceBaseURL', 'text', '', 'URL de Planno.', 'CAS', '', NULL, '47');";
 
 //	Rappels
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES
