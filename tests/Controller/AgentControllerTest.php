@@ -43,6 +43,7 @@ class AgentControllerTest extends PLBWebTestCase
         global $entityManager;
 
         $GLOBALS['config']['Multisites-nombre'] = 1;
+        $GLOBALS['config']['Auth-LoginLayout'] = 'firstname.lastname';
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
