@@ -34,6 +34,9 @@ function authCAS($logger)
     $base_port = in_array($config['CAS-Port'], [80, 443]) ? null : ": {$config['CAS-Port']}";
     $base_url = $base_schema . '://' . $config['CAS-Hostname'] . $base_port;
 
+    if (!empty($config['CAS-ServiceBaseURL']))
+        $base_url = $config['CAS-ServiceBaseURL'];
+
     phpCAS::client($config['CAS-Version'], $config['CAS-Hostname'], intval($config['CAS-Port']), $config['CAS-URI'], $base_url, false);
 
     phpCAS::setExtraCurlOption(CURLOPT_SSLVERSION, intval($config['CAS-SSLVersion']));
@@ -43,7 +46,7 @@ function authCAS($logger)
         phpCAS::setNoCasServerValidation();
     }
 
-    if (!empty($config['CAS-ServiceURL'])) {
+    if (!empty($config['CAS-ServiceURL']) && empty($config['CAS-ServiceBaseURL'])) {
         phpCAS::setFixedServiceURL($config['CAS-ServiceURL']);
     }
 
