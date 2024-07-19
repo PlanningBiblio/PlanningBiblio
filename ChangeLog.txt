@@ -1,3 +1,20 @@
+*** Version 24.05.02   (2024-07-19)    ***
+- Fixes
+MT44586: Remove HTML entities from framework titles #1046
+MT44884: Remove free breaks from quotas #1049
+MT44663: Planook: Disable cell graying #1053
+
+- Enhancements
+MT44618: Planook config: Granularite=15; nb_semaine=1,2 #1047
+MT44776: Allow to choose the layout for creating logins #1052
+MT45026: Planook: Allow sending passwords by email #1054
+
+- Plumbing
+MT44619: Delete unsed function AgentController::sites #1048
+
+- Security
+MT45034: Update dependencies
+
 *** Version 24.05.01   (2024-05-27)    ***
 - Fixes
 MT40420: Fix the calculation of the free break #913
