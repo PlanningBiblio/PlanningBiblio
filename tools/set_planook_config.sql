@@ -101,4 +101,6 @@
 -- INSERT INTO `select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Stage', '12', 'A');
 -- INSERT INTO `select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Non justifiée', '13', 'A');
 -- INSERT INTO `select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Autre', '14', 'A');
+-- Adaptation des droits d'accès 
+-- UPDATE `personnel` set `droits` = '[4,5,6,20,21,22,99,100,201,301,1001]' WHERE `id` = 1; 
 -- 
