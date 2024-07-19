@@ -8,7 +8,7 @@
 -- 
 -- -- Activation du mode Planook
 -- UPDATE `config` SET `valeur` = '1' WHERE `nom` = 'Planook';
--- UPDATE `config` SET `valeur` = 'planook' WHERE `nom` = 'Affichage-theme';
+-- UPDATE `config` SET `valeur` = 'planook', `type` = 'info' WHERE `nom` = 'Affichage-theme';
 -- -- Désactivation du dimanche
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Dimanche';
 -- -- Granularité forcée sur 15 minutes :
@@ -24,6 +24,14 @@
 -- UPDATE config SET valeur='1', type='info' WHERE nom='Absences-agent-preselection';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Absences-tous';
 -- UPDATE config SET valeur='1', type='info' WHERE nom='Absences-journeeEntiere';
+-- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A1';
+-- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A2';
+-- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A3';
+-- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A4';
+-- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B1';
+-- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B2';
+-- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B3';
+-- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B4';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Absences-notifications-agent-par-agent';
 -- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-titre';
 -- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-message';
@@ -45,6 +53,11 @@
 -- -- Emploi du temps en semaines paires et impaires
 -- UPDATE config SET valeur='1', valeurs='1,2' WHERE nom='nb_semaine';
 -- UPDATE config SET valeur='0' , type='info' WHERE nom='EDTSamedi';
+-- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications1';
+-- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications2';
+-- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications3';
+-- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications4';
+-- UPDATE config SET valeur='0', type='info' WHERE nom='PlanningHebdo-notifications-agent-par-agent';
 -- -- Interdire la 2ème pause
 -- UPDATE config SET valeur='0', type='info' WHERE nom='PlanningHebdo-Pause2';
 -- -- Désactivation des imports ICS
@@ -57,8 +70,11 @@
 -- UPDATE config SET valeur='0', type='info' WHERE nom='ICS-Export';
 -- -- Interdire l’ajout de serveur LDAP
 -- UPDATE config SET valeur='', type='info' WHERE nom='LDAP-Host';
--- -- Interdire l’activation de la messagerie
--- UPDATE config SET valeur='0', type='info' WHERE nom='Mail-IsEnabled';
+-- -- Forcer la configuration de la messagerie
+-- UPDATE config SET valeur='IsMail' WHERE nom='Mail-IsMail-IsSMTP';
+-- UPDATE config SET valeur='127.0.0.1' WHERE nom='Mail-Host';
+-- UPDATE config SET valeur='25' WHERE nom='Mail-Port';
+-- UPDATE config SET valeur='Planook' WHERE nom='Mail-FromName';
 -- -- Désactivation des rappels
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Rappels-Actifs';
 -- -- Statistiques
