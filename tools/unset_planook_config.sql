@@ -7,7 +7,7 @@
  
 -- -- Désactivation du mode Planook
 -- UPDATE `config` SET `valeur` = '0' WHERE `nom` = 'Planook';
--- UPDATE `config` SET `valeur` = 'default' WHERE `nom` = 'Affichage-theme';
+-- UPDATE `config` SET `valeur` = 'default', type = 'text' WHERE `nom` = 'Affichage-theme';
 -- -- Possibilité d'activer le dimanche
 -- UPDATE config SET type='boolean' WHERE nom='Dimanche';
 -- -- Granularité non-forcée :
@@ -23,6 +23,14 @@
 -- UPDATE config SET type='boolean' WHERE nom='Absences-agent-preselection';
 -- UPDATE config SET type='boolean' WHERE nom='Absences-tous';
 -- UPDATE config SET type='boolean' WHERE nom='Absences-journeeEntiere';
+-- UPDATE config SET type='checkboxes' WHERE nom='Absences-notifications-A1';
+-- UPDATE config SET type='checkboxes' WHERE nom='Absences-notifications-A2';
+-- UPDATE config SET type='checkboxes' WHERE nom='Absences-notifications-A3';
+-- UPDATE config SET type='checkboxes' WHERE nom='Absences-notifications-A4';
+-- UPDATE config SET type='checkboxes' WHERE nom='Absences-notifications-B1';
+-- UPDATE config SET type='checkboxes' WHERE nom='Absences-notifications-B2';
+-- UPDATE config SET type='checkboxes' WHERE nom='Absences-notifications-B3';
+-- UPDATE config SET type='checkboxes' WHERE nom='Absences-notifications-B4';
 -- UPDATE config SET type='boolean' WHERE nom='Absences-notifications-agent-par-agent';
 -- UPDATE config SET type='text' WHERE nom='Absences-notifications-titre';
 -- UPDATE config SET type='textarea' WHERE nom='Absences-notifications-message';
@@ -41,6 +49,11 @@
 -- UPDATE config SET type='text' WHERE nom='Hamac-csv';
 -- -- Possiblité d'activer le module Planning Hebdo
 -- UPDATE config SET type='boolean' WHERE nom='PlanningHebdo';
+-- UPDATE config SET type='checkboxes' WHERE nom='PlanningHebdo-notifications1';
+-- UPDATE config SET type='checkboxes' WHERE nom='PlanningHebdo-notifications2';
+-- UPDATE config SET type='checkboxes' WHERE nom='PlanningHebdo-notifications3';
+-- UPDATE config SET type='checkboxes' WHERE nom='PlanningHebdo-notifications4';
+-- UPDATE config SET type='boolean' WHERE nom='PlanningHebdo-notifications-agent-par-agent';
 -- -- Ne pas forcer un même emploi du temps chaque semaine
 -- UPDATE config SET type='enum' WHERE nom='nb_semaine';
 -- UPDATE config SET type='enum2' WHERE nom='EDTSamedi';
@@ -56,8 +69,12 @@
 -- UPDATE config SET type='boolean' WHERE nom='ICS-Export';
 -- -- Autoriser l’ajout de serveur LDAP
 -- UPDATE config SET type='text' WHERE nom='LDAP-Host';
--- -- Autoriser l’activation de la messagerie
+-- -- Autoriser les modification de paramètres de messagerie
 -- UPDATE config SET type='boolean' WHERE nom='Mail-IsEnabled';
+-- UPDATE config SET type='enum' WHERE nom='Mail-IsMail-IsSMTP';
+-- UPDATE config SET type='' WHERE nom='Mail-Host';
+-- UPDATE config SET type='' WHERE nom='Mail-Port';
+-- UPDATE config SET type='' WHERE nom='Mail-FromName';
 -- -- Permettre l'activation des rappels
 -- UPDATE config SET type='boolean' WHERE nom='Rappels-Actifs';
 -- -- Statistiques
