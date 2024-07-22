@@ -3443,6 +3443,22 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+ 
+$v="24.04.03";
+
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT44586
+    $sql[] = "UPDATE `{$dbprefix}pl_poste_lignes` SET `poste` = REPLACE(`poste`, '&quot;' , '\"') WHERE `type` = 'titre';";
+    $sql[] = "UPDATE `${dbprefix}pl_poste_lignes` SET `poste` = REPLACE(`poste`, '&#039;' , \"'\") WHERE `type` = 'titre';";
+
+    // MT44776
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('Auth-LoginLayout', 'enum', 'firstname.lastname', 'Schéma à utiliser pour la construction des logins', 'Authentification', 'firstname.lastname,lastname.firstname,mail,mailPrefix', NULL, 10);";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = 5 WHERE `nom` = 'Auth-Mode';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage
