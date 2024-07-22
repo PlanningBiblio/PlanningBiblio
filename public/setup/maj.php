@@ -3420,6 +3420,17 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+ 
+$v="23.10.14";
+
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT44586
+    $sql[] = "UPDATE `{$dbprefix}pl_poste_lignes` SET `poste` = REPLACE(`poste`, '&quot;' , '\"') WHERE `type` = 'titre';";
+    $sql[] = "UPDATE `${dbprefix}pl_poste_lignes` SET `poste` = REPLACE(`poste`, '&#039;' , \"'\") WHERE `type` = 'titre';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage
