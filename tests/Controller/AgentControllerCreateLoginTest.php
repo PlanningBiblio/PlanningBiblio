@@ -13,6 +13,11 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
     {
         parent::setUp();
 
+        global $entityManager;
+
+        $this->builder = new FixtureBuilder();
+        $this->entityManager = $entityManager;
+
         $this->builder->delete(Agent::class);
     }
 
