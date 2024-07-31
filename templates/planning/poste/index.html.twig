@@ -59,8 +59,8 @@
         <table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>
 
           {% for t in tabs %}
-            <tr class='tr_horaires tableau{{ t.j }} {{ t.classe }} {{ t.hiddenTable }}'>
-              <td class='td_postes sticky td_sep' data-id='{{ t.j }}' data-title='{{ t.titre2 }}'>
+            <tr class='tr_horaires tableau{{ t.l }} {{ t.classe }} {{ t.hiddenTable }}'>
+              <td class='td_postes sticky td_sep' data-id='{{ t.l }}' data-title='{{ t.titre2 }}'>
                 {{ t.titre }} {{ t.masqueTableaux | raw }}
               </td>
               {% for h in t.horaires %}
@@ -73,19 +73,19 @@
             {% for l in t.lignes %}
               <!-- Position lines -->
               {% if l.is_position %}
-                <tr class='pl-line tableau{{ t.j }} {{ l.class_tr }} {{ t.classe }} {{ t.hiddenTable }} {{ l.emptyLine }}'>
-                  <td class='td_postes sticky-col {{ l.class_td }}'>
+                <tr class="pl-line roundup-tab tableau{{ t.l }} {{ l.classTR }} {{ t.classe }} {{ t.hiddenTable }} {{ l.emptyLine }}">
+                  <td class='td_postes sticky-col {{ l.classTD }}'>
                     {{ l.position_name }}
                     {% if l.floor %}
                       ({{ l.floor }})
                     {% endif %}
                   </td>
 
-                  {% for h in l.horaires %}
-                    {% if h.cell_off %}
+                  {% for h in l.line_time %}
+                    {% if h.disabled %}
                       <td colspan="{{ h.colspan }}" class='cellule_grise'>&nbsp;</td>
                     {% else %}
-                      {{ h.cell_html | raw }}
+                      {{ h.position_cell | raw }}
                     {% endif %}
                   {% endfor %}
                 </tr>
@@ -93,14 +93,14 @@
 
               <!-- Separation lines -->
               {% if l.separation %}
-                <tr class="tr_separation tableau{{ t.j }} {{ t.classe }} {{ t.hiddenTable }}">
+                <tr class="tr_separation tableau{{ t.l }} {{ t.classe }} {{ t.hiddenTable }}">
                   <td class='sticky-col td_sep'>{{ l.separation }}</td>
                   <td colspan="{{ t.colspan }}">&nbsp;</td>
                 </tr>
               {% endif %}
             {% endfor %}
 
-            <tr class="tr_espace tableau{{ t.j }} {{ t.classe }} {{ t.hiddenTable }}">
+            <tr class="tr_espace tableau{{ t.l }} {{ t.classe }} {{ t.hiddenTable }}">
               <td>&nbsp;</td>
             </tr>
           {% endfor %}
