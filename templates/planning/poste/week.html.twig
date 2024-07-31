@@ -38,7 +38,7 @@
               <table class="text tabsemaine1" cellspacing="0" cellpadding="0">
                 {% for t in day.tabs %}
                   <tr class="tr_horaires tableau{{ t.l }} {{ t.classe }}">
-                    <td class="td_postes" data-id="{{ t.l }}" data-title="{{ t.titre }}">
+                    <td class="td_postes" data-id="{{ t.l }}" data-title="{{ t.titre2 }}">
                       {{ t.titre }} {% if config('Planning-TableauxMasques') %}<span title="Masquer" class="pl-icon pl-icon-hide masqueTableau pointer" data-id="{{ t.l }}" ></span> {% endif %}
                     </td>
                     {% for h in t.horaires %}
@@ -51,7 +51,7 @@
                   <!-- lines -->
                   {% for l in t.lignes %}
                     {% if l.type == 'poste' and l.poste %}
-                      <tr class="pl-line roundup-tab tableau{{ t.l }} {{ l.classTR }} {{ t.classe }} {{ l.emptyLine }}">
+                      <tr class="pl-line roundup-tab tableau{{ t.l }} {{ l.classTR }} {{ t.classe }} {{ t.hiddenTable }} {{ l.emptyLine }}">
                         <td class="td_postes {{ l.classTD }}">
                           {{ l.position_name }}
                           {% if config('Affichage-etages') and l.position_floor %}
@@ -69,7 +69,7 @@
                     {% endif %}
                     {% if l.type == 'ligne' %}
                       <tr class="tr_separation tableau{{ t.l }} {{ t.classe }}">
-                        <td>{{ l.line_sep }}</td>
+                        <td>{{ l.separation }}</td>
                         <td colspan="{{ t.colspan }}">&nbsp;</td>
                       </tr>
                     {% endif %}

@@ -3,6 +3,11 @@
 namespace App\Trait;
 
 use App\Model\SelectFloor;
+use App\PlanningBiblio\Framework;
+
+require_once(__DIR__ . '/../../public/activites/class.activites.php');
+require_once(__DIR__ . '/../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../public/planning/volants/class.volants.php');
 
 trait PlanningTrait
 {
@@ -98,6 +103,46 @@ trait PlanningTrait
             implode(",", $d->dates),
             dateAlpha($date)
         );
+    }
+
+    private function getFrameworkStructure($tab)
+    {
+        $t = new Framework();
+        $t->id = $tab;
+        $t->get();
+        $tabs = $t->elements;
+
+        $debut = '23:59';
+        $fin = null;
+        foreach ($tabs as $elem) {
+            $debut = $elem['horaires'][0]['debut'] < $debut
+                ? $elem['horaires'][0]['debut']
+                : $debut;
+
+            $nb = count($elem['horaires']) - 1;
+            $fin = $elem['horaires'][$nb]['fin'] > $fin
+                ? $elem['horaires'][$nb]['fin']
+                : $fin;
+        }
+        return array($tabs, $debut, $fin);
+    }
+
+    private function getHiddenTables($request, $tab)
+    {
+        $session = $request->getSession();
+
+        $hiddenTables = array();
+        $db = new \db();
+        $db->select2('hidden_tables', '*', array(
+            'perso_id' => $session->get('loginId'),
+            'tableau' => $tab
+        ));
+
+        if ($db->result) {
+            $hiddenTables = json_decode(html_entity_decode($db->result[0]['hidden_tables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+        }
+
+        return $hiddenTables;
     }
 
     private function getHolidays($date)
