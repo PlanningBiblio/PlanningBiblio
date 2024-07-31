@@ -18,11 +18,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../public/planning/poste/class.planning.php');
-require_once(__DIR__ . '/../../public/planning/volants/class.volants.php');
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
-require_once(__DIR__ . '/../../public/conges/class.conges.php');
-require_once(__DIR__ . '/../../public/activites/class.activites.php');
-require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__ . '/../../public/include/function.php');
@@ -212,47 +208,65 @@ class IndexController extends BaseController
             $lignes_sep = $this->entityManager->getRepository(SeparationLine::class);
 
             // Get framework structure, start and end hours.
-            list($tabs, $debut, $fin) = $this->getFrameworkStructure($tab);
+            list($tabs, $startTime, $endTime) = $this->getFrameworkStructure($tab);
 
             $hiddenTables = $this->getHiddenTables($request, $tab);
 
-
             $sn=1;
 
-            $j=0;
+            // TODO A PLACER DANS TRAIT / createTabs
+            $l = 0;
             foreach ($tabs as $index => $tab) {
-                $hiddenTable = in_array($j, $hiddenTables) ? 'hidden-table' : null;
-                $tabs[$index]['hiddenTable'] = $hiddenTable;
-                $tabs[$index]['j'] = $j;
 
+                $hiddenTable = in_array($l, $hiddenTables) ? 'hidden-table' : null;
+                $tabs[$index]['hiddenTable'] = $hiddenTable;
+                $tabs[$index]['l'] = $l;
+
+                // Comble les horaires laissés vides : créé la colonne manquante,
+                // les cellules de cette colonne seront grisées.
                 $cellules_grises = array();
                 $tmp = array();
 
-                $k=0;
-                if ($tab['horaires'][0]['debut']>$debut) {
-                    $tmp[]=array("debut"=>$debut, "fin"=>$tab['horaires'][0]['debut']);
-                    $cellules_grises[]=$k++;
+                // Première colonne : si le début de ce tableau est
+                // supérieur au début d'un autre tableau.
+                $k = 0;
+                if ($tab['horaires'][0]['debut'] > $startTime) {
+                    $tmp[] = array(
+                        'debut' => $startTime,
+                        'fin' => $tab['horaires'][0]['debut']
+                    );
+                    $cellules_grises[] = $k++;
                 }
 
+                // Colonnes manquantes entre le début et la fin
                 foreach ($tab['horaires'] as $key => $value) {
-                    if ($key==0 or $value["debut"]==$tab['horaires'][$key-1]["fin"]) {
-                        $tmp[]=$value;
-                    } elseif ($value["debut"]>$tab['horaires'][$key-1]["fin"]) {
-                        $tmp[]=array("debut"=>$tab['horaires'][$key-1]["fin"], "fin"=>$value["debut"]);
-                        $tmp[]=$value;
-                        $cellules_grises[]=$k++;
+                    if ($key == 0 or $value['debut'] == $tab['horaires'][$key-1]['fin']) {
+                        $tmp[] = $value;
+                    } elseif ($value['debut'] > $tab['horaires'][$key-1]['fin']) {
+                        $tmp[] = array(
+                            'debut' => $tab['horaires'][$key-1]['fin'],
+                            'fin' => $value['debut']
+                        );
+                        $tmp[] = $value;
+                        $cellules_grises[] = $k++;
                     }
                     $k++;
                 }
 
-                $nb=count($tab['horaires'])-1;
-                if ($tab['horaires'][$nb]['fin']<$fin) {
-                    $tmp[]=array("debut"=>$tab['horaires'][$nb]['fin'], "fin"=>$fin);
+                // Dernière colonne : si la fin de ce tableau est
+                // inférieure à la fin d'un autre tableau.
+                $nb = count($tab['horaires']) - 1;
+                if ($tab['horaires'][$nb]['fin'] < $endTime) {
+                    $tmp[] = array(
+                        'debut' => $tab['horaires'][$nb]['fin'],
+                        'fin' => $endTime
+                    );
                     $cellules_grises[]=$k;
                 }
 
                 $tab['horaires'] = $tmp;
 
+                // Table name
                 $tabs[$index]['titre2'] = $tab['titre'];
                 if (!$tab['titre']) {
                     $tabs[$index]['titre2'] = "Sans nom $sn";
@@ -260,15 +274,15 @@ class IndexController extends BaseController
                 }
 
                 // Masquer les tableaux
-                $masqueTableaux=null;
+                $masqueTableaux = null;
                 if ($this->config('Planning-TableauxMasques')) {
                     // FIXME HTML
-                    $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer noprint' data-id='$j' ></span>";
+                    $masqueTableaux = "<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer noprint' data-id='$l' ></span>";
                 }
                 $tabs[$index]['masqueTableaux'] = $masqueTableaux;
 
                 // Lignes horaires
-                $colspan=0;
+                $colspan = 0;
                 foreach ($tab['horaires'] as $key => $horaires) {
 
                     $tabs[$index]['horaires'][$key]['start_nb30'] = nb30($horaires['debut'], $horaires['fin']);
@@ -279,7 +293,9 @@ class IndexController extends BaseController
                 }
                 $tabs[$index]['colspan'] = $colspan;
 
+                // Lignes postes et grandes lignes
                 foreach ($tab['lignes'] as $key => $ligne) {
+
                     // Check if the line is empty.
                     // Don't show empty lines if Planning-vides is disabled.
                     $emptyLine=null;
@@ -287,68 +303,74 @@ class IndexController extends BaseController
                         $emptyLine="empty-line";
                     }
 
-                    $tabs[$index]['lignes'][$key]['emptyLine'] = $emptyLine;
-                    $tabs[$index]['lignes'][$key]['is_position'] = '';
-                    $tabs[$index]['lignes'][$key]['separation'] = '';
+                    $ligne['emptyLine'] = $emptyLine;
+                    $ligne['is_position'] = '';
+                    $ligne['separation'] = '';
 
                     // Position lines
-                    if ($ligne['type']=="poste" and $ligne['poste']) {
-                        $tabs[$index]['lignes'][$key]['is_position'] = 1;
-                        // FIXME $classTD and $classTR are always the same.
-                        // Cell class depends if the position
-                        // is mandatory or not.
-                        $classTD = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "td_obligatoire" : "td_renfort";
-                        // Line class depends if the position
-                        // is mandatory or not.
-                        $classTR = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "tr_obligatoire" : "tr_renfort";
+                    if ($ligne['type'] == 'poste' and $ligne['poste']) {
+
+                        $ligne['is_position'] = 1;
+
+                        // FIXME 'classTD' and 'classTR' are always the same.
+                        // FIXME Check if 'classTD' is used
+
+                        // Cell class depends if the position is mandatory or not.
+                        $ligne['classTD'] = $postes[$ligne['poste']]['obligatoire'] == 'Obligatoire' ? 'td_obligatoire' : 'td_renfort';
+
+                        // Line class depends if the position is mandatory or not.
+                        $ligne['classTR'] = $postes[$ligne['poste']]['obligatoire'] == 'Obligatoire' ? 'tr_obligatoire' : 'tr_renfort';
 
                         // Line class depends on skills and categories.
-                        $classTR .= ' ' . $postes[$ligne['poste']]['classes'];
+                        $ligne['classTR'] .= ' ' . $postes[$ligne['poste']]['classes'];
 
-                        $tabs[$index]['lignes'][$key]['class_td'] = $classTD;
-                        $tabs[$index]['lignes'][$key]['class_tr'] = $classTR;
-                        $tabs[$index]['lignes'][$key]['position_name'] = $postes[$ligne['poste']]['nom'];
-
-                        // floors
-                        $tabs[$index]['lignes'][$key]['floor'] = '';
-                        if ($this->config('Affichage-etages') and $postes[$ligne['poste']]['etage']) {
-                            $tabs[$index]['lignes'][$key]['floor'] = $postes[$ligne['poste']]['etage'];
-                        }
+                        // Classe de la ligne en fonction des activités et des catégories
+                        $ligne['position_name'] = $postes[$ligne['poste']]['nom'];
+                        $ligne['position_floor'] = $postes[$ligne['poste']]['etage'];
 
                         $i=1;
                         $k=1;
-                        $tabs[$index]['lignes'][$key]['horaires'] = array();
+                        $ligne['line_time'] = array();
                         foreach ($tab['horaires'] as $horaires) {
-                            $ligne_horaire = array(
-                                'cell_off' => 0,
-                            );
-
+                            // Recherche des infos à afficher dans chaque cellule
+ 
                             // Cell disabled.
+                            // Cellules grisées si définies dans la configuration
+                            // du tableau et si la colonne a été ajoutée automatiquement.
+                            $horaires['disabled'] = 0;
+
                             if (in_array("{$ligne['ligne']}_{$k}", $tab['cellules_grises']) or in_array($i-1, $cellules_grises)) {
-                                $ligne_horaire['cell_off'] = 1;
-                                $ligne_horaire['colspan'] = nb30($horaires['debut'], $horaires['fin']);
+                                $horaires['disabled'] = 1;
+                                $horaires['colspan'] = nb30($horaires['debut'], $horaires['fin']);
+
                                 // If column added, that shift disabled cells.
-                                if (in_array($i-1, $cellules_grises)) {
+                                // Si colonne ajoutée, ça décale les cellules grises initialement prévues.
+                                // On se décale d'un cran en arrière pour rétablir l'ordre.
+                                if (in_array($i - 1, $cellules_grises)) {
                                     $k--;
                                 }
                             }
+
                             // function cellule_poste(date,debut,fin,colspan,affichage,poste,site)
                             else {
-                                $ligne_horaire['cell_html'] = cellule_poste($date, $horaires["debut"], $horaires["fin"], nb30($horaires['debut'], $horaires['fin']), "noms", $ligne['poste'], $site);
+                                $horaires['position_cell'] = cellule_poste($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site);
                             }
                             $i++;
                             $k++;
-                            $tabs[$index]['lignes'][$key]['horaires'][] = $ligne_horaire;
+                            $ligne['line_time'][] = $horaires;
                         }
                     }
 
                     // Separation lines
-                    if ($ligne['type']=="ligne") {
-                        $tabs[$index]['lignes'][$key]['separation'] = $lignes_sep->find($ligne['poste'])->nom();
+                    if ($ligne['type'] == 'ligne') {
+                        $ligne['separation'] = $lignes_sep->find($ligne['poste'])->nom();
                     }
+                    
+                    $tabs[$index]['lignes'][$key] = $ligne;
                 }
-                $j++;
+                $l++;
             }
+            // TODO FIN A PLACER DANS TRAIT / createTabs
 
             $this->templateParams(array('tabs' => $tabs));
 
@@ -1092,46 +1114,6 @@ class IndexController extends BaseController
         }
 
         return $absences;
-    }
-
-    private function getFrameworkStructure($tab)
-    {
-        $t = new Framework();
-        $t->id = $tab;
-        $t->get();
-        $tabs = $t->elements;
-
-        $debut = '23:59';
-        $fin = null;
-        foreach ($tabs as $elem) {
-            $debut = $elem["horaires"][0]["debut"] < $debut
-                ? $elem["horaires"][0]["debut"]
-                : $debut;
-
-            $nb = count($elem["horaires"]) - 1;
-            $fin = $elem["horaires"][$nb]["fin"] > $fin
-                ? $elem["horaires"][$nb]["fin"]
-                : $fin;
-        }
-        return array($tabs, $debut, $fin);
-    }
-
-    private function getHiddenTables($request, $tab)
-    {
-        $session = $request->getSession();
-
-        $hiddenTables = array();
-        $db = new \db();
-        $db->select2('hidden_tables', '*', array(
-            'perso_id' => $session->get('loginId'),
-            'tableau' => $tab
-        ));
-
-        if ($db->result) {
-            $hiddenTables = json_decode(html_entity_decode($db->result[0]['hidden_tables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-        }
-
-        return $hiddenTables;
     }
 
     private function positionExists($agent, $postes, $horaires)
