@@ -5,23 +5,24 @@ namespace App\Controller;
 use App\Controller\BaseController;
 
 use App\Model\AbsenceReason;
-use App\Model\SelectFloor;
 use App\Model\SeparationLine;
 use App\PlanningBiblio\Framework;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 
-include_once(__DIR__ . '/../../public/planning/poste/class.planning.php');
-include_once(__DIR__ . '/../../public/absences/class.absences.php');
-include_once(__DIR__ . '/../../public/conges/class.conges.php');
-include_once(__DIR__ . '/../../public/activites/class.activites.php');
-include_once(__DIR__ . '/../../public/personnel/class.personnel.php');
-include_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
+require_once(__DIR__ . '/../../public/planning/poste/class.planning.php');
+require_once(__DIR__ . '/../../public/planning/volants/class.volants.php');
+require_once(__DIR__ . '/../../public/absences/class.absences.php');
+require_once(__DIR__ . '/../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../public/activites/class.activites.php');
+require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 
 class WeekPlanningController extends BaseController
 {
+    use \App\Trait\PlanningTrait;
+
     #[Route(path: '/week', name: 'planning.week', methods: ['GET'])]
     public function week(Request $request)
     {
@@ -46,12 +47,8 @@ class WeekPlanningController extends BaseController
         $_SESSION['PLdate'] = $date;
         $_SESSION['week'] = true;
 
-        $d = new \datePl($date);
-        $semaine = $d->semaine;
-        $semaine3 = $d->semaine3;
-        $jour = $d->jour;
-        $dates = $d->dates;
-        $dateAlpha = dateAlpha($date);
+        list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha)
+            = $this->getDatesPlanning($date);
 
         global $idCellule;
         $idCellule=0;
@@ -77,7 +74,7 @@ class WeekPlanningController extends BaseController
             $messages_infos = implode(' - ', $messages_infos);
         }
 
-        // $absence_reasons will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
+        // $absence_reasons will be used in the cellule_poste function.
         global $absence_reasons;
         $absence_reasons = $this->entityManager->getRepository(AbsenceReason::class);
 
@@ -95,71 +92,11 @@ class WeekPlanningController extends BaseController
                 break;
         }
 
-        // ---------- Récupération des postes -----------------//
-        // $postes will also be used in the cellule_poste function.
-        // Using a global variable will avoid multiple access
-        // to the database and enhance performances.
+        // Positions, skills...
+        $activites = $this->getSkills();
+        $categories = $this->getCategories();
         global $postes;
-        $postes = array();
-
-        // Récupération des activités pour appliquer
-        // les classes aux lignes postes en fonction de celles-ci.
-        $a = new \activites();
-        $a->fetch();
-        $activites = $a->elements;
-
-        // Récupération des catégories pour appliquer
-        // les classes aux lignes postes en fonction de celles-ci.
-        $categories = array();
-        $db = new \db();
-        $db->select2('select_categories');
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $categories[$elem['id']] = $elem['valeur'];
-            }
-        }
-
-        // Floors
-        $floors = $this->entityManager->getRepository(SelectFloor::class);
-
-        // Récupération des postes
-        $db = new \db();
-        $db->select2('postes', '*', '1', 'ORDER BY `id`');
-
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                // Classes CSS du poste
-                $classesPoste = array();
-
-                // Ajout des classes en fonction des activités
-                $activitesPoste = $elem['activites'] ? json_decode(html_entity_decode($elem['activites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true) : array();
-
-                foreach ($activitesPoste as $a) {
-                    if (isset($activites[$a]['nom'])) {
-                        $classesPoste[] = 'tr_activite_'.strtolower(removeAccents(str_replace(array(' ','/'), '_', $activites[$a]['nom'])));
-                    }
-                }
-
-                // Ajout des classes de la ligne en fonction
-                // des catégories requises par le poste (A,B ou C).
-                $categoriesPoste = $elem['categories'] ? json_decode(html_entity_decode($elem['categories'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true) : array();
-                foreach ($categoriesPoste as $cat) {
-                    if (array_key_exists($cat, $categories)) {
-                        $classesPoste[] = 'tr_' .str_replace(" ", "", removeAccents(html_entity_decode($categories[$cat], ENT_QUOTES|ENT_IGNORE, "UTF-8")));
-                    }
-                }
-
-                // Tableau $postes
-                $postes[$elem['id']] = array(
-                    'nom' => $elem['nom'],
-                    'etage' => $floors->find($elem['etage']) ? $floors->find($elem['etage'])->valeur() : null,
-                    'obligatoire' => $elem['obligatoire'],
-                    'teleworking' => $elem['teleworking'],
-                    'classes' => implode(' ', $classesPoste)
-                );
-            }
-        }
-        // --------FIN Récupération des postes -----------//
+        $postes = $this->getPositions($activites, $categories);
 
         // Parameters for planning's menu
         // (Calendar widget, days, week and action icons)
@@ -226,73 +163,21 @@ class WeekPlanningController extends BaseController
 
             // ----------- Vérification si le planning est validé ------------ //
             if ($verrou or $autorisationN1) {
-                // ------------ Recherche des infos cellules ------------ //
-                // Toutes les infos seront stockées danx un tableau et
-                // utilisées par les fonctions cellules_postes.
-                $db = new \db();
-                $db->selectLeftJoin(
-                    array('pl_poste', 'perso_id'),
-                    array('personnel', 'id'),
-                    array('perso_id', 'debut', 'fin', 'poste', 'absent', 'supprime', 'grise'),
-                    array('nom', 'prenom', 'statut', 'service', 'postes'),
-                    array('date' => $date, 'site' => $site),
-                    array(),
-                    "ORDER BY `{$dbprefix}pl_poste`.`absent` desc,`{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`"
-            );
+                // Looking for info cells.
+                // All this infos will be stored in array
+                // and used function cellules_postes().
 
                 // $cellules will be used in the cellule_poste function.
-                // Using a global variable will avoid multiple access to
-                // the database and enhance performances.
                 global $cellules;
-                $cellules = $db->result ? $db->result:array();
-                usort($cellules, 'cmp_nom_prenom');
+                $cellules = $this->getCells($date, $site, $activites);                
 
-                // Recherche des absences
-                // Le tableau $absences sera utilisé par
-                // la fonction cellule_poste pour barrer les
-                // absents dans le plannings et pour afficher
-                // les absents en bas du planning.
-                // $cellules will be used in the cellule_poste function.
-                // Using a global variable will avoid multiple access to
-                // the database and enhance performances.
-                $a = new \absences();
-                $a->valide = false;
-                $a->documents = false;
-                $a->rejected = false;
-                $a->agents_supprimes = array(0,1,2);    // required for history
-                $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
+                // Looking for absences.
                 global $absences;
-                $absences = $a->elements ?? array();
+                $absences = $this->getAbsences($date);
 
-                // Ajoute les qualifications de chaque agent (activités)
-                // dans le tableaux $cellules pour personnaliser
-                // l'affichage des cellules en fonction des qualifications.
-                foreach ($cellules as $k => $v) {
-                    if ($v['postes']) {
-                        $p = json_decode(html_entity_decode($v['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                        $cellules[$k]['activites'] = array();
-                        foreach ($activites as $elem) {
-                            if (in_array($elem['id'], $p)) {
-                                $cellules[$k]['activites'][] = $elem['nom'];
-                            }
-                        }
-                    }
-                }
-
-                // Tri des absences par nom
-                usort($absences, 'cmp_nom_prenom_debut_fin');
-
-                // Informations sur les congés
-                // $conges will be used in the cellule_poste function.
-                // Using a global variable will avoid multiple access
-                // to the database and enhance performances.
-                $conges = array();
+                // $conges will be used in the cellule_poste function and added to $absences_planning
                 global $conges;
-                if ($this->config('Conges-Enable')) {
-                    $c = new \conges();
-                    $conges = $c->all($date.' 00:00:00', $date.' 23:59:59');
-                }
-                // ------------ FIN Recherche des infos cellules ---------- //
+                $conges = $this->getHolidays($date);
 
                 // ------------ Affichage du tableau ---------- //
                 // Récupération de la structure du tableau
