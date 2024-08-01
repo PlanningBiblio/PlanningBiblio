@@ -69,11 +69,6 @@ class IndexController extends BaseController
         $messages_infos = $this->getInfoMessages($date);
         $affSem = $this->getWeekData($site, $semaine, $semaine3);
 
-        // Positions, skills...
-        $activites = $this->getSkills();
-        $categories = $this->getCategories();
-        global $postes;
-        $postes = $this->getPositions($activites, $categories);
         $currentFramework = $this->currentFramework($date, $site);
         $show_framework_select = 0;
         if(!$currentFramework and !$tableau and !$groupe and $autorisationN2) {
@@ -181,12 +176,12 @@ class IndexController extends BaseController
             ));
             return $this->output('planning/poste/index.html.twig');
         } else {
-            // Looking for info cells.
-            // All this infos will be stored in array
-            // and used function cellules_postes().
+
+            // ------------ Planning display --------------------//
 
             // $cellules will be used in the cellule_poste function.
             global $cellules;
+            $activites = $this->getSkills();
             $cellules = $this->getCells($date, $site, $activites);
 
             // $absence_reasons will be used in the cellule_poste function.
@@ -201,16 +196,14 @@ class IndexController extends BaseController
             global $conges;
             $conges = $this->getHolidays($date);
 
-            // ------------ Planning display --------------------//
-            $tabs = $this->createTables($tab, $verrou);
+            $tabs = $this->createTables($tab, $verrou, $date);
 
             $this->templateParams(array('tabs' => $tabs));
 
-            // Show absences at bottom of the planning
-            $absencePlanningSite = $this->config('Absences-planning') != 3 ? $site : null;
-            $holidayPlanning = $this->getHolidays($date, $absencePlanningSite);
-            $absences_planning = $this->getAbsencesPlanning($date, $absencePlanningSite, $holidayPlanning);
+            // Show absences for current site at bottom of the planning
+            $absences_planning = $this->getAbsencesPlanning($date, $site, $conges);
 
+            // Affichage des absences
             if (in_array($this->config('Absences-planning'), [1,2])) {
                 $this->templateParams(array('absences_planning' => $absences_planning));
             }
