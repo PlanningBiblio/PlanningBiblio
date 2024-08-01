@@ -40,7 +40,6 @@ $db=new db();
 $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debutSQL' AND '$finSQL' GROUP BY `date`;");
 $nbJours=$db->nb;
 
-$joursParSemaine=$config['Dimanche']?7:6;
 $Fnm = "stat_{$nom}_".date("YmdHis");
 
 if ($type=="csv") {
@@ -56,24 +55,24 @@ $Fnm = "../data/$Fnm";
 
 $tab=$_SESSION['stat_tab'];
 
-$debut=dateAlpha($debutSQL);
-$fin=dateAlpha($finSQL);
+$debutAlpha = dateAlpha($debutSQL);
+$finAlpha = dateAlpha($finSQL);
 
 // Suppression des <sup></sup> dans les dates
-$debut = preg_replace('/<.[^>]*>/', '', $debut);
-$fin = preg_replace('/<.[^>]*>/', '', $fin);
+$debutAlpha = preg_replace('/<.[^>]*>/', '', $debutAlpha);
+$finAlpha = preg_replace('/<.[^>]*>/', '', $finAlpha);
 
 
 $lignes=array();
 
 switch ($nom) {
     case "postes": 									// Postes
-        $lignes=array("Statistiques par poste du $debut au $fin",null);
+        $lignes=array("Statistiques par poste du $debutAlpha au $finAlpha",null);
         $lignes[]="Les agents";
         $lignes[]=implode($separateur, array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo","Nom de l'agent","Prénom de l'agent","Heures par agent"));
         foreach ($tab as $elem) {
             $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-            $hebdo=$jour*$joursParSemaine;
+            $hebdo = statistiques::average($elem[2], $debut, $fin);
             foreach ($elem[1] as $agent) {
                 $cellules=array();
                 $cellules[]=$elem[0][1];			// nom du poste
@@ -92,7 +91,7 @@ switch ($nom) {
         $lignes[]="Les services";
         foreach ($tab as $elem) {
             $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-            $hebdo=$jour*$joursParSemaine;
+            $hebdo = statistiques::average($elem[2], $debut, $fin);
             foreach ($elem["services"] as $service) {
                 $cellules=array();
                 $cellules[]=$elem[0][1];				// nom du poste
@@ -110,7 +109,7 @@ switch ($nom) {
         $lignes[]="Les statuts";
         foreach ($tab as $elem) {
             $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-            $hebdo=$jour*$joursParSemaine;
+            $hebdo = statistiques::average($elem[2], $debut, $fin);
             foreach ($elem["statuts"] as $statut) {
                 $cellules=array();
                 $cellules[]=$elem[0][1];				// nom du poste
@@ -127,11 +126,11 @@ switch ($nom) {
         break;
   
     case "postes_synthese": 							// Postes (synthèse)
-        $lignes=array("Statistiques par poste (synthèse) du $debut au $fin",null);
+        $lignes=array("Statistiques par poste (synthèse) du $debutAlpha au $finAlpha",null);
         $lignes[]=implode($separateur, array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo"));
         foreach ($tab as $elem) {
             $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-            $hebdo=$jour*$joursParSemaine;
+            $hebdo = statistiques::average($elem[2], $debut, $fin);
             $total_heures+=$elem[2];
             $total_jour+=$jour;
             $total_hebdo+=$hebdo;
@@ -148,11 +147,11 @@ switch ($nom) {
         break;
   
     case "postes_renfort": 							// Postes de renfort
-        $lignes=array("Poste de renfort du $debut au $fin",null);
+        $lignes=array("Poste de renfort du $debutAlpha au $finAlpha",null);
         $lignes[]=implode($separateur, array("Poste","Etage","Heures","Moyenne jour","Moyenne hebdo","Jours","Heures par jour","Début","Fin","Heures"));
         foreach ($tab as $elem) {
             $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-            $hebdo=$jour*$joursParSemaine;
+            $hebdo = statistiques::average($elem[2], $debut, $fin);
             foreach ($elem[1] as $date) {
                 foreach ($date[1] as $horaires) {
                     $cellules=array();
@@ -299,11 +298,11 @@ switch ($nom) {
         break;
   
     case "samedis": // Samedis
-        $lignes=statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours, $joursParSemaine);
+        $lignes=statistiquesSamedis($tab, $debutAlpha, $finAlpha, $separateur, $nbJours);
         break;
   
     default:
-        $lignes=statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursParSemaine);
+        $lignes = statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours, $debut, $fin);
         break;
 }
 

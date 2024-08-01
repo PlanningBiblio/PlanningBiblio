@@ -59,7 +59,6 @@ class StatisticController extends BaseController
         $tab = array();
 
         $dbprefix = $GLOBALS['dbprefix'];
-        $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
         $nbSites = $this->config('Multisites-nombre');
 
         if ($nbSites > 1) {
@@ -206,7 +205,7 @@ class StatisticController extends BaseController
                 $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
             }
 
-            //	Number of days concerned
+            // Number of days concerned
             $db = new \db();
             $db->select2("pl_poste", "date", array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"), "GROUP BY `date`;");
             $nbJours = $db->nb;
@@ -488,7 +487,7 @@ class StatisticController extends BaseController
             foreach ($tab as $key => $value) {
                 // Calcul des moyennes
                 $jour = ($nbJours > 0) ? $value[2] / $nbJours : 0;
-                $hebdo = $jour * $joursParSemaine;
+                $hebdo = \statistiques::average($value[2], $debut, $fin);
     
                 $tab[$key][2] = heure4($value[2]);
                 $tab[$key]['jour'] = $jour;
@@ -499,7 +498,7 @@ class StatisticController extends BaseController
                         if ($value["sites"][$i]) {
                             // Calcul des moyennes
                             $jour = ($nbJours > 0) ? floatval($value['sites'][$i]) / $nbJours : 0;
-                            $hebdo = $jour * $joursParSemaine;
+                            $hebdo = \statistiques::average($value['sites'][$i], $debut, $fin);
                         }
                         $tab[$key]["sites"][$i] = heure4($value["sites"][$i]);
                         $tab[$key]["site_hebdo"][$i] = heure4($hebdo);
@@ -580,12 +579,6 @@ class StatisticController extends BaseController
                         }
                     }
                 }
-    
-                for ($i = 1; $i <= $nbSites; $i++) {
-                    if ($tab[$key]['sites'][$i]) {
-                        $tab[$key]['sites'][$i] = heure4($tab[$key]['sites'][$i]);
-                    }
-                }
             }
         }
 
@@ -593,7 +586,6 @@ class StatisticController extends BaseController
         $s = new \statistiques();
         $s->debut = $debutSQL;
         $s->fin = $finSQL;
-        $s->joursParSemaine = $joursParSemaine;
         $s->selectedSites = $selectedSites;
         $s->ouverture();
         $ouverture = $s->ouvertureTexte;
@@ -1284,8 +1276,6 @@ class StatisticController extends BaseController
         $post_postes = isset($post['postes'])?$post['postes']:null;
         $post_sites = isset($post['selectedSites'])?$post['selectedSites']:null;
 
-        $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
-
         if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
             $debut = $_SESSION['stat_debut'];
         }
@@ -1484,7 +1474,6 @@ class StatisticController extends BaseController
         $s = new \statistiques();
         $s->debut = $debutSQL;
         $s->fin = $finSQL;
-        $s->joursParSemaine = $joursParSemaine;
         $s->selectedSites = $selectedSites;
         $s->ouverture();
         $ouverture = $s->ouvertureTexte;
@@ -1513,7 +1502,7 @@ class StatisticController extends BaseController
 
             foreach ($tab as &$elem) {
                 $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-                $hebdo=$jour*$joursParSemaine;
+                $hebdo = \statistiques::average($elem[2], $debut, $fin);
                 $total_heures+=$elem[2];
                 $total_jour+=$jour;
                 $total_hebdo+=$hebdo;
@@ -2048,8 +2037,6 @@ class StatisticController extends BaseController
         $post_postes = isset($post['postes'])?$post['postes']:null;
         $post_sites = isset($post['selectedSites'])?$post['selectedSites']:null;
 
-        $joursParSemaine = $this->config('Dimanche')?7:6;
-
         //		--------------		Initialisation  des variables 'debut','fin' et 'poste'		-------------------
         if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
             $debut = $_SESSION['stat_debut'];
@@ -2259,7 +2246,6 @@ class StatisticController extends BaseController
         $s = new \statistiques();
         $s->debut = $debutSQL;
         $s->fin = $finSQL;
-        $s->joursParSemaine=$joursParSemaine;
         $s->selectedSites=$selectedSites;
         $s->ouverture();
         $ouverture = $s->ouvertureTexte;
@@ -2301,7 +2287,7 @@ class StatisticController extends BaseController
             }
     
             $jour = ($nbJours > 0) ? floatval($elem[2]) / $nbJours : 0;
-            $hebdo = $jour*$joursParSemaine;
+            $hebdo = \statistiques::average($elem[2], $debut, $fin);
             $elem["jour"] = heure4(round($jour, 2));
             $elem["hebdo"] = heure4(round($hebdo, 2));
             $elem["siteEtage"] = $siteEtage;
@@ -2311,7 +2297,7 @@ class StatisticController extends BaseController
                     if ($elem["sites"][$i] and $elem["sites"][$i] != $elem[2]) {
                         // Calcul des moyennes
                         $jour = ($nbJours > 0) ? floatval($elem['sites'][$i]) / $nbJours : 0;
-                        $hebdo = $jour * $joursParSemaine;
+                        $hebdo = \statistiques::average($elem['sites'][$i], $debut, $fin);
                         $elem["sites"][$i] = heure4($elem["sites"][$i]);
                         $elem["site_hebdo"][$i] = heure4($hebdo);
                     }
@@ -2357,8 +2343,6 @@ class StatisticController extends BaseController
 
         $post_postes = isset($post['postes']) ? $post['postes'] : null;
         $post_sites = isset($post['selectedSites']) ? $post['selectedSites'] : null;
-
-        $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
 
         $nbSites = $this->config('Multisites-nombre');
 
@@ -2594,7 +2578,6 @@ class StatisticController extends BaseController
         $s = new \statistiques();
         $s->debut = $debutSQL;
         $s->fin = $finSQL;
-        $s->joursParSemaine = $joursParSemaine;
         $s->selectedSites = $selectedSites;
         $s->ouverture();
         $ouverture = $s->ouvertureTexte;
@@ -2625,7 +2608,7 @@ class StatisticController extends BaseController
                     $siteEtage=null;
                 }
                 $jour = ($nbJours > 0) ? $tab[$key][2] / $nbJours : 0;
-                $hebdo = $jour*$joursParSemaine;
+                $hebdo = \statistiques::average($tab[$key][2], $debut, $fin);
                 $av_jour = null;
                 $av_hebdo = null;
 
@@ -2633,7 +2616,7 @@ class StatisticController extends BaseController
                     for ($i = 1 ; $i <= $nbSites; $i++) {
                         $total = $tab[$key]["sites"][$i];
                         $av_jour = ($nbJours > 0) ? $total / $nbJours : 0;
-                        $average = $av_jour * $joursParSemaine;
+                        $average = \statistiques::average($total, $debut, $fin);
                         $tab[$key]["sites"][$i] = array(
                             'total' => $total,
                             'average' => $average
