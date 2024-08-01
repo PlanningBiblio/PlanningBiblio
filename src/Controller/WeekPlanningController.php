@@ -5,15 +5,12 @@ namespace App\Controller;
 use App\Controller\BaseController;
 
 use App\Model\AbsenceReason;
-use App\Model\SeparationLine;
 use App\PlanningBiblio\Framework;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../public/planning/poste/class.planning.php');
-require_once(__DIR__ . '/../../public/absences/class.absences.php');
-require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 
 class WeekPlanningController extends BaseController
 {
@@ -116,9 +113,6 @@ class WeekPlanningController extends BaseController
 
         // ---------- FIN Affichage du titre et du calendrier ------------//
 
-        // Lignes de separation
-        $lignes_sep = $this->entityManager->getRepository(SeparationLine::class);
-
         // Pour tous les jours de la semaine
         $days = array();
         for ($j=0;$j<=$fin;$j++) {
@@ -176,171 +170,10 @@ class WeekPlanningController extends BaseController
                 $conges = $this->getHolidays($date);
 
                 // ------------ Planning display --------------------//
-                // Get framework structure, start and end hours.
-                list($tabs, $startTime, $endTime) = $this->getFrameworkStructure($tab);
+                $tabs = $this->createTables($tab, $verrou);
 
-                $hiddenTables = $this->getHiddenTables($tab);
-
-                // TODO A PLACER DANS TRAIT / createTabs
-                $l = 0;
-                foreach ($tabs as $index => $tab) {
-
-                    $hiddenTable = in_array($l, $hiddenTables) ? 'hidden-table' : null;
-                    $tabs[$index]['hiddenTable'] = $hiddenTable;
-                    $tabs[$index]['l'] = $l;
-
-                    // Comble les horaires laissés vides : créé la colonne manquante,
-                    // les cellules de cette colonne seront grisées.
-                    $cellules_grises = array();
-                    $tmp = array();
-
-                    // Première colonne : si le début de ce tableau est
-                    // supérieur au début d'un autre tableau.
-                    $k = 0;
-                    if ($tab['horaires'][0]['debut'] > $startTime) {
-                        $tmp[] = array(
-                            'debut' => $startTime,
-                            'fin' => $tab['horaires'][0]['debut']
-                        );
-                        $cellules_grises[] = $k++;
-                    }
-
-                    // Colonnes manquantes entre le début et la fin
-                    foreach ($tab['horaires'] as $key => $value) {
-                        if ($key == 0 or $value['debut'] == $tab['horaires'][$key-1]['fin']) {
-                            $tmp[] = $value;
-                        } elseif ($value['debut'] > $tab['horaires'][$key-1]['fin']) {
-                            $tmp[] = array(
-                                'debut' => $tab['horaires'][$key-1]['fin'],
-                                'fin' => $value['debut']
-                            );
-                            $tmp[] = $value;
-                            $cellules_grises[] = $k++;
-                        }
-                        $k++;
-                    }
-
-                    // Dernière colonne : si la fin de ce tableau est
-                    // inférieure à la fin d'un autre tableau.
-                    $nb = count($tab['horaires']) - 1;
-                    if ($tab['horaires'][$nb]['fin'] < $endTime) {
-                        $tmp[] = array(
-                            'debut' => $tab['horaires'][$nb]['fin'],
-                            'fin' => $endTime
-                        );
-                        $cellules_grises[] = $k;
-                    }
-
-                    $tab['horaires'] = $tmp;
-
-                    // Table name
-                    $tabs[$index]['titre2'] = $tab['titre'];
-                    if (!$tab['titre']) {
-                        $tabs[$index]['titre2'] = "Sans nom $sn";
-                        $sn++;
-                    }
-
-                    // Masquer les tableaux
-                    $masqueTableaux = null;
-                    if ($this->config('Planning-TableauxMasques')) {
-                        // FIXME HTML
-                        $masqueTableaux = "<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer noprint' data-id='$l' ></span>";
-                    }
-                    $tabs[$index]['masqueTableaux'] = $masqueTableaux;
-
-                    // Lignes horaires
-                    $colspan = 0;
-                    foreach ($tab['horaires'] as $key => $horaires) {
-
-                        $tabs[$index]['horaires'][$key]['start_nb30'] = nb30($horaires['debut'], $horaires['fin']);
-                        $tabs[$index]['horaires'][$key]['start_h3'] = heure3($horaires['debut']) ;
-                        $tabs[$index]['horaires'][$key]['end_h3'] = heure3($horaires['fin']) ;
-
-                        $colspan += nb30($horaires['debut'], $horaires['fin']);
-                    }
-                    $tabs[$index]['colspan'] = $colspan;
-
-                    // Lignes postes et grandes lignes
-                    foreach ($tab['lignes'] as $key => $ligne) {
-
-                        // Check if the line is empty.
-                        // Don't show empty lines if Planning-vides is disabled.
-                        $emptyLine = null;
-                        if (!$this->config('Planning-lignesVides') and $verrou and isAnEmptyLine($ligne['poste'])) {
-                            $emptyLine = "empty-line";
-                        }
-
-                        $ligne['emptyLine'] = $emptyLine;
-                        $ligne['is_position'] = '';
-                        $ligne['separation'] = '';
-
-                        // Position lines
-                        if ($ligne['type'] == 'poste' and $ligne['poste']) {
-
-                            $ligne['is_position'] = 1;
-
-                            // FIXME 'classTD' and 'classTR' are always the same.
-                            // FIXME Check if 'classTD' is used
-
-                            // Cell class depends if the position is mandatory or not.
-                            $ligne['classTD'] = $postes[$ligne['poste']]['obligatoire'] == 'Obligatoire' ? 'td_obligatoire' : 'td_renfort';
-
-                            // Line class depends if the position is mandatory or not.
-                            $ligne['classTR'] = $postes[$ligne['poste']]['obligatoire'] == 'Obligatoire' ? 'tr_obligatoire' : 'tr_renfort';
-
-                            // Line class depends on skills and categories.
-                            $ligne['classTR'] .= ' ' . $postes[$ligne['poste']]['classes'];
-
-                            // Classe de la ligne en fonction des activités et des catégories
-                            $ligne['position_name'] = $postes[$ligne['poste']]['nom'];
-                            $ligne['position_floor'] = $postes[$ligne['poste']]['etage'];
-
-                            $i=1;
-                            $k=1;
-                            $ligne['line_time'] = array();
-                            foreach ($tab['horaires'] as $horaires) {
-                                // Recherche des infos à afficher dans chaque cellule
-
-                                // Cell disabled.
-                                // Cellules grisées si définies dans la configuration
-                                // du tableau et si la colonne a été ajoutée automatiquement.
-                                $horaires['disabled'] = 0;
-
-                                if (in_array("{$ligne['ligne']}_{$k}", $tab['cellules_grises']) or in_array($i-1, $cellules_grises)) {                                             
-                                    $horaires['disabled'] = 1;
-                                    $horaires['colspan'] = nb30($horaires['debut'], $horaires['fin']);
-
-                                    // If column added, that shift disabled cells.
-                                    // Si colonne ajoutée, ça décale les cellules grises initialement prévues.
-                                    // On se décale d'un cran en arrière pour rétablir l'ordre.
-                                    if (in_array($i - 1, $cellules_grises)) {
-                                        $k--;
-                                    }
-                                }
-                                
-                                // function cellule_poste(date,debut,fin,colspan,affichage,poste,site)
-                                else {
-                                    $horaires['position_cell'] = cellule_poste($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site);
-                                }
-                                $i++;
-                                $k++;
-                                $ligne['line_time'][] = $horaires;
-                            }
-                        }
-
-                        // Separation lines
-                        if ($ligne['type'] == 'ligne') {
-                            $ligne['separation'] = $lignes_sep->find($ligne['poste'])->nom();
-                        }
-
-                        $tabs[$index]['lignes'][$key] = $ligne;
-                    }
-                    $l++;
-                }
-                // TODO FIN A PLACER DANS TRAIT / createTabs
                 $day['tabs'] = $tabs;
             }
-            // TODO : dans le template, remplacer line_sep par separation
 
             // Notes : Affichage
             $p = new \planning();
