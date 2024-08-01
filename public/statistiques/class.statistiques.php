@@ -26,9 +26,9 @@ if (!isset($version)) {
 // AJouter les html_entity_decode latin1
 // AJouter les variables $nom, (agents,service,statut)
 
-function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursParSemaine)
+function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours, $debut, $fin)
 {
-    $titre="Statistiques par $nom du $debut au $fin";
+    $titre="Statistiques par $nom du $debutAlpha au $finAlpha";
 
     $lignes=array($titre,null,"Postes");
     if ($nom=="agent") {
@@ -69,7 +69,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
 
     foreach ($tab as $elem) {
         $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-        $hebdo = $jour * $joursParSemaine;
+        $hebdo = statistiques::average($elem[2], $debut, $fin);
         foreach ($elem[1] as $poste) {
             $cellules=array();
             if ($nom=="agent") {
@@ -83,8 +83,9 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             if ($GLOBALS['config']['Multisites-nombre']>1) {
                 for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
                     $jour = ($nbJours > 0) ? $elem['sites'][$i] / $nbJours : 0;
+                    $site_hebdo = statistiques::average($elem['sites'][$i], $debut, $fin);
                     $cellules[]=number_format($elem["sites"][$i], 2, ',', ' ');
-                    $cellules[]=number_format($hebdo, 2, ',', ' ');
+                    $cellules[]=number_format($site_hebdo, 2, ',', ' ');
                 }
             }
             $cellules[]=$poste[1];				// Nom du poste
@@ -276,7 +277,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
     return $lignes;
 }
 
-function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours, $joursParSemaine)
+function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours)
 {
     $titre="Statistiques sur les samedis travaillés du $debut au $fin";
     $lignes=array($titre,null);
@@ -348,7 +349,6 @@ class statistiques
 {
     public $debut=null;
     public $fin=null;
-    public $joursParSemaine=null;
     public $selectedSites=null;
 
     public function ouverture()
@@ -357,7 +357,6 @@ class statistiques
     // Recherche du nombre d'heures, de jours et de semaine d'ouverture au public par site
         $debut=$this->debut;
         $fin=$this->fin;
-        $joursParSemaine=$this->joursParSemaine;
         $selectedSites=$this->selectedSites?$this->selectedSites:array(1);
         $totalHeures=array();
         $totalJours=array();
@@ -395,7 +394,7 @@ class statistiques
             $totalJours[$i]=$db->nb;
 
             // Nombre de semaines
-            $totalSemaines[$i]=$totalJours[$i]>0?$totalJours[$i]/$joursParSemaine:1;
+            $totalSemaines[$i] = $totalJours[$i] / 7;
         }
 
         $echo="<p style='margin-top:0px;'>";
@@ -416,4 +415,23 @@ class statistiques
         $echo.="</p>\n";
         $this->ouvertureTexte=$echo;
     }
+
+    /**
+     * Count average hours
+     */
+    public static function average($numberOfHours, $start, $end = null, $type = 'weekly')
+    {
+        $end = $end ?? $start;
+        $numberOfHours = floatval($numberOfHours);
+        $diff = date_diff(DateTime::createFromFormat('d/m/Y', $end), DateTime::createFromFormat('d/m/Y', $start));
+        $totalNumberOfDays = $diff->days + 1;
+    
+        switch ($type) {
+            case 'weekly':
+            default:
+                return $numberOfHours / ($totalNumberOfDays / 7);
+            break;
+        }
+    }
+
 }
