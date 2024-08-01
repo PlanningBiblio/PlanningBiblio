@@ -54,9 +54,6 @@
                       <tr class="pl-line roundup-tab tableau{{ t.l }} {{ l.classTR }} {{ t.classe }} {{ t.hiddenTable }} {{ l.emptyLine }}">
                         <td class="td_postes {{ l.classTD }}">
                           {{ l.position_name }}
-                          {% if config('Affichage-etages') and l.position_floor %}
-                            ({{ l.position_floor }})
-                          {% endif %}
                         </td>
                         {% for t in l.line_time %}
                           {% if t.disabled %}
