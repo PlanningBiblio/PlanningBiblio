@@ -14,7 +14,7 @@ require_once(__DIR__ . '/../../public/planning/volants/class.volants.php');
 trait PlanningTrait
 {
 
-    private function createTables($tab, $verrou)
+    private function createTables($tab, $verrou, $date)
     {
         // Separation lines
         $separationE = $this->entityManager->getRepository(SeparationLine::class)->findAll();
@@ -28,6 +28,11 @@ trait PlanningTrait
         list($tabs, $startTime, $endTime) = $this->getFrameworkStructure($tab);
 
         $hiddenTables = $this->getHiddenTables($tab);
+
+        // Positions, skills...
+        $activites = $this->getSkills();
+        $categories = $this->getCategories();
+        $postes = $this->getPositions($activites, $categories);
 
         $l = 0;
         $sn = 1;
