@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Controller\BaseController;
-
 use App\Model\AbsenceReason;
-use App\PlanningBiblio\Framework;
+use App\Controller\BaseController;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -67,10 +65,6 @@ class WeekPlanningController extends BaseController
             $messages_infos = implode(' - ', $messages_infos);
         }
 
-        // $absence_reasons will be used in the cellule_poste function.
-        global $absence_reasons;
-        $absence_reasons = $this->entityManager->getRepository(AbsenceReason::class);
-
         switch ($this->config('nb_semaine')) {
             case 2:
                 $type_sem = $semaine % 2 ? 'Impaire' : 'Paire';
@@ -84,12 +78,6 @@ class WeekPlanningController extends BaseController
                 $affSem = $semaine;
                 break;
         }
-
-        // Positions, skills...
-        $activites = $this->getSkills();
-        $categories = $this->getCategories();
-        global $postes;
-        $postes = $this->getPositions($activites, $categories);
 
         // Parameters for planning's menu
         // (Calendar widget, days, week and action icons)
@@ -153,13 +141,17 @@ class WeekPlanningController extends BaseController
 
             // ----------- Vérification si le planning est validé ------------ //
             if ($verrou or $autorisationN1) {
-                // Looking for info cells.
-                // All this infos will be stored in array
-                // and used function cellules_postes().
+
+                // ------------ Planning display --------------------//
 
                 // $cellules will be used in the cellule_poste function.
                 global $cellules;
-                $cellules = $this->getCells($date, $site, $activites);                
+                $activites = $this->getSkills();
+                $cellules = $this->getCells($date, $site, $activites);
+
+                // $absence_reasons will be used in the cellule_poste function.
+                global $absence_reasons;
+                $absence_reasons = $this->entityManager->getRepository(AbsenceReason::class);
 
                 // Looking for absences.
                 global $absences;
@@ -169,8 +161,7 @@ class WeekPlanningController extends BaseController
                 global $conges;
                 $conges = $this->getHolidays($date);
 
-                // ------------ Planning display --------------------//
-                $tabs = $this->createTables($tab, $verrou);
+                $tabs = $this->createTables($tab, $verrou, $date);
 
                 $day['tabs'] = $tabs;
             }
