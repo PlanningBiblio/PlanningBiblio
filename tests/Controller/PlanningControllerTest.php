@@ -11,7 +11,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-class IndexControllerTest extends PLBWebTestCase
+class PlanningControllerTest extends PLBWebTestCase
 {
     public function testPlanningNotReadyWithoutPermission()
     {
