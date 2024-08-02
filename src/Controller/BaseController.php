@@ -59,35 +59,6 @@ class BaseController extends AbstractController
         $this->notifier = $notifier;
     }
 
-    public function setSite($request)
-    {
-        $session = $request->getSession();
-
-        $site = $request->get('site');
-
-        // setSite is used by IndexController::index and WeekController::week
-
-        // Multisites: default site is 1.
-        // Site is $_GET['site'] if it is set, else we take
-        // SESSION ['site'] or agent's site.
-
-        if (!$site and !empty($_SESSION['site'])) {
-            $site = $_SESSION['site'];
-        }
-
-        if (!$site) {
-            $p = new \personnel();
-            $p->fetchById($session->get('loginId'));
-            $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
-        }
-
-        $site = $site ? $site : 1;
-
-        $_SESSION['site'] = $site;
-
-        return $site;
-    }
-
     protected function templateParams( array $params = array() )
     {
         if ( empty($params) ) {
