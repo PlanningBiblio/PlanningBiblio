@@ -425,7 +425,7 @@ class statistiques
         $numberOfHours = floatval($numberOfHours);
         $diff = date_diff(DateTime::createFromFormat('d/m/Y', $end), DateTime::createFromFormat('d/m/Y', $start));
         $totalNumberOfDays = $diff->days + 1;
-    
+
         switch ($type) {
             case 'weekly':
             default:

@@ -205,11 +205,6 @@ class StatisticController extends BaseController
                 $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
             }
 
-            // Number of days concerned
-            $db = new \db();
-            $db->select2("pl_poste", "date", array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"), "GROUP BY `date`;");
-            $nbJours = $db->nb;
-
             //  Get information from planning (tables pl_poste and postes)
             //  The result is store in $resultat
             $db = new \db();
@@ -486,18 +481,15 @@ class StatisticController extends BaseController
     
             foreach ($tab as $key => $value) {
                 // Calcul des moyennes
-                $jour = ($nbJours > 0) ? $value[2] / $nbJours : 0;
                 $hebdo = \statistiques::average($value[2], $debut, $fin);
     
                 $tab[$key][2] = heure4($value[2]);
-                $tab[$key]['jour'] = $jour;
                 $tab[$key]['hebdo'] = heure4($hebdo);
     
                 if ($nbSites > 1) {
                     for ($i = 1; $i <= $nbSites; $i++) {
                         if ($value["sites"][$i]) {
                             // Calcul des moyennes
-                            $jour = ($nbJours > 0) ? floatval($value['sites'][$i]) / $nbJours : 0;
                             $hebdo = \statistiques::average($value['sites'][$i], $debut, $fin);
                         }
                         $tab[$key]["sites"][$i] = heure4($value["sites"][$i]);
@@ -892,8 +884,6 @@ class StatisticController extends BaseController
            
             foreach ($tab as &$elem) {
                 // Calcul des moyennes
-                $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-
                 $heures = 0;
                 foreach ($elem[3] as &$samedi) {
                     $heures += $samedi[1];
@@ -2296,7 +2286,6 @@ class StatisticController extends BaseController
                 for ($i = 1; $i <= $nbSites; $i++) {
                     if ($elem["sites"][$i] and $elem["sites"][$i] != $elem[2]) {
                         // Calcul des moyennes
-                        $jour = ($nbJours > 0) ? floatval($elem['sites'][$i]) / $nbJours : 0;
                         $hebdo = \statistiques::average($elem['sites'][$i], $debut, $fin);
                         $elem["sites"][$i] = heure4($elem["sites"][$i]);
                         $elem["site_hebdo"][$i] = heure4($hebdo);
@@ -2609,13 +2598,10 @@ class StatisticController extends BaseController
                 }
                 $jour = ($nbJours > 0) ? $tab[$key][2] / $nbJours : 0;
                 $hebdo = \statistiques::average($tab[$key][2], $debut, $fin);
-                $av_jour = null;
-                $av_hebdo = null;
 
                 if ($nbSites>1) {
                     for ($i = 1 ; $i <= $nbSites; $i++) {
                         $total = $tab[$key]["sites"][$i];
-                        $av_jour = ($nbJours > 0) ? $total / $nbJours : 0;
                         $average = \statistiques::average($total, $debut, $fin);
                         $tab[$key]["sites"][$i] = array(
                             'total' => $total,
@@ -2626,8 +2612,6 @@ class StatisticController extends BaseController
 
                 $tab[$key]["jour"] = $jour;
                 $tab[$key]["hebdo"] = $hebdo;
-                $tab[$key]["av_hebdo"] = $av_hebdo;
-                $tab[$key]["av_jour"] = $av_jour;
                 $tab[$key]["siteEtage"] = $siteEtage;
             }
 
