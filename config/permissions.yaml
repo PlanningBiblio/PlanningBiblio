@@ -101,6 +101,8 @@
     - 100
 "ajax.checkpassword":
     - 100
+"ajax.edt.samedi.control":
+    - 100
 "ajax.update_agent_login":
     - 21
 "ajax.sanitizehtml":
