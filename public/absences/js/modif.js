@@ -35,7 +35,7 @@ $(function() {
   $("#add-motif-form").dialog({
     autoOpen: false,
     height: 600,
-    width: 900,
+    width: 990,
     modal: true,
     resizable: false,
     draggable: false,
@@ -52,12 +52,14 @@ $(function() {
 	$("#motifs-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
       var teleworking = $("#teleworking_" + id).prop('checked') ? 1 : 0;
+      var absencecumulee = $("#absence-cumulee_" + id).prop('checked') ? 1 : 0;
       tab.push(new Array(
         $("#valeur_"+id).text(),
         $(this).index(),
         $("#type_"+id+" option:selected").val(),
         $("#notification-workflow_" + id).val(),
         teleworking,
+        absencecumulee,
       ));
     });
 
@@ -162,6 +164,7 @@ $(function() {
       +options_wf
       +"</select>"
       +"<input type='checkbox' id='teleworking_"+number+"' style='position:absolute; left:780px;' />"
+      +"<input type='checkbox' id='absence-cumulee_"+number+"' style='position:absolute; left:930px;' />"
       +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:840px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
@@ -934,7 +937,7 @@ function verif_absences(ctrl_form){
     CJInfo("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.","error");
     return false;
   }
-  
+
   if($("select[name=motif]").val().toLowerCase()=="autre" || $("select[name=motif]").val().toLowerCase()=="other"){
     if($("input[name=motif_autre]").val()==""){
       CJInfo("Veuillez choisir un motif.","error");
@@ -955,6 +958,7 @@ function verif_absences(ctrl_form){
   }
 
   id=document.form.id.value;
+  motif = document.form.motif.value;
   var groupe = $("#groupe").val();
   debut=document.form.debut.value;
   fin=document.form.fin.value;
@@ -976,11 +980,14 @@ function verif_absences(ctrl_form){
     url: url('ajax/holiday-absence-control'),
     type: "get",
     datatype: "json",
-    data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin, type:'absence'},
+    data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin, type:'absence', motif:motif},
     async: false,
     success: function(result){
       result=JSON.parse(result);
       var admin = result['admin'];
+      var AbsencesCumuleeAutoriseeTousLesMotifs = result['AbsencesCumuleeAutoriseeTousLesMotifs'];
+      var cumulativeReasons = result['cumulativeReasons'];
+      var motif = result['motif'];
 
       // Contrôle si d'autres absences sont enregistrées
       autresAbsences = new Array();
@@ -993,35 +1000,79 @@ function verif_absences(ctrl_form){
         }
       }
 
-      if(autresAbsences.length == 1){
-        if(autresAbsences[0]["autresAbsences"].length == 1){
-          var message = "Une absence est déjà enregistrée pour l'agent "+autresAbsences[0]["nom"]+" "+autresAbsences[0]["autresAbsences"][0]+"\nVoulez-vous continuer ?";
-        } else {
-          var message = "Des absences sont déjà enregistrées pour l'agent "+autresAbsences[0]["nom"]+" :\n";
-          for(i in autresAbsences[0]["autresAbsences"]){
-            message += "- "+autresAbsences[0]["autresAbsences"][i]+"\n";
-          }
-          message += "Voulez-vous continuer ?";
-        }
-      } else if(autresAbsences.length > 1){
-        var message = "Des absences sont déjà enregistrées pour les agents suivants :\n";
-        for(i in autresAbsences){
-          if(autresAbsences[i]["autresAbsences"].length == 1){
-            message += "- "+autresAbsences[i]["nom"]+" "+autresAbsences[i]["autresAbsences"][0]+"\n";
-          } else {
-            message += "- "+autresAbsences[i]["nom"]+"\n";
-            for(j in autresAbsences[i]["autresAbsences"]){
-               message += "-- "+autresAbsences[i]["autresAbsences"][j]+"\n";
-            }
-          }
-        }
-        message += "Voulez-vous continuer ?";
-      }
-      if(autresAbsences.length > 0){
-        if(!confirm(message)){
-          retour=false;
-        }
-      }
+	  if(AbsencesCumuleeAutoriseeTousLesMotifs == 1){
+	      if(autresAbsences.length == 1){
+	        if(autresAbsences[0]["autresAbsences"].length == 1){
+	          var message = "Une absence est déjà enregistrée pour l'agent "+autresAbsences[0]["nom"]+" "+autresAbsences[0]["autresAbsences"][0]+"\nVoulez-vous continuer ?";
+	        } else {
+	          var message = "Des absences sont déjà enregistrées pour l'agent "+autresAbsences[0]["nom"]+" :\n";
+	          for(i in autresAbsences[0]["autresAbsences"]){
+	            message += "- "+autresAbsences[0]["autresAbsences"][i]+"\n";
+	          }
+	          message += "Voulez-vous continuer ?";
+	        }
+	      } else if(autresAbsences.length > 1){
+	        var message = "Des absences sont déjà enregistrées pour les agents suivants :\n";
+	        for(i in autresAbsences){
+	          if(autresAbsences[i]["autresAbsences"].length == 1){
+	            message += "- "+autresAbsences[i]["nom"]+" "+autresAbsences[i]["autresAbsences"][0]+"\n";
+	          } else {
+	            message += "- "+autresAbsences[i]["nom"]+"\n";
+	            for(j in autresAbsences[i]["autresAbsences"]){
+	               message += "-- "+autresAbsences[i]["autresAbsences"][j]+"\n";
+	            }
+	          }
+	        }
+	        message += "Voulez-vous continuer ?";
+	      }
+	      if(autresAbsences.length > 0){
+	        if(!confirm(message)){
+	          retour=false;
+	        }
+	      }
+	  } else {
+	      if(autresAbsences.length == 1){
+	        if(autresAbsences[0]["autresAbsences"].length == 1){
+			  var message = "Une absence est déjà enregistrée pour l'agent "+autresAbsences[0]["nom"]+" "+autresAbsences[0]["autresAbsences"][0];
+			  if(cumulativeReasons.includes(motif) == true && autresAbsences[0]["cumulativeAbsences"][motif].length == 0 && autresAbsences[0]["nonCumulativeAbsences"].length == 0)
+	          	message += "\nVoulez-vous continuer ?";
+	      	  else
+	      		retour=false;
+	      } else {
+	          var message = "Des absences sont déjà enregistrées pour l'agent "+autresAbsences[0]["nom"]+" :\n";
+	          for(i in autresAbsences[0]["autresAbsences"]){
+	            message += "- "+autresAbsences[0]["autresAbsences"][i]+"\n";
+	          }
+	          retour=false;
+	        }
+	      } else if(autresAbsences.length > 1){
+	        var message = "Des absences sont déjà enregistrées pour les agents suivants :\n";
+	        for(i in autresAbsences){
+	          if(autresAbsences[i]["autresAbsences"].length == 1){
+	            message += "- "+autresAbsences[i]["nom"]+" "+autresAbsences[i]["autresAbsences"][0]+"\n";
+	            if(cumulativeReasons.includes(motif) == true && autresAbsences[0]["cumulativeAbsences"][motif].length == 0 && autresAbsences[0]["nonCumulativeAbsences"].length == 0)
+	          	  message += "\nVoulez-vous continuer ?";
+	      	  	else
+	      		  retour=false;
+	          } else {
+	            message += "- "+autresAbsences[i]["nom"]+"\n";
+	            for(j in autresAbsences[i]["autresAbsences"]){
+	               message += "-- "+autresAbsences[i]["autresAbsences"][j]+"\n";
+	            }
+	            retour=false;
+	          }
+	        }
+	      }
+	      if(retour == true){
+		      if(autresAbsences.length > 0){
+		        if(!confirm(message)){
+		          retour=false;
+		        }
+		      }
+	      }else{
+			alert(message);
+		  }
+	  }
 
       // Contrôle si des plannings sont en cours d'élaboration
       if(result["planning_started"] && retour == true){
