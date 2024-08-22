@@ -501,4 +501,27 @@ $(document).ready(function(){
   $("#personnel-a-li3").click(function(){
     changeSelectSites();
   });
+  
+  $('input[name^="EDTSamedi_"]').click(function(){
+	var id = $('input[name="id"]').val();
+	var startDate = $(this).attr('name');
+	var selectedEdt = $(this).val();
+    
+    // Transmet le tableau à la page de validation ajax
+	$.ajax({
+      url: url('ajax/edt-samedi-control'),
+	  type: "get",
+      dataType: "text",
+	  data: {id: id, startDate: startDate.replace('EDTSamedi_', ''), selectedEdt: selectedEdt},
+	  success: function(result){
+		if(result != '')
+	      alert(result);
+	    /* else
+	      alert("Cet emploi du temps n'entre pas en conflit avec le planning."); */
+	  },
+	  error: function(){
+	    console.log("Erreur lors de l'enregistrement des modifications");
+	  }
+	});
+  });
 });
