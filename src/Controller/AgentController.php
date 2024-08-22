@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use App\Model\PlanningPosition;
+use App\Model\SaturdayWorkingHours;
 
 require_once(__DIR__ . "/../../public/personnel/class.personnel.php");
 require_once(__DIR__ . "/../../public/activites/class.activites.php");
@@ -1856,5 +1858,217 @@ class AgentController extends BaseController
         }
 
         return $login;
+    }
+
+    /**
+     *
+     * @Route("/ajax/edt-samedi-control", name="ajax.edt.samedi.control", methods={"GET"})
+     */
+    public function edtSamediControl(Request $request)
+    {
+        $date = $tempsIndex = $tempsIndexValue = $message = null;
+        $planning = $planningToControl = $temps = $absences = $edts = $edtSamedis = $result = $selectedEdtTemps = $conflits = array();
+        $persoId = $request->get('id');
+        $selectedEdt = $request->get('selectedEdt');
+
+        $date = $request->get('startDate');
+        $startDate = $this->startAndEndates($date)['start'];
+        $endDate = $this->startAndEndates($date)['end'];
+        $today = (new \DateTime())->format('Y-m-d');
+
+        if ($request->get('tempsIndex'))
+            $tempsIndex = explode(':', str_replace(array(
+                ']',
+                '['
+            ), array(
+                ':',
+                ':'
+            ), $request->get('tempsIndex')));
+        if ($request->get('tempsIndexValue'))
+            $tempsIndexValue = $request->get('tempsIndexValue');
+
+        $result['persoId'] = $persoId;
+        $result['startDate'] = $startDate;
+        $result['endDate'] = $endDate;
+        $result['selectedEdt'] = $selectedEdt;
+
+        $edt = array(
+            '1' => 'Emploi du temps standard',
+            '2' => 'Emploi du temps des semaines avec samedi travaillé',
+            '3' => 'Emploi du temps en ouverture restreinte'
+        );
+
+        $dbprefix = $this->config('dbprefix');
+        if ($request->get('startDate') != null)
+            $req = "SELECT pp.id, date, debut, fin, poste, absent, p.site, grise, nom FROM {$dbprefix}pl_poste AS pp, {$dbprefix}postes AS p WHERE pp.poste = p.id AND date >= '" . $startDate . "' AND date <= '" . $endDate . "' AND perso_id = " . $persoId . " AND pp.supprime = '0' AND absent = '0'";
+        else
+            $req = "SELECT pp.id, date, debut, fin, poste, absent, p.site, grise, nom FROM {$dbprefix}pl_poste AS pp, {$dbprefix}postes AS p WHERE pp.poste = p.id AND date >= '" . $today . "' AND perso_id = " . $persoId . " AND pp.supprime = '0' AND absent = '0'";
+        $db = new \db();
+        $db->query($req);
+        if ($db->result) {
+            foreach ($db->result as $value) {
+                $value['monday'] = $this->startAndEndates($value['date'])['start'];
+                $planning[] = $value;
+            }
+        }
+        $result['planning'] = $planning;
+
+        $req2 = "SELECT temps FROM {$dbprefix}personnel WHERE id = " . $persoId;
+        $db2 = new \db();
+        $db2->query($req2);
+        if ($db2->result)
+            $temps = (array) json_decode(html_entity_decode($db2->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+        // $result['temps'] = $temps;
+
+        if ($tempsIndex != null && $tempsIndexValue != null)
+            $temps[$tempsIndex[1]][$tempsIndex[3]] = $tempsIndexValue;
+
+        /*
+         * if($request->get('startDate') != null)
+         * $req3 = "SELECT debut, fin, motif FROM {$dbprefix}absences WHERE perso_id = " . $persoId . " AND `valide` > 0 AND debut >= '" . $startDate . "' AND fin <= '" . $endDate . "'";
+         * else
+         * $req3 = "SELECT debut, fin, motif FROM {$dbprefix}absences WHERE perso_id = " . $persoId . " AND `valide` > 0 AND debut >= '" . $today . "'";
+         * $db3 = new \db();
+         * $db3->query($req3);
+         * if ($db3->result)
+         * $absences = $db3->result;
+         * $result['absences'] = $absences;
+         */
+
+        if ($request->get('startDate') == null) {
+            if ($selectedEdt == 1)
+                $req4 = "SELECT semaine FROM {$dbprefix}edt_samedi WHERE perso_id = " . $persoId . " AND semaine >= '" . $startDate . "' AND tableau != " . $selectedEdt;
+            else
+                $req4 = "SELECT semaine FROM {$dbprefix}edt_samedi WHERE perso_id = " . $persoId . " AND semaine >= '" . $startDate . "' AND tableau = " . $selectedEdt;
+            $db4 = new \db();
+            $db4->query($req4);
+            if ($db4->result)
+                foreach ($db4->result as $value) {
+                    $edtSamedis[] = $value['semaine'];
+                }
+            $result['edtSamedis'] = $edtSamedis;
+
+            if (count($edtSamedis) > 0) {
+                foreach ($planning as $value) {
+                    if (($selectedEdt == 1 && ! in_array($value['monday'], $edtSamedis)) || ($selectedEdt != 1 && in_array($value['monday'], $edtSamedis)))
+                        $planningToControl[] = $value;
+                }
+            }
+        } else
+            $planningToControl = $planning;
+
+        $result['$planningToControl'] = $planningToControl;
+
+        foreach ($planningToControl as $value) {
+            $selectedEdtTemps[$value['monday']] = $this->edtTemps($this->startAndEndates($value['monday'])['start'], $selectedEdt, $temps);
+        }
+        $result['selectedEdtTemps'] = $selectedEdtTemps;
+        // dd($result);
+
+        foreach ($planningToControl as $value) {
+            $site = $GLOBALS['config']["Multisites-site{$value['site']}"];
+            $debut = strtotime($value['debut']);
+            $fin = strtotime($value['fin']);
+            $temps = $selectedEdtTemps[$value['monday']];
+            $arrive = strtotime($temps[$value['date']][0]);
+            $depart = strtotime($temps[$value['date']][3]);
+            $pauseDebut = strtotime($temps[$value['date']][1]);
+            $pauseFin = strtotime($temps[$value['date']][2]);
+            if ($this->config('PlanningHebdo-Pause2')) {
+                $pauseDebut2 = strtotime($temps[$value['date']][5]);
+                $pauseFin2 = strtotime($temps[$value['date']][6]);
+            }
+
+            if ($arrive != "" && $depart != "") {
+                if ($debut < $arrive || $fin > $depart || ($value['site'] != $temps[$value['date']][4] && $temps[$value['date']][4] != - 1))
+                    $conflits[$value['id']] = $site . ', ' . $value['nom'] . ' : ' . $value['date'] . ' ' . $value['debut'] . ' - ' . $value['fin'];
+                else {
+                    if ($pauseDebut != "" && $pauseFin != "") {
+                        if (($debut <= $pauseDebut && $fin > $pauseDebut) || ($debut < $pauseFin && $fin >= $pauseFin) || ($debut > $pauseDebut && $fin < $pauseFin) || ($debut < $pauseDebut && $fin > $pauseFin) || ($debut == $pauseDebut && $fin == $pauseFin))
+                            $conflits[$value['id']] = $site . ', ' . $value['nom'] . ' : ' . $value['date'] . ' ' . $value['debut'] . ' - ' . $value['fin'];
+                    }
+
+                    if ($this->config('PlanningHebdo-Pause2') && $pauseDebut2 != "" && $pauseFin2 != "") {
+                        if (($debut <= $pauseDebut2 && $fin > $pauseDebut2) || ($debut < $pauseFin2 && $fin >= $pauseFin2) || ($debut > $pauseDebut2 && $fin < $pauseFin2) || ($debut < $pauseDebut2 && $fin > $pauseFin2) || ($debut == $pauseDebut2 && $fin == $pauseFin2))
+                            $conflits[$value['id']] = $site . ', ' . $value['nom'] . ' : ' . $value['date'] . ' ' . $value['debut'] . ' - ' . $value['fin'];
+                    }
+                }
+            } else
+                $conflits[$value['id']] = $site . ', ' . $value['nom'] . ' : ' . $value['date'] . ' ' . $value['debut'] . ' - ' . $value['fin'];
+        }
+
+        if (count($conflits) > 0) {
+            if (count($conflits) == 1)
+                $message .= $edt[$selectedEdt] . " est en conflit avec le planning suivant.\n";
+            else
+                $message .= $edt[$selectedEdt] . " est en conflit avec les plannings suivants.\n";
+            foreach ($conflits as $value) {
+                $message .= $value . "\n";
+            }
+        }
+
+        // pl_poste, absences, personnel, edt_samedi
+        $response = new Response();
+        $response->setContent($message);
+        $response->setStatusCode(200);
+        return $response;
+    }
+
+    private function dayPlus($date, $number)
+    {
+        return date('Y-m-d', strtotime((new \DateTime($date))->format('Y-m-d') . ' + ' . $number . ' day'));
+    }
+
+    private function edtTemps($date, $tableau, $temps)
+    {
+        $edtTemps = array();
+
+        if ($date != null) {
+            switch ($tableau) {
+                case '2':
+                    $edtTemps[$date] = $temps[7];
+                    $edtTemps[$this->dayPlus($date, 1)] = $temps[8];
+                    $edtTemps[$this->dayPlus($date, 2)] = $temps[9];
+                    $edtTemps[$this->dayPlus($date, 3)] = $temps[10];
+                    $edtTemps[$this->dayPlus($date, 4)] = $temps[11];
+                    $edtTemps[$this->dayPlus($date, 5)] = $temps[12];
+                    break;
+                case '3':
+                    $edtTemps[$date] = $temps[14];
+                    $edtTemps[$this->dayPlus($date, 1)] = $temps[15];
+                    $edtTemps[$this->dayPlus($date, 2)] = $temps[16];
+                    $edtTemps[$this->dayPlus($date, 3)] = $temps[17];
+                    $edtTemps[$this->dayPlus($date, 4)] = $temps[18];
+                    $edtTemps[$this->dayPlus($date, 5)] = $temps[19];
+                    break;
+                default:
+                    $edtTemps[$date] = $temps[0];
+                    $edtTemps[$this->dayPlus($date, 1)] = $temps[1];
+                    $edtTemps[$this->dayPlus($date, 2)] = $temps[2];
+                    $edtTemps[$this->dayPlus($date, 3)] = $temps[3];
+                    $edtTemps[$this->dayPlus($date, 4)] = $temps[4];
+                    $edtTemps[$this->dayPlus($date, 5)] = $temps[5];
+                    break;
+            }
+        }
+
+        return $edtTemps;
+    }
+
+    private function startAndEndates($date)
+    {
+        $startAndEnddates = array();
+        if ($date != null)
+            $date = new \DateTime($date);
+        else
+            $date = new \DateTime();
+
+        if ($date->format('D') != 'Mon')
+            $date = new \DateTime(date('Y-m-d', strtotime($date->format('Y-m-d') . 'last Monday')));
+
+        $startAndEnddates['start'] = $date->format('Y-m-d');
+        $startAndEnddates['end'] = date('Y-m-d', strtotime($date->format('Y-m-d') . 'next sunday'));
+
+        return $startAndEnddates;
     }
 }

@@ -7,6 +7,7 @@ plannoTimepickerParams = {
   change: function(date) {
     roundTimePiker(this);
     timePickerChange(date, this);
+    ugeDateChange(date, this);
   }
 };
 
@@ -103,9 +104,45 @@ function formatHHmm(hour, minute) {
 }
 
 function setTimePickerStep(granularity) {
-  if (granularity == 1 || granularity == 15 || granularity == 5) {
+  /* if (granularity == 1 || granularity == 15 || granularity == 5) {
     return 30;
-  }
+  } */
 
   return granularity;
+}
+
+function ugeDateChange(date,obj){
+  let attrName = $(obj).attr('name');
+  let tempsIndex = (attrName).replace('temps', '');
+  let tempsIndexValue = $(obj).val() + ':00';
+  let selectedEdt = 0;
+  if ($(obj).hasClass('select0')) {
+    selectedEdt = 1;
+  }
+  if ($(obj).hasClass('select1')) {
+    selectedEdt = 2;
+  }
+  if ($(obj).hasClass('select2')) {
+    selectedEdt = 3;
+  }
+  let id = $('input[name="id"]').val();
+
+  // Transmet le tableau à la page de validation ajax
+  if(attrName.indexOf('temps') != -1 && id != ''){
+	  $.ajax({
+		url: url('ajax/edt-samedi-control'),
+		type: "get",
+		dataType: "text",
+		data: {id: id, startDate: null, selectedEdt: selectedEdt, tempsIndex: tempsIndex, tempsIndexValue: tempsIndexValue},
+		success: function(result){
+		  if(result != '')
+		    alert(result);
+		  /* else
+		    alert("Cet emploi du temps n'entre pas en conflit avec le planning."); */
+		},
+		error: function(){
+		  console.log("Erreur lors de l'enregistrement des modifications");
+		}
+	  });
+  }
 }
