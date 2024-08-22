@@ -1,0 +1,1 @@
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('Absences-de-superieure-un-an', 'boolean', '1', 'Afficher les absences de durée supérieure à un an.', 'Absences', '', NULL, '16');";
