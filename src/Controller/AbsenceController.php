@@ -74,13 +74,15 @@ class AbsenceController extends BaseController
             $agents_supprimes = false;
         }
 
-        // Default start & end
-        if (!$debut) {
-            $debut = date('d/m/Y');
-        }
-
-        if (!$fin) {
-            $fin = date('d/m/Y', strtotime(dateFr($debut) . ' +1 year'));
+        if(!$this->config('Absences-de-superieure-un-an')) {
+            // Default start & end
+            if (!$debut) {
+                $debut = date('d/m/Y');
+            }
+    
+            if (!$fin) {
+                $fin = date('d/m/Y', strtotime(dateFr($debut) . ' +1 year'));
+            }
         }
 
         $_SESSION['oups']['absences_debut'] = $debut;
