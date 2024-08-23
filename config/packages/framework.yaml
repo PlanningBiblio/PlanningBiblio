@@ -24,3 +24,7 @@ framework:
 
     assets:
         version_strategy: 'App\Asset\VersionStrategy\CurrentVersionStrategy'
+
+    # Set to false once migrated to attributes
+    annotations:
+        enabled: true
