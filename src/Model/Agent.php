@@ -10,7 +10,8 @@ require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/include/db.php');
 
-#[Entity(repositoryClass: \App\Repository\AgentRepository::class)] // @Table(name="personnel")
+#[Entity(repositoryClass: \App\Repository\AgentRepository::class)]
+#[Table(name: "personnel")]
 class Agent extends PLBEntity
 {
     #[Id] // @Column(type="integer") @GeneratedValue *
