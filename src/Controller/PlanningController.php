@@ -29,50 +29,55 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class PlanningController extends BaseController
 {
-    private $CSRFToken;
-    private $dbprefix;
-
     #[Route(path: '/', name: 'home', methods: ['GET'])]
     #[Route(path: '/index', name: 'index', methods: ['GET'])]
     public function index(Request $request)
     {
-        // Initialisation des variables
-        $CSRFToken = $request->get('CSRFToken');
-        $groupe = $request->get('groupe');
-        $site = $request->get('site');
-        $tableau = $request->get('tableau');
-        $date = $request->get('date');
-
-        $this->CSRFToken = $CSRFToken;
-        $this->dbprefix = $GLOBALS['dbprefix'];
-
-        // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
-        $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
-
         // Show all week plannings.
         if (!$request->get('date') and !empty($_SESSION['week'])) {
           return $this->redirectToRoute('planning.week', ['site' => $site]);
         }
 
-        list($date, $dateFr) = $this->setDate($date);
-
-        list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha)
-            = $this->getDatesPlanning($date);
-
         $_SESSION['week'] = false;
 
-        $groupes = $this->getFrameworksGroup();
-        $site = $this->setSite($request);
-        $pasDeDonneesSemaine = $this->noWeekDataFor($datesSemaine, $site);
-        global $idCellule;
-        $idCellule=0;
-        list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
-        list($jour3, $periode2) = $this->getSelectedDay($jour);
-        list($verrou, $perso2, $date_validation2, $heure_validation2, $validation2)
-            = $this->getLockingData($date, $site);
+        // Initialisation des variables
+        $groupe = $request->get('groupe');
+        $site = $request->get('site');
+        $tableau = $request->get('tableau');
+        $date = $request->get('date');
+
+        $site = $this->setSite($site);
+
+        // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
+        $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
+
+        list($date, $dateFr) = $this->setDate($date);
+
+        list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha) = $this->getDatesPlanning($date);
+
+        // Selection des messages d'informations
         $messages_infos = $this->getInfoMessages($date);
+
+        // Vérification des droits de modification (Autorisation)
+        list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
+
+        // Week page : in the loop
+        // Verrouillage du planning
+        list($verrou, $perso2, $date_validation2, $heure_validation2, $validation2) = $this->getLockingData($date, $site);
+
+        // Week page : in the loop
         $affSem = $this->getWeekData($site, $semaine, $semaine3);
 
+        // Week page : in the loop
+        // Planning's comments
+        $comments = $this->getComments($date, $site);
+
+        // Index page only
+        // FIXME $jour3 and $periode2 are not used. Check if something is missing (e.g.: disable workings hours check on saturday and sunday if ctrlHresAgents is disabled)
+        // if these variables are not required any more, delete them and delete the getSelectedDay function
+        list($jour3, $periode2) = $this->getSelectedDay($jour);
+
+        // Index page only
         $currentFramework = $this->currentFramework($date, $site);
         $show_framework_select = 0;
         if(!$currentFramework and !$tableau and !$groupe and $autorisationN2) {
@@ -83,10 +88,7 @@ class PlanningController extends BaseController
             $not_ready = 1;
         }
 
-
-        // Planning's comments
-        $comments = $this->getComments($date, $site);
-
+        // Index page only
         // Check if an action is undoable or redoable.
         $undoables = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)
@@ -109,9 +111,9 @@ class PlanningController extends BaseController
             'content_planning' => true,
             'date' => $date, 'dates' => $dates, 'site' => $site,
             'start' => $d->dates[0],
-            'startHr' => dateFr($d->dates[0]),
+            'startFr' => dateFr($d->dates[0]),
             'end' => $d->dates[6],
-            'endHr' => dateFr($d->dates[6]),
+            'endFr' => dateFr($d->dates[6]),
             'dateFr' => $dateFr,
             'affSem' => $affSem, 'day' => $jour,
             'public_holiday' => jour_ferie($date),
@@ -134,7 +136,11 @@ class PlanningController extends BaseController
         ));
 
 
+        // Index page only
         // Framework choice.
+        $groupes = $this->getFrameworksGroup();
+        $pasDeDonneesSemaine = $this->noWeekDataFor($datesSemaine, $site);
+
         $tab = 0;
         if ($show_framework_select) {
             $db = new \db();
@@ -152,10 +158,10 @@ class PlanningController extends BaseController
             return $this->output('planning/poste/index.html.twig');
 
         } elseif ($groupe and $autorisationN2) {
-            $tab = $this->resetWeekFrameworkAffect($date, $dates, $site, $groupe);
+            $tab = $this->resetWeekFrameworkAffect($request, $date, $dates, $site, $groupe);
         } elseif ($tableau and $autorisationN2) {	//	Si tableau en argument
             $tab = $tableau;
-            $this->resetFrameworkAffect($date, $tab, $site);
+            $this->resetFrameworkAffect($request, $date, $tab, $site);
         } else {
             $tab = $currentFramework;
         }
@@ -164,7 +170,7 @@ class PlanningController extends BaseController
         // data-validation pour les fonctions refresh_poste et verrouillage du planning
         // Lignes vides pour l'affichage ou non des lignes vides au chargement de la page et après validation (selon la config)
         $this->templateParams(array(
-            'lignesVides'   => $this->config('Planning-lignesVides'),
+            //'lignesVides'   => $this->config('Planning-lignesVides'),
             'tab'           => $tab,
         ));
 
@@ -288,14 +294,12 @@ class PlanningController extends BaseController
         return $this->output('planning/poste/index.html.twig');
     }
 
-<<<<<<< HEAD:src/Controller/IndexController.php
-    #[Route(path: '/deleteplanning', name: 'planning.delete', methods: ['POST'])]
-=======
-    /**
-     * @Route("/week", name="planning.week", methods={"GET"})
-     */
+    #[Route(path: '/week', name: 'planning.week', methods: ['GET'])]
     public function week(Request $request)
     {
+        $_SESSION['week'] = true;
+
+        // Initialisation des variables
         $groupe = $request->get('groupe');
         $site = $request->get('site');
         $tableau = $request->get('tableau');
@@ -303,60 +307,22 @@ class PlanningController extends BaseController
 
         $site = $this->setSite($request);
 
-        $dbprefix = $GLOBALS['dbprefix'];
-        $CSRFSession = $GLOBALS['CSRFSession'];
-
+        // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
         $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
 
-        if (!$date and array_key_exists('PLdate', $_SESSION)) {
-            $date = $_SESSION['PLdate'];
-        } elseif (!$date and !array_key_exists('PLdate', $_SESSION)) {
-            $date = date("Y-m-d");
-        }
+        list($date, $dateFr) = $this->setDate($date);
 
-        $_SESSION['PLdate'] = $date;
-        $_SESSION['week'] = true;
+        list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha) = $this->getDatesPlanning($date);
 
-        list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha)
-            = $this->getDatesPlanning($date);
+        // Selection des messages d'informations
+        $messages_infos = $this->getInfoMessages($dates[0], $dates[$fin]);
 
-        global $idCellule;
-        $idCellule=0;
+        // Vérification des droits de modification (Autorisation)
+        list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
 
-        //-------- Vérification des droits de modification (Autorisation) -------------//
-        $autorisationN1 = (in_array((300 + $site), $this->permissions)
-            or in_array((1000 + $site), $this->permissions));
-
-        // ------ FIN Vérification des droits de modification (Autorisation) -----//
+        $affSem = $this->getWeekData($site, $semaine, $semaine3);
 
         $fin = $this->config('Dimanche') ? 6 : 5;
-
-        //	Selection des messages d'informations
-        $db = new \db();
-        $dateDebut = $db->escapeString($dates[0]);
-        $dateFin = $db->escapeString($dates[$fin]);
-        $db->query("SELECT * FROM `{$dbprefix}infos` WHERE `debut`<='$dateFin' AND `fin`>='$dateDebut' ORDER BY `debut`,`fin`;");
-        $messages_infos = null;
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $messages_infos[] = $elem['texte'];
-            }
-            $messages_infos = implode(' - ', $messages_infos);
-        }
-
-        switch ($this->config('nb_semaine')) {
-            case 2:
-                $type_sem = $semaine % 2 ? 'Impaire' : 'Paire';
-                $affSem = "$type_sem ($semaine)";
-                break;
-            case 3:
-                $type_sem = $semaine3;
-                $affSem = "$type_sem ($semaine)";
-                break;
-            default:
-                $affSem = $semaine;
-                break;
-        }
 
         // Parameters for planning's menu
         // (Calendar widget, days, week and action icons)
@@ -364,7 +330,7 @@ class PlanningController extends BaseController
             'affSem'            => $affSem,
             'autorisationN1'    => $autorisationN1,
             'content_planning'  => true,
-            'CSRFSession'       => $CSRFSession,
+            'CSRFSession'       => $GLOBALS['CSRFSession'],
             'date'              => $date,
             'dates'             => $dates,
             'day'               => $jour,
@@ -387,24 +353,9 @@ class PlanningController extends BaseController
             $date=$dates[$j];
             $day['date'] = $date;
 
-            // ---------- Verrouillage du planning ----------- //
-            $perso2 = null;
-            $date_validation2 = null;
-            $heure_validation2 = null;
-            $verrou = false;
+            // Verrouillage du planning
+            list($verrou, $perso2, $date_validation2, $heure_validation2, $validation2) = $this->getLockingData($date, $site);
 
-            $db = new \db();
-            $db->select2('pl_poste_verrou', '*', array('date' => $date, 'site' => $site));
-            if ($db->result) {
-                $verrou = $db->result[0]['verrou2'];
-                $perso = nom($db->result[0]['perso']);
-                $perso2 = nom($db->result[0]['perso2']);
-                $date_validation = dateFr(substr($db->result[0]['validation'], 0, 10));
-                $heure_validation = substr($db->result[0]['validation'], 11, 5);
-                $date_validation2 = dateFr(substr($db->result[0]['validation2'], 0, 10));
-                $heure_validation2 = substr($db->result[0]['validation2'], 11, 5);
-                $validation2 = $db->result[0]['validation2'];
-            }
             $day['perso2'] = $perso2;
             $day['date_validation2'] = $date_validation2;
             $day['heure_validation2'] = $heure_validation2;
@@ -445,15 +396,9 @@ class PlanningController extends BaseController
                 $day['tabs'] = $tabs;
             }
 
-            // Notes : Affichage
-            $p = new \planning();
-            $p->date = $date;
-            $p->site = $site;
-            $p->getNotes();
-            $notes = $p->notes;
-            $notesDisplay = trim($notes) ? null : "style='display:none;'";
-            $day['notes'] = $notes;
-            $day['notesDisplay'] = $notesDisplay;
+            // Planning's comments
+            $comments = $this->getComments($date, $site);
+            $day['comments'] = $comments;
             $days[] = $day;
         }
 
@@ -464,10 +409,7 @@ class PlanningController extends BaseController
         return $this->output('planning/poste/week.html.twig');
     }
 
-    /**
-     * @Route("/deleteplanning", name="planning.delete", methods={"POST"})
-     */
->>>>>>> MT45129: move IndexController and WeekController to PlanningController:src/Controller/PlanningController.php
+    #[Route(path: '/deleteplanning', name: 'planning.delete', methods: ['POST'])]
     public function delete_planning(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
@@ -542,7 +484,7 @@ class PlanningController extends BaseController
         $get_absents = $request->get('absents');
         $model_id = $request->get('model');
         $droits = $GLOBALS['droits'];
-        $dbprefix = $GLOBALS['dbprefix'];
+        $dbprefix = $this->config('dbprefix');
 
         if (!in_array((300+$site), $droits)) {
             return $this->output('access-denied.html.twig');
@@ -971,12 +913,16 @@ class PlanningController extends BaseController
         return array($verrou, $perso2, $date_validation2, $heure_validation2, $validation2);
     }
 
-    private function getInfoMessages($date)
+    private function getInfoMessages($start, $end = null)
     {
-        $db = new \db();
-        $db->select2('infos', '*', array('debut'=>"<={$date}", 'fin'=>">={$date}"), "ORDER BY `debut`,`fin`");
-
+        $end = $end ?? $start;
         $messages_infos = null;
+
+        $db = new \db();
+        $start = $db->escapeString($start);
+        $end = $db->escapeString($end);
+        $db->select2('infos', '*', array('debut'=>"<={$end}", 'fin'=>">={$start}"), 'ORDER BY `debut`,`fin`');
+
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $messages_infos[] = $elem['texte'];
@@ -1041,8 +987,10 @@ class PlanningController extends BaseController
         );
     }
 
-    private function resetWeekFrameworkAffect($date, $dates, $site, $groupe)
+    private function resetWeekFrameworkAffect(Request $request, $date, $dates, $site, $groupe)
     {
+        $CSRFToken = $request->get('CSRFToken');
+
         $t = new Framework();
         $t->fetchGroup($groupe);
         $groupeTab = $t->elements;
@@ -1060,24 +1008,26 @@ class PlanningController extends BaseController
 
         foreach ($tmp as $elem) {
             $db = new \db();
-            $db->CSRFToken = $this->CSRFToken;
+            $db->CSRFToken = $CSRFToken;
             $db->delete('pl_poste_tab_affect', array('date' => $elem[0], 'site' => $site));
 
             $db = new \db();
-            $db->CSRFToken = $this->CSRFToken;
+            $db->CSRFToken = $CSRFToken;
             $db->insert('pl_poste_tab_affect', array('date' => $elem[0], 'tableau' => $elem[1], 'site' => $site));
         }
         return $tmp[$date][1];
     }
 
-    private function resetFrameworkAffect($date, $tab, $site)
+    private function resetFrameworkAffect(Request $request, $date, $tab, $site)
     {
+        $CSRFToken = $request->get('CSRFToken');
+
         $db = new \db();
-        $db->CSRFToken = $this->CSRFToken;
+        $db->CSRFToken = $CSRFToken;
         $db->delete('pl_poste_tab_affect', array('date' => $date, 'site' => $site));
 
         $db = new \db();
-        $db->CSRFToken = $this->CSRFToken;
+        $db->CSRFToken = $CSRFToken;
         $db->insert('pl_poste_tab_affect', array('date' => $date, 'tableau' => $tab, 'site' => $site));
     }
 
@@ -1377,6 +1327,8 @@ class PlanningController extends BaseController
 
     private function getCells($date, $site, $activites)
     {
+        $dbprefix = $this->config('dbprefix');
+
         $db = new \db();
         $db->selectLeftJoin(
             array('pl_poste', 'perso_id'),
@@ -1385,7 +1337,7 @@ class PlanningController extends BaseController
             array('nom', 'prenom', 'statut', 'service', 'postes', 'depart'),
             array('date' => $date, 'site' => $site),
             array(),
-            "ORDER BY `{$this->dbprefix}pl_poste`.`absent` desc, `{$this->dbprefix}personnel`.`nom`, `{$this->dbprefix}personnel`.`prenom`"
+            "ORDER BY `{$dbprefix}pl_poste`.`absent` desc, `{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`"
         );
 
         $cellules = $db->result ? $db->result : array();
