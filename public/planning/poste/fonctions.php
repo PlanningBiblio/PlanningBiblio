@@ -149,7 +149,10 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
             }
         }
     }
+
+    $GLOBALS['idCellule'] = $GLOBALS['idCellule'] ?? 0;
     $GLOBALS['idCellule']++;
+
     $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' class='menuTrigger' 
     oncontextmenu='cellule={$GLOBALS['idCellule']}'
     data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$GLOBALS['idCellule']}' data-perso-id='0'>";
