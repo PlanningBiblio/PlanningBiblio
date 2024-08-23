@@ -3,7 +3,9 @@
 namespace App\Model;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Entity;
 
+#[Entity]
 class PLBEntity {
 
     public function __call($name, $arguments) {
