@@ -38,7 +38,8 @@ class PlanningController extends BaseController
           return $this->redirectToRoute('planning.week', ['site' => $site]);
         }
 
-        $_SESSION['week'] = false;
+        $weekView = false;
+        $_SESSION['week'] = $weekView;
 
         // Initialisation des variables
         $groupe = $request->get('groupe');
@@ -56,17 +57,32 @@ class PlanningController extends BaseController
         list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha) = $this->getDatesPlanning($date);
 
         // Selection des messages d'informations
-        $messages_infos = $this->getInfoMessages($date);
+        $messages_infos = $this->getInfoMessages($dates, $weekView);
 
         // Vérification des droits de modification (Autorisation)
         list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
 
+        $affSem = $this->getWeekData($site, $semaine, $semaine3);
+
+        // Parameters for planning's menu
+        // (Calendar widget, days, week and action icons)
+        $this->templateParams(array(
+            'affSem'            => $affSem,
+            'autorisationN1'    => $autorisationN1,
+            'content_planning'  => true,
+            'CSRFSession'       => $GLOBALS['CSRFSession'],
+            'date'              => $date,
+            'dates'             => $dates,
+            'day'               => $jour,
+            'messages_infos'    => $messages_infos,
+            'public_holiday'    => jour_ferie($date),
+            'site'              => $site,
+            'week_view'         => $weekView,
+        ));
+
         // Week page : in the loop
         // Verrouillage du planning
         list($verrou, $perso2, $date_validation2, $heure_validation2, $validation2) = $this->getLockingData($date, $site);
-
-        // Week page : in the loop
-        $affSem = $this->getWeekData($site, $semaine, $semaine3);
 
         // Week page : in the loop
         // Planning's comments
@@ -107,27 +123,21 @@ class PlanningController extends BaseController
             $redoable = 0;
         }
 
+        // Index page only
         $this->templateParams(array(
-            'content_planning' => true,
-            'date' => $date, 'dates' => $dates, 'site' => $site,
             'start' => $d->dates[0],
             'startFr' => dateFr($d->dates[0]),
             'end' => $d->dates[6],
             'endFr' => dateFr($d->dates[6]),
             'dateFr' => $dateFr,
-            'affSem' => $affSem, 'day' => $jour,
-            'public_holiday' => jour_ferie($date),
-            'messages_infos' => $messages_infos,
             'not_ready'      => $not_ready,
-            'locked' => $verrou, 'perso2' => $perso2,
+            'locked' => $verrou,
+            'perso2' => $perso2,
             'date_validation2' => $date_validation2,
             'heure_validation2' => $heure_validation2,
             'validation2' => $validation2,
-            'autorisationN1' => $autorisationN1,
             'autorisationN2' => $autorisationN2,
             'autorisationNotes' => $autorisationNotes,
-            'CSRFSession' => $GLOBALS['CSRFSession'],
-            'week_view' => false,
             'undoable' => $undoable,
             'redoable' => $redoable,
             'show_framework_select' => $show_framework_select,
@@ -166,11 +176,7 @@ class PlanningController extends BaseController
             $tab = $currentFramework;
         }
 
-        // Div planning-data : permet de transmettre les valeurs $verrou et $autorisationN1 à la fonction affichant le menudiv
-        // data-validation pour les fonctions refresh_poste et verrouillage du planning
-        // Lignes vides pour l'affichage ou non des lignes vides au chargement de la page et après validation (selon la config)
         $this->templateParams(array(
-            //'lignesVides'   => $this->config('Planning-lignesVides'),
             'tab'           => $tab,
         ));
 
@@ -297,7 +303,8 @@ class PlanningController extends BaseController
     #[Route(path: '/week', name: 'planning.week', methods: ['GET'])]
     public function week(Request $request)
     {
-        $_SESSION['week'] = true;
+        $weekView = true;
+        $_SESSION['week'] = $weekView;
 
         // Initialisation des variables
         $groupe = $request->get('groupe');
@@ -315,14 +322,12 @@ class PlanningController extends BaseController
         list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha) = $this->getDatesPlanning($date);
 
         // Selection des messages d'informations
-        $messages_infos = $this->getInfoMessages($dates[0], $dates[$fin]);
+        $messages_infos = $this->getInfoMessages($dates, $weekView);
 
         // Vérification des droits de modification (Autorisation)
         list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
 
         $affSem = $this->getWeekData($site, $semaine, $semaine3);
-
-        $fin = $this->config('Dimanche') ? 6 : 5;
 
         // Parameters for planning's menu
         // (Calendar widget, days, week and action icons)
@@ -337,7 +342,7 @@ class PlanningController extends BaseController
             'messages_infos'    => $messages_infos,
             'public_holiday'    => jour_ferie($date),
             'site'              => $site,
-            'week_view'         => true,
+            'week_view'         => $weekView,
         ));
 
         // div id='tabsemaine1' : permet d'afficher les tableaux masqués.
@@ -348,7 +353,9 @@ class PlanningController extends BaseController
 
         // Pour tous les jours de la semaine
         $days = array();
-        for ($j=0;$j<=$fin;$j++) {
+        $fin = $this->config('Dimanche') ? 6 : 5;
+
+        for ($j = 0; $j <= $fin; $j++) {
             $day = array();
             $date=$dates[$j];
             $day['date'] = $date;
@@ -913,9 +920,11 @@ class PlanningController extends BaseController
         return array($verrou, $perso2, $date_validation2, $heure_validation2, $validation2);
     }
 
-    private function getInfoMessages($start, $end = null)
+    private function getInfoMessages($dates, $weekView)
     {
-        $end = $end ?? $start;
+        $start = $dates[0];
+        $end = $weekView ? $dates[6] : $dates[0];
+
         $messages_infos = null;
 
         $db = new \db();
