@@ -63,7 +63,9 @@ Example: php bin/console app:purge:data "5"
 
         $this->release();
 
-        $io->success('Purge completed.');
+        if ($output->isVerbose()) {
+            $io->success('Purge completed.');
+        }
 
         return Command::SUCCESS;
     }

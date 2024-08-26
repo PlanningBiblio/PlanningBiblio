@@ -56,7 +56,9 @@ Example: php bin/console app:purge:log-table "12 MONTH"
         $logger->log("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)", "PurgeLogTable");
         $this->release();
 
-        $io->success("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)");
+        if ($output->isVerbose()) {
+            $io->success("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)");
+        }
 
         return Command::SUCCESS;
     }
