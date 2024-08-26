@@ -43,6 +43,7 @@ jobs:
       - run: sudo pecl install xdebug
 
       # MT41778 : Download Google Chrome from an archive to be sure to have version v114
+      - run: sudo apt install -y libu2f-udev
       - run: wget -O /tmp/googlechrome.zip https://github.com/PlanningBiblio/googlechrome/archive/refs/heads/v114.zip
       - run: unzip -o /tmp/googlechrome.zip
       - run: sudo dpkg -i googlechrome-114/google-chrome-stable_current_amd64.deb
