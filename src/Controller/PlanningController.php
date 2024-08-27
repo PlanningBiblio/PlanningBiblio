@@ -38,7 +38,9 @@ class PlanningController extends BaseController
           return $this->redirectToRoute('planning.week', ['site' => $site]);
         }
 
-        $weekView = false;
+        $view = 'default';
+
+        $weekView = $view == 'week';
         $_SESSION['week'] = $weekView;
 
         // Initialisation des variables
@@ -52,12 +54,15 @@ class PlanningController extends BaseController
         // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
         $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
 
-        list($date, $dateFr) = $this->setDate($date);
+        $date = $this->setDate($date);
 
-        list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha) = $this->getDatesPlanning($date);
+        list($d, $semaine, $semaine3, $jour, $dates) = $this->getDatesPlanning($date);
+
+// TODO : dans la fonction init à créer : ne pas retourner : $semaine3
+// si la fonction englobe "list($jour3, $periode2) = $this->getSelectedDay($jour);", ne pas retourner $jour
 
         // Selection des messages d'informations
-        $messages_infos = $this->getInfoMessages($dates, $weekView);
+        $messages_infos = $this->getInfoMessages($dates, $date, $view);
 
         // Vérification des droits de modification (Autorisation)
         list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
@@ -129,7 +134,7 @@ class PlanningController extends BaseController
             'startFr' => dateFr($d->dates[0]),
             'end' => $d->dates[6],
             'endFr' => dateFr($d->dates[6]),
-            'dateFr' => $dateFr,
+            'dateFr' => dateFr($date),
             'not_ready'      => $not_ready,
             'locked' => $verrou,
             'perso2' => $perso2,
@@ -149,7 +154,7 @@ class PlanningController extends BaseController
         // Index page only
         // Framework choice.
         $groupes = $this->getFrameworksGroup();
-        $pasDeDonneesSemaine = $this->noWeekDataFor($datesSemaine, $site);
+        $pasDeDonneesSemaine = $this->noWeekDataFor($dates, $site);
 
         $tab = 0;
         if ($show_framework_select) {
@@ -303,7 +308,9 @@ class PlanningController extends BaseController
     #[Route(path: '/week', name: 'planning.week', methods: ['GET'])]
     public function week(Request $request)
     {
-        $weekView = true;
+        $view = 'week';
+
+        $weekView = $view == 'week';
         $_SESSION['week'] = $weekView;
 
         // Initialisation des variables
@@ -317,12 +324,12 @@ class PlanningController extends BaseController
         // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
         $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
 
-        list($date, $dateFr) = $this->setDate($date);
+        $date = $this->setDate($date);
 
-        list($d, $semaine, $semaine3, $jour, $dates, $datesSemaine, $dateAlpha) = $this->getDatesPlanning($date);
+        list($d, $semaine, $semaine3, $jour, $dates) = $this->getDatesPlanning($date);
 
         // Selection des messages d'informations
-        $messages_infos = $this->getInfoMessages($dates, $weekView);
+        $messages_infos = $this->getInfoMessages($dates, $date, $view);
 
         // Vérification des droits de modification (Autorisation)
         list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
@@ -813,9 +820,7 @@ class PlanningController extends BaseController
 
         $_SESSION['PLdate'] = $date;
 
-        $dateFr = dateFr($date);
-
-        return array($date, $dateFr);
+        return $date;
     }
 
     private function setSite($request)
@@ -854,10 +859,11 @@ class PlanningController extends BaseController
         return $t->elements;
     }
 
-    private function noWeekDataFor($datesSemaine, $site)
+    private function noWeekDataFor($dates, $site)
     {
+        $dates = implode(",", $dates);
         $db = new \db();
-        $db->select2('pl_poste', '*', array('date' => "IN$datesSemaine", 'site' => $site));
+        $db->select2('pl_poste', '*', array('date' => "IN$dates", 'site' => $site));
 
         if ($db->result) {
             return false;
@@ -920,10 +926,18 @@ class PlanningController extends BaseController
         return array($verrou, $perso2, $date_validation2, $heure_validation2, $validation2);
     }
 
-    private function getInfoMessages($dates, $weekView)
+    private function getInfoMessages($dates, $date, $view)
     {
-        $start = $dates[0];
-        $end = $weekView ? $dates[6] : $dates[0];
+        switch ($view) {
+            case 'week' :
+                $start = $dates[0];
+                $end = $dates[6];
+                break;
+            default :
+                $start = $date;
+                $end = $date;
+                break;
+        }
 
         $messages_infos = null;
 
@@ -1389,17 +1403,13 @@ class PlanningController extends BaseController
     private function getDatesPlanning($date)
     {
         $d = new \datePl($date);
-        $semaine = $d->semaine;
-        $semaine3 = $d->semaine3;
-        $jour = $d->jour;
-        $dates = $d->dates;
-        $datesSemaine = implode(',', $dates);
-        $dateAlpha = dateAlpha($date);
 
-        return array($d, $d->semaine, $d->semaine3,
-            $d->jour, $d->dates,
-            implode(",", $d->dates),
-            dateAlpha($date)
+        return array(
+            $d,
+            $d->semaine,
+            $d->semaine3,
+            $d->jour,
+            $d->dates,
         );
     }
 
