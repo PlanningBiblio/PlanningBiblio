@@ -40,50 +40,7 @@ class PlanningController extends BaseController
 
         $view = 'default';
 
-        $weekView = $view == 'week';
-        $_SESSION['week'] = $weekView;
-
-        // Initialisation des variables
-        $groupe = $request->get('groupe');
-        $site = $request->get('site');
-        $tableau = $request->get('tableau');
-        $date = $request->get('date');
-
-        $site = $this->setSite($site);
-
-        // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
-        $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
-
-        $date = $this->setDate($date);
-
-        list($d, $semaine, $semaine3, $jour, $dates) = $this->getDatesPlanning($date);
-
-// TODO : dans la fonction init à créer : ne pas retourner : $semaine3
-// si la fonction englobe "list($jour3, $periode2) = $this->getSelectedDay($jour);", ne pas retourner $jour
-
-        // Selection des messages d'informations
-        $messages_infos = $this->getInfoMessages($dates, $date, $view);
-
-        // Vérification des droits de modification (Autorisation)
-        list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
-
-        $affSem = $this->getWeekData($site, $semaine, $semaine3);
-
-        // Parameters for planning's menu
-        // (Calendar widget, days, week and action icons)
-        $this->templateParams(array(
-            'affSem'            => $affSem,
-            'autorisationN1'    => $autorisationN1,
-            'content_planning'  => true,
-            'CSRFSession'       => $GLOBALS['CSRFSession'],
-            'date'              => $date,
-            'dates'             => $dates,
-            'day'               => $jour,
-            'messages_infos'    => $messages_infos,
-            'public_holiday'    => jour_ferie($date),
-            'site'              => $site,
-            'week_view'         => $weekView,
-        ));
+        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $periode2) = $this->initPlanning($request, $view);
 
         // Week page : in the loop
         // Verrouillage du planning
@@ -92,11 +49,6 @@ class PlanningController extends BaseController
         // Week page : in the loop
         // Planning's comments
         $comments = $this->getComments($date, $site);
-
-        // Index page only
-        // FIXME $jour3 and $periode2 are not used. Check if something is missing (e.g.: disable workings hours check on saturday and sunday if ctrlHresAgents is disabled)
-        // if these variables are not required any more, delete them and delete the getSelectedDay function
-        list($jour3, $periode2) = $this->getSelectedDay($jour);
 
         // Index page only
         $currentFramework = $this->currentFramework($date, $site);
@@ -310,53 +262,7 @@ class PlanningController extends BaseController
     {
         $view = 'week';
 
-        $weekView = $view == 'week';
-        $_SESSION['week'] = $weekView;
-
-        // Initialisation des variables
-        $groupe = $request->get('groupe');
-        $site = $request->get('site');
-        $tableau = $request->get('tableau');
-        $date = $request->get('date');
-
-        $site = $this->setSite($request);
-
-        // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
-        $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
-
-        $date = $this->setDate($date);
-
-        list($d, $semaine, $semaine3, $jour, $dates) = $this->getDatesPlanning($date);
-
-        // Selection des messages d'informations
-        $messages_infos = $this->getInfoMessages($dates, $date, $view);
-
-        // Vérification des droits de modification (Autorisation)
-        list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
-
-        $affSem = $this->getWeekData($site, $semaine, $semaine3);
-
-        // Parameters for planning's menu
-        // (Calendar widget, days, week and action icons)
-        $this->templateParams(array(
-            'affSem'            => $affSem,
-            'autorisationN1'    => $autorisationN1,
-            'content_planning'  => true,
-            'CSRFSession'       => $GLOBALS['CSRFSession'],
-            'date'              => $date,
-            'dates'             => $dates,
-            'day'               => $jour,
-            'messages_infos'    => $messages_infos,
-            'public_holiday'    => jour_ferie($date),
-            'site'              => $site,
-            'week_view'         => $weekView,
-        ));
-
-        // div id='tabsemaine1' : permet d'afficher les tableaux masqués.
-        // La fonction JS afficheTableauxDiv utilise $('#tabsemaine1').after()
-        // pour afficher les liens de récupération des tableaux.
-
-        // ---------- FIN Affichage du titre et du calendrier ------------//
+        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $periode2) = $this->initPlanning($request, $view);
 
         // Pour tous les jours de la semaine
         $days = array();
@@ -808,6 +714,70 @@ class PlanningController extends BaseController
         ));
 
         return $this->output('planning/poste/model_form.html.twig');
+    }
+
+    private function initPlanning($request, $view)
+    {
+        $weekView = $view == 'week';
+        $_SESSION['week'] = $weekView;
+
+        // Initialisation des variables
+        $groupe = $request->get('groupe');
+        $site = $request->get('site');
+        $tableau = $request->get('tableau');
+        $date = $request->get('date');
+
+        $site = $this->setSite($site);
+
+        // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
+        $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
+
+        $date = $this->setDate($date);
+
+        list($d, $semaine, $semaine3, $jour, $dates) = $this->getDatesPlanning($date);
+
+        // Selection des messages d'informations
+        $messages_infos = $this->getInfoMessages($dates, $date, $view);
+
+        // Vérification des droits de modification (Autorisation)
+        list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
+
+        $affSem = $this->getWeekData($site, $semaine, $semaine3);
+
+        // Index page only
+        // FIXME $jour3 and $periode2 are not used. Check if something is missing (e.g.: disable workings hours check on saturday and sunday if ctrlHresAgents is disabled)
+        // if these variables are not required any more, delete them and delete the getSelectedDay function
+        list($jour3, $periode2) = $this->getSelectedDay($jour);
+
+        // Parameters for planning's menu
+        // (Calendar widget, days, week and action icons)
+        $this->templateParams(array(
+            'affSem'            => $affSem,
+            'autorisationN1'    => $autorisationN1,
+            'content_planning'  => true,
+            'CSRFSession'       => $GLOBALS['CSRFSession'],
+            'date'              => $date,
+            'dates'             => $dates,
+            'day'               => $jour,
+            'messages_infos'    => $messages_infos,
+            'public_holiday'    => jour_ferie($date),
+            'site'              => $site,
+            'week_view'         => $weekView,
+        ));
+
+        return array(
+           $groupe,
+           $site,
+           $tableau,
+           $date,
+           $d,
+           $semaine,
+           $dates,
+           $autorisationN1,
+           $autorisationN2,
+           $autorisationNotes,
+           $periode2,
+       );
     }
 
     private function setDate($date)
