@@ -99,17 +99,10 @@ class AbsenceController extends BaseController
         $a->fetch(null, $perso_id, $debutSQL, $finSQL);
         $absences = $a->elements;
 
-        // Tri par défaut du tableau
-        $sort="[[0],[1]]";
-        if ($admin or $adminN2 or (!$this->config('Absences-adminSeulement') and in_array(6, $droits))) {
-            $sort="[[1],[2]]";
-        }
-
         $this->templateParams(array(
             'debut'     => $debut,
             'fin'       => $fin,
             'perso_id'  => $perso_id,
-            'sort'      => $sort,
         ));
 
         $managed = $this->entityManager
