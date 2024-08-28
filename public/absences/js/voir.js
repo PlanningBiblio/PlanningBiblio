@@ -45,8 +45,8 @@ $(function(){
        }
        var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
        if (number_of_days > 367) {
-         alert('Veuillez sélectionner un intervalle inférieur à une année.');
-         event.preventDefault();
+         end.setTime(start.getTime() +  (365 * 24 * 60 * 60 * 1000));
+         $('#fin').val(end.toLocaleDateString());
        }
     }
   });
