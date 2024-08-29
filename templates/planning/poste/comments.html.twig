@@ -1,11 +1,11 @@
 {# planning/poste/comments.html.twig #}
 
-<div id='pl-notes-div1' {{ comments.notesDisplay }} >
+<div id='pl-notes-div1' {% if not comments.display %} style="display:none;" {% endif %} >
   {{ comments.notes | raw_black_listed }}
 </div>
 
 <div id='pl-notes-div1-validation'>
-  {{ comments.notesSuppression }}{{comments.notesValidation }}
+  {{ comments.deleted }}{{comments.validation }}
 </div>
 
 {% if autorisationNotes %}
@@ -19,7 +19,7 @@
     </p>
 
     <form>
-      <textarea id='pl-notes-text'>{{ comments.notesTextarea | raw_black_listed }}</textarea>
+      <textarea id='pl-notes-text'>{{ comments.textarea | raw_black_listed }}</textarea>
     </form>
   </div>
 {% endif %}
