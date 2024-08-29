@@ -698,18 +698,42 @@ class planning
     // Récupère les notes (en bas des plannings)
     public function getNotes()
     {
+        $date = $this->date;
+
         $this->notes=null;
-        $db=new db();
-        $db->select2("pl_notes", "*", array("date"=>$this->date, "site"=>$this->site), "ORDER BY `timestamp` DESC");
+
+        if (is_array($date)) {
+            $dates = implode(',', $date);
+            $db=new db();
+            $db->select2('pl_notes', '*', array('date' => "IN$dates", 'site' => $this->site), 'ORDER BY `timestamp` ASC');
+        } else {
+            $db=new db();
+            $db->select2('pl_notes', '*', array('date' => $date, 'site' => $this->site), 'ORDER BY `timestamp` DESC LIMIT 1');
+        }
+
         if ($db->result) {
-            $notes=$db->result[0]['text'];
-            $notes=str_replace(array("&lt;br/&gt;","#br#"), "<br/>", $notes);
-            $this->notes=$notes;
-            $this->notesTextarea=str_replace("<br/>", "\n", $notes);
-            if ($db->result[0]['perso_id'] and $db->result[0]['timestamp']) {
-                $this->validation=nom($db->result[0]['perso_id']).", ".dateFr($db->result[0]['timestamp'], true);
-            } else {
-                $this->validation=null;
+            foreach ($db->result as $elem) {
+                $notes = $elem['text'];
+                $notes = str_replace(array("&lt;br/&gt;","#br#"), "<br/>", $notes);
+                $notesTextarea = str_replace("<br/>", "\n", $notes);
+    
+                if ($elem['perso_id'] and $elem['timestamp']) {
+                    $validation = nom($elem['perso_id']).", ".dateFr($elem['timestamp'], true);
+                } else {
+                    $validation = null;
+                }
+
+                $this->notes = $notes;
+                $this->notesTextarea = $notesTextarea;
+                $this->validation = $validation;
+
+                $this->comments[$elem['date']][$elem['site']] = array(
+                    'notes' => $notes,
+                    'textarea' => $notesTextarea,
+                    'validation' => $validation,
+                    'display' => trim(strval($notes)) ? true : false,
+                    'deleted' => ($validation and !trim(strval($notes))) ? 'Suppression du commentaire : ' : null,
+               );
             }
         }
     }
@@ -738,7 +762,7 @@ class planning
         $date=$this->date;
         $site=$this->site;
         $text=$this->notes;
-    
+
         // Vérifie s'il y a eu des changements depuis le dernier enregistrement
         $this->getNotes();
         $previousNotes=str_replace("<br/>", "#br#", $this->notes);
