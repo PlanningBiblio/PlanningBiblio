@@ -78,7 +78,7 @@
               </table>
             </div>
           {% endif %}
-          <div class="pl-notes-div1" {{ day.comments.notesDisplay | raw }}>
+          <div class="pl-notes-div1" {% if not day.comments.display %} style="display:none;" {% endif %}>
             {{ day.comments.notes | raw_black_listed }}
           </div>
         </div>

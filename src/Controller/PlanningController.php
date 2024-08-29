@@ -40,15 +40,11 @@ class PlanningController extends BaseController
 
         $view = 'default';
 
-        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $periode2) = $this->initPlanning($request, $view);
+        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $periode2, $comments) = $this->initPlanning($request, $view);
 
         // Week page : in the loop
         // Verrouillage du planning
         list($verrou, $perso2, $date_validation2, $heure_validation2, $validation2) = $this->getLockingData($date, $site);
-
-        // Week page : in the loop
-        // Planning's comments
-        $comments = $this->getComments($date, $site);
 
         // Index page only
         $currentFramework = $this->currentFramework($date, $site);
@@ -98,7 +94,7 @@ class PlanningController extends BaseController
             'undoable' => $undoable,
             'redoable' => $redoable,
             'show_framework_select' => $show_framework_select,
-            'comments' => $comments,
+            'comments' => $comments[$date][$site],
             'CSRFToken' => $GLOBALS['CSRFSession'],
         ));
 
@@ -262,7 +258,7 @@ class PlanningController extends BaseController
     {
         $view = 'week';
 
-        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $periode2) = $this->initPlanning($request, $view);
+        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $periode2, $comments) = $this->initPlanning($request, $view);
 
         // Pour tous les jours de la semaine
         $days = array();
@@ -316,9 +312,7 @@ class PlanningController extends BaseController
                 $day['tabs'] = $tabs;
             }
 
-            // Planning's comments
-            $comments = $this->getComments($date, $site);
-            $day['comments'] = $comments;
+            $day['comments'] = $comments[$date][$site];
             $days[] = $day;
         }
 
@@ -744,6 +738,13 @@ class PlanningController extends BaseController
 
         $affSem = $this->getWeekData($site, $semaine, $semaine3);
 
+        // Planning's comments
+        $p = new \planning();
+        $p->date = $dates;
+        $p->site = $site;
+        $p->getNotes();
+        $comments = $p->comments;
+
         // Index page only
         // FIXME $jour3 and $periode2 are not used. Check if something is missing (e.g.: disable workings hours check on saturday and sunday if ctrlHresAgents is disabled)
         // if these variables are not required any more, delete them and delete the getSelectedDay function
@@ -777,6 +778,7 @@ class PlanningController extends BaseController
            $autorisationN2,
            $autorisationNotes,
            $periode2,
+           $comments,
        );
     }
 
@@ -956,28 +958,6 @@ class PlanningController extends BaseController
         }
 
         return $currentFramework;
-    }
-
-    private function getComments($date, $site)
-    {
-        $p = new \planning();
-        $p->date = $date;
-        $p->site = $site;
-        $p->getNotes();
-        $notes = $p->notes;
-        $notesTextarea = $p->notesTextarea;
-        $notesValidation = $p->validation;
-        $notesDisplay = trim(strval($notes)) ? null : 'style=display:none;';
-        $notesSuppression = ($notesValidation and !trim(strval($notes)))
-            ? 'Suppression du commentaire : ' : null;
-
-        return array(
-            'notes' => $notes,
-            'notesTextarea' => $notesTextarea,
-            'notesValidation' => $notesValidation,
-            'notesDisplay' => $notesDisplay,
-            'notesSuppression' => $notesSuppression,
-        );
     }
 
     private function resetWeekFrameworkAffect(Request $request, $date, $dates, $site, $groupe)
