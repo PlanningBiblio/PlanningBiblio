@@ -1,6 +1,12 @@
+*** Version 24.05.04   (2024-08-30)    ***
+- Fixes
+MT44490: Fix weekly average in statistics #1058
+MT45306: ImportMSGraph not verbose by default #1067
+MT44970: Remove alert interval greater than one year on absence search #1069
+
 *** Version 24.05.03   (2024-08-30)    ***
 - Fixes
-MT45308: CircleCi: Fix dependency problems
+MT45308: CircleCi: Fix dependency problems #1068
 MT45359: Fix HolidayControllerListTest #1070
 
 - Security
