@@ -101,9 +101,18 @@ class HolidayControllerListTest extends PLBWebTestCase
         $manager->notification_level1(0);
         $kboivin->addManaged($manager);
 
+        $date = new DateTime();
+        $year = intval($date->format('Y'));
+        $thisMonth = $date->format('n');
+        $date = new DateTime('now + 3 days');
+        $holidayMonth = $date->format('n');
+        if ($thisMonth == 8 and $holidayMonth == 9) {
+            $year++;
+        }
+
         // Login with agent without rights for holiday
         $this->logInAgent($jdupont, $jdupont->droits());
-        $crawler = $client->request('GET', '/holiday/index');
+        $crawler = $client->request('GET', "/holiday/index?annee=$year");
 
         $this->assertSelectorNotExists('select#perso_id');
 
@@ -112,7 +121,7 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         // Login with agent having rights for holiday
         $this->logInAgent($kboivin, $kboivin->droits());
-        $crawler = $client->request('GET', '/holiday/index');
+        $crawler = $client->request('GET', "/holiday/index?annee=$year");
 
         $agents_select = $crawler->filter('select#perso_id option');
         $this->assertCount(4, $agents_select, 'KBoivin can select 4 options in the list (All, Admin and 3 agents)');
