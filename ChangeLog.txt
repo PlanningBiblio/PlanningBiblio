@@ -1,3 +1,11 @@
+*** Version 24.05.03   (2024-08-30)    ***
+- Fixes
+MT45308: CircleCi: Fix dependency problems
+MT45359: Fix HolidayControllerListTest #1070
+
+- Security
+MT44183 Upgrade to Symfony 6.4 #1071
+
 *** Version 24.05.02   (2024-07-19)    ***
 - Fixes
 MT44586: Remove HTML entities from framework titles #1046
