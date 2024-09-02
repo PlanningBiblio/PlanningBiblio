@@ -206,7 +206,7 @@
                 </td>
               </tr>
 
-              {% if right701 %}
+              {% if right701 and config('Absences-PJ-autorisee') %}
                 <tr style='vertical-align:top;'>
                   <td class="textAlignRight"><label>Pièces justificatives</label></td>
                   <td>
@@ -249,6 +249,7 @@
                 </tr>
               {% endif %}
 
+				{% if config('Absences-PJ-autorisee') %}
                 <tr style='vertical-align:top;'>
                   <td class="textAlignRight"><label>Documents attachés</label></td>
                   <td>
@@ -270,6 +271,7 @@
                     </td>
                     <td><input type="file" name="documentFile" id="documentFile" /> <a href="javascript:addAbsenceDocument({{ id }})">Ajouter</a></td>
                     </tr>
+                {% endif %}
                 {% endif %}
 
               {% if absences_validation %}

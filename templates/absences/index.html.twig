@@ -81,7 +81,7 @@
          <th>Motif</th>
          <th>Commentaires</th>
          <th class='dataTableDateFR'>Demande</th>
-         {% if can_manage_sup_doc %}
+         {% if can_manage_sup_doc and config('Absences-PJ-autorisee') %}
            <th id='thPiecesJustif' class='dataTableNoSort'>
              <span style='white-space:nowrap'>Pièces justificatives</span><br/>
              <div class='absences-pj'>PJ 1</div>
@@ -89,7 +89,9 @@
              <div class='absences-pj'>SO</div>
            </th>
          {% endif %}
+         {% if config('Absences-PJ-autorisee') %}
          <th>Documents</th>
+         {% endif %}
        </tr>
     </thead>
     <tbody>
@@ -136,7 +138,7 @@
             {{ abs.demande | date('d/m/Y H:i') }}
           </td>
 
-          {% if can_manage_sup_doc %}
+          {% if can_manage_sup_doc and config('Absences-PJ-autorisee') %}
             <td style='text-align:center;'>
               <div class='absences-pj'>
                 {% if abs.pj1 %}
@@ -161,12 +163,14 @@
               </div>
             </td>
           {% endif %}
+          {% if config('Absences-PJ-autorisee') %}
           <td>
             {% for doc in abs.absdocs %}
               <a href="{{ asset("absences/document") }}/{{ doc.id }}" target='_blank' >{{ doc.filename }}</a>
               <br/>
             {% endfor %}
           </td>
+          {% endif %}
         </tr>
       {% endfor %}
     </tbody>

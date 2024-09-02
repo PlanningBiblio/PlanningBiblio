@@ -213,7 +213,7 @@
                   </td>
                 </tr>
 
-                {% if right701 %}
+                {% if right701 and config('Absences-PJ-autorisee') %}
                   <tr style='vertical-align:top;'>
                     <td class="textAlignRight">
                       <label >Pièces justificatives</label>
@@ -235,12 +235,14 @@
                   </tr>
                 {% endif %}
 
+				{% if config('Absences-PJ-autorisee') %}
                 <tr style='vertical-align:top;'>
                   <td class="textAlignRight">
                     <label >Attacher un document</label>
                   </td>
                   <td><input type="file" name="documentFile" id="documentFile" /></td>
                 </tr>
+                {% endif %}
 
                 {% if config('Absences-validation') %}
                   <tr id="validation-line">
