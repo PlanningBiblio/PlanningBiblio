@@ -107,7 +107,7 @@ class ConfigController extends BaseController
             );
 
             foreach ($configParams as $cp) {
-                if (in_array($cp->type(), ['hidden','info']) and $cp->nom() != 'URL') {
+                if (in_array($cp->type(), ['hidden','info'])) {
                     continue;
                 }
                 // boolean and checkboxes elements.
@@ -124,11 +124,7 @@ class ConfigController extends BaseController
                     $value = trim($value);
                 }
 
-                // App URL
-                if ($cp->nom() == 'URL') {
-                    $request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')), Request::HEADER_X_FORWARDED_ALL);
-                    $value = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
-                }
+                // Passwords
                 if (substr($cp->nom(), -9)=="-Password") {
                     $value = encrypt($value);
                 }
