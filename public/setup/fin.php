@@ -20,7 +20,7 @@ require_once(__DIR__ . '/../../vendor/autoload.php');
 
 use Symfony\Component\HttpFoundation\Request;
 $request = Request::createFromGlobals();
-$request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
+$request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')), Request::Request::HEADER_X_FORWARDED_TRAEFIK);
 $baseurl = $request->getSchemeAndHttpHost();
 
 $version="setup";
