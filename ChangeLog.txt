@@ -1,5 +1,8 @@
-*** Version 24.05.04   (2024-08-30)    ***
+*** Version 24.05.05   (2024-09-05)    ***
 - Fixes
+MT45421: Fix Undefined constant HEADER_X_FORWARDED_ALL #1072
+
+*** Version 24.05.04   (2024-08-30)    ***
 MT44490: Fix weekly average in statistics #1058
 MT45306: ImportMSGraph not verbose by default #1067
 MT44970: Remove alert interval greater than one year on absence search #1069
