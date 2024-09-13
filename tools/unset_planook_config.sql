@@ -91,7 +91,8 @@
 -- UPDATE config SET type='boolean' WHERE nom='hres4semaines';
 -- UPDATE config SET type='boolean' WHERE nom='ClasseParService';
 -- UPDATE config SET type='boolean' WHERE nom='Planning-Absences-Heures-Hebdo';
--- UPDATE config SET type='boolean' WHERE nom='Planning-Notifications';
+-- UPDATE config SET type='enum2', valeur='-2' WHERE nom='Planning-InitialNotification';
+-- UPDATE config SET type='enum2', valeur='-2' WHERE nom='Planning-ChangeNotification';
 -- UPDATE config SET type='boolean' WHERE nom='Planning-TableauxMasques';
 -- UPDATE config SET type='boolean' WHERE nom='Planning-AppelDispo';
 -- UPDATE config SET type='boolean' WHERE nom='Planning-agents-volants';
