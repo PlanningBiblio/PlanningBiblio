@@ -551,6 +551,25 @@ class planning
         */
 
         // Envoi du mail
+
+        // Send notifications of initial validation or modification depending on the chosen parameters
+        // Settings values : -2 = disabled ; -1 = do not check the date ; 0+ = for dates between today and today + value
+        $setting = $notificationType == 'nouveauPlanning' ? $config['Planning-InitialNotification'] : $config['Planning-ChangeNotification'];
+
+        if ($setting == '-2') {
+            return;
+        }
+
+        if ($setting > '-1') {
+            $datePlanning = new DateTimeImmutable($date);
+            $now = new DateTimeImmutable('midnight');
+            $diff = intval($now->diff($datePlanning)->format('%R%a'));
+
+            if ($diff < 0 or $diff > $setting) {
+                return;
+            }
+        }
+
         $sujet=$notificationType=="nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
 
         // Tous les agents qui doivent être notifiés.

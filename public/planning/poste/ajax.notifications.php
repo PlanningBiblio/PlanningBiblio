@@ -29,7 +29,7 @@ $date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateSQL'
 $site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
 
 // Envoi des notification
-if ($config['Planning-Notifications']) {
+if ($config['Planning-InitialNotification'] != '-2' or $config['Planning-ChangeNotification'] != '-2' ) {
     $p=new planning();
     $p->date=$date;
     $p->site=$site;
