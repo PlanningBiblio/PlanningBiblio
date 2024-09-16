@@ -685,7 +685,18 @@ class planning
     {
         $date = $this->date;
 
-        $this->notes=null;
+        $this->notes = null;
+
+        $dates = is_array($date) ? $date : array($date);
+        foreach ($dates as $d) {
+            $this->comments[$d][$this->site] = array(
+                'notes' =>null,
+                'textarea' => null,
+                'validation' => null,
+                'display' => false,
+                'deleted' => null,
+            );
+        }
 
         if (is_array($date)) {
             $dates = implode(',', $date);
