@@ -721,7 +721,7 @@ class PlanningController extends BaseController
         $tableau = $request->get('tableau');
         $date = $request->get('date');
 
-        $site = $this->setSite($site);
+        $site = $this->setSite($request);
 
         // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
         $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));

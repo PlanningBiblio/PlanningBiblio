@@ -19,7 +19,6 @@ class PlanningControllerTest extends PLBWebTestCase
         $this->builder->delete(PlanningPosition::class);
         $this->builder->delete(PlanningPositionTabAffectation::class);
 
-
         $client = static::createClient();
 
         $agent = $this->builder->build(
@@ -31,17 +30,13 @@ class PlanningControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(99,100));
 
-        $y = date('Y');
-        $m = date('m');
-        $d = date('d');
-        $_SESSION['oups']['CSRFToken'] = '00000';
+        $crawler = $this->client->request('GET', '/');
 
-        $crawler = $client->request('GET', "/index", array('date' => "$y-$m-$d", 'CSRFToken' => '00000'));
+        $result = $crawler->filter('.decalage-gauche p');
+        $this->assertEquals("Le planning n'est pas prêt.", $result->text('Node does not exist', false));
 
-        $result = $crawler->filterXPath('//div[@class="decalage-gauche"]/p');
-        $this->assertEquals($result->text('Node does not exist', false),"Le planning n'est pas prêt.",'test index with no planning');
-
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$y");
+        $date = new \DateTime();
+        $today = $date->format('d/m/Y');
 
         $pl_post_lock = $this->builder->build
         (
@@ -68,9 +63,9 @@ class PlanningControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(99,100));
 
-        $crawler = $client->request('GET', "/index", array('date' => "$y-$m-$d", 'CSRFToken' => '00000'));
+        $crawler = $client->request('GET', '/');
 
-        $result = $crawler->filterXPath('//div[@class="decalage-gauche"]/font');
-        $this->assertEquals($result->text('Node does not exist', false),"Le planning du $d/$m/$y n'est pas validé !",'test index with no lock planning');
+        $result = $crawler->filter('.decalage-gauche font');
+        $this->assertEquals("Le planning du $today n'est pas validé !", $result->text('Node does not exist', false), 'test index with no lock planning');
     }
 }
