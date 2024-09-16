@@ -40,7 +40,7 @@ class PlanningController extends BaseController
 
         $view = 'default';
 
-        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $periode2, $comments) = $this->initPlanning($request, $view);
+        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
 
         // Week page : in the loop
         // Verrouillage du planning
@@ -258,7 +258,7 @@ class PlanningController extends BaseController
     {
         $view = 'week';
 
-        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $periode2, $comments) = $this->initPlanning($request, $view);
+        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
 
         // Pour tous les jours de la semaine
         $days = array();
@@ -745,11 +745,6 @@ class PlanningController extends BaseController
         $p->getNotes();
         $comments = $p->comments;
 
-        // Index page only
-        // FIXME $jour3 and $periode2 are not used. Check if something is missing (e.g.: disable workings hours check on saturday and sunday if ctrlHresAgents is disabled)
-        // if these variables are not required any more, delete them and delete the getSelectedDay function
-        list($jour3, $periode2) = $this->getSelectedDay($jour);
-
         // Parameters for planning's menu
         // (Calendar widget, days, week and action icons)
         $this->templateParams(array(
@@ -777,7 +772,6 @@ class PlanningController extends BaseController
            $autorisationN1,
            $autorisationN2,
            $autorisationNotes,
-           $periode2,
            $comments,
        );
     }
@@ -856,24 +850,6 @@ class PlanningController extends BaseController
             or in_array(1000 + $site, $this->permissions));
 
         return array($autorisationN1, $autorisationN2, $autorisationNotes);
-    }
-
-    private function getSelectedDay($jour)
-    {
-        $jour3 = '';
-        $periode2 = '';
-
-        switch ($jour) {
-          case "lun":   $jour3="Lundi";     $periode2='semaine';    break;
-          case "mar":   $jour3="Mardi";     $periode2='semaine';    break;
-          case "mer":   $jour3="Mercredi";  $periode2='semaine';    break;
-          case "jeu":   $jour3="Jeudi";     $periode2='semaine';    break;
-          case "ven":   $jour3="Vendredi";  $periode2='semaine';    break;
-          case "sam":   $jour3="Samedi";    $periode2='samedi';     break;
-          case "dim":   $jour3="Dimanche";  $periode2='samedi';     break;
-        }
-
-        return array($jour3, $periode2);
     }
 
     private function getLockingData($date, $site)
