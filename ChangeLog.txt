@@ -1,3 +1,8 @@
+*** Version 23.10.16   (2024-09-19)    ***
+- Fixes
+MT45381: Fix validation status display in working hours #1073
+MT45069: fix maj.php (19.11: change column if exists recup_samedi)
+
 *** Version 23.10.15   (2024-08-30)    ***
 - Fixes
 MT44490: Fix weekly average in statistics #1059
