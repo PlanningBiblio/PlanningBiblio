@@ -1,3 +1,11 @@
+*** Version 24.05.06   (2024-09-19)    ***
+- Enhancements
+MT45515: Enhance planning's notifications #1074
+
+- Fixes
+MT45381: Fix validation status display in working hours #1073
+MT45069: fix maj.php (19.11: change column if exists recup_samedi)
+
 *** Version 24.05.05   (2024-09-05)    ***
 - Fixes
 MT45421: Fix Undefined constant HEADER_X_FORWARDED_ALL #1072
