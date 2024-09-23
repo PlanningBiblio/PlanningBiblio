@@ -610,7 +610,12 @@ function affiche_perso_ul(){
   var tab=[];
   $(".perso_ids_hidden").each(function(){
     var id=$(this).val();
-    var name=$("#perso_ids option[value='"+id+"']").text();
+
+    if ($('#agent_' + id).length) {
+      var name = $('#agent_' + id).val();
+    } else {
+      var name = $('#perso_ids option[value="' + id + '"]').text();
+    }
     tab.push([name,id]);
   });
 

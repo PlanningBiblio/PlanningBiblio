@@ -323,6 +323,12 @@ class AgentRepository extends EntityRepository
         // Check for module rights.
         $agent_rights = $loggedin->droits();
 
+        // Give rigths for deleted agents
+        // Avoid "Access denied" when modifying absences with several agents and some of them are deleted
+        if (isset($agent) and $agent->supprime() == 2) {
+            return array(true, true);
+        }
+
         foreach ($sites as $i) {
             if (in_array($this->needed_level1 + $i, $agent_rights)) {
                 $l1 = true;
