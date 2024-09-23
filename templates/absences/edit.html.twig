@@ -35,6 +35,7 @@
           <table class='tableauFiches'>
             {% for agent in agents %}
               <input type='hidden' name='perso_ids[]' value='{{ agent.perso_id}}' id='hidden{{ agent.perso_id}}' class='perso_ids_hidden'/>
+              <input type="hidden" id="agent_{{ agent.perso_id }}" value="{{ agent.nom }} {{ agent.prenom }} {% if agent.deleted > 0 %} (supprimé) {% endif %}" />
             {% endfor %}
 
             {% if agents_multiples %}
