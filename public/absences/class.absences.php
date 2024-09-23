@@ -1023,7 +1023,7 @@ class absences
                     array("absences","perso_id"),
                     array("personnel","id"),
                     array("id"),
-                    array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
+                    array('nom', 'prenom', 'sites',array('name' => 'id', 'as' => 'perso_id'), 'mail', 'mails_responsables', 'supprime'),
                     array("groupe"=>$groupe, "debut"=>$debut, "fin"=>$fin),
                     array(),
                     "order by nom, prenom"
@@ -1034,7 +1034,16 @@ class absences
                     foreach ($db->result as $elem) {
                         $elem['mails_responsables']=explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
                         $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                        $agent=array("perso_id"=>$elem['perso_id'], "nom"=>$elem['nom'], "prenom"=>$elem['prenom'], "sites"=>$sites, "mail"=>$elem['mail'], "mails_responsables"=>$elem['mails_responsables'], "absence_id"=>$elem['id']);
+                        $agent = array(
+                            'perso_id' => $elem['perso_id'],
+                            'nom' => $elem['nom'],
+                            'prenom' => $elem['prenom'],
+                            'sites' => $sites,
+                            'mail' => $elem['mail'],
+                            'mails_responsables' => $elem['mails_responsables'],
+                            'deleted' => $elem['supprime'],
+                            'absence_id' => $elem['id']
+                        );
                         if (!in_array($agent, $agents)) {
                             $agents[]=$agent;
                             $perso_ids[]=$elem['perso_id'];
