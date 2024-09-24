@@ -155,7 +155,7 @@ function updateFormOpen(tab){
   }
 
   // Réinitialise à zéro les tous les champs du formulaire
-  for(i=0; i<5; i++){
+  for(i=0; i<9; i++){
     $('#responsable-'+i).val('');
     $('#responsablel2-'+i).val('');
     $('#notification-'+i).prop('checked', false);
