@@ -88,16 +88,23 @@ class NotifierTest extends TestCase
     {
         $GLOBALS['config']['Mail-IsEnabled'] = 1;
         $GLOBALS['config']['Mail-From'] = 'notifications@planno.fr';
-        $m = new CJMail();
+
         $destinataires = ['alice@example.com', 'bob@example.com', 'eve@example.com'];
+
+        $m = new CJMail();
+        $m->notReally = true;
         $m->to = $destinataires;
-        $mail = $m->setPHPMailer();
-        $bccAddresses = $mail->getBCCAddresses();
-        $this->assertEquals('alice@example.com', $bccAddresses[0][0], 'When multiple recipients are given, they are all in BCC (Alice)');
-        $this->assertEquals('bob@example.com', $bccAddresses[1][0], 'When multiple recipients are given, they are all in BCC (Bob)');
-        $this->assertEquals('eve@example.com', $bccAddresses[2][0], 'When multiple recipients are given, they are all in BCC (Eve)');
-        $toAddresses = $mail->getToAddresses();
-        $this->assertEquals('notifications@planno.fr', $toAddresses[0][0], 'When multiple recipients are given, Mail-From is used as TO');
+        $m->send();
+
+        $toAddresses = [];
+        foreach ($m->successAddresses as $elem) {
+            $toAddresses[] = $elem[0][0];
+        }
+
+        $this->assertEquals('alice@example.com', $toAddresses[0], 'When multiple recipients are given, they are all in To (in seperate emails) (Alice)');
+        $this->assertEquals('bob@example.com', $toAddresses[1], 'When multiple recipients are given, they are all in To (in seperate emails) (Bob)');
+        $this->assertEquals('eve@example.com', $toAddresses[2], 'When multiple recipients are given, they are all in To (in seperate emails) (Eve)');
+        $this->assertNotContains('notifications@planno.fr', $toAddresses, 'When multiple recipients are given, Mail-From is no longer used as TO');
     }
 
 }
