@@ -1,3 +1,9 @@
+*** Version 24.05.07   (2024-09-26)    ***
+- Fixes
+MT45495: Allow edition of absences that include deleted agents #1075
+MT45462: fix initialization of drop-down menus of the manager module #1076
+MT45641: Send a separate email to each recipient (no longer use Cci)#1077
+
 *** Version 24.05.06   (2024-09-19)    ***
 - Enhancements
 MT45515: Enhance planning's notifications #1074
