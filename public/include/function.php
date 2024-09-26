@@ -177,6 +177,7 @@ class CJMail implements NotificationTransporterInterface
     public $error_CJInfo=null;
     public $error_encoded=null;
     public $failedAddresses=array();
+    public $notReally = false;
     public $successAddresses=array();
 
     public function __construct()
@@ -207,7 +208,7 @@ class CJMail implements NotificationTransporterInterface
     private function prepare()
     {
   
-    /* arrête la procédure d'envoi de mail si désactivé dans la config */
+        /* arrête la procédure d'envoi de mail si désactivé dans la config */
         if (!$GLOBALS['config']['Mail-IsEnabled']) {
             $this->successAddresses=array();
             $this->failedAddresses=$this->to;
@@ -258,6 +259,7 @@ class CJMail implements NotificationTransporterInterface
         $this->message = $message;
     }
 
+
     public function setPHPMailer()
     {
         $mail = new PHPMailer();
@@ -283,19 +285,9 @@ class CJMail implements NotificationTransporterInterface
         $mail->FromName = $GLOBALS['config']['Mail-FromName'];
         $mail->IsHTML();
     
+        $mail->Subject = $this->subject;
         $mail->Body = $this->message;
     
-        if (count($this->to)>1) {
-            foreach ($this->to as $elem) {
-                $mail->addBCC($elem);
-            }
-            $mail->addAddress($mail->From);
-        } else {
-            $mail->addAddress($this->to[0]);
-        }
-    
-        $mail->Subject = $this->subject;
-
         return $mail;
     }
 
@@ -305,40 +297,29 @@ class CJMail implements NotificationTransporterInterface
             return false;
         }
 
-        $mail = $this->setPHPMailer();
+        $errors = array();
 
-        if (!$mail->Send()) {
-            $this->error.=$mail->ErrorInfo ."\n";
-      
-            // error_CJInfo: pour affichage dans CJInfo (JS)
-            $this->error_CJInfo=str_replace("\n", "#BR#", $this->error);
-      
-            // Liste des destinataires pour qui l'envoi a fonctionné (en cas de succès partiel)
-            $this->successAddresses=$this->to;
+        foreach ($this->to as $elem) {
+            $mail = $this->setPHPMailer();
+            $mail->AddAddress($elem);
 
-            // Liste des destinataires pour qui l'envoi a échoué
-            $pos=stripos($this->error, "SMTP Error: The following recipients failed: ");
-
-            if ($pos!==false) {
-                $failedAddr=substr($this->error, $pos+45);
-                $end=strpos($failedAddr, "\n");
-                $failedAddr=substr($failedAddr, 0, $end);
-                $failedAddr=explode(", ", $failedAddr);
-
-                $this->failedAddresses=array_merge($this->failedAddresses, $failedAddr);
-    
-                $this->successAddresses=array();
-                foreach ($this->to as $elem) {
-                    if (!in_array($elem, $failedAddr)) {
-                        $this->successAddresses[]=$elem;
-                    }
-                }
+            // notReally : for testing purposes
+            if ($this->notReally) {
+                $this->successAddresses[] = $mail->getToAddresses();
+                continue;
             }
-        } else {
-            // Liste des destinataires pour qui l'envoi a fonctionné (en cas de succès total)
-            $this->successAddresses=$this->to;
+
+            if (!$mail->Send()) {
+                $errors[] = $mail->ErrorInfo;
+                $this->failedAddresses[] = $elem;
+            } else {
+                $this->successAddresses[] = $elem;
+            }
         }
-    
+
+        $this->error = implode("\n", $errors);
+        $this->error_CJInfo = str_replace("\n", '#BR#', $this->error);
+
         return true;
     }
 }
