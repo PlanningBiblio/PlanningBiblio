@@ -23,24 +23,30 @@ function initDraggable(cell) {
 }
 
 function drag(e) {
-  e.dataTransfer = e.originalEvent.dataTransfer;
-  e.dataTransfer.setData('agent_id', e.target.getAttribute('data-agent'));
-  e.dataTransfer.setData('agent_name', $(e.target.querySelector('span')).text());
-  e.dataTransfer.setData('origin_id', e.target.id);
+  if ($('#validation:visible').length == 0) {
+    e.dataTransfer = e.originalEvent.dataTransfer;
+    e.dataTransfer.setData('agent_id', e.target.getAttribute('data-agent'));
+    e.dataTransfer.setData('agent_name', $(e.target.querySelector('span')).text());
+    e.dataTransfer.setData('origin_id', e.target.id);
+  }
 }
 
 function drop(e) {
-  var agent_id = e.dataTransfer.getData('agent_id');
-  var agent_name = e.dataTransfer.getData('agent_name');
-  var origin_id = e.dataTransfer.getData('origin_id');
-  var cellid = e.target.id;
+  if ($('#validation:visible').length == 0) {
+    var agent_id = e.dataTransfer.getData('agent_id');
+    var agent_name = e.dataTransfer.getData('agent_name');
+    var origin_id = e.dataTransfer.getData('origin_id');
+    var cellid = e.target.id;
 
-  //remove from origine.
-  removeWorkingHours(origin_id);
+    //remove from origine.
+    removeWorkingHours(origin_id);
 
-  $('#' + cellid).attr('data-agent', agent_id);
-  $('#' + cellid).append('<span>' + agent_name + '</span>');
-  addWorkingHours(cellid);
+    $('#' + cellid).attr('data-agent', agent_id);
+    $('#' + cellid).append('<span>' + agent_name + '</span>');
+    addWorkingHours(cellid);
+  } else {
+    CJInfo('Vous ne pouvez pas déplacer les agents car le planning est verrouillé', 'error');
+  }
 }
 
 function removeWorkingHours(cell_id) {
