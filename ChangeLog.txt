@@ -1,4 +1,9 @@
 *** Unreleased ***
+
+*** Version 22.04.01       (2024-09-27)   ***
+- Fixes
+MT45688: Prevent drag and drop on statedweek plannings when they are locked
+
 - Enhancements
 Statedweeks : allow modification of hours on main columns
 
