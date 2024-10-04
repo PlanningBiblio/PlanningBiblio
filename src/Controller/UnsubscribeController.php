@@ -11,15 +11,19 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UnsubscribeController extends BaseController
 {
-    #[Route(path: '/unsubscribe', name: 'unsubscribe.interactive', methods: ['GET'])]
+    #[Route(path: '/unsubscribe/{token}', name: 'unsubscribe.interactive', methods: ['GET'])]
     public function interactiveUnsubscription(Request $request){
 
         $session = $request->getSession();
 
         $show_menu = empty($session->get('loginId')) ? 0 : 1;
 
+        // TODO : decrypter le token
+        $mail = $request->get('token');
+
         $this->templateParams(array(
             'show_menu' => $show_menu,
+            'mail' => $mail,
         ));
 
         return $this->output('unsubscribe/index.html.twig');
