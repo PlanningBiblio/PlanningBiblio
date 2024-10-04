@@ -35,7 +35,7 @@ class LoginListener
 
         // Redirect to the login page if there is no session
         // Except for the following routes
-        if (in_array($route, ['login', 'logout', 'legal-notices', 'ical'])) {
+        if (in_array($route, ['login', 'logout', 'legal-notices', 'ical', 'unsubscribe'])) {
             return;
         }
 

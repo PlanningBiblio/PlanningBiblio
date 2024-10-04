@@ -285,6 +285,9 @@ class CJMail implements NotificationTransporterInterface
         $mail->FromName = $GLOBALS['config']['Mail-FromName'];
         $mail->IsHTML();
     
+        $mail->addCustomHeader("List-Unsubscribe-Post", "List-Unsubscribe=One-Click");
+        $mail->addCustomHeader("List-Unsubscribe", $GLOBALS['config']['URL'] . '/unsubscribe');
+
         $mail->Subject = $this->subject;
         $mail->Body = $this->message;
     
