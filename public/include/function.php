@@ -260,7 +260,7 @@ class CJMail implements NotificationTransporterInterface
     }
 
 
-    public function setPHPMailer()
+    public function setPHPMailer($to)
     {
         $mail = new PHPMailer();
         $mail->setLanguage('fr');
@@ -283,10 +283,11 @@ class CJMail implements NotificationTransporterInterface
         $mail->Sender = $GLOBALS['config']['Mail-From'];
         $mail->From = $GLOBALS['config']['Mail-From'];
         $mail->FromName = $GLOBALS['config']['Mail-FromName'];
+        $mail->AddAddress($to);
         $mail->IsHTML();
     
         $mail->addCustomHeader("List-Unsubscribe-Post", "List-Unsubscribe=One-Click");
-        $mail->addCustomHeader("List-Unsubscribe", $GLOBALS['config']['URL'] . '/unsubscribe');
+        $mail->addCustomHeader("List-Unsubscribe", $GLOBALS['config']['URL'] . '/unsubscribe/' . encrypt($to));
 
         $mail->Subject = $this->subject;
         $mail->Body = $this->message;
@@ -303,8 +304,7 @@ class CJMail implements NotificationTransporterInterface
         $errors = array();
 
         foreach ($this->to as $elem) {
-            $mail = $this->setPHPMailer();
-            $mail->AddAddress($elem);
+            $mail = $this->setPHPMailer($elem);
 
             // notReally : for testing purposes
             if ($this->notReally) {
