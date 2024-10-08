@@ -39,6 +39,10 @@ class LoginListener
             return;
         }
 
+        if (substr($route, 0, 11) == 'unsubscribe') {
+            return;
+        }
+
         // Redirect to the login page if there is no session
         if (empty($session->get('loginId'))) {
 

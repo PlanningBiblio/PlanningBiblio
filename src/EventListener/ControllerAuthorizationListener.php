@@ -46,6 +46,10 @@ class ControllerAuthorizationListener
             return;
         }
 
+        if (substr($page, 0, 12) == '/unsubscribe') {
+            return;
+        }
+
         // Droits necessaires pour consulter la page en cours
         $loginId = $event->getRequest()->getSession()->get('loginId');
         $accesses = $this->entityManager->getRepository(Access::class)->findBy(array('page' => $page));
