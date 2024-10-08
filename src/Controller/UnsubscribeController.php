@@ -11,15 +11,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UnsubscribeController extends BaseController
 {
-    #[Route(path: '/unsubscribe/{token}', name: 'unsubscribe.interactive', methods: ['GET'])]
-    public function interactiveUnsubscription(Request $request){
+    #[Route(path: '/unsubscribe/{token}', name: 'unsubscribe.interactive', requirements: ['token' => '.+'], methods: ['GET'])]
+    public function interactiveUnsubscription(Request $request, String $token){
 
         $session = $request->getSession();
 
         $show_menu = empty($session->get('loginId')) ? 0 : 1;
 
-        // TODO : decrypter le token
-        $mail = $request->get('token');
+        $mail = decrypt($token);
+        //error_log("Interactive unsubscription of $mail");
 
         $this->templateParams(array(
             'show_menu' => $show_menu,
@@ -29,12 +29,13 @@ class UnsubscribeController extends BaseController
         return $this->output('unsubscribe/index.html.twig');
     }
 
-    #[Route(path: '/unsubscribe', name: 'unsubscribe.nonInteractive', methods: ['POST'])]
-    public function nonInteractiveUnsubscription(Request $request) {
+    #[Route(path: '/unsubscribe/{token}', name: 'unsubscribe.nonInteractive', requirements: ['token' => '.+'], methods: ['POST'])]
+    public function nonInteractiveUnsubscription(Request $request, String $token) {
 
         // When the mail client uses List-Unsubscribe=One-Click
         if ($request->get('List-Unsubscribe') == 'One-Click') {
-            // Unsubscribe here
+            $mail = decrypt($token);
+            //error_log("Non-interactive unsubscription of $mail");
         }
 
         $response = new Response();
@@ -45,13 +46,14 @@ class UnsubscribeController extends BaseController
 
     }
 
-    #[Route(path: '/unsubscribe', name: 'unsubscribe.preflight', methods: ['OPTIONS'])]
+    #[Route(path: '/unsubscribe/{token}', name: 'unsubscribe.preflight', requirements: ['token' => '.+'],  methods: ['OPTIONS'])]
     public function returnPreflight(Request $request) {
         $response = new Response();
         $response->setStatusCode(200);
         $response->headers->set('Allow', 'OPTIONS, GET, POST');
         $response->headers->set('Access-Control-Allow-Origin', '*');
         $response->headers->set('Access-Control-Allow-Headers', '*');
+
         return $response;
 
     }
