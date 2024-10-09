@@ -1720,11 +1720,11 @@ class AgentController extends BaseController
                 $credits = $event->response();
             } else {
 
-                $comptime_hours = $params['comp_time'];
+                $comptime_hours = trim($params['comp_time']);
                 $negative = false;
-                if ($params['comp_time'] < 0 || $params['comp_time'] == -0) {
+                if (strstr($comptime_hours, '-')) {
                     $negative = true;
-                    $comptime_hours = abs($params['comp_time']);
+                    $comptime_hours = abs($comptime_hours);
                 }
 
                 $comp_time = $comptime_hours + $params['comp_time_min'];
