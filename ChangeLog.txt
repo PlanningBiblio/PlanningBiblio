@@ -1,3 +1,5 @@
+*** Version 24.10.00   (2024-10-21)    ***
+
 *** Version 24.05.08   (2024-10-21)    ***
 - Fixes
 MT45847: fix recording of negative recovery credits
