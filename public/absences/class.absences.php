@@ -971,7 +971,7 @@ class absences
             array("personnel","id"),
             array("id","debut","fin","motif","motif_autre","commentaires","valide_n1","validation_n1","pj1","pj2","so","demande","groupe","ical_key","cal_name","rrule","uid",
             array("name"=>"valide","as"=>"valide_n2"),array("name"=>"validation","as"=>"validation_n2")),
-            array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
+            array('nom', 'prenom', 'sites', array('name' => 'id', 'as' => 'perso_id'), 'mail', 'mails_responsables', 'supprime'),
             array("id"=>$id)
         );
 
@@ -984,7 +984,7 @@ class absences
                 array("personnel","id"),
                 array("id","debut","fin","motif","motif_autre","commentaires","valide_n1","validation_n1","pj1","pj2","so","demande","groupe","ical_key","cal_name","rrule","uid",
                 array("name"=>"valide","as"=>"valide_n2"),array("name"=>"validation","as"=>"validation_n2")),
-                array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
+                array('nom', 'prenom', 'sites', array('name' => 'id', 'as' => 'perso_id'), 'mail', 'mails_responsables', 'supprime'),
                 array("id_origin"=>$id),
                 array(),
                 "order by debut, fin"
@@ -999,7 +999,19 @@ class absences
             // Ce tableau contient un tableau par agent avec les informations le concernant (nom, prenom, mail, etc.)
             // En cas d'absence enregistrée pour plusieurs agents, il sera complété avec les informations des autres agents
             $sites = json_decode(html_entity_decode($result['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-            $agents=array(array("perso_id"=>$result['perso_id'], "nom"=>$result['nom'], "prenom"=>$result['prenom'], "sites"=>$sites, "mail"=>$result['mail'], "mails_responsables"=>$result['mails_responsables'], "absence_id"=>$id));
+            $agents = array(
+                array(
+                    'perso_id' => $result['perso_id'],
+                    'nom' => $result['nom'],
+                    'prenom' => $result['prenom'],
+                    'sites' => $sites,
+                    'mail' => $result['mail'],
+                    'mails_responsables' => $result['mails_responsables'],
+                    'absence_id' => $id,
+                    'deleted' => $result['supprime'],
+                )
+            );
+
             $perso_ids=array($result['perso_id']);
 
             // Absence concernant plusieurs agents
@@ -1016,7 +1028,7 @@ class absences
                     array("absences","perso_id"),
                     array("personnel","id"),
                     array("id"),
-                    array('nom', 'prenom', 'sites',array('name' => 'id', 'as' => 'perso_id'), 'mail', 'mails_responsables', 'supprime'),
+                    array('nom', 'prenom', 'sites', array('name' => 'id', 'as' => 'perso_id'), 'mail', 'mails_responsables', 'supprime'),
                     array("groupe"=>$groupe, "debut"=>$debut, "fin"=>$fin),
                     array(),
                     "order by nom, prenom"
