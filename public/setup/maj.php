@@ -3487,6 +3487,13 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+ 
+$v="24.04.08";
+
+if (version_compare($config['Version'], $v) === -1) {
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage

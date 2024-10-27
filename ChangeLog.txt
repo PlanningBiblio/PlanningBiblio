@@ -1,3 +1,7 @@
+*** Version 24.04.08   (2024-10-27)    ***
+- Fixes
+Issue #1082: Fix undefined key "deleted" in absences/edit.html.twig
+
 *** Version 24.04.07   (2024-10-21)    ***
 - Fixes
 MT45847: fix recording of negative recovery credits
