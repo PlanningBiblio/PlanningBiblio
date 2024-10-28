@@ -359,6 +359,13 @@ class conges
             $anticipation=floatval($result['anticipation_actuel'])-floatval($result['anticipation_prec']);
             $regul_id = $result['regul_id'] ?? 0;
 
+            if ($result['supprime'] != 0) {
+                return;
+            }
+
+            $deletionDate = date('Y-m-d H:i:s');
+            $informationDate = date('Y-m-d H:i:s', strtotime('+1 second'));
+
             // Si le congés a été validé, mise à jour des crédits dans la table personnel
             if ($valide>0) {
                 $db=new db();
@@ -401,7 +408,7 @@ class conges
                     $insert["reliquat_actuel"]=$perso_reliquat_new;
                     $insert["anticipation_actuel"]=$perso_anticipation_new;
                     $insert["information"]=$_SESSION['login_id'];
-                    $insert["info_date"]=date("Y-m-d H:i:s");
+                    $insert["info_date"] = $informationDate;
                     $db=new db();
                     $db->CSRFToken = $this->CSRFToken;
                     $new_id = $db->insert("conges", $insert);
@@ -432,7 +439,7 @@ class conges
         // Marque la demande de congé comme supprimée dans la table conges
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
-        $db->update("conges", array("supprime"=>$_SESSION['login_id'],"suppr_date"=>date("Y-m-d H:i:s")), array("id"=>$id));
+        $db->update('conges', array('supprime' => $_SESSION['login_id'], 'suppr_date' => $deletionDate), array('id' => $id));
     }
 
 

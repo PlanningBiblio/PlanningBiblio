@@ -171,8 +171,8 @@ class HolidayController extends BaseController
                 }
             }
 
-            $elem['start'] = str_replace("00h00", "", dateFr($elem['debut'], true));
-            $elem['end'] = str_replace("23h59", "", dateFr($elem['fin'], true));
+            $elem['start'] = $elem['debut'];
+            $elem['end'] = $elem['fin'];
 
             $force = null;
             if ($voir_recup) {
@@ -183,7 +183,7 @@ class HolidayController extends BaseController
                 $elem['days'] = $holiday_helper->hoursToDays($elem['heures'], $elem['perso_id']);
             }
             $elem['status'] = "Demandé, ".dateFr($elem['saisie'], true);
-            $elem['validationDate'] = dateFr($elem['saisie'], true);
+            $elem['statusDate'] = $elem['saisie'];
 
             foreach (array('solde_prec', 'solde_actuel',
                 'reliquat_prec', 'reliquat_actuel',
@@ -211,24 +211,24 @@ class HolidayController extends BaseController
 
             if ($elem['valide'] < 0) {
                 $elem['status'] = "Refusé, ".nom(-$elem['valide'], 'nom p', $agents);
-                $elem['validationDate'] = dateFr($elem['validation'], true);
+                $elem['statusDate'] = $elem['validation'];
             } elseif ($elem['valide'] or $elem['information']) {
                 $elem['status'] = "Validé, ".nom($elem['valide'], 'nom p', $agents);
-                $elem['validationDate'] = dateFr($elem['validation'], true);
+                $elem['statusDate'] = $elem['validation'];
             } elseif ($elem['valide_n1']) {
                 $elem['status'] = $elem['valide_n1'] > 0 ? $lang['leave_table_accepted_pending'] : $lang['leave_table_refused_pending'];
-                $elem['validationDate'] = dateFr($elem['validation_n1'], true);
+                $elem['statusDate'] = $elem['validation_n1'];
                 $elem['validationStyle'] = "font-weight:bold;";
             }
 
             if ($elem['information']) {
                 $elem['nom'] = $elem['information']<999999999?nom($elem['information'], 'nom p', $agents).", ":null;	// >999999999 = cron
                 $elem['status'] = "Mise à jour des crédits, " . $elem['nom'];
-                $elem['validationDate'] = dateFr($elem['info_date'], true);
+                $elem['statusDate'] = $elem['info_date'];
                 $elem['validationStyle'] = '';
             } elseif ($elem['supprime']) {
                 $elem['status'] = "Supprimé, ".nom($elem['supprime'], 'nom p', $agents);
-                $elem['validationDate'] = dateFr($elem['suppr_date'], true);
+                $elem['statusDate'] = $elem['suppr_date'];
                 $elem['validationStyle'] = '';
             }
 
@@ -252,8 +252,8 @@ class HolidayController extends BaseController
                 $origin->fetch();
                 $data = $origin->elements[0];
 
-                $elem['origin_start'] = str_replace("00h00", "", dateFr($data['debut'], true));
-                $elem['origin_end'] = str_replace("23h59", "", dateFr($data['fin'], true));
+                $elem['origin_start'] = $data['debut'];
+                $elem['origin_end'] = $data['fin'];
             }
 
             $elem['nom'] = nom($elem['perso_id'], 'nom p', $agents);

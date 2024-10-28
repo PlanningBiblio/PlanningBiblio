@@ -99,8 +99,8 @@
     <thead>
       <tr>
         <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
-        <th rowspan='2' class='dataTableDateFR'>Début</th>
-        <th rowspan='2' class='dataTableDateFR-fin'>Fin</th>
+        <th rowspan="2">Début</th>
+        <th rowspan="2">Fin</th>
         {% if admin %}
           <th rowspan='2'>Nom</th>
         {% endif %}
@@ -126,8 +126,8 @@
           <th rowspan='2' class='information'>Informations</th>
       </tr>
       <tr>
-        <th>&Eacute;tat</th>
-        <th class='dataTableDateFR'>Date</th>
+        <th>État</th>
+        <th>Date</th>
       </tr>
     </thead>
     <tbody>
@@ -143,8 +143,8 @@
             {% endif %}
           </td>
 
-          <td>{{ c.start }}</td>
-          <td>{{ c.end }}</td>
+          <td data-order="{{ c.start }}">{{ c.start | datefr }}</td>
+          <td data-order="{{ c.end }}">{{ c.end | datefr }}</td>
           {% if admin %}
             <td>{{ c.nom }}</td>
           {% endif %}
@@ -155,7 +155,7 @@
           {% else %}
             <td style="font-weight: bold;">{{ c.status }}</td>
           {% endif %}
-          <td>{{ c.validationDate }}</td>
+          <td data-order="{{ c.statusDate }}">{{ c.statusDate | datefr }}</td>
           <td class='aRight'>{{ c.hours }}{% if show_hours_to_days %}<br />{{ c.days }}j{% endif %}</td>
 
           {% if balance %}
@@ -209,7 +209,7 @@
           {% endif %}
           <td>
             {% if c.origin_id %}
-              Régularisation liée au congé du {{ c.origin_start }} au {{ c.origin_end }}
+              Régularisation liée au congé du {{ c.origin_start | datefr }} au {{ c.origin_end | datefr }}
             {% endif %}
 
             {% if c.regul_id %}
