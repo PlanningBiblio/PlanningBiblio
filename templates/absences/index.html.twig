@@ -72,15 +72,15 @@
     <thead>
        <tr>
          <th class='dataTableNoSort'>&nbsp;</th>
-         <th class='dataTableDateFR'>Début</th>
-         <th class='dataTableDateFR-fin'>Fin</th>
+         <th>Début</th>
+         <th>Fin</th>
          <th id='thNom'>Agents</th>
          {% if config('Absences-validation') %}
            <th id='thValidation'>État</th>
          {% endif %}
          <th>Motif</th>
          <th>Commentaires</th>
-         <th class='dataTableDateFR'>Demande</th>
+         <th>Demande</th>
          {% if can_manage_sup_doc %}
            <th id='thPiecesJustif' class='dataTableNoSort'>
              <span style='white-space:nowrap'>Pièces justificatives</span><br/>
@@ -107,20 +107,8 @@
               {% endif %}
             </div>
           </td>
-          <td>
-            {% if abs.debut | date('H:i:s') == '00:00:00' %}
-              {{ abs.debut | date('d/m/Y') }}
-            {% else %}
-              {{ abs.debut | date('d/m/Y H\\hi') }}
-            {% endif %}
-          </td>
-          <td>
-            {% if abs.fin | date('H:i:s') == '23:59:59' %}
-              {{ abs.fin | date('d/m/Y') }}
-            {% else %}
-              {{ abs.fin | date('d/m/Y H\\hi') }}
-            {% endif %}
-          </td>
+          <td data-order="{{ abs.debut }}">{{ abs.debut | datefr }}</td>
+          <td data-order="{{ abs.fin }}">{{ abs.fin | datefr }}</td>
           <td>{{ abs.agents | join(', ') }}</td>
 
           {% if config('Absences-validation') %}
@@ -132,8 +120,8 @@
               {{ abs.commentaires }}
             </div>
           </td>
-          <td style='white-space:nowrap;'>
-            {{ abs.demande | date('d/m/Y H:i') }}
+          <td data-order="{{ abs.demande }}" style="white-space:nowrap;">
+            {{ abs.demande | datefr }}
           </td>
 
           {% if can_manage_sup_doc %}
