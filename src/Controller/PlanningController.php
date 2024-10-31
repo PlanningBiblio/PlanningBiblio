@@ -323,8 +323,7 @@ class PlanningController extends BaseController
         $start = $request->get('start');
         $end = $request->get('end');
 
-        $droits = $GLOBALS['droits'];
-        if (!in_array((300 + $site), $droits)) {
+        if (!in_array((300 + $site), $this->permissions)) {
             $session->getFlashBag()->add('error', "Vous n'avez pas les droits suffisants pour supprimer le(s) planning(s)");
             return $this->redirectToRoute('index');
         }
@@ -387,10 +386,9 @@ class PlanningController extends BaseController
         $site = $request->get('site');
         $get_absents = $request->get('absents');
         $model_id = $request->get('model');
-        $droits = $GLOBALS['droits'];
         $dbprefix = $this->config('dbprefix');
 
-        if (!in_array((300+$site), $droits)) {
+        if (!in_array((300+$site), $this->permissions)) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -672,9 +670,8 @@ class PlanningController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');;
         $site = $request->get('site');
-        $droits = $GLOBALS['droits'];
 
-        if (!in_array((300+$site), $droits)) {
+        if (!in_array((300+$site), $this->permissions)) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -1144,7 +1141,7 @@ class PlanningController extends BaseController
                             // Absence non-validée : rouge
                             elseif ($this->config('Absences-non-validees')) {
                                 $class_tmp[]="red";
-                                $title = $nom_affiche.' : Absence non-valid&eacute;e';
+                                $title = $nom_affiche.' : Absence non-validée';
                             }
                         }
                     }
