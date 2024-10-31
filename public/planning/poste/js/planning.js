@@ -343,7 +343,7 @@ $(function() {
   $("#icon-lock").click(function(){
     var date=$('#date').val();
     var site=$('#site').val();
-    var CSRFToken = $("#planning-data").attr("data-CSRFToken");
+    var CSRFToken = $('#CSRFSession').val();
 
     $.ajax({
       url: url('planning/poste/ajax.validation.php'),
@@ -376,7 +376,7 @@ $(function() {
   $("#icon-unlock").click(function(){
     var date=$('#date').val();
     var site=$('#site').val();
-    var CSRFToken = $("#planning-data").attr("data-CSRFToken");
+    var CSRFToken = $('#CSRFSession').val();
 
     $.ajax({
       url: url('planning/poste/ajax.validation.php'),
@@ -1320,7 +1320,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
 
   var sr_config_debut=$("#planning-data").attr("data-sr-debut");
   var sr_config_fin=$("#planning-data").attr("data-sr-fin");
-  var CSRFToken = $("#planning-data").attr("data-CSRFToken");
+  var CSRFToken = $('#CSRFSession').val();
 
   $.ajax({
     url: url('planning/poste/ajax.updateCell.php'),
