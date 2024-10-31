@@ -58,7 +58,7 @@ class PlanningController extends BaseController
         list($verrou, $perso2, $date_validation2, $heure_validation2, $validation2) = $this->getLockingData($date, $site);
 
         // Index page only
-        $currentFramework = $this->currentFramework($date, $site);
+        $currentFramework = $this->getCurrentFramework($date, $site);
         $show_framework_select = 0;
         if(!$currentFramework and !$tableau and !$groupe and $autorisationN2) {
             $show_framework_select = 1;
@@ -697,360 +697,6 @@ class PlanningController extends BaseController
         return $this->output('planning/poste/model_form.html.twig');
     }
 
-    private function initPlanning($request, $view)
-    {
-        $weekView = $view == 'week';
-        $_SESSION['week'] = $weekView;
-
-        // Initialisation des variables
-        $groupe = $request->get('groupe');
-        $site = $request->get('site');
-        $tableau = $request->get('tableau');
-        $date = $request->get('date');
-
-        $site = $this->setSite($request);
-
-        // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
-        $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
-
-        $date = $this->setDate($date);
-
-        list($d, $semaine, $semaine3, $jour, $dates) = $this->getDatesPlanning($date);
-
-        // Selection des messages d'informations
-        $messages_infos = $this->getInfoMessages($dates, $date, $view);
-
-        // Vérification des droits de modification (Autorisation)
-        list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
-
-        $affSem = $this->getWeekData($site, $semaine, $semaine3);
-
-        // Positions and separation lines
-        $this->getPositions();
-        $this->getSeparations();
-
-        // Planning's comments
-        $p = new \planning();
-        $p->date = $dates;
-        $p->site = $site;
-        $p->getNotes();
-        $comments = $p->comments;
-
-        // Parameters for planning's menu
-        // (Calendar widget, days, week and action icons)
-        $this->templateParams(array(
-            'affSem'            => $affSem,
-            'autorisationN1'    => $autorisationN1,
-            'content_planning'  => true,
-            'date'              => $date,
-            'dates'             => $dates,
-            'day'               => $jour,
-            'messages_infos'    => $messages_infos,
-            'public_holiday'    => jour_ferie($date),
-            'site'              => $site,
-            'week_view'         => $weekView,
-        ));
-
-        return array(
-           $groupe,
-           $site,
-           $tableau,
-           $date,
-           $d,
-           $semaine,
-           $dates,
-           $autorisationN1,
-           $autorisationN2,
-           $autorisationNotes,
-           $comments,
-       );
-    }
-
-    private function setDate($date)
-    {
-        if (!$date and array_key_exists('PLdate', $_SESSION)) {
-            $date = $_SESSION['PLdate'];
-        } elseif (!$date and !array_key_exists('PLdate', $_SESSION)) {
-            $date = date("Y-m-d");
-        }
-
-        $_SESSION['PLdate'] = $date;
-
-        return $date;
-    }
-
-    private function setSite($request)
-    {
-        $session = $request->getSession();
-
-        $site = $request->get('site');
-
-        // Multisites: default site is 1.
-        // Site is $_GET['site'] if it is set, else we take
-        // SESSION ['site'] or agent's site.
-
-        if (!$site and !empty($_SESSION['site'])) {
-            $site = $_SESSION['site'];
-        }
-
-        if (!$site) {
-            $p = new \personnel();
-            $p->fetchById($session->get('loginId'));
-            $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
-        }
-
-        $site = $site ? $site : 1;
-
-        $_SESSION['site'] = $site;
-
-        return $site;
-    }
-
-    private function getFrameworksGroup()
-    {
-
-        $t = new Framework();
-        $t->fetchAllGroups();
-
-        return $t->elements;
-    }
-
-    private function noWeekDataFor($dates, $site)
-    {
-        $dates = implode(",", $dates);
-        $db = new \db();
-        $db->select2('pl_poste', '*', array('date' => "IN$dates", 'site' => $site));
-
-        if ($db->result) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function getPermissionsFor($site)
-    {
-        $autorisationN1 = (in_array((300 + $site), $this->permissions)
-            or in_array((1000 + $site), $this->permissions));
-
-        $autorisationN2 = in_array((300 + $site), $this->permissions);
-
-        $autorisationNotes = (in_array((300 + $site), $this->permissions)
-            or in_array((800 + $site), $this->permissions)
-            or in_array(1000 + $site, $this->permissions));
-
-        return array($autorisationN1, $autorisationN2, $autorisationNotes);
-    }
-
-    private function getLockingData($date, $site)
-    {
-        $db = new \db();
-        $db->select2("pl_poste_verrou", "*", array("date"=>$date, "site"=>$site));
-
-        $verrou = false;
-        $perso2 = null;
-        $date_validation2 = null;
-        $heure_validation2 = null;
-        $validation2 = null;
-
-        if ($db->result) {
-            $verrou = $db->result[0]['verrou2'];
-            $perso2 = nom($db->result[0]['perso2']);
-            $date_validation2 = dateFr(substr($db->result[0]['validation2'], 0, 10));
-            $heure_validation2 = substr($db->result[0]['validation2'], 11, 5);
-            $validation2 = $db->result[0]['validation2'];
-        }
-
-        return array($verrou, $perso2, $date_validation2, $heure_validation2, $validation2);
-    }
-
-    private function getInfoMessages($dates, $date, $view)
-    {
-        switch ($view) {
-            case 'week' :
-                $start = $dates[0];
-                $end = $dates[6];
-                break;
-            default :
-                $start = $date;
-                $end = $date;
-                break;
-        }
-
-        $messages_infos = null;
-
-        $db = new \db();
-        $start = $db->escapeString($start);
-        $end = $db->escapeString($end);
-        $db->select2('infos', '*', array('debut'=>"<={$end}", 'fin'=>">={$start}"), 'ORDER BY `debut`,`fin`');
-
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $messages_infos[] = $elem['texte'];
-            }
-            $messages_infos = implode(' - ', $messages_infos);
-        }
-
-        return $messages_infos;
-    }
-
-    private function getWeekData($site, $semaine, $semaine3)
-    {
-        switch ($this->config('nb_semaine')) {
-            case 2:
-                $type_sem = $semaine % 2 ? 'Impaire' : 'Paire';
-                $affSem = "$type_sem ($semaine)";
-                break;
-            case 3: 
-                $type_sem = $semaine3;
-                $affSem = "$type_sem ($semaine)";
-                break;
-            default:
-                $affSem = $semaine;
-                break;
-        }
-
-        return $affSem;
-    }
-
-    private function currentFramework($date, $site)
-    {
-        $db = new \db();
-        $db->select2('pl_poste_tab_affect', 'tableau', array('date'=>$date, 'site'=>$site));
-
-        $currentFramework = '';
-        if (isset($db->result[0]['tableau'])) {
-            $currentFramework = $db->result[0]['tableau'] ?? '';
-        }
-
-        return $currentFramework;
-    }
-
-    private function resetWeekFrameworkAffect(Request $request, $date, $dates, $site, $groupe)
-    {
-        $CSRFToken = $request->get('CSRFToken');
-
-        $t = new Framework();
-        $t->fetchGroup($groupe);
-        $groupeTab = $t->elements;
-
-        $tmp = array();
-        $tmp[$dates[0]]=array($dates[0],$groupeTab['lundi']);
-        $tmp[$dates[1]]=array($dates[1],$groupeTab['mardi']);
-        $tmp[$dates[2]]=array($dates[2],$groupeTab['mercredi']);
-        $tmp[$dates[3]]=array($dates[3],$groupeTab['jeudi']);
-        $tmp[$dates[4]]=array($dates[4],$groupeTab['vendredi']);
-        $tmp[$dates[5]]=array($dates[5],$groupeTab['samedi']);
-        if (array_key_exists("dimanche", $groupeTab)) {
-            $tmp[$dates[6]]=array($dates[6],$groupeTab['dimanche']);
-        }
-
-        foreach ($tmp as $elem) {
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete('pl_poste_tab_affect', array('date' => $elem[0], 'site' => $site));
-
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert('pl_poste_tab_affect', array('date' => $elem[0], 'tableau' => $elem[1], 'site' => $site));
-        }
-        return $tmp[$date][1];
-    }
-
-    private function resetFrameworkAffect(Request $request, $date, $tab, $site)
-    {
-        $CSRFToken = $request->get('CSRFToken');
-
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete('pl_poste_tab_affect', array('date' => $date, 'site' => $site));
-
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->insert('pl_poste_tab_affect', array('date' => $date, 'tableau' => $tab, 'site' => $site));
-    }
-
-    private function getAbsencesPlanning($date, $site, $conges)
-    {
-        $a = new \absences();
-        $a->valide = false;
-        $a->documents = false;
-        $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, array($site));
-
-        $absences = $a->elements;
-
-        // Add holidays
-        foreach ($conges as $elem) {
-            $elem['motif'] = 'Congé payé';
-            $absences[] = $elem;
-        }
-
-        usort($absences, 'cmp_nom_prenom_debut_fin');
-
-        $class = 'tr1';
-        foreach ($absences as $index => $elem) {
-            $absences[$index]['valide'] = 1;
-            if ($elem['valide'] < 0 or ($elem['valide'] == 0 and $this->config('Absences-non-validees') == 0)) {
-                unset ($absences[$index]);
-                continue;
-            }
-
-            $heures = null;
-            $debut = null;
-            $fin = null;
-            if ($elem['debut'] > "$date 00:00:00") {
-                $debut = substr($elem['debut'], -8);
-            }
-            if ($elem['fin']<"$date 23:59:59") {
-                $fin = substr($elem['fin'], -8);
-            }
-            if ($debut and $fin) {
-                $heures = " de ".heure2($debut)." à ".heure2($fin);
-            } elseif ($debut) {
-                $heures = " à partir de ".heure2($debut);
-            } elseif ($fin) {
-                $heures = " jusqu'à ".heure2($fin);
-            }
-
-            $bold = null;
-            $nonValidee = null;
-            if ($this->config('Absences-non-validees') == 1) {
-                if ($elem['valide'] > 0) {
-                    $bold = 'bold';
-                } else {
-                    $nonValidee = " (non validée)";
-                }
-            }
-
-            if ($this->config('Absences-planning') != 2) {
-                $class = $class == 'tr1' ? 'tr2' : 'tr1';
-                $absences[$index]['class'] = $class . ' ' . $bold;
-            } else {
-                $absences[$index]['class'] = $bold;
-            }
-
-            $absences[$index]['heures'] = $heures;
-            $absences[$index]['nonValidee'] = $nonValidee;
-        }
-
-        return $absences;
-    }
-
-    private function positionExists($agent, $positions, $horaires)
-    {
-        if (!in_array($agent['poste'], $positions)) {
-            return false;
-        }
-
-        foreach ($horaires as $h) {
-            if ($h['debut'] == $agent['debut'] and $h['fin'] == $agent['fin']) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
     {
         $resultats=array();
@@ -1411,6 +1057,72 @@ class PlanningController extends BaseController
         $this->absences = $absences;
     }
 
+    private function getAbsencesPlanning($date, $site, $conges)
+    {
+        $a = new \absences();
+        $a->valide = false;
+        $a->documents = false;
+        $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, array($site));
+
+        $absences = $a->elements;
+
+        // Add holidays
+        foreach ($conges as $elem) {
+            $elem['motif'] = 'Congé payé';
+            $absences[] = $elem;
+        }
+
+        usort($absences, 'cmp_nom_prenom_debut_fin');
+
+        $class = 'tr1';
+        foreach ($absences as $index => $elem) {
+            $absences[$index]['valide'] = 1;
+            if ($elem['valide'] < 0 or ($elem['valide'] == 0 and $this->config('Absences-non-validees') == 0)) {
+                unset ($absences[$index]);
+                continue;
+            }
+
+            $heures = null;
+            $debut = null;
+            $fin = null;
+            if ($elem['debut'] > "$date 00:00:00") {
+                $debut = substr($elem['debut'], -8);
+            }
+            if ($elem['fin']<"$date 23:59:59") {
+                $fin = substr($elem['fin'], -8);
+            }
+            if ($debut and $fin) {
+                $heures = " de ".heure2($debut)." à ".heure2($fin);
+            } elseif ($debut) {
+                $heures = " à partir de ".heure2($debut);
+            } elseif ($fin) {
+                $heures = " jusqu'à ".heure2($fin);
+            }
+
+            $bold = null;
+            $nonValidee = null;
+            if ($this->config('Absences-non-validees') == 1) {
+                if ($elem['valide'] > 0) {
+                    $bold = 'bold';
+                } else {
+                    $nonValidee = " (non validée)";
+                }
+            }
+
+            if ($this->config('Absences-planning') != 2) {
+                $class = $class == 'tr1' ? 'tr2' : 'tr1';
+                $absences[$index]['class'] = $class . ' ' . $bold;
+            } else {
+                $absences[$index]['class'] = $bold;
+            }
+
+            $absences[$index]['heures'] = $heures;
+            $absences[$index]['nonValidee'] = $nonValidee;
+        }
+
+        return $absences;
+    }
+
     private function getCategories()
     {
         $categories = array();
@@ -1475,6 +1187,19 @@ class PlanningController extends BaseController
         $this->cells = $cellules;
     }
 
+    private function getCurrentFramework($date, $site)
+    {
+        $db = new \db();
+        $db->select2('pl_poste_tab_affect', 'tableau', array('date'=>$date, 'site'=>$site));
+
+        $currentFramework = '';
+        if (isset($db->result[0]['tableau'])) {
+            $currentFramework = $db->result[0]['tableau'] ?? '';
+        }
+
+        return $currentFramework;
+    }
+
     private function getDatesPlanning($date)
     {
         $d = new \datePl($date);
@@ -1486,6 +1211,14 @@ class PlanningController extends BaseController
             $d->jour,
             $d->dates,
         );
+    }
+
+    private function getFrameworksGroup()
+    {
+        $t = new Framework();
+        $t->fetchAllGroups();
+
+        return $t->elements;
     }
 
     private function getFrameworkStructure($tab)
@@ -1534,6 +1267,72 @@ class PlanningController extends BaseController
             $c = new \conges();
             $this->holidays = $c->all($date.' 00:00:00', $date.' 23:59:59');
         }
+    }
+
+    private function getInfoMessages($dates, $date, $view)
+    {
+        switch ($view) {
+            case 'week' :
+                $start = $dates[0];
+                $end = $dates[6];
+                break;
+            default :
+                $start = $date;
+                $end = $date;
+                break;
+        }
+
+        $messages_infos = null;
+
+        $db = new \db();
+        $start = $db->escapeString($start);
+        $end = $db->escapeString($end);
+        $db->select2('infos', '*', array('debut'=>"<={$end}", 'fin'=>">={$start}"), 'ORDER BY `debut`,`fin`');
+
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $messages_infos[] = $elem['texte'];
+            }
+            $messages_infos = implode(' - ', $messages_infos);
+        }
+
+        return $messages_infos;
+    }
+
+    private function getLockingData($date, $site)
+    {
+        $db = new \db();
+        $db->select2("pl_poste_verrou", "*", array("date"=>$date, "site"=>$site));
+
+        $verrou = false;
+        $perso2 = null;
+        $date_validation2 = null;
+        $heure_validation2 = null;
+        $validation2 = null;
+
+        if ($db->result) {
+            $verrou = $db->result[0]['verrou2'];
+            $perso2 = nom($db->result[0]['perso2']);
+            $date_validation2 = dateFr(substr($db->result[0]['validation2'], 0, 10));
+            $heure_validation2 = substr($db->result[0]['validation2'], 11, 5);
+            $validation2 = $db->result[0]['validation2'];
+        }
+
+        return array($verrou, $perso2, $date_validation2, $heure_validation2, $validation2);
+    }
+
+    private function getPermissionsFor($site)
+    {
+        $autorisationN1 = (in_array((300 + $site), $this->permissions)
+            or in_array((1000 + $site), $this->permissions));
+
+        $autorisationN2 = in_array((300 + $site), $this->permissions);
+
+        $autorisationNotes = (in_array((300 + $site), $this->permissions)
+            or in_array((800 + $site), $this->permissions)
+            or in_array(1000 + $site, $this->permissions));
+
+        return array($autorisationN1, $autorisationN2, $autorisationNotes);
     }
 
     private function getPositions()
@@ -1608,5 +1407,205 @@ class PlanningController extends BaseController
         $a->fetch();
 
         return $a->elements;
+    }
+
+    private function getWeekData($site, $semaine, $semaine3)
+    {
+        switch ($this->config('nb_semaine')) {
+            case 2:
+                $type_sem = $semaine % 2 ? 'Impaire' : 'Paire';
+                $affSem = "$type_sem ($semaine)";
+                break;
+            case 3: 
+                $type_sem = $semaine3;
+                $affSem = "$type_sem ($semaine)";
+                break;
+            default:
+                $affSem = $semaine;
+                break;
+        }
+
+        return $affSem;
+    }
+
+    private function initPlanning($request, $view)
+    {
+        $weekView = $view == 'week';
+        $_SESSION['week'] = $weekView;
+
+        // Initialisation des variables
+        $groupe = $request->get('groupe');
+        $site = $request->get('site');
+        $tableau = $request->get('tableau');
+        $date = $request->get('date');
+
+        $site = $this->setSite($request);
+
+        // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
+        $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
+
+        $date = $this->setDate($date);
+
+        list($d, $semaine, $semaine3, $jour, $dates) = $this->getDatesPlanning($date);
+
+        // Selection des messages d'informations
+        $messages_infos = $this->getInfoMessages($dates, $date, $view);
+
+        // Vérification des droits de modification (Autorisation)
+        list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
+
+        $affSem = $this->getWeekData($site, $semaine, $semaine3);
+
+        // Positions and separation lines
+        $this->getPositions();
+        $this->getSeparations();
+
+        // Planning's comments
+        $p = new \planning();
+        $p->date = $dates;
+        $p->site = $site;
+        $p->getNotes();
+        $comments = $p->comments;
+
+        // Parameters for planning's menu
+        // (Calendar widget, days, week and action icons)
+        $this->templateParams(array(
+            'affSem'            => $affSem,
+            'autorisationN1'    => $autorisationN1,
+            'content_planning'  => true,
+            'date'              => $date,
+            'dates'             => $dates,
+            'day'               => $jour,
+            'messages_infos'    => $messages_infos,
+            'public_holiday'    => jour_ferie($date),
+            'site'              => $site,
+            'week_view'         => $weekView,
+        ));
+
+        return array(
+           $groupe,
+           $site,
+           $tableau,
+           $date,
+           $d,
+           $semaine,
+           $dates,
+           $autorisationN1,
+           $autorisationN2,
+           $autorisationNotes,
+           $comments,
+       );
+    }
+
+    private function noWeekDataFor($dates, $site)
+    {
+        $dates = implode(",", $dates);
+        $db = new \db();
+        $db->select2('pl_poste', '*', array('date' => "IN$dates", 'site' => $site));
+
+        if ($db->result) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function positionExists($agent, $positions, $horaires)
+    {
+        if (!in_array($agent['poste'], $positions)) {
+            return false;
+        }
+
+        foreach ($horaires as $h) {
+            if ($h['debut'] == $agent['debut'] and $h['fin'] == $agent['fin']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function resetFrameworkAffect(Request $request, $date, $tab, $site)
+    {
+        $CSRFToken = $request->get('CSRFToken');
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete('pl_poste_tab_affect', array('date' => $date, 'site' => $site));
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert('pl_poste_tab_affect', array('date' => $date, 'tableau' => $tab, 'site' => $site));
+    }
+
+    private function resetWeekFrameworkAffect(Request $request, $date, $dates, $site, $groupe)
+    {
+        $CSRFToken = $request->get('CSRFToken');
+
+        $t = new Framework();
+        $t->fetchGroup($groupe);
+        $groupeTab = $t->elements;
+
+        $tmp = array();
+        $tmp[$dates[0]]=array($dates[0],$groupeTab['lundi']);
+        $tmp[$dates[1]]=array($dates[1],$groupeTab['mardi']);
+        $tmp[$dates[2]]=array($dates[2],$groupeTab['mercredi']);
+        $tmp[$dates[3]]=array($dates[3],$groupeTab['jeudi']);
+        $tmp[$dates[4]]=array($dates[4],$groupeTab['vendredi']);
+        $tmp[$dates[5]]=array($dates[5],$groupeTab['samedi']);
+        if (array_key_exists("dimanche", $groupeTab)) {
+            $tmp[$dates[6]]=array($dates[6],$groupeTab['dimanche']);
+        }
+
+        foreach ($tmp as $elem) {
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete('pl_poste_tab_affect', array('date' => $elem[0], 'site' => $site));
+
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert('pl_poste_tab_affect', array('date' => $elem[0], 'tableau' => $elem[1], 'site' => $site));
+        }
+        return $tmp[$date][1];
+    }
+
+    private function setDate($date)
+    {
+        if (!$date and array_key_exists('PLdate', $_SESSION)) {
+            $date = $_SESSION['PLdate'];
+        } elseif (!$date and !array_key_exists('PLdate', $_SESSION)) {
+            $date = date("Y-m-d");
+        }
+
+        $_SESSION['PLdate'] = $date;
+
+        return $date;
+    }
+
+    private function setSite($request)
+    {
+        $session = $request->getSession();
+
+        $site = $request->get('site');
+
+        // Multisites: default site is 1.
+        // Site is $_GET['site'] if it is set, else we take
+        // SESSION ['site'] or agent's site.
+
+        if (!$site and !empty($_SESSION['site'])) {
+            $site = $_SESSION['site'];
+        }
+
+        if (!$site) {
+            $p = new \personnel();
+            $p->fetchById($session->get('loginId'));
+            $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
+        }
+
+        $site = $site ? $site : 1;
+
+        $_SESSION['site'] = $site;
+
+        return $site;
     }
 }
