@@ -148,12 +148,12 @@ class PlanningController extends BaseController
 
             // ------------ Planning display --------------------//
 
-            // $cellules will be used in the cellule_poste function.
+            // $cellules will be used in the createCell function.
             global $cellules;
             $activites = $this->getSkills();
             $cellules = $this->getCells($date, $site, $activites);
 
-            // $absence_reasons will be used in the cellule_poste function.
+            // $absence_reasons will be used in the createCell function.
             global $absence_reasons;
             $absence_reasons = $this->entityManager->getRepository(AbsenceReason::class);
 
@@ -161,7 +161,7 @@ class PlanningController extends BaseController
             global $absences;
             $absences = $this->getAbsences($date);
 
-            // $conges will be used in the cellule_poste function and added to $absences_planning
+            // $conges will be used in the createCell function and added to $absences_planning
             global $conges;
             $conges = $this->getHolidays($date);
 
@@ -290,12 +290,12 @@ class PlanningController extends BaseController
 
                 // ------------ Planning display --------------------//
 
-                // $cellules will be used in the cellule_poste function.
+                // $cellules will be used in the createCell function.
                 global $cellules;
                 $activites = $this->getSkills();
                 $cellules = $this->getCells($date, $site, $activites);
 
-                // $absence_reasons will be used in the cellule_poste function.
+                // $absence_reasons will be used in the createCell function.
                 global $absence_reasons;
                 $absence_reasons = $this->entityManager->getRepository(AbsenceReason::class);
 
@@ -303,7 +303,7 @@ class PlanningController extends BaseController
                 global $absences;
                 $absences = $this->getAbsences($date);
 
-                // $conges will be used in the cellule_poste function and added to $absences_planning
+                // $conges will be used in the createCell function and added to $absences_planning
                 global $conges;
                 $conges = $this->getHolidays($date);
 
@@ -1061,6 +1061,174 @@ class PlanningController extends BaseController
         return false;
     }
 
+    private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
+    {
+        $resultats=array();
+        $classe=array();
+        $i=0;
+
+        if ($GLOBALS['cellules']) {
+
+            // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
+            $p = new \planning();
+            $sansRepas = $p->sansRepas($date, $debut, $fin, $poste);
+
+            foreach ($GLOBALS['cellules'] as $elem) {
+                $title=null;
+
+                if ($elem['poste']==$poste and $elem['debut']==$debut and $elem['fin']==$fin) {
+                    //		Affichage du nom et du prénom
+                    $nom_affiche=$elem['nom'];
+                    $title = $elem['nom'];
+                    if ($elem['prenom']) {
+                        $nom_affiche.=" ".mb_substr($elem['prenom'], 0, 1).".";
+                        $title .= ' ' . $elem['prenom'];
+                    }
+
+                    $resultat = $nom_affiche;
+
+                    //		Affichage des sans repas
+                    if ($elem['nom'] and ($sansRepas === true or in_array($elem['perso_id'], $sansRepas))) {
+                        $resultat.="<font class='sansRepas'>&nbsp;(SR)</font>";
+                    }
+
+                    $class_tmp=array();
+
+                    // Cellule grisée depuis le menudiv
+                    if (isset($elem['grise']) and $elem['grise'] == 1) {
+                        $class_tmp[]= 'cellule_grise';
+                    }
+
+                    //		On barre les absents (agents barrés directement dans le plannings, table pl_poste)
+                    if ($elem['absent'] == 1 or $elem['supprime']) {
+                        $class_tmp[]="red";
+                        $class_tmp[]="striped";
+                    }
+
+                    if (isset($elem['depart'])
+                        && $elem['depart'] > '0000-00-00'
+                        && $elem['depart'] < $date)
+                    {
+                        $class_tmp[]="red";
+                        $class_tmp[]="striped";
+                        $title = 'Date de départ dépassée';
+                    }
+
+                    if ($elem['absent'] == 2) {
+                        $class_tmp[] = "out-of-work-time";
+                        $title = 'En dehors de ses heures de présences';
+                    }
+
+                    // On marque les absents (absences enregistrées dans la table absences)
+                    $absence_valide = false;
+
+                    foreach ($GLOBALS['absences'] as $absence) {
+
+                        // Skip teleworking absences if the position is compatible with
+                        if ($GLOBALS['postes'][$poste]['teleworking']) {
+                            $reason = $GLOBALS['absence_reasons']->findOneBy(array('valeur' => $absence['motif']));
+                            if (!empty($reason) and $reason->teleworking() == 1) {
+                                continue;
+                            }
+                        }
+
+                        if ($absence["perso_id"] == $elem['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut) {
+                            // Absence validée : rouge barré
+
+                            if (($this->config('Absences-Exclusion') == 1 and $absence['valide'] == 99999)
+                                or $this->config('Absences-Exclusion') == 2) {
+                                continue;
+                            } elseif ($absence['valide'] > 0 or $this->config('Absences-validation') == 0) {
+                                $class_tmp[]="red";
+                                $class_tmp[]="striped";
+                                $absence_valide = true;
+                                break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
+                            }
+                            // Absence non-validée : rouge
+                            elseif ($GLOBALS['config']['Absences-non-validees']) {
+                                $class_tmp[]="red";
+                                $title = $nom_affiche.' : Absence non-valid&eacute;e';
+                            }
+                        }
+                    }
+
+                    // Il peut y avoir des absences validées et non validées. Si ce cas ce produit, la cellule sera barrée et on n'affichera pas "Absence non-validée"
+                    if ($absence_valide) {
+                        $title=null;
+                    }
+
+                    //		On barre les congés
+                    if ($GLOBALS['config']['Conges-Enable']) {
+                        $conge_valide = false;
+
+                        // On marque les congés
+                        foreach ($GLOBALS['conges'] as $conge) {
+                            if ($conge['perso_id'] == $elem['perso_id'] and $conge['debut'] < "$date {$elem['fin']}" and $conge['fin'] > "$date {$elem['debut']}") {
+                                // Congé validé : orange barré
+                                if ($conge['valide'] > 0) {
+                                    $class_tmp[] = 'orange';
+                                    $class_tmp[] = 'striped';
+                                    $conge_valide = true;
+                                    break;  // Garder le break à cet endroit pour que les congés validées prennent le dessus sur les non-validés
+                                }
+                                // congé non-validée : orange, sauf si une absence validée existe
+                                elseif ($GLOBALS['config']['Absences-non-validees'] and !$absence_valide) {
+                                    $class_tmp[] = 'orange';
+                                    $title = $nom_affiche . ' : Congé non-validé';
+                                }
+                            }
+                        }
+
+                        // Il peut y avoir des absences  et des congés validés et non validés. Si une absence ou un congé est validé, la cellule sera barrée et on n'affichera pas "Congé non-validé"
+                        if ($conge_valide or $absence_valide) {
+                            $title = null;
+                        }
+                    }
+
+                    // Classe en fonction du statut et du service
+                    if ($elem['statut']) {
+                        $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ", "_", $elem['statut'])));
+                    }
+                    if ($elem['service']) {
+                        $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));
+                    }
+                    if (isset($elem['activites']) and is_array($elem['activites'])) {
+                        foreach ($elem['activites'] as $a) {
+                            $class_tmp[]='activite_'.strtolower(removeAccents(str_replace(array('/',' ',), '_', $a)));
+                        }
+                    }
+                    $classe[$i]=implode(" ", $class_tmp);
+
+                    // Color the logged in agent.
+                    $color[$i] = null;
+                    if (!empty($GLOBALS['config']['Affichage-Agent']) and $elem['perso_id'] == $_SESSION['login_id']) {
+                        $color[$i] = filter_var($GLOBALS['config']['Affichage-Agent'], FILTER_CALLBACK, ['options' => 'sanitize_color']);
+                        $color[$i] = "style='background-color:{$color[$i]};'";
+                    }
+
+                    // Création d'une balise span avec les classes cellSpan, et agent_ de façon à les repérer et agir dessus à partir de la fonction JS bataille_navale.
+                    $span="<span class='cellSpan agent_{$elem['perso_id']}' title='$title' >$resultat</span>";
+
+                    $resultats[$i]=array("text"=>$span, "perso_id"=>$elem['perso_id']);
+                    $i++;
+                }
+            }
+        }
+
+        $GLOBALS['idCellule'] = $GLOBALS['idCellule'] ?? 0;
+        $GLOBALS['idCellule']++;
+
+        $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' class='menuTrigger' 
+        oncontextmenu='cellule={$GLOBALS['idCellule']}'
+        data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$GLOBALS['idCellule']}' data-perso-id='0'>";
+        for ($i=0;$i<count($resultats);$i++) {
+            $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]} pl-cellule-perso-{$resultats[$i]['perso_id']}' {$color[$i]} data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
+        }
+
+        $cellule .= '<a class="pl-icon arrow-right" role="button"></a>';
+        $cellule.="</td>\n";
+        return $cellule;
+    }
 
     private function createTables($request, $tab, $verrou, $date, $site)
     {
@@ -1080,7 +1248,7 @@ class PlanningController extends BaseController
         // Positions, skills...
         $activites = $this->getSkills();
         $categories = $this->getCategories();
-        // $postes will be used in the cellule_poste function.
+        // $postes will be used in the createCell function.
         global $postes;
         $postes = $this->getPositions($activites, $categories);
 
@@ -1222,9 +1390,9 @@ class PlanningController extends BaseController
                             }
                         }
 
-                        // function cellule_poste(date,debut,fin,colspan,affichage,poste,site)
+                        // function createCell(date,debut,fin,colspan,affichage,poste,site)
                         else {
-                            $horaires['position_cell'] = cellule_poste($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site);
+                            $horaires['position_cell'] = $this->createCell($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site);
                         }
                         $i++;
                         $k++;
