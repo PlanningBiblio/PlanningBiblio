@@ -29,12 +29,23 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class PlanningController extends BaseController
 {
+
+    private $absenceReasons;
+    private $absences = [];
+    private $cellId = null;
+    private $cells = [];
+    private $holidays = [];
+    private $positions = [];
+    private $separations = [];
+
+
     #[Route(path: '/', name: 'home', methods: ['GET'])]
     #[Route(path: '/index', name: 'index', methods: ['GET'])]
     public function index(Request $request)
     {
         // Show all week plannings.
         if (!$request->get('date') and !empty($_SESSION['week'])) {
+          $site = $this->setSite($request);
           return $this->redirectToRoute('planning.week', ['site' => $site]);
         }
 
@@ -148,29 +159,19 @@ class PlanningController extends BaseController
 
             // ------------ Planning display --------------------//
 
-            // $cellules will be used in the createCell function.
-            global $cellules;
-            $activites = $this->getSkills();
-            $cellules = $this->getCells($date, $site, $activites);
-
-            // $absence_reasons will be used in the createCell function.
-            global $absence_reasons;
-            $absence_reasons = $this->entityManager->getRepository(AbsenceReason::class);
-
-            // Looking for absences.
-            global $absences;
-            $absences = $this->getAbsences($date);
-
-            // $conges will be used in the cellule_poste function
-            global $conges;
-            $conges = $this->getHolidays($date);
+            // The following variables will be used in the createCell function.
+            // We create them before calling them in a loop for performance reasons.
+            $this->getAbsenceReasons();
+            $this->getAbsences($date);
+            $this->getCells($date, $site);
+            $this->getHolidays($date);
 
             $tabs = $this->createTables($request, $tab, $verrou, $date, $site);
 
             $this->templateParams(array('tabs' => $tabs));
 
             // Show absences for current site at bottom of the planning
-            $absences_planning = $this->getAbsencesPlanning($date, $site, $conges);
+            $absences_planning = $this->getAbsencesPlanning($date, $site, $this->holidays);
 
             // Affichage des absences
             if (in_array($this->config('Absences-planning'), [1,2])) {
@@ -290,22 +291,12 @@ class PlanningController extends BaseController
 
                 // ------------ Planning display --------------------//
 
-                // $cellules will be used in the createCell function.
-                global $cellules;
-                $activites = $this->getSkills();
-                $cellules = $this->getCells($date, $site, $activites);
-
-                // $absence_reasons will be used in the createCell function.
-                global $absence_reasons;
-                $absence_reasons = $this->entityManager->getRepository(AbsenceReason::class);
-
-                // Looking for absences.
-                global $absences;
-                $absences = $this->getAbsences($date);
-
-                // $conges will be used in the createCell function and added to $absences_planning
-                global $conges;
-                $conges = $this->getHolidays($date);
+                // The following variables will be used in the createCell function.
+                // We create them before calling them in a loop for performance reasons.
+                $this->getAbsenceReasons();
+                $this->getAbsences($date);
+                $this->getCells($date, $site);
+                $this->getHolidays($date);
 
                 $tabs = $this->createTables($request, $tab, $verrou, $date, $site);
 
@@ -518,7 +509,7 @@ class PlanningController extends BaseController
                 $db->select2('pl_poste_modeles_tab', '*', array('model_id'=>$model_id, 'site'=>$site));
             }
 
-            $postes = array();
+            $positions = array();
             $horaires = array();
             if ($db->result) {
                 $tableau=$db->result[0]['tableau'];
@@ -531,7 +522,7 @@ class PlanningController extends BaseController
                 $db->select2('pl_poste_lignes', 'poste', array('type'=>'poste', 'numero'=>$tableau));
                 if ($db->result) {
                     foreach ($db->result as $elem2) {
-                        $postes[] = $elem2['poste'];
+                        $positions[] = $elem2['poste'];
                     }
                 }
 
@@ -568,7 +559,7 @@ class PlanningController extends BaseController
                     $value = array();
 
                     // Do not import agents if the cell does not exist
-                    if (!$this->positionExists($elem2, $postes, $horaires)) {
+                    if (!$this->positionExists($elem2, $positions, $horaires)) {
                         continue;
                     }
 
@@ -737,6 +728,10 @@ class PlanningController extends BaseController
         list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
 
         $affSem = $this->getWeekData($site, $semaine, $semaine3);
+
+        // Positions and separation lines
+        $this->getPositions();
+        $this->getSeparations();
 
         // Planning's comments
         $p = new \planning();
@@ -1050,9 +1045,9 @@ class PlanningController extends BaseController
         return $absences;
     }
 
-    private function positionExists($agent, $postes, $horaires)
+    private function positionExists($agent, $positions, $horaires)
     {
-        if (!in_array($agent['poste'], $postes)) {
+        if (!in_array($agent['poste'], $positions)) {
             return false;
         }
 
@@ -1071,13 +1066,13 @@ class PlanningController extends BaseController
         $classe=array();
         $i=0;
 
-        if ($GLOBALS['cellules']) {
+        if ($this->cells) {
 
             // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
             $p = new \planning();
             $sansRepas = $p->sansRepas($date, $debut, $fin, $poste);
 
-            foreach ($GLOBALS['cellules'] as $elem) {
+            foreach ($this->cells as $elem) {
                 $title=null;
 
                 if ($elem['poste']==$poste and $elem['debut']==$debut and $elem['fin']==$fin) {
@@ -1126,11 +1121,11 @@ class PlanningController extends BaseController
                     // On marque les absents (absences enregistrées dans la table absences)
                     $absence_valide = false;
 
-                    foreach ($GLOBALS['absences'] as $absence) {
+                    foreach ($this->absences as $absence) {
 
                         // Skip teleworking absences if the position is compatible with
-                        if ($GLOBALS['postes'][$poste]['teleworking']) {
-                            $reason = $GLOBALS['absence_reasons']->findOneBy(array('valeur' => $absence['motif']));
+                        if ($this->positions[$poste]['teleworking']) {
+                            $reason = $this->absenceReasons->findOneBy(array('valeur' => $absence['motif']));
                             if (!empty($reason) and $reason->teleworking() == 1) {
                                 continue;
                             }
@@ -1149,7 +1144,7 @@ class PlanningController extends BaseController
                                 break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
                             }
                             // Absence non-validée : rouge
-                            elseif ($GLOBALS['config']['Absences-non-validees']) {
+                            elseif ($this->config('Absences-non-validees')) {
                                 $class_tmp[]="red";
                                 $title = $nom_affiche.' : Absence non-valid&eacute;e';
                             }
@@ -1162,11 +1157,11 @@ class PlanningController extends BaseController
                     }
 
                     //		On barre les congés
-                    if ($GLOBALS['config']['Conges-Enable']) {
+                    if ($this->config('Conges-Enable')) {
                         $conge_valide = false;
 
                         // On marque les congés
-                        foreach ($GLOBALS['conges'] as $conge) {
+                        foreach ($this->holidays as $conge) {
                             if ($conge['perso_id'] == $elem['perso_id'] and $conge['debut'] < "$date {$elem['fin']}" and $conge['fin'] > "$date {$elem['debut']}") {
                                 // Congé validé : orange barré
                                 if ($conge['valide'] > 0) {
@@ -1176,7 +1171,7 @@ class PlanningController extends BaseController
                                     break;  // Garder le break à cet endroit pour que les congés validées prennent le dessus sur les non-validés
                                 }
                                 // congé non-validée : orange, sauf si une absence validée existe
-                                elseif ($GLOBALS['config']['Absences-non-validees'] and !$absence_valide) {
+                                elseif ($this->config('Absences-non-validees') and !$absence_valide) {
                                     $class_tmp[] = 'orange';
                                     $title = $nom_affiche . ' : Congé non-validé';
                                 }
@@ -1205,8 +1200,8 @@ class PlanningController extends BaseController
 
                     // Color the logged in agent.
                     $color[$i] = null;
-                    if (!empty($GLOBALS['config']['Affichage-Agent']) and $elem['perso_id'] == $_SESSION['login_id']) {
-                        $color[$i] = filter_var($GLOBALS['config']['Affichage-Agent'], FILTER_CALLBACK, ['options' => 'sanitize_color']);
+                    if (!empty($this->config('Affichage-Agent')) and $elem['perso_id'] == $_SESSION['login_id']) {
+                        $color[$i] = filter_var($this->config('Affichage-Agent'), FILTER_CALLBACK, ['options' => 'sanitize_color']);
                         $color[$i] = "style='background-color:{$color[$i]};'";
                     }
 
@@ -1219,14 +1214,14 @@ class PlanningController extends BaseController
             }
         }
 
-        $GLOBALS['idCellule'] = $GLOBALS['idCellule'] ?? 0;
-        $GLOBALS['idCellule']++;
+        $this->cellId = $this->cellId ?? 0;
+        $this->cellId++;
 
-        $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' class='menuTrigger' 
-        oncontextmenu='cellule={$GLOBALS['idCellule']}'
-        data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$GLOBALS['idCellule']}' data-perso-id='0'>";
+        $cellule="<td id='td{$this->cellId}' colspan='$colspan' style='text-align:center;' class='menuTrigger' 
+        oncontextmenu='cellule={$this->cellId}'
+        data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$this->cellId}' data-perso-id='0'>";
         for ($i=0;$i<count($resultats);$i++) {
-            $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]} pl-cellule-perso-{$resultats[$i]['perso_id']}' {$color[$i]} data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
+            $cellule.="<div id='cellule{$this->cellId}_$i' class='cellDiv {$classe[$i]} pl-cellule-perso-{$resultats[$i]['perso_id']}' {$color[$i]} data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
         }
 
         $cellule .= '<a class="pl-icon arrow-right" role="button"></a>';
@@ -1236,25 +1231,13 @@ class PlanningController extends BaseController
 
     private function createTables($request, $tab, $verrou, $date, $site)
     {
-        // Separation lines
-        $separationE = $this->entityManager->getRepository(SeparationLine::class)->findAll();
-
-        $separations = array();
-        foreach ($separationE as $elem) {
-            $separations[$elem->id()] = $elem->nom();
-        }
-
         // Get framework structure, start and end hours.
         list($tabs, $startTime, $endTime) = $this->getFrameworkStructure($tab);
 
         $hiddenTables = $this->getHiddenTables($request, $tab);
 
-        // Positions, skills...
-        $activites = $this->getSkills();
-        $categories = $this->getCategories();
-        // $postes will be used in the createCell function.
-        global $postes;
-        $postes = $this->getPositions($activites, $categories);
+        // Positions
+        $positions = $this->positions;
 
         $l = 0;
         $sn = 1;
@@ -1356,19 +1339,19 @@ class PlanningController extends BaseController
                     // FIXME Check if 'classTD' is used
 
                     // Cell class depends if the position is mandatory or not.
-                    $ligne['classTD'] = $postes[$ligne['poste']]['obligatoire'] == 'Obligatoire' ? 'td_obligatoire' : 'td_renfort';
+                    $ligne['classTD'] = $positions[$ligne['poste']]['obligatoire'] == 'Obligatoire' ? 'td_obligatoire' : 'td_renfort';
 
                     // Line class depends if the position is mandatory or not.
-                    $ligne['classTR'] = $postes[$ligne['poste']]['obligatoire'] == 'Obligatoire' ? 'tr_obligatoire' : 'tr_renfort';
+                    $ligne['classTR'] = $positions[$ligne['poste']]['obligatoire'] == 'Obligatoire' ? 'tr_obligatoire' : 'tr_renfort';
 
                     // Line class depends on skills and categories.
-                    $ligne['classTR'] .= ' ' . $postes[$ligne['poste']]['classes'];
+                    $ligne['classTR'] .= ' ' . $positions[$ligne['poste']]['classes'];
 
                     // Position name
-                    $ligne['position_name'] = $postes[$ligne['poste']]['nom'];
+                    $ligne['position_name'] = $positions[$ligne['poste']]['nom'];
 
-                    if ($this->config('Affichage-etages') and !empty($postes[$ligne['poste']]['etage'])) {
-                        $ligne['position_name'] .= ' (' . $postes[$ligne['poste']]['etage'] . ')';
+                    if ($this->config('Affichage-etages') and !empty($positions[$ligne['poste']]['etage'])) {
+                        $ligne['position_name'] .= ' (' . $positions[$ligne['poste']]['etage'] . ')';
                     }
 
                     $i=1;
@@ -1406,7 +1389,7 @@ class PlanningController extends BaseController
 
                 // Separation lines
                 if ($ligne['type'] == 'ligne') {
-                    $ligne['separation'] = $separations[$ligne['poste']] ?? null;
+                    $ligne['separation'] = $this->separations[$ligne['poste']] ?? null;
                 }
 
                 $tabs[$index]['lignes'][$key] = $ligne;
@@ -1417,6 +1400,10 @@ class PlanningController extends BaseController
         return $tabs;
     }
 
+    private function getAbsenceReasons()
+    {
+        $this->absenceReasons = $this->entityManager->getRepository(AbsenceReason::class);
+    }
 
     private function getAbsences($date)
     {
@@ -1430,7 +1417,7 @@ class PlanningController extends BaseController
 
         usort($absences, 'cmp_nom_prenom_debut_fin');
 
-        return $absences;
+        $this->absences = $absences;
     }
 
     private function getCategories()
@@ -1448,9 +1435,10 @@ class PlanningController extends BaseController
         return $categories;
     }
 
-    private function getCells($date, $site, $activites)
+    private function getCells($date, $site)
     {
         $dbprefix = $this->config('dbprefix');
+        $skills = $this->getSkills();
 
         $db = new \db();
         $db->selectLeftJoin(
@@ -1485,7 +1473,7 @@ class PlanningController extends BaseController
             if ($v['postes']) {
                 $p = json_decode(html_entity_decode($v['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                 $cellules[$k]['activites'] = array();
-                foreach ($activites as $elem) {
+                foreach ($skills as $elem) {
                     if (in_array($elem['id'], $p)) {
                         $cellules[$k]['activites'][] = $elem['nom'];
                     }
@@ -1493,7 +1481,7 @@ class PlanningController extends BaseController
             }
         }
 
-        return $cellules;
+        $this->cells = $cellules;
     }
 
     private function getDatesPlanning($date)
@@ -1551,19 +1539,18 @@ class PlanningController extends BaseController
 
     private function getHolidays($date)
     {
-        $conges = array();
-
         if ($this->config('Conges-Enable')) {
             $c = new \conges();
-            $conges = $c->all($date.' 00:00:00', $date.' 23:59:59');
+            $this->holidays = $c->all($date.' 00:00:00', $date.' 23:59:59');
         }
-
-        return $conges;
     }
 
-    private function getPositions($activites, $categories)
+    private function getPositions()
     {
-        $postes=array();
+        $positions = array();
+
+        $categories = $this->getCategories();
+        $skills = $this->getSkills();
 
         $db = new \db();
         $db->select2('postes', '*', '1', 'ORDER BY `id`');
@@ -1584,8 +1571,8 @@ class PlanningController extends BaseController
                 $activitesPoste = $elem['activites'] ? json_decode(html_entity_decode($elem['activites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true) : array();
 
                 foreach ($activitesPoste as $a) {
-                    if (isset($activites[$a]['nom'])) {
-                        $classesPoste[] = 'tr_activite_' . strtolower(removeAccents(str_replace(array(' ', '/'), '_', $activites[$a]['nom'])));
+                    if (isset($skills[$a]['nom'])) {
+                        $classesPoste[] = 'tr_activite_' . strtolower(removeAccents(str_replace(array(' ', '/'), '_', $skills[$a]['nom'])));
                     }
                 }
 
@@ -1597,7 +1584,7 @@ class PlanningController extends BaseController
                     }
                 }
 
-                $postes[$elem['id']] = array(
+                $positions[$elem['id']] = array(
                     'nom'         => $elem['nom'],
                     'etage'       => $floors[$elem['etage']] ?? null,
                     'obligatoire' => $elem['obligatoire'],
@@ -1607,7 +1594,20 @@ class PlanningController extends BaseController
             }
         }
 
-        return $postes;
+        $this->positions = $positions;
+    }
+
+    private function getSeparations()
+    {
+        // Separation lines
+        $separationE = $this->entityManager->getRepository(SeparationLine::class)->findAll();
+
+        $separations = array();
+        foreach ($separationE as $elem) {
+            $separations[$elem->id()] = $elem->nom();
+        }
+
+        $this->separations = $separations;
     }
 
     private function getSkills()
