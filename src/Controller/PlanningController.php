@@ -106,7 +106,6 @@ class PlanningController extends BaseController
             'redoable' => $redoable,
             'show_framework_select' => $show_framework_select,
             'comments' => $comments[$date][$site],
-            'CSRFToken' => $GLOBALS['CSRFSession'],
         ));
 
 
@@ -746,7 +745,6 @@ class PlanningController extends BaseController
             'affSem'            => $affSem,
             'autorisationN1'    => $autorisationN1,
             'content_planning'  => true,
-            'CSRFSession'       => $GLOBALS['CSRFSession'],
             'date'              => $date,
             'dates'             => $dates,
             'day'               => $jour,
