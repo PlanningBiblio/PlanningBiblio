@@ -165,7 +165,7 @@ class PlanningController extends BaseController
             global $conges;
             $conges = $this->getHolidays($date);
 
-            $tabs = $this->createTables($request, $tab, $verrou, $date);
+            $tabs = $this->createTables($request, $tab, $verrou, $date, $site);
 
             $this->templateParams(array('tabs' => $tabs));
 
@@ -307,7 +307,7 @@ class PlanningController extends BaseController
                 global $conges;
                 $conges = $this->getHolidays($date);
 
-                $tabs = $this->createTables($request, $tab, $verrou, $date);
+                $tabs = $this->createTables($request, $tab, $verrou, $date, $site);
 
                 $day['tabs'] = $tabs;
             }
@@ -1062,7 +1062,7 @@ class PlanningController extends BaseController
     }
 
 
-    private function createTables($request, $tab, $verrou, $date)
+    private function createTables($request, $tab, $verrou, $date, $site)
     {
         // Separation lines
         $separationE = $this->entityManager->getRepository(SeparationLine::class)->findAll();
@@ -1080,6 +1080,8 @@ class PlanningController extends BaseController
         // Positions, skills...
         $activites = $this->getSkills();
         $categories = $this->getCategories();
+        // $postes will be used in the cellule_poste function.
+        global $postes;
         $postes = $this->getPositions($activites, $categories);
 
         $l = 0;
