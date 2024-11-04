@@ -1604,7 +1604,7 @@ class StatisticController extends BaseController
         $nbAgents = array();  // Nombre d'agents pour chaque jour
         $tab = array();
         $nb = count($dates);  // Nombre de dates
-        $nbSemaines = $nb/($this->config('Dimanche')? 7 : 6);   // Nombre de semaines
+        $nbSemaines = $nb / 7;  // Nombre de semaines
         $totalAgents = 0;        // Les totaux
         $totalHeures = 0;
         $siteHeures = array(0,0);   // Heures par site
