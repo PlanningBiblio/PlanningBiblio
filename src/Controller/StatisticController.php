@@ -1603,8 +1603,13 @@ class StatisticController extends BaseController
         $agents_id = array();   // Utilisé pour compter les agents présents chaque jour
         $nbAgents = array();  // Nombre d'agents pour chaque jour
         $tab = array();
-        $nb = count($dates);  // Nombre de dates
-        $nbSemaines = $nb/($this->config('Dimanche')? 7 : 6);   // Nombre de semaines
+
+        // Number of weeks
+        $origin = new \DateTimeImmutable($debut);
+        $target = new \DateTimeImmutable($fin);
+        $interval = (int) $origin->diff($target)->format('%a') + 1;
+        $nbSemaines = $interval / 7;
+
         $totalAgents = 0;        // Les totaux
         $totalHeures = 0;
         $siteHeures = array(0,0);   // Heures par site
