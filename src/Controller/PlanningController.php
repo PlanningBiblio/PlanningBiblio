@@ -51,8 +51,7 @@ class PlanningController extends BaseController
 
         $view = 'default';
 
-        // TODO : adapter le template weeks: utiliser un autre nom à la place de $days {{ days }} pour que ça fonctionne également pour des sites et pour un seul plannings affiché
-        // TODO : adapter la fonction $this->createPlannings pour que ça fonctionne également pour des sites et pour un seul plannings affiché
+        // TODO : faire un élément de template depuis le template week
         // TODO : use $this->createPlannings
 
         list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
@@ -823,32 +822,32 @@ class PlanningController extends BaseController
         list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
 
         // Pour tous les jours de la semaine
-        $days = array();
-        $end = 1;
+        $schedules = array();
+        $end = 0;
 
         if ($view == 'week') {
             $end = $this->config('Dimanche') ? 6 : 5;
         }
 
         for ($j = 0; $j <= $end; $j++) {
-            $day = array();
-            $date = $dates[$j];
-            $day['date'] = $date;
+            $schedule = array();
+            $date = $view == 'week' ? $dates[$j] : $date;
+            $schedule['date'] = $date;
 
             // Verrouillage du planning
             list($verrou, $perso2, $date_validation2, $heure_validation2, $validation2) = $this->getLockingData($date, $site);
 
-            $day['perso2'] = $perso2;
-            $day['date_validation2'] = $date_validation2;
-            $day['heure_validation2'] = $heure_validation2;
+            $schedule['perso2'] = $perso2;
+            $schedule['date_validation2'] = $date_validation2;
+            $schedule['heure_validation2'] = $heure_validation2;
 
             // ------------ Choix du tableau ----------- //
             $db = new \db();
             $db->select2('pl_poste_tab_affect', 'tableau', array('date' => $date, 'site' => $site));
             $tab = $db->result ? $db->result[0]['tableau'] : null;
 
-            $day['tab'] = $tab;
-            $day['verrou'] = $verrou;
+            $schedule['tab'] = $tab;
+            $schedule['verrou'] = $verrou;
             // ----------- FIN Choix du tableau --------- //
 
             // ----------- Vérification si le planning est validé ------------ //
@@ -865,15 +864,15 @@ class PlanningController extends BaseController
 
                 $tabs = $this->createTables($request, $tab, $verrou, $date, $site);
 
-                $day['tabs'] = $tabs;
+                $schedule['tabs'] = $tabs;
             }
 
-            $day['comments'] = $comments[$date][$site];
-            $days[] = $day;
+            $schedule['comments'] = $comments[$date][$site];
+            $schedules[] = $schedule;
         }
 
         $this->templateParams(array(
-            'days' => $days
+            'schedules' => $schedules
         ));
     }
 
