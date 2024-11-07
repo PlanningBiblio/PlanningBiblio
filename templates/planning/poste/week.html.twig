@@ -11,32 +11,32 @@
 
   <div id="tabsemaine1" style="display:none;">&nbsp;</div>
 
-    {% for day in days %}
-      {% if day.tab %}
+    {% for schedule in schedules %}
+      {% if schedule.tab %}
         <div class="tableau">
           <p class="pl-semaine-header">
-            <font class="pl-semaine-date">{{ day.date | datefull }}</font>
+            <font class="pl-semaine-date">{{ schedule.date | datefull }}</font>
             <font class="pl-semaine-validation">
-              {% if day.verrou and day.tab %}
-                  <u>Validation</u> : {{ day.perso2 }} {{ day.date_validation2 }} {{ day.heure_validation2 }}
+              {% if schedule.verrou and schedule.tab %}
+                  <u>Validation</u> : {{ schedule.perso2 }} {{ schedule.date_validation2 }} {{ schedule.heure_validation2 }}
               {% else %}
                 {% if autorisationN1 %}
                   <font class="important bold">
-                    Attention ! Le planning du {{ day.date | datefr }} n'est pas validé !
+                    Attention ! Le planning du {{ schedule.date | datefr }} n'est pas validé !
                   </font>
                 {% else %}
                   <font class="important bold">
-                    Le planning du {{ day.date | datefr }} n'est pas validé !
+                    Le planning du {{ schedule.date | datefr }} n'est pas validé !
                   </font>
                 {% endif %}
               {% endif %}
             </font>
           </p>
 
-          {% if day.verrou or autorisationN1 %}
-            <div id="tableau" data-tableId="{{ day.tab }}" >
+          {% if schedule.verrou or autorisationN1 %}
+            <div id="tableau" data-tableId="{{ schedule.tab }}" >
               <table class="text tabsemaine1" cellspacing="0" cellpadding="0">
-                {% for t in day.tabs %}
+                {% for t in schedule.tabs %}
                   <tr class="tr_horaires tableau{{ t.l }} {{ t.classe }}">
                     <td class="td_postes" data-id="{{ t.l }}" data-title="{{ t.titre2 }}">
                       {{ t.titre }} {% if config('Planning-TableauxMasques') %}<span title="Masquer" class="pl-icon pl-icon-hide masqueTableau pointer" data-id="{{ t.l }}" ></span> {% endif %}
@@ -78,8 +78,8 @@
               </table>
             </div>
           {% endif %}
-          <div class="pl-notes-div1" {% if not day.comments.display %} style="display:none;" {% endif %}>
-            {{ day.comments.notes | raw_black_listed }}
+          <div class="pl-notes-div1" {% if not schedule.comments.display %} style="display:none;" {% endif %}>
+            {{ schedule.comments.notes | raw_black_listed }}
           </div>
         </div>
       {% endif %}
