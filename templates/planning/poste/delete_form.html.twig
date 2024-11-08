@@ -2,15 +2,15 @@
 
 <div id="delete-planning-dialog" title="Suppression du planning">
   <div style="text-align:center">
-    <p>Voulez vous supprimer le planning du jour ({{ dateFr }})</p>
-    <p>ou de la semaine (du {{ startFr }} au {{ endFr }}) ?</p>
+    <p>Voulez vous supprimer le planning du jour ({{ date | datefr }})</p>
+    <p>ou de la semaine (du {{ start | datefr }} au {{ end | datefr }}) ?</p>
   </div>
 </div>
 
 <div id="delete-planning-dialog-confirm-day" title="Suppression du planning">
     <div style="text-align:center">
       <br />
-      Etes vous sûr de vouloir supprimer le planning du {{ dateFr }} ?
+      Etes vous sûr de vouloir supprimer le planning du {{ date | datefr }} ?
       <form id="delete-planning-day-form" action="{{ asset('deleteplanning') }}" method="post">
         <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
         <input type='hidden' name='week' value='0' />
@@ -24,7 +24,7 @@
     <div style="text-align:center">
       <br />
       Etes vous sûr de vouloir supprimer le planning de la semaine
-      (du {{ startFr }} au {{ endFr }}) ?
+      (du {{ start | datefr }} au {{ end | datefr }}) ?
       <form id="delete-planning-week-form" action="{{ asset('deleteplanning') }}" method="post">
         <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
         <input type='hidden' name='week' value='1' />

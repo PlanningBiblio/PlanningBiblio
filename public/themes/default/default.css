@@ -887,9 +887,6 @@ div#tabsemaine1{
   left: 0;
   z-index: 1;
 }
-.td_sep {
-  background: inherit;
-}
 
 /* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
 .tr_espace{
@@ -1096,6 +1093,7 @@ div#tabsemaine1{
 }
 
 #pl-notes-div2{
+  width: 100%;
   position: relative;
   left: 5%;
   display: inline-block;

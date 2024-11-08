@@ -53,7 +53,7 @@ class AppExtension extends AbstractExtension
 
     public function dateFr($date)
     {
-        return dateFr($date);
+        return dateFr($date, true);
     }
 
     public function hours($hours)

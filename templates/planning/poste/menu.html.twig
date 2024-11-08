@@ -72,7 +72,7 @@
           <div id='validation'>
             <div class='pl-validation' style="{{ locked ?: 'display:none'}}">
               <u>Validation</u><br/>
-              {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}
+              {{ lockPerson }} {{ lockDate | datefr }}
             </div>
 
             {% if userCan('300', site) or userCan('1000', site) %}

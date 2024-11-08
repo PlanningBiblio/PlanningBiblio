@@ -28,7 +28,9 @@
     {% endif %}
 
     {% if not_ready %}
-      <div class='decalage-gauche'><p>Le planning n'est pas prêt.</p></div>
+      <div class='decalage-gauche'>
+        <p>Le planning du {{ date | datefr }} n'est pas prêt.</p>
+      </div>
 
       {% if config('Planning-CommentairesToujoursActifs') %}
         {% include 'planning/poste/comments.html.twig' %}
@@ -37,9 +39,7 @@
 
     {% if tab and not locked and not autorisationN1 %}
       <div class='decalage-gauche'>
-        <br/><br/>
-        <font color='red'>Le planning du {{ dateFr }} n'est pas validé !</font>
-        <br/>
+        <p class="important">Le planning du {{ date | datefr }} n'est pas validé !</p>
       </div>
 
       {% if config('Planning-CommentairesToujoursActifs') %}
@@ -47,65 +47,15 @@
       {% endif %}
     {% endif %}
 
-    {% if tabs is defined and tabs %}
+    {% if schedules is defined and schedules %}
       <div id="planning-data" data-verrou="{{ locked }}" data-autorisation="{{ autorisationN1 }}"
-           data-validation="{{ validation2 }}" data-lignesVides="{{ config('Planning-lignesVides') }}"
+           data-validation="{{ lockDate }}" data-lignesVides="{{ config('Planning-lignesVides') }}"
            data-sr-debut="{{ config('Planning-SR-debut') }}"
            data-sr-fin="{{ config('Planning-SR-fin') }}"
            style='display:none;'>&nbsp;
       </div>
 
-      <div id='tableau' data-tableId="{{ tab }}">
-        <table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>
-
-          {% for t in tabs %}
-            <tr class='tr_horaires tableau{{ t.l }} {{ t.classe }} {{ t.hiddenTable }}'>
-              <td class='td_postes sticky td_sep' data-id='{{ t.l }}' data-title='{{ t.titre2 }}'>
-                {{ t.titre }} {{ t.masqueTableaux | raw }}
-              </td>
-              {% for h in t.horaires %}
-              <td class='sticky-line' colspan="{{ h.start_nb30 }}">
-                {{ h.start_h3 }} - {{ h.end_h3 }}
-                </td>
-              {% endfor %}
-            </tr>
-
-            {% for l in t.lignes %}
-              <!-- Position lines -->
-              {% if l.is_position %}
-                <tr class="pl-line roundup-tab tableau{{ t.l }} {{ l.classTR }} {{ t.classe }} {{ t.hiddenTable }} {{ l.emptyLine }}">
-                  <td class='td_postes sticky-col {{ l.classTD }}'>
-                    {{ l.position_name }}
-                  </td>
-
-                  {% for h in l.line_time %}
-                    {% if h.disabled %}
-                      <td colspan="{{ h.colspan }}" class='cellule_grise'>&nbsp;</td>
-                    {% else %}
-                      {{ h.position_cell | raw }}
-                    {% endif %}
-                  {% endfor %}
-                </tr>
-              {% endif %}
-
-              <!-- Separation lines -->
-              {% if l.separation %}
-                <tr class="tr_separation tableau{{ t.l }} {{ t.classe }} {{ t.hiddenTable }}">
-                  <td class='sticky-col td_sep'>{{ l.separation }}</td>
-                  <td colspan="{{ t.colspan }}">&nbsp;</td>
-                </tr>
-              {% endif %}
-            {% endfor %}
-
-            <tr class="tr_espace tableau{{ t.l }} {{ t.classe }} {{ t.hiddenTable }}">
-              <td>&nbsp;</td>
-            </tr>
-          {% endfor %}
-
-        </table>
-      </div>
-
-      {% include 'planning/poste/comments.html.twig' %}
+      {% include 'planning/poste/schedule.element.html.twig' %}
 
       {% if config('Planning-AppelDispo') %}
         <div id="pl-appelDispo-form" title="Appel à disponibilité" class='noprint' style='display:none;'>
