@@ -4,12 +4,12 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Model\AbsenceReason;
+use App\Model\Agent;
+use App\Model\Model;
 use App\Model\PlanningPositionHistory;
 use App\Model\PlanningPositionLock;
 use App\Model\SelectFloor;
 use App\Model\SeparationLine;
-use App\Model\Agent;
-use App\Model\Model;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 use App\PlanningBiblio\PresentSet;
 use App\PlanningBiblio\Framework;
@@ -27,16 +27,27 @@ require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 require_once(__DIR__ . '/../../public/planning/volants/class.volants.php');
 require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
+// TODO FIXME : hidden tables do not work correctly on week view
+
 class PlanningController extends BaseController
 {
-
+    private $admin1 = false;
+    private $admin2 = false;
+    private $adminNotes = false;
     private $absenceReasons;
     private $absences = [];
     private $cellId = 0;
     private $cells = [];
+    private $date = null;
+    private $dates = [];
+    private $locked = 0;
+    private $lockDate = null;
+    private $lockPerson = null;
     private $holidays = [];
     private $positions = [];
+    private $schedules = [];
     private $separations = [];
+    private $site = 1;
 
 
     #[Route(path: '/', name: 'home', methods: ['GET'])]
@@ -45,20 +56,23 @@ class PlanningController extends BaseController
     {
         // Show all week plannings.
         if (!$request->get('date') and !empty($_SESSION['week'])) {
-          $site = $this->setSite($request);
-          return $this->redirectToRoute('planning.week', ['site' => $site]);
+          $this->setSite($request);
+          return $this->redirectToRoute('planning.week', ['site' => $this->site]);
         }
 
+        /*
+         * TODO : remettre de l'ordre dans les contrôles de la page index : 
+         *  1./ Vérifier s'il y a des données pour le site et le jour choisi, si oui : appeler une fonction dédiée qui utilisera $this->createPlanning
+         *  2./ S'il n'y a pas de données pour le site et le jour choisi, appeler une fonction dédiée au formulaire choix d'un tableau / choix d'un groupe
+         *  3./ Contrôler les droits en lecture pour les 2 configurations
+         *  4./ Penser aux commentaires qui peuvent être affichés/modifiés dans toutes ces configutations
+         * TODO : si possible : simplifier les fonctions initPlanning, etc. 
+         *   Voir si initPlanning peut trouver sa place dans le constructeur (attention : gestion de $view et penser au futur affichage pour plusieurs sites)
+         */
+       
         $view = 'default';
 
-        // TODO : faire un élément de template depuis le template week
-        // TODO : use $this->createPlannings
-
         list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
-
-        // Week page : in the loop
-        // Verrouillage du planning
-        list($verrou, $perso2, $date_validation2, $heure_validation2, $validation2) = $this->getLockingData($date, $site);
 
         // Index page only
         $currentFramework = $this->getCurrentFramework($date, $site);
@@ -66,6 +80,7 @@ class PlanningController extends BaseController
         if(!$currentFramework and !$tableau and !$groupe and $autorisationN2) {
             $show_framework_select = 1;
         }
+
         $not_ready = 0;
         if(!$currentFramework and !$tableau and !$groupe and !$autorisationN2) {
             $not_ready = 1;
@@ -92,19 +107,14 @@ class PlanningController extends BaseController
 
         // Index page only
         $this->templateParams(array(
-            'start' => $d->dates[0],
-            'startFr' => dateFr($d->dates[0]),
-            'end' => $d->dates[6],
-            'endFr' => dateFr($d->dates[6]),
-            'dateFr' => dateFr($date),
-            'not_ready'      => $not_ready,
-            'locked' => $verrou,
-            'perso2' => $perso2,
-            'date_validation2' => $date_validation2,
-            'heure_validation2' => $heure_validation2,
-            'validation2' => $validation2,
-            'autorisationN2' => $autorisationN2,
-            'autorisationNotes' => $autorisationNotes,
+            'start' => $this->dates[0]->dates[0],
+            'end' => $this->dates[0]->dates[6],
+            'not_ready' => $not_ready,
+            'locked' => null,
+            'lockDate' => null,
+            'lockPerson' => null,
+            'autorisationN2' => $this->admin2,
+            'autorisationNotes' => $this->adminNotes,
             'undoable' => $undoable,
             'redoable' => $redoable,
             'show_framework_select' => $show_framework_select,
@@ -115,7 +125,7 @@ class PlanningController extends BaseController
         // Index page only
         // Framework choice.
         $groupes = $this->getFrameworksGroup();
-        $pasDeDonneesSemaine = $this->noWeekDataFor($dates, $site);
+        $pasDeDonneesSemaine = $this->noWeekDataFor($this->dates[4], $site);
 
         $tab = 0;
         if ($show_framework_select) {
@@ -133,7 +143,7 @@ class PlanningController extends BaseController
 
             return $this->output('planning/poste/index.html.twig');
 
-        } elseif ($groupe and $autorisationN2) {
+        } elseif ($groupe and $this->admin2) {
             $tab = $this->resetWeekFrameworkAffect($request, $date, $dates, $site, $groupe);
         } elseif ($tableau and $autorisationN2) {	//	Si tableau en argument
             $tab = $tableau;
@@ -150,27 +160,19 @@ class PlanningController extends BaseController
             return $this->output('planning/poste/index.html.twig');
         }
 
-        if (!$verrou and !$autorisationN1) {
+        if (!$this->locked and !$this->admin1) {
             $this->templateParams(array(
                 'absences_planning'   => [],
                 'presents'            => 0,
                 'tabs'                => 0,
             ));
+
             return $this->output('planning/poste/index.html.twig');
+
         } else {
 
             // ------------ Planning display --------------------//
-
-            // The following variables will be used in the createCell function.
-            // We create them before calling them in a loop for performance reasons.
-            $this->getAbsenceReasons();
-            $this->getAbsences($date);
-            $this->getCells($date, $site);
-            $this->getHolidays($date);
-
-            $tabs = $this->createTables($request, $tab, $verrou, $date, $site);
-
-            $this->templateParams(array('tabs' => $tabs));
+            $this->createPlannings($request, $view);
 
             // Show absences for current site at bottom of the planning
             $absences_planning = $this->getAbsencesPlanning($date, $site, $this->holidays);
@@ -835,11 +837,12 @@ class PlanningController extends BaseController
             $schedule['date'] = $date;
 
             // Verrouillage du planning
-            list($verrou, $perso2, $date_validation2, $heure_validation2, $validation2) = $this->getLockingData($date, $site);
+            $this->getLockData();
+            $locked = $this->locked;
 
-            $schedule['perso2'] = $perso2;
-            $schedule['date_validation2'] = $date_validation2;
-            $schedule['heure_validation2'] = $heure_validation2;
+            $schedule['locked'] = $locked;
+            $schedule['lockDate'] = $this->lockDate;
+            $schedule['lockPerson'] = $this->lockPerson;
 
             // ------------ Choix du tableau ----------- //
             $db = new \db();
@@ -847,11 +850,10 @@ class PlanningController extends BaseController
             $tab = $db->result ? $db->result[0]['tableau'] : null;
 
             $schedule['tab'] = $tab;
-            $schedule['verrou'] = $verrou;
             // ----------- FIN Choix du tableau --------- //
 
             // ----------- Vérification si le planning est validé ------------ //
-            if ($verrou or $autorisationN1) {
+            if ($locked or $autorisationN1) {
 
                 // ------------ Planning display --------------------//
 
@@ -862,7 +864,7 @@ class PlanningController extends BaseController
                 $this->getCells($date, $site);
                 $this->getHolidays($date);
 
-                $tabs = $this->createTables($request, $tab, $verrou, $date, $site);
+                $tabs = $this->createTables($request, $tab, $locked, $date, $site);
 
                 $schedule['tabs'] = $tabs;
             }
@@ -871,12 +873,18 @@ class PlanningController extends BaseController
             $schedules[] = $schedule;
         }
 
+        $this->schedules = $schedules;
+
         $this->templateParams(array(
-            'schedules' => $schedules
+            'locked' => $this->locked,
+            'lockDate' => $this->lockDate,
+            'lockPerson' => $this->lockPerson,
+            'schedules' => $schedules,
+            'view' => $view
         ));
     }
 
-    private function createTables($request, $tab, $verrou, $date, $site)
+    private function createTables($request, $tab, $locked, $date, $site)
     {
         // Get framework structure, start and end hours.
         list($tabs, $startTime, $endTime) = $this->getFrameworkStructure($tab);
@@ -970,7 +978,7 @@ class PlanningController extends BaseController
                 // Check if the line is empty.
                 // Don't show empty lines if Planning-vides is disabled.
                 $emptyLine = null;
-                if (!$this->config('Planning-lignesVides') and $verrou and isAnEmptyLine($ligne['poste'])) {
+                if (!$this->config('Planning-lignesVides') and $locked and isAnEmptyLine($ligne['poste'])) {
                     $emptyLine="empty-line";
                 }
 
@@ -1210,19 +1218,6 @@ class PlanningController extends BaseController
         return $currentFramework;
     }
 
-    private function getDatesPlanning($date)
-    {
-        $d = new \datePl($date);
-
-        return array(
-            $d,
-            $d->semaine,
-            $d->semaine3,
-            $d->jour,
-            $d->dates,
-        );
-    }
-
     private function getFrameworksGroup()
     {
         $t = new Framework();
@@ -1309,26 +1304,22 @@ class PlanningController extends BaseController
         return $messages_infos;
     }
 
-    private function getLockingData($date, $site)
+    private function getLockData()
     {
-        $db = new \db();
-        $db->select2("pl_poste_verrou", "*", array("date"=>$date, "site"=>$site));
+        $this->locked = 0;
+        $this->lockDate = null;
+        $this->lockPerson = null;
 
-        $verrou = false;
-        $perso2 = null;
-        $date_validation2 = null;
-        $heure_validation2 = null;
-        $validation2 = null;
+        $lockData = $this->entityManager->getRepository(PlanningPositionLock::class)->findOneBy([
+            'date' => \DateTime::createFromFormat('Y-m-d', $this->date),
+            'site' => $this->site,
+        ]);
 
-        if ($db->result) {
-            $verrou = $db->result[0]['verrou2'];
-            $perso2 = nom($db->result[0]['perso2']);
-            $date_validation2 = dateFr(substr($db->result[0]['validation2'], 0, 10));
-            $heure_validation2 = substr($db->result[0]['validation2'], 11, 5);
-            $validation2 = $db->result[0]['validation2'];
+        if ($lockData) {
+            $this->locked = $lockData->verrou2();
+            $this->lockDate = $lockData->validation2()->format('Y-m-d H:i:s');
+            $this->lockPerson = nom($lockData->perso2());
         }
-
-        return array($verrou, $perso2, $date_validation2, $heure_validation2, $validation2);
     }
 
     private function getPermissionsFor($site)
@@ -1341,6 +1332,10 @@ class PlanningController extends BaseController
         $autorisationNotes = (in_array((300 + $site), $this->permissions)
             or in_array((800 + $site), $this->permissions)
             or in_array(1000 + $site, $this->permissions));
+
+        $this->admin1 = $autorisationN1;
+        $this->admin2 = $autorisationN2;
+        $this->adminNotes = $autorisationNotes;
 
         return array($autorisationN1, $autorisationN2, $autorisationNotes);
     }
@@ -1445,18 +1440,17 @@ class PlanningController extends BaseController
 
         // Initialisation des variables
         $groupe = $request->get('groupe');
-        $site = $request->get('site');
         $tableau = $request->get('tableau');
-        $date = $request->get('date');
 
-        $site = $this->setSite($request);
+        $this->setDates($request);
+        $date = $this->date;
 
-        // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
-        $date = filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
+        $this->setSite($request);
+        $site = $this->site;
 
-        $date = $this->setDate($date);
+        $this->getLockData();
 
-        list($d, $semaine, $semaine3, $jour, $dates) = $this->getDatesPlanning($date);
+        list($d, $semaine, $semaine3, $jour, $dates) = $this->dates;
 
         // Selection des messages d'informations
         $messages_infos = $this->getInfoMessages($dates, $date, $view);
@@ -1579,8 +1573,11 @@ class PlanningController extends BaseController
         return $tmp[$date][1];
     }
 
-    private function setDate($date)
+    private function setDates(Request $request)
     {
+        $date = $request->get('date');
+        $date = filter_var($date, FILTER_CALLBACK, ['options' => 'sanitize_dateSQL']);
+
         if (!$date and array_key_exists('PLdate', $_SESSION)) {
             $date = $_SESSION['PLdate'];
         } elseif (!$date and !array_key_exists('PLdate', $_SESSION)) {
@@ -1589,10 +1586,20 @@ class PlanningController extends BaseController
 
         $_SESSION['PLdate'] = $date;
 
-        return $date;
+        $d = new \datePl($date);
+
+        $this->date = $date;
+
+        $this->dates = array(
+            $d,
+            $d->semaine,
+            $d->semaine3,
+            $d->jour,
+            $d->dates,
+        );
     }
 
-    private function setSite($request)
+    private function setSite(Request $request)
     {
         $session = $request->getSession();
 
@@ -1616,6 +1623,6 @@ class PlanningController extends BaseController
 
         $_SESSION['site'] = $site;
 
-        return $site;
+        $this->site = $site;
     }
 }
