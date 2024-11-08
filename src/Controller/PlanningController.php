@@ -50,8 +50,8 @@ class PlanningController extends BaseController
     private $site = 1;
 
 
-    #[Route(path: '/', name: 'home', methods: ['GET'])]
-    #[Route(path: '/index', name: 'index', methods: ['GET'])]
+    #[Route(path: '/{date?}', name: 'home', methods: ['GET'], requirements: ['date' => '\d{4}-\d{2}-\d{2}'])]
+    #[Route(path: '/{site}/{date?}', name: 'homeWithSite', methods: ['GET'], requirements: ['site' => '\d+', 'date' => '\d{4}-\d{2}-\d{2}'])]
     public function index(Request $request)
     {
         // Show all week plannings.
@@ -258,7 +258,7 @@ class PlanningController extends BaseController
         return $this->output('planning/poste/index.html.twig');
     }
 
-    #[Route(path: '/week', name: 'planning.week', methods: ['GET'])]
+    #[Route(path: '/week/{date?}', name: 'planning.week', methods: ['GET'], requirements: ['date' => '\d{4}-\d{2}-\d{2}'])]
     public function week(Request $request)
     {
         $this->createPlannings($request, 'week');
@@ -837,7 +837,7 @@ class PlanningController extends BaseController
             $schedule['date'] = $date;
 
             // Verrouillage du planning
-            $this->getLockData();
+            $this->getLockData($date);
             $locked = $this->locked;
 
             $schedule['locked'] = $locked;
@@ -1304,14 +1304,16 @@ class PlanningController extends BaseController
         return $messages_infos;
     }
 
-    private function getLockData()
+    private function getLockData(String $date = null)
     {
         $this->locked = 0;
         $this->lockDate = null;
         $this->lockPerson = null;
 
+        $date = $date ?? $this->date;
+
         $lockData = $this->entityManager->getRepository(PlanningPositionLock::class)->findOneBy([
-            'date' => \DateTime::createFromFormat('Y-m-d', $this->date),
+            'date' => \DateTime::createFromFormat('Y-m-d', $date),
             'site' => $this->site,
         ]);
 

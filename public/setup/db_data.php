@@ -406,7 +406,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('15','30','Informations','/holiday-info','config=Conges-Enable'),
   ('15','40','Crédits','/holiday/accounts','config=Conges-Enable'),
   ('20','0','Agenda','/calendar',NULL),
-  ('30','0','Planning','/index',NULL),
+  ('30','0','Planning','/',NULL),
   ('30','90','Agents volants','/detached','config=Planning-agents-volants'),
   ('40','0','Statistiques','/statistics', 'config!=Planook'),
   ('40','10','Feuille de temps','/statistics/time', 'config!=Planook'),
