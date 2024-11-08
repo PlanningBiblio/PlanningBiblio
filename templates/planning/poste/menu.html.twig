@@ -34,17 +34,17 @@
         {% endif %}
 
         <div class='noprint' id='tab_jours'>
-          <ul valign='top' style="padding-left: 0px;">
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[0] }}" class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </li>
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[1] }}" class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </li>
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[2] }}" class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </li>
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[3] }}" class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </li>
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[4] }}" class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </li>
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[5] }}" class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></li>
+          <ul class="days_ul">
+            <li><a href="{{ path('home', {date: dates[0]}) }}" {% if date == dates[0] and not week_view %} class="active" {% endif %}>Lundi</a> / </li>
+            <li><a href="{{ path('home', {date: dates[1]}) }}" {% if date == dates[1] and not week_view %} class="active" {% endif %}>Mardi</a> / </li>
+            <li><a href="{{ path('home', {date: dates[2]}) }}" {% if date == dates[2] and not week_view %} class="active" {% endif %}>Mercredi</a> / </li>
+            <li><a href="{{ path('home', {date: dates[3]}) }}" {% if date == dates[3] and not week_view %} class="active" {% endif %}>Jeudi</a> / </li>
+            <li><a href="{{ path('home', {date: dates[4]}) }}" {% if date == dates[4] and not week_view %} class="active" {% endif %}>Vendredi</a> / </li>
+            <li><a href="{{ path('home', {date: dates[5]}) }}" {% if date == dates[5] and not week_view %} class="active" {% endif %}>Samedi</a></li>
             {% if config('Dimanche') %}
-              <li align='center' style="font-size: 13pt;" class="days_li"> / <a href="{{ asset('index') }}?date={{ dates[6] }}"  class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </li>
+              <li> / <a href="{{ path('home', {date: dates[6]}) }}" {% if date == dates[6] and not week_view %} class="active" {% endif %}>Dimanche</a> </li>
             {% endif %}
-            <li style="font-size: 13pt;" class="days_li"> / <a href="{{ asset('week') }}" class="{{ week_view ?'menuRed' : 'menu' }}" >Semaine</a></li>
+            <li> / <a href="{{ asset('week') }}" {% if week_view %} class="active" {% endif %}>Semaine</a></li>
           </ul>
         </div>
 
@@ -59,7 +59,7 @@
             <span class='pl-icon pl-icon-printer'></span>
           </a>
 
-          <a href="{{ asset('index') }}" title="Actualiser">
+          <a href="{{ path('home') }}" title="Actualiser">
             <span class='pl-icon pl-icon-refresh'>
           </a>
 
@@ -99,7 +99,7 @@
               <span class='pl-icon pl-icon-printer'></span>
             </a>
 
-            <a href="{{ asset('index') }}?date={{ date }}&amp;site={{ site }}" title="Actualiser">
+            <a href="{{ path('home') }}" title="Actualiser">
               <span class='pl-icon pl-icon-refresh'>
             </a>
 

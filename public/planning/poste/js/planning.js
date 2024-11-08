@@ -418,9 +418,9 @@ $(function() {
   $("#pl-calendar").change(function(){
     var date=dateFr($(this).val());
     if($(this).attr("class").search("datepickerSemaine")>0){
-      window.location.href = url('week') + '?date=' + date;
+      window.location.href = url('week') + '/' + date;
     }else{
-      window.location.href="?date="+date;
+      window.location.href = date;
     }
   });
   
