@@ -1,0 +1,93 @@
+{# templates/planning/poste/schedule.element.html.twig #}
+
+<div id="tabsemaine1" style="display:none;">&nbsp;</div>
+
+  {% for schedule in schedules %}
+    {% if schedule.tab %}
+      <div class="tableau" data-tableId="{{ schedule.tab }}">
+        {% if view != 'default' %}
+          <p class="pl-semaine-header">
+            <font class="pl-semaine-date">{{ schedule.date | datefull }}</font>
+            <font class="pl-semaine-validation">
+              {% if schedule.locked and schedule.tab %}
+                  <u>Validation</u> : {{ schedule.lockPerson }} {{ schedule.lockDate | datefr }}
+              {% else %}
+                {% if autorisationN1 %}
+                  <font class="important bold">
+                    Attention ! Le planning du {{ schedule.date | datefr }} n'est pas validé !
+                  </font>
+                {% else %}
+                  <font class="important bold">
+                    Le planning du {{ schedule.date | datefr }} n'est pas validé !
+                  </font>
+                {% endif %}
+              {% endif %}
+            </font>
+          </p>
+        {% endif %}
+
+        {% if schedule.locked or autorisationN1 %}
+          <div id="tableau" data-tableId="{{ schedule.tab }}" >
+            <table class="text tabsemaine1" cellspacing="0" cellpadding="0">
+              {% for t in schedule.tabs %}
+                <tr class="tr_horaires tableau{{ t.l }} {{ t.classe }}">
+                  <td class="td_postes {% if view == 'default' %} sticky {% endif %}" data-id="{{ t.l }}" data-title="{{ t.titre2 }}">
+                    {{ t.titre }} {% if config('Planning-TableauxMasques') %}<span title="Masquer" class="pl-icon pl-icon-hide masqueTableau pointer" data-id="{{ t.l }}" ></span> {% endif %}
+{# TODO: check if similary to : {{ t.titre }} {{ t.masqueTableaux | raw }} #}
+                  </td>
+                  {% for h in t.horaires %}
+                    <td colspan="{{ colspan(h.debut, h.fin) }}" {% if view == 'default' %} class="sticky-line" {% endif %}>
+{# TODO: use h.colspan #}
+                      {{ h.debut | hour_from_his }}-{{ h.fin | hour_from_his }}
+                    </td>
+                  {% endfor %}
+                </tr>
+
+                <!-- Position lines -->
+                {% for l in t.lignes %}
+                  {% if l.type == 'poste' and l.poste %}
+                    <tr class="pl-line roundup-tab tableau{{ t.l }} {{ l.classTR }} {{ t.classe }} {{ t.hiddenTable }} {{ l.emptyLine }}">
+{# TODO: check if t.hiddenTable is necessary #}
+                      <td class="td_postes {{ l.classTD }} {% if view == 'default' %} sticky-col {% endif %}">
+                        {{ l.position_name }}
+                      </td>
+                      {% for t in l.line_time %}
+                        {% if t.disabled %}
+                          <td colspan="{{ colspan(t.debut, t.fin) }}" class="cellule_grise">&nbsp;</td>
+{# TODO: use t.colspan #}
+                        {% else %}
+                          {{ t.position_cell | raw }}
+                        {% endif %}
+                      {% endfor %}
+                    </tr>
+                  {% endif %}
+
+                  <!-- Separation lines -->
+                  {% if l.type == 'ligne' %}
+                    <tr class="tr_separation tableau{{ t.l }} {{ t.classe }}" {{ t.hiddenTable }}>
+{# TODO: check if t.hiddenTable is necessary #}
+                      <td {% if view == 'default' %} class="sticky-col" {% endif %}>{{ l.separation }}</td>
+                      <td colspan="{{ t.colspan }}">&nbsp;</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr class="tr_espace tableau{{ t.l }} {{ t.classe }}" {{ t.hiddenTable }}>
+{# TODO: check if t.hiddenTable is necessary #}
+                  <td>&nbsp;</td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endif %}
+
+        {% if view == 'default' %}
+          {% include 'planning/poste/comments.html.twig' %}
+        {% else %}
+          <div class="pl-notes-div1" {% if not schedule.comments.display %} style="display:none;" {% endif %}>
+            {{ schedule.comments.notes | raw_black_listed }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

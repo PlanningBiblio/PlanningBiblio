@@ -33,7 +33,8 @@ class PlanningControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/');
 
         $result = $crawler->filter('.decalage-gauche p');
-        $this->assertEquals("Le planning n'est pas prêt.", $result->text('Node does not exist', false));
+        $date = date('d/m/Y');
+        $this->assertEquals("Le planning du $date n'est pas prêt.", $result->text('Node does not exist', false));
 
         $date = new \DateTime();
         $today = $date->format('d/m/Y');
@@ -65,7 +66,7 @@ class PlanningControllerTest extends PLBWebTestCase
 
         $crawler = $client->request('GET', '/');
 
-        $result = $crawler->filter('.decalage-gauche font');
+        $result = $crawler->filter('.decalage-gauche p');
         $this->assertEquals("Le planning du $today n'est pas validé !", $result->text('Node does not exist', false), 'test index with no lock planning');
     }
 }
