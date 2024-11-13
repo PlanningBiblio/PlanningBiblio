@@ -204,8 +204,10 @@ class MSGraphClient
                 continue;
             }
 
-            if (!$incomingEvent->subject) {
-                $incomingEvent->subject = "[Empty]";
+            if ($incomingEvent->sensitivity == 'private') {
+                $incomingEvent->subject = '[Private]';
+            } elseif(!$incomingEvent->subject) {
+                $incomingEvent->subject = '[Empty]';
             }
 
             if (array_key_exists($eventArray['plb_id'] . $incomingEvent->iCalUId, $this->localEvents)) {
