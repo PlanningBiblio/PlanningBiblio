@@ -342,7 +342,11 @@ for ($i=0;$i<count($tab);$i++) {
     // Marquage des absences de la table absences
     foreach ($absences as $absence) {
         if ($absence["perso_id"] == $tab[$i]['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut) {
-            if ($absence['valide']>0 or $config['Absences-validation'] == 0) {
+
+            if (($config['Absences-Exclusion'] == 1 and $absence['valide'] == 99999)
+                or $config['Absences-Exclusion'] == 2) {
+                $tab[$i]['absent'] = 0;
+            } elseif ($absence['valide'] > 0 or $config['Absences-validation'] == 0) {
                 $tab[$i]['absent']=1;
                 break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
             } elseif ($config['Absences-non-validees'] and $tab[$i]['absent'] != 1) {

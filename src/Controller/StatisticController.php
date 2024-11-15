@@ -1109,6 +1109,30 @@ class StatisticController extends BaseController
         $motifs = array();
         if (is_array($absences) and !empty($absences)) {
             foreach ($absences as $elem) {
+
+                if (($this->config['Absences-Exclusion'] == 1 and $elem['valide'] == 99999)
+                    or $config['Absences-Exclusion'] == 2)
+                {
+                    $formatted_start_date = date('Y-m-d', strtotime($elem['debut']));
+                    $formatted_start_hour = date('H:i:s', strtotime($elem['debut']));
+                    $formatted_end_date = date('Y-m-d', strtotime($elem['fin']));
+                    $formatted_end_hour = date('H:i:s', strtotime($elem['fin']));
+
+                    $db = new db();
+                    $db->select2('pl_poste', '*', array(
+                            'perso_id' => $elem['perso_id'],
+                            'date' => ">=$formatted_start_date AND date<=$formatted_end_date",
+                            'debut' => "<$formatted_end_hour",
+                            'fin' => ">$formatted_start_hour",
+                        ),
+                        'ORDER BY debut,fin'
+                    );
+
+                    if ($db->result) {
+                        continue;
+                    }
+                }
+
                 if (!in_array($elem['motif'], $motifs)) {
                     $motifs[] = $elem['motif'];
                 }
@@ -1132,6 +1156,29 @@ class StatisticController extends BaseController
         $tab = array();
         $totaux = array("_general"=>0,"_generalHeures"=>0);
         foreach ($absences as $elem) {
+
+            if (($this->config['Absences-Exclusion'] == 1 and $elem['valide'] == 99999)
+                or $config['Absences-Exclusion'] == 2)
+            {
+                $formatted_start_date = date('Y-m-d', strtotime($elem['debut']));
+                $formatted_start_hour = date('H:i:s', strtotime($elem['debut']));
+                $formatted_end_date = date('Y-m-d', strtotime($elem['fin']));
+                $formatted_end_hour = date('H:i:s', strtotime($elem['fin']));
+
+                $db = new db();
+                $db->select2('pl_poste', '*', array(
+                        'perso_id' => $elem['perso_id'],
+                        'date' => ">=$formatted_start_date AND date<=$formatted_end_date",
+                        'debut' => "<$formatted_end_hour",
+                        'fin' => ">$formatted_start_hour",
+                    ),
+                    'ORDER BY debut,fin');
+
+                if ($db->result) {
+                    continue;
+                }
+            }
+
             if (!array_key_exists($elem['perso_id'], $tab)) {
                 $tab[$elem['perso_id']] = array(
                     "nom"         => $elem['nom'],

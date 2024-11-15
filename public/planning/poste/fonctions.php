@@ -19,6 +19,7 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
 
 function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
 {
+    $config = $GLOBALS['config'];
     $resultats=array();
     $classe=array();
     $i=0;
@@ -90,7 +91,11 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
 
                     if ($absence["perso_id"] == $elem['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut) {
                         // Absence validée : rouge barré
-                        if ($absence['valide']>0 or $GLOBALS['config']['Absences-validation'] == 0) {
+
+                        if (($config['Absences-Exclusion'] == 1 and $absence['valide'] == 99999)
+                            or $config['Absences-Exclusion'] == 2) {
+                            continue;
+                        } elseif ($absence['valide'] > 0 or $GLOBALS['config']['Absences-validation'] == 0) {
                             $class_tmp[]="red";
                             $class_tmp[]="striped";
                             $absence_valide = true;
