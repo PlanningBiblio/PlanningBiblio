@@ -47,6 +47,8 @@ class PlanningJobController extends BaseController
         $this->droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
         $tab_exclus = array(0);
+        $listOfUnavailableAbsent = array(0);
+        $listOfUnavailableAbsentImported = array(0);
         $absents = array(0);
         $absences_non_validees = array(0);
         $agents_qualif = array(0);
@@ -298,8 +300,27 @@ class PlanningJobController extends BaseController
         if ($db->result) {
             foreach ($db->result as $elem) {
                 if ($elem['valide'] > 0 or $this->config('Absences-validation') == '0') {
-                    $tab_exclus[]=$elem['perso_id'];
-                    $absents[]=$elem['perso_id'];
+
+                    switch ($this->config('Absences-Exclusion')) {
+                        case 1:
+                            if ($elem['valide'] == '99999') {
+                                $listOfUnavailableAbsentImported[] = $elem['perso_id'];
+                            } else {
+                                $absents[] = $elem['perso_id'];
+                                $tab_exclus[] = $elem['perso_id'];
+                            }
+                            break;
+
+                        case 2:
+                            $listOfUnavailableAbsent[] = $elem['perso_id'];
+                            break;
+
+                        default:
+                            $absents[] = $elem['perso_id'];
+                            $tab_exclus[] = $elem['perso_id'];
+                            break;
+                    }
+
                 } elseif ($this->config('Absences-non-validees')) {
                     $absences_non_validees[] = $elem['perso_id'];
                 }
@@ -382,6 +403,12 @@ class PlanningJobController extends BaseController
 
                 // Handle exclusions.
                 $exclusion[$elem['id']] = array();
+
+                if (in_array($elem['id'], $listOfUnavailableAbsent)) {
+                    $exclusion[$elem['id']][] = 'absence';
+                } elseif (in_array($elem['id'], $listOfUnavailableAbsentImported)) {
+                    $exclusion[$elem['id']][] = 'importedAbsence';
+                }
 
                 // Check id agent is present on
                 // requested time slot.
@@ -553,6 +580,11 @@ class PlanningJobController extends BaseController
                         } else {
                             $motifExclusion[$elem['id']][]="wrong_cat";
                         }
+                    }
+                    if (in_array('absence', $exclusion[$elem['id']])) {
+                        $motifExclusion[$elem['id']][] = 'absence';
+                    } elseif (in_array('importedAbsence', $exclusion[$elem['id']])) {
+                        $motifExclusion[$elem['id']][] = 'importedAbsence';
                     }
                 }
             }

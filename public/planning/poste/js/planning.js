@@ -781,6 +781,17 @@ function ContextMenu2agents(data, agent) {
       content = separator + '';
       separator = ', ';
 
+      // MT46229
+      if (e == 'absence') {
+        title_attr = "L'agent a une indisponibilité enregistrée sur ce créneau (voir liste des absences)";
+        content += 'Absence';
+      }
+
+      if (e == 'importedAbsence') {
+        title_attr = "L'agent a une indisponibilité enregistrée sur ce créneau (voir liste des absences)";
+        content += 'Absence importée';
+      }
+
       if (e == 'times') {
         title_attr = "Les horaires de l'agent ne lui permettent pas d'occuper ce poste";
         content = 'Horaires';
