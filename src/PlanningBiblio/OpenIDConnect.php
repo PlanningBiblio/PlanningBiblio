@@ -4,6 +4,7 @@ namespace App\PlanningBiblio;
 
 use App\PlanningBiblio\Logger;
 use Jumbojett\OpenIDConnectClient;
+use Symfony\Component\HttpFoundation\Request;
 
 class OpenIDConnect
 {
@@ -26,8 +27,10 @@ class OpenIDConnect
     }
 
 
-    public function auth()
+    public function auth(Request $request)
     {
+        $session = $request->getSession();
+
         try {
 
             $oidc = new OpenIDConnectClient($this->provider,
@@ -35,8 +38,11 @@ class OpenIDConnect
                 $this->client_secret,
             );
 
+            $oidc->addScope(['openid', 'email', 'profile']);
             $oidc->setCertPath($this->ca_cert);
             $oidc->authenticate();
+
+            $session->set('oidcToken', $oidc->getIdToken());
 
             $user = new \stdClass();
             $user->firstname = $oidc->requestUserInfo('given_name');
@@ -52,15 +58,26 @@ class OpenIDConnect
     }
 
 
-    public function logout()
+    public function logout(Request $request)
     {
+        if (stristr($this->provider, 'google')) {
+            return;
+        }
 
-        $oidc = new OpenIDConnectClient($this->provider,
-            $this->client_id,
-            $this->client_secret,
-        );
+        $session = $request->getSession();
+        $oidcToken = $session->get('oidcToken');
 
-        $oidc->setCertPath($this->ca_cert);
-        $oidc->signOut($this->client_id, $this->config['URL'] . '/logout');
+        try {
+            $oidc = new OpenIDConnectClient($this->provider,
+                $this->client_id,
+                $this->client_secret,
+            );
+
+            $oidc->setCertPath($this->ca_cert);
+            $oidc->signOut($oidcToken, $this->config['URL'] . '/logout');
+
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }
