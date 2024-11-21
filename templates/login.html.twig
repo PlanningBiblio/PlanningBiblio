@@ -60,6 +60,14 @@
               </td>
             </tr>
   
+            {% if sSOLink %}
+              <tr>
+                <td colspan='2' align='center'><br/>
+                  <a href='{{ path('home') }}'>{{ sSOLink }}</a>
+                </td>
+              </tr>
+            {% endif %}
+  
             {% if demo_mode %}
               <tr>
                 <td colspan='2' align='center'>

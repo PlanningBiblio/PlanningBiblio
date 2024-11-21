@@ -37,12 +37,30 @@ class AuthorizationsController extends BaseController
         $redirect_url = $request->get('redirURL');
         $new_login = $request->get('newlogin');
 
+        // SSO Link
+        $sSOLink = null;
+
+        if ($this->config('Auth-Mode') == 'OpenIDConnect' and !empty($_ENV['OIDC_PROVIDER'])) {
+            if (stristr($_ENV['OIDC_PROVIDER'], 'google')) {
+                $sSOLink = 'Se connecter avec un compte Google';
+            } elseif (stristr($_ENV['OIDC_PROVIDER'], 'microsoft')) {
+                $sSOLink = 'Se connecter avec un compte Microsoft';
+            } else {
+                $sSOLink = 'Se connecter avec un compte professionnel';
+            }
+        }
+
+        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS' and !empty($this->config('CAS-Hostname'))) {
+            $sSOLink = 'Se connecter avec un compte CAS';
+        }
+
         $this->templateParams(array(
             'show_menu' => 0,
             'redirect_url' => $redirect_url,
             'new_login' => $new_login,
             'demo_mode' => empty($this->config('demo')) ? 0 : 1,
             'error' => $error,
+            'sSOLink' => $sSOLink,
         ));
 
         return $this->output('login.html.twig');
