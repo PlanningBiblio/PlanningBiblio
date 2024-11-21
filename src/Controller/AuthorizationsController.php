@@ -161,7 +161,7 @@ class AuthorizationsController extends BaseController
         $session->invalidate();
 
         $authArgs = null;
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {
+        if (in_array($this->config('Auth-Mode'), ['CAS', 'CAS-SQL', 'OpenIDConnect'])) {
             $authArgs = $_SESSION['oups']['Auth-Mode'] == 'CAS' ? null: '?noCAS';
         }
 
@@ -177,7 +177,7 @@ class AuthorizationsController extends BaseController
 
         if ($this->config('Auth-Mode') == 'OpenIDConnect') {
             $oidc = new OpenIDConnect();
-            $oidc->logout();
+            $oidc->logout($request);
         }
 
         return $this->redirect($this->config('URL') . "/login$authArgs");
@@ -214,7 +214,7 @@ class AuthorizationsController extends BaseController
             // OpenID Connect
             } elseif ($this->config('Auth-Mode') == 'OpenIDConnect') {
                 $oidc = new OpenIDConnect();
-                $user = $oidc->auth();
+                $user = $oidc->auth($request);
                 $login = $user ? $user->login : null;
             }
 
