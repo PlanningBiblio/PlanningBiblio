@@ -114,6 +114,11 @@ function add_horaires(tableau){
 
 function change_horaires(elem){
   tmp = elem.attr('name').split('_');
+
+  if (tmp[0] != 'fin') {
+    return;
+  }
+
   tmp[2]++;
   elem2 = 'debut_' + tmp[1] + '_' + tmp[2];
   for(i=0;i<document.form2.elements.length;i++){
