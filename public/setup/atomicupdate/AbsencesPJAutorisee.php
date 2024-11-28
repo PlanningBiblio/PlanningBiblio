@@ -1,0 +1,1 @@
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('Absences-PJ-autorisee', 'boolean', '0', 'Afficher ou masquer les champs Pièces justificatives et Attacher un document dans le formulaire Ajouter une absence.', 'Absences', '', NULL, '14');";
