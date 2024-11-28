@@ -48,6 +48,7 @@ class CJICS
 {
     public $CSRFToken = null;
     public $error=null;
+    public $icsServer = 0;
     public $logs=null;
     public $number = 0;
     public $pattern=null;
@@ -149,10 +150,11 @@ class CJICS
      * @param int $this->perso_id (optionnel)
      * Supprime de la table $this->table tous les événements du calendrier $this->src pour l'agent défini par $this->perso_id
      */
-    public function purge()
+    public function purge($old = false)
     {
         // Initialisation des variables
         $CSRFToken = $this->CSRFToken;
+        $icsServer = $this->icsServer;
         $perso_id = $this->perso_id;    // perso_id
         $table = $this->table;          // Table à mettre à jour
         $src = $this->src;              // Fichier ICS
@@ -163,12 +165,12 @@ class CJICS
             $test = @get_headers($src, 1);
 
             if (empty($test)) {
-                logs("Agent #$perso_id : $src is not a valid URL", "ICS", $CSRFToken);
+                logs("Agent #$perso_id, Server #$icsServer : $src is not a valid URL", "ICS", $CSRFToken);
                 return false;
             }
 
             if (!strstr($test[0], '200')) {
-                logs("Agent #$perso_id : $src {$test[0]}", "ICS", $CSRFToken);
+                logs("Agent #$perso_id, Server #$icsServer : $src {$test[0]}", "ICS", $CSRFToken);
                 return false;
             }
         }
@@ -185,19 +187,25 @@ class CJICS
         }
 
         if ($this->logs) {
-            logs("Agent #$perso_id : Purge $calName, Table: $table, src: $src", "ICS", $CSRFToken);
+            logs("Agent #$perso_id, Server #$icsServer : Purge $calName, Table: $table, src: $src", "ICS", $CSRFToken);
         }
 
         if ($this->logs) {
             $db = new db();
             $db->select2($table, 'id', array('cal_name' => $calName, 'perso_id' => $perso_id));
             $nb = $db->nb;
-            logs("Agent #$perso_id : Purge $calName, Table: $table, $nb éléments à supprimer", "ICS", $CSRFToken);
+            logs("Agent #$perso_id, Server #$icsServer : Purge $calName, Table: $table, $nb éléments à supprimer", "ICS", $CSRFToken);
         }
 
-        $db = new db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete($table, array('cal_name' => $calName, 'perso_id' => $perso_id));
+        if ($icsServer != 0 and $old == false) {
+            $db = new db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete($table, array('ics_server' => $icsServer, 'perso_id' => $perso_id));
+        } elseif ($old == true) {
+            $db = new db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete($table, array('ics_server' => null, 'cal_name' => $calName, 'perso_id' => $perso_id));
+        }
     }
 
     /**
@@ -212,6 +220,7 @@ class CJICS
     {
         // Initialisation des variables
         $CSRFToken = $this->CSRFToken;
+        $icsServer = $this->icsServer;
         $perso_id=$this->perso_id;  // perso_id
         $table=$this->table;        // Table à mettre à jour
         $src=$this->src;            // Fichier ICS
@@ -225,7 +234,7 @@ class CJICS
         $config = $GLOBALS['config'];
 
         if ($this->logs) {
-            logs("Agent #$perso_id : Table: $table, src: $src", "ICS", $CSRFToken);
+            logs("Agent #$perso_id, Server #$icsServer : Table: $table, src: $src", "ICS", $CSRFToken);
         }
 
         // Get available absences reasons
@@ -245,8 +254,8 @@ class CJICS
         } catch(Exception $e) {
             if ($this->logs) {
                 $error = $e->getMessage();
-                logs("Agent #$perso_id : Impossible de lire le fichier $src", "ICS", $CSRFToken);
-                logs("Agent #$perso_id : Error : $error", "ICS", $CSRFToken);
+                logs("Agent #$perso_id, Server #$icsServer : Impossible de lire le fichier $src", "ICS", $CSRFToken);
+                logs("Agent #$perso_id, Server #$icsServer : Error : $error", "ICS", $CSRFToken);
                 return false;
             }
         }
@@ -264,12 +273,12 @@ class CJICS
 
         $calTimeZone = $ical->calendarTimezone();
         if ($this->logs) {
-            logs("Agent #$perso_id : Calendrier: $calName, Fuseau horaire: $calTimeZone", "ICS", $CSRFToken);
+            logs("Agent #$perso_id, Server #$icsServer : Calendrier: $calName, Fuseau horaire: $calTimeZone", "ICS", $CSRFToken);
         }
 
         if (!is_array($events) or empty($events)) {
             if ($this->logs) {
-                logs("Agent #$perso_id : Aucun élément trouvé dans le fichier $src", "ICS", $CSRFToken);
+                logs("Agent #$perso_id, Server #$icsServer : Aucun élément trouvé dans le fichier $src", "ICS", $CSRFToken);
                 $events = array();
             }
         }
@@ -417,9 +426,9 @@ class CJICS
             }
         }
 
-        // Recherche les événements correspondant au calendrier $calName et à l'agent $perso_id dans la table $table
+        // Recherche les événements correspondant au calendrier $icsServer et à l'agent $perso_id dans la table $table
         $db=new db();
-        $db->select2($table, null, array("cal_name"=> "$calName","perso_id"=>$perso_id));
+        $db->select2($table, null, array('ics_server' => $icsServer, 'perso_id' => $perso_id));
         if ($db->result) {
             // Pour chaque événement
             foreach ($db->result as $elem) {
@@ -445,7 +454,7 @@ class CJICS
         }
 
         if ($this->logs) {
-            logs("Agent #$perso_id : $nb événement(s) supprimé(s)", "ICS", $CSRFToken);
+            logs("Agent #$perso_id, Server #$icsServer : $nb événement(s) supprimé(s)", "ICS", $CSRFToken);
         }
 
         // Insertion des nouveux éléments ou des éléments modifiés dans la table $table : complète le tableau $insert
@@ -460,8 +469,8 @@ class CJICS
         if (!empty($insert)) {
             $db=new dbh();
             $req = "INSERT INTO `{$GLOBALS['config']['dbprefix']}$table`
-                (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`, `id_origin`, `last_modified`)
-                VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :cal_name, :ical_key, :uid, :rrule, :id_origin, :last_modified);";
+                (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `ics_server`, `cal_name`, `ical_key`, `imported_at`, `uid`, `rrule`, `id_origin`, `last_modified`)
+                VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :ics_server, :cal_name, :ical_key, :imported_at, :uid, :rrule, :id_origin, :last_modified);";
             $db->CSRFToken = $CSRFToken;
             $db->prepare($req);
 
@@ -581,8 +590,10 @@ class CJICS
                   ":motif_autre" => $motif_autre,
                   ":commentaires" => $commentaires,
                   ":groupe" => $groupe,
+                  ':ics_server' => $icsServer,
                   ":cal_name" => $calName,
                   ":ical_key" => $elem['key'],
+                  ':imported_at' => date('Y-m-d H:i:s'),
                   ":uid" => $elem['UID'],
                   ":rrule" => $rrule, 
                   ":id_origin" => $id_origin,
@@ -604,7 +615,7 @@ class CJICS
         }
 
         if ($this->logs) {
-            logs("Agent #$perso_id : $nb événement(s) importé(s)", "ICS", $CSRFToken);
+            logs("Agent #$perso_id, Server #$icsServer : $nb événement(s) importé(s)", "ICS", $CSRFToken);
         }
     }
 

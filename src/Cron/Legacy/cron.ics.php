@@ -136,11 +136,23 @@ foreach ($agents as $agent) {
             $url = $agent['url_ics'];
         }
 
+        // Purge old calendars (calendards imported before MT45827)
+        $ics = new CJICS();
+        $ics->icsServer = $i;
+        $ics->src = $url;
+        $ics->number = $i;
+        $ics->perso_id = $agent["id"];
+        $ics->table = "absences";
+        $ics->logs = true;
+        $ics->CSRFToken = $CSRFToken;
+        $ics->purge(true);
+
         // If the current calendar checkbox is not checked, we do not import it and we purge the relative events already imported.
         if (!$agent["ics_$i"]) {
-            logs("Agent #{$agent['id']} : Check ICS $i is disabled", "ICS", $CSRFToken);
+            logs("Agent #{$agent['id']}, Server #$i : Check ICS $i is disabled", "ICS", $CSRFToken);
 
             $ics=new CJICS();
+            $ics->icsServer = $i;
             $ics->src = $url;
             $ics->number = $i;
             $ics->perso_id = $agent["id"];
@@ -153,13 +165,13 @@ foreach ($agents as $agent) {
         }
     
         if (!$url) {
-            logs("Agent #{$agent['id']} : Impossible de constituer une URL valide", "ICS", $CSRFToken);
+            logs("Agent #{$agent['id']}, Server #$i : Impossible de constituer une URL valide", "ICS", $CSRFToken);
             continue;
         }
     
         // Test si le fichier existe
         if (substr($url, 0, 1) == '/' and !file_exists($url)) {
-            logs("Agent #{$agent['id']} : Le fichier $url n'existe pas", "ICS", $CSRFToken);
+            logs("Agent #{$agent['id']}, Server #$i : Le fichier $url n'existe pas", "ICS", $CSRFToken);
             continue;
         }
     
@@ -168,19 +180,20 @@ foreach ($agents as $agent) {
             $test = @get_headers($url, 1);
 
             if (empty($test)) {
-                logs("Agent #{$agent['id']} : $url is not a valid URL", "ICS", $CSRFToken);
+                logs("Agent #{$agent['id']}, Server #$i : $url is not a valid URL", "ICS", $CSRFToken);
                 continue;
             }
 
             if (!strstr($test[0], '200')) {
-                logs("Agent #{$agent['id']} : $url {$test[0]}", "ICS", $CSRFToken);
+                logs("Agent #{$agent['id']}, Server #$i : $url {$test[0]}", "ICS", $CSRFToken);
                 continue;
             }
         }
     
-        logs("Agent #{$agent['id']} : Importation du fichier $url", "ICS", $CSRFToken);
+        logs("Agent #{$agent['id']}, Server #$i : Importation du fichier $url", "ICS", $CSRFToken);
 
         $ics=new CJICS();
+        $ics->icsServer = $i;
         $ics->src=$url;
         $ics->perso_id=$agent["id"];
         $ics->pattern = $config["ICS-Pattern$i"];
