@@ -781,7 +781,6 @@ function ContextMenu2agents(data, agent) {
       content = separator + '';
       separator = ', ';
 
-      // MT46229
       if (e == 'absence') {
         title_attr = "L'agent a une indisponibilité enregistrée sur ce créneau (voir liste des absences)";
         content += 'Absence';

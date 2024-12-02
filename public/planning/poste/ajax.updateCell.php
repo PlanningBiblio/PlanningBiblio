@@ -345,12 +345,12 @@ for ($i=0;$i<count($tab);$i++) {
 
             if (($config['Absences-Exclusion'] == 1 and $absence['valide'] == 99999)
                 or $config['Absences-Exclusion'] == 2) {
-                $tab[$i]['absent'] = 0;
+                // Nothing changes. If absent = 1 because manually crossed out, absent must remain equal to 1.
             } elseif ($absence['valide'] > 0 or $config['Absences-validation'] == 0) {
-                $tab[$i]['absent']=1;
+                $tab[$i]['absent'] = 1;
                 break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
             } elseif ($config['Absences-non-validees'] and $tab[$i]['absent'] != 1) {
-                $tab[$i]['absent']=2;
+                $tab[$i]['absent'] = 2;
             }
         }
     }
