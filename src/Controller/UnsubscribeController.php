@@ -19,7 +19,6 @@ class UnsubscribeController extends BaseController
         $show_menu = empty($session->get('loginId')) ? 0 : 1;
 
         $mail = decrypt($token);
-        //error_log("Interactive unsubscription of $mail");
 
         $this->templateParams(array(
             'show_menu' => $show_menu,
@@ -35,7 +34,6 @@ class UnsubscribeController extends BaseController
         // When the mail client uses List-Unsubscribe=One-Click
         if ($request->get('List-Unsubscribe') == 'One-Click') {
             $mail = decrypt($token);
-            //error_log("Non-interactive unsubscription of $mail");
         }
 
         $response = new Response();
