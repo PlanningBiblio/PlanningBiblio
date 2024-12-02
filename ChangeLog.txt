@@ -1,3 +1,15 @@
+*** Version 24.10.02   (2024-12-02)    ***
+- Fixes
+Issue #394: Check if a holiday exists before deleting it #1083
+MT44528: Fix weekly average in statistics #1085
+MT44985: Framework hours edition: Next start time change only if the … #1089
+
+- Enhancements
+MT43946: Add unsubscribe link in Planno's emails headers. #1079
+MT46227: MS Graph: do not import the subject if the event is private #1086
+MT44566: Adapt OpenID connector to Google #1088
+MT46229: Allow the assignment of absent agents to schedules #1090
+
 *** Version 24.10.01   (2024-10-27)    ***
 - Fixes
 Issue #1082: Fix undefined key "deleted" in absences/edit.html.twig
