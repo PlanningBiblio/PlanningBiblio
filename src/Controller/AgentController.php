@@ -379,7 +379,7 @@ class AgentController extends BaseController
             $sites = array();
             $titre = "Ajout d'un agent";
             $action = "ajout";
-            if ($_SESSION['perso_actif'] and $_SESSION['perso_actif']!="Supprim&eacute;") {
+            if (!empty($_SESSION['perso_actif']) and $_SESSION['perso_actif'] != 'Supprim&eacute;') {
                 $actif = $_SESSION['perso_actif'];
             }// vérifie dans quel tableau on se trouve pour la valeur par défaut
         }

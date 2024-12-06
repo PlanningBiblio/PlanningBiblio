@@ -11,16 +11,13 @@ use Symfony\Component\DomCrawler\Crawler;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-class IndexControllerTest extends PLBWebTestCase
+class PlanningControllerTest extends PLBWebTestCase
 {
     public function testPlanningNotReadyWithoutPermission()
     {
         $this->builder->delete(Agent::class);
         $this->builder->delete(PlanningPosition::class);
         $this->builder->delete(PlanningPositionTabAffectation::class);
-
-
-        $client = static::createClient();
 
         $agent = $this->builder->build(
             Agent::class,
@@ -31,17 +28,12 @@ class IndexControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(99,100));
 
-        $y = date('Y');
-        $m = date('m');
-        $d = date('d');
-        $_SESSION['oups']['CSRFToken'] = '00000';
+        $date = new \DateTime();
+        $today = date('d/m/Y');
 
-        $crawler = $client->request('GET', "/index", array('date' => "$y-$m-$d", 'CSRFToken' => '00000'));
-
-        $result = $crawler->filterXPath('//div[@class="decalage-gauche"]/p');
-        $this->assertEquals($result->text('Node does not exist', false),"Le planning n'est pas prêt.",'test index with no planning');
-
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$y");
+        $crawler = $this->client->request('GET', '/');
+        $result = $crawler->filter('.decalage-gauche p');
+        $this->assertEquals("Le planning du $today n'est pas prêt.", $result->text('Node does not exist', false));
 
         $pl_post_lock = $this->builder->build
         (
@@ -66,11 +58,8 @@ class IndexControllerTest extends PLBWebTestCase
             )
         );
 
-        $this->logInAgent($agent, array(99,100));
-
-        $crawler = $client->request('GET', "/index", array('date' => "$y-$m-$d", 'CSRFToken' => '00000'));
-
-        $result = $crawler->filterXPath('//div[@class="decalage-gauche"]/font');
-        $this->assertEquals($result->text('Node does not exist', false),"Le planning du $d/$m/$y n'est pas validé !",'test index with no lock planning');
+        $crawler = $this->client->request('GET', '/');
+        $result = $crawler->filter('.decalage-gauche p');
+        $this->assertEquals("Le planning du $today n'est pas validé !", $result->text('Node does not exist', false), 'test index with no lock planning');
     }
 }

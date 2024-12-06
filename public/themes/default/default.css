@@ -564,9 +564,28 @@ a:hover.ejsmenu2 {
   font-size:13pt;
 }
 
-.days_li{
+.days_ul {
+  vertical-align: top;
+  padding-left: 0px;
+}
+
+.days_ul li {
   display: inline;
   padding: 5px 0px;
+}
+
+.days_ul li a {
+  background: #29495C;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 13.0pt;
+  font-family: Poppins;
+  font-weight: bold;
+  z-index:3;
+}
+
+.days_ul li a.active {
+  color: #FFD700;
 }
 
 /* TD du menu top */
@@ -887,9 +906,6 @@ div#tabsemaine1{
   left: 0;
   z-index: 1;
 }
-.td_sep {
-  background: inherit;
-}
 
 /* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
 .tr_espace{
@@ -1096,6 +1112,7 @@ div#tabsemaine1{
 }
 
 #pl-notes-div2{
+  width: 100%;
   position: relative;
   left: 5%;
   display: inline-block;
@@ -1139,28 +1156,6 @@ div#tabsemaine1{
 	{
 	font-size:13px; 
 	display:none;
-	}
-
-.menu
-	{
-	background:#29495C;
-  color: #FFFFFF;
-	text-decoration:none;
-	font-size:13.0pt;
-	font-family: Poppins;
-	font-weight: bold;
-	z-index:3;
-	}
-	
-.menuRed
-	{
-	color:#FFD700;
-	background:#29495C;
-	text-decoration:none;
-	font-size:13.0pt;
-	font-family:Poppins;
-	font-weight: bold;
-	z-index:3;
 	}
 
 a:hover.menuRed, a:hover.menu {
