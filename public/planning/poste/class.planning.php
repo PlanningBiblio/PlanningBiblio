@@ -450,9 +450,23 @@ class planning
                 $filter .= " $teleworking_exception";
             }
 
+            // Overwrite $elem['absent'] = 1 if absences are found in tables absences and conges.
+            // NB: $elem['absent'] is already set to 0 or 1 from table pl_poste (1 if manually striped out).
             $db = new \db();
             $db->select('absences', '*', "`debut`<'$end' AND `fin`>'$start' AND `valide` > 0 AND `perso_id`='$id' $filter ");
-            $elem['absent'] = $db->result ? 1 : 0;
+
+            if ($db->result) {
+                if ($config['Absences-Exclusion'] == 0) {
+                    $elem['absent'] = 1;
+                } elseif ($config['Absences-Exclusion'] == 1) {
+                    foreach ($db->result as $abs) {
+                        if ($abs['valide'] != 99999) {
+                            $elem['absent'] = 1;
+                            break;
+                        }
+                    }
+                }
+            }
 
             // Looking for holidays.
             if ($agent->isOnVacationOn($start, $end)) {
@@ -603,7 +617,8 @@ class planning
                         }
                     }
                     $bold=$exists?null:"font-weight:bold;";
-                    $striped = $e['absent'] == '1' ?"text-decoration:line-through; color:red;":null;
+
+                    $striped = $e['absent'] == '1' ? 'text-decoration:line-through; color:red;' : null;
 
                     // Affichage de la ligne avec horaires et poste
                     $poste = html_entity_decode($postes[$e['poste']]['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
@@ -612,7 +627,7 @@ class planning
 
                     // On ajoute "(supprimé)" et une étoile en cas de modif car certains webmail suppriment les balises et le style "bold", etc.
                     if ($striped) {
-                        $line.=" (supprim&eacute;)";
+                        $line .= " (supprimé)";
                     }
                     if ($bold) {
                         $line.="<sup style='font-weight:bold;'>*</sup>";
