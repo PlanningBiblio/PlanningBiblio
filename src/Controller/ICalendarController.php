@@ -117,12 +117,31 @@ class ICalendarController extends BaseController
                 $verrou[$elem['date'].'_'.$elem['site']] = array('date' => $elem['validation2'], 'agent' => $elem['perso2']);
             }
         }
+
         // Recherche des absences
-        $a = new \absences();
-        $a->valide = true;
-        $a->documents = false;
-        $a->fetch("`debut`,`fin`", $id, ($icsInterval ? date('Y-m-d',strtotime(date('Y-m-d') . " - $icsInterval days")) : '0000-00-00 00:00:00'), date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
-        $absences = $a->elements;
+        $absences = array();
+
+        if ($this->config('Absences-Exclusion') != 2) {
+            $a = new \absences();
+            $a->valide = true;
+            $a->documents = false;
+            $a->fetch(
+                '`debut`,`fin`',
+                $id,
+                ($icsInterval ? date('Y-m-d',strtotime(date('Y-m-d') . " - $icsInterval days")) : '0000-00-00 00:00:00'),
+                date('Y-m-d', strtotime(date('Y-m-d').' + 2 years'))
+            );
+
+            if ($this->config('Absences-Exclusion') == 0) {
+                $absences = $a->elements;
+            } else {
+                foreach ($a->elements as $abs) {
+                    if ($abs['valide'] != 99999) {
+                        $absences[] = $abs;
+                    }
+                }
+            }
+        }
 
         // Recherche des congés (si le module est activé)
         if ($this->config('Conges-Enable')) {
