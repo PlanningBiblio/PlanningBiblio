@@ -26,7 +26,13 @@ class UpdateDbCommand extends Command
         require_once(__DIR__ . '/../../init/init.php');
         $content = ob_get_clean();
 
+        $io = new SymfonyStyle($input, $output);
+
         if ($content) {
+            if ($output->isVerbose()) {
+                $io->writeln($content);
+            }
+
             $folder = __DIR__ . '/../../var/update/' . $_ENV['APP_ENV'];
             $file = $folder . '/updateDB-' . date('Ymd-His') . '.txt';
     
@@ -37,7 +43,6 @@ class UpdateDbCommand extends Command
             file_put_contents($file, $content);
         }
 
-        $io = new SymfonyStyle($input, $output);
         $io->success('Database updated');
 
         return Command::SUCCESS;
