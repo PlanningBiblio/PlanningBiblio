@@ -562,6 +562,61 @@ $(function() {
     }
   });
 
+  // Tooltip Form
+  $( "#pl-tooltip-form" ).dialog({
+    autoOpen: false,
+    height: 480,
+    width: 650,
+    modal: true,
+    buttons: {
+      "Enregistrer": {
+	click: function() {
+          allFields.removeClass( "ui-state-error");
+          var bValid = true;
+
+          if ( bValid ) {
+            // Enregistre le commentaire
+            text.val(text.val().trim());
+            var text2=text.val().replace(/\n/g,"#br#");
+            var text3=text.val().replace(/\n/g,"<br/>");
+            $.ajax({
+              dataType: "json",
+              url: url('planning/poste/ajax.notes.php'),
+              type: "post",
+              data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2), CSRFToken: $('#CSRFSession').val()},
+              success: function(result){
+                if(result.error){
+                  CJInfo(result.error,"error");
+                }
+                else{
+                  CJInfo("Infobulle modifiée avec succès","success");
+                  // Ferme le dialog
+                }
+                $("#pl-tooltip-form").dialog( "close" );
+              },
+              error: function(){
+                updateTips("Une erreur est survenue lors de l'enregistrement du message", "error");
+              }
+            });
+          }
+        },
+        text: 'Enregistrer'
+      },
+
+      Annuler: {
+        click: function() {
+          $(this).dialog( "close" );
+        },
+        text: "Annuler",
+        class: "ui-button-type2"
+      },
+    },
+
+    close: function() {
+      allFields.removeClass( "ui-state-error" );
+    }
+  });
+  
   $(".cellDiv").contextmenu(function(){
     $(this).closest("td").attr("data-perso-id",$(this).attr("data-perso-id"));
     majPersoOrigine($(this).attr("data-perso-id"));
@@ -970,6 +1025,11 @@ function fillContextMenuLevel1(data) {
     menu1.append(contextMenuDisableCell(data));
   }
 
+  // Add information tooltip
+  if (data.can_disable_cell) {
+    menu1.append(contextMenuTooltip(data));
+  }
+
   menu1.appendTo('#menudiv1');
 
 }
@@ -1169,6 +1229,36 @@ function contextMenuTitle(data) {
   td = $('<td>').attr({ colspan: '2'}).append(position).append(times);
 
   tr = $('<tr>').attr({ class: 'menudiv-titre'}).append(td);
+
+  return tr;
+}
+
+function contextMenuTooltip(data) {
+/*
+  on = 'bataille_navale("' + data.position_id + '","' + data.date + '","'
+            + data.start + '","' + data.end + '",0,0,0,"' + data.site + '",1,-1);';
+*/
+  on = '$("#pl-tooltip-form").dialog("open");';
+  title = 'Ajouter des informations';
+
+/*
+  // TODO: avec une condition : title = 'Modifier les informations';
+  if (data.cell_enabled) {
+    on = 'bataille_navale("' + data.position_id + '","' + data.date + '","'
+              + data.start + '","' + data.end + '",0,0,0,"' + data.site + '",1,1);';
+    title = 'Griser la cellule';
+  }
+*/
+
+  td = $('<td>').attr({
+    colspan: '2',
+    onclick: on
+  }).html(title);
+
+  tr = $('<tr>').attr({
+    class: 'menudiv-tr',
+    onmouseover: 'groupe_tab_hide();'
+  }).append(td);
 
   return tr;
 }
