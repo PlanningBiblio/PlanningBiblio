@@ -441,7 +441,6 @@ $(function() {
     height: 480,
     width: 650,
     modal: true,
-    dialogClass: 'popup-background',
     buttons: {
       "Enregistrer": {
 	click: function() {
@@ -956,7 +955,7 @@ function fillContextMenuLevel1(data) {
     menu1.append(contextMenuCallForhelp(data));
   }
 
-  // Disable ans enable cell.
+  // Disable and enable cell.
   if (data.can_disable_cell) {
     menu1.append(contextMenuDisableCell(data));
   }

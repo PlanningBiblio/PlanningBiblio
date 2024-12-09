@@ -39,7 +39,6 @@ $(function() {
     modal: true,
     resizable: false,
     draggable: false,
-    dialogClass: 'popup-background',
     buttons: {
       Enregistrer: function() {
 	// Supprime les lignes cachées lors du clic sur la corbeille
@@ -283,7 +282,6 @@ $(function() {
     height: 480,
     width: 650,
     modal: true,
-    dialogClass: 'popup-background',
     buttons: {
       "Enregistrer": function() {
 
