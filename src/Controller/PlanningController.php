@@ -277,7 +277,7 @@ class PlanningController extends BaseController
 
         if (!in_array((300 + $site), $this->permissions)) {
             $session->getFlashBag()->add('error', "Vous n'avez pas les droits suffisants pour supprimer le(s) planning(s)");
-            return $this->redirectToRoute('index');
+            return $this->redirectToRoute('home');
         }
 
         if ($week) {
@@ -305,7 +305,7 @@ class PlanningController extends BaseController
                 ->getRepository(PlanningPositionLock::class)
                 ->delete($start, $end, $site);
 
-            return $this->redirectToRoute('index');
+            return $this->redirectToRoute('home');
         }
 
         $history = new PlanningPositionHistoryHelper();
@@ -327,7 +327,7 @@ class PlanningController extends BaseController
             'date' => $date)
         );
 
-        return $this->redirectToRoute('index');
+        return $this->redirectToRoute('home');
     }
 
     #[Route(path: '/modelimport', name: 'model.import', methods: ['POST'])]
@@ -613,7 +613,7 @@ class PlanningController extends BaseController
                 }
             }
         }
-        return $this->redirectToRoute('index', array('date' => $date));
+        return $this->redirectToRoute('home');
     }
 
     #[Route(path: '/modelform', name: 'model.form', methods: ['GET'])]
