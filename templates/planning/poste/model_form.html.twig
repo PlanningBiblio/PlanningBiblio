@@ -2,7 +2,7 @@
 
 <div style="text-align:center">
   <form name="form" id="form" method="post" action="{{ asset('modelimport') }}" onsubmit="return ctrl_form('model');">
-    <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+    <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
     <input type='hidden' name='_token' value='{{ csrf_token('') }}' />
     <input type='hidden' name='date' value='{{ date }}' />
     <input type='hidden' name='site' value='{{ site }}' />
