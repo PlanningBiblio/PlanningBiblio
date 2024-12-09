@@ -47,13 +47,13 @@ class OvertimeControllerAddTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h4', 'Liste des demandes d\'heures supplémentaires');
 
-        $result = $crawler->filterXPath('//body/div[@class="popup-background ui-dialog ui-widget ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
+        $result = $crawler->filterXPath('//body/div[@class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
         $this->assertStringContainsString('display: none',$result->attr('style'),'check display: none');
 
         $button = $crawler->filterXPath('//button[@id="dialog-button"]');
         $button->click();
 
-        $result = $crawler->filterXPath('//body/div[@class="popup-background ui-dialog ui-widget ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
+        $result = $crawler->filterXPath('//body/div[@class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
         $this->assertStringContainsString('display: block',$result->attr('style'),'check display: block');
 
         $result = $crawler->filterXPath('//p[@class="validateTips"]');
@@ -67,7 +67,7 @@ class OvertimeControllerAddTest extends PLBWebTestCase
         $button = $crawler->selectButton('Enregistrer');
         $button->click();
 
-        $result = $crawler->filterXPath('//body/div[@class="popup-background ui-dialog ui-widget ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
+        $result = $crawler->filterXPath('//body/div[@class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
         $this->assertStringContainsString('display: block', $result->attr('style'),'check display: none');
 
     }
