@@ -8412,7 +8412,7 @@ var dialog = $.widget( "ui.dialog", {
 
 	_createWrapper: function() {
 		this.uiDialog = $("<div>")
-			.addClass( "popup-background ui-dialog ui-widget ui-corner-all ui-front " +
+			.addClass( "ui-dialog ui-widget ui-widget-content ui-corner-all ui-front " +
 				this.options.dialogClass )
 			.hide()
 			.attr({
@@ -8472,7 +8472,7 @@ var dialog = $.widget( "ui.dialog", {
 		var uiDialogTitle;
 
 		this.uiDialogTitlebar = $( "<div>" )
-			.addClass( "ui-dialog-titlebar popup-header ui-corner-all ui-helper-clearfix" )
+			.addClass( "ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix" )
 			.prependTo( this.uiDialog );
 		this._on( this.uiDialogTitlebar, {
 			mousedown: function( event ) {

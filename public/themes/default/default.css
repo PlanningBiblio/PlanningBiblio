@@ -1814,28 +1814,22 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
 
 /*Buttons END*/
 
-/*Popup START*/
+/*ui-dialog START*/
 
-.popup-background{
+.ui-dialog {
   background: #FFFFFF;
   border: 1px solid #999999;
   color: #29495C;
   padding: 0 0 0 0;
 }
 
-.popup-header{
+.ui-dialog-titlebar {
   background: #FFD700;
   border: 1px solid #FFD700;
   color: #29495C;
 }
 
-.popup-button{
-  background: #FFD700;
-  border: 1px solid #FFD700;
-  color: #29495C;
-}
-
-/*Popup END*/
+/*ui-dialog END*/
 
 /*Table START*/
 
