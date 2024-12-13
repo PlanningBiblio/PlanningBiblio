@@ -1,3 +1,15 @@
+*** Version 24.10.03   (2024-12-13)    ***
+- Fixes
+MT46579: Agents are no longer displayed "deleted" #1091 
+MT46575: ICS Export: Schedules are exported if absences are ignored #1093
+MT46598: use jQuery-UI standard classes for dialogboxes #1095
+
+- Enhancements
+MT46595: update-db: display SQL queries with option -v #1094
+
+- Security
+MT46605: composer update #1096
+
 *** Version 24.10.02   (2024-12-02)    ***
 - Fixes
 Issue #394: Check if a holiday exists before deleting it #1083
