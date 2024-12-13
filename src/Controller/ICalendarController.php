@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Model\AbsenceReason;
 use App\Model\Agent;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -119,6 +120,11 @@ class ICalendarController extends BaseController
                 $verrou[$elem['date'].'_'.$elem['site']] = array('date' => $elem['validation2'], 'agent' => $elem['perso2']);
             }
         }
+
+        // Teleworking reasons
+        $teleworkingReasons = $this->entityManager->getRepository(AbsenceReason::class)
+            ->getRemoteWorkingDescriptions();
+
         // Recherche des absences
         $a = new \absences();
         $a->valide = true;
@@ -184,7 +190,10 @@ class ICalendarController extends BaseController
 
                 // Exclusion des absences
                 foreach ($absences as $a) {
-                    if ($a['debut'] < $elem['date'].' '.$elem['fin'] and $a['fin'] > $elem['date'].' '.$elem['debut']) {
+                    if ($a['debut'] < $elem['date'].' '.$elem['fin']
+                        and $a['fin'] > $elem['date'].' '.$elem['debut']
+                        and !($postes[$elem['poste']]['teleworking'] and in_array($a['motif'], $teleworkingReasons))
+                        ) {
                         continue 2;
                     }
                 }
