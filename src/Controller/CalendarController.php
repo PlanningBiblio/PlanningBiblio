@@ -3,12 +3,13 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Model\AbsenceReason;
+use App\PlanningBiblio\ClosingDay;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\PlanningBiblio\ClosingDay;
 
 require_once(__DIR__.'/../../public/personnel/class.personnel.php');
 
@@ -85,6 +86,10 @@ class CalendarController extends BaseController
             $temps = json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
         }
 
+        // Teleworking reasons
+        $teleworkingReasons = $this->entityManager->getRepository(AbsenceReason::class)
+            ->getRemoteWorkingDescriptions();
+
         // Sélection des absences
         $filter = $this->config('Absences-validation')?"AND `valide`>0":null;
         $db = new \db();
@@ -112,7 +117,7 @@ class CalendarController extends BaseController
             array("pl_poste", "poste"),
             array("postes", "id"),
             array("date","debut","fin","absent","site"),
-            array(array("name"=>"nom", "as"=>"poste")),
+            array(array('name' => 'nom', 'as' => 'poste'), 'teleworking'),
             array("perso_id"=>$perso_id, "date"=>"BETWEEN $debutSQL AND $finSQL"),
             array(),
             "ORDER BY date, debut, fin, site, poste"
@@ -179,6 +184,10 @@ class CalendarController extends BaseController
                         if (is_array($absences)) {
                             foreach ($absences as $a) {
                                 if ($a['debut'] < $elem['date'].' '.$elem['fin'] and $a['fin'] > $elem['date'].' '.$elem['debut']) {
+                                    if ($elem['teleworking'] and in_array($a['motif'], $teleworkingReasons)) {
+                                        continue;
+                                    }
+
                                     $elem['absent'] = 1;
                                     break;
                                 }
@@ -344,7 +353,8 @@ class CalendarController extends BaseController
                 $tmp = array();
                 $j = 0;
                 for ($i = 0; $i < count($current_postes); $i++) {
-                    $current_postes[$i]['absent'] == true ? true : false;
+                    $current_postes[$i]['absent'] = $current_postes[$i]['absent'] == 1 ? true : false;
+
                     if ($i == 0) {
                         $tmp[$j] = $current_postes[$i];
                     } else {
