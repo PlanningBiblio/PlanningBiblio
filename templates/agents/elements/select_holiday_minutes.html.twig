@@ -1,11 +1,15 @@
 {# agents/elements/select_holiday_minutes.html.twig #}
 
 <select name='{{ name }}' id='{{ name }}' style='width:70px;'>
-  {% for i in range(low=0, high=59, step=config('Granularite')) %}
-    {% if minutes == i %}
-      <option value="{{ i * 0.016666666666667 }}" selected="selected">{{ "%02d"|format(i) }}</option>
+    {% if config('Granularite') == 60 %}
+        <option value="0" selected="selected">00</option>
     {% else %}
-      <option value="{{ i * 0.016666666666667 }}" >{{ "%02d"|format(i) }}</option>
+        {% for i in range(low=0, high=59, step=config('Granularite')) %}
+            {% if minutes == i %}
+              <option value="{{ i * 0.016666666666667 }}" selected="selected">{{ "%02d"|format(i) }}</option>
+            {% else %}
+              <option value="{{ i * 0.016666666666667 }}" >{{ "%02d"|format(i) }}</option>
+            {% endif %}
+        {% endfor %}
     {% endif %}
-  {% endfor %}
 </select>
