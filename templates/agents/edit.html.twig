@@ -361,7 +361,7 @@
       $("document").ready(function(){calculHeures($(this),"","form","heures{{ i }}",{{ i }});});
     {% endfor %}
   </script>
-  <script src="/personnel/js/modif.js"></script>
+  <script type="text/JavaScript" src="{{ asset('personnel/js/modif.js') }}"></script>
 
 <!-- CONTINUER ICI -->
 {% endblock %}
