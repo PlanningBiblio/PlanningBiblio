@@ -7,7 +7,8 @@
     function delete_template(id) {
       if (confirm("Etes vous sûr de vouloir supprimer cet élément ?")) {
         $.ajax({
-          url: url('model/' + id),
+          url: url('model'),
+          data: {id: id},
           type: 'DELETE',
           success: function(data) {
             window.location.reload(false);

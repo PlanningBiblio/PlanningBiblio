@@ -136,7 +136,7 @@ class ModelController extends BaseController
     }
 
 
-    #[Route(path: '/model/{id<\d+>}', name: 'model.delete', methods: ['DELETE'])]
+    #[Route(path: '/model', name: 'model.delete', methods: ['DELETE'])]
     public function delete(Request $request, Session $session)
     {
         $id = $request->get('id');
