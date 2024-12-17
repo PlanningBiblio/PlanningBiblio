@@ -27,6 +27,7 @@ require_once __DIR__."/../absences/class.absences.php";
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\PlanningBiblio\Helper\HourHelper;
 use App\Model\Agent;
 
 class conges
@@ -804,7 +805,7 @@ class conges
             $this->elements=array("annuel"=>null,"anticipation"=>null,"credit"=>null,"recup"=>null,"reliquat"=>null,
     "annuelHeures"=>null, "anticipationHeures"=>null, "creditHeures"=>null, "recupHeures"=>null, "reliquatHeures"=>null,
     "annuelMinutes"=>null, "anticipationMinutes"=>null, "creditMinutes"=>null, "recupMinutes"=>null, "reliquatMinutes"=>null,
-    "annuelCents"=>null, "anticipationCents"=>null, "creditCents"=>null, "recupCents"=>null, "reliquatCents"=>null );
+    "annuelCents"=>null, "anticipationCents"=>null, "creditCents"=>null, "reliquatCents"=>null );
         } else {
             $db=new db();
             $db->select("personnel", "conges_credit,conges_reliquat,conges_anticipation,comp_time,conges_annuel", "`id`='{$this->perso_id}'");
@@ -812,53 +813,59 @@ class conges
                 $annuel = $db->result[0]['conges_annuel'] ? $db->result[0]['conges_annuel'] : 0;
                 $anticipation = $db->result[0]['conges_anticipation'] ? $db->result[0]['conges_anticipation'] : 0;
                 $credit = $db->result[0]['conges_credit'] ? $db->result[0]['conges_credit'] : 0;
-                $recup = $db->result[0]['comp_time'] ? $db->result[0]['comp_time'] : 0;
+                $decimal_comp_time = $db->result[0]['comp_time'] ? $db->result[0]['comp_time'] : 0;
                 $reliquat = $db->result[0]['conges_reliquat'] ? $db->result[0]['conges_reliquat'] : 0;
 
                 // Take into account negative anticipation.
+                // TODO: Use HourHelper::decimalToHourMinutes also for anticipations?
                 $anticipationNegative = false;
                 if ($anticipation < 0) {
                     $anticipationNegative = true;
                     $anticipation = abs($anticipation);
                 }
 
-                // Take into account negative compensatory time.
-                $negative = false;
-                if ($recup < 0) {
-                    $negative = true;
-                    $recup = abs($recup);
-                }
+                $comp_time = HourHelper::decimalToHoursMinutes($decimal_comp_time);
 
                 $annuelHeures=floor($annuel);
                 $anticipationHeures=floor($anticipation);
                 $creditHeures=floor($credit);
-                $recupHeures=floor($recup);
                 $reliquatHeures=floor($reliquat);
 
                 $annuelCents=(round(($annuel-$annuelHeures)*60)/2)*2;
                 $anticipationCents=(round(($anticipation-$anticipationHeures)*60)/2)*2;
                 $creditCents=(round(($credit-$creditHeures)*60)/2)*2;
-                $recupCents=(round(($recup-$recupHeures)*60)/2)*2;
                 $reliquatCents=(round(($reliquat-$reliquatHeures)*60)/2)*2;
 
                 $annuelMinutes=$annuelCents*0.6;
                 $anticipationMinutes=$anticipationCents*0.6;
                 $creditMinutes=$creditCents*0.6;
-                $recupMinutes=$recupCents*0.6;
                 $reliquatMinutes=$reliquatCents*0.6;
 
                 if ($anticipationNegative) {
                     $anticipationHeures = "-$anticipationHeures";
                 }
 
-                if ($negative) {
-                    $recupHeures = "-$recupHeures";
-                }
-
-                $this->elements=array("annuel"=>$annuel, "anticipation"=>$anticipation, "credit"=>$credit, "recup"=>$recup, "reliquat"=>$reliquat,
-      "annuelHeures"=>$annuelHeures, "anticipationHeures"=>$anticipationHeures, "creditHeures"=>$creditHeures, "recupHeures"=>$recupHeures, "reliquatHeures"=>$reliquatHeures,
-      "annuelMinutes"=>$annuelMinutes, "anticipationMinutes"=>$anticipationMinutes, "creditMinutes"=>$creditMinutes, "recupMinutes"=>$recupMinutes, "reliquatMinutes"=>$reliquatMinutes,
-      "annuelCents"=>$annuelCents, "anticipationCents"=>$anticipationCents, "creditCents"=>$creditCents, "recupCents"=>$recupCents, "reliquatCents"=>$reliquatCents );
+                $this->elements = array(
+                    "annuel"              => $annuel,
+                    "annuelHeures"        => $annuelHeures,
+                    "annuelMinutes"       => $annuelMinutes,
+                    "annuelCents"         => $annuelCents,
+                    "anticipation"        => $anticipation,
+                    "anticipationHeures"  => $anticipationHeures,
+                    "anticipationMinutes" => $anticipationMinutes,
+                    "anticipationCents"   => $anticipationCents,
+                    "credit"              => $credit,
+                    "creditHeures"        => $creditHeures,
+                    "creditMinutes"       => $creditMinutes,
+                    "creditCents"         => $creditCents,
+                    "reliquat"            => $reliquat,
+                    "recup"               => $decimal_comp_time,
+                    "recupHeures"         => $comp_time['hours'],
+                    "recupMinutes"        => $comp_time['minutes'],
+                    "reliquatHeures"      => $reliquatHeures,
+                    "reliquatMinutes"     => $reliquatMinutes,
+                    "reliquatCents"       => $reliquatCents
+                );
             }
         }
     }
