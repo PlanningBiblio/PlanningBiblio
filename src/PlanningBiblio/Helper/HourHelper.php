@@ -10,6 +10,56 @@ class HourHelper extends BaseHelper
 
     private static $end_default = '23:59:59';
 
+
+    public static function decimalToHoursMinutes($decimal_duration)
+    {
+        $result = array();
+
+        $negative = false;
+        if ($decimal_duration < 0) {
+            $negative = true;
+            $decimal_duration = abs($decimal_duration);
+        }
+        $result['hours'] = (int) floor($decimal_duration);
+        if ($negative) {
+            $result['hours'] = 0 - $result['hours'];
+        }
+
+        # Considering minutes only from now:
+        $decimal_duration = $decimal_duration - floor($decimal_duration);
+
+        $result['minutes'] = round($decimal_duration * 60);
+
+        if ($result['minutes'] == 60) {
+            if ($negative) {
+                $result['hours'] -= 1;
+            } else {
+                $result['hours'] += 1;
+            }
+            $result['minutes'] = 0;
+        }
+
+        return $result;
+    }
+
+    public static function hoursMinutesToDecimal($hours, $minutes)
+    {
+        $negative = false;
+        if ($hours < 0) {
+            $negative = true;
+            $hours = abs($hours);
+        }
+
+        $result = $hours + round($minutes / 60, 9);
+
+        if ($negative) {
+            $result = 0 - $result;
+        }
+
+        # Working with 9 decimals is enough for minute precision
+        return sprintf("%.9f", $result);
+    }
+
     public static function StartEndFromRequest($request)
     {
         $start = $request->get('hre_debut');
