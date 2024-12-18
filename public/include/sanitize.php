@@ -15,6 +15,9 @@ Page contenant les fonctions PHP de nettoyages de variables
 Page appelée par le fichier index.php
 */
 
+use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
+
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès direct et quitte
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     include_once "accessDenied.php";
@@ -22,10 +25,10 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
 }
 
 function sanitize_html($input) {
-    // TODO: Use symfony/html-sanitizer once using symfony 6.1+
-    $config = HTMLPurifier_Config::createDefault();
-    $purifier = new HTMLPurifier($config);
-    return $purifier->purify($input);
+    $htmlSanitizer = new HtmlSanitizer(
+        (new HtmlSanitizerConfig())->allowSafeElements()
+    );
+    return $htmlSanitizer->sanitize($input);
 }
 
 function sanitize_array_unsafe($n)
