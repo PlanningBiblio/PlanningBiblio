@@ -2803,7 +2803,7 @@ class StatisticController extends BaseController
 
         // Find used positions (we do not want to show positions that are never used)
         $usedPositions = array();
-        $plannings = $this->entityManager->getRepository(PlanningPosition::class)->findAll();
+        $plannings = $this->entityManager->getRepository(PlanningPosition::class)->getPositions();
 
         foreach ($plannings as $elem) {
             if (!in_array($elem->poste(), $usedPositions)) {
