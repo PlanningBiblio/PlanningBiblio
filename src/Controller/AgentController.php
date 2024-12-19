@@ -685,7 +685,6 @@ class AgentController extends BaseController
             $anticipationString = heure4($conges['anticipation']);
 
             $recupHeures = $conges['recupHeures'] ? $conges['recupHeures'] : 0;
-            $recupString = heure4($conges['recup']);
 
             if ($this->config('Conges-Mode') == 'jours' ) {
                 $event = new OnTransformLeaveHours($conges);
@@ -731,8 +730,7 @@ class AgentController extends BaseController
                 'anticipation_min'      => $conges['anticipationCents'],
                 'anticipation_string'   => $anticipationString,
                 'recup_heures'          => $recupHeures,
-                'recup_min'             => $conges['recupCents'],
-                'recup_string'          => $recupString,
+                'recup_min'             => $conges['recupMinutes'],
                 'lang_comp_time'        => $lang['comp_time'],
                 'show_hours_to_days'    => $holiday_helper->showHoursToDays(),
             );
@@ -1720,20 +1718,13 @@ class AgentController extends BaseController
                 $credits = $event->response();
             } else {
 
-                $comptime_hours = trim($params['comp_time']);
-                $negative = false;
-                if (strstr($comptime_hours, '-')) {
-                    $negative = true;
-                    $comptime_hours = abs($comptime_hours);
-                }
-
-                $comp_time = $comptime_hours + $params['comp_time_min'];
+                $comp_time = HourHelper::hoursMinutesToDecimal(trim($params['comp_time_hours']), trim($params['comp_time_min']));
 
                 $credits = array(
                     'conges_credit' => $params['conges_credit'] *= 7,
                     'conges_reliquat' => $params['conges_reliquat'] *= 7,
                     'conges_anticipation' => $params['conges_anticipation'] *= 7,
-                    'comp_time' => $negative ? 0 - $comp_time : $comp_time,
+                    'comp_time' => $comp_time,
                     'conges_annuel' => $params['conges_annuel'] *= 7,
                 );
             }

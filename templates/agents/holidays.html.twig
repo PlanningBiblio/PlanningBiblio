@@ -54,12 +54,12 @@
       <td>{{ lang_comp_time }} :</td>
       <td style='text-align:right; padding-right: 45px;'>
         {% if can_manage_agent %}
-          <input type='text' name='comp_time' value='{{ recup_heures}}'  style='width:60px;text-align:right;'>
+          <input type='text' name='comp_time_hours' value='{{ recup_heures }}' style='width:60px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
-          {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': recup_min, 'name': 'comp_time_min' } %}
+          <input type='text' name='comp_time_min' value='{{ recup_min }}' style='width:60px;text-align:left;'>
         {% else %}
           <p style='padding-right: 18px;'>
-          {{ recup_string }}
+          {{ recup_heures }} heures {{ recup_min }}
           </p>
         {% endif %}
       </td>
