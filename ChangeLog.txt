@@ -1,3 +1,8 @@
+*** Version 24.04.11   (2024-12-19)    ***
+- Fixes
+MT46682: do not cross out positions compatible with teleworking when there are teleworking absences #1098
+Issue #1087: fix link to JS file in templates/agents/edit #1099
+
 *** Version 24.04.10   (2024-12-13)    ***
 - Fixes
 MT46598: use jQuery-UI standard classes for dialogboxes #1095
