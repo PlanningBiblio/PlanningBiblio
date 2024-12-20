@@ -862,7 +862,7 @@ class PlanningJobController extends BaseController
 
         $history = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)
-            ->undoable($request, $date, $site);
+            ->undoable($date, $site);
 
         // Nothing to cancel.
         if (empty($history)) {
@@ -937,7 +937,7 @@ class PlanningJobController extends BaseController
 
         $history = $this->entityManager
              ->getRepository(PlanningPositionHistory::class)
-             ->redoable($request, $date, $site);
+             ->redoable($date, $site);
 
         // Nothing to cancel.
         if (empty($history)) {
