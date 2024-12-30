@@ -139,6 +139,10 @@ $(document).ready(function(){
     },
   });
 
+  if ($('#planning-data').attr('data-verrou') == '1') {
+    mergeCells();
+  }
+
   function save_model(erase = 0) {
     name = $('form[name="save-model-form"] input[name="name"]').val()
     site = $('form[name="save-model-form"] input[name="site"]').val()
@@ -365,9 +369,13 @@ $(function() {
         // Affichage des lignes vides
         $(".pl-line").show();
         CJInfo(result[0],result[1]);
+
+        // Unmerge identical cells
+        unmergeCells();
+
       },
       error: function(result){
-        CJInfo("Erreur lors du dev&eacute;rrouillage du planning","error");
+        CJInfo("Erreur lors du devérrouillage du planning","error");
       }
     });
   });
@@ -405,6 +413,9 @@ $(function() {
 
         // Masque les lignes vides
         hideEmptyLines();
+
+        // Merge identical cells
+        mergeCells();
 
         CJInfo(result[0],result[1]);
       },
@@ -1612,6 +1623,99 @@ function hideEmptyLines(){
 function majPersoOrigine(perso_id){
   perso_id_origine=perso_id;
   perso_nom_origine=$(".agent_"+perso_id+":eq(0)").text();
+}
+
+// Merge Identical Cells
+function mergeCells() {
+
+  $('.tabsemaine1 tr').each(function() {
+    var last = null;
+
+    $(this).children('td').each(function() {
+      var cell = $(this);
+
+      if (cell.hasClass('cellule_grise') || cell.hasClass('menuTrigger')) {
+
+        var merge = false;
+
+        // Merge grey cells
+        if (cell.children('div').hasClass('cellule_grise')) {
+          cell.addClass('cellule_grise');
+        }
+
+        if (last
+          && last.hasClass('cellule_grise')
+          && cell.hasClass('cellule_grise')
+        ) {
+          merge = mergeCellElement(last, cell);
+        }
+
+        // Merge other cells
+        if (mergeCellCheckDiv(last, cell)
+        ) {
+          merge = mergeCellElement(last, cell);
+        }
+
+        if (! merge) {
+          last = cell;
+        }
+      }
+
+    });
+  });
+}
+
+function mergeCellElement(last, current) {
+  var colspan = last.prop('colspan') + current.prop('colspan');
+  last.prop('colspan', colspan);
+  current.hide();
+
+  return true;
+}
+
+function mergeCellCheckDiv(last, current) {
+
+  if (! last) {
+    return false;
+  }
+
+  if (last.text() != current.text()) {
+    return false;
+  }
+
+  if (last.children('div').length != current.children('div').length) {
+    return false;
+  }
+
+  for (i = 1; i <= last.children('div').length; i++) {
+    var lastClasses = mergeCellGetClasses(last, i); 
+    var currentClasses = mergeCellGetClasses(current, i);
+
+    if (lastClasses != currentClasses) {
+      return false;
+    }
+
+  }
+  return true;
+}
+
+function mergeCellGetClasses(div, i) {
+    var classes = div.children('div:nth-child(' + i + ')').attr('class').split(/\s+/);
+
+    classes = classes.filter((elem) => elem !== 'service_');
+    classes = classes.filter((elem) => elem !== 'statut_');
+    classes = classes.filter((elem) => elem !== 'pl-highlight');
+    classes = classes.filter((elem) => elem.substring(0, 17) !== 'pl-cellule-perso-');
+
+    return JSON.stringify(classes);
+}
+
+function unmergeCells() {
+  // temporary
+  document.location.reload();
+
+  // TODO : revert mergeCells actions
+  // list .menuTrigger:hidden and .cellule_grise:hidden, get the last :visible and substract :hidden colspan.
 }
 
 /**
