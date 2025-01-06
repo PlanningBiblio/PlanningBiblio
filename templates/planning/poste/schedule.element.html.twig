@@ -36,8 +36,7 @@
 {# TODO: check if similary to : {{ t.titre }} {{ t.masqueTableaux | raw }} #}
                   </td>
                   {% for h in t.horaires %}
-                    <td colspan="{{ colspan(h.debut, h.fin) }}" {% if view == 'default' %} class="sticky-line" {% endif %}>
-{# TODO: use h.colspan #}
+                    <td colspan="{{ h.colspan }}" {% if view == 'default' %} class="sticky-line" {% endif %}>
                       {{ h.debut | hour_from_his }}-{{ h.fin | hour_from_his }}
                     </td>
                   {% endfor %}
@@ -53,7 +52,7 @@
                       </td>
                       {% for t in l.line_time %}
                         {% if t.disabled %}
-                          <td colspan="{{ colspan(t.debut, t.fin) }}" class="cellule_grise">&nbsp;</td>
+                          <td colspan="{{ t.colspan }}" class="cellule_grise">&nbsp;</td>
 {# TODO: use t.colspan #}
                         {% else %}
                           {{ t.position_cell | raw }}

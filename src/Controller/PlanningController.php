@@ -964,11 +964,12 @@ class PlanningController extends BaseController
             $colspan = 0;
             foreach ($tab['horaires'] as $key => $horaires) {
 
-                $tabs[$index]['horaires'][$key]['start_nb30'] = nb30($horaires['debut'], $horaires['fin']);
-                $tabs[$index]['horaires'][$key]['start_h3'] = heure3($horaires['debut']) ;
-                $tabs[$index]['horaires'][$key]['end_h3'] = heure3($horaires['fin']) ;
+                $tabs[$index]['horaires'][$key]['colspan'] = nb30($horaires['debut'], $horaires['fin']);
+                $tabs[$index]['horaires'][$key]['debut'] = $horaires['debut'];
+                $tabs[$index]['horaires'][$key]['fin'] = $horaires['fin'];
 
                 $colspan += nb30($horaires['debut'], $horaires['fin']);
+
             }
             $tabs[$index]['colspan'] = $colspan;
 
