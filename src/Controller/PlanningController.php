@@ -169,10 +169,9 @@ class PlanningController extends BaseController
             // ------------ Planning display --------------------//
             $this->createPlannings($request, $view);
 
-            // Show absences for current site at bottom of the planning
-            $absences_planning = $this->getAbsencesPlanning($date, $site, $this->holidays);
+            // Show absences at bottom of the planning
+            $absences_planning = $this->getAbsencesPlanning($date, $site);
 
-            // Affichage des absences
             if (in_array($this->config('Absences-planning'), [1,2])) {
                 $this->templateParams(array('absences_planning' => $absences_planning));
             }
@@ -1150,17 +1149,25 @@ class PlanningController extends BaseController
         $this->absences = $absences;
     }
 
-    private function getAbsencesPlanning($date, $site, $conges)
+    private function getAbsencesPlanning($date, $site)
     {
+        $site = $this->config('Absences-planning') != 3 ? $site : null;
+
+        if ($site) {
+            $site = [$site];
+        }
+
         $a = new \absences();
         $a->valide = false;
         $a->documents = false;
-        $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, array($site));
+        $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, $site);
 
         $absences = $a->elements;
 
         // Add holidays
-        foreach ($conges as $elem) {
+        $holidays = $this->getHolidays($date, $site);
+
+        foreach ($holidays as $elem) {
             $elem['motif'] = 'Congé payé';
             $absences[] = $elem;
         }
@@ -1341,12 +1348,17 @@ class PlanningController extends BaseController
         return $hiddenTables;
     }
 
-    private function getHolidays($date)
+    private function getHolidays($date, $site = null)
     {
         if ($this->config('Conges-Enable')) {
             $c = new \conges();
-            $this->holidays = $c->all($date.' 00:00:00', $date.' 23:59:59');
+            $holidays = $c->all($date.' 00:00:00', $date.' 23:59:59', 0, $site);
+
+            $this->holidays = $holidays;
+            return $holidays;
         }
+
+        return [];
     }
 
     private function getInfoMessages($dates, $date, $view)
