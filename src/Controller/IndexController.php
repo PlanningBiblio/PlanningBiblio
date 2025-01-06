@@ -205,12 +205,9 @@ class IndexController extends BaseController
             global $absences;
             $absences = $this->getAbsences($date);
 
-            // $conges will be used in the cellule_poste function and added to $absences_planning
+            // $conges will be used in the cellule_poste function
             global $conges;
             $conges = $this->getHolidays($date);
-
-            // Show absences for current site at bottom of the planning
-            $absences_planning = $this->getAbsencesPlanning($date, $site, $conges);
 
             // ------------ Planning display --------------------//
             // Separation lines
@@ -357,7 +354,11 @@ class IndexController extends BaseController
 
             $this->templateParams(array('tabs' => $tabs));
 
-            // Affichage des absences
+            // Show absences at bottom of the planning
+            $absencePlanningSite = $this->config('Absences-planning') != 3 ? $site : null;
+            $holidayPlanning = $this->getHolidays($date, $absencePlanningSite);
+            $absences_planning = $this->getAbsencesPlanning($date, $absencePlanningSite, $holidayPlanning);
+
             if (in_array($this->config('Absences-planning'), [1,2])) {
                 $this->templateParams(array('absences_planning' => $absences_planning));
             }
@@ -1174,10 +1175,14 @@ class IndexController extends BaseController
 
     private function getAbsencesPlanning($date, $site, $conges)
     {
+        if ($site) {
+            $site = [$site];
+        }
+
         $a = new \absences();
         $a->valide = false;
         $a->documents = false;
-        $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, array($site));
+        $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, $site);
 
         $absences = $a->elements;
 
@@ -1238,13 +1243,17 @@ class IndexController extends BaseController
         return $absences;
     }
 
-    private function getHolidays($date)
+    private function getHolidays($date, $site = null)
     {
+        if ($site) {
+            $site = [$site];
+        }
+
         $conges = array();
 
         if ($this->config('Conges-Enable')) {
             $c = new \conges();
-            $conges = $c->all($date.' 00:00:00', $date.' 23:59:59');
+            $conges = $c->all($date.' 00:00:00', $date.' 23:59:59', 0, $site);
         }
 
         return $conges;
