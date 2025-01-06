@@ -490,10 +490,26 @@ class conges
         $perso_ids=array(0);
         $p=new personnel();
         // Si précisé, recherche également les agents supprimés
-    $p->supprime=$this->agents_supprimes; 	// array(0,1,2), default : array(0);
-    $p->fetch("nom");
+        // array(0,1,2), default : array(0);
+        $p->supprime = $this->agents_supprimes;
+        $p->fetch('nom');
+
         foreach ($p->elements as $elem) {
-            $perso_ids[]=$elem['id'];
+            $keep = true;
+
+            if ($GLOBALS['config']['Multisites-nombre'] > 1 and !empty($this->sites)) {
+                $keep = false;
+                foreach ($this->sites as $site) {
+                    if (is_array($elem['sites']) and in_array($site, $elem['sites'])) {
+                        $keep = true;
+                        break;
+                    }
+                }
+            }
+
+            if ($keep) {
+                $perso_ids[] = $elem['id'];
+            }
         }
 
         // Recherche avec le nom de l'agent
@@ -1292,12 +1308,13 @@ class conges
         }
     }
 
-    public function all($from, $to, $rejected = 0)
+    public function all($from, $to, $rejected = 0, $sites = [])
     {
         $this->debut = $from;
         $this->fin = $to;
         $this->valide = false;
         $this->information = false;
+        $this->sites = $sites;
         $this->supprime = false;
 
         $filtered = array();
