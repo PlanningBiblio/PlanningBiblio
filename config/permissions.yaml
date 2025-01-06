@@ -219,6 +219,10 @@
     - 100
 "planning.delete":
     - 100
+"planning.setFramework":
+    - 301
+"planning.setFrameworkGroup":
+    - 301
 "planning.week":
     - 99
 "planningjob.contextmenu":

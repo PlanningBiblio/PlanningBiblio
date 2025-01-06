@@ -72,17 +72,17 @@ class PlanningController extends BaseController
        
         $view = 'default';
 
-        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
+        list($site, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
 
         // Index page only
         $currentFramework = $this->getCurrentFramework($date, $site);
         $show_framework_select = 0;
-        if(!$currentFramework and !$tableau and !$groupe and $autorisationN2) {
+        if(!$currentFramework and $autorisationN2) {
             $show_framework_select = 1;
         }
 
         $not_ready = 0;
-        if(!$currentFramework and !$tableau and !$groupe and !$autorisationN2) {
+        if(!$currentFramework and !$autorisationN2) {
             $not_ready = 1;
         }
 
@@ -143,11 +143,6 @@ class PlanningController extends BaseController
 
             return $this->output('planning/poste/index.html.twig');
 
-        } elseif ($groupe and $this->admin2) {
-            $tab = $this->resetWeekFrameworkAffect($request, $date, $dates, $site, $groupe);
-        } elseif ($tableau and $autorisationN2) {	//	Si tableau en argument
-            $tab = $tableau;
-            $this->resetFrameworkAffect($request, $date, $tab, $site);
         } else {
             $tab = $currentFramework;
         }
@@ -649,6 +644,85 @@ class PlanningController extends BaseController
         return $this->output('planning/poste/model_form.html.twig');
     }
 
+    #[Route(path: '/setFramework', name: 'planning.setFramework', methods: ['POST'])]
+    public function setFramework(Request $request)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $session = $request->getSession();
+        $date = $session->get('date');
+        $site = $session->get('site');
+
+        if (!in_array((300 + $site), $this->permissions)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $CSRFToken = $request->get('CSRFToken');
+        $tab = $request->get('tab');
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete('pl_poste_tab_affect', array('date' => $date, 'site' => $site));
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert('pl_poste_tab_affect', array('date' => $date, 'tableau' => $tab, 'site' => $site));
+
+        return $this->redirectToRoute('home');
+    }
+
+    #[Route(path: '/setFrameworkGroup', name: 'planning.setFrameworkGroup', methods: ['POST'])]
+    public function setFrameworkGroup(Request $request)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $session = $request->getSession();
+        $date = $session->get('date');
+        $site = $session->get('site');
+
+        if (!in_array((300 + $site), $this->permissions)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $CSRFToken = $request->get('CSRFToken');
+        $group = $request->get('group');
+
+        $d = new \datePl($date);
+        $dates = $d->dates;
+
+        $t = new Framework();
+        $t->fetchGroup($group);
+        $groupTab = $t->elements;
+
+        $tmp = array();
+        $tmp[$dates[0]] = array($dates[0], $groupTab['lundi']);
+        $tmp[$dates[1]] = array($dates[1], $groupTab['mardi']);
+        $tmp[$dates[2]] = array($dates[2], $groupTab['mercredi']);
+        $tmp[$dates[3]] = array($dates[3], $groupTab['jeudi']);
+        $tmp[$dates[4]] = array($dates[4], $groupTab['vendredi']);
+        $tmp[$dates[5]] = array($dates[5], $groupTab['samedi']);
+
+        if (array_key_exists('dimanche', $groupTab)) {
+            $tmp[$dates[6]] = array($dates[6], $groupTab['dimanche']);
+        }
+
+        foreach ($tmp as $elem) {
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete('pl_poste_tab_affect', array('date' => $elem[0], 'site' => $site));
+
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert('pl_poste_tab_affect', array('date' => $elem[0], 'tableau' => $elem[1], 'site' => $site));
+        }
+
+        return $this->redirectToRoute('home');
+    }
+
     private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
     {
         $resultats=array();
@@ -821,7 +895,7 @@ class PlanningController extends BaseController
 
     private function createPlannings($request, $view)
     {
-        list($groupe, $site, $tableau, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
+        list($site, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
 
         // Pour tous les jours de la semaine
         $schedules = array();
@@ -1441,10 +1515,6 @@ class PlanningController extends BaseController
         $weekView = $view == 'week';
         $_SESSION['week'] = $weekView;
 
-        // Initialisation des variables
-        $groupe = $request->get('groupe');
-        $tableau = $request->get('tableau');
-
         $this->setDates($request);
         $date = $this->date;
 
@@ -1490,9 +1560,7 @@ class PlanningController extends BaseController
         ));
 
         return array(
-           $groupe,
            $site,
-           $tableau,
            $date,
            $d,
            $semaine,
@@ -1532,52 +1600,10 @@ class PlanningController extends BaseController
         return false;
     }
 
-    private function resetFrameworkAffect(Request $request, $date, $tab, $site)
-    {
-        $CSRFToken = $request->get('CSRFToken');
-
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete('pl_poste_tab_affect', array('date' => $date, 'site' => $site));
-
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->insert('pl_poste_tab_affect', array('date' => $date, 'tableau' => $tab, 'site' => $site));
-    }
-
-    private function resetWeekFrameworkAffect(Request $request, $date, $dates, $site, $groupe)
-    {
-        $CSRFToken = $request->get('CSRFToken');
-
-        $t = new Framework();
-        $t->fetchGroup($groupe);
-        $groupeTab = $t->elements;
-
-        $tmp = array();
-        $tmp[$dates[0]]=array($dates[0],$groupeTab['lundi']);
-        $tmp[$dates[1]]=array($dates[1],$groupeTab['mardi']);
-        $tmp[$dates[2]]=array($dates[2],$groupeTab['mercredi']);
-        $tmp[$dates[3]]=array($dates[3],$groupeTab['jeudi']);
-        $tmp[$dates[4]]=array($dates[4],$groupeTab['vendredi']);
-        $tmp[$dates[5]]=array($dates[5],$groupeTab['samedi']);
-        if (array_key_exists("dimanche", $groupeTab)) {
-            $tmp[$dates[6]]=array($dates[6],$groupeTab['dimanche']);
-        }
-
-        foreach ($tmp as $elem) {
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete('pl_poste_tab_affect', array('date' => $elem[0], 'site' => $site));
-
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert('pl_poste_tab_affect', array('date' => $elem[0], 'tableau' => $elem[1], 'site' => $site));
-        }
-        return $tmp[$date][1];
-    }
-
     private function setDates(Request $request)
     {
+        $session = $request->getSession();
+
         $date = $request->get('date');
         $date = filter_var($date, FILTER_CALLBACK, ['options' => 'sanitize_dateSQL']);
 
@@ -1588,6 +1614,7 @@ class PlanningController extends BaseController
         }
 
         $_SESSION['PLdate'] = $date;
+        $session->set('date', $date);
 
         $d = new \datePl($date);
 
@@ -1625,6 +1652,7 @@ class PlanningController extends BaseController
         $site = $site ? $site : 1;
 
         $_SESSION['site'] = $site;
+        $session->set('site', $site);
 
         $this->site = $site;
     }
