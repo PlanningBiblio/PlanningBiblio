@@ -1801,11 +1801,12 @@ class AgentController extends BaseController
                 );
             }
         } else {
+            $comp_time = HourHelper::hoursMinutesToDecimal(trim($params['comp_time_hours']), trim($params['comp_time_min']));
             $credits = array(
                 'conges_credit' => $params['conges_credit'] + $params['conges_credit_min'],
                 'conges_reliquat' => $params['conges_reliquat'] + $params['conges_reliquat_min'],
                 'conges_anticipation' => $params['conges_anticipation'] + $params['conges_anticipation_min'],
-                'comp_time' => $params['comp_time'] + $params['comp_time_min'],
+                'comp_time' => $comp_time,
                 'conges_annuel' => $params['conges_annuel'] + $params['conges_annuel_min'],
             );
         }
