@@ -86,7 +86,7 @@
 
       {% if can_manage_agent %}
         <li id="admin" class='ui-tab-cancel'><a href='{{ asset("agent") }}'>Annuler</a></li>
-        <li id="admin" class='ui-tab-submit'><a href='javascript:verif_form_agent();'>Valider</a></li>
+        <li id="admin" class='ui-tab-submit'><a id="post_form_agent" href="">Valider</a></li>
       {% else %}
         <li id="admin" class='ui-tab-cancel'><a href='{{ asset("agent") }}'>Fermer</a></li>
       {% endif %}

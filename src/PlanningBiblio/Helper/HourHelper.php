@@ -39,13 +39,24 @@ class HourHelper extends BaseHelper
             $result['minutes'] = 0;
         }
 
+        if ($result['hours'] == 0 && $negative) {
+            $result['hours'] = '-0';
+        } else {
+            $result['hours'] = (string) $result['hours'];
+        }
+
         return $result;
     }
 
-    public static function hoursMinutesToDecimal($hours, $minutes)
+    public static function hoursMinutesToDecimal(string $hours, int $minutes)
     {
+
+        if (!is_int($minutes) || $minutes < 0 || $minutes > 59) {
+            throw new \InvalidArgumentException('hoursMinutesToDecimal only accepts integers between 0 and 59 included for minutes. Input was: ' . $minutes);
+        }
+
         $negative = false;
-        if ($hours < 0) {
+        if (strstr($hours, '-')) {
             $negative = true;
             $hours = abs($hours);
         }
