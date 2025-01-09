@@ -198,31 +198,60 @@ function sendICSURL(){
 
 // Contrôle des champs lors de la validation
 function verif_form_agent(){
-  erreur=false;
-  message="Les champs suivants sont obligatoires :";
-  if(!document.form.nom.value){
-    erreur=true;
-    message=message+"\n- Nom";
+
+  erreur = false;
+  message = "Les champs suivants sont obligatoires :";
+
+  if(!document.form.nom.value) {
+    erreur = true;
+    message = message + "\n- Nom";
   }
-  if(!document.form.prenom.value){
-    erreur=true;
-    message=message+"\n- prénom";
+  if(!document.form.prenom.value) {
+    erreur = true;
+    message = message + "\n- prénom";
   }
-  if(!document.form.mail.value){
-    erreur=true;
-    message=message+"\n- E-mail";
+  if(!document.form.mail.value) {
+    erreur = true;
+    message = message + "\n- E-mail";
   }
   
-  if(erreur)
-    alert(message);
-  else{
-    if(!verif_mail(document.form.mail.value)){
-      alert("Adresse e-mail invalide");
-    }
-    else{
-      document.form.submit();
-    }
+  if(erreur) {
+    CJInfo(message);
+    return false;
   }
+
+  if(!verif_mail(document.form.mail.value)) {
+    CJInfo("Adresse e-mail invalide");
+    return false;
+  }
+
+  comp_time_min = $("#comp_time_min").val();
+  if (comp_time_min) {
+    comp_time_min = Number(comp_time_min);  
+    if (
+        !Number.isInteger(comp_time_min) ||
+        comp_time_min < 0 ||
+        comp_time_min > 59
+       ) {
+        CJInfo("Le nombre de minutes des récupérations doit être un entier compris entre 0 et 59");
+        return false;
+    }
+  } else {
+    $("#comp_time_min").val(0);
+  }
+  comp_time_hours = $("#comp_time_hours").val();
+  if (comp_time_hours) {
+    comp_time_hours = Number(comp_time_hours);
+    console.log(comp_time_hours);
+    if (!Number.isInteger(comp_time_hours)) {
+        CJInfo("Le nombre d'heures des récupérations doit être un entier");
+        return false;
+    }
+  } else {
+    $("#comp_time_hours").val(0);
+  }
+
+  document.form.submit();
 }
 
 $(function() {
@@ -500,5 +529,8 @@ $(document).ready(function(){
   // Met à jour les select site des emplois du temps si les sites ont changé dans les infos générales
   $("#personnel-a-li3").click(function(){
     changeSelectSites();
+  });
+  $("#post_form_agent").click(function() {
+    verif_form_agent();
   });
 });
