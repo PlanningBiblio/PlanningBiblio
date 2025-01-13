@@ -100,14 +100,13 @@ $(document).ready(function() {
       <td>{{ lang_comp_time }} :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' name='comp_time' value='{{ recup_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' name='comp_time_hours' id='comp_time_hours' value='{{ recup_heures }}' style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
-          {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': recup_min, 'name': 'comp_time_min' } %}
+          <input type='text' name='comp_time_min' id='comp_time_min' value='{{ recup_min }}' style='width:70px;text-align:left;'>
         {% else %}
-          {{ recup_string }}
+          {{ recup_heures }}h{{ recup_min }}
         {% endif %}
       </td>
-      <td></td>
     </tr>
   </table>
   {% if show_hours_to_days %}Équivalence utilisée : 1 jour = <span id="hours_per_day">{{ hours_per_day }}</span> heures{% endif %}
