@@ -864,9 +864,9 @@ class AbsenceController extends BaseController
         }
 
         // Vouchers.
-        $pj1 = filter_input(INPUT_GET, "pj1", FILTER_CALLBACK, array("options"=>"sanitize_on01"));
-        $pj2 = filter_input(INPUT_GET, "pj2", FILTER_CALLBACK, array("options"=>"sanitize_on01"));
-        $so = filter_input(INPUT_GET, "so", FILTER_CALLBACK, array("options"=>"sanitize_on01"));
+        $pj1 = filter_var($request->get('pj1'), FILTER_CALLBACK, ['options' => 'sanitize_on01']);
+        $pj2 = filter_var($request->get('pj2'), FILTER_CALLBACK, ['options' => 'sanitize_on01']);
+        $so = filter_var($request->get('so'), FILTER_CALLBACK, ['options' => 'sanitize_on01']);
 
         $fin = $fin ? $fin : $debut;
 
