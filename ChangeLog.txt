@@ -1,3 +1,7 @@
+*** Version 24.04.12   (2025-01-17)    ***
+- Enhancements
+MT46713: Improve filtering of absences and holidays displayed under plannings #1104
+
 *** Version 24.04.11   (2024-12-19)    ***
 - Fixes
 MT46682: do not cross out positions compatible with teleworking when there are teleworking absences #1098
