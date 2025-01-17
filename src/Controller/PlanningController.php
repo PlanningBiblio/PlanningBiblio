@@ -1052,7 +1052,7 @@ class PlanningController extends BaseController
                 // Check if the line is empty.
                 // Don't show empty lines if Planning-vides is disabled.
                 $emptyLine = null;
-                if (!$this->config('Planning-lignesVides') and $locked and isAnEmptyLine($ligne['poste'])) {
+                if (!$this->config('Planning-lignesVides') and $locked and $this->isAnEmptyLine($ligne['poste'])) {
                     $emptyLine="empty-line";
                 }
 
@@ -1582,6 +1582,22 @@ class PlanningController extends BaseController
            $autorisationNotes,
            $comments,
        );
+    }
+
+    // Check if the line is empty or not
+    private function isAnEmptyLine($position)
+    {
+        if (!$position) {
+            return false;
+        }
+
+        foreach ($this->cells as $cell) {
+            if ($position == $cell['poste'] && $cell['perso_id']) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function noWeekDataFor($dates, $site)

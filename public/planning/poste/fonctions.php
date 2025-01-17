@@ -55,22 +55,6 @@ function groupe($poste)
 }
 //--------		FIN Vérifier si le poste demandé appartient à un groupe, si oui, on recherche les personnes qualifiées pour ce groupe (poste=groupe) ---------//
 
-
-// Vérifie si la ligne du tableau correspondant au poste $poste est vide ou non
-function isAnEmptyLine($poste)
-{
-    if (!$poste) {
-        return false;
-    }
-    foreach ($GLOBALS['cellules'] as $elem) {
-        if ($poste==$elem['poste'] && $elem['perso_id']) {
-            return false;
-        }
-    }
-    return true;
-}
-
-
 //		-------------	paramétrage de la largeur des colonnes		--------------//
 function nb30($debut, $fin)
 {
