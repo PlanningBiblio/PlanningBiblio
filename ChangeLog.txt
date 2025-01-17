@@ -1,3 +1,7 @@
+*** Version 24.11.07   (2025-01-17)    ***
+- Plumbing
+MT45129: Create PlanningController that gathers the index and week routes #1092 
+
 *** Version 24.11.06   (2025-01-17)    ***
 - Fixes
 MT46921: Initialize variables in class absences
