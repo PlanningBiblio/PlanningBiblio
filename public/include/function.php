@@ -248,13 +248,17 @@ class CJMail implements NotificationTransporterInterface
         $this->subject = "Planno : " . $this->subject;
 
         /* Préparation du message, html, doctype, signature */
-        $message="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
-        $message.="<html><head><title>Planning</title></head><body>";
-        $message.= $this->message;
-        $message.="<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
-        $message.="</body></html>";
-        $message = stripslashes($message);
-        $message = str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $message);
+        $message  = "<!DOCTYPE html>";
+        $message .= "<html><head>";
+        $message .= "<title>Planno</title>";
+        $message .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
+        $message .= "</head>";
+        $message .= "<body>";
+        $message .= $this->message;
+        $message .= "<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
+        $message .= "</body></html>";
+        $message  = stripslashes($message);
+        $message  = str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $message);
 
         $this->message = $message;
     }
