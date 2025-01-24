@@ -69,6 +69,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Groupe:', $result->text('Node does not exist', false), 'label is Groupe');
         $this->assertStringContainsString('Obligatoire / renfort :',$result->text('Node does not exist', false), 'label is Obligatoire / renfort : ');
         $this->assertStringContainsString('Bloquant :',$result->text('Node does not exist', false), 'label is Bloquant : ');
+        $this->assertStringContainsString('Compter les heures dans le quota de service public :',$result->text('Node does not exist', false), 'label is Compter les heures dans le quota de service public : ');
         $this->assertStringContainsString('Statistiques :',$result->text('Node does not exist', false), 'label is Statistiques: ');
         $this->assertStringContainsString('Compatible télétravail :',$result->text('Node does not exist', false), 'label is Compatible télétravail');
 
@@ -168,6 +169,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Groupe:', $result->text('Node does not exist', false), 'label is Groupe');
         $this->assertStringContainsString('Obligatoire / renfort :',$result->text('Node does not exist', false), 'label is Obligatoire / renfort : ');
         $this->assertStringContainsString('Bloquant :',$result->text('Node does not exist', false), 'label is Bloquant : ');
+        $this->assertStringContainsString('Compter les heures dans le quota de service public :',$result->text('Node does not exist', false), 'label is Compter les heures dans le quota de service public : ');
         $this->assertStringContainsString('Statistiques :',$result->text('Node does not exist', false), 'label is Statistiques: ');
         $this->assertStringContainsString('Compatible télétravail :',$result->text('Node does not exist', false), 'label is Compatible télétravail');
 
@@ -197,16 +199,17 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('value'),'Obligatoire','input obligatoire value is Obligatoire');
         $this->assertEquals($result->eq(1)->attr('value'),'Renfort','input obligatoire value is Obligatoire Renfort');
 
-
         $result = $crawler->filterXPath('//input[@name="bloquant"]');
         $this->assertEquals($result->attr('value'),'1','input bloquant value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input bloquant value is 0');
-
 
         $result = $crawler->filterXPath('//input[@name="statistiques"]');
         $this->assertEquals($result->attr('value'),'1','input statistiques value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input statistiques value is 0');
 
+        $result = $crawler->filterXPath('//input[@name="quota_sp"]');
+        $this->assertEquals($result->attr('value'),'1','input quota_sp value is 1');
+        $this->assertEquals($result->eq(1)->attr('value'),'0','input quota_sp value is 0');
 
         $result = $crawler->filterXPath('//input[@name="teleworking"]');
         $this->assertEquals($result->attr('value'),'1','input teleworking value is 1');
