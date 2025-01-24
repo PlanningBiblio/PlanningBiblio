@@ -1,3 +1,8 @@
+*** Version 24.11.08   (2025-01-24)    ***
+- Fixes
+MT45706: Use a helper to convert durations from decimal to hh:mm and vice-versa #1100
+MT46909: Use HTML5 Doctype for Emails #1106
+
 *** Version 24.11.07   (2025-01-17)    ***
 - Plumbing
 MT45129: Create PlanningController that gathers the index and week routes #1092 
