@@ -25,6 +25,7 @@ class AppExtension extends AbstractExtension
         return [
             new TwigFilter('datefull', [$this, 'dateFull'], ['is_safe' => ['html']]),
             new TwigFilter('datefr', [$this, 'dateFr']),
+            new TwigFilter('digit', [$this, 'digit']),
             new TwigFilter('hours', [$this, 'hours']),
             new TwigFilter('hour_from_his', [$this, 'hourFromHis']),
             new TwigFilter('hoursToDays', [$this, 'hoursToDays']),
@@ -54,6 +55,11 @@ class AppExtension extends AbstractExtension
     public function dateFr($date)
     {
         return dateFr($date, true);
+    }
+
+    public function digit($number, $digits)
+    {
+        return sprintf('%0' . $digits . 'd', $number);
     }
 
     public function hours($hours)

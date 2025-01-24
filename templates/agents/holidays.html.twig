@@ -56,10 +56,10 @@
         {% if can_manage_agent %}
           <input type='text' name='comp_time_hours' id='comp_time_hours' value='{{ recup_heures }}' style='width:60px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
-          <input type='text' name='comp_time_min' id='comp_time_min' value='{{ recup_min }}' style='width:60px;text-align:left;'>
+          <input type='text' name='comp_time_min' id='comp_time_min' value='{{ recup_min | digit(2) }}' style='width:60px;text-align:left;'>
         {% else %}
           <p style='padding-right: 18px;'>
-          {{ recup_heures }}h{{ recup_min }}
+          {{ recup_heures }}h{{ recup_min | digit(2) }}
           </p>
         {% endif %}
       </td>
