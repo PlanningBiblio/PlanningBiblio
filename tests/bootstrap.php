@@ -44,8 +44,26 @@ if ($dbconn) {
     foreach ($sql as $elem) {
         mysqli_multi_query($dblink, $elem);
     }
+
+    $atomic_dir = __DIR__ . '/../public/setup/atomicupdate/*.php';
+
+    $sql = array();
+    foreach (glob($atomic_dir) as $file) {
+        try {
+            require_once($file);
+        } catch (Exception $e) {
+            print $e->getMessage() . "\n";
+            continue;
+        }
+    }
+
+    foreach ($sql as $elem) {
+        mysqli_multi_query($dblink, $elem);
+    }
+
     mysqli_close($dblink);
 }
+
 
 include_once(__DIR__ . '/../init/init.php');
 include_once(__DIR__.'/../init/init_templates.php');

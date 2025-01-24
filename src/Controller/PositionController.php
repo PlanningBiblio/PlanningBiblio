@@ -130,6 +130,8 @@ class PositionController extends BaseController
             $renfort = $position->obligatoire() == "Renfort"?"checked='checked'":"";
             $stat1 = $position->statistiques()?"checked='checked'":"";
             $stat2 = !$position->statistiques()?"checked='checked'":"";
+            $quota_sp1 = $position->quota_sp() ? "checked='checked'" : "";
+            $quota_sp2 = !$position->quota_sp() ? "checked='checked'" : "";
             $bloq1 = $position->bloquant()?"checked='checked'":"";
             $bloq2 = !$position->bloquant()?"checked='checked'":"";
             $teleworking1 = $position->teleworking() ? "checked='checked'" : "";
@@ -149,6 +151,8 @@ class PositionController extends BaseController
             $renfort = null;
             $stat1 = 'checked';
             $stat2 = null;
+            $quota_sp1 = 'checked';
+            $quota_sp2 = null;
             $bloq1 = 'checked';
             $bloq2 = null;
             $teleworking1 = null;
@@ -235,6 +239,8 @@ class PositionController extends BaseController
             'lunch2'        => $lunch2,
             'bloq1'         => $bloq1,
             'bloq2'         => $bloq2,
+            'quota_sp1'     => $quota_sp1,
+            'quota_sp2'     => $quota_sp2,
             'floors'        => $floors,
             'groups'        => $groups,
             'nbSites'       => $nbSites,
@@ -270,6 +276,7 @@ class PositionController extends BaseController
             $categories = $request->get('categories', []);
             $site = $request->get('site', 1);
             $bloquant = $request->get('bloquant', 1);
+            $quota_sp = $request->get('quota_sp', 1);
             $lunch = $request->get('lunch', 0);
             $statistiques = $request->get('statistiques', 1);
             $teleworking = $request->get('teleworking', 0);
@@ -285,6 +292,7 @@ class PositionController extends BaseController
                 $position->activites($activites);
                 $position->categories($categories);
                 $position->bloquant($bloquant);
+                $position->quota_sp($quota_sp);
                 $position->statistiques($statistiques);
                 $position->teleworking($teleworking);
                 $position->lunch($lunch);
@@ -315,6 +323,7 @@ class PositionController extends BaseController
                 $position->activites($activites);
                 $position->categories($categories);
                 $position->bloquant($bloquant);
+                $position->quota_sp($quota_sp);
                 $position->statistiques($statistiques);
                 $position->teleworking($teleworking);
                 $position->lunch($lunch);

@@ -50,4 +50,7 @@ class Position extends PLBEntity
 
     /** @Column(type="datetime")**/
     protected $supprime;
+
+    /** @Column(type="boolean")**/
+    protected $quota_sp = true;
 }
