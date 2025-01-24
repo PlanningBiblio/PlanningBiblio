@@ -112,7 +112,7 @@ class planning
     }
 
     // Affiche la liste des agents dans le menudiv
-    public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey)
+    public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $quotaSP, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey)
     {
         $config=$GLOBALS['config'];
         $dbprefix=$config['dbprefix'];
@@ -141,7 +141,7 @@ class planning
 
         // Nombre d'heures de la cellule choisie
         $hres_cellule = 0;
-        if ($stat) {    // vérifier si le poste est compté dans les stats
+        if ($quotaSP) {    // vérifier si le poste est compté dans les stats
             $hres_cellule = diff_heures($debut, $fin, "decimal");
         }
     

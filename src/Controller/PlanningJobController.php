@@ -86,14 +86,14 @@ class PlanningJobController extends BaseController
         }
 
         // Position's name and related skills
-        $db = new \db;
-        $db->select2('postes', null, array('id' => $poste));
-        $posteNom = $db->result[0]['nom'];
-        $activites = json_decode(html_entity_decode($db->result[0]['activites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-        $stat = $db->result[0]['statistiques'];
-        $teleworking = $db->result[0]['teleworking'];
-        $bloquant = $db->result[0]['bloquant'];
-        $categories = $db->result[0]['categories'] ? json_decode(html_entity_decode($db->result[0]['categories'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true) : array();
+        $position = $positions->find($poste);
+        $posteNom = $position->nom();
+        $activites = $position->activites();
+        $stat = $position->statistiques();
+        $quotaSP = $position->quota_sp();
+        $teleworking = $position->teleworking();
+        $bloquant = $position->bloquant();
+        $categories = $position->categories() ? $position->categories() : array();
 
         // Site's name
         $siteNom = null;
@@ -712,7 +712,7 @@ class PlanningJobController extends BaseController
             $p = new \planning();
             $p->site = $site;
             $p->CSRFToken = $CSRFToken;
-            $p->menudivAfficheAgents($poste, $agents_dispo, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
+            $p->menudivAfficheAgents($poste, $agents_dispo, $date, $debut, $fin, $deja, $quotaSP, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
             $tableaux['menu1'] = $p->menudiv;
         }
 
@@ -757,7 +757,7 @@ class PlanningJobController extends BaseController
             $p = new \planning();
             $p->site = $site;
             $p->CSRFToken = $CSRFToken;
-            $p->menudivAfficheAgents($poste, $agents_tous, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
+            $p->menudivAfficheAgents($poste, $agents_tous, $date, $debut, $fin, $deja, $quotaSP, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
             $tableaux['menu2'] = $p->menudiv;
         }
 
@@ -767,7 +767,7 @@ class PlanningJobController extends BaseController
             $p = new \planning();
             $p->site = $site;
             $p->CSRFToken = $CSRFToken;
-            $p->menudivAfficheAgents($poste, $autres_agents, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
+            $p->menudivAfficheAgents($poste, $autres_agents, $date, $debut, $fin, $deja, $quotaSP, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
             $tableaux['menu2'] = $p->menudiv;
         }
 
