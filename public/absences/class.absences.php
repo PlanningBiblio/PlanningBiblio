@@ -1154,6 +1154,9 @@ class absences
 
         $categories=$GLOBALS['config']["{$type}-notifications{$validation}"];
         $categories=json_decode(html_entity_decode(stripslashes($categories), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+        if (!is_array($categories)) {
+            $categories = array();
+        }
         /*
         $categories : Catégories de personnes à qui les notifications doivent être envoyées
           tableau sérialisé issu de la config. : champ Absences-notifications, Absences-notifications2,
