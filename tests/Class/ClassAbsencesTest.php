@@ -2,6 +2,9 @@
 
 use PHPUnit\Framework\TestCase;
 
+use App\Model\Agent;
+use App\Model\ConfigParam;
+
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 
 class ClassAbsencesTest extends TestCase
@@ -34,4 +37,56 @@ class ClassAbsencesTest extends TestCase
         $this->assertEquals('DTSTART;TZID=UTC:20220117T080000', $lines[14], 'DTSTART;TZID h:m');
         $this->assertEquals('DTEND;TZID=UTC:20220117T123000', $lines[15], 'DTEND;TZID h:m');
     }
+
+    public function testRecipients()
+    {
+        global $entityManager;
+
+        # MT46949: Check that getRecipients handles empty values for Absences-notifications-*
+        $absence = new absences();
+        $absence->perso_id = 8;
+        $responsables = array();
+        $member = $entityManager->getRepository(Agent::class)->find(1);
+        $this->setParam('Absences-notifications-A1', '');
+        $this->setParam('Absences-notifications-A2', '');
+        $this->setParam('Absences-notifications-A3', '');
+        $this->setParam('Absences-notifications-A4', '');
+        $this->setParam('Absences-notifications-B1', '');
+        $this->setParam('Absences-notifications-B2', '');
+        $this->setParam('Absences-notifications-B3', '');
+        $this->setParam('Absences-notifications-B4', '');
+        $absence->getRecipients("-A2", $responsables, $member);
+        $destinataires = $absence->recipients;
+        $this->assertEmpty($destinataires, 'When all Absences-notification* are empty, recipients is empty');
+
+        $this->setParam('Absences-notifications-A1', '[]');
+        $this->setParam('Absences-notifications-A2', '[]');
+        $this->setParam('Absences-notifications-A3', '[]');
+        $this->setParam('Absences-notifications-A4', '[]');
+        $this->setParam('Absences-notifications-B1', '[]');
+        $this->setParam('Absences-notifications-B2', '[]');
+        $this->setParam('Absences-notifications-B3', '[]');
+        $this->setParam('Absences-notifications-B4', '[]');
+        $absence->getRecipients("-A2", $responsables, $member);
+        $destinataires = $absence->recipients;
+        $this->assertEmpty($destinataires, 'When all Absences-notification* are empty arrays, recipients is empty');
+
+
+
+    }
+
+    protected function setParam($name, $value)
+    {
+        global $entityManager;
+        $absence = new absences();
+        $GLOBALS['config'][$name] = $value;
+        $param = $entityManager
+            ->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => $name]);
+
+        $param->valeur($value);
+        $entityManager->persist($param);
+        $entityManager->flush();
+    }
+
 }
