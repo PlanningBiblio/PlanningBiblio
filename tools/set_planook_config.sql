@@ -24,14 +24,14 @@
 -- UPDATE config SET valeur='1', type='info' WHERE nom='Absences-agent-preselection';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Absences-tous';
 -- UPDATE config SET valeur='1', type='info' WHERE nom='Absences-journeeEntiere';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A1';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A2';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A3';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A4';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B1';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B2';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B3';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B4';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-A1';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-A2';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-A3';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-A4';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-B1';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-B2';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-B3';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-B4';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Absences-notifications-agent-par-agent';
 -- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-titre';
 -- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-message';
@@ -52,10 +52,11 @@
 -- UPDATE config SET valeur='0' , type='info' WHERE nom='PlanningHebdo';
 -- -- Emploi du temps en semaines paires et impaires
 -- UPDATE config SET valeur='1', valeurs='1,2' WHERE nom='nb_semaine';
--- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications1';
--- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications2';
--- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications3';
--- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications4';
+-- UPDATE config SET valeur='0' , type='info' WHERE nom='EDTSamedi';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='PlanningHebdo-notifications1';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='PlanningHebdo-notifications2';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='PlanningHebdo-notifications3';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='PlanningHebdo-notifications4';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='PlanningHebdo-notifications-agent-par-agent';
 -- UPDATE config SET valeur='0' , type='info' WHERE nom='EDTSamedi';
 -- -- Interdire la 2ème pause
