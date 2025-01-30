@@ -43,7 +43,7 @@
             <a href="{{ asset('workinghour')}}/{{ elem.id }}?retour={{ asset("workinghour") }}"/>
               <span class='pl-icon pl-icon-edit' title='Voir'></span>
             </a>
-            {% if elem.cle == null %}
+            {% if elem.cle == null and admin %}
               <a href='{{ asset('workinghour') }}/{{ elem.id }}?copy={{ elem.id }}&retour={{ asset("workinghour") }}'/>
                 <span class='pl-icon pl-icon-copy' title='Copier'></span>
               </a>
