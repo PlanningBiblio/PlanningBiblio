@@ -252,6 +252,7 @@ class WorkingHourController extends BaseController
 
         $this->templateParams(
             array(
+                'admin' => $admin,
                 "debut" => $debut,
                 "fin"   => $fin,
                 "tab"   => $tab
