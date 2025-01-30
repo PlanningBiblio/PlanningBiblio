@@ -93,7 +93,7 @@ class PlanningJobController extends BaseController
         $quotaSP = $position->quota_sp();
         $teleworking = $position->teleworking();
         $bloquant = $position->bloquant();
-        $categories = $position->categories() ? $position->categories() : array();
+        $categories = $position->categories() ?? [];
 
         // Site's name
         $siteNom = null;
