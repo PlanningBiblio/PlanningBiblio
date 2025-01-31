@@ -189,7 +189,7 @@ class planning
                     'absent'   => "<>1",
                     'date'     => "BETWEEN {$date1} AND {$date2}",
                 ),
-                array("statistiques"=>"1")
+                array('quota_sp' => '1')
       );
 
             if ($db_heures->result) {
