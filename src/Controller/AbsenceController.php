@@ -491,8 +491,8 @@ class AbsenceController extends BaseController
             $acces = true;
         }
 
-        if (!$acces) {
-            $acces = (in_array(6, $this->droits) and $perso_id == $session->get('loginId') and empty($groupe));
+        if (!$acces and $valideN1 == 0 and $valideN2 == 0) {
+            $acces = (in_array(6, $this->droits) and in_array($session->get('loginId'), $perso_ids));
         }
 
         if (!$acces) {
