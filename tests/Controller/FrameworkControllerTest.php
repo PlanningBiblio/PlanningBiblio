@@ -1,20 +1,16 @@
 <?php
 
-use App\Model\ConfigParam;
-use App\Model\Agent;
 use App\Model\Absence;
+use App\Model\Agent;
 use App\Model\PlanningPosition;
-use App\Model\PlanningPositionTab;
-use App\Model\PlanningPositionLines;
-use App\Model\PlanningPositionTabGroup;
 use App\Model\PlanningPositionTabAffectation;
-
+use App\Model\PlanningPositionLines;
+use App\Model\PlanningPositionTab;
+use App\Model\PlanningPositionTabGroup;
 use App\PlanningBiblio\Framework;
-
 use Symfony\Component\DomCrawler\Crawler;
-
-use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
 class FrameworkControllerTest extends PLBWebTestCase
 {
@@ -23,18 +19,6 @@ class FrameworkControllerTest extends PLBWebTestCase
         parent::setUp();
 
         $this->builder->delete(Agent::class);
-    }
-
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
     }
 
     public function testListTable()

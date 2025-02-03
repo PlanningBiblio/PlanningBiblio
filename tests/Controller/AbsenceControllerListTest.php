@@ -2,8 +2,6 @@
 
 use App\Model\Agent;
 use App\Model\Manager;
-use App\Model\ConfigParam;
-
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
@@ -16,18 +14,6 @@ class AbsenceControllerListTest extends PLBWebTestCase
         parent::setUp();
 
         $this->builder->delete(Agent::class);
-    }
-
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
     }
 
     public function testList()
