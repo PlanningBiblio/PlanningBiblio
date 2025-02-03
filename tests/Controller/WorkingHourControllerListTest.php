@@ -1,12 +1,10 @@
 <?php
 
 use App\Model\Agent;
-use App\Model\WorkingHour;
-use App\Model\ConfigParam;
 use App\Model\Manager;
-
-use Tests\PLBWebTestCase;
+use App\Model\WorkingHour;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
 class WorkingHourControllerListTest extends PLBWebTestCase
 {
@@ -17,18 +15,6 @@ class WorkingHourControllerListTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
 
         $GLOBALS['config']['Absences-validation'] = 1;
-    }
-
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
     }
 
     private function createWorkingHoursFor($agent, $status = 0)

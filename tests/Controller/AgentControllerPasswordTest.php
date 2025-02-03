@@ -1,17 +1,14 @@
 <?php
+
+use App\Model\Absence;
 use App\Model\Agent;
 use App\Model\Holiday;
-use App\Model\Absence;
-use App\Model\Position;
 use App\Model\PlanningPosition;
-
+use App\Model\Position;
 use App\PlanningBiblio\WorkingHours;
-
 use Symfony\Component\DomCrawler\Crawler;
-
-use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
-
+use Tests\PLBWebTestCase;
 
 class AgentControllerPasswordTest extends PLBWebTestCase
 {
@@ -20,18 +17,6 @@ class AgentControllerPasswordTest extends PLBWebTestCase
         parent::setUp();
 
         $this->builder->delete(Agent::class);
-    }
-
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
     }
 
     public function testPasswordChangeWithCSRFOk()

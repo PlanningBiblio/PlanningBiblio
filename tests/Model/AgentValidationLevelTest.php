@@ -2,13 +2,11 @@
 
 use App\Model\Agent;
 use App\Model\Manager;
-use App\Model\ConfigParam;
-
-use Tests\FixtureBuilder;
-
 use PHPUnit\Framework\TestCase;
+use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
-class AgentValidationLevelTest extends TestCase
+class AgentValidationLevelTest extends PLBWebTestCase
 {
     protected $builder;
     protected $entityManager;
@@ -23,17 +21,6 @@ class AgentValidationLevelTest extends TestCase
         $this->builder->delete(Agent::class);
 
         $this->entityManager = $entityManager;
-    }
-
-    protected function setParam($name, $value)
-    {
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
     }
 
     public function testgetValidationLevelForWorkingHours()

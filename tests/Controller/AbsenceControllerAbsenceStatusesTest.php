@@ -1,7 +1,6 @@
 <?php
 
 use App\Model\Agent;
-use App\Model\ConfigParam;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 
@@ -14,18 +13,6 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
 
         $GLOBALS['config']['Absences-validation'] = 1;
-    }
-
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
     }
 
     public function testNewAbsenceWithoutRight()

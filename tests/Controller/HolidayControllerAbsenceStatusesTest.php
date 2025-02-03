@@ -1,10 +1,8 @@
 <?php
 
 use App\Model\Agent;
-use App\Model\ConfigParam;
-
-use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 
@@ -17,18 +15,6 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
 
         $GLOBALS['config']['Conges-validation'] = 1;
-    }
-
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
     }
 
     public function testEditN2AbsenceRightN1AndN2()
