@@ -1,10 +1,8 @@
 <?php
 
 use App\Model\Agent;
-use App\Model\ConfigParam;
-
-use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
 class WorkingHourControllerStatusesTest extends PLBWebTestCase
 {
@@ -15,18 +13,6 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
 
         $this->setParam('PlanningHebdo-Agents', 1);
-    }
-
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
     }
 
     public function testNewWorkinghoursWithoutRight()

@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Model\ConfigParam;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -15,6 +16,18 @@ class PLBWebTestCase extends PantherTestCase
     protected $client;
     protected $CSRFToken;
     protected $entityManager;
+
+    protected function setParam($name, $value)
+    {
+        $GLOBALS['config'][$name] = $value;
+        $param = $this->entityManager
+            ->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => $name]);
+
+        $param->valeur($value);
+        $this->entityManager->persist($param);
+        $this->entityManager->flush();
+    }
 
     protected function setUp(): void
     {

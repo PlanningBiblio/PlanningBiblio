@@ -1,15 +1,11 @@
 <?php
 
 use App\Model\Agent;
-use App\Model\Skill;
-use App\Model\ConfigParam;
 use App\Model\Manager;
-
+use App\Model\Skill;
 use Symfony\Component\DomCrawler\Crawler;
-
-use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
-
+use Tests\PLBWebTestCase;
 
 class LegalNoticesControllerTest extends PLBWebTestCase
 {
@@ -18,18 +14,6 @@ class LegalNoticesControllerTest extends PLBWebTestCase
         parent::setUp();
 
         $this->builder->delete(Agent::class);
-    }
-
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
     }
 
     public function testLegalNotices()
