@@ -487,11 +487,15 @@ class AbsenceController extends BaseController
 
         $acces = false;
 
-        if ($this->admin or $this->adminN2) {
+        if ($this->adminN2) {
             $acces = true;
         }
 
-        if (!$acces and $valideN1 == 0 and $valideN2 == 0) {
+        if ($valideN2 == 0 and $this->admin) {
+            $acces = true;
+        }
+
+        if (!$acces and ($this->config('Absences-validation') == 0 or ($valideN1 == 0 and $valideN2 == 0))) {
             $acces = (in_array(6, $this->droits) and in_array($session->get('loginId'), $perso_ids));
         }
 
