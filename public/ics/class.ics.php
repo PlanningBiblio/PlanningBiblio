@@ -488,12 +488,12 @@ class CJICS
                 // Par défaut, nous mettons dans le champ motif l'information enregistrée dans la config, paramètre ICS-PatternX (ex: Agenda personnel)
                 // Mais nous pouvons mettre l'information présente dans le champ SUMMARY de l'événements. Dans ce cas, il faut préciser $this->pattern = "[SUMMARY]"; (exemple d'utilisation : enregistrement d'absences récurrentes dans Planning Biblio)
 
-                $motif = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] : $this->pattern;
+                $motif = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] ?? '' : $this->pattern;
                 $motif_autre = '';
 
                 if (!in_array($motif, $reasons)) {
                     $motif = 'Autre';
-                    $motif_autre = $elem['SUMMARY'];
+                    $motif_autre = $elem['SUMMARY'] ?? '';
                 }
 
                 // The DESCRIPTION is added to the comment field depending on the configuration
