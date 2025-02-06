@@ -737,7 +737,9 @@ select
 }
 
 #planningTips {
-  margin: 20px 0px;
+  width: 90%;
+  margin: auto;
+  margin-bottom: 20px;
   font-weight: bold;
   display: none;
 }
