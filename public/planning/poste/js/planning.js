@@ -1692,15 +1692,10 @@ function verif_categorieA(){
     datatype: "json",
     type: "post",
     data: {"date": date, "site": site},
-    success: function(result){
-      result=JSON.parse(result);
-      if(result=="true"){
-	$("#planningTips").hide();
-      }
-      else {
-	$("#planningTips").html("<div class='noprint'>Attention, pas d&apos;agent de cat&eacute;gorie A en fin de service.</div>");
-	$("#planningTips").show();
-	CJErrorHighlight($("#planningTips"),"error");
+    success: function(result) {
+      result = JSON.parse(result);
+      if(result == "false") {
+        CJInfo("Attention, pas d'agent de catégorie A en fin de service.", 'error');
       }
     }
   });
