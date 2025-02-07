@@ -63,7 +63,6 @@
             <span class='pl-icon pl-icon-refresh'>
           </a>
 
-          <div id='planningTips'>&nbsp;</div>
         {% else %}
           {% if ( userCan('300', site) or userCan('1000', site) ) and config('CatAFinDeService') %}
             <div id='pl-verif-categorie-A'></div>
@@ -105,7 +104,6 @@
 
           </div>
 
-          <div id='planningTips'>&nbsp;</div>
           {% if (userCan('300', site) or userCan('1000', site)) and not locked %}
             <div id='undo-redo' class='pl-undo' style="{{ locked ? 'display:none;' }}">
               {% if undoable %}
