@@ -1064,6 +1064,10 @@ div#tabsemaine1{
   margin-bottom: 20px;
 }
 
+#tab_titre .row {
+  justify-content: space-around;
+}
+
 /* Calendrier affiché en haut des plannings */
 #pl-calendar{
   border:0;
