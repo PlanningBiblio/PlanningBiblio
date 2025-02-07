@@ -736,16 +736,6 @@ select
   right: 5%;
 }
 
-#planningTips {
-  margin: 20px 0px;
-  font-weight: bold;
-  display: none;
-}
-
-#planningTips .ui-icon-alert{
-  margin-top: 0.3em;
-}
-
 #date_planning, #semaine_planning {
   margin-top: 5px;
 }
