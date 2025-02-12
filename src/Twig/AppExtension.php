@@ -141,6 +141,25 @@ class AppExtension extends AbstractExtension
     {
         $config = $GLOBALS['config'];
 
+        // Handle Planning's menu
+        if (empty($menu)) {
+            $uri = substr($requested_url, strlen($config['URL']));
+
+            if ($uri == '/') {
+                return true;
+            }
+
+            if (preg_match('/\/(\/d{4}-\d{2}-\d{2})/', $uri)) {
+                return true;
+            }
+
+            if (preg_match('/\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri)) {
+                return true;
+            }
+
+            return false;
+        }
+
         if(strpos($requested_url, "{$config['URL']}/$menu") !== false){
             return true;
         }
