@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Model\AbsenceBlock;
@@ -99,8 +100,11 @@ class AbsenceBlockController extends BaseController
     public function delete(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('absence.block.index');
+            $response = new Response();
+            $response->setStatusCode(403);
+            $response->setContent(json_encode('CSRF error'));
+
+            return $response;
         }
 
         $id = $request->get('id');
@@ -110,8 +114,12 @@ class AbsenceBlockController extends BaseController
         $this->entityManager->flush();
 
         $flash = "Le blocage a bien été supprimé.";
-
         $session->getFlashBag()->add('notice', $flash);
-        return $this->redirectToRoute('absence.block.index');
+
+        $response = new Response();
+        $response->setStatusCode(200);
+        $response->setContent(json_encode('OK'));
+
+        return $response;
     }
 }
