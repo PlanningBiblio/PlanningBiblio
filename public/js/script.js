@@ -398,28 +398,33 @@ function deleteAbsenceDocument(id) {
 }
 
 function deleteAbsenceInfo(id) {
-    if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
-        $('#form').submit();
-    }
+    deleteAjax(id, 'absences/info', 'Êtes vous sûr(e) de vouloir supprimer cette information ?');
 }
 
-
 function deleteAbsenceBlock(id) {
-    if (confirm("Êtes-vous sûr(e) de vouloir supprimer ce blocage ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
-        $('#form').prepend("<input type='hidden' name='id' value='" + id + "' />");
-        $('#form').submit();
-    }
+    deleteAjax(id, 'absence/block', 'Êtes-vous sûr(e) de vouloir supprimer ce blocage ?');
 }
 
 function deleteAdminInfo(id) {
-    if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
-        $('#form').submit();
-    }
+    deleteAjax(id, 'admin/info', 'Êtes vous sûr(e) de vouloir supprimer cette information ?');
 }
 
+function deleteAjax(id, route, message) {
+    if (confirm(message)) {
+        $.ajax({
+            url: url(route),
+            type: 'delete',
+            dataType: 'json',
+            data: {id: id, _token: $('#_token').val()},
+            success: function(result) {
+                window.location.href=url(route);
+            },
+            error: function(result){
+              CJInfo('Une erreur est survenue lors de la suppression', 'error');
+            }
+        });
+    }
+}
 
 function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 heures (formats H:i:s)
   var d=new Date("Mon, 26 Aug 2013 "+debut);

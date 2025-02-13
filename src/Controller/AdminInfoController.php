@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -103,7 +104,11 @@ class AdminInfoController extends BaseController
     public function delete(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
+            $response = new Response();
+            $response->setStatusCode(403);
+            $response->setContent(json_encode('CSRF error'));
+
+            return $response;
         }
 
         $id = $request->get('id');
@@ -113,8 +118,12 @@ class AdminInfoController extends BaseController
         $this->entityManager->flush();
 
         $flash = "L'information a bien été supprimée.";
-
         $session->getFlashBag()->add('notice', $flash);
-        return $this->redirectToRoute('admin.info.index');
+
+        $response = new Response();
+        $response->setStatusCode(200);
+        $response->setContent(json_encode('OK'));
+
+        return $response;
     }
 }
