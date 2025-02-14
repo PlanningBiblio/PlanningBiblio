@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   width="25"
+   height="25"
+   viewBox="0 0 0.75 0.75"
+   fill="none"
+   version="1.1"
+   id="svg10"
+   sodipodi:docname="pl-icon-ai.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs14" />
+  <sodipodi:namedview
+     id="namedview12"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     showgrid="false"
+     inkscape:zoom="26.9"
+     inkscape:cx="15"
+     inkscape:cy="15"
+     inkscape:window-width="1850"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg10" />
+  <g
+     id="g1078"
+     transform="matrix(2.2155421,0,0,2.2155421,-0.44117027,-0.43509353)">
+    <path
+       d="M 0.49994606,0.31609316 V 0.48602047 H 0.45660813 V 0.31609316 Z"
+       fill="#000000"
+       id="path2"
+       style="fill:#ffffff;stroke-width:0.0317466" />
+    <path
+       d="m 0.45416163,0.26864008 c 0,-0.0132592 0.009786,-0.0233781 0.0241155,-0.0233781 0.014679,0 0.023766,0.0101189 0.0241155,0.0233781 0,0.0129103 -0.009436,0.0230292 -0.024465,0.0230292 -0.0143295,0 -0.023766,-0.0101189 -0.023766,-0.0230292 z"
+       fill="#000000"
+       id="path4"
+       style="fill:#ffffff;stroke-width:0.0317466" />
+    <path
+       fill-rule="evenodd"
+       clip-rule="evenodd"
+       d="m 0.39514388,0.48602047 -0.0213195,-0.066645 h -0.0747916 l -0.020271,0.066645 h -0.0443864 l 0.0754919,-0.23517566 h 0.0548701 l 0.0765404,0.23517566 z m -0.0709484,-0.15701702 -0.0181727,0.0579218 h 0.0604621 l -0.0185235,-0.0579218 c -0.003676,-0.011578 -0.006895,-0.0242989 -0.009843,-0.0359436 -6.9264e-4,-0.002743 -0.001373,-0.005426 -0.00204,-0.00802 h -6.99e-4 c -0.001195,0.004661 -0.002392,0.009649 -0.003619,0.0147545 -0.002351,0.009799 -0.004807,0.0200357 -0.007565,0.0292091 z"
+       fill="#000000"
+       id="path6"
+       style="fill:#ffffff;stroke-width:0.0317466" />
+  </g>
+</svg>

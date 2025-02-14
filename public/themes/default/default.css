@@ -275,6 +275,10 @@ h4{
   filter: invert(100%);
 }
 
+.pl-icon-ai {
+  background:url("images/icon/ai.svg") no-repeat center;
+}
+
 .pl-icon-copy {
   background:url("images/icon/content_copy_black_18dp.svg") no-repeat center;
 }

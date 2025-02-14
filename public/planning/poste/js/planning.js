@@ -338,7 +338,34 @@ $(document).ready(function(){
 
 // Evénements JQuery
 $(function() {
-  
+
+  // MiniZinc AI Icon
+  $("#icon-ai").click(function(){
+    var _token = $('#_token').val();
+    var CSRFToken = $('#CSRFSession').val();
+    var date=$('#date').val();
+    var site=$('#site').val();
+
+    $.ajax({
+      url: url('planningjob/autofill'),
+      dataType: "json",
+      data: {_token: _token, CSRFToken: CSRFToken, date: date, site: site, perso_nom: perso_nom_origine, perso_id:perso_id_origine},
+      //data: {_token: _token, date: date, site: site},
+      type: "post",
+
+      success: function(result) {
+        if (result.error) {
+          CJInfo(result.error, 'error');
+        } else {
+          document.location.reload(false);
+        }
+      },
+      error: function(result){
+        CJInfo("Une erreur est survenue lors du remplissage du planning","error");
+      }
+    });
+  });
+
   // Déverrouillage du planning
   $("#icon-lock").click(function(){
     var date=$('#date').val();
