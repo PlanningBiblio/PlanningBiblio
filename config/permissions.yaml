@@ -225,6 +225,8 @@
     - 301
 "planning.week":
     - 99
+"planningjob.autofill":
+    - 301
 "planningjob.contextmenu":
     - 100
 "planningjob.undo":
