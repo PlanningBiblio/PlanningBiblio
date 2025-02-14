@@ -1,3 +1,11 @@
+*** Version 24.04.14   (2025-02-14)    ***
+-Fixes
+MT46949: Fix getRecipients to handle empty values for Absences-notifications-* #1107
+MT47037: Hide copy/delele icons from working hour list when not admin #1109
+MT47249: ICS import: init variables motif and motif_autre #1110
+MT41625: Fix planning menu display on smartphones #1113
+MT43912: Use CJInfo for missing category A display #1114
+
 *** Version 24.04.13   (2025-01-24)    ***
 - Fixes
 MT45706: Use a helper to convert durations from decimal to hh:mm and vice-versa #1100
