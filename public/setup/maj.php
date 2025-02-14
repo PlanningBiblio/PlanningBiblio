@@ -3574,7 +3574,7 @@ $v="24.11.09";
 
 if (version_compare($config['Version'], $v) === -1) {
     // MT45507
-    $sql[] = "ALTER TABLE postes ADD column quota_sp tinyint(1) NOT NULL DEFAULT 1;";
+    $sql[] = "ALTER TABLE `{$dbprefix}postes` ADD COLUMN IF NOT EXISTS `quota_sp` TINYINT(1) NOT NULL DEFAULT 1;";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
