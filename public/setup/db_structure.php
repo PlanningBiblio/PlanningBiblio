@@ -379,6 +379,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `site` INT(1) DEFAULT '1',
   `categories` TEXT NULL DEFAULT NULL,
   `supprime` DATETIME NULL DEFAULT NULL,
+  `quota_sp` TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
