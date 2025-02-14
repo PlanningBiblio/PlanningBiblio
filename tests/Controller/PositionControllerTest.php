@@ -69,7 +69,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Groupe:', $result->text('Node does not exist', false), 'label is Groupe');
         $this->assertStringContainsString('Obligatoire / renfort :',$result->text('Node does not exist', false), 'label is Obligatoire / renfort : ');
         $this->assertStringContainsString('Bloquant :',$result->text('Node does not exist', false), 'label is Bloquant : ');
-        $this->assertStringContainsString('Compter les heures dans le quota de service public :',$result->text('Node does not exist', false), 'label is Compter les heures dans le quota de service public : ');
+        $this->assertStringContainsString('Quota de SP :',$result->text('Node does not exist', false), 'label is Quota de SP : ');
         $this->assertStringContainsString('Statistiques :',$result->text('Node does not exist', false), 'label is Statistiques: ');
         $this->assertStringContainsString('Compatible télétravail :',$result->text('Node does not exist', false), 'label is Compatible télétravail');
 
@@ -169,7 +169,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Groupe:', $result->text('Node does not exist', false), 'label is Groupe');
         $this->assertStringContainsString('Obligatoire / renfort :',$result->text('Node does not exist', false), 'label is Obligatoire / renfort : ');
         $this->assertStringContainsString('Bloquant :',$result->text('Node does not exist', false), 'label is Bloquant : ');
-        $this->assertStringContainsString('Compter les heures dans le quota de service public :',$result->text('Node does not exist', false), 'label is Compter les heures dans le quota de service public : ');
+        $this->assertStringContainsString('Quota de SP :',$result->text('Node does not exist', false), 'label is Quota de SP : ');
         $this->assertStringContainsString('Statistiques :',$result->text('Node does not exist', false), 'label is Statistiques: ');
         $this->assertStringContainsString('Compatible télétravail :',$result->text('Node does not exist', false), 'label is Compatible télétravail');
 
