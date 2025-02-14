@@ -3569,6 +3569,15 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+ 
+$v="24.11.09";
+
+if (version_compare($config['Version'], $v) === -1) {
+    // MT45507
+    $sql[] = "ALTER TABLE postes ADD column quota_sp tinyint(1) NOT NULL DEFAULT 1;";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage
