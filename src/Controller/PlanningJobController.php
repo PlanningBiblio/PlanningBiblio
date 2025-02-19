@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Model\Agent;
 use App\Model\AbsenceReason;
+use App\Model\PlanningPosition;
 use App\Model\PlanningPositionHistory;
 use App\Model\Position;
 
@@ -48,32 +49,88 @@ class PlanningJobController extends BaseController
         $perso_nom = $request->get('perso_nom');
         $perso_id = $request->get('perso_id');
 
-    
-        $f = new Framework();                                                                            
-        $framework = $f->getFromDate($date, $site);                                                      
-                                                                                                         
-        // Hours and positions for Planno                                                                
-        $hours = array();                                                                                
-        $positions = array();                                                                            
-                                                                                                         
-        $i = 1;                                                                                          
+
+        $f = new Framework();
+        $framework = $f->getFromDate($date, $site);
+
+        // Hours and positions for Planno
+        $hours = array();
+        $positions = array();
+
         foreach ($framework as $f) {
 
-            error_log("Processing framework " . $f['nom'] . " - " . $f['titre']);
+#            error_log("Processing framework " . $f['nom'] . " - " . $f['titre']);
 #            error_log(print_r($f['lignes'], 1));
 #            error_log("array_keys " . join(' ', array_keys($f)));
             foreach ($f['lignes'] as $ligne) {
 
-                error_log("Processing line " . $ligne['poste']);
+#                error_log("Processing line " . $ligne['poste']);
                 $poste = $ligne['poste'];
                 #error_log("poste $poste");
+                $lastid = null;
                 foreach ($f['horaires'] as $horaire) {
 
-                    error_log("Processing cell " . $horaire['debut'] . " - " . $horaire['fin']);
+#                    error_log("Processing cell " . $horaire['debut'] . " - " . $horaire['fin']);
                     $planningJobHelper = new PlanningJobHelper();
-                     error_log("$site, $date, " . $horaire['debut'] . " , " .  $horaire['fin'] . " , $perso_id, $perso_nom, $poste");
+#                     error_log("$site, $date, " . $horaire['debut'] . " , " .  $horaire['fin'] . " , $perso_id, $perso_nom, $poste");
                     $results = $planningJobHelper->getContextMenuInfos($site, $date, $horaire['debut'], $horaire['fin'], $perso_id, $perso_nom, $poste, $CSRFToken, $session);
                     error_log($results['position_name']);
+                    $id = null;
+                    $available_agents = array();
+
+                    // Available agents
+                    if ($results['menu1']['agents']) {
+                        foreach ($results['menu1']['agents'] as $available_agent) {
+                            if ($lastid != $available_agent['id']) {
+                                array_push($available_agents, $available_agent['id']);
+                            }
+                        }
+                    }
+                    if (sizeof($available_agents) > 0) {
+                        error_log(print_r($available_agents, 1));
+                        $id = $available_agents[array_rand($available_agents)];
+                        error_log("id: $id");
+                    }
+
+                    // Unavailable agents
+                    #TODO: Add a second button to trigger filling also with unavailable agents ?
+                    /*
+                    if (!$id) {
+                        if ($results['menu2']['agents']) {
+                            foreach ($results['menu2']['agents'] as $unavailable_agent) {
+                                if ($lastid != $unavailable_agent['id']) {
+                                    $id = $unavailable_agent['id'];
+                                }
+                            }
+                        }
+                    }
+                    */
+
+                    if ($id) {
+                        $lastid = $id;
+                        $start = \Datetime::createFromFormat('H:i:s', $horaire['debut']);
+                        $end = \Datetime::createFromFormat('H:i:s', $horaire['fin']);
+                        error_log("Setting agent $id on position $poste from ". $horaire['debut'] . " to " . $horaire['fin'] . " on date $date");
+                        $datetime = \Datetime::createFromFormat('Y-m-d', $date);
+
+                        #TODO: Do not fill if already in position
+                        # Or add a button to replace existing positions
+                        $p = new PlanningPosition();
+                        $p->date($datetime);
+                        $p->perso_id($id);
+                        $p->poste($poste);
+                        $p->absent(0);     // TODO Add default value on model
+                        $p->chgt_login('admin');
+                        $p->chgt_time(new \DateTime()); // TODO Add default value on model
+                        $p->debut($start);
+                        $p->fin($end);
+                        $p->site($site);
+
+                        $this->entityManager->persist($p);
+                        $this->entityManager->flush();
+                    }
+
+
 #                    error_log(print_r($results), 1);
                     #TODO: Get names and fill cell
                 }
