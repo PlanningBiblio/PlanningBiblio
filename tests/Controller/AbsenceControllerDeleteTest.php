@@ -367,7 +367,43 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    private function createAndTest($acl, $nbAgents = 1, $validations = [1,1], $result = 'empty')
+    public function test17()
+    {
+        /**
+         * Absences-validation disabled
+         * Agent is admin level 1 (right 201)
+         * Absence is not his own
+         * The absence can not be deleted
+         */
+
+        $acl = [201];
+        $nbAgent = 1;
+        $result = 'notEmpty';
+
+        $validations = [0,1];
+        $this->createAndTest($acl, $nbAgent, $validations, $result, 1);
+    }
+
+    public function test18()
+    {
+        /**
+         * Absences-validation disabled
+         * Agent is admin level 2 (right 501)
+         * Absence is not his own
+         * The absence can be deleted
+         */
+
+        $acl = [501];
+        $nbAgent = 1;
+        $result = 'empty';
+
+        $validations = [0,1];
+        $this->createAndTest($acl, $nbAgent, $validations, $result, 1);
+    }
+
+
+
+    private function createAndTest($acl, $nbAgents = 1, $validations = [1,1], $result = 'empty', $loggedInAgentId = 0)
     {
         $acl = array_merge($acl, [99,100]);
         $agents = $this->agents;
@@ -406,7 +442,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
             );
         }
 
-        $this->logInAgent($agents[0], $acl);
+        $this->logInAgent($agents[$loggedInAgentId], $acl);
 
         $this->client->request('DELETE', '/absence', ['CSRFToken' => $this->CSRFToken, 'id' => $absence->id()]);
 
