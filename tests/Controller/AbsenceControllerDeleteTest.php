@@ -373,12 +373,14 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
          * Absences-validation disabled
          * Agent is admin level 1 (right 201)
          * Absence is not his own
-         * The absence can not be deleted
+         * The absence can be deleted
          */
+
+        $this->setParam('Absences-validation', 0);
 
         $acl = [201];
         $nbAgent = 1;
-        $result = 'notEmpty';
+        $result = 'empty';
 
         $validations = [0,1];
         $this->createAndTest($acl, $nbAgent, $validations, $result, 1);
