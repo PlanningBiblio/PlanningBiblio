@@ -491,7 +491,7 @@ class AbsenceController extends BaseController
             $acces = true;
         }
 
-        if ($valideN2 == 0 and $this->admin) {
+        if ($this->admin && ($this->config('Absences-validation') == 0 || $valideN2 == 0)) {
             $acces = true;
         }
 
