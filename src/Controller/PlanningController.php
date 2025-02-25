@@ -793,22 +793,23 @@ class PlanningController extends BaseController
                             }
                         }
 
-                        if ($absence["perso_id"] == $elem['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut) {
-                            // Absence validée : rouge barré
+                        if (($this->config('Absences-Exclusion') == 1 and $absence['valide'] == 99999)
+                            or $this->config('Absences-Exclusion') == 2) {
+                            continue;
+                        }
 
-                            if (($this->config('Absences-Exclusion') == 1 and $absence['valide'] == 99999)
-                                or $this->config('Absences-Exclusion') == 2) {
-                                continue;
-                            } elseif ($absence['valide'] > 0 or $this->config('Absences-validation') == 0) {
-                                $class_tmp[]="red";
-                                $class_tmp[]="striped";
+                        if ($absence['perso_id'] == $elem['perso_id'] and $absence['debut'] < $date . ' ' . $fin and $absence['fin'] > $date . ' ' . $debut) {
+                            // Absence validée : rouge barré
+                            if ($absence['valide'] > 0 or $this->config('Absences-validation') == 0) {
+                                $class_tmp[] = 'red';
+                                $class_tmp[] = 'striped';
                                 $absence_valide = true;
                                 break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
                             }
                             // Absence non-validée : rouge
                             elseif ($this->config('Absences-non-validees')) {
-                                $class_tmp[]="red";
-                                $title = $nom_affiche.' : Absence non-validée';
+                                $class_tmp[] = 'red';
+                                $title = $nom_affiche . ' : Absence non-validée';
                             }
                         }
                     }
