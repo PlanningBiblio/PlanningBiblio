@@ -59,22 +59,16 @@ class PlanningJobController extends BaseController
 
         foreach ($framework as $f) {
 
-#            error_log("Processing framework " . $f['nom'] . " - " . $f['titre']);
-#            error_log(print_r($f['lignes'], 1));
-#            error_log("array_keys " . join(' ', array_keys($f)));
             foreach ($f['lignes'] as $ligne) {
 
-#                error_log("Processing line " . $ligne['poste']);
                 $poste = $ligne['poste'];
-                #error_log("poste $poste");
                 $lastid = null;
+                $max_consecutive_positions = 2;
+                $consecutive_positions_count = 1;
                 foreach ($f['horaires'] as $horaire) {
-
-#                    error_log("Processing cell " . $horaire['debut'] . " - " . $horaire['fin']);
+                    $consecutive_placement_possible = false;
                     $planningJobHelper = new PlanningJobHelper();
-#                     error_log("$site, $date, " . $horaire['debut'] . " , " .  $horaire['fin'] . " , $perso_id, $perso_nom, $poste");
                     $results = $planningJobHelper->getContextMenuInfos($site, $date, $horaire['debut'], $horaire['fin'], $perso_id, $perso_nom, $poste, $CSRFToken, $session);
-                    error_log($results['position_name']);
                     $id = null;
                     $available_agents = array();
 
@@ -83,13 +77,26 @@ class PlanningJobController extends BaseController
                         foreach ($results['menu1']['agents'] as $available_agent) {
                             if ($lastid != $available_agent['id']) {
                                 array_push($available_agents, $available_agent['id']);
+                            } else {
+                                $consecutive_placement_possible = true;
                             }
                         }
+                    }
+
+                    # Do we have to place the same agent consecutively?
+                    if (sizeof($available_agents) == 0 &&
+                        $consecutive_placement_possible &&
+                        $consecutive_positions_count <= $max_consecutive_positions) {
+                        array_push($available_agents, $lastid);
+                        error_log("Adding agent $lastid $consecutive_positions_count times consecutively ($max_consecutive_positions max)\n");
+                        $consecutive_positions_count++;
                     }
                     if (sizeof($available_agents) > 0) {
                         error_log(print_r($available_agents, 1));
                         $id = $available_agents[array_rand($available_agents)];
-                        error_log("id: $id");
+                    }
+                    if ($id != $lastid) {
+                        $consecutive_positions_count = 1;
                     }
 
                     // Unavailable agents
@@ -110,7 +117,7 @@ class PlanningJobController extends BaseController
                         $lastid = $id;
                         $start = \Datetime::createFromFormat('H:i:s', $horaire['debut']);
                         $end = \Datetime::createFromFormat('H:i:s', $horaire['fin']);
-                        error_log("Setting agent $id on position $poste from ". $horaire['debut'] . " to " . $horaire['fin'] . " on date $date");
+                        error_log("Setting agent $id on position $poste from ". $horaire['debut'] . " to " . $horaire['fin'] . " on date $date\n");
                         $datetime = \Datetime::createFromFormat('Y-m-d', $date);
 
                         #TODO: Do not fill if already in position
@@ -129,10 +136,6 @@ class PlanningJobController extends BaseController
                         $this->entityManager->persist($p);
                         $this->entityManager->flush();
                     }
-
-
-#                    error_log(print_r($results), 1);
-                    #TODO: Get names and fill cell
                 }
             }
             
