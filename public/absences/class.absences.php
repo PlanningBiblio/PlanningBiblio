@@ -696,7 +696,7 @@ class absences
         }
 
         if (!$this->rejected) {
-            $filter.=" AND `{$dbprefix}absences`.`valide` != -1 ";
+            $filter .= " AND `{$dbprefix}absences`.`valide` >= 0 ";
         }
 
         // Don't look for teleworking absences if the position is compatible with
