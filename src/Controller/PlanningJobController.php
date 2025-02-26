@@ -47,6 +47,15 @@ class PlanningJobController extends BaseController
         $perso_nom = $request->get('perso_nom');
         $perso_id = $request->get('perso_id');
 
+        $datetime = \Datetime::createFromFormat('Y-m-d', $date);
+        $p = $this->entityManager->getRepository(PlanningPosition::class)->findBy(array(
+            'date' => $datetime,
+            'site' => $site,
+        ));
+
+        if (!empty($p)) {
+            return new Response(json_encode(['error' => 'Le planning n\'est pas vide']));
+        }
 
         $f = new Framework();
         $framework = $f->getFromDate($date, $site);
@@ -138,11 +147,6 @@ class PlanningJobController extends BaseController
             }
 
         }
-
-        /*if (!empty($result[1])) {
-            return new Response(json_encode($result[1]));
-        }*/
-
         return new Response('{}');
     }
 
