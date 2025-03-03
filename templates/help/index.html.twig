@@ -473,14 +473,30 @@ Vous pouvez rechercher un poste en tapant son nom dans le cadre "Rechercher".<br
 <a name="poste_ajout"></a>
 <h4>7.1 ) Ajout d'un poste</h4>
 Pour ajouter un poste, cliquez sur le bouton « Ajouter » puis complétez le formulaire.<br/><br/>
-Remplissez le nom du poste, choisissez son site (si configuration multi-sites), son étage, son groupe
-(les groupes permettent d’afficher des statistiques par groupe de postes dans la feuille de temps
-(voir chapitre 0.1)).<br/>
-Cochez la case "Obligatoire" s'il est obligatoire ou "Renfort" s'il s'agit d'un poste de renfort.<br/>
-Cochez la case "Non" face à "Bloquant" si vous souhaitez pouvoir placer un agent sur ce poste et sur un autre en même temps.<br/> 
-Cochez la case "Non" face à "Statistiques" si vous ne souhaitez pas voir apparaître ce poste dans les statistiques.<br/><br/>
-A droite, cochez les activités liées au poste et les catégories requises pour pouvoir occuper ce poste. 
-Si aucune catégorie n'est cochée, les agents de toutes catégories pourront être placés sur ce poste.<br/><br/>
+Remplissez : 
+<ul>
+  <li>le <strong>nom</strong> du poste</li>
+  <li>choisissez son <strong>site</strong>, si configuration multi-sites</li>
+  <li>son <strong>étage</strong>. Vous pouvez renseigner dans le champ étage toute information géographique permettant de savoir où se trouve le poste. Ceci pourra vous aider lors de la conception des tableaux.</li>
+  <li>son <strong>groupe</strong>. Les groupes permettent d’afficher des statistiques par groupe de postes dans la feuille de temps (voir chapitre 9.1)</li>
+</ul>
+
+Les valeurs renseignées par défaut pour les options suivantes conviennent à la plupart des cas. Modifiez-les seulement si vous souhaitez changer le comportement du poste.<br/>
+<ul>
+  <li><strong>Obligatoire / Renfort</strong> : Cochez la case "Obligatoire" si le remplissage du poste est obligatoire ou "Renfort" s'il s'agit d'un poste de renfort.</li>
+  <li><strong>Bloquant</strong> : Cochez la case "Non" face à "Bloquant" si vous souhaitez pouvoir placer un agent sur ce poste et sur un autre en même temps. Dans ce cas, l'agent pourra être placé sur un poste bloquant et un ou plusieurs postes non-bloquants en même temps. Le contrôle vérifiant si l'agent est déjà placé ne se fera pas sur l'ensemble des postes non-bloquants.</li> 
+  <li><strong>Quota de SP</strong> : Cochez la case "Non" face à "Quota de SP" si vous souhaitez que les heures de ce poste ne soient pas comptées dans le quota de service public. Les heures comptées dans le quota et le quota sont affichés à côté du nom de chaque agent dans le menu qui vous permet de placer les agents dans le planning et sur la page "Statistiques / Feuille de temps". Le nombre d'heures comptées en SP n'évoluent pas dans ce menu et sur cette page pour les postes ayant le paramètre "Quota de SP" à non. Les heures effectuées sur ces postes peuvent toutefois être comptées dans les statistiques (hors "Feuille de temps").</li>
+  <li><strong>Statistiques</strong> : Cochez la case "Non" face à "Statistiques" si vous ne souhaitez pas voir apparaître ce poste dans les statistiques (hors "Feuille de temps").</li>
+  <li><strong>Compatible télétravail</strong> : Cochez la case "Oui" face à l'option "Compatible télétravail" si l'activité désignée par ce poste peut être effectuée à distance, en télétravail. Les agents ne seront pas barrés des postes "Compatibles télétravail" lorsqu'ils enregistreront des absences de type "Télétravail".</li>
+  <li><strong>Poste repas</strong> : Cochez la case "Oui" face à "Poste repas" si vous souhaitez créer des lignes "Repas" ou "Pause déjeuner" dans vos tableaux. Ces lignes seront associées à ces postes repas et l'alerte "SR (Sans Repas)" sera désactivée sur celles-ci.</li>
+</ul>
+
+A droite, cochez les <strong>activités</strong> liées au poste et les <strong>catégories</strong> requises pour pouvoir occuper ce poste.
+<ul>
+  <li>Chaque <strong>activité</strong> cochée agit comme un filtre ajouté sur la liste des agents proposés. Plus il y a d'activités, plus la liste des agents sera réduite.</li>
+  <li>Pour les <strong>catégories</strong>, le filtre est déactivé si aucune catégorie n'est cochée. Dans ce cas, les agents de toutes catégories pourront être placés sur ce poste.</li>
+</ul>
+
 Validez.
 
 <a name="poste_modif"></a>
