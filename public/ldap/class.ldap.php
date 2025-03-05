@@ -28,7 +28,7 @@ function authCAS($logger)
         phpCAS::setLogger($logger);
         phpCAS::setVerbose(true);
     }
-    phpCAS::client($GLOBALS['config']['CAS-Version'], $GLOBALS['config']['CAS-Hostname'], intval($GLOBALS['config']['CAS-Port']), $GLOBALS['config']['CAS-URI'], false);
+    phpCAS::client($GLOBALS['config']['CAS-Version'], $GLOBALS['config']['CAS-Hostname'], intval($GLOBALS['config']['CAS-Port']), $GLOBALS['config']['CAS-URI'], $GLOBALS['config']['CAS-ServiceURL']);
     phpCAS::setExtraCurlOption(CURLOPT_SSLVERSION, intval($GLOBALS['config']['CAS-SSLVersion']));
     if ($GLOBALS['config']['CAS-CACert']) {
         phpCAS::setCasServerCACert($GLOBALS['config']['CAS-CACert']);
