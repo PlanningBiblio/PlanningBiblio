@@ -1,3 +1,12 @@
+*** Version 24.10.09   (2025-03-06)    ***
+- Fixes
+MT47685: An level 1 admin can delete another agent absence when Absences-validation is disabled #1115
+MT47572: Do not cross out agents with refused absences #1118
+MT47806: Fix Undefined property: App\Controller\StatisticController::config #1120
+
+- Documentation
+MT45507: Add position parameter to include it in public service quota #1119
+
 *** Version 24.10.08   (2025-02-14)    ***
 -Fixes
 MT46949: Fix getRecipients to handle empty values for Absences-notifications-* #1107
