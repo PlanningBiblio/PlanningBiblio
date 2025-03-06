@@ -1,3 +1,7 @@
+*** Version 24.11.11   (2025-03-06)    ***
+- Fixes
+MT47685: An level 1 admin can delete another agent absence when Absences-validation is disabled #1115
+
 *** Version 24.11.10   (2025-03-06)    ***
 - Fixes
 MT47572: Do not cross out agents with refused absences #1117
