@@ -1110,8 +1110,8 @@ class StatisticController extends BaseController
         if (is_array($absences) and !empty($absences)) {
             foreach ($absences as $elem) {
 
-                if (($this->config['Absences-Exclusion'] == 1 and $elem['valide'] == 99999)
-                    or $config['Absences-Exclusion'] == 2)
+                if (($this->config('Absences-Exclusion') == 1 and $elem['valide'] == 99999)
+                    or $this->config('Absences-Exclusion') == 2)
                 {
                     $formatted_start_date = date('Y-m-d', strtotime($elem['debut']));
                     $formatted_start_hour = date('H:i:s', strtotime($elem['debut']));
@@ -1157,8 +1157,8 @@ class StatisticController extends BaseController
         $totaux = array("_general"=>0,"_generalHeures"=>0);
         foreach ($absences as $elem) {
 
-            if (($this->config['Absences-Exclusion'] == 1 and $elem['valide'] == 99999)
-                or $config['Absences-Exclusion'] == 2)
+            if (($this->config('Absences-Exclusion') == 1 and $elem['valide'] == 99999)
+                or $this->config('Absences-Exclusion') == 2)
             {
                 $formatted_start_date = date('Y-m-d', strtotime($elem['debut']));
                 $formatted_start_hour = date('H:i:s', strtotime($elem['debut']));
