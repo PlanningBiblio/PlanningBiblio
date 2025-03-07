@@ -335,6 +335,12 @@ class StatisticController extends BaseController
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
 
+                                    if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                                        or $this->config('Absences-Exclusion') == 2)
+                                    {
+                                        continue;
+                                    }
+
                                     // Ignore teleworking absences for compatible positions
                                     if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
                                         continue;
