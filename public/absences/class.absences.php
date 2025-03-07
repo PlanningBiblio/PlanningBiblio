@@ -950,7 +950,8 @@ class absences
         //	Select All
         $req="SELECT `{$dbprefix}absences`.`perso_id` AS `perso_id`, "
         ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
-        ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`motif` AS `motif` "
+        ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`motif` AS `motif`, "
+        ."`{$dbprefix}absences`.`valide` AS `valide` "
         ."FROM `{$dbprefix}absences` "
         ."WHERE $dates $filter;";
 
