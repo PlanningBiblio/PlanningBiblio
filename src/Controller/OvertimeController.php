@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\PlanningBiblio\Helper\HourHelper;
 
 use App\Model\Agent;
 use App\Model\OverTime;
@@ -138,13 +139,15 @@ class OvertimeController extends BaseController
             }
 
             $date2 = ($elem['date2'] and $elem['date2']!="0000-00-00") ? " & ".dateFr($elem['date2']) : null;
+            $overtime_result = HourHelper::decimalToHoursMinutes($elem['heures']);
+            $hours = $overtime_result['hours'] . 'h' . $overtime_result['minutes'];
 
             $overtime = array(
                 'id'                => $elem['id'],
                 'date'              => dateFr($elem['date']),
                 'date2'             => $date2,
                 'name'              => nom($elem['perso_id']),
-                'hours'             => heure4($elem['heures']),
+                'hours'             => $hours,
                 'validation_style'  => $validationStyle,
                 'validation'        => $validation,
                 'validation_date'   => $validation_date,
@@ -222,7 +225,8 @@ class OvertimeController extends BaseController
         $agent = nom($recup['perso_id'], "prenom nom");
         $recup['saisie'] = dateFr($recup['saisie'], true);
         $recup['saisie_par_nom'] = nom($recup['saisie_par']);
-        $recup['time'] = gmdate('H:i', floor($recup['heures'] * 3600));
+        $result = HourHelper::decimalToHoursMinutes($recup['heures']);
+        $recup['time'] = $result['hours'] . ':' . $result['minutes'];
         $recup['editable'] = $recup['valide'] <= 0 ? 1 : 0;
         $recup['save'] = (
             ($adminN2 and $recup['valide'] <= 0 )  // Level 2 off or refused
@@ -254,7 +258,7 @@ class OvertimeController extends BaseController
         $lang = $GLOBALS['lang'];
 
         list($hours, $minutes) = explode(':', $heures);
-        $heures = intVal($hours) + intVal($minutes) / 60;
+        $heures = HourHelper::hoursMinutesToDecimal($hours, $minutes);
 
         $result = array(
             'type' => 'notice',
