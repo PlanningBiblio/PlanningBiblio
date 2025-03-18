@@ -1,0 +1,1 @@
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('CAS-ServiceBaseURL', 'text', '', 'URL de Planno.', 'CAS', '', NULL, '47');";
