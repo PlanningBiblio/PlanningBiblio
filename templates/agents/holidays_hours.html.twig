@@ -44,11 +44,11 @@ $(document).ready(function() {
       <td>Nombre d'heures de congés par an :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' id='conges_annuel' name='conges_annuel' value='{{ annuel_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_annuel_hours' name='conges_annuel_hours' value='{{ annuel_heures }}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
-          {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': annuel_min, 'name': 'conges_annuel_min' } %}
+          <input type='text' name='conges_annuel_min' id='conges_annuel_min' value='{{ annuel_min | digit(2) }}' style='width:70px;text-align:left;'>
         {% else %}
-          {{ annuel_string }}
+          {{ annuel_heures }}h{{ annuel_min | digit(2) }}
         {% endif %}
       </td>
       <td>{% if show_hours_to_days %}<span id="annuel_jours">{{ annuel_jours }}</span> jours{% endif %}</td>
@@ -58,11 +58,11 @@ $(document).ready(function() {
       <td>Crédit d'heures de congés actuel :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' id='conges_credit' name='conges_credit' value='{{ credit_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_credit_hours' name='conges_credit_hours' value='{{ credit_heures }}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
-          {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': credit_min, 'name': 'conges_credit_min' } %}
+          <input type='text' name='conges_credit_min' id='conges_credit_min' value='{{ credit_min | digit(2) }}' style='width:70px;text-align:left;'>
         {% else %}
-          {{ credit_string }}
+          {{ credit_heures }}h{{ credit_min | digit(2) }}
         {% endif %}
       </td>
       <td>{% if show_hours_to_days %}<span id="credit_jours">{{ credit_jours }}</span> jours{% endif %}</td>
@@ -72,11 +72,11 @@ $(document).ready(function() {
       <td>Reliquat de congés :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' id='conges_reliquat' name='conges_reliquat' value='{{ reliquat_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_reliquat_hours' name='conges_reliquat_hours' value='{{ reliquat_heures }}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
-          {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': reliquat_min, 'name': 'conges_reliquat_min' } %}
+          <input type='text' name='conges_reliquat_min' id='conges_reliquat_min' value='{{ reliquat_min | digit(2) }}' style='width:70px;text-align:left;'>
         {% else %}
-          {{ reliquat_string }}
+          {{ reliquat_heures }}h{{ reliquat_min | digit(2) }}
         {% endif %}
       </td>
         <td>{% if show_hours_to_days %}<span id="reliquat_jours">{{ reliquat_jours }}</span> jours{% endif %}</td>
@@ -86,11 +86,11 @@ $(document).ready(function() {
       <td>Solde débiteur :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' id='conges_anticipation' name='conges_anticipation' value='{{ anticipation_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_anticipation_hours' name='conges_anticipation_hours' value='{{ anticipation_heures }}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
-          {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': anticipation_min, 'name': 'conges_anticipation_min' } %}
+          <input type='text' id='conges_anticipation_min' name='conges_anticipation_min' value='{{ anticipation_min | digit(2) }}'  style='width:70px;text-align:left;'>
         {% else %}
-          {{ anticipation_string }}
+          {{ anticipation_heures }}h{{ anticipation_min | digit(2) }}
         {% endif %}
       </td>
         <td>{% if show_hours_to_days %}<span id="anticipation_jours">{{ anticipation_jours }}</span> jours{% endif %}</td>
