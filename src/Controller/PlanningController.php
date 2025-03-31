@@ -777,7 +777,7 @@ class PlanningController extends BaseController
 
                     if ($elem['absent'] == 2) {
                         $class_tmp[] = "out-of-work-time";
-                        $title = 'En dehors de ses heures de présences';
+                        $title = 'En dehors de ses heures de présence';
                     }
 
                     // On marque les absents (absences enregistrées dans la table absences)
