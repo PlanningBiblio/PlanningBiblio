@@ -378,6 +378,21 @@ $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`
 // Mentions légales
 $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('legalNotices', 'textarea', '', 'Mentions légales (exemple : notice RGPD). La syntaxe markdown peut être utilisée pour la saisie.', 'Mentions légales', 10);";
 
+// Add OpenID Connect params
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('OIDC-Provider', 'text', '', 'OpenID Connect Provider.', 'OpenID Connect', '', 1, 10);";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('OIDC-CACert', 'text', '', 'Path to the OpenID Connect CA Certificate.', 'OpenID Connect', '', 1, 20);";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('OIDC-ClientID', 'text', '', 'OpenID Connect Client ID (not to be confused with Secret ID).', 'OpenID Connect', '', 1, 30);";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('OIDC-ClientSecret', 'text', '', 'OpenID Connect Secret Value (not to be confused with Secret ID).', 'OpenID Connect', '', 1, 40);";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('OIDC-LoginAttribute', 'text', '', 'OpenID Connect Login Attribute.', 'OpenID Connect', '', 1, 50);";
+
+// Add MS Graph params
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('MSGraph-TenantID', 'text', '', 'MS Graph Tenant ID.', 'Microsoft Graph API', '', 1, 10);";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('MSGraph-ClientID', 'text', '', 'MS Graph Client ID (not to be confused with Secret ID).', 'Microsoft Graph API', '', 1, 20);";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('MSGraph-ClientSecret', 'text', '', 'MS Graph Secret Value (not to be confused with Secret ID).', 'Microsoft Graph API', '', 1, 30);";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('MSGraph-LoginSuffix', 'text', '', 'Suffix that must be added to the Planno login to link with the MS login. Optional, empty by default.', 'Microsoft Graph API', '', 1, 40);";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('MSGraph-IgnoredStatuses', 'text', 'free;tentative', 'List of statuses to ignore, separated by semicolons. Optional, \"free;tentative\" by default.', 'Microsoft Graph API', '', 1, 50);";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('MSGraph-AbsenceReason', 'text', 'Office 365', 'Absence Reason to use for imported events. Optional, \"Outlook\" by default.', 'Microsoft Graph API', '', 1, 60);";
+
 // Cron
 $sql[]="INSERT INTO `{$dbprefix}cron` (`h`,`m`,`dom`,`mon`,`dow`,`command`,`comments`) VALUES ('0','0','*','*','*','cron.planning_hebdo_daily.php','Daily Cron for Planning Hebdo module');";
 $sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,1,'*','cron.holiday_reset_remainder.php','Reset holiday remainders');";
@@ -429,7 +444,8 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('50','70','Jours de fermeture','/closingday', 'config!=Planook&config=Conges-Enable'),
   ('50','75','Heures de présence','/workinghour','config=PlanningHebdo'),
   ('50','77','Notifications / Validations','/notification','config=Absences-notifications-agent-par-agent'),
-  ('50','80','Configuration','/config',NULL),
+  ('50','80','Configuration fonctionnelle','/config',NULL),
+  ('50','90','Configuration technique','/config/technical',NULL),
   ('60','0','Aide','/help',NULL);";
 
 //	Personnel

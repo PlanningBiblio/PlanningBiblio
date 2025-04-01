@@ -30,6 +30,7 @@ class MSGraphClient
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full, $stdout)
     {
+        $config = $GLOBALS['config'];
         $tokenURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/token";
         $authURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/authorize";
         $options = [
@@ -39,10 +40,10 @@ class MSGraphClient
         $this->oauth = new OAuth($this->logger, $clientid, $clientsecret, $tokenURL, $authURL, $options);
         $this->msCalendarUtils = new MSCalendarUtils();
         $this->entityManager = $entityManager;
-        $this->dbprefix = $_ENV['DATABASE_PREFIX'];
-        $this->reason_name = $_ENV['MS_GRAPH_REASON_NAME'] ?? 'Outlook';
-        $this->login_suffix = $_ENV['MS_GRAPH_LOGIN_SUFFIX'] ?? null;
-        $this->ignoredStatuses = !empty($_ENV['MS_GRAPH_IGNORED_STATUSES']) ? explode(';', $_ENV['MS_GRAPH_IGNORED_STATUSES']) : ['free', 'tentative'];
+        $this->dbprefix = $config['dbprefix'];
+        $this->reason_name = $config['MSGraph-AbsenceReason'] ?? 'Outlook';
+        $this->login_suffix = $config['MSGraph-LoginSuffix'] ?? null;
+        $this->ignoredStatuses = !empty($config['MSGraph-IgnoredStatuses']) ? explode(';', $config['MSGraph-IgnoredStatuses']) : ['free', 'tentative'];
         $this->full = $full;
     }
 

@@ -36,7 +36,11 @@
     {% endif %}
 
     {% if userCan('20') %}
-      <li><a href='{{ asset("config") }}'>Configuration</a></li>
+      <li><a href="{{ path('config.index') }}">Configuration fonctionnelle</a></li>
+    {% endif %}
+
+    {% if userCan('20') %}
+      <li><a href="{{ path('config.index', {'options': 'technical'}) }}">Configuration fonctionnelle technique</a></li>
     {% endif %}
   </ul>
 {% endblock %}

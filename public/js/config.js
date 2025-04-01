@@ -58,6 +58,10 @@ function ldaptest(){
 }
 
 function mail_config() {
+  if ($('#Mail-IsMail-IsSMTP').length == 0) {
+    return;
+  }
+
   if (document.getElementById('Mail-IsMail-IsSMTP').value == 'IsMail') {
     document.getElementById('Mail-Hostname_tr').style.display = 'none';
     document.getElementById('Mail-Host_tr').style.display = 'none';

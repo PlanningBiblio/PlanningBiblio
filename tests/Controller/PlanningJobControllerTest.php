@@ -93,8 +93,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $GLOBALS['config']['agentsIndispo'] = 0;
         $GLOBALS['config']['Multisites-nombre'] = 1;
         $GLOBALS['config']['Multisites-site1'] = 'site';
-
-        unset($_ENV['MS_GRAPH_CLIENT_ID']);
+        $GLOBALS['config']['MSGraph-ClientID'] = '';
 
         $builder = new FixtureBuilder();
 

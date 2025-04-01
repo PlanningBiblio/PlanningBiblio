@@ -30,6 +30,9 @@ class ConfigParam extends PLBEntity
     /** @Column(type="string") **/
     protected $valeurs;
 
+    /** @Column(type="boolean") **/
+    protected $technical;
+
     /** @Column(type="string") **/
     protected $extra;
 
