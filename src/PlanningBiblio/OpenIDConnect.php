@@ -22,11 +22,11 @@ class OpenIDConnect
         $this->config = $GLOBALS['config'];
         $this->entityManager = $GLOBALS['entityManager'];
 
-        $this->provider = $_ENV['OIDC_PROVIDER'];
-        $this->cacert = $_ENV['OIDC_CACERT'];
-        $this->client_id = $_ENV['OIDC_CLIENT_ID'];
-        $this->client_secret = $_ENV['OIDC_CLIENT_SECRET'];
-        $this->login_attribute = !empty($_ENV['OIDC_LOGIN_ATTRIBUTE']) ? $_ENV['OIDC_LOGIN_ATTRIBUTE'] : 'email';
+        $this->provider = $this->config['OIDC-Provider'];
+        $this->cacert = $this->config['OIDC-CACert'];
+        $this->client_id = $this->config['OIDC-ClientID'];
+        $this->client_secret = $this->config['OIDC-ClientSecret'];
+        $this->login_attribute = !empty($this->config['OIDC-LoginAttribute']) ? $this->config['OIDC-LoginAttribute'] : 'email';
     }
 
 

@@ -440,7 +440,7 @@ class AgentController extends BaseController
             'ICS_Server2'       => $this->config('ICS-Server2'),
             'ICS_Server3'       => $this->config('ICS-Server3'),
             'ICS_Code'          => $this->config('ICS-Code'),
-            'MSGraphConfig'     => !empty($_ENV['MS_GRAPH_CLIENT_ID']),
+            'MSGraphConfig'     => !empty($this->config('MSGraph-ClientID')),
             'MSGraphCheck'      => $mSGraphCheck,
             'ics'               => $ics,
             'CSRFSession'       => $CSRFSession,
@@ -484,7 +484,7 @@ class AgentController extends BaseController
         if ($this->config('ICS-Server1') or $this->config('ICS-Server2')
             or $this->config('ICS-Server3') or $this->config('ICS-Export')
             or $this->config('Hamac-csv')
-            or !empty($_ENV['MS_GRAPH_CLIENT_ID'])) {
+            or !empty($this->config('MSGraph-ClientID'))) {
             $this->templateParams(array( 'agendas_and_sync' => 1 ));
         }
 

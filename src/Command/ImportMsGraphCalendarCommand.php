@@ -39,12 +39,14 @@ class ImportMsGraphCalendarCommand extends Command
             return Command::FAILURE;
         }
 
-        $tenantid = $_ENV['MS_GRAPH_TENANT_ID'] ?? null;
-        $clientid = $_ENV['MS_GRAPH_CLIENT_ID'] ?? null;
-        $clientsecret = $_ENV['MS_GRAPH_CLIENT_SECRET'] ?? null;
+        $config = $GLOBALS['config'];
+
+        $tenantid = $config['MSGraph-TenantID'] ?? null;
+        $clientid = $config['MSGraph-ClientID'] ?? null;
+        $clientsecret = $config['MSGraph-ClientSecret'] ?? null;
 
         if (!$tenantid || !$clientid || !$clientsecret) {
-            $io->error('At least one of the following is not defined: MS_GRAPH_TENANT_ID, MS_GRAPH_CLIENT_ID, MS_GRAPH_CLIENT_SECRET. Please check you .env.{prod|dev}.local file.');
+            $io->error('At least one of the following is not defined: MSGraph-TenantID, MSGraph-ClientID, MSGraph-ClientSecret. Please check your configuration.');
             return Command::FAILURE;
         }
 
