@@ -100,7 +100,7 @@
     {% endif %}
   {% endif %}
 
-  <h3>Configuration</h3>
+  <h3>Configuration {% if technical %}technique{% else %}fonctionnelle{% endif %}</h3>
     <form name="form" action="{{ path('config.update') }}" method="post">
 
       <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>

@@ -33,7 +33,7 @@ class ConfigControllerTest extends PLBWebTestCase
 
         $response = $this->client->getResponse()->getContent();
         $this->assertMatchesRegularExpression(
-            '/<h3>Configuration<\/h3>/',
+            '/<h3>Configuration fonctionnelle<\/h3>/',
             $response
         );
 
