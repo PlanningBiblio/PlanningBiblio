@@ -25,6 +25,7 @@ $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `comm
 // Move other params
 $sql[] = "UPDATE `{$dbprefix}config` SET `technical` = 1 WHERE `categorie` = 'Authentification';";
 $sql[] = "UPDATE `{$dbprefix}config` SET `technical` = 1 WHERE `categorie` = 'CAS';";
+$sql[] = "UPDATE `{$dbprefix}config` SET `technical` = 1 WHERE `categorie` = 'Hamac';";
 $sql[] = "UPDATE `{$dbprefix}config` SET `technical` = 1 WHERE `categorie` = 'ICS';";
 $sql[] = "UPDATE `{$dbprefix}config` SET `technical` = 1 WHERE `categorie` = 'LDAP';";
 $sql[] = "UPDATE `{$dbprefix}config` SET `technical` = 1 WHERE `categorie` = 'LDIF';";
@@ -59,3 +60,6 @@ foreach ($params as $param) {
         }
     }
 }
+
+// CAS config does not require CAS-ServiceURL. URL is used instead.
+$sql[] = "DELETE FROM `{$dbprefix}config` WHERE `nom` = 'CAS-ServiceURL';";

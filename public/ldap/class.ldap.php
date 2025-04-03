@@ -43,9 +43,7 @@ function authCAS($logger)
         phpCAS::setNoCasServerValidation();
     }
 
-    if (!empty($config['CAS-ServiceURL'])) {
-        phpCAS::setFixedServiceURL($config['CAS-ServiceURL']);
-    }
+    phpCAS::setFixedServiceURL($config['URL']);
 
     phpCAS::forceAuthentication();
 
