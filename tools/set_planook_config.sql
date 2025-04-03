@@ -70,6 +70,8 @@
 -- UPDATE config SET valeur='0', type='info' WHERE nom='ICS-Export';
 -- -- Interdire l’ajout de serveur LDAP
 -- UPDATE config SET valeur='', type='info' WHERE nom='LDAP-Host';
+-- -- Interdire l’import LDIF
+-- UPDATE config SET valeur='', type='info' WHERE nom='LDIF-File';
 -- -- Forcer la configuration de la messagerie
 -- UPDATE config SET valeur='IsMail' WHERE nom='Mail-IsMail-IsSMTP';
 -- UPDATE config SET valeur='127.0.0.1' WHERE nom='Mail-Host';
