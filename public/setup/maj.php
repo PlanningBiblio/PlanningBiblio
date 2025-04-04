@@ -2363,7 +2363,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Nombre de semaines pour la rotation des heures de présence. Les valeurs supérieures à 3 ne peuvent être utilisées que si le paramètre PlanningHebdo est coché' WHERE `nom` = 'nb_semaine';";
 
-    $sql[] = "ALTER TABLE `{$dbprefix}planning_hebdo` ADD COLUMN nb_semaine INT AFTER exception";
+    $sql[] = "ALTER TABLE `{$dbprefix}planning_hebdo` ADD COLUMN IF NOT EXISTS nb_semaine INT AFTER exception";
 
     $sql[] = "UPDATE `{$dbprefix}planning_hebdo` SET nb_semaine=" . $GLOBALS['config']['nb_semaine'] . " WHERE nb_semaine IS NULL";
 
@@ -2386,7 +2386,7 @@ $v="21.05.00.002";
 if (version_compare($config['Version'], $v) === -1) {
 
     // MT 29617
-    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Conges-tous', 'boolean', '0', 'Autoriser l\'enregistrement de congés pour tous les agents en une fois','Congés','6');";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Conges-tous', 'boolean', '0', 'Autoriser l\'enregistrement de congés pour tous les agents en une fois','Congés','6');";
     $sql[] = "UPDATE `{$dbprefix}config` set `ordre`='4' WHERE `nom`='Conges-validation';";
     $sql[] = "UPDATE `{$dbprefix}config` set `ordre`='5' WHERE `nom`='Conges-Validation-N2';";
     $sql[] = "UPDATE `{$dbprefix}config` set `ordre`='6' WHERE `nom`='Conges-tous';";
@@ -2402,7 +2402,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` set `ordre`='16' WHERE `nom`='Recup-Uneparjour';";
 
     // MT 32844
-    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Conges-fullday-reference-time','text','','Temps de référence (en heures) pour une journée complète. Si ce champ est renseigné et que les crédits de congés sont gérés en jours, la différence de temps de chaque journée sera créditée ou débitée du solde des récupérations. Format : entier ou décimal. Exemple : pour 7h30, tapez 7.5', 'Congés', '', '10');";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Conges-fullday-reference-time','text','','Temps de référence (en heures) pour une journée complète. Si ce champ est renseigné et que les crédits de congés sont gérés en jours, la différence de temps de chaque journée sera créditée ou débitée du solde des récupérations. Format : entier ou décimal. Exemple : pour 7h30, tapez 7.5', 'Congés', '', '10');";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `ordre`= '8' WHERE `nom` = 'Conges-demi-journees';";
     $sql[] = "UPDATE `{$dbprefix}config` SET `ordre`= '9' WHERE `nom` = 'Conges-fullday-switching-time';";
@@ -2410,8 +2410,8 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `ordre`= '12' WHERE `nom` = 'Conges-apresValidation';";
     $sql[] = "UPDATE `{$dbprefix}config` SET `ordre`= '13' WHERE `nom` = 'Conges-Rappels-N1';";
 
-    $sql[] = "ALTER TABLE `{$dbprefix}conges` ADD COLUMN `regul_id` INT(11) NULL DEFAULT NULL AFTER `info_date`;";
-    $sql[] = "ALTER TABLE `{$dbprefix}conges` ADD COLUMN `origin_id` INT(11) NULL DEFAULT NULL AFTER `regul_id`;";
+    $sql[] = "ALTER TABLE `{$dbprefix}conges` ADD COLUMN IF NOT EXISTS `regul_id` INT(11) NULL DEFAULT NULL AFTER `info_date`;";
+    $sql[] = "ALTER TABLE `{$dbprefix}conges` ADD COLUMN IF NOT EXISTS `origin_id` INT(11) NULL DEFAULT NULL AFTER `regul_id`;";
 
     // MT 30755
     $sql[] = "DELETE FROM `{$dbprefix}config` WHERE nom LIKE 'Multisites-site%-cycles' LIMIT 10;";
@@ -2421,7 +2421,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}config` SET valeurs = '[[1, \"Libre\"],[60,\"Heure\"],[30,\"Demi-heure\"],[15,\"Quart d\'heure\"],[5,\"5 minutes\"]]' WHERE nom = 'Granularite'";
 
     // MT 33801
-    $sql[] = "ALTER TABLE `{$dbprefix}config` ADD `extra` varchar(100) AFTER `valeurs`;";
+    $sql[] = "ALTER TABLE `{$dbprefix}config` ADD COLUMN IF NOT EXISTS `extra` varchar(100) AFTER `valeurs`;";
     $sql[] = "UPDATE `{$dbprefix}config` SET `extra` = 'onchange=\'mail_config();\'' WHERE `nom` = 'Mail-IsMail-IsSMTP';";
     $sql[] = "DELETE FROM `{$dbprefix}config` WHERE `nom` = 'Mail-WordWrap';";
 
@@ -2436,13 +2436,13 @@ if (version_compare($config['Version'], $v) === -1) {
 
 $v="21.10.00.000";
 if (version_compare($config['Version'], $v) === -1) {
-    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Conges-Heures','enum2','0','Permettre la saisie de congés sur quelques heures ou forcer la saisie de congés sur des journées complètes. Paramètre actif avec les options Conges-Mode=Heures et Conges-Recuperations=Dissocier', 'Congés', '[[0,\"Forcer la saisie de congés sur journées entières\"],[1,\"Permettre la saisie de congés sur quelques heures\"]]', '3');";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Conges-Heures','enum2','0','Permettre la saisie de congés sur quelques heures ou forcer la saisie de congés sur des journées complètes. Paramètre actif avec les options Conges-Mode=Heures et Conges-Recuperations=Dissocier', 'Congés', '[[0,\"Forcer la saisie de congés sur journées entières\"],[1,\"Permettre la saisie de congés sur quelques heures\"]]', '3');";
 
-    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES
+    $sql[]="INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES
       ('PlanningHebdo-DebutPauseLibre', 'enum2', '12:00:00',
       '[[\"11:00:00\",\"11h00\"],[\"11:15:00\",\"11h15\"],[\"11:30:00\",\"11h30\"],[\"11:45:00\",\"11h45\"],[\"12:00:00\",\"12h00\"],[\"12:15:00\",\"12h15\"],[\"12:30:00\",\"12h30\"],[\"12:45:00\",\"12h45\"],[\"13:00:00\",\"13h00\"],[\"13:15:00\",\"13h15\"],[\"13:30:00\",\"13h30\"],[\"13:45:00\",\"13h45\"],[\"14:00:00\",\"14h00\"],[\"14:15:00\",\"14h15\"],[\"14:30:00\",\"14h30\"],[\"14:45:00\",\"14h45\"]]',
       'Heures de présence','66', 'Début de période de pause libre');";
-    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES
+    $sql[]="INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES
       ('PlanningHebdo-FinPauseLibre', 'enum2', '14:00:00',
       '[[\"11:15:00\",\"11h15\"],[\"11:30:00\",\"11h30\"],[\"11:45:00\",\"11h45\"],[\"12:00:00\",\"12h00\"],[\"12:15:00\",\"12h15\"],[\"12:30:00\",\"12h30\"],[\"12:45:00\",\"12h45\"],[\"13:00:00\",\"13h00\"],[\"13:15:00\",\"13h15\"],[\"13:30:00\",\"13h30\"],[\"13:45:00\",\"13h45\"],[\"14:00:00\",\"14h00\"],[\"14:15:00\",\"14h15\"],[\"14:30:00\",\"14h30\"],[\"14:45:00\",\"14h45\"],[\"15:00:00\",\"15h00\"]]',
       'Heures de présence','67', 'Fin de période de pause libre');";
@@ -2783,12 +2783,12 @@ $v="22.04.00.001";
 if (version_compare($config['Version'], $v) === -1) {
     // MT 35062. New validation schema.
     $sql[] = "ALTER TABLE `{$dbprefix}responsables` CHANGE `notification` `notification_level1` INT(1) NOT NULL DEFAULT '0'";
-    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN `notification_level2` INT(1) NOT NULL DEFAULT '0' AFTER `notification_level1`";
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN IF NOT EXISTS `notification_level2` INT(1) NOT NULL DEFAULT '0' AFTER `notification_level1`";
 
-    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN `level1` INT(1) NOT NULL DEFAULT '1' AFTER `responsable`";
-    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN `level2` INT(1) NOT NULL DEFAULT '0' AFTER `level1`";
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN IF NOT EXISTS `level1` INT(1) NOT NULL DEFAULT '1' AFTER `responsable`";
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` ADD COLUMN IF NOT EXISTS `level2` INT(1) NOT NULL DEFAULT '0' AFTER `level1`";
 
-    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Absences-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"L\'absence doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Absences', 'La validation niveau 2 des absences peut se faire directement ou doit attendre la validation niveau 1', '31')";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Absences-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"L\'absence doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Absences', 'La validation niveau 2 des absences peut se faire directement ou doit attendre la validation niveau 1', '31')";
 
     // Symfonize recuperation (comp-time).
     $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'conges/recuperation_modif.php';";
