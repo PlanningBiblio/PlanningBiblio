@@ -225,33 +225,54 @@ function verif_form_agent(){
     return false;
   }
 
-  comp_time_min = $("#comp_time_min").val();
-  if (comp_time_min) {
-    comp_time_min = Number(comp_time_min);
-    if (
-        !Number.isInteger(comp_time_min) ||
-        comp_time_min < 0 ||
-        comp_time_min > 59
-       ) {
-        CJInfo("Le nombre de minutes des récupérations doit être un entier compris entre 0 et 59");
-        return false;
-    }
-  } else {
-    $("#comp_time_min").val(0);
-  }
-  comp_time_hours = $("#comp_time_hours").val();
-  if (comp_time_hours) {
-    comp_time_hours = Number(comp_time_hours);
-    console.log(comp_time_hours);
-    if (!Number.isInteger(comp_time_hours)) {
-        CJInfo("Le nombre d'heures des récupérations doit être un entier");
-        return false;
-    }
-  } else {
-    $("#comp_time_hours").val(0);
+  if ($('.invalid').length) {
+    CJInfo("Des valeurs sont invalides dans l'onglet \"Congés\"");
+    return false;
   }
 
   document.form.submit();
+}
+
+function control_credits_min(o) {
+  id = o.attr('id');
+  errorElem = id + '_error';
+  minutes = o.val();
+
+  $('#' + errorElem).remove();
+
+  if (minutes) {
+    minutes = Number(minutes);
+    if (
+        !Number.isInteger(minutes) ||
+        minutes < 0 ||
+        minutes > 59
+       ) {
+        o.closest('tr').after('<tr id="' + errorElem + '"><td colspan="2" class="aRight important invalid">Le nombre de minutes doit être un entier compris entre 0 et 59</td></tr>');
+    }
+  }
+}
+
+function control_credits_hours(o) {
+  id = o.attr('id');
+  errorElem = id + '_error';
+  hours = o.val();
+
+  $('#' + errorElem).remove();
+
+  if (hours) {
+    hours = Number(hours);
+    if (id == 'comp_time_hours') {
+      if (!Number.isInteger(hours)) {
+          o.closest('tr').after('<tr id="' + errorElem + '"><td colspan="2" class="aRight important invalid">Le nombre d\'heures doit être un entier</td></tr>');
+      }
+    } else {
+      if (!Number.isInteger(hours) ||
+          hours < 0
+         ) {
+          o.closest('tr').after('<tr id="' + errorElem + '"><td colspan="2" class="aRight important invalid">Le nombre d\'heures doit être un entier positif</td></tr>');
+      }
+    }
+  }
 }
 
 $(function() {
@@ -521,7 +542,45 @@ $(function() {
     }
   });
   
+  $('#conges_annuel_hours').on('keyup', function(){
+    control_credits_hours($(this));
+  });
 
+  $('#conges_anticipation_hours').on('keyup', function(){
+    control_credits_hours($(this));
+  });
+
+  $('#conges_credit_hours').on('keyup', function(){
+    control_credits_hours($(this));
+  });
+
+  $('#conges_reliquat_hours').on('keyup', function(){
+    control_credits_hours($(this));
+  });
+
+  $('#comp_time_hours').on('keyup', function(){
+    control_credits_hours($(this));
+  });
+
+  $('#conges_annuel_min').on('keyup', function(){
+    control_credits_min($(this));
+  });
+
+  $('#conges_anticipation_min').on('keyup', function(){
+    control_credits_min($(this));
+  });
+
+  $('#conges_credit_min').on('keyup', function(){
+    control_credits_min($(this));
+  });
+
+  $('#conges_reliquat_min').on('keyup', function(){
+    control_credits_min($(this));
+  });
+
+  $('#comp_time_min').on('keyup', function(){
+    control_credits_min($(this));
+  });
 
 });
 
