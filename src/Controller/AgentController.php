@@ -672,24 +672,24 @@ class AgentController extends BaseController
             $conges = $c->elements;
             $holiday_helper = new HolidayHelper();
 
-            $annuelHeures  = $conges['annuelHeures']  ? $conges['annuelHeures']  : 0;
-            $annuelMinutes = $conges['annuelMinutes'] ? $conges['annuelMinutes'] : 0;
+            $annuelHeures  = $conges['annuelHeures']  ?? 0;
+            $annuelMinutes = $conges['annuelMinutes'] ?? 0;
             $annuelString  = '';
 
-            $creditHeures  = $conges['creditHeures']  ? $conges['creditHeures']  : 0;
-            $creditMinutes = $conges['creditMinutes'] ? $conges['creditMinutes'] : 0;
+            $creditHeures  = $conges['creditHeures']  ?? 0;
+            $creditMinutes = $conges['creditMinutes'] ?? 0;
             $creditString  = '';
 
-            $reliquatHeures  = $conges['reliquatHeures']  ? $conges['reliquatHeures']  : 0;
-            $reliquatMinutes = $conges['reliquatMinutes'] ? $conges['reliquatMinutes'] : 0;
+            $reliquatHeures  = $conges['reliquatHeures']  ?? 0;
+            $reliquatMinutes = $conges['reliquatMinutes'] ?? 0;
             $reliquatString  = '';
 
-            $anticipationHeures  = $conges['anticipationHeures']  ? $conges['anticipationHeures']  : 0;
-            $anticipationMinutes = $conges['anticipationMinutes'] ? $conges['anticipationMinutes'] : 0;
+            $anticipationHeures  = $conges['anticipationHeures']  ?? 0;
+            $anticipationMinutes = $conges['anticipationMinutes'] ?? 0;
             $anticipationString  = '';
 
-            $recupHeures  = $conges['recupHeures']  ? $conges['recupHeures']  : 0;
-            $recupMinutes = $conges['recupMinutes'] ? $conges['recupMinutes'] : 0;
+            $recupHeures  = $conges['recupHeures']  ?? 0;
+            $recupMinutes = $conges['recupMinutes'] ?? 0;
 
             if ($this->config('Conges-Mode') == 'jours' ) {
                 $event = new OnTransformLeaveHours($conges);
@@ -1703,16 +1703,21 @@ class AgentController extends BaseController
             return array();
         }
 
-        $available_keys = array(
-            'conges_credit',
-            'conges_reliquat',
-            'conges_anticipation',
-            'comp_time',
-            'conges_annuel');
+        $available_keys = ['comp_time'];
+
+        if ($this->config('Conges-Mode') == 'heures') {
+            $available_keys = [
+                'comp_time',
+                'conges_credit',
+                'conges_reliquat',
+                'conges_anticipation',
+                'conges_annuel'
+            ];
+        }
 
         foreach ($available_keys as $key) {
-            $params[$key . '_min'] = isset($params[$key . '_min']) ? $params[$key . '_min'] : 0;
-            $params[$key] = !empty($params[$key]) ? $params[$key] : 0;
+            $params[$key . '_hours'] = !empty(trim($params[$key . '_hours'])) ? trim($params[$key . '_hours']) : 0;
+            $params[$key . '_min'] = !empty(trim($params[$key . '_min'])) ? trim($params[$key . '_min']) : 0;
         }
 
         $comp_time = HourHelper::hoursMinutesToDecimal(trim($params['comp_time_hours']), trim($params['comp_time_min']));
