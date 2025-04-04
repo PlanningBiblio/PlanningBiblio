@@ -1211,8 +1211,13 @@ function nom($id, $format="nom p", $agents=array())
         if (!isset($agents[$id])) {
             return 'error';
         }
-        $nom=$agents[$id]['nom'];
-        $prenom=$agents[$id]['prenom'];
+        if (is_object($agents[$id])) {
+            $nom = $agents[$id]->nom();
+            $prenom = $agents[$id]->prenom();
+        } else {
+            $nom = $agents[$id]['nom'];
+            $prenom = $agents[$id]['prenom'];
+        }
     }
   
     switch ($format) {
