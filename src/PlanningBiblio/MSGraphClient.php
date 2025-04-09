@@ -3,9 +3,11 @@
 namespace App\PlanningBiblio;
 
 use App\Model\Agent;
+use App\Model\ConfigParam;
 use App\PlanningBiblio\OAuth;
 use App\PlanningBiblio\Logger;
 use App\PlanningBiblio\MSCalendarUtils;
+use Doctrine\Common\Collections\ArrayCollection;
 use Unirest\Request;
 
 class MSGraphClient
@@ -30,20 +32,30 @@ class MSGraphClient
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full, $stdout)
     {
-        $config = $GLOBALS['config'];
         $tokenURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/token";
         $authURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/authorize";
         $options = [
              'scope' => 'https://graph.microsoft.com/.default'
         ];
+
+        $config = $entityManager->getRepository(ConfigParam::class)->findBy(
+            array('categorie' => 'Microsoft Graph API'),
+        );
+
+        $config = new ArrayCollection($config);
+
+        $absenceReason = $config->filter(function($element) {return $element->nom() == 'MSGraph-AbsenceReason';})->first()->valeur();
+        $loginSuffix = $config->filter(function($element) {return $element->nom() == 'MSGraph-LoginSuffix';})->first()->valeur();
+        $ignoredStatuses = $config->filter(function($element) {return $element->nom() == 'MSGraph-IgnoredStatuses';})->first()->valeur();
+
         $this->logger = new Logger($entityManager, $stdout);
         $this->oauth = new OAuth($this->logger, $clientid, $clientsecret, $tokenURL, $authURL, $options);
         $this->msCalendarUtils = new MSCalendarUtils();
         $this->entityManager = $entityManager;
-        $this->dbprefix = $config['dbprefix'];
-        $this->reason_name = $config['MSGraph-AbsenceReason'] ?? 'Outlook';
-        $this->login_suffix = $config['MSGraph-LoginSuffix'] ?? null;
-        $this->ignoredStatuses = !empty($config['MSGraph-IgnoredStatuses']) ? explode(';', $config['MSGraph-IgnoredStatuses']) : ['free', 'tentative'];
+        $this->dbprefix = '';
+        $this->reason_name = $absenceReason ?? 'Outlook';
+        $this->login_suffix = $loginSuffix ?? null;
+        $this->ignoredStatuses = !empty($ignoredStatuses) ? explode(';', $ignoredStatuses) : ['free', 'tentative'];
         $this->full = $full;
     }
 
