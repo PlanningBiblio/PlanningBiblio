@@ -607,8 +607,19 @@ function calculHeuresSP($date, $CSRFToken)
  */
 function calculSiPresent($debut, $fin, $temps, $jour)
 {
+    $config = $GLOBALS['config'];
+
     $wh = new WorkingHours($temps);
     $tab = $wh->hoursOf($jour);
+
+    if ($config['Planning-IgnoreBreaks']) {
+        if (count($tab) > 1) {
+            $end = end($tab);
+            $tab = [
+                0 => [$tab[0][0], $end[1]],
+            ];
+        }
+    }
 
     // Confrontation du créneau de service public aux tableaux
     foreach ($tab as $elem) {
