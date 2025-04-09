@@ -10,7 +10,7 @@ use App\Model\ConfigParam;
 
 class ConfigController extends BaseController
 {
-    #[Route(path: '/config', name: 'config.index', methods: ['GET'])]
+    #[Route(path: '/config/{options?}', name: 'config.index', methods: ['GET'])]
     public function index(Request $request)
     {
         // Temporary folder
@@ -20,8 +20,10 @@ class ConfigController extends BaseController
             array('nom' => 'URL')
         );
 
+        $technical = $request->get('options') == 'technical' ? 1 : 0;
+
         $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
-            array(),
+            array('technical' => $technical),
             array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
         );
 
@@ -84,26 +86,34 @@ class ConfigController extends BaseController
             'elements'  => $elements,
             'error'     => $request->query->get('error'),
             'post'      => $request->query->get('post'),
+            'technical' => $technical,
             'warning'   => $request->query->get('warning')
         ));
-
 
         return $this->output('config/index.html.twig');
     }
 
+
     #[Route(path: '/config', name: 'config.update')] // , methods={"POST"})
     public function update(Request $request, Session $session)
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $params = $request->request->all();
         // Demo mode
         if ($params && !empty($this->config('demo'))) {
             $error = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
             $error .= "#BR#Merci de votre compréhension";
         }
-        elseif ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
+        elseif ($params) {
+
+            $technical = $request->get('technical');
 
             $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
-                array(), array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
+                array('technical' => $technical),
+                array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
             );
 
             foreach ($configParams as $cp) {
@@ -156,6 +166,8 @@ class ConfigController extends BaseController
             $session->getFlashBag()->add('notice', $flash);
         }
 
-        return $this->redirectToRoute('config.index');
+        $options = $technical ? ['options' => 'technical'] : [];
+
+        return $this->redirectToRoute('config.index', $options);
     }
 }

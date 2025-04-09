@@ -71,6 +71,8 @@
 -- UPDATE config SET type='boolean' WHERE nom='ICS-Export';
 -- -- Autoriser l’ajout de serveur LDAP
 -- UPDATE config SET type='text' WHERE nom='LDAP-Host';
+-- -- Autoriser l’import LDIF
+-- UPDATE config SET type='text' WHERE nom='LDIF-File';
 -- -- Autoriser les modification de paramètres de messagerie
 -- UPDATE config SET type='boolean' WHERE nom='Mail-IsEnabled';
 -- UPDATE config SET type='enum' WHERE nom='Mail-IsMail-IsSMTP';

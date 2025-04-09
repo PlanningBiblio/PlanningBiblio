@@ -109,6 +109,8 @@
     - 100
 "config.index":
     - 20
+"config.technical":
+    - 20
 "config.update":
     - 20
 "closingday.index":

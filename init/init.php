@@ -76,24 +76,3 @@ $favicon = null;
 if (!file_exists("themes/$theme/favicon.png")) {
     $favicon = "themes/$theme/images/favicon.ico";
 }
-
-function CSRFTokenOK($token, $session) {
-    $error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
-
-    if (!$token) {
-        error_log($error);
-        return false;
-    }
-
-    if (!$session['oups']['CSRFToken']) {
-        error_log($error);
-        return false;
-    }
-
-    if ($token !== $session['oups']['CSRFToken']) {
-        error_log($error);
-        return false;
-    }
-
-    return true;
-}

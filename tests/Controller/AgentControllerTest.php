@@ -179,8 +179,7 @@ class AgentControllerTest extends PLBWebTestCase
         $GLOBALS['config']['LDAP-Suffix'] = '';
         $GLOBALS['config']['Conges-Enable'] = 1;
         $GLOBALS['config']['PlanningHebdo'] = 0;
-
-        unset($_ENV['MS_GRAPH_CLIENT_ID']);
+        $GLOBALS['config']['MSGraph-ClientID'] = '';
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',

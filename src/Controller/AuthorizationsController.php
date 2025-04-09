@@ -38,10 +38,10 @@ class AuthorizationsController extends BaseController
         // SSO Link
         $sSOLink = null;
 
-        if ($this->config('Auth-Mode') == 'OpenIDConnect' and !empty($_ENV['OIDC_PROVIDER'])) {
-            if (stristr($_ENV['OIDC_PROVIDER'], 'google')) {
+        if ($this->config('Auth-Mode') == 'OpenIDConnect' and !empty($this->config('OIDC-Provider'))) {
+            if (stristr($this->config('OIDC-Provider'), 'google')) {
                 $sSOLink = 'Se connecter avec un compte Google';
-            } elseif (stristr($_ENV['OIDC_PROVIDER'], 'microsoft')) {
+            } elseif (stristr($this->config('OIDC-Provider'), 'microsoft')) {
                 $sSOLink = 'Se connecter avec un compte Microsoft';
             } else {
                 $sSOLink = 'Se connecter avec un compte professionnel';
