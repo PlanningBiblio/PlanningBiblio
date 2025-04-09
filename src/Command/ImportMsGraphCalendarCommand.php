@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -11,6 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use App\Model\ConfigParam;
 use App\PlanningBiblio\MSGraphClient;
 
 #[AsCommand(
@@ -39,20 +41,24 @@ class ImportMsGraphCalendarCommand extends Command
             return Command::FAILURE;
         }
 
-        $config = $GLOBALS['config'];
+        $kernel = $this->getApplication()->getKernel();
+        $container = $kernel->getContainer();
+        $em = $container->get('doctrine')->getManager();
 
-        $tenantid = $config['MSGraph-TenantID'] ?? null;
-        $clientid = $config['MSGraph-ClientID'] ?? null;
-        $clientsecret = $config['MSGraph-ClientSecret'] ?? null;
+        $config = $em->getRepository(ConfigParam::class)->findBy(
+            array('categorie' => 'Microsoft Graph API'),
+        );
+
+        $config = new ArrayCollection($config);
+
+        $tenantid = $config->filter(function($element) {return $element->nom() == 'MSGraph-TenantID';})->first()->valeur();
+        $clientid = $config->filter(function($element) {return $element->nom() == 'MSGraph-ClientID';})->first()->valeur();
+        $clientsecret = $config->filter(function($element) {return $element->nom() == 'MSGraph-ClientSecret';})->first()->valeur();
 
         if (!$tenantid || !$clientid || !$clientsecret) {
             $io->error('At least one of the following is not defined: MSGraph-TenantID, MSGraph-ClientID, MSGraph-ClientSecret. Please check your configuration.');
             return Command::FAILURE;
         }
-
-        $kernel = $this->getApplication()->getKernel();
-        $container = $kernel->getContainer();
-        $em = $container->get('doctrine')->getManager();
 
         $graph_client = new MSGraphClient($em, $tenantid, $clientid, $clientsecret, $input->getOption('full'), $input->getOption('stdout'));
         $graph_client->retrieveEvents();
