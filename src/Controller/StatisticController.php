@@ -1696,7 +1696,7 @@ class StatisticController extends BaseController
                 $heuresAbsences[$d] = $a->calculHeuresAbsences($d);
                 foreach ($heuresAbsences[$d] as $key => $value) {
                     if (array_key_exists($key, $heuresSP[$d])) {
-                        $heuresSP[$d][$key] = $heuresSP[$d][$key]-$value;
+                        $heuresSP[$d][$key] = (float) $heuresSP[$d][$key] - (float) $value;
                         if ($heuresSP[$d][$key] < 0) {
                             $heuresSP[$d][$key] = 0;
                         }
