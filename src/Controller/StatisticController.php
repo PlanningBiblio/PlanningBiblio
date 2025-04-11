@@ -804,6 +804,12 @@ class StatisticController extends BaseController
 
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
 
+                                    if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                                        or $this->config('Absences-Exclusion') == 2)
+                                    {
+                                        continue;
+                                    }
+
                                     // Ignore teleworking absences for compatible positions
                                     if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
                                         continue;
@@ -1124,7 +1130,7 @@ class StatisticController extends BaseController
                     $formatted_end_date = date('Y-m-d', strtotime($elem['fin']));
                     $formatted_end_hour = date('H:i:s', strtotime($elem['fin']));
 
-                    $db = new db();
+                    $db = new \db();
                     $db->select2('pl_poste', '*', array(
                             'perso_id' => $elem['perso_id'],
                             'date' => ">=$formatted_start_date AND date<=$formatted_end_date",
@@ -1171,7 +1177,7 @@ class StatisticController extends BaseController
                 $formatted_end_date = date('Y-m-d', strtotime($elem['fin']));
                 $formatted_end_hour = date('H:i:s', strtotime($elem['fin']));
 
-                $db = new db();
+                $db = new \db();
                 $db->select2('pl_poste', '*', array(
                         'perso_id' => $elem['perso_id'],
                         'date' => ">=$formatted_start_date AND date<=$formatted_end_date",
@@ -1476,6 +1482,12 @@ class StatisticController extends BaseController
                             // S'il est absent : continue
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                                        or $this->config('Absences-Exclusion') == 2)
+                                    {
+                                        continue;
+                                    }
 
                                     // Ignore teleworking absences for compatible positions
                                     if (in_array($a['motif'], $teleworking_absence_reasons) and $poste_tab[4]) {
@@ -1792,6 +1804,13 @@ class StatisticController extends BaseController
                 // Vérifie à partir de la table absences si l'agent est absent
                 // S'il est absent, on met à 1 la variable $elem['absent']
                 foreach ($absencesDB as $a) {
+
+                    if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                        or $this->config('Absences-Exclusion') == 2)
+                    {
+                        continue;
+                    }
+
 
                     // Ignore teleworking absences for compatible positions
                     if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
@@ -2252,6 +2271,12 @@ class StatisticController extends BaseController
 
                             foreach ($absencesDB[$elem['perso_id']] as $a) {
 
+                                if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                                    or $this->config('Absences-Exclusion') == 2)
+                                {
+                                    continue;
+                                }
+
                                 // Ignore teleworking absences for compatible positions
                                 if (in_array($a['motif'], $teleworking_absence_reasons) and $poste_tab[4]) {
                                     continue;
@@ -2562,6 +2587,12 @@ class StatisticController extends BaseController
                             // S'il est absent : continue
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                                        or $this->config('Absences-Exclusion') == 2)
+                                    {
+                                        continue;
+                                    }
 
                                     // Ignore teleworking absences for compatible positions
                                     if (in_array($a['motif'], $teleworking_absence_reasons) and $poste_tab[4]) {
