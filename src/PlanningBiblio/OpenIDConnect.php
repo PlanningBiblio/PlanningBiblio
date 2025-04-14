@@ -9,21 +9,24 @@ use Symfony\Component\HttpFoundation\Request;
 class OpenIDConnect
 {
 
+    private $config;
+    private $entityManager;
     private $provider;
     private $ca_cert;
     private $client_id;
     private $client_secret;
-    private $config;
 
 
     public function __construct()
     {
+        $this->config = $GLOBALS['config'];
+        $this->entityManager = $GLOBALS['entityManager'];
+
         $this->provider = $_ENV['OIDC_PROVIDER'];
         $this->cacert = $_ENV['OIDC_CACERT'];
         $this->client_id = $_ENV['OIDC_CLIENT_ID'];
         $this->client_secret = $_ENV['OIDC_CLIENT_SECRET'];
         $this->login_attribute = !empty($_ENV['OIDC_LOGIN_ATTRIBUTE']) ? $_ENV['OIDC_LOGIN_ATTRIBUTE'] : 'email';
-        $this->config = $GLOBALS['config'];
     }
 
 
@@ -49,6 +52,10 @@ class OpenIDConnect
             $user->lastname = $oidc->requestUserInfo('family_name');
             $user->email = $oidc->requestUserInfo('email');
             $user->login = $oidc->requestUserInfo($this->login_attribute);
+
+            $message = json_encode($oidc->requestUserInfo());
+            $logger = new Logger($this->entityManager);
+            $logger->log($message, 'OpenID Connect');
 
         } catch (Exception $e) {
             return false;
