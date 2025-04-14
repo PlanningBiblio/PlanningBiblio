@@ -8,7 +8,7 @@ class Logger
     private $dbprefix;
     private $stdout;
 
-    public function __construct($entityManager, $stdout)
+    public function __construct($entityManager, $stdout = false)
     {
         $this->entityManager = $entityManager;
         $this->dbprefix = $_ENV['DATABASE_PREFIX'];
