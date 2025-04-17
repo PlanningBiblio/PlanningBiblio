@@ -3,6 +3,7 @@
 namespace App\PlanningBiblio\Helper;
 
 use App\PlanningBiblio\Helper\BaseHelper;
+use App\PlanningBiblio\WorkingHours;
 
 use App\Controller\BaseController;
 use App\Model\Agent;
@@ -20,7 +21,7 @@ class PlanningJobHelper extends BaseHelper
         parent::__construct();
     }
 
-    private function canManagePlanning($session, $site)
+    public function canManagePlanning($session, $site)
     {
         if (!$session->get('loginId')) {
             return false;
@@ -76,7 +77,7 @@ class PlanningJobHelper extends BaseHelper
 
         // Check logged-in rights.
         if (!$this->canManagePlanning($session, $site)) {
-            return $this->json('forbiden');
+            return 'forbiden';
         }
 
         // Position's name and related skills

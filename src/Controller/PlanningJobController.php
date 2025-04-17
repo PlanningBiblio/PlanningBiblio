@@ -125,7 +125,8 @@ class PlanningJobController extends BaseController
         $date = $request->get('date');
         $site = $request->get('site');
 
-        if (!$this->canManagePlanning($session, $site)) {
+        $planningJobHelper = new PlanningJobHelper();
+        if (!$planningJobHelper->canManagePlanning($session, $site)) {
             return $this->json('forbiden');
         }
 
@@ -200,7 +201,8 @@ class PlanningJobController extends BaseController
         $site = $request->get('site');
         $CSRFToken = $request->get('CSRFToken');
 
-        if (!$this->canManagePlanning($session, $site)) {
+        $planningJobHelper = new PlanningJobHelper();
+        if (!$planningJobHelper->canManagePlanning($session, $site)) {
             return $this->json('forbiden');
         }
 
@@ -262,21 +264,6 @@ class PlanningJobController extends BaseController
         $this->entityManager->flush();
 
         return $this->json($response);
-    }
-
-    private function canManagePlanning($session, $site)
-    {
-        if (!$session->get('loginId')) {
-            return false;
-        }
-
-        $droits = $GLOBALS['droits'];
-
-        if (!in_array((300 + $site), $droits) and !in_array((1000 + $site), $droits)) {
-            return false;
-        }
-
-        return true;
     }
 
     private function convertActionDates($action)
