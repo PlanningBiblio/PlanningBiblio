@@ -38,6 +38,7 @@ if (!file_exists("themes/$theme/favicon.png")) {
 <head>
 <title>Planno</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="robots" content="noindex,nofollow" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
 <script type='text/JavaScript' src='js/jquery-1.11.1.min.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/jquery.timepicker.min.js?version=<?php echo $version; ?>'></script>
