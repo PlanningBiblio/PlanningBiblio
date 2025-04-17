@@ -8,7 +8,6 @@ use App\Model\AbsenceReason;
 use App\Model\PlanningPositionHistory;
 use App\Model\Position;
 
-use App\PlanningBiblio\Helper\PlanningJobHelper;
 use App\PlanningBiblio\WorkingHours;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +27,7 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class PlanningJobController extends BaseController
 {
-    private Array $droits;
+    use \App\Traits\PlanningJobTrait;
 
     #[Route(path: '/planningjob/contextmenu', name: 'planningjob.contextmenu', methods: ['GET'])]
     public function contextmenu(Request $request)
@@ -44,8 +43,7 @@ class PlanningJobController extends BaseController
         $poste = $request->get('poste');
         $CSRFToken = $request->get('CSRFToken');
 
-        $planningJobHelper = new PlanningJobHelper();
-        $tableaux = $planningJobHelper->getContextMenuInfos($site, $date, $debut, $fin, $perso_id, $perso_nom, $poste, $CSRFToken, $session);
+        $tableaux = $this->getContextMenuInfos($site, $date, $debut, $fin, $perso_id, $perso_nom, $poste, $CSRFToken, $session);
 
         return $this->json($tableaux);
     }
@@ -125,8 +123,7 @@ class PlanningJobController extends BaseController
         $date = $request->get('date');
         $site = $request->get('site');
 
-        $planningJobHelper = new PlanningJobHelper();
-        if (!$planningJobHelper->canManagePlanning($session, $site)) {
+        if (!$this->canManagePlanning($session, $site)) {
             return $this->json('forbiden');
         }
 
@@ -201,8 +198,7 @@ class PlanningJobController extends BaseController
         $site = $request->get('site');
         $CSRFToken = $request->get('CSRFToken');
 
-        $planningJobHelper = new PlanningJobHelper();
-        if (!$planningJobHelper->canManagePlanning($session, $site)) {
+        if (!$this->canManagePlanning($session, $site)) {
             return $this->json('forbiden');
         }
 

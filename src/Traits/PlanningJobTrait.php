@@ -1,25 +1,15 @@
 <?php
 
-namespace App\PlanningBiblio\Helper;
+namespace App\Traits;
 
-use App\PlanningBiblio\Helper\BaseHelper;
+use App\Model\AbsenceReason;
+use App\Model\Position;
 use App\PlanningBiblio\WorkingHours;
 
-use App\Controller\BaseController;
-use App\Model\Agent;
-use App\Model\AbsenceReason;
-use App\Model\PlanningPositionHistory;
-use App\Model\Position;
-
-class PlanningJobHelper extends BaseHelper
+trait PlanningJobTrait
 {
 
     private Array $droits;
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function canManagePlanning($session, $site)
     {
