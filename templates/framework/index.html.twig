@@ -5,28 +5,20 @@
   <script type="text/JavaScript" src='{{ asset("js/plb/framework.js") }}'></script>
   <script type="text/JavaScript">
     $(document).ready(function(){
-      $("#copy-div").dialog({
+      $('#copy-div').dialog({
           autoOpen: false,
           modal: true,
           width: 400,
           height: 310
       });
 
-      $('.copy-table').click(function(e){
+      $('.copy-table').click(function(e) {
         e.preventDefault();
         id = $(this).data('id');
-        $("#copy-div").dialog('open');
-        $("#copy-form").attr("action", url('framework/copy/' + id));
-        $("#copy-form#numero").attr("value", id);
-
+        $('#copy-div').dialog('open');
+        $('#copy-form-id').val(id);
       });
 
-      $("#Copy").on('click', function(e){
-        $("#copy-form").submit();
-        e.preventDefault();
-        $("#copy-div").html("<br/><br/><b>Copie en cours. Veuillez patienter ...</b>");
-        $(this).unbind(e).click();
-      });
     });
   </script>
 {% endblock %}
@@ -167,16 +159,15 @@
 
   <div id="copy-div" style="display: none;">
     <h3>Copie du tableau</h3>
-    <form name='form' id="copy-form" action="" method='get'>
+    <form name="form" id="copy-form" action="{{ path('framework.copy_table') }}" method="post">
       <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
-      <input type='hidden' name='menu' value='off' />
-      <input type='hidden' name='confirm' value='on' />
-      <input type='hidden' name='numero' id='numero' value="" />
+      <input type='hidden' name='id' id='copy-form-id' value="" />
+
       Nom du nouveau tableau<br/>
       <input type='text' name='nom' />
       <br/><br/><br/>
       <input type='button' id="Cancel" value='Annuler' onclick="$('#copy-div').dialog('close');" class="ui-button ui-button-type2"/>
-      &nbsp;&nbsp;<input type='button' id="Copy" value='Copier' class="ui-button ui-button-type1"/>
+      &nbsp;&nbsp;<input type="submit" value="Copier" class="ui-button ui-button-type1"/>
     </form>
   </div>
 {% endblock %}
