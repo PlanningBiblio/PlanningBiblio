@@ -1,3 +1,17 @@
+*** Version 24.11.12   (2025-04-18)    ***
+- Fixes
+MT47502: Apply Absences-Exclusion to statistics: agent/service/status #1122
+MT47772: Use HourHelper for overtimes #1123
+Issue #1124: Typo imported outside of working hours #1125
+MT48343: Fix Unsupported operand types: string - int at StatisticController.php line 1727 #1131
+MT48437: Fix the copying of frameworks #1134
+
+- Security
+MT48467: Add instructions for robots #1133
+
+- Enhancement
+MT48363: Log OpenID Connect request User Info #1132
+
 *** Version 24.11.11   (2025-03-06)    ***
 - Fixes
 MT47685: An level 1 admin can delete another agent absence when Absences-validation is disabled #1115
