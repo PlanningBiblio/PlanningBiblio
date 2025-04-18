@@ -1,3 +1,7 @@
+*** Version 24.04.17   (2025-04-18)    ***
+- Fixes
+MT48091: Fix maj.php #1130
+
 *** Version 24.04.16   (2025-04-18)    ***
 - Fixes
 MT47772: Use HourHelper for overtimes #1123
