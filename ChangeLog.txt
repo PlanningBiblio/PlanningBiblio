@@ -1,3 +1,13 @@
+*** Version 24.04.16   (2025-04-18)    ***
+- Fixes
+MT47772: Use HourHelper for overtimes #1123
+Issue #1124: Typo imported outside of working hours #1126
+MT48343: Fix Unsupported operand types: string - int at StatisticCont… #1131
+MT48437: Fix the copying of frameworks #1134
+
+- Security
+MT48467: Add instructions for robots #1133
+
 *** Version 24.04.15   (2025-03-06)    ***
 - Fixes
 MT47572: Do not cross out agents with refused absences #1118
