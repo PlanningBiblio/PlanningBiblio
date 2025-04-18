@@ -17,7 +17,7 @@ $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_
 $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSION['oups']['Auth-Mode'] : '';
 
 // Version
-$version="24.11.12"; // xx.xx.xx
+$version="24.11.13"; // xx.xx.xx
 $GLOBALS['version'] = $version;
 
 // Redirection vers setup si le fichier config est absent

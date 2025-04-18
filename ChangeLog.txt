@@ -1,3 +1,7 @@
+*** Version 24.11.13   (2025-04-18)    ***
+- Fixes
+MT48091: Fix maj.php #1130
+
 *** Version 24.11.12   (2025-04-18)    ***
 - Fixes
 MT47502: Apply Absences-Exclusion to statistics: agent/service/status #1122
