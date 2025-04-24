@@ -71,8 +71,3 @@ $themeJQuery = $config['Affichage-theme'] ?$config['Affichage-theme'] : "default
 if (!file_exists("themes/$themeJQuery/jquery-ui.min.css")) {
     $themeJQuery="default";
 }
-
-$favicon = null;
-if (!file_exists("themes/$theme/favicon.png")) {
-    $favicon = "themes/$theme/images/favicon.ico";
-}

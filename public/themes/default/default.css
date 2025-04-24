@@ -105,10 +105,10 @@ h4{
   display:none;
 }
 
-.logo-favicon{
+.logo-thumbnail {
   width: 48px;
   height: 36px;
-  background:url("images/favicon.svg") no-repeat center;
+  background:url("images/logo-thumbnail.svg") no-repeat center;
 }
 
 #logo {
@@ -2546,7 +2546,7 @@ table.dataTable th{
   #logo {
     width: 48px;
     height: 36px;
-    background:url("images/favicon.svg") no-repeat center;
+    background:url("images/logo-thumbnail.svg") no-repeat center;
   }
 
   #username {
