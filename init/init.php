@@ -72,11 +72,6 @@ if (!file_exists("themes/$themeJQuery/jquery-ui.min.css")) {
     $themeJQuery="default";
 }
 
-$favicon = null;
-if (!file_exists("themes/$theme/favicon.png")) {
-    $favicon = "themes/$theme/images/favicon.ico";
-}
-
 function CSRFTokenOK($token, $session) {
     $error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
 
