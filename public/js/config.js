@@ -92,6 +92,7 @@ function mailtest(){
   var fromName = $('#Mail-FromName').val();
   var signature = $('#Mail-Signature').val();
   var planning = $('#Mail-Planning').val().trim();
+  var unsubscribeLink = $('#Mail-UnsubscribeLink').prop('checked') ? 1 : 0;
   
   var pos = $('#Mail-Test').position();
   top1 = pos.top - 10;
@@ -112,7 +113,7 @@ function mailtest(){
     url: url('ajax/mail-test'),
     type: 'post',
     dataType: 'json',
-    data: {mailSmtp: mailSmtp, hostanme: hostname, host: host, port: port, secure: secure, auth: auth, user: user, password: password, fromMail: fromMail, fromName: fromName, signature: signature, planning: planning},
+    data: {mailSmtp: mailSmtp, hostanme: hostname, host: host, port: port, secure: secure, auth: auth, user: user, password: password, fromMail: fromMail, fromName: fromName, signature: signature, planning: planning, unsubscribeLink: unsubscribeLink},
     success: function(result){
       if(result == 'ok'){
         CJInfo('Le mail de test a été envoyé avec succès. Vérifiez votre messagerie.','success',top1,8000);
