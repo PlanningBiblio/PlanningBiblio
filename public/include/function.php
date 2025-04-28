@@ -290,8 +290,10 @@ class CJMail implements NotificationTransporterInterface
         $mail->AddAddress($to);
         $mail->IsHTML();
     
-        $mail->addCustomHeader("List-Unsubscribe-Post", "List-Unsubscribe=One-Click");
-        $mail->addCustomHeader("List-Unsubscribe", $GLOBALS['config']['URL'] . '/unsubscribe/' . encrypt($to));
+        if ($GLOBALS['config']['Mail-UnsubscribeLink']) {
+            $mail->addCustomHeader("List-Unsubscribe-Post", "List-Unsubscribe=One-Click");
+            $mail->addCustomHeader("List-Unsubscribe", $GLOBALS['config']['URL'] . '/unsubscribe/' . encrypt($to));
+        }
 
         $mail->Subject = $this->subject;
         $mail->Body = $this->message;
