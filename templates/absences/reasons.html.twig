@@ -14,6 +14,7 @@
         <span style='position:absolute;left:415px;' >Niveau</span>
         <span style='position:absolute;left:590px;'>Circuit de notification</span>
         <span style='position:absolute;left:750px;'>Télétravail</span>
+        <span style='position:absolute;left:840px;'>Absence cumulée</span>
       </div>
       <ul id="motifs-sortable">
         {% if reasons is iterable %}
@@ -54,6 +55,12 @@
                   <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:780px;' checked='checked' />
                 {% else %}
                   <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:780px;' />
+                {% endif %}
+                
+                {% if r.absence_cumulee %}
+                  <input type='checkbox' id='absence-cumulee_{{ r.id }}' style='position:absolute; left:910px;' checked='checked' />
+                {% else %}
+                  <input type='checkbox' id='absence-cumulee_{{ r.id }}' style='position:absolute; left:910px;' />
                 {% endif %}
 
               {% if r.unused %}

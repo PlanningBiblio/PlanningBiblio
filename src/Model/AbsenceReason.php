@@ -26,4 +26,7 @@ class AbsenceReason extends PLBEntity
 
     /** @Column(type="integer") **/
     protected $teleworking;
+    
+    /** @Column(type="integer") **/
+    protected $absence_cumulee;
 }
