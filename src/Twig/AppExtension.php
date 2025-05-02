@@ -149,11 +149,11 @@ class AppExtension extends AbstractExtension
                 return true;
             }
 
-            if (preg_match('/\/(\/d{4}-\d{2}-\d{2})/', $uri)) {
+            if (preg_match('/^\/(\/d{4}-\d{2}-\d{2})/', $uri)) {
                 return true;
             }
 
-            if (preg_match('/\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri)) {
+            if (preg_match('/^\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri)) {
                 return true;
             }
 
@@ -182,7 +182,10 @@ class AppExtension extends AbstractExtension
             if (strpos($requested_url, 'holiday') !== false) {
                 return true;
             }
-            if (strpos($requested_url, 'comp-time') !== false) {
+            if (strpos($requested_url, 'comptime') !== false) {
+                return true;
+            }
+            if (strpos($requested_url, 'overtime') !== false) {
                 return true;
             }
         }
