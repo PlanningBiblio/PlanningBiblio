@@ -1,3 +1,7 @@
+*** Version 24.11.15   (2025-05-09)    ***
+- Enhancement
+MT48103: Add a setting to ignore lunch breaks #1135
+
 *** Version 24.11.14   (2025-05-09)    ***
 - Fixes
 MT46909: Move favicon.ico to the root of the public folder #1136
