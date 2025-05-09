@@ -1,6 +1,10 @@
+*** Version 25.04.00   (2025-05-09)    ***
 *** Version 24.11.15   (2025-05-09)    ***
 - Enhancement
 MT48103: Add a setting to ignore lunch breaks #1135
+
+- Security
+Composer update
 
 *** Version 24.11.14   (2025-05-09)    ***
 - Fixes
