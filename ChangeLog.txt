@@ -1,3 +1,11 @@
+*** Version 24.11.14   (2025-05-09)    ***
+- Fixes
+MT46909: Move favicon.ico to the root of the public folder #1136
+
+- Enhancement
+MT48190: Move OIDC, MSGraph and other technical params to the /config/technical page #1128
+MT46909: Add a new setting to disable the unsubscribe link in the email header #1137
+
 *** Version 24.11.13   (2025-04-18)    ***
 - Fixes
 MT48091: Fix maj.php #1130
