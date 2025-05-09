@@ -1,3 +1,10 @@
+*** Version 24.10.12   (2025-05-09)    ***
+- Fixes
+MT46909: Move favicon.ico to the root of the public folder #1136
+
+- Enhancement
+MT46909: Add a new setting to disable the unsubscribe link in the email header #1137
+
 *** Version 24.10.11   (2025-04-18)    ***
 - Fixes
 MT48091: Fix maj.php #1130
