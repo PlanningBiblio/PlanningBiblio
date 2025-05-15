@@ -3,7 +3,7 @@
 <script>
 
 function getHours(id, hours) {
-    hours_per_year = parseFloat($("#conges_annuel").val()) + parseFloat($("#conges_annuel_min option:selected").val());
+    hours_per_year = parseFloat($("#conges_annuel_hours").val()) + parseFloat($("#conges_annuel_min").val() / 60);
     $.ajax({
         url: url('ajax/holidays-hours-to-days'),
         data: {hours_to_convert: hours , hours_per_year: hours_per_year},
@@ -11,30 +11,35 @@ function getHours(id, hours) {
         type: "get",
         async: false,
         success: function(result){
-            $("#hours_per_day").text(result['hoursPerDay']);
-            $(id).text(result['hoursToDays']);
+            $("#hours_per_day").text(result['hoursMinutesPerDay']);
+            $(id).text(result['hoursToDecimalDays']);
         }
     });
 }
 
+function updateAll() {
+        result = getHours('#annuel_jours', parseFloat($("#conges_annuel_hours").val()) + parseFloat($("#conges_annuel_min").val() / 60));
+        result = getHours('#credit_jours', parseFloat($("#conges_credit_hours").val()) + parseFloat($("#conges_credit_min").val() / 60 ));
+        result = getHours('#reliquat_jours', parseFloat($("#conges_reliquat_hours").val()) + parseFloat($("#conges_reliquat_min").val() / 60));
+        result = getHours('#anticipation_jours', parseFloat($("#conges_anticipation_hours").val()) + parseFloat($("#conges_anticipation_min").val() / 60));
+}
+
 $(document).ready(function() {
-    $("#conges_annuel, #conges_annuel_min").change(function() {
-        result = getHours('#annuel_jours', parseFloat($("#conges_annuel").val()) + parseFloat($("#conges_annuel_min option:selected").val()));
-        result = getHours('#credit_jours', parseFloat($("#conges_credit").val()) + parseFloat($("#conges_credit_min option:selected").val()));
-        result = getHours('#reliquat_jours', parseFloat($("#conges_reliquat").val()) + parseFloat($("#conges_reliquat_min option:selected").val()));
-        result = getHours('#anticipation_jours', parseFloat($("#conges_anticipation").val()) + parseFloat($("#conges_anticipation_min option:selected").val()));
+
+    $("#conges_annuel_hours, #conges_annuel_min").change(function() {
+        updateAll();
     });
 
-    $("#conges_credit, #conges_credit_min").change(function() {
-        result = getHours('#credit_jours', parseFloat($("#conges_credit").val()) + parseFloat($("#conges_credit_min option:selected").val()));
+    $("#conges_credit_hours, #conges_credit_min").change(function() {
+        result = getHours('#credit_jours', parseFloat($("#conges_credit_hours").val()) + parseFloat($("#conges_credit_min").val() / 60));
     });
 
-    $("#conges_reliquat, #conges_reliquat_min").change(function() {
-        result = getHours('#reliquat_jours', parseFloat($("#conges_reliquat").val()) + parseFloat($("#conges_reliquat_min option:selected").val()));
+    $("#conges_reliquat_hours, #conges_reliquat_min").change(function() {
+        result = getHours('#reliquat_jours', parseFloat($("#conges_reliquat_hours").val()) + parseFloat($("#conges_reliquat_min").val() / 60));
     });
 
-    $("#conges_anticipation, #conges_anticipation_min").change(function() {
-        result = getHours('#anticipation_jours', parseFloat($("#conges_anticipation").val()) + parseFloat($("#conges_anticipation_min option:selected").val()));
+    $("#conges_anticipation_hours, #conges_anticipation_min").change(function() {
+        result = getHours('#anticipation_jours', parseFloat($("#conges_anticipation_hours").val()) + parseFloat($("#conges_anticipation_min").val() / 60));
     });
 });
 </script>
@@ -51,7 +56,7 @@ $(document).ready(function() {
           {{ annuel_heures }}h{{ annuel_min | digit(2) }}
         {% endif %}
       </td>
-      <td>{% if show_hours_to_days %}<span id="annuel_jours">{{ annuel_jours }}</span> jours{% endif %}</td>
+      <td>{% if show_hours_to_days %}<span id="annuel_jours">{{ annuel_jours }}</span>{% endif %}</td>
     </tr>
 
     <tr>
@@ -65,7 +70,7 @@ $(document).ready(function() {
           {{ credit_heures }}h{{ credit_min | digit(2) }}
         {% endif %}
       </td>
-      <td>{% if show_hours_to_days %}<span id="credit_jours">{{ credit_jours }}</span> jours{% endif %}</td>
+      <td>{% if show_hours_to_days %}<span id="credit_jours">{{ credit_jours }}</span>{% endif %}</td>
     </tr>
 
     <tr>
@@ -79,7 +84,7 @@ $(document).ready(function() {
           {{ reliquat_heures }}h{{ reliquat_min | digit(2) }}
         {% endif %}
       </td>
-        <td>{% if show_hours_to_days %}<span id="reliquat_jours">{{ reliquat_jours }}</span> jours{% endif %}</td>
+        <td>{% if show_hours_to_days %}<span id="reliquat_jours">{{ reliquat_jours }}</span>{% endif %}</td>
     </tr>
 
     <tr>
@@ -93,7 +98,7 @@ $(document).ready(function() {
           {{ anticipation_heures }}h{{ anticipation_min | digit(2) }}
         {% endif %}
       </td>
-        <td>{% if show_hours_to_days %}<span id="anticipation_jours">{{ anticipation_jours }}</span> jours{% endif %}</td>
+        <td>{% if show_hours_to_days %}<span id="anticipation_jours">{{ anticipation_jours }}</span>{% endif %}</td>
     </tr>
 
     <tr>
@@ -109,5 +114,5 @@ $(document).ready(function() {
       </td>
     </tr>
   </table>
-  {% if show_hours_to_days %}Équivalence utilisée : 1 jour = <span id="hours_per_day">{{ hours_per_day }}</span> heures{% endif %}
+  {% if show_hours_to_days %}Équivalence utilisée : 1 jour = <span id="hours_per_day">{{ hours_per_day }}</span>{% endif %}
 </div>
