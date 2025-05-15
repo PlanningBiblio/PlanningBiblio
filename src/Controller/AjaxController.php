@@ -93,7 +93,6 @@ class AjaxController extends BaseController
         $fromName = $request->get('fromName');
         $signature = $request->get('signature');
         $planning = $request->get('planning');
-        $unsubscribeLink = $request->get('unsubscribeLink');
 
         // Connexion au serveur de messagerie
         if ($fp=@fsockopen($host, $port, $errno, $errstr, 5)) {
@@ -110,7 +109,6 @@ class AjaxController extends BaseController
             $GLOBALS['config']['Mail-FromName'] = $fromName;
             $GLOBALS['config']['Mail-Signature'] = $signature;
             $GLOBALS['config']['Mail-Planning'] = $planning;
-            $GLOBALS['config']['Mail-UnsubscribeLink'] = $unsubscribeLink;
 
             $m=new \CJMail();
             $m->subject="Message de test";
