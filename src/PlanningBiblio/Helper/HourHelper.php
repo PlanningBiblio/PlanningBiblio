@@ -10,7 +10,6 @@ class HourHelper extends BaseHelper
 
     private static $end_default = '23:59:59';
 
-
     public static function decimalToHoursMinutes($decimal_duration)
     {
         $result = array();

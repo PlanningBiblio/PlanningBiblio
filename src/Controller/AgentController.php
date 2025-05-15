@@ -739,14 +739,18 @@ class AgentController extends BaseController
                 'lang_comp_time'        => $lang['comp_time'],
                 'show_hours_to_days'    => $holiday_helper->showHoursToDays(),
             );
-            if ($holiday_helper->showHoursToDays()) {
-                $templateParams['annuel_jours'] = $id ? $holiday_helper->hoursToDays($conges['annuel'], $id) : '';
-                $templateParams['credit_jours'] = $id ? $holiday_helper->hoursToDays($conges['credit'], $id) : '';
-                $templateParams['reliquat_jours'] = $id ? $holiday_helper->hoursToDays($conges['reliquat'], $id) : '';
-                $templateParams['anticipation_jours'] = $id ? $holiday_helper->hoursToDays($conges['anticipation'], $id) : '';
-                $templateParams['hours_per_day'] = $id ? $holiday_helper->hoursPerDay($id) : '';
 
+            if ($holiday_helper->showHoursToDays()) {
+
+                $hours_minutes = HourHelper::decimalToHoursMinutes($holiday_helper->hoursPerDay($id));
+
+                $templateParams['annuel_jours']       = $id ? $holiday_helper->hoursToDays($conges['annuel'], $id, null, true)       : '';
+                $templateParams['credit_jours']       = $id ? $holiday_helper->hoursToDays($conges['credit'], $id, null, true)       : '';
+                $templateParams['reliquat_jours']     = $id ? $holiday_helper->hoursToDays($conges['reliquat'], $id, null, true)     : '';
+                $templateParams['anticipation_jours'] = $id ? $holiday_helper->hoursToDays($conges['anticipation'], $id, null, true) : '';
+                $templateParams['hours_per_day']      = $id ? $hours_minutes['hours'] . 'h' . $hours_minutes['minutes']              : '';
             }
+
             $this->templateParams($templateParams);
         }
 
