@@ -277,8 +277,7 @@ class HolidayController extends BaseController
         $results['hoursToDecimalDays'] = $holiday_helper->hoursToDays($hours_to_convert, null, $hours_per_year, true);
         $results['decimalHoursPerDay'] = $holiday_helper->hoursPerDay(null, $hours_per_year);
 
-        $hours_minutes = HourHelper::decimalToHoursMinutes($results['decimalHoursPerDay']);
-        $results['hoursMinutesPerDay'] = $hours_minutes['hours'] . 'h' . $hours_minutes['minutes'];
+        $results['hoursMinutesPerDay'] = HourHelper::decimalToHoursMinutes($results['decimalHoursPerDay'])['as_string'];
         return $this->json($results);
     }
 
