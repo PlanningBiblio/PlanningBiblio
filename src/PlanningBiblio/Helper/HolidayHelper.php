@@ -278,7 +278,7 @@ class HolidayHelper extends BaseHelper
 
     public function hoursToDays($given_hours, $perso_id, $holidays_hours_per_year = null, $human_readable = false) {
         if (empty($given_hours) and !$human_readable) { return 0; }
-        if (empty($given_hours) and $human_readable) { return null; }
+        if (empty($given_hours) and $human_readable) { return ''; }
 
         $hours_per_day = ($holidays_hours_per_year == null) ? $this->hoursPerDay($perso_id) : $this->hoursPerDay(null, $holidays_hours_per_year);
 
@@ -286,9 +286,9 @@ class HolidayHelper extends BaseHelper
 
         if ($human_readable) {
             if (empty($result)) {
-                return null;
+                return '';
             }
-            return $result  > 1 ? ' / ' . $result . ' jours' : ' / ' . $result . ' jour';
+            return $result  > 1 ? $result . ' jours' : $result . ' jour';
         }
 
         return $result;

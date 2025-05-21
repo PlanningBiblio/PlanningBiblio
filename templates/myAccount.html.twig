@@ -83,9 +83,11 @@
                   {{ credits.annuel }}
                 </td>
               {% endif %}
+              {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
               <td style='text-align:right;'>
-                {{ credits.joursAnnuel }} jours
+                {{ credits.joursAnnuel }}
               </td>
+              {% endif %}
             </tr>
             <tr>
               <td>Crédit restant</td>
@@ -94,9 +96,12 @@
                   {{ credits.conges }}
                 </td>
               {% endif %}
-              <td style='text-align:right;'>
-                {{ credits.joursConges }} jours
-              </td>
+
+              {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
+                <td style='text-align:right;'>
+                  {{ credits.joursConges }}
+                </td>
+              {% endif %}
             </tr>
             <tr>
               <td>Reliquat</td>
@@ -105,9 +110,11 @@
                   {{ credits.reliquat }}
                 </td>
               {% endif %}
-              <td style='text-align:right;'>
-                {{ credits.joursReliquat}} jours
-              </td>
+              {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
+                <td style='text-align:right;'>
+                  {{ credits.joursReliquat}}
+                </td>
+              {% endif %}
             </tr>
             <tr>
               <td>Solde débiteur</td>
@@ -116,9 +123,11 @@
                   {{ credits.anticipation }}
                 </td>
                {% endif %}
-               <td style='text-align:right;'>
-                 {{ credits.joursAnticipation }} jours
-               </td>
+               {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
+                 <td style='text-align:right;'>
+                   {{ credits.joursAnticipation }}
+                 </td>
+               {% endif %}
             </tr>
             <tr>
               <td style='font-weight:bold;padding-top:20px;' colspan='2'>Récupérations</td>
@@ -130,7 +139,9 @@
               </td>
             </tr>
           </table>
-          <p style='font-style:italic;margin:30px 0 0 10px;'>Le nombre de jours est calculé sur la base de 7 heures par jour.</p>
+          {% if show_hours_to_days %}
+            <p style='font-style:italic;margin:30px 0 0 10px;'>Le nombre de jours est calculé sur la base de {{ hours_per_day }} heures par jour.</p>
+          {% endif %}
         </div>
       <!-- Crédits-->
       {% endif %}

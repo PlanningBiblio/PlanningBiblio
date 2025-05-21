@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use App\PlanningBiblio\Helper\HolidayHelper;
+use App\PlanningBiblio\Helper\HourHelper;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,41 +29,42 @@ class AccountController extends BaseController
         $message = null;
         $CSRFSession = $GLOBALS['CSRFSession'];
         $credits = array();
+        $perso_id = $session->get('loginId');
 
         // Informations sur l'agent
         $p = new \personnel();
         $p->CSRFToken = $CSRFSession;
-        $p->fetchById($session->get('loginId'));
+        $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
 
         // URL ICS
         $ics = null;
         if ($this->config('ICS-Export')) {
-            $ics = $p->getICSURL($session->get('loginId'));
+            $ics = $p->getICSURL($perso_id);
         }
 
         // Crédits (congés, récupérations)
         if ($this->config('Conges-Enable')) {
 
-            // @note : $fulldayReferenceTime may change depending on param Conges-fullday-reference-time.
-            // Its default value is 7 hours
-            // Its value is always 7 hours if credits are managed in days (Conges-Mode=jours)
+            $holiday_helper = new HolidayHelper();
 
-            $fulldayReferenceTime = !empty(floatval($this->config('Conges-fullday-reference-time'))) ? floatval($this->config('Conges-fullday-reference-time')) : 7;
+            $credits['annuel']       = HourHelper::decimalToHoursMinutes($p->elements[0]['conges_annuel'])['as_string'];
+            $credits['conges']       = HourHelper::decimalToHoursMinutes($p->elements[0]['conges_credit'])['as_string'];
+            $credits['reliquat']     = HourHelper::decimalToHoursMinutes($p->elements[0]['conges_reliquat'])['as_string'];
+            $credits['anticipation'] = HourHelper::decimalToHoursMinutes($p->elements[0]['conges_anticipation'])['as_string'];
+            $credits['recuperation'] = HourHelper::decimalToHoursMinutes($p->elements[0]['comp_time'])['as_string'];
 
-            if ($this->config('Conges-Mode') == 'jours') {
-                $fulldayReferenceTime = 7;
-            }
+            $credits['joursAnnuel']       = $holiday_helper->hoursToDays($p->elements[0]['conges_annuel'],       $perso_id, null, true);
+            $credits['joursConges']       = $holiday_helper->hoursToDays($p->elements[0]['conges_credit'],       $perso_id, null, true);
+            $credits['joursReliquat']     = $holiday_helper->hoursToDays($p->elements[0]['conges_reliquat'],     $perso_id, null, true); 
+            $credits['joursAnticipation'] = $holiday_helper->hoursToDays($p->elements[0]['conges_anticipation'], $perso_id, null, true); 
 
-            $credits['annuel'] = heure4($p->elements[0]['conges_annuel']);
-            $credits['conges'] = heure4($p->elements[0]['conges_credit']);
-            $credits['reliquat'] = heure4($p->elements[0]['conges_reliquat']);
-            $credits['anticipation'] = heure4($p->elements[0]['conges_anticipation']);
-            $credits['recuperation'] = heure4($p->elements[0]['comp_time']);
-            $credits['joursAnnuel'] = number_format($p->elements[0]['conges_annuel']/$fulldayReferenceTime, 2, ",", " ");
-            $credits['joursConges'] = number_format($p->elements[0]['conges_credit']/$fulldayReferenceTime, 2, ",", " ");
-            $credits['joursReliquat'] = number_format($p->elements[0]['conges_reliquat']/$fulldayReferenceTime, 2, ",", " ");
-            $credits['joursAnticipation'] = number_format($p->elements[0]['conges_anticipation']/$fulldayReferenceTime, 2, ",", " ");
+            $this->templateParams(
+                array(
+                    'show_hours_to_days' => $holiday_helper->showHoursToDays(),
+                    'hours_per_day'      => $holiday_helper->hoursPerDay($perso_id),
+                )
+            );
         }
 
         // Liste de tous les agents (pour la fonction nom()
@@ -70,7 +74,7 @@ class AccountController extends BaseController
         $agents = $a->elements;
 
         $p = new \planningHebdo();
-        $p->perso_id = $session->get('loginId');
+        $p->perso_id = $perso_id;
         $p->merge_exception = false;
         $p->fetch();
         $planning = $p->elements;
@@ -97,11 +101,10 @@ class AccountController extends BaseController
 
         $this->templateParams(
             array(
-                "credits"          => $credits,
-                "ics"              => $ics,
-                "login"            => $login,
-                "planning"         => $planning
-
+                "credits"  => $credits,
+                "ics"      => $ics,
+                "login"    => $login,
+                "planning" => $planning
             )
         );
         return $this->output('/myAccount.html.twig');
