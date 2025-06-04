@@ -416,11 +416,13 @@ class HolidayController extends BaseController
 
         $hoursPerDay = null;
         if ($holiday_helper->showHoursToDays()) {
-            $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);
+
+            $hoursPerDay               = $holiday_helper->hoursPerDay($perso_id);
+            $hoursPerDayInHoursMinutes = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];
 
             $anticipation_jours = $holiday_helper->hoursToDays($conges_anticipation, $perso_id, null, true);
-            $credit_jours = $holiday_helper->hoursToDays($conges_credit, $perso_id, null, true);
-            $reliquat_jours = $holiday_helper->hoursToDays($conges_reliquat, $perso_id, null, true);
+            $credit_jours       = $holiday_helper->hoursToDays($conges_credit,       $perso_id, null, true);
+            $reliquat_jours     = $holiday_helper->hoursToDays($conges_reliquat,     $perso_id, null, true);
         }
 
         $templateParams = array(
@@ -432,6 +434,7 @@ class HolidayController extends BaseController
             'start_halfday'         => $data['start_halfday'],
             'end_halfday'           => $data['end_halfday'],
             'hours_per_day'         => $hoursPerDay,
+            'hours_per_day_in_hhmm' => $hoursPerDayInHoursMinutes,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
             'reliquat_jours'        => $reliquat_jours,
@@ -590,11 +593,13 @@ class HolidayController extends BaseController
 
         $hoursPerDay = null;
         if ($holiday_helper->showHoursToDays()) {
-            $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);
+
+            $hoursPerDay               = $holiday_helper->hoursPerDay($perso_id);
+            $hoursPerDayInHoursMinutes = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];
 
             $anticipation_jours = $holiday_helper->hoursToDays($conges_anticipation, $perso_id, null, true);
-            $credit_jours = $holiday_helper->hoursToDays($conges_credit, $perso_id, null, true);
-            $reliquat_jours = $holiday_helper->hoursToDays($conges_reliquat, $perso_id, null, true);
+            $credit_jours       = $holiday_helper->hoursToDays($conges_credit,       $perso_id, null, true);
+            $reliquat_jours     = $holiday_helper->hoursToDays($conges_reliquat,     $perso_id, null, true);
         }
 
         if ($balance[4] < 0) {
@@ -621,6 +626,7 @@ class HolidayController extends BaseController
             'conges_tous'           => $this->config('Conges-tous'),
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'hours_per_day'         => $hoursPerDay,
+            'hours_per_day_in_hhmm' => $hoursPerDayInHoursMinutes,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
             'reliquat_jours'        => $reliquat_jours,
