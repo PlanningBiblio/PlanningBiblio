@@ -2,11 +2,12 @@
 
 <script>
 
-function getHours(id, hours) {
+function getHours(id, hours, minutes) {
     hours_per_year = parseFloat($("#conges_annuel_hours").val()) + parseFloat($("#conges_annuel_min").val() / 60);
+    hours_to_convert = parseFloat(hours) + parseFloat(minutes / 60);
     $.ajax({
         url: url('ajax/holidays-hours-to-days'),
-        data: {hours_to_convert: hours , hours_per_year: hours_per_year},
+        data: {hours_to_convert: hours_to_convert, hours_per_year: hours_per_year},
         dataType: "json",
         type: "get",
         async: false,
@@ -18,10 +19,10 @@ function getHours(id, hours) {
 }
 
 function updateAll() {
-        result = getHours('#annuel_jours', parseFloat($("#conges_annuel_hours").val()) + parseFloat($("#conges_annuel_min").val() / 60));
-        result = getHours('#credit_jours', parseFloat($("#conges_credit_hours").val()) + parseFloat($("#conges_credit_min").val() / 60 ));
-        result = getHours('#reliquat_jours', parseFloat($("#conges_reliquat_hours").val()) + parseFloat($("#conges_reliquat_min").val() / 60));
-        result = getHours('#anticipation_jours', parseFloat($("#conges_anticipation_hours").val()) + parseFloat($("#conges_anticipation_min").val() / 60));
+        result = getHours('#annuel_jours',       $("#conges_annuel_hours").val(),       $("#conges_annuel_min").val());
+        result = getHours('#credit_jours',       $("#conges_credit_hours").val(),       $("#conges_credit_min").val());
+        result = getHours('#reliquat_jours',     $("#conges_reliquat_hours").val(),     $("#conges_reliquat_min").val());
+        result = getHours('#anticipation_jours', $("#conges_anticipation_hours").val(), $("#conges_anticipation_min").val());
 }
 
 $(document).ready(function() {
@@ -31,15 +32,15 @@ $(document).ready(function() {
     });
 
     $("#conges_credit_hours, #conges_credit_min").change(function() {
-        result = getHours('#credit_jours', parseFloat($("#conges_credit_hours").val()) + parseFloat($("#conges_credit_min").val() / 60));
+        result = getHours('#credit_jours', $("#conges_credit_hours").val(), $("#conges_credit_min").val());
     });
 
     $("#conges_reliquat_hours, #conges_reliquat_min").change(function() {
-        result = getHours('#reliquat_jours', parseFloat($("#conges_reliquat_hours").val()) + parseFloat($("#conges_reliquat_min").val() / 60));
+        result = getHours('#reliquat_jours', $("#conges_reliquat_hours").val(), $("#conges_reliquat_min").val());
     });
 
     $("#conges_anticipation_hours, #conges_anticipation_min").change(function() {
-        result = getHours('#anticipation_jours', parseFloat($("#conges_anticipation_hours").val()) + parseFloat($("#conges_anticipation_min").val() / 60));
+        result = getHours('#anticipation_jours', $("#conges_anticipation_hours").val(), $("#conges_anticipation_min").val());
     });
 });
 </script>
