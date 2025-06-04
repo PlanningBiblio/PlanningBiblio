@@ -62,7 +62,7 @@ class AccountController extends BaseController
             $this->templateParams(
                 array(
                     'show_hours_to_days' => $holiday_helper->showHoursToDays(),
-                    'hours_per_day'      => $holiday_helper->hoursPerDay($perso_id),
+                    'hours_per_day'      => HourHelper::decimalToHoursMinutes($holiday_helper->hoursPerDay($perso_id))['as_string'],
                 )
             );
         }
