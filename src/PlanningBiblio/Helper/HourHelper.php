@@ -44,7 +44,7 @@ class HourHelper extends BaseHelper
             $result['hours'] = (string) $result['hours'];
         }
 
-        $result['as_string'] = $result['hours'] . 'h' . $result['minutes'];
+        $result['as_string'] = $result['hours'] . 'h' . str_pad($result['minutes'], 2, '0', STR_PAD_LEFT);
 
         return $result;
     }
