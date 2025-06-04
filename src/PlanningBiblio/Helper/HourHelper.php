@@ -10,7 +10,6 @@ class HourHelper extends BaseHelper
 
     private static $end_default = '23:59:59';
 
-
     public static function decimalToHoursMinutes($decimal_duration)
     {
         $result = array();
@@ -43,6 +42,12 @@ class HourHelper extends BaseHelper
             $result['hours'] = '-0';
         } else {
             $result['hours'] = (string) $result['hours'];
+        }
+
+        if ($result['hours'] == 0 && $result['minutes'] == 0) {
+            $result['as_string'] = '';
+        } else {
+            $result['as_string'] = $result['hours'] . 'h' . str_pad($result['minutes'], 2, '0', STR_PAD_LEFT);
         }
 
         return $result;

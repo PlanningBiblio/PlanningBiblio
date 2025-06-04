@@ -255,7 +255,7 @@
 
                 <td style="{{ elem.validation_style }}">{{ elem.validation }}</td>
                 <td>{{ elem.validation_date }}</td>
-                <td>{{ elem.credits }}</td>
+                <td>{{ elem.credits | raw }}</td>
                 <td>{{ elem.commentaires | nl2br }}</td>
               </tr>
             {% endfor %}

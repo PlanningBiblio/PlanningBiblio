@@ -790,7 +790,7 @@ class conges
                     } elseif ($GLOBALS['config']['Conges-Mode'] == 'jours') {
                         $tab[$perso_id][$key] = $helper->HumanReadableDuration($tab[$perso_id][$key]);
                     } else {
-                        $tab[$perso_id][$key] = heure4($tab[$perso_id][$key]);
+                        $tab[$perso_id][$key] = HourHelper::decimalToHoursMinutes((float) $tab[$perso_id][$key])['as_string'];
                     }
                 }
             }

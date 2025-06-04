@@ -141,8 +141,7 @@ class OvertimeController extends BaseController
             }
 
             $date2 = ($elem['date2'] and $elem['date2']!="0000-00-00") ? " & ".dateFr($elem['date2']) : null;
-            $overtime_result = HourHelper::decimalToHoursMinutes($elem['heures']);
-            $hours = $overtime_result['hours'] . 'h' . $overtime_result['minutes'];
+            $hours = HourHelper::decimalToHoursMinutes($elem['heures'])['as_string'];
 
             $overtime = array(
                 'id'                => $elem['id'],
