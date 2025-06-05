@@ -322,8 +322,15 @@ class Agent extends PLBEntity
 
     public function skills()
     {
-        $skills = json_decode($this->postes());
+        $skills = json_decode($this->postes(), true);
         return is_array($skills) ? $skills : [];
+    }
+
+    public function setSkills(array $skills): static
+    {
+        $this->postes = json_encode($skills);
+
+        return $this;
     }
 
     public function managedSites($needed_l1, $needed_l2)

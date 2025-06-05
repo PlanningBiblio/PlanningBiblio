@@ -53,4 +53,17 @@ class Position extends PLBEntity
 
     /** @Column(type="boolean")**/
     protected $quota_sp = true;
+
+    public function getSkills()
+    {
+        return (array) $this->activites();
+    }
+
+    public function setSkills(array $skills): static
+    {
+        $this->activites = $skills;
+
+        return $this;
+    }
+
 }
