@@ -70,7 +70,7 @@ trait PlanningJobTrait
         // Position's name and related skills
         $position = $positions->find($poste);
         $posteNom = $position->getName();
-        $activites = $position->getActivities();
+        $activites = $position->getSkills();
         $quotaSP = $position->isQuotaSP();
         $teleworking = $position->isTeleworking();
         $bloquant = $position->isBlocking();
