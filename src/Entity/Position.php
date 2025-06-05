@@ -122,12 +122,12 @@ class Position
         return $this;
     }
 
-    public function getActivities(): ?array
+    public function getSkills(): ?array
     {
         return $this->activites;
     }
 
-    public function setActivities(array $activities): static
+    public function setSkills(array $activities): static
     {
         $this->activites = $activities;
 

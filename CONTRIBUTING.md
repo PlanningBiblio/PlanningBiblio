@@ -17,8 +17,6 @@
 | ---- | -------- | ------- |
 | aCL | droits |
 | active | actif |
-| activities | activites |
-| activity | activite |
 | actualAnticipation | anticipation_actuel |
 | actualCompTime | recup_actuel |
 | actualCredit | solde_actuel |
@@ -108,6 +106,8 @@
 | rRule| rrule |
 | site | site |
 | sites | sites |
+| skill | activite |
+| skills | activites |
 | skills | postes | for Agents |
 | start | debut |
 | statistics | statistiques |

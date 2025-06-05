@@ -71,7 +71,7 @@ class PositionController extends BaseController
 
             $activites = array();
             $activitesAffichees = array();
-            $activitesPoste = $value->getActivities();
+            $activitesPoste = $value->getSkills();
 
             if (is_array($activitesPoste)) {
                 foreach ($activitesPoste as $act) {
@@ -125,7 +125,7 @@ class PositionController extends BaseController
             $groupe_id = $position->getGroupId();
             $categories  =  $position->getCategories() ?  : array();
             $site = $position->getSite();
-            $activites = $position->getActivities();
+            $activites = $position->getSkills();
             $obligatoire = $position->getMandatory() == 'Obligatoire' ? 'checked="checked"' : '';
             $renfort = $position->getMandatory() == 'Renfort' ? 'checked="checked"' : '';
             $stat1 = $position->isStatistics() ? 'checked="checked"' : '';
@@ -288,7 +288,7 @@ class PositionController extends BaseController
             if (!$id){
                 $position = new Position;
                 $position->setName($nom);
-                $position->setActivities($activites);
+                $position->setSkills($activites);
                 $position->setCategories($categories);
                 $position->setBlocking($bloquant);
                 $position->setQuotaSP($quota_sp);
@@ -319,7 +319,7 @@ class PositionController extends BaseController
             } else {
                 $position = $this->entityManager->getRepository(Position::class)->find($id);
                 $position->setName($nom);
-                $position->setActivities($activites);
+                $position->setSkills($activites);
                 $position->setCategories($categories);
                 $position->setBlocking($bloquant);
                 $position->setQuotaSP($quota_sp);
