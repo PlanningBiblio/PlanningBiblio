@@ -17,7 +17,7 @@ class PositionRepository extends EntityRepository
         $positions = $entityManager->getRepository(Position::class)->findAll();
         $all_skills = array();
         foreach ($positions as $position) {
-            $activites = $position->getActivities();
+            $activites = $position->getSkills();
             if (is_array($activites)) {
                 foreach ($activites as $activite) {
                     array_push($all_skills, $activite);
