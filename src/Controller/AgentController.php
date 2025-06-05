@@ -1608,8 +1608,10 @@ class AgentController extends BaseController
         // Parse the LDIF file
         $ld = new Ldif2Array($this->config('LDIF-File'), true, $this->config('LDIF-Encoding'));
 
-        foreach ($ld->entries as $elem) {
+        foreach ($ld->entries as $entry) {
             $keep = false;
+
+            $elem = array_change_key_case($entry, CASE_LOWER);
 
             foreach ($searchTerms as $searchTerm) {
 
@@ -1645,8 +1647,8 @@ class AgentController extends BaseController
                     }
                     $id = $result[$this->config('LDIF-ID-Attribute')];
                     $result['id'] = $id;
-                    $result['login'] = $result[$this->config('LDIF-ID-Attribute')];
-                    $result['matricule'] = $result[$this->config('LDIF-Matricule')] ?? null;
+                    $result['login'] = $result[strtolower($this->config('LDIF-ID-Attribute'))];
+                    $result['matricule'] = $result[strtolower($this->config('LDIF-Matricule'))] ?? null;
 
                     $results[$id] = $result;
                 }
