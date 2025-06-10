@@ -45,9 +45,11 @@ class HourHelper extends BaseHelper
         }
 
         if ($result['hours'] == 0 && $result['minutes'] == 0) {
-            $result['as_string'] = '';
+            $result['as_string']      = '';
+            $result['as_full_string'] = '';
         } else {
-            $result['as_string'] = $result['hours'] . 'h' . str_pad($result['minutes'], 2, '0', STR_PAD_LEFT);
+            $result['as_string']      = $result['hours'] . 'h'        . str_pad($result['minutes'], 2, '0', STR_PAD_LEFT);
+            $result['as_full_string'] = $result['hours'] . ' heures ' . str_pad($result['minutes'], 2, '0', STR_PAD_LEFT);
         }
 
         return $result;

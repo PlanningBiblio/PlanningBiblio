@@ -59,10 +59,13 @@ class AccountController extends BaseController
             $credits['joursReliquat']     = $holiday_helper->hoursToDays($p->elements[0]['conges_reliquat'],     $perso_id, null, true); 
             $credits['joursAnticipation'] = $holiday_helper->hoursToDays($p->elements[0]['conges_anticipation'], $perso_id, null, true); 
 
+            $hours_per_day = HourHelper::decimalToHoursMinutes($holiday_helper->hoursPerDay($perso_id));
+
             $this->templateParams(
                 array(
                     'show_hours_to_days' => $holiday_helper->showHoursToDays(),
-                    'hours_per_day'      => HourHelper::decimalToHoursMinutes($holiday_helper->hoursPerDay($perso_id))['as_string'],
+                    'hours_per_day'      => $hours_per_day['as_string'],
+                    'hours_per_day_full' => $hours_per_day['as_full_string'],
                 )
             );
         }
