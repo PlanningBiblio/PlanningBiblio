@@ -1705,7 +1705,13 @@ function verif_categorieA(){
     success: function(result) {
       result = JSON.parse(result);
       if(result == "false") {
-        CJInfo("Attention, pas d'agent de catégorie A en fin de service.", 'error');
+        if (!$(".missingCategoryA")[0]) {
+            CJInfo("Attention, pas d'agent de catégorie A en fin de service.", 'error', 82, 999999, 'missingCategoryA');
+        }
+      } else {
+        if ($(".missingCategoryA")[0]) {
+            $(".missingCategoryA")[0].remove();
+        }
       }
     }
   });
