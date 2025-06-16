@@ -1,3 +1,8 @@
+*** Version 24.10.13   (2025-06-16)    ***
+- Enhancement
+MT46909: Remove the setting 'Mail-UnsubscribeLink' #1139
+MT48943: Make LDIF import case insensitive #1142
+
 *** Version 24.10.12   (2025-05-09)    ***
 - Fixes
 MT46909: Move favicon.ico to the root of the public folder #1136

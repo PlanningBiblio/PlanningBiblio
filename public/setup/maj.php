@@ -3618,6 +3618,15 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+ 
+$v="24.10.13";
+
+if (version_compare($config['Version'], $v) === -1) {
+    // MT46909
+    $sql[] = "DELETE FROM `{$dbprefix}config` WHERE `nom` = 'Mail-UnsubscribeLink';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage
