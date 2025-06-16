@@ -276,7 +276,7 @@ class HolidayHelper extends BaseHelper
         return -1;
     }
 
-    public function hoursToDays($given_hours, $perso_id, $holidays_hours_per_year = null, $human_readable = false) {
+    public function hoursToDays($given_hours, $perso_id, $holidays_hours_per_year = null, $human_readable = false, $prefix = null) {
         if (empty($given_hours) and !$human_readable) { return 0; }
         if (empty($given_hours) and $human_readable) { return ''; }
 
@@ -288,7 +288,8 @@ class HolidayHelper extends BaseHelper
             if (empty($result)) {
                 return '';
             }
-            return $result  > 1 ? $result . ' jours' : $result . ' jour';
+            $result = $result > 1 ? $result . ' jours' : $result . ' jour';
+            return $prefix . $result;
         }
 
         return $result;
