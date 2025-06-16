@@ -1,3 +1,10 @@
+*** Version 25.05.01   (2025-06-16)    ***
+- Enhancement
+MT47833: Move PlanningJobController contextmenu logic to PlanningJobHelper #1121
+MT46909: Remove the setting 'Mail-UnsubscribeLink' #1139
+MT48100: Improve hours to days conversions #1140
+MT48943: Make LDIF import case insensitive #1142
+
 *** Version 24.11.15   (2025-05-09)    ***
 - Enhancement
 MT48103: Add a setting to ignore lunch breaks #1135
