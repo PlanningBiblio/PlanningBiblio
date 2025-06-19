@@ -1089,7 +1089,7 @@ class StatisticController extends BaseController
             $date = $_SESSION['PLdate'];
             $d = new \datePl($date);
             $debut = dateFr($d->dates[0]);
-            $fin = $this->config('Dimanche') ? dateFr($d->dates[6]) : dateFr($d->dates[5]);
+            $fin = dateFr($d->dates[6]);
             $site = 0;
         }
         $_SESSION['oups']['stat_absences_debut'] = $debut;
@@ -1642,7 +1642,7 @@ class StatisticController extends BaseController
            $date=$_SESSION['PLdate'];
            $d = new \datePl($date);
            $debut = $d->dates[0];
-           $fin = $this->config('Dimanche') ? $d->dates[6] : $d->dates[5];
+           $fin = $d->dates[6];
            $selection_groupe = false;
         }
 
@@ -1652,12 +1652,7 @@ class StatisticController extends BaseController
         $current = $debut;
 
         while ($current<=$fin) {
-            if (date("w", strtotime($current)) == 0 and !$this->config('Dimanche')) {
-
-            } else {
-                $dates[] = array($current,dateAlpha2($current));
-            }
-
+            $dates[] = array($current,dateAlpha2($current));
             $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
         }
 
