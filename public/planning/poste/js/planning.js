@@ -1353,6 +1353,9 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         majPersoOrigine(0);
       }
 
+      // Affiche un message en haut du planning si pas de catégorie A en fin de service
+      verif_categorieA();
+
       // Cellule grisée depuis le menudiv
       if(result != 'grise'){
         $("#td"+cellule).removeClass('cellule_grise');
@@ -1481,8 +1484,6 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
       }
     });
 
-  // Affiche un message en haut du planning si pas de catégorie A en fin de service 
-  verif_categorieA();
   
   /*
   Exemple de valeur pour la variable result :
@@ -1705,7 +1706,13 @@ function verif_categorieA(){
     success: function(result) {
       result = JSON.parse(result);
       if(result == "false") {
-        CJInfo("Attention, pas d'agent de catégorie A en fin de service.", 'error');
+        if (!$(".missingCategoryA")[0]) {
+            CJInfo("Attention, pas d'agent de catégorie A en fin de service.", 'error', 82, 999999, 'missingCategoryA');
+        }
+      } else {
+        if ($(".missingCategoryA")[0]) {
+            $(".missingCategoryA")[0].remove();
+        }
       }
     }
   });
