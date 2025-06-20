@@ -21,12 +21,6 @@ class AccountController extends BaseController
     public function index(Request $request, Session $session)
     {
         // Initialisation des variables
-        // Working hours
-        // Années universitaires (si utilisation des périodes définies)
-        $tmp = array();
-        $tmp[0] = date("n") < 9 ? (date("Y")-1)."-".(date("Y")) : (date("Y"))."-".(date("Y")+1);
-        $tmp[1] = date("n") < 9 ? (date("Y"))."-".(date("Y")+1) : (date("Y")+1)."-".(date("Y")+2);
-        $message = null;
         $CSRFSession = $GLOBALS['CSRFSession'];
         $credits = array();
         $perso_id = $session->get('loginId');
@@ -97,14 +91,22 @@ class AccountController extends BaseController
 
         }
 
-        $login = array("name" => $_SESSION['login_prenom'], "surname" => $_SESSION['login_nom'], "id" => $session->get('loginId'));
+        $login = array('name' => $_SESSION['login_prenom'], 'surname' => $_SESSION['login_nom'], 'id' => $perso_id);
+
+        $canChangePassword = true;
+        if ($_SESSION['oups']['Auth-Mode'] == 'CAS'
+            or ($this->config('Auth-Mode') == 'LDAP' and $perso_id != 1))
+        {
+            $canChangePassword = false;
+        }
 
         $this->templateParams(
             array(
-                "credits"  => $credits,
-                "ics"      => $ics,
-                "login"    => $login,
-                "planning" => $planning
+                'canChangePassword' => $canChangePassword,
+                'credits'  => $credits,
+                'ics'      => $ics,
+                'login'    => $login,
+                'planning' => $planning
             )
         );
         return $this->output('/myAccount.html.twig');
