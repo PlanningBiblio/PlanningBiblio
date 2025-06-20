@@ -215,6 +215,7 @@ class AuthorizationsController extends BaseController
             and !isset($_POST['acces'])) {
 
             $redirURL = $_GET['redirURL'] ?? '';
+            // TODO : replace "$_SESSION['oups']['Auth-Mode']" with $session->set('Auth-Mode', 'SSO') 
             $_SESSION['oups']['Auth-Mode']="CAS";
 
             $login = null;
