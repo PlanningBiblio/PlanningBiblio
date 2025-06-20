@@ -39,6 +39,9 @@ class Holiday extends PLBEntity
     /** @Column(type="string", length=20) **/
     protected $heures;
 
+    /** @Column(type="text")**/
+    protected $calculation;
+
     /** @Column(type="string", length=20) **/
     protected $debit;
 

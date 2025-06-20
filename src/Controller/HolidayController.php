@@ -285,6 +285,10 @@ class HolidayController extends BaseController
     #[Route(path: '/holiday/edit/{id}', name: 'holiday.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session)
     {
+        // FIXME : create dedicated routes : GET to display the form and POST to save data
+        // FIXME : remove $confirm from this method and from the template
+        // FIXME : add csrf protection to POST route
+
         $id = $request->get('id');
         $confirm = $request->get('confirm');
         $dbprefix = $GLOBALS['dbprefix'];
@@ -1020,6 +1024,7 @@ class HolidayController extends BaseController
                 'is_recover' => $is_recover
             ));
             $result = $holidayHlper->getCountedHours();
+            $data['calculation'] = $result['calculation'];
             $data['heures'] = $result['hours'];
             $data['minutes'] = $result['minutes'];
 

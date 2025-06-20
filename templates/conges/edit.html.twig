@@ -161,7 +161,7 @@
                 value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
             </td>
           </tr>
-
+{# TODO: MT48758: when the holiday is validated l2, dates, hours, calculated hours and minutes, calculation should be get from the db and display on read only mode #}
           <tr>
             {% if conges_mode == 'heures' or request_type == 'recover' %}
               <td style='padding-top:15px;'>Nombre d'heures : </td>
@@ -176,6 +176,7 @@
               {% endif %}
               <input type='hidden' name='heures' value='0' />
               <input type='hidden' name='minutes' value='0' />
+              <input type="hidden" id="calculation" name="calculation" value="" />
               <input type='hidden' id='erreurCalcul' value='false' />
             </td>
           </tr>

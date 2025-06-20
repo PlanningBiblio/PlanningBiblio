@@ -162,6 +162,7 @@ function calculCredit(){
         document.form.elements["heures"].value = result.hours;
         document.form.elements["minutes"].value = result.minutes;
 
+        $('#calculation').val(result.calculation);
         $("#nbHeures").text(result.hr_hours);
         $("#nbJours").text(result.days);
         $("#nbHeures").effect("highlight",null,4000);

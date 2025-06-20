@@ -76,18 +76,21 @@ class HolidayHelper extends BaseHelper
         // Calcul du nombre d'heures correspondant aux congés demandés
         $current = $debut;
         $result = array(
-            'error'     => false,
-            'minutes'   => 0,
-            'hours'     => 0,
-            'hr_hours'  => '0h00'
+            'calculation' => '',
+            'error'       => false,
+            'minutes'     => 0,
+            'hours'       => 0,
+            'hr_hours'    => '0h00'
         );
 
+        $calculation = '';
         $per_week = array();
         $regul_total = 0;
 
         // For each requested date.
         while ($current <= $fin) {
 
+            $calculation .= "\n$current: ";
             $date_current = new \DateTime($current);
 
             // Check agent's planning.
@@ -188,15 +191,25 @@ class HolidayHelper extends BaseHelper
 
             $times = $this->getTimes($planning, $current, $free_break_already_removed);
 
+            $fullDay = 0;
             $today = 0;
             foreach ($times as $t) {
                 $t0 = strtotime($t[0]);
                 $t1 = strtotime($t[1]);
 
+                $fullDay += ($t1 - $t0);
+
                 $debutConges1 = $debutConges > $t0 ? $debutConges : $t0;
                 $finConges1 = $finConges < $t1 ? $finConges : $t1;
                 if ($finConges1 > $debutConges1) {
                     $today += $finConges1 - $debutConges1;
+                }
+
+                if ($finConges1 > $debutConges1) {
+                    $calculation .= date('H:i', $debutConges1);
+                    $calculation .= '-';
+                    $calculation .= date('H:i', $finConges1);
+                    $calculation .= ';';
                 }
             }
 
@@ -216,6 +229,23 @@ class HolidayHelper extends BaseHelper
                 }
 
                 $today = $today <= $switching_time ? 12600 : 25200;
+            }
+
+
+            // MT48758
+            // TODO: get minutesToAdd and condition from config
+            $minutesToAdd = 20 ;
+            $addition = $minutesToAdd * 60;
+            $condition = 6 * 3600;
+            $remain = $fullDay - $today;
+            if (($remain) > 0
+                and ($remain) < $condition
+                and $fullDay > $condition
+                ) {
+                $today = $today + $addition;
+
+                $calculation .= ' +' . $minutesToAdd . 'min';
+                $calculation .= ' (remaining time: +' . gmdate('H:i', $remain) . ')';
             }
 
             // If this is a closing day, don't check for
@@ -252,6 +282,7 @@ class HolidayHelper extends BaseHelper
             $result['hr_rest'] = $hr_rest;
         }
 
+        $result['calculation'] = $calculation;
         $result['days'] = $this->hoursToDays($total, $perso_id);
 
         return $result;
