@@ -129,35 +129,56 @@ class HolidayHelper extends BaseHelper
 
             // Convert free break as fixed break if needed
             $free_break_already_removed = false;
-            $has_fixed_break = !empty($planning['times'][$day_id][1]) || !empty($planning['times'][$day_id][5]);
 
-            if (isset($planning['breaktimes'][$day_id]) && !$has_fixed_break) {
+            if (!empty($planning['breaktimes'][$day_id])) {
+                if (!$this->hasFixedBreak($planning['times'][$day_id])) {
 
-                $free_break_already_removed = true;
-                $free_break_start = $this->config('PlanningHebdo-DebutPauseLibre');
-                $free_break_end = $this->config('PlanningHebdo-FinPauseLibre');
-                $free_break_duration = $planning['breaktimes'][$day_id] * 60;
+                    $free_break_already_removed = true;
+                    $free_break_start = $this->config('PlanningHebdo-DebutPauseLibre');
+                    $free_break_end = $this->config('PlanningHebdo-FinPauseLibre');
+                    $free_break_duration = $planning['breaktimes'][$day_id] * 60;
 
-                if (strtotime($debutConges) >= strtotime($free_break_start) &&
-                    strtotime($finConges)   <= strtotime($free_break_end)) {
+                    $planning['times'][$day_id] = $this->standardizeTime($planning['times'][$day_id]);
 
-                    // If the holiday is shorter than the free break, the free break starts at the beginning of the holiday
-                    $planning["times"][$day_id][1] = $debutConges;
-                    $planning["times"][$day_id][2] = date('H:i:s', strtotime("+ $free_break_duration minutes $debutConges"));
+                    if (strtotime($debutConges) >= strtotime($free_break_start) &&
+                        strtotime($finConges)   <= strtotime($free_break_end)) {
 
-                } elseif (substr($debutConges, 0, 2) >= 12) {
+                        // If the holiday is shorter than the free break, the free break starts at the beginning of the holiday
+                        $planning["times"][$day_id][1] = $debutConges;
+                        $planning["times"][$day_id][2] = date('H:i:s', strtotime("+ $free_break_duration minutes $debutConges"));
 
-                    // If the holiday is in the afternoon, the free break is at the end of its period.
-                    $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
-                    $planning["times"][$day_id][1] = $fixed_free_break_start;
-                    $planning["times"][$day_id][2] = $free_break_end;
 
-                } else {
+                    } elseif ($free_break_start < $planning['times'][$day_id][0]) {
 
-                    // If the holiday is in the morning, the free break is at the beginning of its period.
-                    $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
-                    $planning["times"][$day_id][1] = $free_break_start;
-                    $planning["times"][$day_id][2] = $fixed_free_break_end;
+                        // If working hours start after the period defined in config, we move the break at the beginning of working hours
+                        $free_break_start = $planning['times'][$day_id][0];
+                        $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
+                        $planning["times"][$day_id][1] = $free_break_start;
+                        $planning["times"][$day_id][2] = $fixed_free_break_end;
+
+
+                    } elseif ($free_break_end > $planning['times'][$day_id][3]) {
+
+                        // If working hours end before the period defined in config, we move the break at the end of working hours
+                        $free_break_end = $planning['times'][$day_id][3];
+                        $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
+                        $planning["times"][$day_id][1] = $fixed_free_break_start;
+                        $planning["times"][$day_id][2] = $free_break_end;
+
+                    } elseif (substr($debutConges, 0, 2) >= 12) {
+
+                        // If the holiday is in the afternoon, the free break is at the end of its period.
+                        $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
+                        $planning["times"][$day_id][1] = $fixed_free_break_start;
+                        $planning["times"][$day_id][2] = $free_break_end;
+
+                    } else {
+
+                        // If the holiday is in the morning, the free break is at the beginning of its period.
+                        $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
+                        $planning["times"][$day_id][1] = $free_break_start;
+                        $planning["times"][$day_id][2] = $fixed_free_break_end;
+                    }
                 }
             }
 
@@ -444,5 +465,56 @@ class HolidayHelper extends BaseHelper
         }
 
         return false;
+    }
+
+    private function hasFixedBreak($times)
+    {
+        $indexes = array(0,1,2,3,5,6);
+
+        $slots = 0;
+        foreach ($indexes as $index) {
+            if (!empty($times[$index])) {
+                $slots++;
+            }
+        }
+
+        $break = $slots > 2;
+
+        return $break;
+    }
+
+   /** The standardizeTime function fills cells 0 and 3 in all cases to be able to place the break on cells 1 and 2
+      * Works if only one time slot if defined.
+      * Case 1 : 0 - 3
+      * Case 2 : 0 - 1
+      * Case 3 : 0 - 6
+      * Case 4 : 2 - 3
+      * Case 5 : 2 - 6
+      * Case 6 : 5 - 6
+      */
+    private function standardizeTime($times)
+    {
+
+        if (!empty($times[1])) {
+            $times[3] = $times[1];
+            $times[1] = null;
+        }
+
+        if (!empty($times[2])) {
+            $times[0] = $times[2];
+            $times[2] = null;
+        }
+
+        if (!empty($times[5])) {
+            $times[0] = $times[5];
+            $times[5] = null;
+        }
+
+        if (!empty($times[6])) {
+            $times[3] = $times[6];
+            $times[6] = null;
+        }
+
+        return $times;
     }
 }
