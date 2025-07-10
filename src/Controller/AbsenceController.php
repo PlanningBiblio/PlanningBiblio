@@ -312,6 +312,16 @@ class AbsenceController extends BaseController
         $absence['commentaires'] = html_entity_decode($a->elements['commentaires'], ENT_QUOTES);
         $agents=$a->elements['agents'];
 
+        // POC_Saclay_Schema_Validation
+        // Get notification workflow
+        $workflow = 'A';
+        $reason = $this->entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $absence['motif']]);
+        if ($reason) {
+            $workflow = $reason->notification_workflow();
+        }
+
+        $absence['workflow'] = $workflow;
+
         $adminN1 = true;
         $adminN2 = true;
         foreach ($agents as $agent) {
@@ -319,7 +329,7 @@ class AbsenceController extends BaseController
                 ->getRepository(Agent::class)
                 ->setModule('absence')
                 ->forAgent($agent['perso_id'])
-                ->getValidationLevelFor($session->get('loginId'));
+                ->getValidationLevelFor($session->get('loginId'), $workflow);
 
             $adminN1 = $N1 === false ? $N1 : $adminN1;
             $adminN2 = $N2 === false ? $N2 : $adminN2;
@@ -699,8 +709,9 @@ class AbsenceController extends BaseController
         $agent_ids = $request->get('ids') ?? array();
         $module = $request->get('module');
         $entity_id = $request->get('id');
+        $workflow = $request->get('workflow');
 
-        $this->setStatusesParams($agent_ids, $module, $entity_id);
+        $this->setStatusesParams($agent_ids, $module, $entity_id, $workflow);
 
         return $this->output('/common/validation-statuses.html.twig');
     }

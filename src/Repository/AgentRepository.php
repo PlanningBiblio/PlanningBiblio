@@ -267,7 +267,7 @@ class AgentRepository extends EntityRepository
         return array($loggedin);
     }
 
-    public function getValidationLevelFor($loggedin_id)
+    public function getValidationLevelFor($loggedin_id, String $workflow = 'A')
     {
 
         $entityManager = $this->getEntityManager();
@@ -305,6 +305,10 @@ class AgentRepository extends EntityRepository
             }
 
             if ($loggedin->isManagerOf(array($this->agent_id), 'level2')) {
+                $l2 = true;
+            }
+
+            if ($l1 and $workflow == 'B') {
                 $l2 = true;
             }
 
