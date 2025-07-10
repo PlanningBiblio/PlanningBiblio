@@ -7,7 +7,7 @@ use App\Entity\Agent;
 
 trait EntityValidationStatuses
 {
-    public function getStatusesParams($agent_ids, $module, $entity_id = null)
+    public function getStatusesParams($agent_ids, $module, $entity_id = null, String $workflow = 'A')
     {
         if (!$agent_ids) {
             throw new \Exception("EntityValidationStatuses::getStatusesParams: No agent");
@@ -30,7 +30,7 @@ trait EntityValidationStatuses
                 ->getRepository(Agent::class)
                 ->setModule($module)
                 ->forAgent($id)
-                ->getValidationLevelFor($_SESSION['login_id']);
+                ->getValidationLevelFor($_SESSION['login_id'], $workflow);
 
             $adminN1 = $N1 ? $adminN1 : false;
             $adminN2 = $N2 ? $adminN2 : false;

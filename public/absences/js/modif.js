@@ -667,10 +667,11 @@ function update_validation_statuses() {
   }
 
   absence_id = $('input[name="id"]').val();
+  var workflow = $('#workflow').val() || 'A';
 
   $.ajax({
     url: url('absence-statuses'),
-    data: { ids: perso_ids, module: 'absence', id: absence_id },
+    data: { ids: perso_ids, module: 'absence', id: absence_id, workflow: workflow },
     dataType: 'html',
     success: function(result){
       $("#validation-statuses").html(result);
