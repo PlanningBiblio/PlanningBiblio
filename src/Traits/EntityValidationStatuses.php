@@ -7,7 +7,7 @@ use App\Entity\Agent;
 
 trait EntityValidationStatuses
 {
-    public function getStatusesParams($agent_ids, $module, $entity_id = null)
+    public function getStatusesParams($agent_ids, $module, $entity_id = null, String $workflow = 'A')
     {
         if (!$agent_ids) {
             throw new \Exception("EntityValidationStatuses::getStatusesParams: No agent");
@@ -30,32 +30,35 @@ trait EntityValidationStatuses
                 ->getRepository(Agent::class)
                 ->setModule($module)
                 ->forAgent($id)
-                ->getValidationLevelFor($_SESSION['login_id']);
+                ->getValidationLevelFor($_SESSION['login_id'], $workflow);
 
             $adminN1 = $N1 ? $adminN1 : false;
             $adminN2 = $N2 ? $adminN2 : false;
         }
-
         $show_select = $adminN1 || $adminN2;
         $show_n1 = $adminN1 || $adminN2;
         $show_n2 = $adminN2;
 
+        // Simplified absence validation schema for workflow B
+        if ($workflow == 'B' && $module == 'absence') {
+            $show_n1 = false;
+        } 
+
         // Only adminN2 can change statuses of
         // validated N2 entities.
         if (in_array($entity_state, [1, -1]) && !$adminN2) {
-            $show_select = 0;
+            $show_select = false;
         }
 
         // Prevent user without right L1 to directly validate l2
         if (!$adminN1 && $entity_state == 0 && $entity->needsValidationL1()) {
-            $show_select = 0;
+            $show_select = false;
         }
 
         // Accepted N2 holidays cannot be changed.
         if ($entity_state == 1 && $module == 'holiday') {
-            $show_select = 0;
+            $show_select = false;
         }
-
         $params = array(
             'entity_state_desc' => $entity_state_desc,
             'entity_state'      => $entity_state,

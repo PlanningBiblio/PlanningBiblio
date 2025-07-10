@@ -1,4 +1,5 @@
 <?php 
+use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\Model;
 use App\Entity\Manager;
@@ -26,55 +27,77 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->setUpPantherClient();
         $this->setParam('Absences-notifications-agent-par-agent', 1);
         $this->setParam('Absences-validation', 1);
+        # Absence must be validated at level1 first
+        $this->setParam('Absences-Validation-N2', 1);
+
         global $entityManager;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
         # descriptions
         $desc_state_0 = "Demandée";
-        $meeting_reason = "Réunion";
-        $meeting_reason = "Formation";
+        $desc_state_1 = "Acceptée";
+        $desc_state_2 = "Acceptée (En attente de validation hiérarchique)";
+        $refused_state_1 = "Refusée";
+        $refused_state_2 = "Refusée (En attente de validation hiérarchique)";
+
+        $workflow_b_reason = 'Reason with workflow B';
+
+        # Absence reason with workflow B
+        $ar = new AbsenceReason();
+        $ar->setValue($workflow_b_reason);
+        $ar->setRank(1);
+        $ar->setType(1);
+        $ar->setTeleworking(0);
+        $ar->setNotificationWorkflow('B');
+        $this->entityManager->persist($ar);
 
         # Logged-in user
         # Scenarios: logged in as: myself, no-rights, level1, level2, admin
-        # TODO: Foreach on different agents
 
         # Agents
         $agent1 = $builder->build(Agent::class);
         $manager_level1_for_agent1 = $builder->build(Agent::class);
         $manager_level2_for_agent1 = $builder->build(Agent::class);
+        $manager_level1_level2_for_agent1 = $builder->build(Agent::class);
 
-        $manager1 = new Manager();
-        $manager1->setUser($agent1);
-        $manager1->setLevel1(1);
-        $manager1->setLevel2(0);
-        $manager_level1_for_agent1->addManaged($manager1);
+        $managed1 = new Manager();
+        $managed1->setUser($agent1);
+        $managed1->setLevel1(1);
+        $managed1->setLevel2(0);
+        $manager_level1_for_agent1->addManaged($managed1);
 
-        $manager2 = new Manager();
-        $manager2->setUser($agent1);
-        $manager2->setLevel1(0);
-        $manager2->setLevel2(1);
-        $manager_level2_for_agent1->addManaged($manager2);
+        $managed2 = new Manager();
+        $managed2->setUser($agent1);
+        $managed2->setLevel1(0);
+        $managed2->setLevel2(1);
+        $manager_level2_for_agent1->addManaged($managed2);
+
+        $managed3 = new Manager();
+        $managed3->setUser($agent1);
+        $managed3->setLevel1(1);
+        $managed3->setLevel2(1);
+        $manager_level1_level2_for_agent1->addManaged($managed3);
 
 
+        $this->assertTrue( $manager_level1_for_agent1->isManagerOf(array($agent1->getId()), 'level1'));
+        $this->assertFalse($manager_level1_for_agent1->isManagerOf(array($agent1->getId()), 'level2'));
 
-        echo "manager " .  $manager_level1_for_agent1->getId() . " agent " . $agent1->getId(); 
-        $this->assertTrue($manager_level1_for_agent1->isManagerOf(array($agent1->getId())));
+        $this->assertFalse($manager_level2_for_agent1->isManagerOf(array($agent1->getId()), 'level1'));
+        $this->assertTrue( $manager_level2_for_agent1->isManagerOf(array($agent1->getId()), 'level2'));
 
-        #$this->logInAgent($agent1, $agent1->getACL());
+        $this->assertTrue($manager_level1_level2_for_agent1->isManagerOf(array($agent1->getId()), 'level1'));
+        $this->assertTrue($manager_level1_level2_for_agent1->isManagerOf(array($agent1->getId()), 'level2'));
+
         $this->login($agent1);
         $_SESSION['login_id'] = $agent1->getId();
-
-
-        #$agent3 = $builder->build(Agent::class, array('login' => 'mmyers', 'droits' => array(99,100)));
-        #$agent3 = $builder->build(Agent::class, array('login' => 'mmyers', 'droits' => array()));
 
         $agents_ids = array($agent1->getId());
         $module = 'absence';
 
         # MYSELF
-        # CREATION
-        # Logged-in as myself
+        ## CREATION
+        ### Logged-in as myself
         $params = $this->getStatusesParams($agents_ids, $module);
         $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
         $this->assertEquals(0, $params['entity_state'], 'entity state');
@@ -82,22 +105,21 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->assertFalse($params['show_n1'], 'Show n1');
         $this->assertFalse($params['show_n2'], 'Show n2');
 
-        # EDITION
-        # Logged-in as myself, editing an absence for myself
-        $absence_id = $this->createAbsenceFor($agent1); 
-#        $this->debug_absence($absence_id);
+        ## EDITION
+        ### Logged-in as myself, editing an absence for myself
+        $absence_id = $this->createAbsenceFor($agent1);
         $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
         $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
         $this->assertEquals(0, $params['entity_state'], 'entity state');
         $this->assertFalse($params['show_select'], 'showing select');
         $this->assertFalse($params['show_n1'], 'Show n1');
         $this->assertFalse($params['show_n2'], 'Show n2');
-
 
         # MANAGER LEVEL1
         $this->login($manager_level1_for_agent1);
         $_SESSION['login_id'] = $manager_level1_for_agent1->getId();
-        # CREATION
+
+        ## CREATION
         $params = $this->getStatusesParams($agents_ids, $module);
         $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
         $this->assertEquals(0, $params['entity_state'], 'entity state');
@@ -105,9 +127,9 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->assertTrue($params['show_n1'], 'Show n1');
         $this->assertFalse($params['show_n2'], 'Show n2');
 
-        # EDITION
-        # Logged-in as manager level1, editing an absence for agent1
-        $absence_id = $this->createAbsenceFor($agent1); 
+        ## EDITION
+        ### Logged-in as manager level1, editing an unvalidated workflow A absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1);
         $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
         $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
         $this->assertEquals(0, $params['entity_state'], 'entity state');
@@ -115,19 +137,104 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->assertTrue($params['show_n1'], 'Show n1');
         $this->assertFalse($params['show_n2'], 'Show n2');
 
-        # MT49914: Simplified absence validation schema for meetings
-        $absence_id = $this->createAbsenceFor($agent1, 0, $meeting_reason); 
+        ### Logged-in as manager level1, editing a level1 validated workflow A absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 2);
         $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
-        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
-        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertEquals($desc_state_2, $params['entity_state_desc'], 'entity state description is Accepted (waiting for hierarchy approval)');
+        $this->assertEquals(2, $params['entity_state'], 'entity state');
         $this->assertTrue($params['show_select'], 'showing select');
-        $this->assertFalse($params['show_n1'], 'Show n1 when editing a meeting');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertFalse($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level1, editing a level1 refused workflow A absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, -2);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($refused_state_2, $params['entity_state_desc'], 'entity state description is Refused (waiting for hierarchy approval)');
+        $this->assertEquals(-2, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertFalse($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level1, editing a level2 validated workflow A absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 1);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($desc_state_1, $params['entity_state_desc'], 'entity state description is Accepted');
+        $this->assertEquals(1, $params['entity_state'], 'entity state');
+        $this->assertFalse($params['show_select'], 'level1 manager cannot change level2 decision');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertFalse($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level1, editing a level2 refused workflow A absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, -1);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($refused_state_1, $params['entity_state_desc'], 'entity state description is Refused');
+        $this->assertEquals(-1, $params['entity_state'], 'entity state');
+        $this->assertFalse($params['show_select'], 'level1 manager cannot change level2 decision');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertFalse($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level1, editing an unvalidated workflow B absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 1, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($desc_state_1, $params['entity_state_desc'], 'entity state description is Accepted');
+        $this->assertEquals(1, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'Don\'t show n1 when editing a workflow B absence');
         $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level1, editing a level1 validated workflow B absence for agent1
+        #### In theory, this shouldn't happen, since validating a worflow B absence at level1 means validating it completely
+        $absence_id = $this->createAbsenceFor($agent1, 2, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($desc_state_2, $params['entity_state_desc'], 'entity state description is Accepted (waiting for hierarchy approval)');
+        $this->assertEquals(2, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level1, editing a level1 refused workflow B absence for agent1
+        #### In theory, this shouldn't happen, since refusing a worflow B absence at level1 means refusing it completely
+        $absence_id = $this->createAbsenceFor($agent1, -2, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($refused_state_2, $params['entity_state_desc'], 'entity state description is Refused (waiting for hierarchy approval)');
+        $this->assertEquals(-2, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'Don\'t show n1 when editing a workflow B absence');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level1, editing a level2 validated workflow B absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 1, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($desc_state_1, $params['entity_state_desc'], 'entity state description is Accepted');
+        $this->assertEquals(1, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'Don\'t show n1 when editing a workflow B absence');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level1, editing a level2 validated workflow B absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, -1, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($refused_state_1, $params['entity_state_desc'], 'entity state description is Refused');
+        $this->assertEquals(-1, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'show n1 when editing a workflow B absence');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
 
         # MANAGER LEVEL2
         $this->login($manager_level2_for_agent1);
         $_SESSION['login_id'] = $manager_level2_for_agent1->getId();
-        # CREATION
+
+        ## CREATION
+        $this->setParam('Absences-Validation-N2', 1);
+        $params = $this->getStatusesParams($agents_ids, $module);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertFalse($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        $this->setParam('Absences-Validation-N2', 0);
         $params = $this->getStatusesParams($agents_ids, $module);
         $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
         $this->assertEquals(0, $params['entity_state'], 'entity state');
@@ -135,9 +242,21 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->assertTrue($params['show_n1'], 'Show n1');
         $this->assertTrue($params['show_n2'], 'Show n2');
 
-        # EDITION
-        # Logged-in as manager level2, editing an absence for agent1
-        $absence_id = $this->createAbsenceFor($agent1); 
+        ## EDITION
+        ### Logged-in as manager level2, editing an unvalidated workflow A absence for agent1
+        #### Absence must be validated at level1 first
+        $this->setParam('Absences-Validation-N2', 1);
+        $absence_id = $this->createAbsenceFor($agent1);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertFalse($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        #### Absence can be validated at level 2 directly
+        $this->setParam('Absences-Validation-N2', 0);
+        $absence_id = $this->createAbsenceFor($agent1);
         $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
         $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
         $this->assertEquals(0, $params['entity_state'], 'entity state');
@@ -145,24 +264,141 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->assertTrue($params['show_n1'], 'Show n1');
         $this->assertTrue($params['show_n2'], 'Show n2');
 
-
-
-        # Let's change logged-in user
-        /*
-        $this->login($agent3);
-        $this->logInAgent($agent, $agent->getACL());
-        $absence_id = $this->createAbsenceFor($agent1); 
+        ### Logged-in as manager level2, editing a level1 validated workflow A absence for agent1
+        $this->setParam('Absences-Validation-N2', 1);
+        $absence_id = $this->createAbsenceFor($agent1, 2);
         $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
-        var_dump($params);
-        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for last');
-        $this->assertEquals(0, $params['entity_state'], 'entity state');
-        # TODO: This should be false
+        $this->assertEquals($desc_state_2, $params['entity_state_desc'], 'entity state description is Accepted (waiting for hierarchy approval)');
+        $this->assertEquals(2, $params['entity_state'], 'entity state');
         $this->assertTrue($params['show_select'], 'showing select');
         $this->assertTrue($params['show_n1'], 'Show n1');
         $this->assertTrue($params['show_n2'], 'Show n2');
-        */
+
+        ### Logged-in as manager level2, editing a level2 validated workflow A absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 1);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($desc_state_1, $params['entity_state_desc'], 'entity state description is Accepted');
+        $this->assertEquals(1, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'level2 manager can change level2 decision');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level2, editing an unvalidated workflow B absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 1, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($desc_state_1, $params['entity_state_desc'], 'entity state description is Accepted');
+        $this->assertEquals(1, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'Don\'t show n1 when editing a workflow B absence');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level2, editing a level1 validated workflow B absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 2, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($desc_state_2, $params['entity_state_desc'], 'entity state description is Accepted (waiting for hierarchy approval)');
+        $this->assertEquals(2, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'Don\'t show n1 when editing a workflow B absence');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level2, editing a level2 validated workflow B absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 1, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($desc_state_1, $params['entity_state_desc'], 'entity state description is Accepted');
+        $this->assertEquals(1, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'Don\'t show n1 when editing a workflow B absence');
+        $this->assertTrue($params['show_n2'], 'Show n2');
 
 
+        # MANAGER LEVEL1 & LEVEL2
+        $this->login($manager_level1_level2_for_agent1);
+        $_SESSION['login_id'] = $manager_level1_level2_for_agent1->getId();
+
+        ## CREATION
+        $this->setParam('Absences-Validation-N2', 1);
+        $params = $this->getStatusesParams($agents_ids, $module);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        $this->setParam('Absences-Validation-N2', 0);
+        $params = $this->getStatusesParams($agents_ids, $module);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ## EDITION
+        ### Logged-in as manager level 1 and 2, editing an unvalidated workflow A absence for agent1
+        #### Absence must be validated at level1 first
+        $this->setParam('Absences-Validation-N2', 1);
+        $absence_id = $this->createAbsenceFor($agent1);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'level 1 & 2 manager can edit an unvalidated absence when absence must be validated at level1 first');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        #### Absence can be validated at level 2 directly
+        $this->setParam('Absences-Validation-N2', 0);
+        $absence_id = $this->createAbsenceFor($agent1);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level 1 and 2, editing a level1 validated workflow A absence for agent1
+        $this->setParam('Absences-Validation-N2', 1);
+        $absence_id = $this->createAbsenceFor($agent1, 2);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($desc_state_2, $params['entity_state_desc'], 'entity state description is Accepted (waiting for hierarchy approval)');
+        $this->assertEquals(2, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level 1 and 2, editing a level2 validated workflow A absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 1);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($desc_state_1, $params['entity_state_desc'], 'entity state description is Accepted');
+        $this->assertEquals(1, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'level2 manager can change level2 decision');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level 1 and 2, editing an unvalidated workflow B absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 1, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($desc_state_1, $params['entity_state_desc'], 'entity state description is Accepted');
+        $this->assertEquals(1, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'Don\'t show n1 when editing a workflow B absence');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level 1 and 2, editing a level1 validated workflow B absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 2, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($desc_state_2, $params['entity_state_desc'], 'entity state description is Accepted (waiting for hierarchy approval)');
+        $this->assertEquals(2, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'Don\'t show n1 when editing a workflow B absence');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        ### Logged-in as manager level 1 and 2, editing a level2 validated workflow B absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 1, $workflow_b_reason);
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($desc_state_1, $params['entity_state_desc'], 'entity state description is Accepted');
+        $this->assertEquals(1, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'Don\'t show n1 when editing a workflow B absence');
+        $this->assertTrue($params['show_n2'], 'Show n2');
     }
 
     private function debug_absence($id) {
@@ -183,6 +419,23 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $absence->perso_ids = array($agent->getId());
         $absence->commentaires = '';
         $absence->motif = $motif;
+
+        # Note:
+
+        # In database:
+        # valide = 0  and valide_n1 = 0  when the absence is asked for
+        # valide = 0  and valide_n1 = id when the absence is approved (waiting for hierarchy approval)
+        # valide = id and valide_n1 = id when the absence is approved
+
+        # In absence object:
+        # valide = 0 when is the absence is asked for
+        # valide = 1 when is the absence is approved
+        # valide = 2 when the absence is approved (waiting for hierarchy approval)
+
+        # In a nutshell:
+        # database valide    = object valide_n1
+        # database valide_n1 = object valide_n2
+
         $absence->valide = $status;
         $absence->valide_n1 = $status;
         $absence->valide_n2 = $status;
