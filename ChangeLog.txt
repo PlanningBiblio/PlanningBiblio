@@ -1,3 +1,11 @@
+*** Version 25.05.02   (2025-07-11)    ***
+- Fixes
+MT48793: Improve missing category A display #1143
+MT49108: We can change our password if we use local authentication #1145
+
+- Enhancement
+MT49000: Default search for statistics until Sundays #1144
+
 *** Version 25.05.01   (2025-06-16)    ***
 - Enhancement
 MT47833: Move PlanningJobController contextmenu logic to PlanningJobHelper #1121
