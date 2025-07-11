@@ -131,7 +131,7 @@
               <td>Nombre de tableaux :</td>
               <td>
                 <select name='nombre' id='nombre' style='width:300px;' {% if used %}disabled{% endif %}>
-                  {% for i in 1..16 %}
+                  {% for i in 1..30 %}
                     <option value='{{ i }}' {{ (i == nombre) ? "selected='selected'":" "}} >{{ i }}</option>
                   {% endfor %}
                 </select>
