@@ -208,7 +208,7 @@ $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categor
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Affichage-etages','boolean','0','Afficher les &eacute;tages des postes dans le planning','Affichage','','30');";
 $sql[]="INSERT IGNORE INTO `{$dbprefix}config` ( `nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `extra`, `ordre`) VALUES ('Affichage-Agent', 'color', '#FFF3B3', 'Couleur des cellules de l\'agent connecté', 'Affichage', '', NULL, '40');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`type`,`nom`,`valeurs`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES
-  ('enum','Planning-NbAgentsCellule','1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17,18,19,20','2','Nombre maximum d\'agents par cellule','Planning','3');";
+  ('enum','Planning-NbAgentsCellule','1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20','4','Nombre maximum d\'agents par cellule','Planning','3');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`type`,`valeur`,`categorie`,`ordre`,`commentaires`) VALUES ('Planning-lignesVides','boolean','1','Planning',4,'Afficher ou non les lignes vides dans les plannings validés');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES
   ('Planning-SR-debut', 'enum2', '11:30:00',

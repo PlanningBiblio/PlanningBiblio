@@ -185,7 +185,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"nb_agents":0', $result[0]);
 
-        $this->assertStringContainsString('"max_agents":"2"', $result[0]);
+        $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
         $this->assertStringContainsString('"agent_id":"' .$abreton->id() .'"', $result[0]);
 
@@ -303,7 +303,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"nb_agents":0', $result[0]);
 
-        $this->assertStringContainsString('"max_agents":"2"', $result[0]);
+        $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
         $this->assertStringContainsString('"agent_id":"' .$abreton->id() .'"', $result[0]);
 
@@ -400,7 +400,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"nb_agents":0', $result[0]);
 
-        $this->assertStringContainsString('"max_agents":"2"', $result[0]);
+        $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
         $this->assertStringContainsString('"agent_id":"' .$abreton->id() .'"', $result[0]);
 
@@ -519,7 +519,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"nb_agents":0', $result[0]);
 
-        $this->assertStringContainsString('"max_agents":"2"', $result[0]);
+        $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
         $this->assertStringContainsString('"agent_id":"' .$abreton->id() .'"', $result[0]);
 
