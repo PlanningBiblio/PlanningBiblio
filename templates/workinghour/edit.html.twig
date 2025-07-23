@@ -73,6 +73,12 @@
             </div>
             {% endif %}
 
+            {# TODO MT49520 : add condition (id, nb_semaine > 2, etc. cf.: https://docky.biblibre.com/clients/t/toulouse-bm/planno/spec/toulouse_spec_dev_planno_rotation_des_cycles.html) #}
+            <div id="rotate">
+                <input type="button" class="workingHoursRotationBtn" value="Rotate 1" data-rotation="clockwise" />
+                <input type="button" class="workingHoursRotationBtn" value="Rotate 2" data-rotation="counterclockwise" />
+            </div>
+
             <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
             <input type='hidden' name='retour' value='{{ retour }}' />
             <input type='hidden' name='action' value='{{ action }}' />
