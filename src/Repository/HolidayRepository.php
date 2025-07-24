@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityRepository;
 class HolidayRepository extends EntityRepository
 {
 
-    public function get($start, $end = null)
+    public function get($start, $end = null, $valid = true)
     {
         $end = $end ?? $start;
 
@@ -17,11 +17,17 @@ class HolidayRepository extends EntityRepository
                 ->from(Holiday::class, 'h')
                 ->andWhere('h.debut < :end')
                 ->andWhere('h.fin > :start')
-                ->andWhere('h.valide > 0')
                 ->andWhere('h.information = 0')
                 ->andWhere('h.supprime = 0')
                 ->setParameter('start', $start)
                 ->setParameter('end', $end);
+
+        if ($valid) {
+            $builder->andWhere('h.valide > 0');
+        } else {
+            $builder->andWhere('h.valide = 0');
+        }
+
         $results = $builder->getQuery()->getResult();
 
         return $results;

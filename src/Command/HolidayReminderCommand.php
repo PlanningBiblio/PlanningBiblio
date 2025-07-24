@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Model\Agent;
+use App\Model\Holiday;
 use App\Model\Manager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -50,6 +51,9 @@ Exemple à ajouter en crontab :
         require_once __DIR__ . '/../../init/init_entitymanager.php';
         require_once __DIR__ . '/../../public/include/function.php';
 
+        // $xxxx = $GLOBALS['xxxx']; is required for unit tests
+        $config = $GLOBALS['config'];
+        $entityManager = $GLOBALS['entityManager'];
         $CSRFToken = CSRFToken();
 
         if (!$config['Conges-Rappels']) {
@@ -131,75 +135,72 @@ Exemple à ajouter en crontab :
         }
 
         // Recherche des congés non-validés
-        $db = new \db();
-        $db->select2('conges', null, array('debut' => "<$fin 23:59:59", 'fin' => ">$debut 00:00:00", 'valide' => '0', 'supprime' => '0', 'information' => '0'));
+        $holidays = $entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59", false);
 
         // Assemble les informations des congés et des agents
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $agent = $agents[$elem['perso_id']];
+        foreach ($holidays as $elem) {
+            $agent = $agents[$elem->perso_id()];
 
-                $tmp = $elem;
-                $tmp['nom'] = $agent->nom();
-                $tmp['prenom'] = $agent->prenom();
-                $tmp['destinataires'] = [];
+            $tmp = $elem;
+            $tmp->lastname = $agent->nom();
+            $tmp->firstname = $agent->prenom();
+            $tmp->recipients = [];
 
-                // Consider the validation scheme (config Absences-notifications-agent-par-agent)
-                if ($config['Absences-notifications-agent-par-agent']) {
-                    if ($elem['valide_n1'] == 0 and $elem['valide'] == 0) {
-                        $tmp['destinataires'] = $agent->notification_level1;
-                    }
+            // Consider the validation scheme (config Absences-notifications-agent-par-agent)
+            if ($config['Absences-notifications-agent-par-agent']) {
+                if ($elem->valide_n1() == 0) {
+                    $tmp->recipients = $agent->notification_level1;
+                } else { 
+                    $tmp->recipients = $agent->notification_level2;
+                }
 
-                    if ($elem['valide_n1'] != 0 and $elem['valide'] == 0) {
-                        $tmp['destinataires'] = $agent->notification_level2;
-                    }
+            } else {
+                // TODO : Use Absences-notifications-A1, Absences-notifications-B1 instead of Conges-Rappels-N1, then remove param Conges-Rappels-N1
+                // Ajoute les destinataires pour les congés n'étant pas validés en N1 en fonction du paramètre $config['Conges-Rappels-N1']
+                if ($elem->valide_n1() == 0) {
+                    $destN1 = json_decode(html_entity_decode($config['Conges-Rappels-N1'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
 
-                } else {
-                    // TODO : Use Absences-notifications-A1, Absences-notifications-B1 instead of Conges-Rappels-N1, then remove param Conges-Rappels-N1
-                    // Ajoute les destinataires pour les congés n'étant pas validés en N1 en fonction du paramètre $config['Conges-Rappels-N1']
-                    if ($elem['valide_n1'] == 0 and $elem['valide'] == 0) {
-                        $destN1 = json_decode(html_entity_decode($config['Conges-Rappels-N1'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
-                        if (is_array($destN1)) {
-                            if (in_array('Mail-Planning', $destN1)) {
-                                $tmp['destinataires'] = array_merge($tmp['destinataires'], $agent->get_planning_unit_mails());
-                            }
-                            if (in_array('mails_responsables', $destN1)) {
-                                $tmp['destinataires'] = array_merge($tmp['destinataires'], $agent->get_manager_emails());
-                            }
+                    if (is_array($destN1)) {
+                        if (in_array('Mail-Planning', $destN1)) {
+                            $tmp->recipients = array_merge($tmp->recipients, $agent->get_planning_unit_mails());
                         }
-                    }
-
-                    // TODO : Use Absences-notifications-A3, Absences-notifications-B3 instead of Conges-Rappels-N2, then remove param Conges-Rappels-N2
-                    // Ajoute les destinataires pour les congés n'étant pas validés en N2 en fonction du paramètre $config['Conges-Rappels-N2']
-                    if ($elem['valide_n1'] != 0 and $elem['valide'] == 0) {
-                        $destN2 = json_decode(html_entity_decode($config['Conges-Rappels-N2'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
-                        if (is_array($destN2)) {
-                            if (in_array('Mail-Planning', $destN2)) {
-                                $tmp['destinataires'] = array_merge($tmp['destinataires'], $agent->get_planning_unit_mails());
-                            }
-                            if (in_array('mails_responsables', $destN2)) {
-                                $tmp['destinataires'] = array_merge($tmp['destinataires'], $agent->get_manager_emails());
-                            }
+                        if (in_array('mails_responsables', $destN1)) {
+                            $tmp->recipients = array_merge($tmp->recipients, $agent->get_manager_emails());
                         }
                     }
                 }
 
-                // Regroupe les informations par destinaire pour des envois uniques
-                $tmp['destinataires'] = array_unique($tmp['destinataires']);
-
-                foreach ($tmp['destinataires'] as $dest) {
-                    if (!isset($data[$dest])) {
-                        $data[$dest] = array('destinaire' => $dest);
+                // TODO : Use Absences-notifications-A3, Absences-notifications-B3 instead of Conges-Rappels-N2, then remove param Conges-Rappels-N2
+                // Ajoute les destinataires pour les congés n'étant pas validés en N2 en fonction du paramètre $config['Conges-Rappels-N2']
+                if ($elem->valide_n1() != 0) {
+                    $destN2 = json_decode(html_entity_decode($config['Conges-Rappels-N2'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+                    if (is_array($destN2)) {
+                        if (in_array('Mail-Planning', $destN2)) {
+                            $tmp->recipients = array_merge($tmp->recipients, $agent->get_planning_unit_mails());
+                        }
+                        if (in_array('mails_responsables', $destN2)) {
+                            $tmp->recipients = array_merge($tmp->recipients, $agent->get_manager_emails());
+                        }
                     }
-                    $data[$dest][] = $tmp;
                 }
+            }
+
+            // Regroupe les informations par destinaire pour des envois uniques
+            $tmp->recipients = array_unique($tmp->recipients);
+            $tmp->recipients = array_map('trim', $tmp->recipients);
+
+            foreach ($tmp->recipients as $dest) {
+                if (!isset($data[$dest])) {
+                    $data[$dest] = array('recipient' => $dest);
+                }
+                $data[$dest][] = $tmp;
             }
         }
 
         // Création du message pour chaque destinataire
         foreach ($data as $dest) {
-            $to = $dest['destinaire'];
-            unset($dest['destinaire']);
+            $to = $dest['recipient'];
+            unset($dest['recipient']);
 
             if (count($dest)>1) {
                 $subject = "Congés en attente de validation du " . dateFr($debut) . " au " . dateFr($fin);
@@ -212,14 +213,14 @@ Exemple à ajouter en crontab :
             // Affichage de tous les congés non validé le concernant
             $msg .= "<ul>\n";
             foreach ($dest as $conge) {
-                $link = $config['URL'] . "/holiday/edit/{$conge['id']}";
+                $link = $config['URL'] . "/holiday/edit/{$conge->id()}";
 
                 $msg .= "<li style='margin-bottom:15px;'>\n";
-                $msg .= "<strong>{$conge['nom']} {$conge['prenom']}</strong><br/>\n";
-                $msg .= "<strong>Du ".dateFr($conge['debut'], true)." à ".dateFr($conge['fin'], true)."</strong><br/><br/>\n";
-                $msg .= "Demandé le ".dateFr($conge['saisie'], true)." par ".nom($conge['saisie_par'], $agents)."<br/>\n";
-                if ($conge['valide_n1'] > 0) {
-                    $msg .= "Validation niveau 1 : Accepté le ".dateFr($conge['validation_n1'], true)." par ".nom($conge['valide_n1'], $agents)."<br/>\n";
+                $msg .= "<strong>{$conge->lastname} {$conge->firstname}</strong><br/>\n";
+                $msg .= '<strong>Du ' . $conge->debut()->format('d/m/Y H:i') . ' à ' .  $conge->fin()->format('d/m/Y H:i') . "</strong><br/><br/>\n";
+                $msg .= 'Demandé le ' . $conge->saisie()->format('d/m/Y h:i') . ' par ' . nom($conge->saisie_par(), $agents) . "<br/>\n";
+                if ($conge->valide_n1() > 0) {
+                    $msg .= 'Validation niveau 1 : Accepté le ' . $conge->validation_n1()->format('d/m/Y H:i') . ' par ' . nom($conge->valide_n1(), $agents) . "<br/>\n";
                 }
                 $msg .= "<a href='$link' target='_blank'>$link</a>\n";
                 $msg .= "</li>\n";
@@ -236,9 +237,9 @@ Exemple à ajouter en crontab :
             }
 
             if ($output->isVerbose()) {
-                $output->writeln("Recipient: $to\n");
-                $output->writeln("Subject: $subject\n");
-                $output->writeln("Message: $msg\n\n");
+                $io->text("Recipient: $to\n");
+                $io->text("Subject: $subject\n");
+                $io->text("Message: $msg\n\n");
             }
         }
 
