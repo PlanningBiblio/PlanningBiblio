@@ -11,7 +11,7 @@ executors:
         default: '8.3'
       mariadb:
         type: string
-        default: '10.11'
+        default: '11.7'
     docker:
       - image: jeromecombes/planno-circleci-php:<< parameters.php >>-chrome
       - image: cimg/mariadb:<< parameters.mariadb >>
