@@ -8,10 +8,13 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-#[Entity] // @Table(name="pl_notifications")
+#[Entity]
+#[Table(name: 'pl_notifications')]
 class PlanningNotification extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'date')] // *

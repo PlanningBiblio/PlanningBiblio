@@ -2,12 +2,16 @@
 
 namespace App\Model;
 
+use App\Repository\PositionRepository;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-#[Entity(repositoryClass: \App\Repository\PositionRepository::class)] // @Table(name="postes")
+#[Entity(repositoryClass: PositionRepository::class)]
+#[Table(name: 'postes')]
 class Position extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'string')] // *

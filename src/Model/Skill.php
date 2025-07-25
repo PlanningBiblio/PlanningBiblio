@@ -2,11 +2,16 @@
 
 namespace App\Model;
 
+use App\Repository\SkillRepository;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-#[Entity(repositoryClass: \App\Repository\SkillRepository::class)] // @Table(name="activites")
-class Skill extends PLBEntity{
-    #[Id] // @Column(type="integer", length = 11) @GeneratedValue *
+#[Entity(repositoryClass: SkillRepository::class)]
+#[Table(name: 'activites')]
+class Skill extends PLBEntity
+{
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'string')] // *

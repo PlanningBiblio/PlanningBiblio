@@ -18,6 +18,7 @@ use App\Model\PlanningPositionModel;
 use App\Model\RecurringAbsence;
 use App\Model\SaturdayWorkingHours;
 use App\Model\Supervisor;
+// FIXME Use Manager instead of Supervisor
 use App\Model\WorkingHour;
 use App\Model\ConfigParam;
 
@@ -107,6 +108,7 @@ class AgentRepository extends EntityRepository
                 ->orWhere($supervisorCriteria->expr()->contains('responsable', $perso_id));
 
             $supervisors = $entityManager->getRepository(Supervisor::class)->matching($supervisorCriteria);
+            // FIXME Use Manager::class instead of Supervisor::class
             if (count($supervisors)) { $delete = false; }
 
             if ($delete == true) {

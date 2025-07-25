@@ -8,10 +8,13 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-#[Entity] // @Table(name="hidden_tables")
+#[Entity]
+#[Table(name: 'hidden_tables')]
 class HiddenTables extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'integer')] // *
@@ -28,3 +31,55 @@ class HiddenTables extends PLBEntity
         error_log("hidden tables purge");
     }
 }
+
+//    #[Column(type: Types::TEXT)]
+//    protected ?string $text = null;
+//
+//    #[Column(type: Types::DATE_MUTABLE)]
+//    protected ?\DateTime $date = null;
+//
+//    #[Column]
+//    protected ?\DateTime $date = null;
+//
+//    #[Column]
+//    protected ?int $id = null;
+//
+//    #[Column(type: Types::SMALLINT)]
+//    protected ?int $level1 = null;
+//
+//    #[Column(length: 255)]
+//    protected ?string $name = null;
+//
+//    #[Column]
+//    protected array $json = [];
+//
+//    #[Column]
+//    protected ?float $ffloat = null;
+//
+//    #[Column]
+//    protected ?bool $boolean = null;
+//
+//    #[Column(type: Types::ARRAY)]
+//    private array $array = [];
+//
+//    /**
+//     * @var Collection<int, Absence>
+//     */
+//    #[OneToMany(mappedBy: 'test', targetEntity: Absence::class)]
+//    private Collection $onetomany;
+//
+//
+//    #[ManyToOne(inversedBy: 'onetomany')]
+//    private ?Test4 $test = null;
+//
+//    public function getTest(): ?Test4
+//    {
+//        return $this->test;
+//    }
+//
+//    public function setTest(?Test4 $test): static
+//    {
+//        $this->test = $test;
+//
+//        return $this;
+//    }

@@ -8,16 +8,18 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-#[Entity] // @Table(name="volants")
+#[Entity]
+#[Table(name: 'volants')]
 class Detached extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
-    #[Column(type: 'date')] // *
-    protected $date;
+    #[Column(type: Types::DATE_MUTABLE)]
+    protected ?\DateTime $date = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
-
+    #[Column]
+    protected ?int $perso_id = null;
 }

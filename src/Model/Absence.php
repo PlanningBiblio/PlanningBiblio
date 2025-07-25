@@ -2,81 +2,86 @@
 
 namespace App\Model;
 
+use App\Entity\Test4;
+use App\Repository\AbsenceRepository;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-#[Entity(repositoryClass: \App\Repository\AbsenceRepository::class)] // @Table(name="absences")
+#[Entity(repositoryClass: AbsenceRepository::class)]
+#[Table(name: 'absences')]
 class Absence extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[Column]
+    protected ?int $perso_id = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $debut;
+    #[Column]
+    protected ?\DateTime $debut = null;
 
-    #[Column(type: 'datetime')]
-    protected $fin;
+    #[Column]
+    protected ?\DateTime $fin = null;
 
-    #[Column(type: 'text')]
-    protected $motif;
+    #[Column(type: Types::TEXT)]
+    protected ?string $motif = null;
 
-    #[Column(type: 'text')]
-    protected $motif_autre;
+    #[Column(type: Types::TEXT)]
+    protected ?string $motif_autre = null;
 
-    #[Column(type: 'text')]
-    protected $commentaires;
+    #[Column(type: Types::TEXT)]
+    protected ?string $commentaires = null;
 
-    #[Column(type: 'text')]
-    protected $etat;
+    #[Column(type: Types::TEXT)]
+    protected ?string $etat = null;
 
-    #[Column(type: 'datetime')]
-    protected $demande;
+    #[Column]
+    protected ?\DateTime $demande = null;
 
-    #[Column(type: 'integer')]
-    protected $valide;
+    #[Column]
+    protected ?int $valide = null;
 
-    #[Column(type: 'datetime')]
-    protected $validation;
+    #[Column]
+    protected ?\DateTime $validation = null;
 
-    #[Column(type: 'integer')]
-    protected $valide_n1;
+    #[Column]
+    protected ?int $valide_n1 = null;
 
-    #[Column(type: 'datetime')]
-    protected $validation_n1;
+    #[Column]
+    protected ?\DateTime $validation_n1 = null;
 
-    #[Column(type: 'integer')]
-    protected $pj1;
+    #[Column]
+    protected ?int $pj1 = null;
 
-    #[Column(type: 'integer')]
-    protected $pj2;
+    #[Column]
+    protected ?int $pj2 = null;
 
-    #[Column(type: 'integer')]
-    protected $so;
+    #[Column]
+    protected ?int $so = null;
 
     #[Column(type: 'string')]
     protected $groupe;
 
-    #[Column(type: 'text')]
-    protected $cal_name;
+    #[Column(type: Types::TEXT)]
+    protected ?string $cal_name = null;
 
-    #[Column(type: 'text')]
-    protected $ical_key;
+    #[Column(type: Types::TEXT)]
+    protected ?string $ical_key = null;
 
     #[Column(type: 'string')]
     protected $last_modified;
 
-    #[Column(type: 'text')]
-    protected $uid;
+    #[Column(type: Types::TEXT)]
+    protected ?string $uid = null;
 
-    #[Column(type: 'text')]
-    protected $rrule;
+    #[Column(type: Types::TEXT)]
+    protected ?string $rrule = null;
 
-    #[Column(type: 'integer')]
-    protected $id_origin;
+    #[Column]
+    protected ?int $id_origin = null;
 }

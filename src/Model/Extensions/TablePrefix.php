@@ -3,7 +3,7 @@
 namespace App\Model\Extensions;
 
 use Doctrine\Common\EventSubscriber;
-use \Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
 class TablePrefix implements EventSubscriber
 {

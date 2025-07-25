@@ -2,26 +2,30 @@
 
 namespace App\Model;
 
+use App\Repository\AbsenceReasonRepository;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-#[Entity(repositoryClass: \App\Repository\AbsenceReasonRepository::class)] // @Table(name="select_abs")
+#[Entity(repositoryClass: AbsenceReasonRepository::class)]
+#[Table(name: 'select_abs')]
 class AbsenceReason extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
-    #[Column(type: 'text')] // *
-    protected $valeur;
+    #[Column(type: Types::TEXT)]
+    protected ?string $valeur = null;
 
-    #[Column(type: 'integer')] // *
-    protected $rang;
+    #[Column]
+    protected ?int $rang = null;
 
-    #[Column(type: 'integer')] // *
-    protected $type;
+    #[Column]
+    protected ?int $type = null;
 
-    #[Column(type: 'string')] // *
-    protected $notification_workflow;
+    #[Column(length: 255)]
+    protected ?string $notification_workflow = null;
 
-    #[Column(type: 'integer')] // *
-    protected $teleworking;
+    #[Column]
+    protected ?int $teleworking = null;
 }

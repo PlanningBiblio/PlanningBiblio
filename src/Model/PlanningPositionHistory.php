@@ -2,12 +2,17 @@
 
 namespace App\Model;
 
+use App\Repository\PlanningPositionHistoryRepository;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-#[Entity] // @Entity(repositoryClass="App\Repository\PlanningPositionHistoryRepository") @Table(name="pl_position_history")
+#[Entity(repositoryClass: PlanningPositionHistoryRepository::class)]
+#[Table(name: 'pl_position_history')]
+
 class PlanningPositionHistory extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'json')] // *

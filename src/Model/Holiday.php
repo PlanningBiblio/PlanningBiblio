@@ -2,12 +2,16 @@
 
 namespace App\Model;
 
+use App\Repository\HolidayRepository;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-#[Entity(repositoryClass: \App\Repository\HolidayRepository::class)] // @Table(name="conges")
+#[Entity(repositoryClass: HolidayRepository::class)]
+#[Table(name: 'conges')]
 class Holiday extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'integer')] // *

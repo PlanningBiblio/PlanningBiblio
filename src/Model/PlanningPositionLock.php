@@ -2,12 +2,16 @@
 
 namespace App\Model;
 
+use App\Repository\PlanningPositionLockRepository;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-#[Entity(repositoryClass: \App\Repository\PlanningPositionLockRepository::class)] // @Table(name="pl_poste_verrou")
+#[Entity(repositoryClass: PlanningPositionLockRepository::class)]
+#[Table(name: 'pl_poste_verrou')]
 class PlanningPositionLock extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'date')] // *

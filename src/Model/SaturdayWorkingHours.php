@@ -8,10 +8,13 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-#[Entity] // @Table(name="edt_samedi")
+#[Entity]
+#[Table(name: 'edt_samedi')]
 class SaturdayWorkingHours extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'integer')] // *

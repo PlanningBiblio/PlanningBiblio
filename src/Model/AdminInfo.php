@@ -4,19 +4,21 @@ namespace App\Model;
 
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-#[Entity] // @Table(name="infos")
+#[Entity]
+#[Table(name: 'infos')]
 class AdminInfo extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
-    #[Column(type: 'string')] // *
-    protected $debut;
+    #[Column(length: 255)]
+    protected ?string $debut = null;
 
-    #[Column(type: 'string')] // *
-    protected $fin;
+    #[Column(length: 255)]
+    protected ?string $fin = null;
 
-    #[Column(type: 'text')] // *
-    protected $texte;
-
+    #[Column(type: Types::TEXT)]
+    protected ?string $texte = null;
 }

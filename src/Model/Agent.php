@@ -2,128 +2,137 @@
 
 namespace App\Model;
 
+use App\Repository\AgentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, OneToMany};
+
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/include/db.php');
 
-#[Entity(repositoryClass: \App\Repository\AgentRepository::class)]
-#[Table(name: "personnel")]
+#[Entity(repositoryClass: AgentRepository::class)]
+#[Table(name: 'personnel')]
 class Agent extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
-    #[Column(type: 'text')] // *
-    protected $nom;
+    #[Column(type: Types::TEXT)]
+    protected ?string $nom = null;
 
-    #[Column(type: 'text')] // *
-    protected $prenom;
+    #[Column(type: Types::TEXT)]
+    protected ?string $prenom = null;
 
-    #[Column(type: 'text')] // *
-    protected $mail;
+    #[Column(type: Types::TEXT)]
+    protected ?string $mail = null;
 
-    #[Column(type: 'text')] // *
-    protected $statut;
+    #[Column(type: Types::TEXT)]
+    protected ?string $statut = null;
 
-    #[Column(type: 'string')] // *
-    protected $categorie;
+    #[Column(length: 255)]
+    protected ?string $categorie = null;
 
-    #[Column(type: 'text')] // *
-    protected $service;
+    #[Column(type: Types::TEXT)]
+    protected ?string $service = null;
 
-    #[Column(type: 'date')] // *
-    protected $arrivee;
+    #[Column(type: Types::DATE_MUTABLE)]
+    protected ?\DateTime $arrivee = null;
 
-    #[Column(type: 'date')] // *
-    protected $depart;
+    #[Column(type: Types::DATE_MUTABLE)]
+    protected ?\DateTime $depart = null;
 
-    #[Column(type: 'text')] // *
-    protected $postes;
+    #[Column(type: Types::TEXT)]
+    protected ?string $postes = null;
 
-    #[Column(type: 'string')] // *
-    protected $actif;
+    #[Column(length: 255)]
+    protected ?string $actif = null;
 
-    #[Column(type: 'json')] // *
-    protected $droits;
+    #[Column]
+    protected array $droits = [];
 
-    #[Column(type: 'string')] // *
-    protected $login;
+    #[Column(length: 255)]
+    protected ?string $login = null;
 
-    #[Column(type: 'string')] // *
-    protected $password;
+    #[Column(length: 255)]
+    protected ?string $password = null;
 
-    #[Column(type: 'text')] // *
-    protected $commentaires;
+    #[Column(type: Types::TEXT)]
+    protected ?string $commentaires = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $last_login;
+    #[Column]
+    protected ?\DateTime $last_login = null;
 
-    #[Column(type: 'string', length: 6)] // *
-    protected $heures_hebdo;
+    #[Column(length: 6)]
+    protected ?string $heures_hebdo = null;
 
-    #[Column(type: 'float')] // *
-    protected $heures_travail;
+    #[Column]
+    protected ?float $heures_travail = null;
 
-    #[Column(type: 'text')] // *
-    protected $sites;
+    #[Column(type: Types::TEXT)]
+    protected ?string $sites = null;
 
-    #[Column(type: 'text')] // *
-    protected $temps;
+    #[Column(type: Types::TEXT)]
+    protected ?string $temps = null;
 
-    #[Column(type: 'text')] // *
-    protected $informations;
+    #[Column(type: Types::TEXT)]
+    protected ?string $informations = null;
 
-    #[Column(type: 'text')] // *
-    protected $recup;
+    #[Column(type: Types::TEXT)]
+    protected ?string $recup = null;
 
-    #[Column(type: 'string')] // *
-    protected $supprime;
+    #[Column(length: 255)]
+    protected ?string $supprime = null;
 
-    #[Column(type: 'text')] // *
-    protected $mails_responsables;
+    #[Column(type: Types::TEXT)]
+    protected ?string $mails_responsables = null;
 
-    #[Column(type: 'string')] // *
-    protected $matricule;
+    #[Column(length: 255)]
+    protected ?string $matricule = null;
 
-    #[Column(type: 'string')] // *
-    protected $code_ics;
+    #[Column(length: 255)]
+    protected ?string $code_ics = null;
 
-    #[Column(type: 'text')] // *
-    protected $url_ics;
+    #[Column(type: Types::TEXT)]
+    protected ?string $url_ics = null;
 
-    #[Column(type: 'string', length: 10)] // *
-    protected $check_ics;
+    #[Column(length: 10)]
+    protected ?string $check_ics = null;
 
-    #[Column(type: 'integer')] // *
-    protected $check_hamac;
+    #[Column]
+    protected ?int $check_hamac = null;
 
-    #[Column(type: 'boolean')] // *
-    protected $check_ms_graph;
+    #[Column]
+    protected ?bool $check_ms_graph = null;
 
-    #[Column(type: 'float')] // *
-    protected $conges_credit;
+    #[Column]
+    protected ?float $conges_credit = null;
 
-    #[Column(type: 'float')] // *
-    protected $conges_reliquat;
+    #[Column]
+    protected ?float $conges_reliquat = null;
 
-    #[Column(type: 'float')] // *
-    protected $conges_anticipation;
+    #[Column]
+    protected ?float $conges_anticipation = null;
 
-    #[Column(type: 'float')] // *
-    protected $comp_time;
+    #[Column]
+    protected ?float $comp_time = null;
 
-    #[Column(type: 'float')] // *
-    protected $conges_annuel;
+    #[Column]
+    protected ?float $conges_annuel = null;
 
-    #[OneToMany(targetEntity: \Manager::class, mappedBy: 'perso_id', cascade: ['ALL'])]
-    protected $managers;
+    /**
+     * @var Collection<int, Manager>
+     */
+    #[OneToMany(mappedBy: 'perso_id', targetEntity: Manager::class, cascade: ['ALL'])]
+    protected Collection $managers;
 
-    #[OneToMany(targetEntity: \Manager::class, mappedBy: 'responsable', cascade: ['ALL'])]
-    protected $managed;
+    /**
+     * @var Collection<int, Manager>
+     */
+    #[OneToMany(mappedBy: 'responsable', targetEntity: Manager::class, cascade: ['ALL'])]
+    protected Collection $managed;
 
     public function __construct() {
         $this->managers = new ArrayCollection();

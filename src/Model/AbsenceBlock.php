@@ -4,19 +4,22 @@ namespace App\Model;
 
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-#[Entity] // @Table(name="absence_blocks")
+#[Entity]
+#[Table(name: 'absence_blocks')]
 class AbsenceBlock extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
-    #[Column(type: 'date')] // *
-    protected $start;
+    #[Column(type: Types::DATE_MUTABLE)]
+    protected ?\DateTime $start = null;
 
-    #[Column(type: 'date')] // *
-    protected $end;
+    #[Column(type: Types::DATE_MUTABLE)]
+    protected ?\DateTime $end = null;
 
-    #[Column(type: 'text')] // *
-    protected $comment;
+    #[Column(type: Types::TEXT)]
+    protected ?string $comment = null;
 
 }

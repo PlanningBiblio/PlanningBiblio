@@ -8,10 +8,13 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-#[Entity] // @Table(name="pl_poste_tab_grp")
+#[Entity]
+#[Table(name: 'pl_poste_tab_grp')]
 class PlanningPositionTabGroup extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'text')] // *

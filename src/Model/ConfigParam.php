@@ -8,34 +8,35 @@ use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 #[Table(name: 'config')]
 class ConfigParam extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
-    #[Column(type: Types::INTEGER)]
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
-    #[Column(type: 'string')]
-    protected $nom;
+    #[Column(length: 255)]
+    protected ?string $nom = null;
 
-    #[Column(type: 'string')]
-    protected $type;
+    #[Column(length: 255)]
+    protected ?string $type = null;
 
-    #[Column(type: 'string')]
-    protected $valeur;
+    #[Column(length: 255)]
+    protected ?string $valeur = null;
 
-    #[Column(type: 'string')]
-    protected $commentaires;
+    #[Column(length: 255)]
+    protected ?string $commentaires = null;
 
-    #[Column(type: 'string')]
-    protected $categorie;
+    #[Column(length: 255)]
+    protected ?string $categorie = null;
 
-    #[Column(type: 'string')]
-    protected $valeurs;
+    #[Column(length: 255)]
+    protected ?string $valeurs = null;
 
-    #[Column(type: Types::BOOLEAN)]
-    protected $technical;
+    #[Column]
+    protected ?bool $technical = false;
 
-    #[Column(type: 'string')]
-    protected $extra;
+    #[Column(length: 255)]
+    protected ?string $extra = null;
 
-    #[Column(type: 'integer')]
-    protected $ordre;
+    #[Column]
+    protected ?int $ordre = null;
 }

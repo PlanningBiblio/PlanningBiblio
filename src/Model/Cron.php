@@ -8,36 +8,39 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-#[Entity] // @Table(name="cron")
+#[Entity]
+#[Table(name: 'cron')]
 class Cron extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
-    #[Column(type: 'string', length: 2)] // *
-    protected $m;
+    #[Column(length: 2)]
+    protected ?string $m = null;
 
-    #[Column(type: 'string', length: 2)] // *
-    protected $h;
+    #[Column(length: 2)]
+    protected ?string $h = null;
 
-    #[Column(type: 'string', length: 2)] // *
-    protected $dom;
+    #[Column(length: 2)]
+    protected ?string $dom = null;
 
-    #[Column(type: 'string', length: 2)] // *
-    protected $mon;
+    #[Column(length: 2)]
+    protected ?string $mom = null;
 
-    #[Column(type: 'string', length: 2)] // *
-    protected $dow;
+    #[Column(length: 2)]
+    protected ?string $dow = null;
 
-    #[Column(type: 'text')] // *
-    protected $command;
+    #[Column(type: Types::TEXT)]
+    protected ?string $command = null;
 
-    #[Column(type: 'text')] // *
-    protected $comments;
+    #[Column(type: Types::TEXT)]
+    protected ?string $comments = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $last;
+    #[Column]
+    protected ?\DateTime $last = null;
 
-    #[Column(type: 'boolean')] // *
-    protected $disabled;
+    #[Column]
+    protected ?bool $disabled = null;
 }

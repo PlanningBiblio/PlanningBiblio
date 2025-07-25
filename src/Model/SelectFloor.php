@@ -8,9 +8,13 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-#[Entity] // @Table(name="select_etages")
-class SelectFloor extends PLBEntity {
-    #[Id] // @Column(type="integer", length = 11) @GeneratedValue *
+#[Entity]
+#[Table(name: 'select_etages')]
+class SelectFloor extends PLBEntity
+{
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'string')] // *

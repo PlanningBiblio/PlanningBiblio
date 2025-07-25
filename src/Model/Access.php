@@ -4,27 +4,30 @@ namespace App\Model;
 
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
-#[Entity] // @Table(name="acces")
+#[Entity]
+#[Table(name: 'acces')]
 class Access extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
-    #[Column(type: 'text')] // *
-    protected $nom;
+    #[Column(type: Types::TEXT)]
+    protected ?string $nom = null;
 
-    #[Column(type: 'integer')] // *
-    protected $groupe_id;
+    #[Column]
+    protected ?int $groupe_id = null;
 
-    #[Column(type: 'text')] // *
-    protected $groupe;
+    #[Column(type: Types::TEXT)]
+    protected ?string $groupe = null;
 
-    #[Column(type: 'string')] // *
-    protected $page;
+    #[Column(length: 255)]
+    protected ?string $page = null;
 
-    #[Column(type: 'integer')] // *
-    protected $ordre;
+    #[Column]
+    protected ?int $ordre = null;
 
-    #[Column(type: 'string')] // *
-    protected $categorie;
+    #[Column(length: 255)]
+    protected ?string $categorie = null;
 }

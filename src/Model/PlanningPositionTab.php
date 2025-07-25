@@ -2,16 +2,20 @@
 
 namespace App\Model;
 
+use App\Repository\PlanningPositionTabRepository;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-#[Entity(repositoryClass: \App\Repository\PlanningPositionTabRepository::class)] // @Table(name="pl_poste_tab")
+#[Entity(repositoryClass: PlanningPositionTabRepository::class)]
+#[Table(name: 'pl_poste_tab')]
 class PlanningPositionTab extends PLBEntity
 {
-    #[Id] // @Column(type="integer") @GeneratedValue *
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
     protected $id;
 
     #[Column(type: 'integer')] // *
