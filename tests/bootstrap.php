@@ -1,8 +1,9 @@
 <?php
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Doctrine\ORM\Tools\Setup;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Setup;
 use Symfony\Component\Dotenv\Dotenv;
 
 exec(__DIR__ . '/../vendor/bin/bdi detect drivers');
@@ -51,10 +52,15 @@ if ($dbconn) {
 exec(__DIR__ . '/../bin/console doctrine:migrations:migrate --env=test -q');
 
 include_once(__DIR__ . '/../init/init.php');
-include_once(__DIR__.'/../init/init_templates.php');
+include_once(__DIR__ . '/../init/init_templates.php');
 
 $entitiesPath = array('src/Entity');
 $emConfig = Setup::createAttributeMetadataConfiguration($entitiesPath, true);
+
+// Handle table prefix.
+$evm = new \Doctrine\Common\EventManager;
+$tablePrefix = new App\Entity\Extensions\TablePrefix($config['dbprefix']);
+$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
 
 $dbParams = array(
     'driver'   => 'pdo_mysql',
@@ -65,4 +71,5 @@ $dbParams = array(
 );
 
 global $entityManager;
-$entityManager = EntityManager::create($dbParams, $emConfig);
+$conn = DriverManager::getConnection($dbParams);
+$entityManager = new EntityManager($conn, $emConfig, $evm);

@@ -1,16 +1,18 @@
-# Planning Biblio
+# Planno
 
-Planning Biblio est un logiciel libre développé en PHP-MySQL permettant de réaliser les plannings de service public
+![Logo Planno](public/themes/default/images/logo-planno.svg "Logo Planno")
+
+Planno est un logiciel libre développé en PHP-MySQL permettant de réaliser les plannings de service public
 
 - Site web : https://www.planno.fr
-- Twitter : @jeromecombes , #PlanningBiblio
+- X (Twitter) : @jeromecombes , #Planno
 - Facebook : facebook.com/PlanningBiblio
 - Groupe Facebook : Les faiseurs de planning : https://www.facebook.com/groups/350347521813310
 
 ### Prérequis :
 
 - Serveur Apache 2.2 ou supérieur / Nginx 1.10.3 ou supérieur
-- PHP 7.4 ou supérieur
+- PHP 8.2 ou 8.3
 - MariaDB client/serveur 10 ou supérieur
 
 - Extensions PHP :
@@ -22,13 +24,13 @@ Planning Biblio est un logiciel libre développé en PHP-MySQL permettant de ré
   - CURL (si identification CAS)
   - LDAP (si utilisation avec un serveur LDAP)
 
-### Copyright (C) 2011-2018 - Jérôme Combes
+### Licence GNU/GPL
 
-Planning Biblio est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+Planno est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
 suivant les termes de la "GNU General Public License", telle que publiée par la 
 Free Software Foundation (version 2 et au dela).
 
-Planning Biblio est distribué dans l'espoir qu'il vous sera utile, mais SANS AUCUNE GARANTIE :
+Planno est distribué dans l'espoir qu'il vous sera utile, mais SANS AUCUNE GARANTIE :
 sans même la garantie implicite de COMMERCIALISABILITÉ ni d'ADÉQUATION À UN OBJECTIF PARTICULIER.
 Consultez la Licence Générale Publique GNU pour plus de détails.
 
@@ -37,11 +39,11 @@ si ce n'est pas le cas, consultez : http://www.gnu.org/licenses
 
 ### Ressources installées via composer:
 
-- Symfony/HttpFoundation 3.4
-- phpmailer/phpmailer >= 6.0.5
-- Twig 2.0
-- apereo/phpcas 1.3
-- Doctrine 2.5
+- Apereo/phpcas
+- Doctrine
+- Phpmailer
+- Symfony
+- Twig
 
 ### Ressources intégrées au code :
 

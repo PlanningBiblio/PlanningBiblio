@@ -39,6 +39,10 @@ class LoginListener
             return;
         }
 
+        if (substr($route, 0, 4) == '_wdt') {
+            return;
+        }
+
         if (substr($route, 0, 11) == 'unsubscribe') {
             return;
         }
