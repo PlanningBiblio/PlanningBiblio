@@ -1,3 +1,12 @@
+*** Version 25.05.03   (2025-07-25)    ***
+- Fixes
+CAPlanno94: keep the attendee/missing table display preferences in session #1149
+MT49456: Add '9' to the list of values of the Planning-NbAgentsCellulle parameter #1150
+MT49473: Correctly initialize 'hours_per_day' for new users #1151
+
+- Enhancement
+MT48262: Holiday reminder: consider the validation scheme #1152
+
 *** Version 25.05.02   (2025-07-11)    ***
 - Fixes
 MT48793: Improve missing category A display #1143

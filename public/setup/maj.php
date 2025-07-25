@@ -3737,6 +3737,15 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+ 
+$v="25.05.03";
+
+if (version_compare($config['Version'], $v) === -1) {
+    // MT49456
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20' WHERE `nom` = 'Planning-NbAgentsCellule';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage
