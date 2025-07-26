@@ -31,21 +31,21 @@ class ConfigController extends BaseController
         foreach ($configParams as $cp) {
 
             // Do not display hidden information
-            if ($cp->type() == "hidden") {
+            if ($cp->getType() == 'hidden') {
                 continue;
             }
 
             $elem = array(
-                'type'          => $cp->type(),
-                'nom'           => $cp->nom(),
-                'valeur'        => html_entity_decode($cp->valeur(), ENT_QUOTES|ENT_HTML5),
-                'valeurs'       => html_entity_decode($cp->valeurs(), ENT_QUOTES|ENT_HTML5),
-                'categorie'     => $cp->categorie(),
-                'commentaires'  => html_entity_decode($cp->commentaires(), ENT_QUOTES|ENT_HTML5),
-                'extra'       => $cp->extra(),
+                'type'          => $cp->getType(),
+                'nom'           => $cp->getName(),
+                'valeur'        => html_entity_decode($cp->getValue(), ENT_QUOTES|ENT_HTML5),
+                'valeurs'       => html_entity_decode($cp->getValues(), ENT_QUOTES|ENT_HTML5),
+                'categorie'     => $cp->getCategory(),
+                'commentaires'  => html_entity_decode($cp->getComments(), ENT_QUOTES|ENT_HTML5),
+                'extra'         => $cp->getExtra(),
             );
 
-            if ($cp->type() == "password") {
+            if ($cp->getType() == 'password') {
                 $elem['valeur']=decrypt($elem['valeur']);
             }
             switch ($elem['type']) {
@@ -79,7 +79,7 @@ class ConfigController extends BaseController
             $elem['commentaires'] = str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
             $elem['commentaires'] = str_replace("[SERVER]", $url->valeur(), $elem['commentaires']);
             $category = str_replace('_', '', $elem['categorie']);
-            $elements[$category][$cp->nom()] = $elem;
+            $elements[$category][$cp->getName()] = $elem;
         }
 
         $this->templateParams(array(
@@ -117,25 +117,25 @@ class ConfigController extends BaseController
             );
 
             foreach ($configParams as $cp) {
-                if (in_array($cp->type(), ['hidden','info'])) {
+                if (in_array($cp->getType(), ['hidden', 'info'])) {
                     continue;
                 }
                 // boolean and checkboxes elements.
-                if (!isset($params[$cp->nom()])) {
-                    if ($cp->type() == 'boolean') {
-                        $params[$cp->nom()] = '0';
+                if (!isset($params[$cp->getName()])) {
+                    if ($cp->getType() == 'boolean') {
+                        $params[$cp->getName()] = '0';
                     } else {
-                        $params[$cp->nom()] = array();
+                        $params[$cp->getName()] = array();
                     }
                 }
-                $value = $params[$cp->nom()];
+                $value = $params[$cp->getName()];
 
                 if (is_string($value)) {
                     $value = trim($value);
                 }
 
                 // Passwords
-                if (substr($cp->nom(), -9)=="-Password") {
+                if (substr($cp->getName(), -9) == '-Password') {
                     $value = encrypt($value);
                 }
                 // Checkboxes
@@ -143,12 +143,12 @@ class ConfigController extends BaseController
                     $value = json_encode($value);
                 }
 
-                if ($cp->type() == 'color') {
+                if ($cp->getType() == 'color') {
                     $value = filter_var($value, FILTER_CALLBACK, ['options' => 'sanitize_color']);
                 }
 
                 try {
-                    $cp->valeur($value);
+                    $cp->setValue($value);
                     $this->entityManager->persist($cp);
                 }
                 catch (Exception $e) {

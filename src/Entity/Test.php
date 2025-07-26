@@ -23,6 +23,12 @@ class Test
     #[ORM\Column]
     private ?float $ffloat = null;
 
+    #[ORM\Column]
+    private ?bool $bool = null;
+
+    #[ORM\Column]
+    private ?int $iint = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +66,30 @@ class Test
     public function setFfloat(float $ffloat): static
     {
         $this->ffloat = $ffloat;
+
+        return $this;
+    }
+
+    public function isBool(): ?bool
+    {
+        return $this->bool;
+    }
+
+    public function setBool(bool $bool): static
+    {
+        $this->bool = $bool;
+
+        return $this;
+    }
+
+    public function getIint(): ?int
+    {
+        return $this->iint;
+    }
+
+    public function setIint(int $iint): static
+    {
+        $this->iint = $iint;
 
         return $this;
     }

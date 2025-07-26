@@ -286,7 +286,7 @@
 // 
 //         foreach ($config as $k => $v) {
 //             $param = $entityManager->getRepository(ConfigParam::class)->findOneBy(['nom' => $k]);
-//             $param->valeur($v);
+//             $param->setValue($v);
 //             $entityManager->persist($param);
 //             $entityManager->flush();
 //             $GLOBALS['config'][$k] = $v;

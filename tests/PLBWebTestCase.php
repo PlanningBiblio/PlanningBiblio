@@ -24,7 +24,7 @@ class PLBWebTestCase extends PantherTestCase
             ->getRepository(ConfigParam::class)
             ->findOneBy(['nom' => $name]);
 
-        $param->valeur($value);
+        $param->setValue($value);
         $this->entityManager->persist($param);
         $this->entityManager->flush();
     }

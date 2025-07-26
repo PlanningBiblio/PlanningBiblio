@@ -13,7 +13,7 @@ class Absence
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id')]
-    private $myId;
+    private ?int $myId = null;
     // FIXME Replace with $id when the id() setter/getter will be replaced with getId and setId
 
     #[ORM\Column]

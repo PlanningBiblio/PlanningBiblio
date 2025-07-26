@@ -1,12 +1,6 @@
 <?php
 
 use App\Model\Agent;
-use App\Model\Skill;
-use App\Model\ConfigParam;
-use App\Model\Manager;
-
-use Symfony\Component\DomCrawler\Crawler;
-
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 

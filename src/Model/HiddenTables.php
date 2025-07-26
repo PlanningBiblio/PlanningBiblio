@@ -3,84 +3,33 @@
 namespace App\Model;
 
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'hidden_tables')]
-class HiddenTables extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'hidden_tables')]
+class HiddenTables
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $tableau;
+    #[ORM\Column]
+    private ?int $tableau = null;
 
-    #[Column(type: 'text')] // *
-    protected $hidden_tables;
+    #[Column(type: Types::TEXT)]
+    private ?string $hidden_tables = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function purge()
     {
         error_log("hidden tables purge");
     }
 }
-
-//    #[Column(type: Types::TEXT)]
-//    protected ?string $text = null;
-//
-//    #[Column(type: Types::DATE_MUTABLE)]
-//    protected ?\DateTime $date = null;
-//
-//    #[Column]
-//    protected ?\DateTime $date = null;
-//
-//    #[Column]
-//    protected ?int $id = null;
-//
-//    #[Column(type: Types::SMALLINT)]
-//    protected ?int $level1 = null;
-//
-//    #[Column(length: 255)]
-//    protected ?string $name = null;
-//
-//    #[Column]
-//    protected array $json = [];
-//
-//    #[Column]
-//    protected ?float $ffloat = null;
-//
-//    #[Column]
-//    protected ?bool $boolean = null;
-//
-//    #[Column(type: Types::ARRAY)]
-//    private array $array = [];
-//
-//    /**
-//     * @var Collection<int, Absence>
-//     */
-//    #[OneToMany(mappedBy: 'test', targetEntity: Absence::class)]
-//    private Collection $onetomany;
-//
-//
-//    #[ManyToOne(inversedBy: 'onetomany')]
-//    private ?Test4 $test = null;
-//
-//    public function getTest(): ?Test4
-//    {
-//        return $this->test;
-//    }
-//
-//    public function setTest(?Test4 $test): static
-//    {
-//        $this->test = $test;
-//
-//        return $this;
-//    }

@@ -51,7 +51,7 @@ class BaseController extends AbstractController
             array('nom' => 'URL')
         );
 
-        $GLOBALS['config']['URL'] = $url->valeur();
+        $GLOBALS['config']['URL'] = $url->getValue();
         $this->config = $GLOBALS['config'];
     }
 

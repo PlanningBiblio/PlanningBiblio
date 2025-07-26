@@ -3,24 +3,25 @@
 namespace App\Model;
 
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'volants')]
-class Detached extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'volants')]
+class Detached
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: Types::DATE_MUTABLE)]
-    protected ?\DateTime $date = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date = null;
 
-    #[Column]
-    protected ?int $perso_id = null;
+    #[ORM\Column]
+    private ?int $perso_id = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

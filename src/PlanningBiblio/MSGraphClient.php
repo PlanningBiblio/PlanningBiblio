@@ -44,9 +44,9 @@ class MSGraphClient
 
         $config = new ArrayCollection($config);
 
-        $absenceReason = $config->filter(function($element) {return $element->nom() == 'MSGraph-AbsenceReason';})->first()->valeur();
-        $loginSuffix = $config->filter(function($element) {return $element->nom() == 'MSGraph-LoginSuffix';})->first()->valeur();
-        $ignoredStatuses = $config->filter(function($element) {return $element->nom() == 'MSGraph-IgnoredStatuses';})->first()->valeur();
+        $absenceReason = $config->filter(function($element) {return $element->getName() == 'MSGraph-AbsenceReason';})->first()->getValue();
+        $loginSuffix = $config->filter(function($element) {return $element->getName() == 'MSGraph-LoginSuffix';})->first()->getValue();
+        $ignoredStatuses = $config->filter(function($element) {return $element->getName() == 'MSGraph-IgnoredStatuses';})->first()->getValue();
 
         $this->logger = new Logger($entityManager, $stdout);
         $this->oauth = new OAuth($this->logger, $clientid, $clientsecret, $tokenURL, $authURL, $options);

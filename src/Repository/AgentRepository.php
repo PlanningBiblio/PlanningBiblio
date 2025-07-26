@@ -170,12 +170,12 @@ class AgentRepository extends EntityRepository
             ->findOneBy(['nom' => $this->by_agent_param]);
 
         $sites_number = $entityManager->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled.
-        if ($by_agent_param->valeur()) {
+        if ($by_agent_param->getValue()) {
             $managed_sites = array();
 
             foreach ($loggedin->getManaged() as $m) {
@@ -192,9 +192,9 @@ class AgentRepository extends EntityRepository
         $sites_select = array();
         for ($i = 1; $i <= $sites_number; $i++) {
             $name = $entityManager->getRepository(ConfigParam::class)
-                ->findOneBy(['nom' => "Multisites-site$i"])->valeur();
+                ->findOneBy(['nom' => "Multisites-site$i"])->getValue();
 
-            if ($by_agent_param->valeur()) {
+            if ($by_agent_param->getValue()) {
                 if (in_array($i, $managed_sites)) {
                     $sites_select[] = array('id' => $i, 'name' => $name);
                 }
@@ -219,12 +219,12 @@ class AgentRepository extends EntityRepository
             ->findOneBy(['nom' => $this->by_agent_param]);
 
         $sites_number = $entityManager->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled.
-        if ($by_agent_param->valeur()) {
+        if ($by_agent_param->getValue()) {
             $managed = array_map(function($m) {
                 return $m->perso_id();
             }, $loggedin->getManaged());
@@ -278,7 +278,7 @@ class AgentRepository extends EntityRepository
             ->findOneBy(['nom' => $this->by_agent_param]);
 
         $sites_number = $entityManager->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->valeur();
+            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
 
         $sites = array(1);
         if ($this->check_by_site && $sites_number > 1) {
@@ -301,7 +301,7 @@ class AgentRepository extends EntityRepository
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled and we ask for a specific agent.
-        if ($by_agent_param->valeur() and $this->agent_id) {
+        if ($by_agent_param->getValue() and $this->agent_id) {
             if ($loggedin->isManagerOf(array($this->agent_id), 'level1')) {
                 $l1 = true;
             }
@@ -317,7 +317,7 @@ class AgentRepository extends EntityRepository
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled but no agent is specified.
         // So look for max admin level on managed agents.
-        if ($by_agent_param->valeur()) {
+        if ($by_agent_param->getValue()) {
             $managed = $this->getManagedFor($loggedin_id);
             foreach ($managed as $m) {
                 if ($loggedin->isManagerOf(array($m->id()), 'level1')) {

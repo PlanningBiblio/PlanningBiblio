@@ -84,7 +84,7 @@ class ClassAbsencesTest extends TestCase
             ->getRepository(ConfigParam::class)
             ->findOneBy(['nom' => $name]);
 
-        $param->valeur($value);
+        $param->setValue($value);
         $entityManager->persist($param);
         $entityManager->flush();
     }

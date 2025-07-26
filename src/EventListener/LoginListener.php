@@ -30,7 +30,7 @@ class LoginListener
 
         // Prevent user accessing to login page if he is already authenticated
         if (!empty($session->get('loginId')) and $route == 'login') {
-            $event->setResponse(new RedirectResponse($url->valeur()));
+            $event->setResponse(new RedirectResponse($url->getValue()));
         }
 
         // Redirect to the login page if there is no session
@@ -56,7 +56,7 @@ class LoginListener
 
             // Anonymous login
             $login = $event->getRequest()->get('login');
-            if ($login and $login === "anonyme" and $config->findOneBy(array('nom' => 'Auth-Anonyme'))->valeur()) {
+            if ($login and $login === 'anonyme' and $config->findOneBy(array('nom' => 'Auth-Anonyme'))->getValue()) {
                 $_SESSION['login_id']=999999999;
                 $_SESSION['login_nom']="Anonyme";
                 $_SESSION['login_prenom']="";
@@ -73,7 +73,7 @@ class LoginListener
 
             $routeParams = !empty($routeParams) ? '?' . implode('&', $routeParams) : null;
 
-            $event->setResponse(new RedirectResponse($url->valeur() . '/login' . $routeParams));
+            $event->setResponse(new RedirectResponse($url->getValue() . '/login' . $routeParams));
         }
     }
 }

@@ -1,15 +1,9 @@
 <?php
 
-use App\Model\ConfigParam;
 use App\Model\Agent;
 use App\Model\PublicHoliday;
-
 use App\PlanningBiblio\ClosingDay;
-
-use Symfony\Component\DomCrawler\Crawler;
-
 use Tests\PLBWebTestCase;
-use Tests\FixtureBuilder;
 
 class ClosingDayControllerTest extends PLBWebTestCase
 {

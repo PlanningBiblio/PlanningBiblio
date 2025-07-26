@@ -22,10 +22,10 @@ class Crontab {
 
         foreach ($crons as $cron) {
 
-            $date_cron = $cron->last()->format('Y-m-d H:m:s');
+            $date_cron = $cron->getLast()->format('Y-m-d H:m:s');
 
             // Daily crons.
-            if ($cron->dom() == '*' and $cron->mon() == '*' and $cron->dow() == '*') {
+            if ($cron->getDom() == '*' and $cron->getMon() == '*' and $cron->getDow() == '*') {
                 if ($date_cron < $today) {
                     $this->executable_crons[] = $cron;
                 }
@@ -33,8 +33,8 @@ class Crontab {
             }
 
             // Yearly Cron
-            if ($cron->dom() != '*' and $cron->mon() != '*') {
-                $command_date = strtotime("{$cron->mon()}/{$cron->dom()}");
+            if ($cron->getDom() != '*' and $cron->getMon() != '*') {
+                $command_date = strtotime("{$cron->getMon()}/{$cron->getDom()}");
                 if ($command_date > time()) {
                     $command_date = strtotime('-1 year', $command_date);
                 }
@@ -60,7 +60,7 @@ class Crontab {
             $crons = $this->crons();
 
             foreach ($crons as $cron) {
-                include($this->crons_dir . $cron->command());
+                include($this->crons_dir . $cron->getCommand());
                 $this->update_cron($cron);
             }
 
@@ -78,7 +78,7 @@ class Crontab {
     {
         $last = date_create();
 
-        $cron->last($last);
+        $cron->setLast($last);
 
         $entityManager = $GLOBALS['entityManager'];
         $entityManager->persist($cron);
