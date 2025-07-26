@@ -21,17 +21,17 @@ class AgentTest extends TestCase
         global $entityManager;
         $agent = $entityManager->find(Agent::class, 1);
 
-        $this->assertEquals('Administrateur', $agent->nom());
-        $this->assertEquals('admin', $agent->login());
+        $this->assertEquals('Administrateur', $agent->getLastname());
+        $this->assertEquals('admin', $agent->getLogin());
     }
 
     public function testCanAccess() {
 
         $access = new Access();
-        $access->groupe_id(99);
+        $access->setGroupId(99);
 
         $access_bad = new Access();
-        $access_bad->groupe_id(201);
+        $access_bad->setGroupId(201);
 
         $builder = new FixtureBuilder();
         $agent = $builder->build(Agent::class, array(
@@ -53,7 +53,7 @@ class AgentTest extends TestCase
 
 
         $builder->delete(Holiday::class);
-        $holiday = $builder->build(Holiday::class, array('debut' => $start, 'fin' => $end, 'perso_id' => $agent->id(), 'valide_n1' => 1, 'valide' =>1, 'supprime' => 0, 'information' => 0));
+        $holiday = $builder->build(Holiday::class, array('debut' => $start, 'fin' => $end, 'perso_id' => $agent->getId(), 'valide_n1' => 1, 'valide' =>1, 'supprime' => 0, 'information' => 0));
 
         $this->assertFalse($agent->isOnVacationOn('2022-12-10', '2022-12-15'));
         $this->assertTrue($agent->isOnVacationOn($start->format('Y-m-d'), $end->format('Y-m-d')));
@@ -87,7 +87,7 @@ class AgentTest extends TestCase
                 'poste' => $post->id(),
                 'debut' => $start,
                 'fin' => $end,
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'absent' => 0,
                 'supprime' => 0,
                 'grise'=>1
@@ -106,7 +106,7 @@ class AgentTest extends TestCase
                 'date' => $date_ok,
                 'poste' => $post2->id(),
                 'debut' => $start, 'fin' => $end,
-                'perso_id' => $agent2->id(),
+                'perso_id' => $agent2->getId(),
                 'absent' => 0,
                 'supprime' => 0,
                 'grise'=>1
@@ -176,7 +176,7 @@ class AgentTest extends TestCase
         (
             WorkingHour::class,
             array(
-                'perso_id' => $agent2->id(),
+                'perso_id' => $agent2->getId(),
                 'debut' => $start,
                 'fin' => $end,
                 'valide_n1' => 1,
@@ -202,7 +202,7 @@ class AgentTest extends TestCase
         (
             WorkingHour::class,
             array(
-                'perso_id' => $agent3->id(),
+                'perso_id' => $agent3->getId(),
                 'debut' => $start,
                 'fin' => $end,
                 'valide_n1' => 0,
@@ -313,7 +313,7 @@ class AgentTest extends TestCase
             array(
                 'debut' => $start,
                 'fin' => $end,
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'valide_n1' => 1,
                 'valide' =>1,
                 'supprime' => 0,

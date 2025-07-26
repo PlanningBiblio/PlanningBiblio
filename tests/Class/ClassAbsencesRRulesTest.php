@@ -33,7 +33,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->fin = '10/10/2022';
         $a->hre_debut = '00:00:00';
         $a->hre_fin = '23:59:59';
-        $a->perso_ids = array($agent->id());
+        $a->perso_ids = array($agent->getId());
         $a->commentaires = 'This is an absence';
         $a->motif = 'Formation';
         $a->motif_autre = '';
@@ -47,7 +47,7 @@ class ClassAbsencesRRulesTest extends TestCase
 
         $absences = $entityManager->getRepository(Absence::class)
                                   ->findBy(
-                                      array('perso_id' => $agent->id()),
+                                      array('perso_id' => $agent->getId()),
                                       array('debut' => 'ASC')
                                   );
 
@@ -60,38 +60,38 @@ class ClassAbsencesRRulesTest extends TestCase
         $fifth_absence = $absences[4];
 
         // First absence
-        $this->assertEquals('2022-10-10', $first_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-10-10', $first_absence->getStart()->format('Y-m-d'),
             'First absence starts at 2022-10-10');
 
-        $this->assertEquals('2022-10-10', $first_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-10-10', $first_absence->getEnd()->format('Y-m-d'),
             'First absence ends at 2022-10-10');
 
         // Second absence
-        $this->assertEquals('2022-10-24', $second_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-10-24', $second_absence->getStart()->format('Y-m-d'),
             'Second absence starts at 2022-10-24');
 
-        $this->assertEquals('2022-10-24', $second_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-10-24', $second_absence->getEnd()->format('Y-m-d'),
             'second absence ends at 2022-10-24');
 
         // Third absence
-        $this->assertEquals('2022-11-07', $third_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-11-07', $third_absence->getStart()->format('Y-m-d'),
             'Third absence starts at 2022-11-07');
 
-        $this->assertEquals('2022-11-07', $third_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-11-07', $third_absence->getEnd()->format('Y-m-d'),
             'Third absence ends at 2022-11-07');
 
         // Fourth absence
-        $this->assertEquals('2022-11-21', $fourth_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-11-21', $fourth_absence->getStart()->format('Y-m-d'),
             'Fourth absence starts at 2022-11-21');
 
-        $this->assertEquals('2022-11-21', $fourth_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-11-21', $fourth_absence->getEnd()->format('Y-m-d'),
             'Fourth absence ends at 2022-11-21');
 
         // Fifth absence
-        $this->assertEquals('2022-12-05', $fifth_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-12-05', $fifth_absence->getStart()->format('Y-m-d'),
             'Fifth absence starts at 2022-12-05');
 
-        $this->assertEquals('2022-12-05', $fifth_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-12-05', $fifth_absence->getEnd()->format('Y-m-d'),
             'Fifth absence ends at 2022-12-05');
     }
 
@@ -116,7 +116,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->fin = '13/12/2022';
         $a->hre_debut = '00:00:00';
         $a->hre_fin = '23:59:59';
-        $a->perso_ids = array($agent->id());
+        $a->perso_ids = array($agent->getId());
         $a->commentaires = 'This is an absence';
         $a->motif = 'Formation';
         $a->motif_autre = '';
@@ -130,7 +130,7 @@ class ClassAbsencesRRulesTest extends TestCase
 
         $absences = $entityManager->getRepository(Absence::class)
                                   ->findBy(
-                                      array('perso_id' => $agent->id()),
+                                      array('perso_id' => $agent->getId()),
                                       array('debut' => 'ASC')
                                   );
 
@@ -141,24 +141,24 @@ class ClassAbsencesRRulesTest extends TestCase
         $third_absence = $absences[2];
 
         // First absence
-        $this->assertEquals('2022-12-10', $first_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-12-10', $first_absence->getStart()->format('Y-m-d'),
             'First absence starts at 10/12/2022');
 
-        $this->assertEquals('2022-12-13', $first_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-12-13', $first_absence->getEnd()->format('Y-m-d'),
             'First absence ends at 13/12/2022');
 
         // Second absence
-        $this->assertEquals('2022-12-26', $second_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-12-26', $second_absence->getStart()->format('Y-m-d'),
             'Second absence starts at 2022-31-24');
 
-        $this->assertEquals('2022-12-29', $second_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-12-29', $second_absence->getEnd()->format('Y-m-d'),
             'second absence ends at 2023-01-04');
 
         // Third absence
-        $this->assertEquals('2023-01-16', $third_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2023-01-16', $third_absence->getStart()->format('Y-m-d'),
             'Third absence 2023 at 2022-01-25');
 
-        $this->assertEquals('2023-01-19', $third_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2023-01-19', $third_absence->getEnd()->format('Y-m-d'),
             'Third absence ends at 2022-01-29');
     }
 
@@ -183,7 +183,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->fin = '10/10/2022';
         $a->hre_debut = '00:00:00';
         $a->hre_fin = '23:59:59';
-        $a->perso_ids = array($agent->id());
+        $a->perso_ids = array($agent->getId());
         $a->commentaires = 'This is an absence';
         $a->motif = 'Formation';
         $a->motif_autre = '';
@@ -197,7 +197,7 @@ class ClassAbsencesRRulesTest extends TestCase
 
         $absences = $entityManager->getRepository(Absence::class)
                                   ->findBy(
-                                      array('perso_id' => $agent->id()),
+                                      array('perso_id' => $agent->getId()),
                                       array('debut' => 'ASC')
                                   );
 
@@ -208,24 +208,24 @@ class ClassAbsencesRRulesTest extends TestCase
         $third_absence = $absences[2];
 
         // First absence
-        $this->assertEquals('2022-10-10', $first_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-10-10', $first_absence->getStart()->format('Y-m-d'),
             'First absence starts at 2022-10-10');
 
-        $this->assertEquals('2022-10-10', $first_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-10-10', $first_absence->getEnd()->format('Y-m-d'),
             'First absence ends at 2022-10-10');
 
         // Second absence
-        $this->assertEquals('2022-10-14', $second_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-10-14', $second_absence->getStart()->format('Y-m-d'),
             'Second absence starts at 2022-10-14');
 
-        $this->assertEquals('2022-10-14', $second_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-10-14', $second_absence->getEnd()->format('Y-m-d'),
             'second absence ends at 2022-10-14');
 
         // Third absence
-        $this->assertEquals('2022-10-18', $third_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-10-18', $third_absence->getStart()->format('Y-m-d'),
             'Third absence starts at 2022-10-18');
 
-        $this->assertEquals('2022-10-18', $third_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-10-18', $third_absence->getEnd()->format('Y-m-d'),
             'Third absence ends at 2022-10-18');
     }
 
@@ -251,7 +251,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->fin = '13/10/2022';
         $a->hre_debut = '00:00:00';
         $a->hre_fin = '23:59:59';
-        $a->perso_ids = array($agent->id());
+        $a->perso_ids = array($agent->getId());
         $a->commentaires = 'This is an absence';
         $a->motif = 'Formation';
         $a->motif_autre = '';
@@ -265,7 +265,7 @@ class ClassAbsencesRRulesTest extends TestCase
 
         $absences = $entityManager->getRepository(Absence::class)
                                   ->findBy(
-                                      array('perso_id' => $agent->id()),
+                                      array('perso_id' => $agent->getId()),
                                       array('debut' => 'ASC')
                                   );
 
@@ -276,17 +276,17 @@ class ClassAbsencesRRulesTest extends TestCase
 
 
         // First absence
-        $this->assertEquals('2022-10-10', $first_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-10-10', $first_absence->getStart()->format('Y-m-d'),
             'First absence starts at 2022-10-10');
 
-        $this->assertEquals('2022-10-13', $first_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-10-13', $first_absence->getEnd()->format('Y-m-d'),
             'First absence ends at 2022-10-13');
 
         // Second absence
-        $this->assertEquals('2022-10-16', $second_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-10-16', $second_absence->getStart()->format('Y-m-d'),
             'First absence starts at 2022-10-16');
 
-        $this->assertEquals('2022-10-19', $second_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-10-19', $second_absence->getEnd()->format('Y-m-d'),
             'First absence ends at 2022-10-19');
     }
 
@@ -311,7 +311,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->fin = '10/10/2022';
         $a->hre_debut = '00:00:00';
         $a->hre_fin = '23:59:59';
-        $a->perso_ids = array($agent->id());
+        $a->perso_ids = array($agent->getId());
         $a->commentaires = 'This is an absence';
         $a->motif = 'Formation';
         $a->motif_autre = '';
@@ -325,7 +325,7 @@ class ClassAbsencesRRulesTest extends TestCase
 
         $absences = $entityManager->getRepository(Absence::class)
                                   ->findBy(
-                                      array('perso_id' => $agent->id()),
+                                      array('perso_id' => $agent->getId()),
                                       array('debut' => 'ASC')
                                   );
 
@@ -336,17 +336,17 @@ class ClassAbsencesRRulesTest extends TestCase
 
 
         // First absence
-        $this->assertEquals('2022-10-10', $first_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-10-10', $first_absence->getStart()->format('Y-m-d'),
             'First absence starts at 2022-10-10');
 
-        $this->assertEquals('2022-10-10', $first_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-10-10', $first_absence->getEnd()->format('Y-m-d'),
             'First absence ends at 2022-10-10');
 
         // Second absence
-        $this->assertEquals('2022-11-07', $second_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-11-07', $second_absence->getStart()->format('Y-m-d'),
             'First absence starts at 2022-11-07');
 
-        $this->assertEquals('2022-11-07', $second_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-11-07', $second_absence->getEnd()->format('Y-m-d'),
             'First absence ends at 2022-11-07');
     }
 
@@ -371,7 +371,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->fin = '10/10/2022';
         $a->hre_debut = '00:00:00';
         $a->hre_fin = '23:59:59';
-        $a->perso_ids = array($agent->id());
+        $a->perso_ids = array($agent->getId());
         $a->commentaires = 'This is an absence';
         $a->motif = 'Formation';
         $a->motif_autre = '';
@@ -385,7 +385,7 @@ class ClassAbsencesRRulesTest extends TestCase
 
         $absences = $entityManager->getRepository(Absence::class)
                                   ->findBy(
-                                      array('perso_id' => $agent->id()),
+                                      array('perso_id' => $agent->getId()),
                                       array('debut' => 'ASC')
                                   );
 
@@ -397,24 +397,24 @@ class ClassAbsencesRRulesTest extends TestCase
 
 
         // First absence
-        $this->assertEquals('2022-10-10', $first_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-10-10', $first_absence->getStart()->format('Y-m-d'),
             'First absence starts at 2022-10-10');
 
-        $this->assertEquals('2022-10-10', $first_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-10-10', $first_absence->getEnd()->format('Y-m-d'),
             'First absence ends at 2022-10-10');
 
         // Second absence
-        $this->assertEquals('2022-12-10', $second_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2022-12-10', $second_absence->getStart()->format('Y-m-d'),
             'First absence starts at 2022-12-10');
 
-        $this->assertEquals('2022-12-10', $second_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2022-12-10', $second_absence->getEnd()->format('Y-m-d'),
             'First absence ends at 2022-12-10');
 
         // Third absence
-        $this->assertEquals('2023-02-10', $third_absence->debut()->format('Y-m-d'),
+        $this->assertEquals('2023-02-10', $third_absence->getStart()->format('Y-m-d'),
             'First absence starts at 2023-02-10');
 
-        $this->assertEquals('2023-02-10', $third_absence->fin()->format('Y-m-d'),
+        $this->assertEquals('2023-02-10', $third_absence->getEnd()->format('Y-m-d'),
             'First absence ends at 2023-02-10');
     }
 }

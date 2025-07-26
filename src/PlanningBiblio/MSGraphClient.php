@@ -85,14 +85,14 @@ class MSGraphClient
         $users = $this->entityManager->getRepository(Agent::class)->findBy(['supprime' => 0, 'check_ms_graph' => 1]);
         foreach ($users as $user) {
             if ($this->isGraphUser($user)) {
-                array_push($this->graphUsers, $user->id());
+                array_push($this->graphUsers, $user->getId());
                 $currentYear = date("Y");
                 if ($this->full) {
                     $yearCount = 0;
                     while ($this->start_year + $yearCount <= $currentYear) {
                         $from = ($this->start_year + $yearCount) . "-01-01";
                         $to = ($this->start_year + $yearCount) . "-12-31";
-                        $this->log("Getting events from $from to $to for user ". $user->login());
+                        $this->log("Getting events from $from to $to for user ". $user->getLogin());
                         $response = $this->getCalendarView($user, $from, $to);
                         if ($response && $response->code == 200) {
                             $this->addToIncomingEvents($user, $response, $from, $to);
@@ -105,7 +105,7 @@ class MSGraphClient
                     $range = $this->getDateRange();
                     $from = $range['from'];
                     $to = $range['to'];
-                    $this->log("Getting events from $from to $to for user ". $user->login());
+                    $this->log("Getting events from $from to $to for user ". $user->getLogin());
                     $response = $this->getCalendarView($user, $from, $to);
                     if ($response && $response->code == 200) {
                         $this->addToIncomingEvents($user, $response, $from, $to);
@@ -130,11 +130,11 @@ class MSGraphClient
             if (($event->start->dateTime >= $from . 'T00:00:00.0000000' && $event->end->dateTime <= $to . 'T00:00:00.0000000' ) &&
                 ($event->isOrganizer == true || $event->responseStatus->response == "accepted") &&
                 !in_array($event->showAs, $this->ignoredStatuses) &&
-                 !$this->isEventEmpty($user->login(), $event->id)) {
-                $this->incomingEvents[$user->id() . $event->iCalUId]['plb_id'] = $user->id();
-                $this->incomingEvents[$user->id() . $event->iCalUId]['plb_login'] = $user->login();
-                $this->incomingEvents[$user->id() . $event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
-                $this->incomingEvents[$user->id() . $event->iCalUId]['event'] = $event;
+                 !$this->isEventEmpty($user->getLogin(), $event->id)) {
+                $this->incomingEvents[$user->getId() . $event->iCalUId]['plb_id'] = $user->getId();
+                $this->incomingEvents[$user->getId() . $event->iCalUId]['plb_login'] = $user->getLogin();
+                $this->incomingEvents[$user->getId() . $event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
+                $this->incomingEvents[$user->getId() . $event->iCalUId]['event'] = $event;
             }
         }
 
@@ -175,7 +175,7 @@ class MSGraphClient
     }
 
     private function getCalendarView($user, $from, $to) {
-        $login = $user->login();
+        $login = $user->getLogin();
         $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/calendarView?startDateTime=' . $from . 'T00:00:00.0000000&endDateTime=' . $to . 'T00:00:00.0000000&$top=200');
         if ($response && $response->code == 200) {
             return $response;
@@ -184,7 +184,7 @@ class MSGraphClient
     }
 
     private function isGraphUser($user) {
-        $login = $user->login();
+        $login = $user->getLogin();
         $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar');
         if ($response && $response->code == 200) {
             return true;

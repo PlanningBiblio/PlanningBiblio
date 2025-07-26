@@ -39,7 +39,7 @@ class AgentControllerPasswordTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,99,401,601));
 
-        $crawler = $this->client->request('GET', '/agent/' . $agent->id());
+        $crawler = $this->client->request('GET', '/agent/' . $agent->getId());
         $extract_result = $crawler->filter('input#_token')->extract(array('value'));
         $token = $extract_result[0];
 
@@ -49,8 +49,8 @@ class AgentControllerPasswordTest extends PLBWebTestCase
             '_token' => $token,
         ));
 
-        $agent = $entityManager->find(Agent::class, $agent->id());
-        $this->assertTrue(password_verify('Password_changed2', $agent->password()));
+        $agent = $entityManager->find(Agent::class, $agent->getId());
+        $this->assertTrue(password_verify('Password_changed2', $agent->getPassword()));
 
         $result = $crawler->filterXPath('//p');
         $this->assertEquals($result->text('Node does not exist', false), 'Password successfully changed');
@@ -82,9 +82,9 @@ class AgentControllerPasswordTest extends PLBWebTestCase
             '_token' => 'fake_token',
         ));
 
-        $agent = $entityManager->find(Agent::class, $agent->id());
-        $this->assertFalse(password_verify('Password_changed2', $agent->password()));
-        $this->assertTrue(password_verify('Password_1', $agent->password()));
+        $agent = $entityManager->find(Agent::class, $agent->getId());
+        $this->assertFalse(password_verify('Password_changed2', $agent->getPassword()));
+        $this->assertTrue(password_verify('Password_1', $agent->getPassword()));
 
     }
 }

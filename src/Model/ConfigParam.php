@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 
 #[Entity]

@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use App\Repository\ManagerRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, ManyToOne, JoinColumn};
 
 #[Entity(repositoryClass: ManagerRepository::class)]

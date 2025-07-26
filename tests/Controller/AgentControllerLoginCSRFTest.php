@@ -32,13 +32,13 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
         $this->logInAgent($agent, array(100,99,21,401,601));
 
         $crawler = $this->client->request('POST', '/ajax/update_agent_login', array(
-            'id' => $agent->id(),
+            'id' => $agent->getId(),
             'login' => 'login_2',
         ));
 
-        $agent = $entityManager->find(Agent::class, $agent->id());
-        $this->assertNotEquals('login_2', $agent->login());
-        $this->assertEquals('login_1', $agent->login());
+        $agent = $entityManager->find(Agent::class, $agent->getId());
+        $this->assertNotEquals('login_2', $agent->getLogin());
+        $this->assertEquals('login_1', $agent->getLogin());
 
     }
 
@@ -57,18 +57,18 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,99,21,401,601));
 
-        $crawler = $this->client->request('GET', '/agent/' . $agent->id());
+        $crawler = $this->client->request('GET', '/agent/' . $agent->getId());
         $extract_result = $crawler->filter('input#_token')->extract(array('value'));
         $token = $extract_result[0];
 
         $crawler = $this->client->request('POST', '/ajax/update_agent_login', array(
-            'id' => $agent->id(),
+            'id' => $agent->getId(),
             'login' => 'login_2',
             '_token' => $token,
         ));
 
-        $agent = $entityManager->find(Agent::class, $agent->id());
-        $this->assertEquals('login_2', $agent->login());
+        $agent = $entityManager->find(Agent::class, $agent->getId());
+        $this->assertEquals('login_2', $agent->getLogin());
 
     }
 }

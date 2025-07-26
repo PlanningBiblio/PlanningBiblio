@@ -2,86 +2,118 @@
 
 namespace App\Model;
 
-use App\Entity\Test4;
 use App\Repository\AbsenceRepository;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity(repositoryClass: AbsenceRepository::class)]
-#[Table(name: 'absences')]
-class Absence extends PLBEntity
+#[ORM\Entity(repositoryClass: AbsenceRepository::class)]
+#[ORM\Table(name: 'absences')]
+class Absence
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'id')]
+    private $myId;
+    // FIXME Replace with $id when the id() setter/getter will be replaced with getId and setId
 
-    #[Column]
-    protected ?int $perso_id = null;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column]
-    protected ?\DateTime $debut = null;
+    #[ORM\Column]
+    private ?\DateTime $debut = null;
 
-    #[Column]
-    protected ?\DateTime $fin = null;
+    #[ORM\Column]
+    private ?\DateTime $fin = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $motif = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $motif = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $motif_autre = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $motif_autre = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $commentaires = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $commentaires = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $etat = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $etat = null;
 
-    #[Column]
-    protected ?\DateTime $demande = null;
+    #[ORM\Column]
+    private ?\DateTime $demande = null;
 
-    #[Column]
-    protected ?int $valide = null;
+    #[ORM\Column]
+    private ?int $valide = null;
 
-    #[Column]
-    protected ?\DateTime $validation = null;
+    #[ORM\Column]
+    private ?\DateTime $validation = null;
 
-    #[Column]
-    protected ?int $valide_n1 = null;
+    #[ORM\Column]
+    private ?int $valide_n1 = null;
 
-    #[Column]
-    protected ?\DateTime $validation_n1 = null;
+    #[ORM\Column]
+    private ?\DateTime $validation_n1 = null;
 
-    #[Column]
-    protected ?int $pj1 = null;
+    #[ORM\Column]
+    private ?int $pj1 = null;
 
-    #[Column]
-    protected ?int $pj2 = null;
+    #[ORM\Column]
+    private ?int $pj2 = null;
 
-    #[Column]
-    protected ?int $so = null;
+    #[ORM\Column]
+    private ?int $so = null;
 
-    #[Column(type: 'string')]
-    protected $groupe;
+    #[ORM\Column(type: 'string')]
+    private $groupe;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $cal_name = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $cal_name = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $ical_key = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $ical_key = null;
 
-    #[Column(type: 'string')]
-    protected $last_modified;
+    #[ORM\Column(type: 'string')]
+    private $last_modified;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $uid = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $uid = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $rrule = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $rrule = null;
 
-    #[Column]
-    protected ?int $id_origin = null;
+    #[ORM\Column]
+    private ?int $id_origin = null;
+
+    // FIXME Remove function id() when the id() setter/getter will be replaced with getId and setId
+    public function id(): ?int
+    {
+        return $this->myId;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->myId;
+    }
+
+    public function getStart(): ?\DateTime
+    {
+        return $this->debut;
+    }
+
+    public function setStart(\DateTime $start): static
+    {
+        $this->debut = $start;
+
+        return $this;
+    }
+
+    public function getEnd(): ?\DateTime
+    {
+        return $this->fin;
+    }
+
+    public function setEnd(\DateTime $end): static
+    {
+        $this->fin = $end;
+
+        return $this;
+    }
 }

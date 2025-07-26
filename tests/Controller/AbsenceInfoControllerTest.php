@@ -31,10 +31,10 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $this->client->request('POST', '/absences/info', array('start' => '05/10/2022', 'end' => '10/10/2022', 'text' => 'salut', '_token' => $token));
 
         $info = $entityManager->getRepository(AbsenceInfo::class)->findOneBy(array('texte' => 'salut'));
-        $this->assertEquals('05/10/2022', $info->debut()->format('d/m/Y'), 'debut is ok');
-        $this->assertEquals('10/10/2022', $info->fin()->format('d/m/Y'), 'fin is ok');
+        $this->assertEquals('05/10/2022', $info->getStart()->format('d/m/Y'), 'debut is ok');
+        $this->assertEquals('10/10/2022', $info->getEnd()->format('d/m/Y'), 'fin is ok');
 
-        $this->assertEquals('salut', $info->texte(), 'info texte is salut');
+        $this->assertEquals('salut', $info->getComment(), 'info texte is salut');
 
     }
 
@@ -92,14 +92,14 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
 
         $info = new AbsenceInfo();
-        $info->debut($start);
-        $info->fin($end);
-        $info->texte('salut');
+        $info->setStart($start);
+        $info->setEnd($end);
+        $info->setComment('salut');
 
         $entityManager->persist($info);
         $entityManager->flush();
 
-        $id = $info->id();
+        $id = $info->getId();
 
         $crawler = $this->client->request('GET', "/absences/info/$id");
 
@@ -155,9 +155,9 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $end = new DateTime('+1 month +1 day');
 
         $info = new AbsenceInfo();
-        $info->debut($start);
-        $info->fin($end);
-        $info->texte('hello');
+        $info->setStart($start);
+        $info->setEnd($end);
+        $info->setComment('hello');
 
         $entityManager->persist($info);
         $entityManager->flush();

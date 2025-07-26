@@ -36,7 +36,7 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createHolidayFor($jdevoe);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "/absence-statuses?ids[]=$agent_id&module=holiday&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');

@@ -47,9 +47,9 @@ class PLBWebTestCase extends PantherTestCase
     }
 
     protected function logInAgent($agent, $rights = array(99, 100)) {
-        $_SESSION['login_id'] = $agent->id();
+        $_SESSION['login_id'] = $agent->getId();
 
-        $agent->droits($rights);
+        $agent->setACL($rights);
 
         global $entityManager;
         $entityManager->persist($agent);
@@ -58,7 +58,7 @@ class PLBWebTestCase extends PantherTestCase
         $GLOBALS['droits'] = $rights;
         $crawler = $this->client->request('GET', '/login');
         $session = $this->client->getRequest()->getSession();
-        $session->set('loginId', $agent->id());
+        $session->set('loginId', $agent->getId());
         $session->save();
     
         $cookie = new Cookie($session->getName(), $session->getId());
@@ -82,14 +82,14 @@ class PLBWebTestCase extends PantherTestCase
         global $entityManager;
 
         $password = password_hash("MyPass", PASSWORD_BCRYPT);
-        $agent->password($password);
+        $agent->setPassword($password);
         $entityManager->persist($agent);
         $entityManager->flush();
 
         $crawler = $this->client->request('GET', '/login');
 
         $form = $crawler->selectButton('Valider')->form();
-        $form['login'] = $agent->login();
+        $form['login'] = $agent->getLogin();
         $form['password'] = 'MyPass';
 
         $crawler = $this->client->submit($form);

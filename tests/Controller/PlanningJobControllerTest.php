@@ -137,7 +137,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'droits' => array("6","9","701","3","4","21","1101","1201","22","5","17","1301","25","23","201","202","203","204","401","402","403","404","601","602","603","604","301","302","303","304","1001","1002","1003","1004","901","902","903","904","801","802","803","804",6,99,100,20)
         ));
 
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
 
         // Create WeekPlanning
         $builder->delete(WorkingHour::class);
@@ -255,7 +255,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'droits' => array("6","9","701","3","4","21","1101","1201","22","5","17","1301","25","23","201","202","203","204","401","402","403","404","601","602","603","604","301","302","303","304","1001","1002","1003","1004","901","902","903","904","801","802","803","804",6,99,100,20)
         ));
 
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
 
         // Create Holiday
         $builder->delete(Holiday::class);
@@ -369,7 +369,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'droits' => array("6","9","701","3","4","21","1101","1201","22","5","17","1301","25","23","201","202","203","204","401","402","403","404","601","602","603","604","301","302","303","304","1001","1002","1003","1004","901","902","903","904","801","802","803","804",6,99,100,20)
         ));
 
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
 
         // Create WeekPlanning
         $builder->delete(WorkingHour::class);
@@ -466,7 +466,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'droits' => array("6","9","701","3","4","21","1101","1201","22","5","17","1301","25","23","201","202","203","204","401","402","403","404","601","602","603","604","301","302","303","304","1001","1002","1003","1004","901","902","903","904","801","802","803","804",6,99,100,20)
         ));
 
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
 
         // Create WeekPlanning
         $builder->delete(WorkingHour::class);

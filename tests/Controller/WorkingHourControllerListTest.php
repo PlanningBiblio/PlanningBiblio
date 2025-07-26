@@ -94,7 +94,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
         $kboivin->addManaged($manager);
 
         // Login with agent without rights for WeekPlannings
-        $this->logInAgent($jdupont, $jdupont->droits());
+        $this->logInAgent($jdupont, $jdupont->getACL());
         $crawler = $client->request('GET', '/workinghour');
 
         $this->assertSelectorNotExists('select#perso_id');
@@ -104,7 +104,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
         $this->assertStringContainsString('Jean', $result->text(null,false));
 
         // Login with agent having rights for WeekPlanning
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $client->request('GET', '/workinghour');
 
         // Check available agents ordered by name

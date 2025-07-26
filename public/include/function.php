@@ -350,21 +350,21 @@ function authSQL($login, $password)
     $agent = $agent[0];
 
     // Old MD5 password
-    if (strlen($agent->password()) == 32) {
-        if (md5($password) == $agent->password()) {
+    if (strlen($agent->getPassword()) == 32) {
+        if (md5($password) == $agent->getPassword()) {
             $auth=true;
             $_SESSION['oups']['Auth-Mode']="SQL";
 
             // Update password
             $bcrypt_password = password_hash($password,PASSWORD_BCRYPT);
 
-            $agent->password($bcrypt_password);
+            $agent->setPassword($bcrypt_password);
             $em->persist($agent);
             $em->flush();
         }
     // New bcrypt password
     } else {
-        if (password_verify($password, $agent->password())) {
+        if (password_verify($password, $agent->getPassword())) {
             $auth=true;
             $_SESSION['oups']['Auth-Mode']="SQL";
         }
@@ -1212,8 +1212,8 @@ function nom($id, $format="nom p", $agents=array())
             return 'error';
         }
         if (is_object($agents[$id])) {
-            $nom = $agents[$id]->nom();
-            $prenom = $agents[$id]->prenom();
+            $nom = $agents[$id]->getLastname();
+            $prenom = $agents[$id]->getFirstname();
         } else {
             $nom = $agents[$id]['nom'];
             $prenom = $agents[$id]['prenom'];

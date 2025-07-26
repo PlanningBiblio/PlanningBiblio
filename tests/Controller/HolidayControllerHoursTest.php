@@ -42,7 +42,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array(
-            'perso_id' => $jdevoe->id(),
+            'perso_id' => $jdevoe->getId(),
             'valide' => 0,
             'valide_n1' => 0
         ));
@@ -50,7 +50,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
         $start = $holiday->debut()->format('Y-m-d H:i:s');
@@ -69,10 +69,10 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->assertEquals($holiday->recup_actuel(), null, 'New com time credit is unchanged');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 175, 'credit has not been updated yet');
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 35, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 175, 'credit has not been updated yet');
+        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getCompTime(), 35, "comp time didn't change");
     }
 
     public function testHolidayOneAgentAllDay()
@@ -90,12 +90,12 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         );
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
-        $data = $this->getHolidayData(array('perso_id' => $jdevoe->id()));
+        $data = $this->getHolidayData(array('perso_id' => $jdevoe->getId()));
 
         $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
         $start = $holiday->debut()->format('Y-m-d H:i:s');
@@ -114,10 +114,10 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->assertEquals($holiday->recup_actuel(), 35, 'New com time credit is unchanged');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 168, 'credit has been updated');
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 35, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 168, 'credit has been updated');
+        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getCompTime(), 35, "comp time didn't change");
     }
 
     public function testHolidayOneAgentOneHour()
@@ -136,7 +136,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array(
-            'perso_id' => $jdevoe->id(),
+            'perso_id' => $jdevoe->getId(),
             'hre_debut' => '09:00:00',
             'hre_fin' => '10:00:00',
             'allday' => '',
@@ -145,7 +145,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
         $start = $holiday->debut()->format('Y-m-d H:i:s');
@@ -164,10 +164,10 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->assertEquals($holiday->recup_actuel(), 35, 'New com time credit is unchanged');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 174, 'credit has been updated');
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 35, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 174, 'credit has been updated');
+        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getCompTime(), 35, "comp time didn't change");
 
     }
 
@@ -187,14 +187,14 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array(
-            'perso_id' => $jdevoe->id(),
+            'perso_id' => $jdevoe->getId(),
             'debit' => 'recuperation',
         ));
 
         $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
         $start = $holiday->debut()->format('Y-m-d H:i:s');
@@ -213,10 +213,10 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->assertEquals($holiday->recup_actuel(), 28, 'New com time credit updated');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 175, "credit didn't change");
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 28, "comp time was updated");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 175, "credit didn't change");
+        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getCompTime(), 28, "comp time was updated");
 
     }
 

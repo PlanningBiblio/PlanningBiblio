@@ -34,10 +34,10 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $info = $entityManager->getRepository(AdminInfo::class)->findOneBy(array('debut' => '20211005', 'fin' => '20211010'));
 
 
-        $this->assertEquals('salut', $info->texte(), 'info texte is salut');
+        $this->assertEquals('salut', $info->getComment(), 'info texte is salut');
         
-        $this->assertEquals('20211005', $info->debut(), 'debut is 20211005');
-        $this->assertEquals('20211010', $info->fin(), 'fin is 20211010');
+        $this->assertEquals('20211005', $info->getStart(), 'debut is 20211005');
+        $this->assertEquals('20211010', $info->getEnd(), 'fin is 20211010');
     
 
     }
@@ -101,14 +101,14 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->logInAgent($agent, array(23));
 
         $info = new AdminInfo();
-        $info->debut('20221005');
-        $info->fin('20221010');
-        $info->texte('salut');
+        $info->setStart('20221005');
+        $info->setEnd('20221010');
+        $info->setComment('salut');
 
         $entityManager->persist($info);
         $entityManager->flush();
 
-        $id = $info->id();
+        $id = $info->getId();
         
         $crawler = $this->client->request('GET', "/admin/info/$id");
 

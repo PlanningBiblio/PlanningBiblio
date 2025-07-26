@@ -919,12 +919,12 @@ class HolidayController extends BaseController
 
         $hh = new HolidayHelper();
         $holiday_account = array(
-            'holiday_balance' => $hh->HumanReadableDuration($agent->conges_reliquat()),
-            'holiday_balance_decimal' => $agent->conges_reliquat() ?? 0,
-            'holiday_credit' => $hh->HumanReadableDuration($agent->conges_credit()),
-            'holiday_credit_decimal' => $agent->conges_credit() ?? 0,
-            'holiday_debit' => $hh->HumanReadableDuration($agent->conges_anticipation()),
-            'holiday_debit_decimal' => $agent->conges_anticipation() ?? 0
+            'holiday_balance' => $hh->HumanReadableDuration($agent->getRemainder()),
+            'holiday_balance_decimal' => $agent->getRemainder() ?? 0,
+            'holiday_credit' => $hh->HumanReadableDuration($agent->getHolidayCredit()),
+            'holiday_credit_decimal' => $agent->getHolidayCredit() ?? 0,
+            'holiday_debit' => $hh->HumanReadableDuration($agent->getAnticipation()),
+            'holiday_debit_decimal' => $agent->getAnticipation() ?? 0
         );
 
         return $this->json($holiday_account);

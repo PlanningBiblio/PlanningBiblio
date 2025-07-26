@@ -41,7 +41,7 @@ class AgentRepository extends EntityRepository
         $agents = $entityManager->getRepository(Agent::class)->findAll();
         $all_skills = array();
         foreach ($agents as $agent) {
-            $activites = $agent->postes();
+            $activites = $agent->getSkills();
             if (is_array($activites)) {
                 foreach ($activites as $activite) {
                     array_push($all_skills, $activite);
@@ -179,7 +179,7 @@ class AgentRepository extends EntityRepository
             $managed_sites = array();
 
             foreach ($loggedin->getManaged() as $m) {
-                $sites = json_decode($m->perso_id()->sites(), true) ?? array();
+                $sites = json_decode($m->perso_id()->getSites(), true) ?? array();
                 $managed_sites = array_merge($managed_sites, $sites);
             }
 
@@ -187,7 +187,7 @@ class AgentRepository extends EntityRepository
 
         }
 
-        $rights = $loggedin->droits();
+        $rights = $loggedin->getACL();
 
         $sites_select = array();
         for ($i = 1; $i <= $sites_number; $i++) {
@@ -239,7 +239,7 @@ class AgentRepository extends EntityRepository
             return $managed;
         }
 
-        $rights = $loggedin->droits();
+        $rights = $loggedin->getACL();
         $managed_sites = $loggedin->managedSites($this->needed_level1, $this->needed_level2);
 
         if (!empty($managed_sites)) {
@@ -291,7 +291,7 @@ class AgentRepository extends EntityRepository
             // will only check for agent sites
             if ($this->agent_id) {
                 $agent = $entityManager->find(Agent::class, $this->agent_id);
-                $sites = json_decode($agent->sites()) ?? array();
+                $sites = json_decode($agent->getSites()) ?? array();
             }
         }
 
@@ -334,11 +334,11 @@ class AgentRepository extends EntityRepository
 
         // No validation by agent.
         // Check for module rights.
-        $agent_rights = $loggedin->droits();
+        $agent_rights = $loggedin->getACL();
 
         // Give rigths for deleted agents
         // Avoid "Access denied" when modifying absences with several agents and some of them are deleted
-        if (isset($agent) and $agent->supprime() == 2) {
+        if (isset($agent) and $agent->getDeletionStatus() == 2) {
             return array(true, true);
         }
 
@@ -385,7 +385,7 @@ class AgentRepository extends EntityRepository
         $agents = $entityManager->getRepository(Agent::class)->findBy(array('id' => $agent_ids));
         $sites_array = array();
         foreach ($agents as $agent) {
-            $agent_sites = json_decode(html_entity_decode($agent->sites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $agent_sites = json_decode(html_entity_decode($agent->getSites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             if (is_array($agent_sites)) {
                 $sites_array = array_merge($sites_array, $agent_sites);
             }

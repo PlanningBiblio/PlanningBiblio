@@ -54,9 +54,9 @@ class AdminInfoController extends BaseController
 
         $this->templateParams(array(
             'id'    => $id,
-            'start' => date('d/m/Y', strtotime($info->debut())),
-            'end'   => date('d/m/Y', strtotime($info->fin())),
-            'text'  => $info->texte()
+            'start' => date('d/m/Y', strtotime($info->getStart())),
+            'end'   => date('d/m/Y', strtotime($info->getEnd())),
+            'text'  => $info->getComment(),
         ));
 
         return $this->output('adminInfo/edit.html.twig');
@@ -80,16 +80,16 @@ class AdminInfoController extends BaseController
 
         if ($id) {
             $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
-            $info->debut($start);
-            $info->fin($end);
-            $info->texte($text);
+            $info->setStart($start);
+            $info->setEnd($end);
+            $info->setComment($text);
             $flash = "L'information a bien été modifiée.";
         } else {
             // Store a new info
             $info = new AdminInfo();
-            $info->debut($start);
-            $info->fin($end);
-            $info->texte($text);
+            $info->setStart($start);
+            $info->setEnd($end);
+            $info->setComment($text);
             $flash = "L'information a bien été enregistrée.";
         }
 

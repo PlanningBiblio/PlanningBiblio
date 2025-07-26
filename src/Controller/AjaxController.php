@@ -45,15 +45,15 @@ class AjaxController extends BaseController
 
         $agents = array();
         foreach ($managed as $m) {
-            if ($m->id() == $session->get('loginId') ||
+            if ($m->getId() == $session->get('loginId') ||
                 $this->config('Multisites-nombre') == 1 ||
                 ($sites && $m->inOneOfSites($sites))) {
 
                 $agents[] = array(
-                    'id'        => $m->id(),
-                    'nom'       => $m->nom(),
-                    'prenom'    => $m->prenom(),
-                    'sites'     => $m->sites(),
+                    'id'        => $m->getId(),
+                    'nom'       => $m->getLastname(),
+                    'prenom'    => $m->getFirstname(),
+                    'sites'     => $m->getSites(),
                 );
             }
         }
@@ -145,11 +145,11 @@ class AjaxController extends BaseController
             $r[2] = isset($r[2]) ? $r[2] : 0;
             $r[3] = isset($r[3]) ? $r[3] : 'A';
             $reason = new AbsenceReason();
-            $reason->valeur($r[0]);
-            $reason->rang($r[1]);
-            $reason->type($r[2]);
-            $reason->notification_workflow($r[3]);
-            $reason->teleworking($r[4]);
+            $reason->setValeur($r[0]);
+            $reason->setRang($r[1]);
+            $reason->setType($r[2]);
+            $reason->setNotificationWorkflow($r[3]);
+            $reason->setTeleworking($r[4]);
             $this->entityManager->persist($reason);
         }
         $this->entityManager->flush();

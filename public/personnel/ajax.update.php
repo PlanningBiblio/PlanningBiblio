@@ -62,32 +62,32 @@ $agents = $entityManager->getRepository(Agent::class)->findById($list);
 foreach ($agents as $agent) {
     // Main Tab
     if ($actif != '-1') {
-        $agent->actif($actif);
+        $agent->setActive($actif);
     }
 
     if ($contrat != '-1') {
-        $agent->categorie($contrat);
+        $agent->setCategory($contrat);
     }
 
     if ($heures_hebdo != '-1') {
-        $agent->heures_hebdo($heures_hebdo);
+        $agent->setWeeklyServiceHours($heures_hebdo);
     }
 
     if ($heures_travail != '-1') {
-        $agent->heures_travail($heures_travail);
+        $agent->setWeeklyWorkingHours($heures_travail);
     }
 
     if ($service != '-1') {
-        $agent->service($service);
+        $agent->setService($service);
     }
 
     if ($statut != '-1') {
-        $agent->statut($statut);
+        $agent->setStatus($statut);
     }
 
     // Skills tab
     if ($postes != '-1') {
-        $agent->postes($postes);
+        $agent->setSkills($postes);
     }
 
     $entityManager->persist($agent);

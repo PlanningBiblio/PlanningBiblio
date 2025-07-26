@@ -2,32 +2,57 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'acces')]
-class Access extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'acces')]
+class Access
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'id')]
+    private $myId;
+    // FIXME Replace with $id when the id() setter/getter will be replaced with getId and setId
 
-    #[Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT)]
     protected ?string $nom = null;
 
-    #[Column]
+    #[ORM\Column]
     protected ?int $groupe_id = null;
 
-    #[Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT)]
     protected ?string $groupe = null;
 
-    #[Column(length: 255)]
+    #[ORM\Column(length: 255)]
     protected ?string $page = null;
 
-    #[Column]
+    #[ORM\Column]
     protected ?int $ordre = null;
 
-    #[Column(length: 255)]
+    #[ORM\Column(length: 255)]
     protected ?string $categorie = null;
+
+    // FIXME Remove function id() when the id() setter/getter will be replaced with getId and setId
+    public function id(): ?int
+    {
+        return $this->myId;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->myId;
+    }
+    
+    public function getGroupId(): ?int
+    {
+        return $this->groupe_id;
+    }
+
+    public function setGroupId(int $groupId): static
+    {
+        $this->groupe_id = $groupId;
+
+        return $this;
+    }
 }

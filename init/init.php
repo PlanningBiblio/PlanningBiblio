@@ -59,7 +59,7 @@ $_SESSION['PLdate']=array_key_exists("PLdate", $_SESSION)?$_SESSION['PLdate']:da
 
 // Recupération des droits d'accès de l'agent
 $logged_in = $entityManager->find(Agent::class, $loginId);
-$droits = $logged_in ? $logged_in->droits() : array();
+$droits = $logged_in ? $logged_in->getACL() : array();
 $_SESSION['droits'] = array_merge($droits, array(99));
 
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";

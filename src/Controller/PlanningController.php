@@ -571,7 +571,7 @@ class PlanningController extends BaseController
                     } else {
                         $agent = $this->entityManager->find(Agent::class, $elem2['perso_id']);
                         if (!empty($agent)) {
-                            $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
+                            $temps = json_decode(html_entity_decode($agent->getWorkingHours(), ENT_QUOTES, 'UTF-8'), true);
                         } else {
                             $temps = array();
                         }
@@ -788,7 +788,7 @@ class PlanningController extends BaseController
                         // Skip teleworking absences if the position is compatible with
                         if ($this->positions[$poste]['teleworking']) {
                             $reason = $this->absenceReasons->findOneBy(array('valeur' => $absence['motif']));
-                            if (!empty($reason) and $reason->teleworking() == 1) {
+                            if (!empty($reason) and $reason->getTeleworking() == 1) {
                                 continue;
                             }
                         }

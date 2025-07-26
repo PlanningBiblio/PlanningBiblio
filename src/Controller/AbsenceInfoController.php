@@ -54,9 +54,9 @@ class AbsenceInfoController extends BaseController
 
         $this->templateParams(array(
             'id'    => $id,
-            'start' => date_format($info->debut(), "d/m/Y"),
-            'end'   => date_format($info->fin(), "d/m/Y"),
-            'text'  => $info->texte()
+            'start' => date_format($info->getStart(), "d/m/Y"),
+            'end'   => date_format($info->getEnd(), "d/m/Y"),
+            'text'  => $info->getComment(),
         ));
 
         return $this->output('absenceInfo/edit.html.twig');
@@ -81,16 +81,16 @@ class AbsenceInfoController extends BaseController
 
         if ($id) {
             $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);
-            $info->debut($start);
-            $info->fin($end);
-            $info->texte($text);
+            $info->setStart($start);
+            $info->setEnd($end);
+            $info->setComment($text);
             $flash = "L'information a bien été modifiée.";
         } else {
             // Store a new info
             $info = new AbsenceInfo();
-            $info->debut($start);
-            $info->fin($end);
-            $info->texte($text);
+            $info->setStart($start);
+            $info->setEnd($end);
+            $info->setComment($text);
             $flash = "L'information a bien été enregistrée.";
         }
 

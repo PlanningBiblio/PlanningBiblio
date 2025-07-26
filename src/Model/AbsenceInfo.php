@@ -2,24 +2,72 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'absences_infos')]
-class AbsenceInfo extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'absences_infos')]
+class AbsenceInfo
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'id')]
+    private $myId;
+    // FIXME Replace with $id when the id() setter/getter will be replaced with getId and setId
 
-    #[Column(type: Types::DATE_MUTABLE)]
-    protected ?\DateTime $debut = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $debut = null;
 
-    #[Column(type: Types::DATE_MUTABLE)]
-    protected ?\DateTime $fin = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $fin = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $texte = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $texte = null;
 
+    // FIXME Remove function id() when the id() setter/getter will be replaced with getId and setId
+    public function id(): ?int
+    {
+        return $this->myId;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->myId;
+    }
+
+    public function getStart(): ?\DateTime
+    {
+        return $this->debut;
+    }
+
+    public function setStart(\DateTime $start): static
+    {
+        $this->debut = $start;
+
+        return $this;
+    }
+
+    public function getEnd(): ?\DateTime
+    {
+        return $this->fin;
+    }
+
+    public function setEnd(\DateTime $end): static
+    {
+        $this->fin = $end;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->texte;
+    }
+
+    public function setComment(string $comment): static
+    {
+        $this->texte = $comment;
+
+        return $this;
+    }
 }

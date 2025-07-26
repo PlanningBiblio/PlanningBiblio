@@ -31,7 +31,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $agent_id = $jdevoe->id();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
         $statuses_element = $crawler->filter('span');
@@ -54,7 +54,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $agent_id = $jdevoe->id();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
         $statuses_elements = $crawler->filter('select option');
@@ -81,7 +81,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $agent_id = $jdevoe->id();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
         $statuses_elements = $crawler->filter('select option');
@@ -110,7 +110,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $agent_id = $jdevoe->id();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
         $statuses_elements = $crawler->filter('select option');
@@ -139,7 +139,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $agent_id = $jdevoe->id();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
         $statuses_element = $crawler->filter('span');
@@ -161,7 +161,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $agent_id = $loggedin->id();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -186,7 +186,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -215,7 +215,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -246,7 +246,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -277,7 +277,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -300,7 +300,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $agent_id = $loggedin->id();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -325,7 +325,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -354,7 +354,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -385,7 +385,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -416,7 +416,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -444,7 +444,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $agent_id = $loggedin->id();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -469,7 +469,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, -1);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -495,7 +495,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, 1);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -526,7 +526,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, 1);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -557,7 +557,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence_id = $this->createAbsenceFor($jdevoe, -1);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');

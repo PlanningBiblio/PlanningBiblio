@@ -32,7 +32,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         ));
         $agent_id = $jdevoe->id();
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/add/$agent_id");
 
         $statuses_element = $crawler->filter('span#validation');
@@ -57,7 +57,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         ));
         $agent_id = $jdevoe->id();
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/add/$agent_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
@@ -86,7 +86,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         ));
         $agent_id = $jdevoe->id();
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/add/$agent_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
@@ -117,7 +117,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         ));
         $agent_id = $jdevoe->id();
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/add/$agent_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
@@ -148,7 +148,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         ));
         $agent_id = $jdevoe->id();
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/add/$agent_id");
 
         $statuses_element = $crawler->filter('span#validation');
@@ -173,7 +173,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $agent_id = $loggedin->id();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_element = $crawler->filter('span#validation');
@@ -200,7 +200,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
@@ -231,7 +231,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -264,7 +264,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -297,7 +297,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_element = $crawler->filter('span#validation');
@@ -322,7 +322,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $agent_id = $loggedin->id();
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_element = $crawler->filter('span#validation');
@@ -349,7 +349,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
@@ -379,7 +379,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
@@ -413,7 +413,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
@@ -446,7 +446,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
@@ -476,7 +476,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $agent_id = $loggedin->id();
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_element = $crawler->filter('span#validation');
@@ -503,7 +503,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_element = $crawler->filter('span#validation');
@@ -531,7 +531,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
@@ -564,7 +564,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
@@ -597,7 +597,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');

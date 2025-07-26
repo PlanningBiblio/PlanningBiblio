@@ -1079,7 +1079,7 @@ class AgentController extends BaseController
         }
 
         $password = password_hash($password, PASSWORD_BCRYPT);
-        $agent->password($password);
+        $agent->setPassword($password);
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
 
@@ -1174,7 +1174,7 @@ class AgentController extends BaseController
     {
         $isCurrentPassword = false;
         $agent = $this->entityManager->find(Agent::class, $agent_id);
-        $hashedPassword = $agent->password();
+        $hashedPassword = $agent->getPassword();
 	
         if (password_verify($password, $hashedPassword)) {
             $isCurrentPassword = true;
@@ -1202,14 +1202,14 @@ class AgentController extends BaseController
             ->getRepository(Agent::class)
             ->findOneBy(array('login' => $login));
 
-        if ($login == $agent->login()) {
+        if ($login == $agent->getLogin()) {
             $response->setContent('identic');
             $response->setStatusCode(400);
 
             return $response;
         }
 
-        if ($duplicate && $login != $agent->login()) {
+        if ($duplicate && $login != $agent->getLogin()) {
             $response->setContent('duplicate');
             $response->setStatusCode(400);
 
@@ -1217,7 +1217,7 @@ class AgentController extends BaseController
         }
 
         $agent = $this->entityManager->find(Agent::class, $agent_id);
-        $agent->login($login);
+        $agent->setLogin($login);
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
 
@@ -1482,7 +1482,7 @@ class AgentController extends BaseController
 
         foreach ($results as $key => $value) {
             foreach ($agents as $agent) {
-                if ($agent->login() == $key) {
+                if ($agent->getLogin() == $key) {
                     unset($results[$key]);
                 }
             }

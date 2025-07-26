@@ -70,10 +70,10 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($holiday->recup_actuel(), 0, 'New com time credit is unchanged');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 32, 'credit has updated');
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 0, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 32, 'credit has updated');
+        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getCompTime(), 0, "comp time didn't change");
     }
 
     public function testHolidayManyAgentManyDays()
@@ -135,10 +135,10 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($jdevoe_holiday->recup_actuel(), 0, 'New com time credit is unchanged');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 46, 'credit has updated');
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 0, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 46, 'credit has updated');
+        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getCompTime(), 0, "comp time didn't change");
 
         $start = $adenis_holiday->debut()->format('Y-m-d H:i:s');
         $end = $adenis_holiday->fin()->format('Y-m-d H:i:s');
@@ -156,10 +156,10 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($adenis_holiday->recup_actuel(), 10, 'New com time credit is unchanged');
 
         $entityManager->refresh($adenis);
-        $this->assertEquals($adenis->conges_credit(), 89, 'credit has updated');
-        $this->assertEquals($adenis->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($adenis->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($adenis->comp_time(), 10, "comp time didn't change");
+        $this->assertEquals($adenis->getHolidayCredit(), 89, 'credit has updated');
+        $this->assertEquals($adenis->getRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($adenis->getAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($adenis->getCompTime(), 10, "comp time didn't change");
     }
 
     public function testHolidayManyAgentManyDaysWithRemainingHoliday()
@@ -221,10 +221,10 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($jdevoe_holiday->anticipation_actuel(), 10, 'New remaining is 10');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 0, 'credit has updated');
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 10, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 0, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 0, 'credit has updated');
+        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getAnticipation(), 10, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getCompTime(), 0, "comp time didn't change");
 
         $start = $adenis_holiday->debut()->format('Y-m-d H:i:s');
         $end = $adenis_holiday->fin()->format('Y-m-d H:i:s');
@@ -242,10 +242,10 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($adenis_holiday->reliquat_actuel(), 0, 'New remaining is 0');
 
         $entityManager->refresh($adenis);
-        $this->assertEquals($adenis->conges_credit(), 164, 'credit has updated');
-        $this->assertEquals($adenis->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($adenis->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($adenis->comp_time(), 10, "comp time didn't change");
+        $this->assertEquals($adenis->getHolidayCredit(), 164, 'credit has updated');
+        $this->assertEquals($adenis->getRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($adenis->getAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($adenis->getCompTime(), 10, "comp time didn't change");
     }
 
     private function deleteWorkingHours()

@@ -41,7 +41,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->createAbsenceFor($abreton, 2);
         $this->createAbsenceFor($kboivin, 2);
 
-        $this->logInAgent($jdevoe, $jdevoe->droits());
+        $this->logInAgent($jdevoe, $jdevoe->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $this->assertResponseIsSuccessful('Jdevoe can access to list page');
@@ -53,7 +53,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->assertEquals('Devoe John', $jdevoe_abs->html());
 
         // Login with agent having rights for absences
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $this->assertResponseIsSuccessful('KBoivin can access to list page');
@@ -110,7 +110,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->createAbsenceFor($kboivin, 2);
 
         // Login with agent having rights for absences
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $agents_select = $crawler->filter('select#perso_id option');
@@ -170,7 +170,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $kboivin->addManaged($manager);
 
         // Login with agent having rights for absences
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $agents_select = $crawler->filter('select#perso_id option');

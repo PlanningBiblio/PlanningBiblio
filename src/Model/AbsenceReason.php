@@ -3,29 +3,102 @@
 namespace App\Model;
 
 use App\Repository\AbsenceReasonRepository;
-use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity(repositoryClass: AbsenceReasonRepository::class)]
-#[Table(name: 'select_abs')]
-class AbsenceReason extends PLBEntity
+#[ORM\Entity(repositoryClass: AbsenceReasonRepository::class)]
+#[ORM\Table(name: 'select_abs')]
+class AbsenceReason
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'id')]
+    private $myId;
+    // FIXME Replace with $id when the id() setter/getter will be replaced with getId and setId
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $valeur = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $valeur = null;
 
-    #[Column]
-    protected ?int $rang = null;
+    #[ORM\Column]
+    private ?int $rang = null;
 
-    #[Column]
-    protected ?int $type = null;
+    #[ORM\Column]
+    private ?int $type = null;
 
-    #[Column(length: 255)]
-    protected ?string $notification_workflow = null;
+    #[ORM\Column(length: 255)]
+    private ?string $notification_workflow = null;
 
-    #[Column]
-    protected ?int $teleworking = null;
+    #[ORM\Column]
+    private ?int $teleworking = null;
+
+    // FIXME Remove function id() when the id() setter/getter will be replaced with getId and setId
+    public function id(): ?int
+    {
+        return $this->myId;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->myId;
+    }
+
+    public function getNotificationWorkflow(): ?string
+    {
+        return $this->notification_workflow;
+    }
+
+    public function setNotificationWorkflow(string $notificationWorkflow): static
+    {
+        $this->notification_workflow = $notificationWorkflow;
+
+        return $this;
+    }
+
+    public function getRang(): ?int
+    {
+        return $this->rang;
+    }
+
+    public function setRang(int $rang): static
+    {
+        $this->rang = $rang;
+
+        return $this;
+    }
+
+    public function getTeleworking(): ?int
+    {
+        return $this->teleworking;
+    }
+
+    public function setTeleworking(int $teleworking): static
+    {
+        $this->teleworking= $teleworking;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getValeur(): ?string
+    {
+        return $this->valeur;
+    }
+
+    public function setValeur(string $valeur): static
+    {
+        $this->valeur = $valeur;
+
+        return $this;
+    }
 }

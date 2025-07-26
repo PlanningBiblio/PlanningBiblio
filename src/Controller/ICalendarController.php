@@ -39,7 +39,7 @@ class ICalendarController extends BaseController
         if (!$id and $login) {
             $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(array('login' => $login));
             if ($agent) {
-                $id = $agent->id();
+                $id = $agent->getId();
             } else {
                 return $this->returnError("Impossible de trouver l'id associé au login $login", $module, 400);
             }
@@ -49,7 +49,7 @@ class ICalendarController extends BaseController
         if (!$id and $mail) {
             $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(array('mail' => $mail));
             if ($agent) {
-                $id = $agent->id();
+                $id = $agent->getId();
             } else {
                 return $this->returnError("Impossible de trouver l'id associé au mail $mail", $module, 400);
             }
@@ -67,7 +67,7 @@ class ICalendarController extends BaseController
         }
 
         if ($this->config('ICS-Code')) {
-            $agent_ics_code = $agent->code_ics();
+            $agent_ics_code = $agent->getICSCode();
             if ($agent_ics_code != $code) {
                 return $this->returnError("Accès refusé", $module, 401);
             }

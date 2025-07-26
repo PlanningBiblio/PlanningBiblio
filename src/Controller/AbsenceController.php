@@ -265,14 +265,14 @@ class AbsenceController extends BaseController
             $filename = $file->getClientOriginalName();
 
             $ad = new AbsenceDocument();
-            $ad->absence_id($result['id']);
-            $ad->filename($filename);
-            $ad->date(new \DateTime());
+            $ad->setAbsenceId($result['id']);
+            $ad->setFilename($filename);
+            $ad->setDate(new \DateTime());
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
 
             $absenceDocument = new AbsenceDocument();
-            $file->move($absenceDocument->upload_dir() . $result['id'] . '/' . $ad->id(), $filename);
+            $file->move($absenceDocument->upload_dir() . $result['id'] . '/' . $ad->getId(), $filename);
 
         }
 
@@ -562,7 +562,7 @@ class AbsenceController extends BaseController
             $workflow = 'A';
             $reason = $this->entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
             if ($reason) {
-                $workflow = $reason->notification_workflow();
+                $workflow = $reason->getNotificationWorkflow();
             }
 
             // Foreach agent, search for agents in charge of absences.
@@ -737,7 +737,7 @@ class AbsenceController extends BaseController
 
         $docsarray = array();
         foreach ($absdocs as $absdoc) {
-           $docsarray[] = array('filename' => $absdoc->filename(), 'id' => $absdoc->id());
+           $docsarray[] = array('filename' => $absdoc->getFilename(), 'id' => $absdoc->getId());
         }
 
         return $docsarray;
@@ -1309,7 +1309,7 @@ class AbsenceController extends BaseController
         $workflow = 'A';
         $reason = $this->entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
         if ($reason) {
-            $workflow = $reason->notification_workflow();
+            $workflow = $reason->getNotificationWorkflow();
         }
 
         // Liste des responsables

@@ -2,11 +2,18 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 
 #[Entity]
-class PLBEntity {
+class PLBEntity
+{
+    #[Id]
+    #[GeneratedValue]
+    #[Column]
+    private $fakeId;
 
     public function __call($name, $arguments) {
 

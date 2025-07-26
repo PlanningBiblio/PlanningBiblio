@@ -27,7 +27,7 @@ class AgentControllerTest extends PLBWebTestCase
             'mail' => 'jdupont@mail.fr', 'droits' => array(21,100,99,4)
         ));
 
-        $this->logInAgent($agent, $agent->droits());
+        $this->logInAgent($agent, $agent->getACL());
 
         $_SESSION['oups']['CSRFToken'] = '00000';
 
@@ -79,12 +79,12 @@ class AgentControllerTest extends PLBWebTestCase
 
         $info = $entityManager->getRepository(Agent::class)->findOneBy(array('nom' => 'Boivin'));
 
-        $this->assertEquals('karel.boivin', $info->login(), 'login');
-        $this->assertEquals('Boivin', $info->nom(), 'nom');
-        $this->assertEquals('Karel', $info->prenom(), 'prenom');
-        $this->assertEquals('kboivin@mail.fr', $info->mail(), 'mail');
-        $this->assertEquals($start, $info->arrivee()->format("d/m/Y"), 'arrivee');
-        $this->assertEquals($end, $info->depart()->format("d/m/Y"), 'depart');
+        $this->assertEquals('karel.boivin', $info->getLogin(), 'login');
+        $this->assertEquals('Boivin', $info->getLastname(), 'nom');
+        $this->assertEquals('Karel', $info->getFirstname(), 'prenom');
+        $this->assertEquals('kboivin@mail.fr', $info->getMail(), 'mail');
+        $this->assertEquals($start, $info->getArrivalDate()->format("d/m/Y"), 'arrivee');
+        $this->assertEquals($end, $info->getDepartureDate()->format("d/m/Y"), 'depart');
     }
 
     public function testAddFormElement() {
@@ -99,7 +99,7 @@ class AgentControllerTest extends PLBWebTestCase
             'sites' => '["1"]', 'droits' => array(21,100,99,4)
         ));
 
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $this->client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//table[@id="tableAgents"]/thead');
@@ -191,11 +191,11 @@ class AgentControllerTest extends PLBWebTestCase
             'sites' => '["1"]', 'droits' => array(21,100,99,4)
         ));
 
-        $id = $jdupont->id();
+        $id = $jdupont->getId();
 
         //$this->login($kboivin);
 
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $this->client->request('GET', "/agent/$id");
 
         $this->assertSelectorTextContains('h3', 'Dupont Jean');

@@ -22,7 +22,7 @@ class AbsenceDocumentController extends BaseController
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
 
         $absenceDocument = new AbsenceDocument();
-        $file = new File($absenceDocument->upload_dir() . $ad->absence_id() . '/' . $ad->id() . '/' . $ad->filename());
+        $file = new File($absenceDocument->upload_dir() . $ad->getAbsenceId() . '/' . $ad->getId() . '/' . $ad->getFilename());
 
         $response = new BinaryFileResponse($file);
 
@@ -57,9 +57,9 @@ class AbsenceDocumentController extends BaseController
         if (!empty($file)) {
             $filename = $file->getClientOriginalName();
             $ad = new AbsenceDocument();
-            $ad->absence_id($id);
-            $ad->filename($filename);
-            $ad->date(new \DateTime());
+            $ad->setAbsenceId($id);
+            $ad->setFilename($filename);
+            $ad->setDate(new \DateTime());
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
 

@@ -81,7 +81,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         $kboivin->addManaged($manager);
 
         // Login with agent without rights for absences
-        $this->logInAgent($jdupont, $jdupont->droits());
+        $this->logInAgent($jdupont, $jdupont->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $this->assertSelectorNotExists('select#perso_id');
@@ -92,7 +92,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         $this->assertStringContainsString('Dupont Jean', $result->text('Node does not exist', false));
 
         // Login with agent having rights for absences
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $agents_select = $crawler->filter('select#perso_id option');

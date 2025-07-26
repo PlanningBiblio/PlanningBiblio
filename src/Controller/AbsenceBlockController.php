@@ -48,9 +48,9 @@ class AbsenceBlockController extends BaseController
 
         $this->templateParams(array(
             'id'    => $id,
-            'start' => date_format($block->start(), "d/m/Y"),
-            'end'   => date_format($block->end(), "d/m/Y"),
-            'text'  => $block->comment()
+            'start' => date_format($block->getStart(), "d/m/Y"),
+            'end'   => date_format($block->getEnd(), "d/m/Y"),
+            'text'  => $block->getComment()
         ));
 
         return $this->output('absenceBlock/edit.html.twig');
@@ -76,16 +76,16 @@ class AbsenceBlockController extends BaseController
 
         if ($id) {
             $block = $this->entityManager->getRepository(AbsenceBlock::class)->find($id);
-            $block->start($start);
-            $block->end($end);
-            $block->comment($text);
+            $block->setStart($start);
+            $block->setEnd($end);
+            $block->setComment($text);
             $flash = "Le blocage a bien été modifié.";
         } else {
             // Store a new block
             $block = new AbsenceBlock();
-            $block->start($start);
-            $block->end($end);
-            $block->comment($text);
+            $block->setStart($start);
+            $block->setEnd($end);
+            $block->setComment($text);
             $flash = "Le blocage a bien été enregistré.";
         }
 

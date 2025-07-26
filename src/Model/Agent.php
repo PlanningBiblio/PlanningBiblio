@@ -5,134 +5,179 @@ namespace App\Model;
 use App\Repository\AgentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue, OneToMany};
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/include/db.php');
+/**
+ * nom
+ * getLastname
+ * prenom
+ * getFirstname
+ * mail
+ * getMail
+ * setStatus (statut)
+ * setService
+ * setActive (actif)
+ * setCategory (categorie)
+ * setWeeklyServiceHours (heures_hebdo)
+ * setWeeklyWorkingHours (heures_travail)
+ * getSkills (postes)
+ * setSkills (postes)
+ * getArrivalDate (arrivee)
+ * getDepartureDate (depart)
+ * getACL (droits)
+ * setACL (droits)
+ * getLogin
+ * setLogin
+ * getPassword
+ * setPassword
+ * getSites
+ * getWorkingHours (temps)
+ * getDeletionStatus (supprime)
+ * getICSCode (code_ics)
+ * getHolidayCredit (conges_credit)
+ * getRemainder (conges_reliquat)
+ * getAnticipation (conges_anticipation)
+ * getCompTime (comp_time)
+ */
 
-#[Entity(repositoryClass: AgentRepository::class)]
-#[Table(name: 'personnel')]
-class Agent extends PLBEntity
+#[ORM\Entity(repositoryClass: AgentRepository::class)]
+#[ORM\Table(name: 'personnel')]
+class Agent
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'id')]
+    private $myId;
+    // FIXME Replace with $id when the id() setter/getter will be replaced with getId and setId
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $nom = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $nom = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $prenom = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $prenom = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $mail = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $mail = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $statut = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $statut = null;
 
-    #[Column(length: 255)]
-    protected ?string $categorie = null;
+    #[ORM\Column(length: 255)]
+    private ?string $categorie = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $service = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $service = null;
 
-    #[Column(type: Types::DATE_MUTABLE)]
-    protected ?\DateTime $arrivee = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $arrivee = null;
 
-    #[Column(type: Types::DATE_MUTABLE)]
-    protected ?\DateTime $depart = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $depart = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $postes = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $postes = null;
 
-    #[Column(length: 255)]
-    protected ?string $actif = null;
+    #[ORM\Column(length: 255)]
+    private ?string $actif = null;
 
-    #[Column]
-    protected array $droits = [];
+    #[ORM\Column]
+    private array $droits = [];
 
-    #[Column(length: 255)]
-    protected ?string $login = null;
+    #[ORM\Column(length: 255)]
+    private ?string $login = null;
 
-    #[Column(length: 255)]
-    protected ?string $password = null;
+    #[ORM\Column(length: 255)]
+    private ?string $password = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $commentaires = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $commentaires = null;
 
-    #[Column]
-    protected ?\DateTime $last_login = null;
+    #[ORM\Column]
+    private ?\DateTime $last_login = null;
 
-    #[Column(length: 6)]
-    protected ?string $heures_hebdo = null;
+    #[ORM\Column(length: 6)]
+    private ?string $heures_hebdo = null;
 
-    #[Column]
-    protected ?float $heures_travail = null;
+    #[ORM\Column]
+    private ?float $heures_travail = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $sites = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $sites = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $temps = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $temps = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $informations = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $informations = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $recup = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $recup = null;
 
-    #[Column(length: 255)]
-    protected ?string $supprime = null;
+    #[ORM\Column(length: 255)]
+    private ?string $supprime = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $mails_responsables = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $mails_responsables = null;
 
-    #[Column(length: 255)]
-    protected ?string $matricule = null;
+    #[ORM\Column(length: 255)]
+    private ?string $matricule = null;
 
-    #[Column(length: 255)]
-    protected ?string $code_ics = null;
+    #[ORM\Column(length: 255)]
+    private ?string $code_ics = null;
 
-    #[Column(type: Types::TEXT)]
-    protected ?string $url_ics = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $url_ics = null;
 
-    #[Column(length: 10)]
-    protected ?string $check_ics = null;
+    #[ORM\Column(length: 10)]
+    private ?string $check_ics = null;
 
-    #[Column]
-    protected ?int $check_hamac = null;
+    #[ORM\Column]
+    private ?int $check_hamac = null;
 
-    #[Column]
-    protected ?bool $check_ms_graph = null;
+    #[ORM\Column]
+    private ?bool $check_ms_graph = null;
 
-    #[Column]
-    protected ?float $conges_credit = null;
+    #[ORM\Column]
+    private ?float $conges_credit = null;
 
-    #[Column]
-    protected ?float $conges_reliquat = null;
+    #[ORM\Column]
+    private ?float $conges_reliquat = null;
 
-    #[Column]
-    protected ?float $conges_anticipation = null;
+    #[ORM\Column]
+    private ?float $conges_anticipation = null;
 
-    #[Column]
-    protected ?float $comp_time = null;
+    #[ORM\Column]
+    private ?float $comp_time = null;
 
-    #[Column]
-    protected ?float $conges_annuel = null;
+    #[ORM\Column]
+    private ?float $conges_annuel = null;
 
     /**
      * @var Collection<int, Manager>
      */
     #[OneToMany(mappedBy: 'perso_id', targetEntity: Manager::class, cascade: ['ALL'])]
-    protected Collection $managers;
+    private Collection $managers;
 
     /**
      * @var Collection<int, Manager>
      */
     #[OneToMany(mappedBy: 'responsable', targetEntity: Manager::class, cascade: ['ALL'])]
-    protected Collection $managed;
+    private Collection $managed;
+
+    // FIXME Remove function id() when the id() setter/getter will be replaced with getId and setId
+    public function id(): ?int
+    {
+        return $this->myId;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->myId;
+    }
 
     public function __construct() {
         $this->managers = new ArrayCollection();
@@ -181,7 +226,7 @@ class Agent extends PLBEntity
             return false;
         }
 
-        $droits = $this->droits();
+        $droits = $this->droits;
         $multisites = $GLOBALS['config']['Multisites-nombre'];
 
         // Right 21 (Edit personnel) gives right 4 (Show personnel)
@@ -190,7 +235,7 @@ class Agent extends PLBEntity
         }
 
         foreach ($accesses as $access) {
-            if (in_array($access->groupe_id(), $droits)) {
+            if (in_array($access->getGroupId(), $droits)) {
                 return true;
             }
         }
@@ -198,9 +243,9 @@ class Agent extends PLBEntity
         // Multisites rights associated with page access
         $multisites_rights = array(201,301);
         if ($multisites > 1) {
-            if (in_array($accesses[0]->groupe_id(), $multisites_rights)) {
+            if (in_array($accesses[0]->getGroupId(), $multisites_rights)) {
                 for ($i = 1; $i <= $multisites; $i++) {
-                    $droit = $accesses[0]->groupe_id() -1 + $i;
+                    $droit = $accesses[0]->getGroupId() -1 + $i;
                     if (in_array($droit, $droits)) {
                         return true;
                     }
@@ -240,7 +285,7 @@ class Agent extends PLBEntity
     }
 
     public function get_manager_emails() {
-        $emails_string = $this->mails_responsables();
+        $emails_string = $this->mails_responsables;
 
         if ($emails_string == '') {
             return array();
@@ -274,7 +319,7 @@ class Agent extends PLBEntity
         $config = $GLOBALS['config'];
 
         if (!$config['PlanningHebdo']) {
-            return array('temps' => json_decode($this->temps(), true));
+            return array('temps' => json_decode($this->temps, true));
         }
 
         $working_hours = new \planningHebdo();
@@ -326,7 +371,7 @@ class Agent extends PLBEntity
 
     public function skills()
     {
-        $skills = json_decode($this->postes());
+        $skills = json_decode($this->postes);
         return is_array($skills) ? $skills : [];
     }
 
@@ -339,7 +384,7 @@ class Agent extends PLBEntity
             $sites_number = 1;
         }
 
-        $rights = $this->droits();
+        $rights = $this->droits;
 
         $managed_sites = array();
         for ($i = 1; $i <= $sites_number; $i++) {
