@@ -338,8 +338,8 @@ class OvertimeController extends BaseController
 
                 // Notifiy agent and managers.
                 $agent = $this->entityManager->find(Agent::class, $perso_id);
-                $nom = $agent->nom();
-                $prenom = $agent->prenom();
+                $nom = $agent->getLastname();
+                $prenom = $agent->getFirstname();
 
                 if (isset($update['valide']) and $update['valide'] > 0) {
                     $sujet = $lang['overtime_subject_accepted'];

@@ -234,7 +234,7 @@ class AgentRepository extends EntityRepository
                 $managed[] = $loggedin;
             }
 
-            usort($managed, function($a, $b) { return ($a->nom() < $b->nom()) ? -1 : 1; });
+            usort($managed, function($a, $b) { return ($a->getLastname() < $b->getLastname()) ? -1 : 1; });
 
             return $managed;
         }
@@ -338,7 +338,7 @@ class AgentRepository extends EntityRepository
 
         // Give rigths for deleted agents
         // Avoid "Access denied" when modifying absences with several agents and some of them are deleted
-        if (isset($agent) and $agent->getDeletionStatus() == 2) {
+        if (isset($agent) and $agent->getDeletion() == 2) {
             return array(true, true);
         }
 

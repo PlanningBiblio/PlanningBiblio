@@ -57,8 +57,8 @@ if ($db->error) {
 
     // Envoi d'un e-mail à l'agent et aux responsables
     $agent = $entityManager->find(Agent::class, $perso_id);
-    $nom = $agent->nom();
-    $prenom = $agent->prenom();
+    $nom = $agent->getLastname();
+    $prenom = $agent->getFirstname();
 
     if ($config['Absences-notifications-agent-par-agent']) {
         $a = new absences();

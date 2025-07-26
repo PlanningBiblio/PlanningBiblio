@@ -11,38 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/include/db.php');
-/**
- * nom
- * getLastname
- * prenom
- * getFirstname
- * mail
- * getMail
- * setStatus (statut)
- * setService
- * setActive (actif)
- * setCategory (categorie)
- * setWeeklyServiceHours (heures_hebdo)
- * setWeeklyWorkingHours (heures_travail)
- * getSkills (postes)
- * setSkills (postes)
- * getArrivalDate (arrivee)
- * getDepartureDate (depart)
- * getACL (droits)
- * setACL (droits)
- * getLogin
- * setLogin
- * getPassword
- * setPassword
- * getSites
- * getWorkingHours (temps)
- * getDeletionStatus (supprime)
- * getICSCode (code_ics)
- * getHolidayCredit (conges_credit)
- * getRemainder (conges_reliquat)
- * getAnticipation (conges_anticipation)
- * getCompTime (comp_time)
- */
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\Table(name: 'personnel')]
@@ -177,6 +145,282 @@ class Agent
     public function getId(): ?int
     {
         return $this->myId;
+    }
+
+    public function getACL(): array
+    {
+        return $this->droits;
+    }
+
+    public function setACL(array $acl): static
+    {
+        $this->droits = $acl;
+
+        return $this;
+    }
+
+    public function getActive(): ?string
+    {
+        return $this->actif;
+    }
+
+    public function setActive(string $active): static
+    {
+        $this->actif = $active;
+
+        return $this;
+    }
+
+    public function getAnticipation(): ?float
+    {
+        return $this->conges_anticipation;
+    }
+
+    public function setAnticipation(float $anticipation): static
+    {
+        $this->conges_anticipation = $anticipation;
+
+        return $this;
+    }
+
+    public function getArrival(): ?\DateTime
+    {
+        return $this->arrivee;
+    }
+
+    public function setArrival(\DateTime $arrival): static
+    {
+        $this->arrivee = $arrival;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->categorie;
+    }
+
+    public function setCategory(string $category): static
+    {
+        $this->categorie = $category;
+
+        return $this;
+    }
+
+    public function getCompTime(): ?float
+    {
+        return $this->comp_time;
+    }
+
+    public function setCompTime(float $compTime): static
+    {
+        $this->comp_time = $compTime;
+
+        return $this;
+    }
+
+    public function getDeletion(): ?string
+    {
+        return $this->supprime;
+    }
+
+    public function setDeletion(string $deletionStatus): static
+    {
+        $this->supprime = $deletionStatus;
+
+        return $this;
+    }
+
+    public function getDeparture(): ?\DateTime
+    {
+        return $this->depart;
+    }
+
+    public function setDeparture(\DateTime $departure): static
+    {
+        $this->depart = $departure;
+
+        return $this;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setFirstname(string $firstname): static
+    {
+        $this->supprime = $firstname;
+
+        return $this;
+    }
+
+    public function getHolidayCredit(): ?float
+    {
+        return $this->conges_credit;
+    }
+
+    public function setHolidayCredit(float $holidayCredit): static
+    {
+        $this->conges_credit = $holidayCredit;
+
+        return $this;
+    }
+
+    public function getICSCode(): ?string
+    {
+        return $this->code_ics;
+    }
+
+    public function setICSCode(string $iCSCode): static
+    {
+        $this->code_ics = $iCSCode;
+
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setLastname(string $lastname): static
+    {
+        $this->nom = $lastname;
+
+        return $this;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function setLogin(string $login): static
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    public function getMail(): ?string
+    {
+        return $this->mail;
+    }
+
+    public function setMail(string $mail): static
+    {
+        $this->mail = $mail;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getRemainder(): ?float
+    {
+        return $this->conges_reliquat;
+    }
+
+    public function setRemainder(float $remainder): static
+    {
+        $this->conges_reliquat = $remainder;
+
+        return $this;
+    }
+
+    public function getService(): ?string
+    {
+        return $this->service;
+    }
+
+    public function setService(string $service): static
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    public function getSites(): ?string
+    {
+        return $this->sites;
+    }
+
+    public function setSites(string $sites): static
+    {
+        $this->sites = $sites;
+
+        return $this;
+    }
+
+    public function getSkills(): ?string
+    {
+        return $this->postes;
+    }
+
+    public function setSkills(string $skills): static
+    {
+        $this->postes = $skills;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->statut = $status;
+
+        return $this;
+    }
+
+    public function getWeeklyServiceHours(): ?string
+    {
+        return $this->heures_hebdo;
+    }
+
+    public function setWeeklyServiceHours(string $weeklyServiceHours): static
+    {
+        $this->heures_hebdo = $weeklyServiceHours;
+
+        return $this;
+    }
+
+    public function getWeeklyWorkingHours(): ?float
+    {
+        return $this->heures_travail;
+    }
+
+    public function setWeeklyWorkingHours(float $weeklyWorkingHours): static
+    {
+        $this->heures_travail = $weeklyWorkingHours;
+
+        return $this;
+    }
+
+    public function getWorkingHours(): ?string
+    {
+        return $this->temps;
+    }
+
+    public function setWorkingHours(string $workingHours): static
+    {
+        $this->temps = $workingHours;
+
+        return $this;
     }
 
     public function __construct() {

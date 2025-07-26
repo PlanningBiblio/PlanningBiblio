@@ -45,7 +45,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $wh = new WorkingHours($workingHours);
 
         $planning = $this->builder->build(WorkingHour::class, array(
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'debut' => $start,
             'fin' => $end,
             'temps' => json_encode($workingHours),
@@ -66,7 +66,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $id = $poste->id();
 
         $planning_post = $this->builder->build(PlanningPosition::class, array(
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'debut' => $start,
             'fin' => $end,
             'date'=> $date,
@@ -129,7 +129,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
-        $ida = $abreton->id();
+        $ida = $abreton->getId();
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode($id),
             'service' => 'Pôle Public', 'sites' => json_encode(array("1")), 'actif' =>'Actif',
@@ -156,7 +156,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $jdupont_off = $this->builder->build(Absence::class, array(
             'debut' => $start,
             'fin' => $end,
-            'perso_id' => $jdupont->id(),
+            'perso_id' => $jdupont->getId(),
             'valide_n1' => 1,
             'valide' =>1,
             'supprime' => 0,
@@ -187,16 +187,16 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
-        $this->assertStringContainsString('"agent_id":"' .$abreton->id() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_id":"' .$abreton->getId() .'"', $result[0]);
 
-        $this->assertStringContainsString('"agent_name":"' .$abreton->nom() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_name":"' .$abreton->getLastname() .'"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$kboivin->nom() .' ' .$kboivin->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' .$kboivin->getLastname() .' ' .$kboivin->getFirstname() .'"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$jdevoe->nom() .' ' .$jdevoe->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' .$jdevoe->getLastname() .' ' .$jdevoe->getFirstname() .'"', $result[0]);
 
         // Check if the absent agent is in not in the context menu
-        $this->assertStringNotContainsString('"name_title":"' .$jdupont->nom() .' ' .$jdupont->prenom() .'"', $result[0]);
+        $this->assertStringNotContainsString('"name_title":"' .$jdupont->getLastname() .' ' .$jdupont->getFirstname() .'"', $result[0]);
     }
 
 
@@ -240,7 +240,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
-        $ida = $abreton->id();
+        $ida = $abreton->getId();
         $agentHoliday = $this->builder->build(Agent::class, array(
             'login' => 'holiday', 'nom' => 'Day', 'prenom' => 'Holy', 'postes' => json_encode($id),
             'service' => 'Pôle Public', 'sites' => json_encode(array("1")), 'actif' =>'Actif',
@@ -266,7 +266,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $holiday = $builder->build(Holiday::class, array(
             'debut' => $start,
             'fin' => $end,
-            'perso_id' => $agentHoliday->id(),
+            'perso_id' => $agentHoliday->getId(),
             'valide_n1' => 1,
             'valide' =>0,
             'supprime' => 0,
@@ -305,15 +305,15 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
-        $this->assertStringContainsString('"agent_id":"' .$abreton->id() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_id":"' .$abreton->getId() .'"', $result[0]);
 
-        $this->assertStringContainsString('"agent_name":"' .$abreton->nom() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_name":"' .$abreton->getLastname() .'"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$kboivin->nom() .' ' .$kboivin->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' .$kboivin->getLastname() .' ' .$kboivin->getFirstname() .'"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$jdevoe->nom() .' ' .$jdevoe->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' .$jdevoe->getLastname() .' ' .$jdevoe->getFirstname() .'"', $result[0]);
 
-        $this->assertStringContainsString('{"id":"' .$agentHoliday->id() .'","nom":"' .$agentHoliday->nom() .'","prenom":"' .$agentHoliday->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('{"id":"' .$agentHoliday->getId() .'","nom":"' .$agentHoliday->getLastname() .'","prenom":"' .$agentHoliday->getFirstname() .'"', $result[0]);
     }
 
 
@@ -361,7 +361,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
-        $ida = $abreton->id();
+        $ida = $abreton->getId();
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode($id),
             'service' => 'Pôle Public', 'sites' => json_encode(array("1")), 'actif' =>'Actif',
@@ -402,15 +402,15 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
-        $this->assertStringContainsString('"agent_id":"' .$abreton->id() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_id":"' .$abreton->getId() .'"', $result[0]);
 
-        $this->assertStringContainsString('"agent_name":"' .$abreton->nom() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_name":"' .$abreton->getLastname() .'"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$kboivin->nom() .' ' .$kboivin->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' .$kboivin->getLastname() .' ' .$kboivin->getFirstname() .'"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$jdevoe->nom() .' ' .$jdevoe->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' .$jdevoe->getLastname() .' ' .$jdevoe->getFirstname() .'"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$jdupont->nom() .' ' .$jdupont->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' .$jdupont->getLastname() .' ' .$jdupont->getFirstname() .'"', $result[0]);
     }
 
 
@@ -458,7 +458,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
-        $ida = $abreton->id();
+        $ida = $abreton->getId();
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode($id),
             'service' => 'Pôle Public', 'sites' => json_encode(array("1")), 'actif' =>'Actif',
@@ -488,7 +488,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         );
 
         $planning = $this->builder->build(WorkingHour::class, array(
-            'perso_id' => $jdevoe->id(),
+            'perso_id' => $jdevoe->getId(),
             'debut' => $start,
             'fin' => $end,
             'temps' => json_encode($workingHours),
@@ -521,15 +521,15 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
-        $this->assertStringContainsString('"agent_id":"' .$abreton->id() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_id":"' .$abreton->getId() .'"', $result[0]);
 
-        $this->assertStringContainsString('"agent_name":"' .$abreton->nom() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_name":"' .$abreton->getLastname() .'"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$kboivin->nom() .' ' .$kboivin->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' .$kboivin->getLastname() .' ' .$kboivin->getFirstname() .'"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$jdupont->nom() .' ' .$jdupont->prenom() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' .$jdupont->getLastname() .' ' .$jdupont->getFirstname() .'"', $result[0]);
 
         // Check if the agent with wrong site is int the context menu
-        $this->assertStringNotContainsString('"name_title":"' .$jdevoe->nom() .' ' .$jdevoe->prenom() .'"', $result[0]);
+        $this->assertStringNotContainsString('"name_title":"' .$jdevoe->getLastname() .' ' .$jdevoe->getFirstname() .'"', $result[0]);
     }
 }

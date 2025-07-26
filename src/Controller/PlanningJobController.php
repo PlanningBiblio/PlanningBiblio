@@ -65,7 +65,7 @@ class PlanningJobController extends BaseController
 
             try {
                 $agent = $this->entityManager->find(Agent::class, $agent_id);
-                $fullname = $agent->prenom() . ' ' . $agent->nom();
+                $fullname = $agent->getFirstname() . ' ' . $agent->getLastname();
                 $available = true;
 
                 if ($agent->isAbsentOn("$date $start", "$date $end")) {

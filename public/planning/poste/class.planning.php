@@ -475,7 +475,7 @@ class planning
 
             // Création d'un tableau par agent, avec nom, prénom et email
             if (!isset($tab[$id])) {
-                $tab[$id]=array("nom"=>$agent->nom(), "prenom"=>$agent->prenom(), "mail"=>$agent->mail(), "planning"=>array());
+                $tab[$id]=array("nom"=>$agent->getLastname(), "prenom"=>$agent->getFirstname(), "mail"=>$agent->getMail(), "planning"=>array());
             }
             // Complète le tableau avec les postes, les sites, horaires et marquage "absent"
             $tab[$id]["planning"][]=array("debut"=> $elem["debut"], "fin"=> $elem["fin"], "absent"=> $elem["absent"], "site"=> $site, "poste"=> $elem['poste']);

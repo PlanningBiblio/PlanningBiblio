@@ -35,12 +35,12 @@ class NameTest extends KernelTestCase
                 'name' => $name,
             ];
 
-            $agentObject[$agent->id()] = $agent;
+            $agentObject[$agent->getId()] = $agent;
 
-            $agentTable[$agent->id()] = [
-                'id' => $agent->id(),
-                'nom' => $agent->nom(),
-                'prenom' => $agent->prenom(),
+            $agentTable[$agent->getId()] = [
+                'id' => $agent->getId(),
+                'nom' => $agent->getLastname(),
+                'prenom' => $agent->getFirstname(),
             ];
         }
 
@@ -48,40 +48,40 @@ class NameTest extends KernelTestCase
             $agent = $a['agent'];
             $name = $a['name'];
 
-            $output = nom($agent->id());
+            $output = nom($agent->getId());
             $this->assertEquals($name[2], $output);
 
-            $output = nom($agent->id(), 'nom p');
+            $output = nom($agent->getId(), 'nom p');
             $this->assertEquals($name[2], $output);
 
-            $output = nom($agent->id(), 'prenom nom');
+            $output = nom($agent->getId(), 'prenom nom');
             $this->assertEquals($name[3], $output);
 
-            $output = nom($agent->id(), 'nom prenom');
+            $output = nom($agent->getId(), 'nom prenom');
             $this->assertEquals($name[4], $output);
 
-            $output = nom($agent->id(), $agentObject);
+            $output = nom($agent->getId(), $agentObject);
             $this->assertEquals($name[2], $output);
 
-            $output = nom($agent->id(), 'nom p', $agentObject);
+            $output = nom($agent->getId(), 'nom p', $agentObject);
             $this->assertEquals($name[2], $output);
 
-            $output = nom($agent->id(), 'prenom nom', $agentObject);
+            $output = nom($agent->getId(), 'prenom nom', $agentObject);
             $this->assertEquals($name[3], $output);
 
-            $output = nom($agent->id(), 'nom prenom', $agentObject);
+            $output = nom($agent->getId(), 'nom prenom', $agentObject);
             $this->assertEquals($name[4], $output);
 
-            $output = nom($agent->id(), $agentTable);
+            $output = nom($agent->getId(), $agentTable);
             $this->assertEquals($name[2], $output);
 
-            $output = nom($agent->id(), 'nom p', $agentTable);
+            $output = nom($agent->getId(), 'nom p', $agentTable);
             $this->assertEquals($name[2], $output);
 
-            $output = nom($agent->id(), 'prenom nom', $agentTable);
+            $output = nom($agent->getId(), 'prenom nom', $agentTable);
             $this->assertEquals($name[3], $output);
 
-            $output = nom($agent->id(), 'nom prenom', $agentTable);
+            $output = nom($agent->getId(), 'nom prenom', $agentTable);
             $this->assertEquals($name[4], $output);
         }
     }

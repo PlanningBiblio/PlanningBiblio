@@ -83,8 +83,8 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEquals('Boivin', $info->getLastname(), 'nom');
         $this->assertEquals('Karel', $info->getFirstname(), 'prenom');
         $this->assertEquals('kboivin@mail.fr', $info->getMail(), 'mail');
-        $this->assertEquals($start, $info->getArrivalDate()->format("d/m/Y"), 'arrivee');
-        $this->assertEquals($end, $info->getDepartureDate()->format("d/m/Y"), 'depart');
+        $this->assertEquals($start, $info->getArrival()->format("d/m/Y"), 'arrivee');
+        $this->assertEquals($end, $info->getDeparture()->format("d/m/Y"), 'depart');
     }
 
     public function testAddFormElement() {

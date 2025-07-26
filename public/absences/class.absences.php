@@ -198,7 +198,7 @@ class absences
                 $a->CSRFToken = $this->CSRFToken;
                 $a->dtstamp = $dtstamp;
                 $a->exdate = $this->exdate;
-                $a->perso_id = $agent->id();
+                $a->perso_id = $agent->getId();
                 $a->commentaires = $commentaires;
                 $a->debut = $debut;
                 $a->fin = $fin;
@@ -219,7 +219,7 @@ class absences
             } else {
                 // Ajout de l'absence dans la table 'absence'
                 $insert = array(
-                    "perso_id" => $agent->id(),
+                    "perso_id" => $agent->getId(),
                     "debut" => $debut_sql,
                     "fin" => $fin_sql,
                     "motif" => $motif,
@@ -251,17 +251,17 @@ class absences
 
             // Recherche du responsables pour l'envoi de notifications
             $a = new absences();
-            $a->getResponsables($debutSQL, $finSQL, $agent->id());
+            $a->getResponsables($debutSQL, $finSQL, $agent->getId());
             $responsables = $a->responsables;
 
             // Informations sur l'agent
-            $nom = $agent->nom();
-            $prenom = $agent->prenom();
+            $nom = $agent->getLastname();
+            $prenom = $agent->getFirstname();
 
             // Choix des destinataires des notifications selon la configuration
             if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
                 $a=new absences();
-                $a->getRecipients2(null, $agent->id(), $notifications, 500, $debutSQL, $finSQL);
+                $a->getRecipients2(null, $agent->getId(), $notifications, 500, $debutSQL, $finSQL);
                 $destinataires = $a->recipients;
             } else {
                 $a = new absences();
@@ -271,7 +271,7 @@ class absences
 
             // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
             $info = array(array("name"=>"MAX(id)", "as"=>"id"));
-            $where = array("debut"=>$debut_sql, "fin"=>$fin_sql, "perso_id"=>$agent->id());
+            $where = array("debut"=>$debut_sql, "fin"=>$fin_sql, "perso_id"=>$agent->getId());
             $db = new db();
             $db->select2("absences", $info, $where);
             if ($db->result) {
@@ -282,7 +282,7 @@ class absences
             $a = new absences();
             $a->debut = $debut_sql;
             $a->fin = $fin_sql;
-            $a->perso_ids = array($agent->id());
+            $a->perso_ids = array($agent->getId());
             $a->infoPlannings();
             $infosPlanning = $a->message;
 
@@ -1178,7 +1178,7 @@ class absences
 
         // recipients : liste des mails qui sera retournée
         $recipients=array();
-        $mail = $agent->mail();
+        $mail = $agent->getMail();
         $mails_responsables = $agent->get_manager_emails();
 
         // Agents ayant le droits de gérer les absences

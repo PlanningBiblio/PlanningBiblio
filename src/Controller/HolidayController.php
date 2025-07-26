@@ -1032,8 +1032,8 @@ class HolidayController extends BaseController
 
             // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
             $agent = $this->entityManager->find(Agent::class, $perso_id);
-            $nom = $agent->nom();
-            $prenom = $agent->prenom();
+            $nom = $agent->getLastname();
+            $prenom = $agent->getFirstname();
 
             // Choix du sujet et des destinataires en fonction du degré de validation
             switch ($valide) {
@@ -1140,8 +1140,8 @@ class HolidayController extends BaseController
         // Envoi d'une notification par email
         // Récupération des adresses e-mails de l'agent et des responsables pour m'envoi des alertes
         $agent = $this->entityManager->find(Agent::class, $perso_id);
-        $nom = $agent->nom();
-        $prenom = $agent->prenom();
+        $nom = $agent->getLastname();
+        $prenom = $agent->getFirstname();
 
         $recover = ($post['debit'] == 'recuperation' && $this->config('Conges-Recuperations') == '1') ? 1 : 0;
 

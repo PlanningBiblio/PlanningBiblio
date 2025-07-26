@@ -17,6 +17,12 @@ class Test
     #[ORM\Column(type: Types::TEXT)]
     private ?string $test = null;
 
+    #[ORM\Column(type: Types::ARRAY)]
+    private array $array = [];
+
+    #[ORM\Column]
+    private ?float $ffloat = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -30,6 +36,30 @@ class Test
     public function setTest(string $test): static
     {
         $this->test = $test;
+
+        return $this;
+    }
+
+    public function getArray(): array
+    {
+        return $this->array;
+    }
+
+    public function setArray(array $array): static
+    {
+        $this->array = $array;
+
+        return $this;
+    }
+
+    public function getFfloat(): ?float
+    {
+        return $this->ffloat;
+    }
+
+    public function setFfloat(float $ffloat): static
+    {
+        $this->ffloat = $ffloat;
 
         return $this;
     }

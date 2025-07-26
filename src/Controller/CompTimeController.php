@@ -155,8 +155,8 @@ class CompTimeController extends BaseController
 
         // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
         $agent = $this->entityManager->find(Agent::class, $perso_id);
-        $nom = $agent->nom();
-        $prenom = $agent->prenom();
+        $nom = $agent->getLastname();
+        $prenom = $agent->getFirstname();
 
         // Choix des destinataires en fonction de la configuration
         if ($this->config('Absences-notifications-agent-par-agent')) {

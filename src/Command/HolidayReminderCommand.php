@@ -112,7 +112,7 @@ Exemple à ajouter en crontab :
         foreach ($agentRepository as $a) {
             $a->notification_level1 = [];
             $a->notification_level2 = [];
-            $agents[$a->id()] = $a;
+            $agents[$a->getId()] = $a;
         }
 
         // Look for managers when the validation scheme is enabled (config: Absences-notifications-agent-par-agent
@@ -122,12 +122,12 @@ Exemple à ajouter en crontab :
 
             foreach ($agents as &$a) {
                 foreach ($manager as $m) {
-                    if ($a->id() == $m->perso_id()->id()) {
+                    if ($a->getId() == $m->perso_id()->getId()) {
                         if ($m->notification_level1()) {
-                            $a->notification_level1[] = $m->responsable()->mail();
+                            $a->notification_level1[] = $m->responsable()->getMail();
                         }
                         if ($m->notification_level2()) {
-                            $a->notification_level2[] = $m->responsable()->mail();
+                            $a->notification_level2[] = $m->responsable()->getMail();
                         }
                     }
                 }
@@ -142,8 +142,8 @@ Exemple à ajouter en crontab :
             $agent = $agents[$elem->perso_id()];
 
             $tmp = $elem;
-            $tmp->lastname = $agent->nom();
-            $tmp->firstname = $agent->prenom();
+            $tmp->lastname = $agent->getLastname();
+            $tmp->firstname = $agent->getFirstname();
             $tmp->recipients = [];
 
             // Consider the validation scheme (config Absences-notifications-agent-par-agent)
