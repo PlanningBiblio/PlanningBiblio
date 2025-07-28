@@ -159,14 +159,14 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
         // Make kboivin manager of dailleboust
         $manager = new Manager();
-        $manager->perso_id($dailleboust);
-        $manager->notification_level1(0);
+        $manager->setUser($dailleboust);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Make kboivin manager of abreton
         $manager = new Manager();
-        $manager->perso_id($abreton);
-        $manager->notification_level1(0);
+        $manager->setUser($abreton);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Login with agent having rights for absences
@@ -199,7 +199,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $absence->fin = $date->format('Y-m-d');
         $absence->hre_debut = '00:00:00';
         $absence->hre_fin = '23:59:59';
-        $absence->perso_ids = array($agent->id());
+        $absence->perso_ids = array($agent->getId());
         $absence->commentaires = '';
         $absence->motif = 'Foo';
         $absence->CSRFToken = $this->CSRFToken;

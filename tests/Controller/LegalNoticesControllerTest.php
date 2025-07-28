@@ -1,7 +1,6 @@
 <?php
 
 use App\Model\Agent;
-use App\Model\Manager;
 use App\Model\Skill;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;

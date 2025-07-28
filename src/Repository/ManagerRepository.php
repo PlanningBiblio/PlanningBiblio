@@ -47,7 +47,6 @@ class ManagerRepository extends EntityRepository
         $entityManager = $this->getEntityManager();
         $agent = $entityManager->getRepository(Agent::class)->find($agent_id);
 
-
         foreach ($manager_ids as $id) {
             $notification = in_array($id, $notifications) ? 1 : 0 ;
             $agent_manager = $entityManager->getRepository(Agent::class)->find($id);
@@ -59,19 +58,19 @@ class ManagerRepository extends EntityRepository
             // if a manager already exists,
             // its a level one.
             if ($manager) {
-                $manager->level2(1);
-                $manager->notification_level2($notification);
+                $manager->setLevel2(1);
+                $manager->setLevel2Notification($notification);
                 $entityManager->persist($manager);
                 continue;
             }
 
             $manager = new Manager();
-            $manager->perso_id($agent);
-            $manager->responsable($agent_manager);
-            $manager->level1($level == 1 ? 1 : 0);
-            $manager->level2($level == 2 ? 1 : 0);
-            $manager->notification_level1($level == 1 ? $notification : 0);
-            $manager->notification_level2($level == 2 ? $notification : 0);
+            $manager->setUser($agent);
+            $manager->setManager($agent_manager);
+            $manager->setLevel1($level == 1 ? 1 : 0);
+            $manager->setLevel2($level == 2 ? 1 : 0);
+            $manager->setLevel1Notification($level == 1 ? $notification : 0);
+            $manager->setLevel2Notification($level == 2 ? $notification : 0);
             $entityManager->persist($manager);
         }
         $entityManager->flush();

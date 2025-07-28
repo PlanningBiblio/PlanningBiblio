@@ -25,4 +25,8 @@ class IPBlocker
     #[ORM\Column]
     private ?\DateTime $timestamp = null;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

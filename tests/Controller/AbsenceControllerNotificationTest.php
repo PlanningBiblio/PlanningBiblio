@@ -70,14 +70,14 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
 
         // Make kboivin manager of jdupont
         $manager = new Manager();
-        $manager->perso_id($jdupont);
-        $manager->notification_level1(0);
+        $manager->setUser($jdupont);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Make kboivin manager of abreton
         $manager = new Manager();
-        $manager->perso_id($abreton);
-        $manager->notification_level1(0);
+        $manager->setUser($abreton);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Login with agent without rights for absences

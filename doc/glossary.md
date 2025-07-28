@@ -3,6 +3,7 @@
 ## Model's Columns
 
 * id
+* user (previously agent)
 * userId (previously perso_id or agent_id or agentId)
 * start (previously debut)
 * end (previously fin)

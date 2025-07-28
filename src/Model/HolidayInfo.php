@@ -26,4 +26,8 @@ class HolidayInfo
     #[ORM\Column]
     private ?\DateTime $saisie = null;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

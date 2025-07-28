@@ -31,8 +31,8 @@ class AgentManagerTest extends TestCase
         $agent2 = $this->builder->build(Agent::class);
 
         $manager = new Manager();
-        $manager->perso_id($agent1);
-        $manager->notification_level1(0);
+        $manager->setUser($agent1);
+        $manager->setLevel1Notification(0);
         $agent_manager->addManaged($manager);
 
         $this->entityManager->persist($agent_manager);
@@ -42,21 +42,21 @@ class AgentManagerTest extends TestCase
         $this->entityManager->refresh($agent2);
         $this->entityManager->refresh($agent_manager);
 
-        $this->assertTrue($agent_manager->isManagerOf(array($agent1->id())));
+        $this->assertTrue($agent_manager->isManagerOf(array($agent1->getId())));
 
-        $this->assertFalse($agent_manager->isManagerOf(array($agent2->id())));
+        $this->assertFalse($agent_manager->isManagerOf(array($agent2->getId())));
 
-        $this->assertFalse($agent_manager->isManagerOf(array($agent1->id(), $agent2->id())));
+        $this->assertFalse($agent_manager->isManagerOf(array($agent1->getId(), $agent2->getId())));
 
         $manager2 = new Manager();
-        $manager2->perso_id($agent2);
-        $manager2->notification_level1(0);
+        $manager2->setUser($agent2);
+        $manager2->setLevel1Notification(0);
         $agent_manager->addManaged($manager2);
 
         $this->entityManager->persist($agent_manager);
         $this->entityManager->flush();
 
-        $this->assertTrue($agent_manager->isManagerOf(array($agent1->id(), $agent2->id())));
+        $this->assertTrue($agent_manager->isManagerOf(array($agent1->getId(), $agent2->getId())));
     }
 
     public function testIsManagerOfByLevel()
@@ -67,15 +67,15 @@ class AgentManagerTest extends TestCase
         $agent3 = $this->builder->build(Agent::class);
 
         $manager = new Manager();
-        $manager->perso_id($agent1);
-        $manager->level1(1);
-        $manager->level2(0);
+        $manager->setUser($agent1);
+        $manager->setLevel1(1);
+        $manager->setLevel2(0);
         $agent_manager->addManaged($manager);
 
         $manager2 = new Manager();
-        $manager2->perso_id($agent2);
-        $manager2->level1(0);
-        $manager2->level2(1);
+        $manager2->setUser($agent2);
+        $manager2->setLevel1(0);
+        $manager2->setLevel2(1);
         $agent_manager->addManaged($manager2);
 
         $this->entityManager->persist($agent_manager);
@@ -86,16 +86,16 @@ class AgentManagerTest extends TestCase
         $this->entityManager->refresh($agent3);
         $this->entityManager->refresh($agent_manager);
 
-        $this->assertTrue($agent_manager->isManagerOf(array($agent1->id())));
-        $this->assertTrue($agent_manager->isManagerOf(array($agent1->id()), 'level1'));
-        $this->assertFalse($agent_manager->isManagerOf(array($agent1->id()), 'level2'));
+        $this->assertTrue($agent_manager->isManagerOf(array($agent1->getId())));
+        $this->assertTrue($agent_manager->isManagerOf(array($agent1->getId()), 'level1'));
+        $this->assertFalse($agent_manager->isManagerOf(array($agent1->getId()), 'level2'));
 
-        $this->assertTrue($agent_manager->isManagerOf(array($agent2->id())));
-        $this->assertFalse($agent_manager->isManagerOf(array($agent2->id()), 'level1'));
-        $this->assertTrue($agent_manager->isManagerOf(array($agent2->id()), 'level2'));
+        $this->assertTrue($agent_manager->isManagerOf(array($agent2->getId())));
+        $this->assertFalse($agent_manager->isManagerOf(array($agent2->getId()), 'level1'));
+        $this->assertTrue($agent_manager->isManagerOf(array($agent2->getId()), 'level2'));
 
-        $this->assertFalse($agent_manager->isManagerOf(array($agent3->id())));
-        $this->assertFalse($agent_manager->isManagerOf(array($agent3->id()), 'level1'));
-        $this->assertFalse($agent_manager->isManagerOf(array($agent3->id()), 'level2'));
+        $this->assertFalse($agent_manager->isManagerOf(array($agent3->getId())));
+        $this->assertFalse($agent_manager->isManagerOf(array($agent3->getId()), 'level1'));
+        $this->assertFalse($agent_manager->isManagerOf(array($agent3->getId()), 'level2'));
     }
 }

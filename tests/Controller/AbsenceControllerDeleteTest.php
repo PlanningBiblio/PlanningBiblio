@@ -2,7 +2,6 @@
 
 use App\Model\Absence;
 use App\Model\Agent;
-use App\Model\Manager;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 

@@ -122,11 +122,11 @@ Exemple à ajouter en crontab :
 
             foreach ($agents as &$a) {
                 foreach ($manager as $m) {
-                    if ($a->getId() == $m->perso_id()->getId()) {
-                        if ($m->notification_level1()) {
+                    if ($a->getId() == $m->getUser()->getId()) {
+                        if ($m->getLevel1Notification()) {
                             $a->notification_level1[] = $m->responsable()->getMail();
                         }
-                        if ($m->notification_level2()) {
+                        if ($m->getLevel2Notification()) {
                             $a->notification_level2[] = $m->responsable()->getMail();
                         }
                     }

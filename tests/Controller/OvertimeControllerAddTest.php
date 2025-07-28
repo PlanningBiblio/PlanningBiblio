@@ -1,7 +1,6 @@
 <?php
 
 use App\Model\Agent;
-use App\Model\Manager;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 

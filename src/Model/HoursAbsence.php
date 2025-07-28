@@ -22,4 +22,9 @@ class HoursAbsence
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $heures = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

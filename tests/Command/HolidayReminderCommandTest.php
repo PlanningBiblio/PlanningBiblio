@@ -356,42 +356,42 @@
 //         $entityManager = $GLOBALS['entityManager'];
 // 
 //         $manager = new Manager();
-//         $manager->perso_id($agent);
-//         $manager->responsable($agentLevel1);
-//         $manager->level1(1);
-//         $manager->level1(0);
-//         $manager->notification_level1(0);
-//         $manager->notification_level2(0);
+//         $manager->setUser($agent);
+//         $manager->setManager($agentLevel1);
+//         $manager->setLevel1(1);
+//         $manager->setLevel2(0);
+//         $manager->setLevel1Notification(0);
+//         $manager->setLevel2Notification(0);
 //         $entityManager->persist($manager);
 //         $entityManager->flush();
 // 
 //         $manager = new Manager();
-//         $manager->perso_id($agent);
-//         $manager->responsable($agentLevel1Notif);
-//         $manager->level1(1);
-//         $manager->level1(0);
-//         $manager->notification_level1(1);
-//         $manager->notification_level2(0);
+//         $manager->setUser($agent);
+//         $manager->setManager($agentLevel1Notif);
+//         $manager->setLevel1(1);
+//         $manager->setLevel2(0);
+//         $manager->setLevel1Notification(1);
+//         $manager->setLevel2Notification(0);
 //         $entityManager->persist($manager);
 //         $entityManager->flush();
 // 
 //         $manager = new Manager();
-//         $manager->perso_id($agent);
-//         $manager->responsable($agentLevel2);
-//         $manager->level1(1);
-//         $manager->level1(1);
-//         $manager->notification_level1(0);
-//         $manager->notification_level2(0);
+//         $manager->setUser($agent);
+//         $manager->setManager($agentLevel2);
+//         $manager->setLevel1(1);
+//         $manager->setLevel2(1);
+//         $manager->setLevel1Notification(0);
+//         $manager->setLevel2Notification(0);
 //         $entityManager->persist($manager);
 //         $entityManager->flush();
 // 
 //         $manager = new Manager();
-//         $manager->perso_id($agent);
-//         $manager->responsable($agentLevel2Notif);
-//         $manager->level1(1);
-//         $manager->level1(1);
-//         $manager->notification_level1(0);
-//         $manager->notification_level2(1);
+//         $manager->setUser($agent);
+//         $manager->setManager($agentLevel2Notif);
+//         $manager->setLevel1(1);
+//         $manager->setLevel2(1);
+//         $manager->setLevel1Notification(0);
+//         $manager->setLevel2Notification(1);
 //         $entityManager->persist($manager);
 //         $entityManager->flush();
 // 
