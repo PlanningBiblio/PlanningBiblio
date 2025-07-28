@@ -2,30 +2,80 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'pl_notifications')]
-class PlanningNotification extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'pl_notifications')]
+class PlanningNotification
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'date')] // *
-    protected $date;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date = null;
 
-    #[Column(type: 'integer')] // *
-    protected $site;
+    #[ORM\Column]
+    private ?int $site = null;
 
-    #[Column(type: 'datetime')]
-    protected $update_time;
+    #[ORM\Column]
+    private ?\DateTime $update_time = null;
 
-    #[Column(type: 'text')] // *
-    protected $data;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $data = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getData(): ?string
+    {
+        return $this->data;
+    }
+
+    public function setData(string $data): static
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTime
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTime $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getSite(): ?int
+    {
+        return $this->site;
+    }
+
+    public function setSite(int $site): static
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    public function getUpdateTime(): ?\DateTime
+    {
+        return $this->update_time;
+    }
+
+    public function setUpdateTime(\DateTime $updateTime): static
+    {
+        $this->update_time = $updateTime;
+
+        return $this;
+    }
 }

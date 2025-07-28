@@ -2,34 +2,95 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'pl_notes')]
-class PlanningNote extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'pl_notes')]
+class PlanningNote
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'date')] // *
-    protected $date;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date = null;
 
-    #[Column(type: 'integer')] // *
-    protected $site;
+    #[ORM\Column]
+    private ?int $site = null;
 
-    #[Column(type: 'text')]
-    protected $text;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $text = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $timestamp;
+    #[ORM\Column]
+    private ?\DateTime $timestamp = null;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getComments(): ?string
+    {
+        return $this->text;
+    }
+
+    public function setComments(string $comments): static
+    {
+        $this->text = $comments;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTime
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTime $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getSite(): ?int
+    {
+        return $this->site;
+    }
+
+    public function setSite(int $site): static
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    public function getTimestamp(): ?\DateTime
+    {
+        return $this->timestamp;
+    }
+
+    public function setTimestamp(\DateTime $timestamp): static
+    {
+        $this->timestamp = $timestamp;
+
+        return $this;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->perso_id;
+    }
+
+    public function setUserId(int $userId): static
+    {
+        $this->perso_id = $userId;
+
+        return $this;
+    }
 }
