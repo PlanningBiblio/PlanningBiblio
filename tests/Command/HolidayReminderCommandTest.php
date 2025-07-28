@@ -293,8 +293,8 @@
 //         }
 // 
 //         $holiday = $entityManager->getRepository(Holiday::class)->find(1);
-//         $holiday->valide_n1($level1);
-//         $holiday->valide($level2);
+//         $holiday->setValidLevel1($level1);
+//         $holiday->setValidLevel2($level2);
 //         $entityManager->persist($holiday);
 //         $entityManager->flush();
 // 
@@ -400,17 +400,17 @@
 //         $end = new \DateTime('+5 day');
 // 
 //         $holiday = new Holiday();
-//         $holiday->perso_id($agent->id());
-//         $holiday->debut($start);
-//         $holiday->fin($end);
-//         $holiday->saisie($now);
-//         $holiday->modif($agent->id());
-//         $holiday->supprime(0);
-//         $holiday->information(0);
-//         $holiday->saisie_par($agent->id());
-//         $holiday->validation_n1($now);
-//         $holiday->valide_n1(0);
-//         $holiday->valide(0);
+//         $holiday->setUserId($agent->getId());
+//         $holiday->setStart($start);
+//         $holiday->setEnd($end);
+//         $holiday->setEntryDate($now);
+//         $holiday->setChange($agent->getId());
+//         $holiday->setDelete(0);
+//         $holiday->setInfo(0);
+//         $holiday->setEntry($agent->getId());
+//         $holiday->setValidLevel1Date($now);
+//         $holiday->setValidLevel1(0);
+//         $holiday->setValidLevel2(0);
 // 
 //         $entityManager->persist($holiday);
 //         $entityManager->flush();

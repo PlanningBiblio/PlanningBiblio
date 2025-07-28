@@ -1500,7 +1500,7 @@ class AbsenceController extends BaseController
         // delete all agents the logged in user cannot create absences for.
         if ($this->config('Absences-notifications-agent-par-agent') and !$this->adminN2) {
             $logged_in = $this->entityManager->find(Agent::class, $session->get('loginId'));
-            $accepted_ids = array_map(function($m) { return $m->perso_id()->id(); }, $logged_in->getManaged());
+            $accepted_ids = array_map(function($m) { return $m->perso_id()->getId(); }, $logged_in->getManaged());
             $accepted_ids[] = $session->get('loginId');
 
             foreach ($valid_ids as $k => $v) {

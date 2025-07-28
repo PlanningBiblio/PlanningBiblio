@@ -29,11 +29,11 @@ class HolidayControllerListTest extends PLBWebTestCase
         ));
 
         $holiday = $this->builder->build(Holiday::class, array(
-            'perso_id' => $agent->id(), 'debut' => $date, 'fin' => $date,
-            'commentaires' => 'pop','origin_id' => $holiday1->id(), 'regul_id' => $holiday1->id(),
+            'perso_id' => $agent->getId(), 'debut' => $date, 'fin' => $date,
+            'commentaires' => 'pop','origin_id' => $holiday1->getId(), 'regul_id' => $holiday1->getId(),
         ));
 
-        return $holiday->id();
+        return $holiday->getId();
     }
 
     public function testHolidayList()

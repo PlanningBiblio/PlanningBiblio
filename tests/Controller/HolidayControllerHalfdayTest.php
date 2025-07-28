@@ -31,23 +31,23 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
 
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
 
-        $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id())));
+        $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->getId())));
 
         $this->client->request('POST', '/holiday', $data);
 
         $jdevoe_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
-        $start = $jdevoe_holiday->debut()->format('Y-m-d H:i:s');
+        $start = $jdevoe_holiday->getStart()->format('Y-m-d H:i:s');
         $this->assertEquals($start, '2022-01-24 00:00:00', 'Fullday holiday starts at 00:00:00');
 
-        $end = $jdevoe_holiday->fin()->format('Y-m-d H:i:s');
+        $end = $jdevoe_holiday->getEnd()->format('Y-m-d H:i:s');
         $this->assertEquals($end, '2022-01-24 23:59:59', 'Fullday holiday ends at 23:59:59');
 
-        $this->assertEquals($jdevoe_holiday->halfday(), 1, 'Halfday is enabled');
-        $this->assertEquals($jdevoe_holiday->start_halfday(), 'fullday', 'start_halfday is fullday');
-        $this->assertEquals($jdevoe_holiday->end_halfday(), 'fullday', 'end_halfday is fullday');
+        $this->assertEquals($jdevoe_holiday->getHalfDay(), 1, 'Halfday is enabled');
+        $this->assertEquals($jdevoe_holiday->getHalfDayStart(), 'fullday', 'start_halfday is fullday');
+        $this->assertEquals($jdevoe_holiday->getHalfDayEnd(), 'fullday', 'end_halfday is fullday');
     }
 
     public function testHolidayOneAgentOnMorning()
@@ -57,23 +57,23 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
-        $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id()), 'start_halfday' => 'morning', 'end_halfday' => 'morning'));
+        $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->getId()), 'start_halfday' => 'morning', 'end_halfday' => 'morning'));
 
         $this->client->request('POST', '/holiday', $data);
 
         $jdevoe_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
-        $start = $jdevoe_holiday->debut()->format('Y-m-d H:i:s');
+        $start = $jdevoe_holiday->getStart()->format('Y-m-d H:i:s');
         $this->assertEquals($start, '2022-01-24 00:00:00', 'Morning holiday starts at 00:00:00');
 
-        $end = $jdevoe_holiday->fin()->format('Y-m-d H:i:s');
+        $end = $jdevoe_holiday->getEnd()->format('Y-m-d H:i:s');
         $this->assertEquals($end, '2022-01-24 12:30:00', 'Morning holiday ends at 12:30:00');
 
-        $this->assertEquals($jdevoe_holiday->halfday(), 1, 'Halfday is enabled');
-        $this->assertEquals($jdevoe_holiday->start_halfday(), 'morning', 'start_halfday is morning');
-        $this->assertEquals($jdevoe_holiday->end_halfday(), 'morning', 'end_halfday is morning');
+        $this->assertEquals($jdevoe_holiday->getHalfDay(), 1, 'Halfday is enabled');
+        $this->assertEquals($jdevoe_holiday->getHalfDayStart(), 'morning', 'start_halfday is morning');
+        $this->assertEquals($jdevoe_holiday->getHalfDayEnd(), 'morning', 'end_halfday is morning');
     }
 
     public function testHolidayOneAgentOnAfternoon()
@@ -83,23 +83,23 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
-        $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id()), 'start_halfday' => 'afternoon', 'end_halfday' => 'afternoon'));
+        $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->getId()), 'start_halfday' => 'afternoon', 'end_halfday' => 'afternoon'));
 
         $this->client->request('POST', '/holiday', $data);
 
         $jdevoe_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
-        $start = $jdevoe_holiday->debut()->format('Y-m-d H:i:s');
+        $start = $jdevoe_holiday->getStart()->format('Y-m-d H:i:s');
         $this->assertEquals($start, '2022-01-24 13:30:00', 'Afternoon holiday starts at 13:30:00');
 
-        $end = $jdevoe_holiday->fin()->format('Y-m-d H:i:s');
+        $end = $jdevoe_holiday->getEnd()->format('Y-m-d H:i:s');
         $this->assertEquals($end, '2022-01-24 23:59:59', 'Morning holiday ends at 23:59:59');
 
-        $this->assertEquals($jdevoe_holiday->halfday(), 1, 'Halfday is enabled');
-        $this->assertEquals($jdevoe_holiday->start_halfday(), 'afternoon', 'start_halfday is afternoon');
-        $this->assertEquals($jdevoe_holiday->end_halfday(), 'afternoon', 'end_halfday is afternoon');
+        $this->assertEquals($jdevoe_holiday->getHalfDay(), 1, 'Halfday is enabled');
+        $this->assertEquals($jdevoe_holiday->getHalfDayStart(), 'afternoon', 'start_halfday is afternoon');
+        $this->assertEquals($jdevoe_holiday->getHalfDayEnd(), 'afternoon', 'end_halfday is afternoon');
     }
 
     public function testHolidayManyAgentsOnAfternoon()
@@ -111,37 +111,37 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
         $this->addWorkingHours($abreton, array('09:00:00', '12:00:00', '13:00:00', '17:00:00'));
 
-        $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id(), $abreton->id()), 'start_halfday' => 'afternoon', 'end_halfday' => 'afternoon'));
+        $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->getId(), $abreton->getId()), 'start_halfday' => 'afternoon', 'end_halfday' => 'afternoon'));
 
         $this->client->request('POST', '/holiday', $data);
 
         $jdevoe_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
-        $start = $jdevoe_holiday->debut()->format('Y-m-d H:i:s');
+        $start = $jdevoe_holiday->getStart()->format('Y-m-d H:i:s');
         $this->assertEquals($start, '2022-01-24 13:30:00', 'Afternoon holiday starts at 13:30:00');
 
-        $end = $jdevoe_holiday->fin()->format('Y-m-d H:i:s');
+        $end = $jdevoe_holiday->getEnd()->format('Y-m-d H:i:s');
         $this->assertEquals($end, '2022-01-24 23:59:59', 'Morning holiday ends at 23:59:59');
 
-        $this->assertEquals($jdevoe_holiday->halfday(), 1, 'Halfday is enabled');
-        $this->assertEquals($jdevoe_holiday->start_halfday(), 'afternoon', 'start_halfday is afternoon');
-        $this->assertEquals($jdevoe_holiday->end_halfday(), 'afternoon', 'end_halfday is afternoon');
+        $this->assertEquals($jdevoe_holiday->getHalfDay(), 1, 'Halfday is enabled');
+        $this->assertEquals($jdevoe_holiday->getHalfDayStart(), 'afternoon', 'start_halfday is afternoon');
+        $this->assertEquals($jdevoe_holiday->getHalfDayEnd(), 'afternoon', 'end_halfday is afternoon');
 
         $abreton_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $abreton->id())
+            array('perso_id' => $abreton->getId())
         );
 
-        $start = $abreton_holiday->debut()->format('Y-m-d H:i:s');
+        $start = $abreton_holiday->getStart()->format('Y-m-d H:i:s');
         $this->assertEquals($start, '2022-01-24 13:00:00', 'Afternoon holiday starts at 13:00:00');
 
-        $end = $abreton_holiday->fin()->format('Y-m-d H:i:s');
+        $end = $abreton_holiday->getEnd()->format('Y-m-d H:i:s');
         $this->assertEquals($end, '2022-01-24 23:59:59', 'Morning holiday ends at 23:59:59');
 
-        $this->assertEquals($abreton_holiday->halfday(), 1, 'Halfday is enabled');
-        $this->assertEquals($abreton_holiday->start_halfday(), 'afternoon', 'start_halfday is afternoon');
-        $this->assertEquals($abreton_holiday->end_halfday(), 'afternoon', 'end_halfday is afternoon');
+        $this->assertEquals($abreton_holiday->getHalfDay(), 1, 'Halfday is enabled');
+        $this->assertEquals($abreton_holiday->getHalfDayStart(), 'afternoon', 'start_halfday is afternoon');
+        $this->assertEquals($abreton_holiday->getHalfDayEnd(), 'afternoon', 'end_halfday is afternoon');
     }
 
     public function testHolidayOneAgentSeveralDays()
@@ -151,7 +151,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
-        $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->id()),
+        $data = $this->getHolidayData(array('perso_ids' => array($jdevoe->getId()),
             'start_halfday' => 'afternoon',
             'end_halfday' => 'morning',
             'debut' => '24/01/2022',
@@ -161,18 +161,18 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $this->client->request('POST', '/holiday', $data);
 
         $jdevoe_holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
-        $start = $jdevoe_holiday->debut()->format('Y-m-d H:i:s');
+        $start = $jdevoe_holiday->getStart()->format('Y-m-d H:i:s');
         $this->assertEquals($start, '2022-01-24 13:30:00', 'Afternoon holiday starts at 13:30:00');
 
-        $end = $jdevoe_holiday->fin()->format('Y-m-d H:i:s');
+        $end = $jdevoe_holiday->getEnd()->format('Y-m-d H:i:s');
         $this->assertEquals($end, '2022-01-28 12:30:00', 'Morning holiday ends at 23:59:59');
 
-        $this->assertEquals($jdevoe_holiday->halfday(), 1, 'Halfday is enabled');
-        $this->assertEquals($jdevoe_holiday->start_halfday(), 'afternoon', 'start_halfday is afternoon');
-        $this->assertEquals($jdevoe_holiday->end_halfday(), 'morning', 'end_halfday is afternoon');
+        $this->assertEquals($jdevoe_holiday->getHalfDay(), 1, 'Halfday is enabled');
+        $this->assertEquals($jdevoe_holiday->getHalfDayStart(), 'afternoon', 'start_halfday is afternoon');
+        $this->assertEquals($jdevoe_holiday->getHalfDayEnd(), 'morning', 'end_halfday is afternoon');
     }
 
     private function addWorkingHours($agent, $times)

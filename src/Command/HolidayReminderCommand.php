@@ -139,7 +139,7 @@ Exemple à ajouter en crontab :
 
         // Assemble les informations des congés et des agents
         foreach ($holidays as $elem) {
-            $agent = $agents[$elem->perso_id()];
+            $agent = $agents[$elem->getUserId()];
 
             $tmp = $elem;
             $tmp->lastname = $agent->getLastname();
@@ -148,7 +148,7 @@ Exemple à ajouter en crontab :
 
             // Consider the validation scheme (config Absences-notifications-agent-par-agent)
             if ($config['Absences-notifications-agent-par-agent']) {
-                if ($elem->valide_n1() == 0) {
+                if ($elem->getValidLevel1() == 0) {
                     $tmp->recipients = $agent->notification_level1;
                 } else { 
                     $tmp->recipients = $agent->notification_level2;
@@ -157,7 +157,7 @@ Exemple à ajouter en crontab :
             } else {
                 // TODO : Use Absences-notifications-A1, Absences-notifications-B1 instead of Conges-Rappels-N1, then remove param Conges-Rappels-N1
                 // Ajoute les destinataires pour les congés n'étant pas validés en N1 en fonction du paramètre $config['Conges-Rappels-N1']
-                if ($elem->valide_n1() == 0) {
+                if ($elem->getValidLevel1() == 0) {
                     $destN1 = json_decode(html_entity_decode($config['Conges-Rappels-N1'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
 
                     if (is_array($destN1)) {
@@ -172,7 +172,7 @@ Exemple à ajouter en crontab :
 
                 // TODO : Use Absences-notifications-A3, Absences-notifications-B3 instead of Conges-Rappels-N2, then remove param Conges-Rappels-N2
                 // Ajoute les destinataires pour les congés n'étant pas validés en N2 en fonction du paramètre $config['Conges-Rappels-N2']
-                if ($elem->valide_n1() != 0) {
+                if ($elem->getValidLevel1() != 0) {
                     $destN2 = json_decode(html_entity_decode($config['Conges-Rappels-N2'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
                     if (is_array($destN2)) {
                         if (in_array('Mail-Planning', $destN2)) {

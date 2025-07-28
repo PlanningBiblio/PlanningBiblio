@@ -3,110 +3,368 @@
 namespace App\Model;
 
 use App\Repository\HolidayRepository;
-use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity(repositoryClass: HolidayRepository::class)]
-#[Table(name: 'conges')]
-class Holiday extends PLBEntity
+#[ORM\Entity(repositoryClass: HolidayRepository::class)]
+#[ORM\Table(name: 'conges')]
+class Holiday
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $debut;
+    #[ORM\Column]
+    private ?\DateTime $debut = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $fin;
+    #[ORM\Column]
+    private ?\DateTime $fin = null;
 
-    #[Column(type: 'integer', length: 4)] // *
-    protected $halfday;
+    #[ORM\Column]
+    private ?int $halfday = null;
 
-    #[Column(type: 'string', length: 20)] // *
-    protected $start_halfday;
+    #[ORM\Column(length: 20)]
+    private ?string $start_halfday = null;
 
-    #[Column(type: 'string', length: 20)] // *
-    protected $end_halfday;
+    #[ORM\Column(length: 20)]
+    private ?string $end_halfday = null;
 
-    #[Column(type: 'text')] // *
-    protected $commentaires;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $commentaires = null;
 
-    #[Column(type: 'text')] // *
-    protected $refus;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $refus = null;
 
-    #[Column(type: 'string', length: 20)] // *
-    protected $heures;
+    #[ORM\Column(length: 20)]
+    private ?string $heures = null;
 
-    #[Column(type: 'string', length: 20)] // *
-    protected $debit;
+    #[ORM\Column(length: 20)]
+    private ?string $debit = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $saisie;
+    #[ORM\Column]
+    private ?\DateTime $saisie = null;
 
-    #[Column(type: 'integer', length: 11)] // *
-    protected $saisie_par;
+    #[ORM\Column]
+    private ?int $saisie_par = null;
 
-    #[Column(type: 'integer', length: 11)] // *
-    protected $modif;
+    #[ORM\Column]
+    private ?int $modif = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $modification;
+    #[ORM\Column]
+    private ?\DateTime $modification = null;
 
-    #[Column(type: 'integer', length: 11)] // *
-    protected $valide_n1;
+    #[ORM\Column]
+    private ?int $valide_n1 = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $validation_n1;
+    #[ORM\Column]
+    private ?\DateTime $validation_n1 = null;
 
-    #[Column(type: 'integer', length: 11)] // *
-    protected $valide;
+    #[ORM\Column]
+    private ?int $valide = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $validation;
+    #[ORM\Column]
+    private ?\DateTime $validation = null;
 
-    #[Column(type: 'float')] // *
-    protected $solde_prec;
+    #[ORM\Column]
+    private ?float $solde_prec = null;
 
-    #[Column(type: 'float')] // *
-    protected $solde_actuel;
+    #[ORM\Column]
+    private ?float $solde_actuel = null;
 
-    #[Column(type: 'float')] // *
-    protected $recup_prec;
+    #[ORM\Column]
+    private ?float $recup_prec = null;
 
-    #[Column(type: 'float')] // *
-    protected $recup_actuel;
+    #[ORM\Column]
+    private ?float $recup_actuel = null;
 
-    #[Column(type: 'float')] // *
-    protected $reliquat_prec;
+    #[ORM\Column]
+    private ?float $reliquat_prec = null;
 
-    #[Column(type: 'float')] // *
-    protected $reliquat_actuel;
+    #[ORM\Column]
+    private ?float $reliquat_actuel = null;
 
-    #[Column(type: 'float')] // *
-    protected $anticipation_prec;
+    #[ORM\Column]
+    private ?float $anticipation_prec = null;
 
-    #[Column(type: 'float')] // *
-    protected $anticipation_actuel;
+    #[ORM\Column]
+    private ?float $anticipation_actuel = null;
 
-    #[Column(type: 'integer', length: 11)] // *
-    protected $supprime;
+    #[ORM\Column]
+    private ?int $supprime = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $suppr_date;
+    #[ORM\Column]
+    private ?\DateTime $suppr_date = null;
 
-    #[Column(type: 'integer', length: 11)] // *
-    protected $information;
+    #[ORM\Column]
+    private ?int $information = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $info_date;
+    #[ORM\Column]
+    private ?\DateTime $info_date = null;
 
-    #[Column(type: 'integer', length: 11)] // *
-    protected $regul_id;
+    #[ORM\Column]
+    private ?int $regul_id = null;
 
-    #[Column(type: 'integer', length: 11)] // *
-    protected $origin_id;
+    #[ORM\Column]
+    private ?int $origin_id = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->perso_id;
+    }
+
+    public function setUserId(int $userId): static
+    {
+        $this->perso_id = $userId;
+
+        return $this;
+    }
+
+    public function getStart(): ?\DateTime
+    {
+        return $this->debut;
+    }
+
+    public function setStart(\DateTime $start): static
+    {
+        $this->debut = $start;
+
+        return $this;
+    }
+
+    public function getEnd(): ?\DateTime
+    {
+        return $this->fin;
+    }
+
+    public function setEnd(\DateTime $end): static
+    {
+        $this->fin = $end;
+
+        return $this;
+    }
+
+    public function getValidLevel1(): ?int
+    {
+        return $this->valide_n1;
+    }
+
+    public function setValidLevel1(int $userId): static
+    {
+        $this->valide_n1 = $userId;
+
+        return $this;
+    }
+
+    public function getValidLevel1Date(): ?\DateTime
+    {
+        return $this->validation_n1;
+    }
+
+    public function setValidLevel1Date(\DateTime $date): static
+    {
+        $this->validation_n1 = $date;
+
+        return $this;
+    }
+
+    public function getValidLevel2(): ?int
+    {
+        return $this->valide;
+    }
+
+    public function setValidLevel2(int $userId): static
+    {
+        $this->valide = $userId;
+
+        return $this;
+    }
+
+    public function getValidLevel2Date(): ?\DateTime
+    {
+        return $this->validation;
+    }
+
+    public function setValidLevel2Date(\DateTime $date): static
+    {
+        $this->validation = $date;
+
+        return $this;
+    }
+
+    public function getEntry(): ?int
+    {
+        return $this->saisie_par;
+    }
+
+    public function setEntry(int $userId): static
+    {
+        $this->saisie_par = $userId;
+
+        return $this;
+    }
+
+    public function getEntryDate(): ?\DateTime
+    {
+        return $this->saisie;
+    }
+
+    public function setEntryDate(\DateTime $date): static
+    {
+        $this->saisie = $date;
+
+        return $this;
+    }
+
+    public function getChange(): ?int
+    {
+        return $this->modif;
+    }
+
+    public function setChange(int $userId): static
+    {
+        $this->modif = $userId;
+
+        return $this;
+    }
+
+    public function getDelete(): ?int
+    {
+        return $this->supprime;
+    }
+
+    public function setDelete(int $userId): static
+    {
+        $this->supprime = $userId;
+
+        return $this;
+    }
+
+    public function getInfo(): ?int
+    {
+        return $this->supprime;
+    }
+
+    public function setInfo(int $userId): static
+    {
+        $this->supprime = $userId;
+
+        return $this;
+    }
+
+    public function getHalfDay(): ?int
+    {
+        return $this->halfday;
+    }
+
+    public function setHalfDay(int $halfDay): static
+    {
+        $this->halfday = $halfDay;
+
+        return $this;
+    }
+
+    public function getHalfDayStart(): ?string
+    {
+        return $this->start_halfday;
+    }
+
+    public function setHalfDayStart(string $halfDayStart): static
+    {
+        $this->start_halfday = $halfDayStart;
+
+        return $this;
+    }
+
+    public function getHalfDayEnd(): ?string
+    {
+        return $this->end_halfday;
+    }
+
+    public function setHalfDayEnd(string $halfDayEnd): static
+    {
+        $this->end_halfday = $halfDayEnd;
+
+        return $this;
+    }
+
+    public function getDebit(): ?string
+    {
+        return $this->debit;
+    }
+
+    public function setDebit(string $debit): static
+    {
+        $this->debit = $debit;
+
+        return $this;
+    }
+
+    public function getHours(): ?string
+    {
+        return $this->heures;
+    }
+
+    public function setHours(string $hours): static
+    {
+        $this->heures = $hours;
+
+        return $this;
+    }
+
+    public function getPreviousCredit(): ?float
+    {
+        return $this->solde_prec;
+    }
+
+    public function setPreviousCredit(float $credit): static
+    {
+        $this->solde_prec = $credit;
+
+        return $this;
+    }
+
+    public function getActualCredit(): ?float
+    {
+        return $this->solde_actuel;
+    }
+
+    public function setActualCredit(float $credit): static
+    {
+        $this->solde_actuel = $credit;
+
+        return $this;
+    }
+
+    public function getPreviousCompTime(): ?float
+    {
+        return $this->recup_prec;
+    }
+
+    public function setPreviousCompTime(float $compTime): static
+    {
+        $this->recup_prec = $compTime;
+
+        return $this;
+    }
+
+    public function getActualCompTime(): ?float
+    {
+        return $this->recup_actuel;
+    }
+
+    public function setActualCompTime(float $compTime): static
+    {
+        $this->recup_actuel = $compTime;
+
+        return $this;
+    }
 }
