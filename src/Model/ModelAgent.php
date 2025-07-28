@@ -2,42 +2,47 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'pl_poste_modeles')]
-class ModelAgent extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'pl_poste_modeles')]
+class ModelAgent
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $model_id;
+    #[ORM\Column]
+    private ?int $model_id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $poste;
+    #[ORM\Column]
+    private ?int $poste = null;
 
-    #[Column(type: 'string')] // *
-    protected $commentaire;
+    #[ORM\Column]
+    private ?string $commentaire = null;
 
-    #[Column(type: 'time')] // *
-    protected $debut;
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTime $debut = null;
 
-    #[Column(type: 'time')] // *
-    protected $fin;
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTime $fin = null;
 
-    #[Column(type: 'text')] // *
-    protected $tableau;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $tableau = null;
 
-    #[Column(type: 'text')] // *
-    protected $jour;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $jour = null;
 
-    #[Column(type: 'integer')] // *
-    protected $site;
+    #[ORM\Column]
+    private ?int $site = null;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

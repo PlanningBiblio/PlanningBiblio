@@ -250,12 +250,12 @@ class Holiday
 
     public function getInfo(): ?int
     {
-        return $this->supprime;
+        return $this->information;
     }
 
     public function setInfo(int $userId): static
     {
-        $this->supprime = $userId;
+        $this->information = $userId;
 
         return $this;
     }

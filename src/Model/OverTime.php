@@ -2,69 +2,239 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'recuperations')]
-class OverTime extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'recuperations')]
+class OverTime
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column(type: 'date')] // *
-    protected $date;
+    #[ORM\Column(type: Types::DATE_MUTABLE, name: 'date')]
+    private ?\DateTime $date = null;
 
-    #[Column(type: 'date')] // *
-    protected $date2;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date2 = null;
 
-    #[Column(type: 'float')] // *
-    protected $heures;
+    #[ORM\Column]
+    private ?float $heures = null;
 
-    #[Column(type: 'string')] // *
-    protected $etat;
+    #[ORM\Column]
+    private ?string $etat = null;
 
-    #[Column(type: 'text')] // *
-    protected $commentaires;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $commentaires = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $saisie;
+    #[ORM\Column]
+    private ?\DateTime $saisie = null;
 
-    #[Column(type: 'integer')] // *
-    protected $saisie_par;
+    #[ORM\Column]
+    private ?int $saisie_par = null;
 
-    #[Column(type: 'integer')] // *
-    protected $modif;
+    #[ORM\Column]
+    private ?int $modif = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $modification;
+    #[ORM\Column]
+    private ?\DateTime $modification = null;
 
-    #[Column(type: 'integer')] // *
-    protected $valide_n1;
+    #[ORM\Column]
+    private ?int $valide_n1 = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $validation_n1;
+    #[ORM\Column]
+    private ?\DateTime $validation_n1 = null;
 
-    #[Column(type: 'integer')] // *
-    protected $valide;
+    #[ORM\Column]
+    private ?int $valide = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $validation;
+    #[ORM\Column]
+    private ?\DateTime $validation = null;
 
-    #[Column(type: 'text')] // *
-    protected $refus;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $refus = null;
 
-    #[Column(type: 'float')] // *
-    protected $solde_prec;
+    #[ORM\Column]
+    private ?float $solde_prec = null;
 
-    #[Column(type: 'float')] // *
-    protected $solde_actuel;
+    #[ORM\Column]
+    private ?float $solde_actuel = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->perso_id;
+    }
+
+    public function setUserId(int $userId): static
+    {
+        $this->perso_id = $userId;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTime
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTime $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getDate2(): ?\DateTime
+    {
+        return $this->date2;
+    }
+
+    public function setDate2(\DateTime $date): static
+    {
+        $this->date2 = $date;
+
+        return $this;
+    }
+
+    public function getHours(): ?float
+    {
+        return $this->heures;
+    }
+
+    public function setHours(float $hours): static
+    {
+        $this->heures = $hours;
+
+        return $this;
+    }
+
+    public function getComments(): ?string
+    {
+        return $this->commentaires;
+    }
+
+    public function setComments(string $comments): static
+    {
+        $this->commentaires = $comments;
+
+        return $this;
+    }
+
+    public function getEntry(): ?int
+    {
+        return $this->saisie_par;
+    }
+
+    public function setEntry(int $userId): static
+    {
+        $this->saisie_par = $userId;
+
+        return $this;
+    }
+
+    public function getEntryDate(): ?\DateTime
+    {
+        return $this->saisie;
+    }
+
+    public function setEntryDate(\DateTime $date): static
+    {
+        $this->saisie = $date;
+
+        return $this;
+    }
+
+    public function getChange(): ?int
+    {
+        return $this->modif;
+    }
+
+    public function setChange(int $userId): static
+    {
+        $this->modif = $userId;
+
+        return $this;
+    }
+
+    public function getValidLevel1(): ?int
+    {
+        return $this->valide_n1;
+    }
+
+    public function setValidLevel1(int $userId): static
+    {
+        $this->valide_n1 = $userId;
+
+        return $this;
+    }
+
+    public function getValidLevel1Date(): ?\DateTime
+    {
+        return $this->validation_n1;
+    }
+
+    public function setValidLevel1Date(\DateTime $date): static
+    {
+        $this->validation_n1 = $date;
+
+        return $this;
+    }
+
+    public function getValidLevel2(): ?int
+    {
+        return $this->valide;
+    }
+
+    public function setValidLevel2(int $userId): static
+    {
+        $this->valide = $userId;
+
+        return $this;
+    }
+
+    public function getValidLevel2Date(): ?\DateTime
+    {
+        return $this->validation;
+    }
+
+    public function setValidLevel2Date(\DateTime $date): static
+    {
+        $this->validation = $date;
+
+        return $this;
+    }
+
+    public function getPreviousCredit(): ?float
+    {
+        return $this->solde_prec;
+    }
+
+    public function setPreviousCredit(float $credit): static
+    {
+        $this->solde_prec = $credit;
+
+        return $this;
+    }
+
+    public function getActualCredit(): ?float
+    {
+        return $this->solde_actuel;
+    }
+
+    public function setActualCredit(float $credit): static
+    {
+        $this->solde_actuel = $credit;
+
+        return $this;
+    }
 }

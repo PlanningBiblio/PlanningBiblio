@@ -35,6 +35,9 @@ class Test
     #[ORM\Column]
     private ?\DateTime $datetime = null;
 
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTime $time = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -120,6 +123,18 @@ class Test
     public function setDatetime(\DateTime $datetime): static
     {
         $this->datetime = $datetime;
+
+        return $this;
+    }
+
+    public function getTime(): ?\DateTime
+    {
+        return $this->time;
+    }
+
+    public function setTime(\DateTime $time): static
+    {
+        $this->time = $time;
 
         return $this;
     }

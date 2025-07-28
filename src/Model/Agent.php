@@ -452,7 +452,7 @@ class Agent
         foreach ($managed as $m) {
             if (!$requested_level
                 or ($requested_level && $m->{$requested_level}())) {
-                $managed_ids[] = $m->perso_id()->id();
+                $managed_ids[] = $m->getUser()->id();
             }
         }
 

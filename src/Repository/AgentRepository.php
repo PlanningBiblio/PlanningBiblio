@@ -179,7 +179,7 @@ class AgentRepository extends EntityRepository
             $managed_sites = array();
 
             foreach ($loggedin->getManaged() as $m) {
-                $sites = json_decode($m->perso_id()->getSites(), true) ?? array();
+                $sites = json_decode($m->getUser()->getSites(), true) ?? array();
                 $managed_sites = array_merge($managed_sites, $sites);
             }
 
@@ -226,7 +226,7 @@ class AgentRepository extends EntityRepository
         // is enabled.
         if ($by_agent_param->getValue()) {
             $managed = array_map(function($m) {
-                return $m->perso_id();
+                return $m->getUser();
             }, $loggedin->getManaged());
 
             // Prevent adding logged in twice.

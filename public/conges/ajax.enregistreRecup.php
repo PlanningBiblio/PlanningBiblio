@@ -94,7 +94,7 @@ if ($db->error) {
             ),
         );
 
-        $url = $config['URL'] . '/overtime/' . $overtime->id();
+        $url = $config['URL'] . '/overtime/' . $overtime->getId();
         $message.="<p>Lien vers la demande d'heures supplémentaires :<br/><a href='$url'>$url</a></p>";
 
         // Envoi du mail
