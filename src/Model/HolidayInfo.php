@@ -2,31 +2,28 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'conges_infos')]
-class HolidayInfo extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'conges_infos')]
+class HolidayInfo
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'date')] // *
-    protected $debut;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $debut = null;
 
-    #[Column(type: 'date')] // *
-    protected $fin;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $fin = null;
 
-    #[Column(type: 'text')] // *
-    protected $texte;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $texte = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $saisie;
+    #[ORM\Column]
+    private ?\DateTime $saisie = null;
 
 }

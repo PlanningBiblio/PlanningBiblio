@@ -2,31 +2,27 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'ip_blocker')]
-class IPBlocker extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'ip_blocker')]
+class IPBlocker
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'string')] // *
-    protected $ip;
+    #[ORM\Column]
+    private ?string $ip = null;
 
-    #[Column(type: 'string')] // *
-    protected $login;
+    #[ORM\Column]
+    private ?string $login = null;
 
-    #[Column(type: 'string')] // *
-    protected $status;
+    #[ORM\Column]
+    private ?string $status = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $timestamp;
+    #[ORM\Column]
+    private ?\DateTime $timestamp = null;
 
 }

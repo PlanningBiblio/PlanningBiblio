@@ -2,28 +2,25 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'log')]
-class Logs extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'log')]
+class Logs
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'text')] // *
-    protected $msg;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $msg = null;
 
-    #[Column(type: 'string')] // *
-    protected $program;
+    #[ORM\Column]
+    private ?string $program = null;
 
-    #[Column(type: 'datetime')]
-    protected $timestamp;
+    #[ORM\Column]
+    private ?\DateTime $timestamp = null;
 
 }

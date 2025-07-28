@@ -29,6 +29,12 @@ class Test
     #[ORM\Column]
     private ?int $iint = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date = null;
+
+    #[ORM\Column]
+    private ?\DateTime $datetime = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -90,6 +96,30 @@ class Test
     public function setIint(int $iint): static
     {
         $this->iint = $iint;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTime
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTime $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getDatetime(): ?\DateTime
+    {
+        return $this->datetime;
+    }
+
+    public function setDatetime(\DateTime $datetime): static
+    {
+        $this->datetime = $datetime;
 
         return $this;
     }

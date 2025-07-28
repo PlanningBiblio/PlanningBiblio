@@ -6,6 +6,7 @@
 * userId (previously perso_id or agent_id or agentId)
 * start (previously debut)
 * end (previously fin)
+* comments (previously texte or commentaires)
 * validLevel1 (previously valide_n1)
 * validLevel2 (previously valide or valide_n2)
 * getValidLevel1Date (previously validation_n1)
