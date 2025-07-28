@@ -339,7 +339,7 @@ class PlanningController extends BaseController
         }
 
         $model = $this->entityManager
-            ->getRepository(Model::Class)
+            ->getRepository(Model::class)
             ->findOneBy(array('model_id' => $model_id));
 
         $dates = array();

@@ -23,12 +23,12 @@ class ModelController extends BaseController
 
         $models = array();
         foreach ($all_models as $model) {
-            if (!isset($models[$model->site() . $model->nom()])) {
-                $models[$model->site() . $model->nom()] = array(
-                    'name' => $model->nom(),
-                    'week' => $model->jour() == 9 ? 0 : 1,
-                    'id' => $model->model_id(),
-                    'site' => $model->site()
+            if (!isset($models[$model->getSite() . $model->getName()])) {
+                $models[$model->getSite() . $model->getName()] = array(
+                    'name' => $model->getName(),
+                    'week' => $model->getDay() == 9 ? 0 : 1,
+                    'id' => $model->getModelId(),
+                    'site' => $model->getSite()
                 );
             }
         }
@@ -67,7 +67,7 @@ class ModelController extends BaseController
             ->findBy(array('model_id' => $id));
 
         foreach ($models as $model) {
-            $model->nom($name);
+            $model->setName($name);
             $this->entityManager->persist($model);
         }
 
@@ -114,10 +114,10 @@ class ModelController extends BaseController
                 $select->select2('pl_poste', '*', array('date' => $date, 'site' => $site));
                 if ($select->result) {
                     $delete->CSRFToken = $CSRFToken;
-                    $delete->delete('pl_poste_modeles', array('model_id' => $existing_model->model_id()));
+                    $delete->delete('pl_poste_modeles', array('model_id' => $existing_model->getModelId()));
                     $delete = new \db();
                     $delete->CSRFToken = $CSRFToken;
-                    $delete->delete('pl_poste_modeles_tab', array('model_id' => $existing_model->model_id()));
+                    $delete->delete('pl_poste_modeles_tab', array('model_id' => $existing_model->getModelId()));
                 }
             }
         }
