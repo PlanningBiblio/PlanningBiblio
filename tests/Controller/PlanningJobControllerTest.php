@@ -56,34 +56,6 @@ class PlanningJobControllerTest extends PLBWebTestCase
     }
 
 
-    public function createPlanningPostFor($agent,$poste)
-    {
-
-        $start = \DateTime::createFromFormat("H:i:s", "08:00:00");
-        $end = \DateTime::createFromFormat("H:i:s", "19:30:00");
-        $date = \DateTime::createFromFormat("d/m/Y", "01/11/2022");
-
-        $id = $poste->id();
-
-        $planning_post = $this->builder->build(PlanningPosition::class, array(
-            'perso_id' => $agent->getId(),
-            'debut' => $start,
-            'fin' => $end,
-            'date'=> $date,
-            'poste' => json_encode($id),
-            'site' => json_encode(1),
-            'valide_n1' => 0,
-            'valide' => 0,
-            'nb_semaine' => 1,
-            'absent' => 0,
-            'supprime' => 0,
-            'grise' => 0,
-        ));
-
-        return $planning_post;
-    }
-
-
     public function testContextMenuAgentsDispo()
     {
         $GLOBALS['config']['PlanningHebdo-Agents'] = 0;

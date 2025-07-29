@@ -371,7 +371,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $planning_position = $this->builder->build(
             PlanningPosition::class,
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'date' => $date,
                 'debut' => \DateTime::createFromFormat("H:i:s", "08:00:00"),
                 'fin' => \DateTime::createFromFormat("H:i:s", "18:00:00"),

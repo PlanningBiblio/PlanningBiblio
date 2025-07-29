@@ -2838,8 +2838,8 @@ class StatisticController extends BaseController
         $plannings = $this->entityManager->getRepository(PlanningPosition::class)->getPositions();
 
         foreach ($plannings as $elem) {
-            if (!in_array($elem->poste(), $usedPositions)) {
-                $usedPositions[] = $elem->poste();
+            if (!in_array($elem->getPosition(), $usedPositions)) {
+                $usedPositions[] = $elem->getPosition();
             }
         }
 

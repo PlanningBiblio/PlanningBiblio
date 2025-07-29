@@ -3,51 +3,65 @@
 namespace App\Model;
 
 use App\Repository\PlanningPositionRepository;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity(repositoryClass: PlanningPositionRepository::class)]
-#[Table(name: 'pl_poste')]
-class PlanningPosition extends PLBEntity
+#[ORM\Entity(repositoryClass: PlanningPositionRepository::class)]
+#[ORM\Table(name: 'pl_poste')]
+class PlanningPosition
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column(type: 'date')] // *
-    protected $date;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date = null;
 
-    #[Column(type: 'integer')] // *
-    protected $poste;
+    #[ORM\Column]
+    private ?int $poste = null;
 
-    #[Column(type: 'string')] // *
-    protected $absent;
+    #[ORM\Column]
+    private ?string $absent = null;
 
-    #[Column(type: 'integer')] // *
-    protected $chgt_login;
+    #[ORM\Column]
+    private ?int $chgt_login = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $chgt_time;
+    #[ORM\Column]
+    private ?\DateTime $chgt_time = null;
 
-    #[Column(type: 'time')] // *
-    protected $debut;
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTime $debut = null;
 
-    #[Column(type: 'time')] // *
-    protected $fin;
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTime $fin = null;
 
-    #[Column(type: 'string')] // *
-    protected $supprime;
+    #[ORM\Column]
+    private ?string $supprime = null;
 
-    #[Column(type: 'integer')] // *
-    protected $site;
+    #[ORM\Column]
+    private ?int $site = null;
 
-    #[Column(type: 'string')] // *
-    protected $grise;
+    #[ORM\Column]
+    private ?string $grise = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getPosition(): ?int
+    {
+        return $this->poste;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->poste = $position;
+
+        return $this;
+    }
 }
