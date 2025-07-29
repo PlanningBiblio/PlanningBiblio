@@ -2,30 +2,31 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'pl_poste_cellules')]
-class PlanningPositionCells extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'pl_poste_cellules')]
+class PlanningPositionCells
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $numero;
+    #[ORM\Column]
+    private ?int $numero = null;
 
-    #[Column(type: 'integer')] // *
-    protected $tableau;
+    #[ORM\Column]
+    private ?int $tableau = null;
 
-    #[Column(type: 'integer')] // *
-    protected $ligne;
+    #[ORM\Column]
+    private ?int $ligne = null;
 
-    #[Column(type: 'integer')] // *
-    protected $colonne;
+    #[ORM\Column]
+    private ?int $colonne = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

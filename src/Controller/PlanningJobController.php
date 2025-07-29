@@ -166,13 +166,13 @@ class PlanningJobController extends BaseController
 
         $a1 = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)->find($action['id']);
-        $a1->undone(1);
+        $a1->setUndone(true);
         $this->entityManager->persist($a1);
 
         if ($action_before) {
             $a2 = $this->entityManager
                 ->getRepository(PlanningPositionHistory::class)->find($action_before['id']);
-            $a2->undone(1);
+            $a2->setUndone(true);
             $this->entityManager->persist($a2);
             $action_before = $this->convertActionDates($action_before);
             $response['actions'][] = $action_before;
@@ -245,13 +245,13 @@ class PlanningJobController extends BaseController
 
         $a1 = $this->entityManager
            ->getRepository(PlanningPositionHistory::class)->find($action['id']);
-        $a1->undone(0);
+        $a1->setUndone(false);
         $this->entityManager->persist($a1);
 
         if ($action_after) {
             $a2 = $this->entityManager
                 ->getRepository(PlanningPositionHistory::class)->find($action_after['id']);
-            $a2->undone(0);
+            $a2->setUndone(false);
             $this->entityManager->persist($a2);
             $action_after = $this->convertActionDates($action_after);
             $response['actions'][] = $action_after;

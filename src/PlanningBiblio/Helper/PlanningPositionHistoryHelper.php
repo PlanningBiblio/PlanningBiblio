@@ -14,40 +14,40 @@ class PlanningPositionHistoryHelper extends BaseHelper
         parent::__construct();
     }
 
-    public function add($date, $beginning, $end, $site, $position, $login_id, $perso_id, $play_before = false)
+    public function add($date, $start, $end, $site, $position, $login_id, $perso_id, $playBefore = false)
     {
-        $action = $this->save('add', $date, $beginning, $end, $site, $position, $login_id, array($perso_id));
+        $action = $this->save('add', $date, $start, $end, $site, $position, $login_id, array($perso_id));
 
         // There was an action before (i.e cross)
-        if ($play_before) {
-            $action->play_before(1);
+        if ($playBefore) {
+            $action->setPlayBefore(true);
             $this->entityManager->persist($action);
             $this->entityManager->flush();
         }
     }
 
-    public function disable($date, $beginning, $end, $site, $position, $login_id, $perso_id_origine)
+    public function disable($date, $start, $end, $site, $position, $login_id, $perso_id_origine)
     {
-        $action = $this->save('disable', $date, $beginning, $end, $site, $position, $login_id, array($perso_id_origine));
+        $action = $this->save('disable', $date, $start, $end, $site, $position, $login_id, array($perso_id_origine));
 
         // There was an agent in the disabled cell.
         // So map this action with the previous (delete)
         // built in ajax.updateCell.php.
         if ($perso_id_origine) {
-            $action->play_before(1);
+            $action->setPlayBefore(true);
             $this->entityManager->persist($action);
             $this->entityManager->flush();
         }
     }
 
-    public function put($date, $beginning, $end, $site, $position, $login_id, $perso_id, $perso_id_origin = 0)
+    public function put($date, $start, $end, $site, $position, $login_id, $perso_id, $perso_id_origin = 0)
     {
         // Check from DB if there is deletion before because $perso_id_origin is not reset when the original cell is empty
         // (perso_id_origin may be != 0 even if the cell is empty).
         $before = $this->entityManager->getRepository(PlanningPosition::class)->findOneBy([
             'date' => \DateTime::createFromFormat('Y-m-d', $date),
             'site' => $site,
-            'debut' => \DateTime::createFromFormat('H:i:s', $beginning),
+            'debut' => \DateTime::createFromFormat('H:i:s', $start),
             'fin' => \DateTime::createFromFormat('H:i:s', $end),
             'poste' => $position,
         ]);
@@ -55,13 +55,13 @@ class PlanningPositionHistoryHelper extends BaseHelper
         $deleteBefore = $before ? true : false;
 
         if ($deleteBefore) {
-            $this->delete($date, $beginning, $end, $site, $position, $login_id, $perso_id_origin);
+            $this->delete($date, $start, $end, $site, $position, $login_id, $perso_id_origin);
         }
 
-        $this->save('put', $date, $beginning, $end, $site, $position, $login_id, array($perso_id), $deleteBefore);
+        $this->save('put', $date, $start, $end, $site, $position, $login_id, array($perso_id), $deleteBefore);
     }
 
-    public function cross($date, $beginning, $end, $site, $position, $login_id, $perso_id = null)
+    public function cross($date, $start, $end, $site, $position, $login_id, $perso_id = null)
     {
         // Select agents who are not crossed before
         $perso_ids = array();
@@ -69,7 +69,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         $qb->select('p.perso_id')
             ->from(PlanningPosition::class, 'p')
             ->where("p.date = '$date'")
-            ->andwhere("p.debut = '$beginning'")
+            ->andwhere("p.debut = '$start'")
             ->andwhere("p.fin = '$end'")
             ->andwhere("p.site = $site")
             ->andwhere("p.poste = $position")
@@ -92,12 +92,12 @@ class PlanningPositionHistoryHelper extends BaseHelper
             }
 
             if (!empty($perso_ids)) {
-                $this->save('cross', $date, $beginning, $end, $site, $position, $login_id, $perso_ids);
+                $this->save('cross', $date, $start, $end, $site, $position, $login_id, $perso_ids);
             }
         }
     }
 
-    public function delete($date, $beginning, $end, $site, $position, $login_id, $perso_id = null)
+    public function delete($date, $start, $end, $site, $position, $login_id, $perso_id = null)
     {
         // Select agents who are in the cell before
         $perso_ids = array();
@@ -105,7 +105,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         $qb->select('p.perso_id')
             ->from(PlanningPosition::class, 'p')
             ->where("p.date = '$date'")
-            ->andwhere("p.debut = '$beginning'")
+            ->andwhere("p.debut = '$start'")
             ->andwhere("p.fin = '$end'")
             ->andwhere("p.site = $site")
             ->andwhere("p.poste = $position");
@@ -127,7 +127,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
             }
 
             if (!empty($perso_ids)) {
-                $this->save('delete', $date, $beginning, $end, $site, $position, $login_id, $perso_ids);
+                $this->save('delete', $date, $start, $end, $site, $position, $login_id, $perso_ids);
             }
         }
     }
@@ -158,24 +158,25 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
-    private function save($action, $date, $beginning, $end, $site, $position, $login_id, $perso_ids, $playBefore = false) {
+    private function save($action, $date, $start, $end, $site, $position, $login_id, $perso_ids, $playBefore = false)
+    {
 
         // Format data
         $date = \DateTime::createFromFormat('Y-m-d', $date);
-        $beginning = \DateTime::createFromFormat('H:i:s', $beginning);
+        $start = \DateTime::createFromFormat('H:i:s', $start);
         $end = \DateTime::createFromFormat('H:i:s', $end);
 
         $history = new PlanningPositionHistory;
-        $history->perso_ids($perso_ids);
-        $history->date($date);
-        $history->beginning($beginning);
-        $history->end($end);
-        $history->site($site);
-        $history->position($position);
-        $history->action($action);
-        $history->play_before($playBefore);
-        $history->updated_by($login_id);
-        $history->updated_at(new \DateTime());
+        $history->setUsers($perso_ids);
+        $history->setDate($date);
+        $history->setStart($start);
+        $history->setEnd($end);
+        $history->setSite($site);
+        $history->setPosition($position);
+        $history->setAction($action);
+        $history->setPlayBefore($playBefore);
+        $history->setUpdatedBy($login_id);
+        $history->setUpdatedAt(new \DateTime());
 
         try{
             $this->entityManager->persist($history);

@@ -23,7 +23,7 @@ class PlanningPositionHistoryRepository extends EntityRepository
             ->findBy($filter);
 
         foreach ($history as $action) {
-            $action->archive(1);
+            $action->setArchive(true);
             $entityManager->persist($action);
         }
 

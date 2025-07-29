@@ -38,6 +38,9 @@ class Test
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTime $time = null;
 
+    #[ORM\Column]
+    private array $json = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -135,6 +138,18 @@ class Test
     public function setTime(\DateTime $time): static
     {
         $this->time = $time;
+
+        return $this;
+    }
+
+    public function getJson(): array
+    {
+        return $this->json;
+    }
+
+    public function setJson(array $json): static
+    {
+        $this->json = $json;
 
         return $this;
     }
