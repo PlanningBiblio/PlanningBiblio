@@ -14,7 +14,7 @@ class PositionRepository extends EntityRepository
         $positions = $entityManager->getRepository(Position::class)->findAll();
         $all_skills = array();
         foreach ($positions as $position) {
-            $activites = $position->activites();
+            $activites = $position->getActivities();
             if (is_array($activites)) {
                 foreach ($activites as $activite) {
                     array_push($all_skills, $activite);
@@ -41,7 +41,7 @@ class PositionRepository extends EntityRepository
                     ->from(PlanningPositionLines::class, 'a')
                     ->andWhere("a.type = 'poste'")
                     ->andWhere('a.poste = :id')
-                    ->setParameter('id', $result->id());
+                    ->setParameter('id', $result->getId());
             $lines = $builder->getQuery()->getResult();
             if (sizeof($lines) == 0) {
                 $entityManager->remove($result);

@@ -2,49 +2,50 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'pl_poste_tab_grp')]
-class PlanningPositionTabGroup extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'pl_poste_tab_grp')]
+class PlanningPositionTabGroup
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'text')] // *
-    protected $nom;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $nom = null;
 
-    #[Column(type: 'integer')] // *
-    protected $lundi;
+    #[ORM\Column]
+    private ?int $lundi = null;
 
-    #[Column(type: 'integer')] // *
-    protected $mardi;
+    #[ORM\Column]
+    private ?int $mardi = null;
 
-    #[Column(type: 'integer')] // *
-    protected $mercredi;
+    #[ORM\Column]
+    private ?int $mercredi = null;
 
-    #[Column(type: 'integer')] // *
-    protected $jeudi;
+    #[ORM\Column]
+    private ?int $jeudi = null;
 
-    #[Column(type: 'integer')] // *
-    protected $vendredi;
+    #[ORM\Column]
+    private ?int $vendredi = null;
 
-    #[Column(type: 'integer')] // *
-    protected $samedi;
+    #[ORM\Column]
+    private ?int $samedi = null;
 
-    #[Column(type: 'integer')] // *
-    protected $dimanche;
+    #[ORM\Column]
+    private ?int $dimanche = null;
 
-    #[Column(type: 'integer')] // *
-    protected $site;
+    #[ORM\Column]
+    private ?int $site = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $supprime;
+    #[ORM\Column]
+    private ?\DateTime $supprime = null;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

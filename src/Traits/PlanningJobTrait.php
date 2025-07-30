@@ -72,14 +72,12 @@ trait PlanningJobTrait
 
         // Position's name and related skills
         $position = $positions->find($poste);
-        $posteNom = $position->nom();
-        $activites = $position->activites();
-        $stat = $position->statistiques();
-        $quotaSP = $position->quota_sp();
-        $teleworking = $position->teleworking();
-        $bloquant = $position->bloquant();
-        $categories = $position->categories() ?? [];
-
+        $posteNom = $position->getName();
+        $activites = $position->getActivities();
+        $quotaSP = $position->isQuotaSP();
+        $teleworking = $position->isTeleworking();
+        $bloquant = $position->isBlocking();
+        $categories = $position->getCategories() ?? [];
 
         // Site's name
         $siteNom = null;
@@ -133,7 +131,7 @@ trait PlanningJobTrait
 
         // Looking for agents already placed at this time slot.
         // Don't check if the position is a blocker one.
-        if ($bloquant == '1') {
+        if ($bloquant) {
             $db = new \db();
             $dateSQL = $db->escapeString($date);
             $debutSQL = $db->escapeString($debut);
@@ -247,7 +245,7 @@ trait PlanningJobTrait
                 foreach ($db->result as $elem) {
                     // If the current position is a lunch, don't add it to duration
                     // cause this a not worked position
-                    if ($positions->find($elem['poste'])->lunch()) {
+                    if ($positions->find($elem['poste'])->isLunch()) {
                         continue;
                     }
 
@@ -405,7 +403,7 @@ trait PlanningJobTrait
                 if ($break_countdown) {
                     $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
 
-                    $is_a_break = $positions->find($poste)->lunch();
+                    $is_a_break = $positions->find($poste)->isLunch();
                     $requested_hours = $is_a_break ? 0 : strtotime($fin) - strtotime($debut);
 
                     $wh = new WorkingHours($temps);

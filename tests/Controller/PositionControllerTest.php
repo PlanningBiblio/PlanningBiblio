@@ -21,7 +21,6 @@ class PositionControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Position::class);
 
-
         $this->logInAgent($agent, array(5));
 
         $crawler = $this->client->request('GET', '/position/add');
@@ -33,12 +32,12 @@ class PositionControllerTest extends PLBWebTestCase
 
         $position = $entityManager->getRepository(Position::class)->findOneBy(array('nom' => 'bureau'));
 
-        $this->assertEquals($position->nom(), 'bureau', 'post name is bureau');
-        $this->assertEquals($position->bloquant(), 1, 'post bloquant is 1');
-        $this->assertEquals($position->statistiques(), 0, 'post statistique is 0');
-        $this->assertEquals($position->teleworking(), 1, 'post teleworking is 1');
-        $this->assertEquals($position->obligatoire(), 'Obligatoire', 'post obligatoire is Obligatoire');
-        $this->assertEquals($position->groupe(), 'admin', 'post group is admin');
+        $this->assertEquals($position->getName(), 'bureau', 'post name is bureau');
+        $this->assertEquals($position->getBlocking(), 1, 'post bloquant is 1');
+        $this->assertEquals($position->isStatistics(), false, 'post statistique is false');
+        $this->assertEquals($position->isTeleworking(), true, 'post teleworking is true');
+        $this->assertEquals($position->getMandatory(), 'Obligatoire', 'post obligatoire is Obligatoire');
+        $this->assertEquals($position->getGroupe(), 'admin', 'post group is admin');
     }
 
     public function testNewForm()
@@ -133,21 +132,21 @@ class PositionControllerTest extends PLBWebTestCase
         $this->logInAgent($agent, array(5));
 
         $position = new Position();
-        $position->nom('bureau');
-        $position->groupe('administratif');
-        $position->groupe_id('26');
-        $position->obligatoire('bureau');
-        $position->etage('Mezzanine');
-        $position->activites(['communication','inscription']);
-        $position->statistiques(0);
-        $position->teleworking(1);
-        $position->bloquant(0);
-        $position->categories([]);
+        $position->setName('bureau');
+        $position->setGroup('administratif');
+        $position->setGroupId('26');
+        $position->setMandatory('Renfort');
+        $position->setFloor('Mezzanine');
+        $position->setActivities(['communication','inscription']);
+        $position->setStatistics(0);
+        $position->setTeleworking(1);
+        $position->setBlocking(0);
+        $position->setCategories([]);
 
         $entityManager->persist($position);
         $entityManager->flush();
 
-        $id = $position->id();
+        $id = $position->getId();
 
         $crawler = $this->client->request('GET', "/position/$id");
 
@@ -234,20 +233,19 @@ class PositionControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Position::class);
 
-
         $this->logInAgent($agent, array(5));
 
         $position = new Position();
-        $position->nom('bureau');
-        $position->groupe('administratif');
-        $position->groupe_id('26');
-        $position->obligatoire('obligatoire');
-        $position->etage('Mezzanine');
-        $position->activites(['communication','inscription']);
-        $position->statistiques(1);
-        $position->teleworking(1);
-        $position->bloquant(0);
-        $position->categories([]);
+        $position->setName('bureau');
+        $position->setGroup('administratif');
+        $position->setGroupId('26');
+        $position->setMandatory('Renfort');
+        $position->setFloor('Mezzanine');
+        $position->setActivities(['communication','inscription']);
+        $position->setStatistics(1);
+        $position->setTeleworking(1);
+        $position->setBlocking(0);
+        $position->setCategories([]);
 
         $entityManager->persist($position);
         $entityManager->flush();

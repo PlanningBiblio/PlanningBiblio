@@ -2,7 +2,6 @@
 
 use App\Model\Absence;
 use App\Model\Agent;
-use App\Model\Position;
 use App\PlanningBiblio\WorkingHours;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;

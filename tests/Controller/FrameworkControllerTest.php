@@ -5,7 +5,6 @@ use App\Model\Agent;
 use App\Model\PlanningPosition;
 use App\Model\PlanningPositionTabAffectation;
 use App\Model\PlanningPositionTab;
-use App\Model\PlanningPositionTabGroup;
 use App\PlanningBiblio\Framework;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;

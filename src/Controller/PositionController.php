@@ -71,7 +71,7 @@ class PositionController extends BaseController
 
             $activites = array();
             $activitesAffichees = array();
-            $activitesPoste = $value->activites();
+            $activitesPoste = $value->getActivities();
 
             if (is_array($activitesPoste)) {
                 foreach ($activitesPoste as $act) {
@@ -90,18 +90,18 @@ class PositionController extends BaseController
             }
 
             if ($nbMultisite>1) {
-                $site = $this->config("Multisites-site{$value->site()}") ? $this->config("Multisites-site{$value->site()}") :"-";
+                $site = $this->config("Multisites-site{$value->getSite()}") ? $this->config("Multisites-site{$value->getSite()}") :"-";
                 $new['site'] = $site;
             }
-            $new['nom'] =  $value->nom();
+            $new['nom'] =  $value->getName();
             $new['activites'] = $activites;
             $new['activitesAffichees'] = $activitesAffichees;
-            $new['id'] = $value->id();
-            $new['groupe'] = $groups->find($value->groupe()) ? $groups->find($value->groupe())->valeur() : null;
-            $new['etage'] = $floors->find($value->etage()) ? $floors->find($value->etage())->valeur() : null;
-            $new['statistiques'] = $value->statistiques();
-            $new['bloquant'] = $value->bloquant();
-            $new['obligatoire'] = $value->obligatoire();
+            $new['id'] = $value->getId();
+            $new['groupe'] = $groups->find($value->getGroup()) ? $groups->find($value->getGroup())->valeur() : null;
+            $new['etage'] = $floors->find($value->getFloor()) ? $floors->find($value->getFloor())->valeur() : null;
+            $new['statistiques'] = $value->isStatistics();
+            $new['bloquant'] = $value->isBlocking();
+            $new['obligatoire'] = $value->getMandatory();
             $positions[] = $new;
         }
 
@@ -119,25 +119,25 @@ class PositionController extends BaseController
 
         if (is_numeric($id)) {
             $position  =  $this->entityManager->getRepository(Position::class)->find($id);
-            $nom =  $position->nom();
-            $etage = $position->etage();
-            $groupe = $position->groupe();
-            $groupe_id = $position->groupe_id();
-            $categories  =  $position->categories() ?  : array();
-            $site = $position->site();
-            $activites = $position->activites();
-            $obligatoire = $position->obligatoire() =="Obligatoire"?"checked='checked'":"";
-            $renfort = $position->obligatoire() == "Renfort"?"checked='checked'":"";
-            $stat1 = $position->statistiques()?"checked='checked'":"";
-            $stat2 = !$position->statistiques()?"checked='checked'":"";
-            $quota_sp1 = $position->quota_sp() ? "checked='checked'" : "";
-            $quota_sp2 = !$position->quota_sp() ? "checked='checked'" : "";
-            $bloq1 = $position->bloquant()?"checked='checked'":"";
-            $bloq2 = !$position->bloquant()?"checked='checked'":"";
-            $teleworking1 = $position->teleworking() ? "checked='checked'" : "";
-            $teleworking2 = !$position->teleworking() ? "checked='checked'" : "";
-            $lunch1 = $position->lunch() ? "checked='checked'" : "";
-            $lunch2 = !$position->lunch() ? "checked='checked'" : "";
+            $nom =  $position->getName();
+            $etage = $position->get->getFloor();
+            $groupe = $position->getGroup();
+            $groupe_id = $position->getGroupeId();
+            $categories  =  $position->getCategories() ?  : array();
+            $site = $position->getSite();
+            $activites = $position->getActivities();
+            $obligatoire = $position->getMandatory() == 'Obligatoire' ? 'checked="checked"' : '';
+            $renfort = $position->getMandatory() == 'Renfort' ? 'checked="checked"' : '';
+            $stat1 = $position->isStatistics() ? 'checked="checked"' : '';
+            $stat2 = !$position->isStatistics() ? 'checked="checked"' : '';
+            $quota_sp1 = $position->isQuotaSP() ? 'checked="checked"' : '';
+            $quota_sp2 = !$position->isQuotaSP() ? 'checked="checked"' : '';
+            $bloq1 = $position->isBlocking() ? 'checked="checked"' : '';
+            $bloq2 = !$position->isBlocking() ? 'checked="checked"' : '';
+            $teleworking1 = $position->isTeleworking() ? 'checked="checked"' : '';
+            $teleworking2 = !$position->isTeleworking() ? 'checked="checked"' : '';
+            $lunch1 = $position->isLunch() ? 'checked="checked"' : '';
+            $lunch2 = !$position->isLunch() ? 'checked="checked"' : '';
         } else {
             $id = null;
             $nom =  null;
@@ -275,11 +275,11 @@ class PositionController extends BaseController
             $activites = $request->get('activites', []);
             $categories = $request->get('categories', []);
             $site = $request->get('site', 1);
-            $bloquant = $request->get('bloquant', 1);
-            $quota_sp = $request->get('quota_sp', 1);
-            $lunch = $request->get('lunch', 0);
-            $statistiques = $request->get('statistiques', 1);
-            $teleworking = $request->get('teleworking', 0);
+            $bloquant = $request->get('bloquant', true);
+            $quota_sp = $request->get('quota_sp', true);
+            $lunch = $request->get('lunch', false);
+            $statistiques = $request->get('statistiques', true);
+            $teleworking = $request->get('teleworking', false);
             $etage = $request->get('etage',"");
             $groupe = $request->get('groupe', "");
             $groupe_id = $request->get('group_id', "");
@@ -288,19 +288,19 @@ class PositionController extends BaseController
 
             if (!$id){
                 $position = new Position;
-                $position->nom($nom);
-                $position->activites($activites);
-                $position->categories($categories);
-                $position->bloquant($bloquant);
-                $position->quota_sp($quota_sp);
-                $position->statistiques($statistiques);
-                $position->teleworking($teleworking);
-                $position->lunch($lunch);
-                $position->etage($etage);
-                $position->groupe($groupe);
-                $position->groupe_id($groupe_id);
-                $position->obligatoire($obligatoire);
-                $position->site($site);
+                $position->setName($nom);
+                $position->setActivities($activites);
+                $position->setCategories($categories);
+                $position->setBlocking($bloquant);
+                $position->setQuotaSP($quota_sp);
+                $position->setStatistics($statistiques);
+                $position->setTeleworking($teleworking);
+                $position->setLunch($lunch);
+                $position->setFloor($etage);
+                $position->setGroup($groupe);
+                $position->setGroupId($groupe_id);
+                $position->setMandatory($obligatoire);
+                $position->setSite($site);
 
                 try{
                     $this->entityManager->persist($position);
@@ -318,20 +318,20 @@ class PositionController extends BaseController
                 }
 
             } else {
-                $position=$this->entityManager->getRepository(Position::class)->find($id);
-                $position->nom($nom);
-                $position->activites($activites);
-                $position->categories($categories);
-                $position->bloquant($bloquant);
-                $position->quota_sp($quota_sp);
-                $position->statistiques($statistiques);
-                $position->teleworking($teleworking);
-                $position->lunch($lunch);
-                $position->etage($etage);
-                $position->groupe($groupe);
-                $position->groupe_id($groupe_id);
-                $position->obligatoire($obligatoire);
-                $position->site($site);
+                $position = $this->entityManager->getRepository(Position::class)->find($id);
+                $position->setName($nom);
+                $position->setName($activites);
+                $position->setCategories($categories);
+                $position->setBlocking($bloquant);
+                $position->setQuotaSP($quota_sp);
+                $position->setStatistics($statistiques);
+                $position->setTeleworking($teleworking);
+                $position->setLunch($lunch);
+                $position->setFloor($etage);
+                $position->setGroup($groupe);
+                $position->setGroupId($groupe_id);
+                $position->setMandatory($obligatoire);
+                $position->setSite($site);
 
                 try{
                     $this->entityManager->persist($position);
@@ -360,7 +360,7 @@ class PositionController extends BaseController
         $p = $this->entityManager->getRepository(Position::class)->find($id);
 
         $date = new \DateTime();
-        $p->supprime($date);
+        $p->setDelete($date);
         try{
             $this->entityManager->persist($p);
             $this->entityManager->flush();

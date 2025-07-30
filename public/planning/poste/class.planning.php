@@ -207,7 +207,7 @@ class planning
                         }
                     }
 
-                    if ($positions->find($elem['poste'])->lunch()) {
+                    if ($positions->find($elem['poste'])->isLunch()) {
                         continue;
                     }
 
@@ -804,12 +804,12 @@ class planning
 
         $lunch_positions = array();
         foreach ($positions->findBy(['lunch' => true]) as $elem) {
-            $lunch_positions[] = $elem->id(); 
+            $lunch_positions[] = $elem->getId(); 
         }
 
         $lunch_positions = implode(',', $lunch_positions);
        
-        if (isset($poste) and $positions->find($poste)->lunch()) {
+        if (isset($poste) and $positions->find($poste)->isLunch()) {
             return array();
         }
 

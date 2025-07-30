@@ -6,7 +6,6 @@ use App\Controller\BaseController;
 use App\Model\Agent;
 use App\Model\AbsenceReason;
 use App\Model\PlanningPositionHistory;
-use App\Model\Position;
 
 use App\PlanningBiblio\WorkingHours;
 

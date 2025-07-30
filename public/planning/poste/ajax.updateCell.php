@@ -303,7 +303,7 @@ $p = $entityManager->getRepository(Position::class)->find($poste);
 $a=new absences();
 $a->valide=false;
 $a->rejected = false;
-$a->teleworking = !$p->teleworking();
+$a->teleworking = !$p->isTeleworking();
 $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date.' '.$debut, $date.' '.$fin);
 
 $absences=$a->elements;

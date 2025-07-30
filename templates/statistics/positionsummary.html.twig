@@ -38,7 +38,7 @@
                     {% if postes_list is iterable %}
                       <option value='Tous'>Tous</option>
                       {% for poste in postes_list %}
-                        <option value="{{ poste.id }}" {% if poste.id in postes %} selected="selected" {% endif %} >{{ poste.nom }} {% if poste.etage %} ({{ poste.etage }}) {% endif %}</option>
+                        <option value="{{ poste.getId }}" {% if poste.getId in postes %} selected="selected" {% endif %} >{{ poste.getName }} {% if poste.getFloor %} ({{ poste.getFloor }}) {% endif %}</option>
                       {% endfor %}
                     {% endif %}
                   </select>

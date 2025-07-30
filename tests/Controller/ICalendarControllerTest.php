@@ -54,7 +54,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->assertEquals($content->{'error'}, "id inconnu", 'Unknown agent ID');
 
         // Agent id provided
-        $this->client->request('GET', "/ical", array("id" => $agent->id()));
+        $this->client->request('GET', "/ical", array("id" => $agent->getId()));
         $content = explode("\n", $this->client->getResponse()->getContent());
         $code = $this->client->getResponse()->getStatusCode();
         $this->assertEquals($code, '200', 'status code is 200');
@@ -86,39 +86,39 @@ class ICalendarControllerTest extends PLBWebTestCase
 
          // Test planning position
         $this->createPlanningPositionFor($agent);
-        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $this->client->request('GET', "/ical", array("id" => $agent->getId(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals($content[27], 'SUMMARY:Rangement 4', 'ICS export with planning position');
 
         // Test holiday
         $GLOBALS['config']['Conges-Enable'] = 1;
         $this->createHolidayFor($agent);
-        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $this->client->request('GET', "/ical", array("id" => $agent->getId(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals('SUMMARY:Congé Payé ICS holiday test', $content[27], 'ICS export with holiday');
         $this->assertEquals('DESCRIPTION:ICS holiday test', $content[28], 'ICS export with holiday');
 
         // Test absence
         $this->createAbsenceFor($agent);
-        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $this->client->request('GET', "/ical", array("id" => $agent->getId(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals('SUMMARY:ICS absence test', $content[27], 'ICS export with absence');
 
         // With interval in URL
-        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1, "interval" => 1));
+        $this->client->request('GET', "/ical", array("id" => $agent->getId(), "absences" => 1, "interval" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
 
         // With interval in config
         $GLOBALS['config']['ICS-Interval'] = 1;
-        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $this->client->request('GET', "/ical", array("id" => $agent->getId(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
         $GLOBALS['config']['ICS-Interval'] = 0;
 
         // With code
         $GLOBALS['config']['ICS-Code'] = 1;
-        $this->client->request('GET', "/ical", array("id" => $agent->id(), "absences" => 1));
+        $this->client->request('GET', "/ical", array("id" => $agent->getId(), "absences" => 1));
         $content = json_decode($this->client->getResponse()->getContent());
         $code = $this->client->getResponse()->getStatusCode();
         $this->assertEquals($code, '401', 'status code is 401');
@@ -129,7 +129,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->createPlanningPositionFor($deletedagent);
         $this->createHolidayFor($deletedagent);
         $this->createAbsenceFor($deletedagent);
-        $this->client->request('GET', "/ical", array("id" => $deletedagent->id(), "absences" => 1));
+        $this->client->request('GET', "/ical", array("id" => $deletedagent->getId(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
         $this->assertEquals(sizeof($content), 23, 'No exports for deleted agents');
     }
@@ -150,8 +150,8 @@ class ICalendarControllerTest extends PLBWebTestCase
                 'date' => $date,
                 'debut' => new DateTime('now'),
                 'fin' => new DateTime('now + 1 hour'),
-                'poste' => $post->id(),
-                'perso_id' => $agent->id(),
+                'poste' => $post->getId(),
+                'perso_id' => $agent->getId(),
                 'absent' => 0,
                 'supprime' => 0,
                 'grise' => 0,
@@ -168,8 +168,8 @@ class ICalendarControllerTest extends PLBWebTestCase
                 'verrou' => 0,
                 'verrou2' => 1,
                 'site' => 1,
-                'perso' => $agent->id(),
-                'perso2' => $agent->id(),
+                'perso' => $agent->getId(),
+                'perso2' => $agent->getId(),
             )
         );
 
@@ -189,7 +189,7 @@ class ICalendarControllerTest extends PLBWebTestCase
             'minutes'       => '0',
             'rest'          => 0,
             'debit'         => 'credit',
-            'perso_id'      => $agent->id(),
+            'perso_id'      => $agent->getId(),
             'saisie_par'    => 1,
             'valide'        => 1,
             'valide_n1'     => 0,
@@ -212,7 +212,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $absence->fin = $date->format('Y-m-d');
         $absence->hre_debut = '00:00:00';
         $absence->hre_fin = '23:59:59';
-        $absence->perso_ids = array($agent->id());
+        $absence->perso_ids = array($agent->getId());
         $absence->commentaires = '';
         $absence->motif = 'ICS absence test';
         $absence->valide = $status;

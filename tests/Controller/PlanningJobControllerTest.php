@@ -78,7 +78,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'teleworking' => 1,
             'bloquant' => 0,
         ));
-        $id = $post->id();
+        $id = $post->getId();
 
 
         // Create agents
@@ -141,9 +141,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $result = explode('["callback":protected]', $response);
 
-        $this->assertStringContainsString('"position_name":"' .$post->nom() .'"', $result[0]);
+        $this->assertStringContainsString('"position_name":"' . $post->getName() .'"', $result[0]);
 
-        $this->assertStringContainsString('"position_id":"' .$post->id() .'"', $result[0]);
+        $this->assertStringContainsString('"position_id":"' . $post->getId() .'"', $result[0]);
 
         $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
 
@@ -194,7 +194,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'teleworking' => 1,
             'bloquant' => 0,
         ));
-        $id = $post->id();
+        $id = $post->getId();
 
 
         // Create agent
@@ -259,9 +259,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $result = explode('["callback":protected]', $response);
 
-        $this->assertStringContainsString('"position_name":"' .$post->nom() .'"', $result[0]);
+        $this->assertStringContainsString('"position_name":"' . $post->getName() .'"', $result[0]);
 
-        $this->assertStringContainsString('"position_id":"' .$post->id() .'"', $result[0]);
+        $this->assertStringContainsString('"position_id":"' . $post->getId() .'"', $result[0]);
 
         $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
 
@@ -303,6 +303,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         // Create post
         $builder->delete(Position::class);
+
         $post = $builder->build(Position::class, array(
 
             'nom' => 'administratif',
@@ -310,7 +311,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'teleworking' => 1,
             'bloquant' => 0,
         ));
-        $id = $post->id();
+        $id = $post->getId();
 
 
         // Create agent
@@ -356,9 +357,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $result = explode('["callback":protected]', $response);
 
-        $this->assertStringContainsString('"position_name":"' .$post->nom() .'"', $result[0]);
+        $this->assertStringContainsString('"position_name":"' . $post->getName() .'"', $result[0]);
 
-        $this->assertStringContainsString('"position_id":"' .$post->id() .'"', $result[0]);
+        $this->assertStringContainsString('"position_id":"' . $post->getId() .'"', $result[0]);
 
         $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
 
@@ -408,7 +409,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'teleworking' => 1,
             'bloquant' => 0,
         ));
-        $id = $post->id();
+        $id = $post->getId();
 
         // Create agent
         $arrivee = \DateTime::createFromFormat("d/m/Y", "01/10/2022");
@@ -475,9 +476,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $result = explode('["callback":protected]', $response);
 
-        $this->assertStringContainsString('"position_name":"' .$post->nom() .'"', $result[0]);
+        $this->assertStringContainsString('"position_name":"' . $post->getName() .'"', $result[0]);
 
-        $this->assertStringContainsString('"position_id":"' .$post->id() .'"', $result[0]);
+        $this->assertStringContainsString('"position_id":"' . $post->getId() .'"', $result[0]);
 
         $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
 

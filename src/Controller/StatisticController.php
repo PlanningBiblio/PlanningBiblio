@@ -1468,8 +1468,8 @@ class StatisticController extends BaseController
 
                 // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
                 foreach ($postes_list as $elem) {
-                    if ($elem->id() == $poste) {
-                        $poste_tab = array($poste, $elem->nom(), $elem->etage(), $elem->obligatoire(), $elem->teleworking());
+                    if ($elem->getId() == $poste) {
+                        $poste_tab = array($poste, $elem->getName(), $elem->getFloor(), $elem->getMandatory(), $elem->isTeleworking());
                         break;
                     }
                 }
@@ -2250,8 +2250,8 @@ class StatisticController extends BaseController
 
                 // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
                 foreach ($postes_list as $elem) {
-                    if ($elem->id() == $poste) {
-                        $poste_tab = array($poste, $elem->nom(), $elem->etage(), $elem->obligatoire(), $elem->teleworking());
+                    if ($elem->getId() == $poste) {
+                        $poste_tab = array($poste, $elem->getName(), $elem->getFloor(), $elem->getMandatory(), $elem->isTeleworking());
                         break;
                     }
                 }
@@ -2569,8 +2569,8 @@ class StatisticController extends BaseController
 
                 // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
                 foreach ($postes_list as $elem) {
-                    if ($elem->id() == $poste) {
-                        $poste_tab = array($poste, $elem->nom(), $elem->etage(), $elem->obligatoire(), $elem->teleworking());
+                    if ($elem->getId() == $poste) {
+                        $poste_tab = array($poste, $elem->getName(), $elem->getFloor(), $elem->getMandatory(), $elem->isTeleworking());
                         break;
                     }
                 }
@@ -2847,12 +2847,12 @@ class StatisticController extends BaseController
 
         foreach ($positions as $elem) {
             // Keep only used positions
-            if (!in_array($elem->id(), $usedPositions)) {
+            if (!in_array($elem->getId(), $usedPositions)) {
                 continue;
             }
 
             // Add floor information
-            $elem->etage($floors->find($elem->etage()) ? $floors->find($elem->etage())->valeur() : null);
+            $elem->setFloor($floors->find($elem->getFloor()) ? $floors->find($elem->getFloor())->valeur() : null);
             $result[] = $elem;
         }
 

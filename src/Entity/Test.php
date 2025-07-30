@@ -41,6 +41,9 @@ class Test
     #[ORM\Column]
     private array $json = [];
 
+    #[ORM\Column(type: Types::SMALLINT)]
+    private ?int $tiny = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -150,6 +153,18 @@ class Test
     public function setJson(array $json): static
     {
         $this->json = $json;
+
+        return $this;
+    }
+
+    public function getTiny(): ?int
+    {
+        return $this->tiny;
+    }
+
+    public function setTiny(int $tiny): static
+    {
+        $this->tiny = $tiny;
 
         return $this;
     }

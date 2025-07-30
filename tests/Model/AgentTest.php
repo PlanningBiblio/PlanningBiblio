@@ -84,7 +84,7 @@ class AgentTest extends TestCase
             PlanningPosition::class,
             array(
                 'date' => $date_ok,
-                'poste' => $post->id(),
+                'poste' => $post->getId(),
                 'debut' => $start,
                 'fin' => $end,
                 'perso_id' => $agent->getId(),
@@ -104,7 +104,7 @@ class AgentTest extends TestCase
             PlanningPosition::class,
             array(
                 'date' => $date_ok,
-                'poste' => $post2->id(),
+                'poste' => $post2->getId(),
                 'debut' => $start, 'fin' => $end,
                 'perso_id' => $agent2->getId(),
                 'absent' => 0,

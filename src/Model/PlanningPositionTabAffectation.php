@@ -2,27 +2,65 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'pl_poste_tab_affect')]
-class PlanningPositionTabAffectation extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'pl_poste_tab_affect')]
+class PlanningPositionTabAffectation
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'date')] // *
-    protected $date;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date = null;
 
-    #[Column(type: 'integer')] // *
-    protected $tableau;
+    #[ORM\Column]
+    private ?int $tableau = null;
 
-    #[Column(type: 'integer')] // *
-    protected $site;
+    #[ORM\Column]
+    private ?int $site = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getDate(): ?\DateTime
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTime $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+    
+    public function getTable(): ?string
+    {
+        return $this->tableau;
+    }
+
+    public function setTable(string $tableau): static
+    {
+        $this->tableau = $table;
+
+        return $this;
+    }
+    
+    public function getSite(): ?string
+    {
+        return $this->site;
+    }
+
+    public function setSite(string $site): static
+    {
+        $this->site = $site;
+
+        return $this;
+    }
 }

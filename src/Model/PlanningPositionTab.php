@@ -2,32 +2,80 @@
 
 namespace App\Model;
 
-use App\Repository\PlanningPositionTabRepository;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity(repositoryClass: PlanningPositionTabRepository::class)]
-#[Table(name: 'pl_poste_tab')]
-class PlanningPositionTab extends PLBEntity
+#[ORM\Entity(repositoryClass: PlanningPositionTabRepository::class)]
+#[ORM\Table(name: 'pl_poste_tab')]
+class PlanningPositionTab
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $tableau;
+    #[ORM\Column]
+    private ?int $tableau = null;
 
-    #[Column(type: 'text')] // *
-    protected $nom;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $nom = null;
 
-    #[Column(type: 'integer')] // *
-    protected $site;
+    #[ORM\Column]
+    private ?int $site = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $supprime;
+    #[ORM\Column]
+    private ?\DateTime $supprime = null;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getTable(): ?string
+    {
+        return $this->tableau;
+    }
+
+    public function setTable(string $tableau): static
+    {
+        $this->tableau = $table;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->nom = $name;
+
+        return $this;
+    }
+
+    public function getSite(): ?int
+    {
+        return $this->site;
+    }
+
+    public function setSite(int $site): static
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    public function getDelete(): ?\DateTime
+    {
+        return $this->supprime;
+    }
+
+    public function setDelete(\DateTime $delete): static
+    {
+        $this->supprime = $delete;
+
+        return $this;
+    }
 }
