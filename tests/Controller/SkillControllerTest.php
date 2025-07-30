@@ -2,13 +2,9 @@
 
 use App\Model\Agent;
 use App\Model\Skill;
-
 use Symfony\Component\DomCrawler\Crawler;
-
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
-
-
 
 class SkillControllerTest extends PLBWebTestCase
 {
@@ -32,7 +28,7 @@ class SkillControllerTest extends PLBWebTestCase
 
         $skill = $entityManager->getRepository(Skill::class)->findOneBy(array('nom' => 'securite'));
 
-        $this->assertEquals('securite', $skill->nom(), 'skill nom is securite');
+        $this->assertEquals('securite', $skill->getName(), 'skill nom is securite');
 
     }
 
@@ -77,12 +73,12 @@ class SkillControllerTest extends PLBWebTestCase
         $this->logInAgent($agent, array(5));
 
         $skill = new Skill();
-        $skill->nom('security');
+        $skill->setName('security');
 
         $entityManager->persist($skill);
         $entityManager->flush();
 
-        $id = $skill->id();
+        $id = $skill->getId();
 
         $crawler = $this->client->request('GET', "/skill/$id");
 
@@ -113,7 +109,7 @@ class SkillControllerTest extends PLBWebTestCase
         $this->logInAgent($agent, array(5));
 
         $skill = new Skill();
-        $skill->nom('security');
+        $skill->setName('security');
 
         $entityManager->persist($skill);
         $entityManager->flush();

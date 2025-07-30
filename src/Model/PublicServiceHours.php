@@ -2,27 +2,29 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'edt_samedi')]
-class PublicServiceHours extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'edt_samedi')]
+class PublicServiceHours
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'date')] // *
-    protected $semaine;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $semaine = null;
 
-    #[Column(type: 'integer')] // *
-    protected $update_time;
+    #[ORM\Column]
+    private ?int $update_time = null;
 
-    #[Column(type: 'text')] // *
-    protected $heures;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $heures = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

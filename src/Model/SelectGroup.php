@@ -2,24 +2,49 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'select_groupes')]
-class SelectGroup extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'select_groupes')]
+class SelectGroup
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'string')] // *
-    protected $valeur;
+    #[ORM\Column]
+    private ?string $valeur = null;
 
-    #[Column(type: 'integer')] // *
-    protected $rang;
+    #[ORM\Column]
+    private ?int $rang = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getValue(): ?string
+    {
+        return $this->valeur;
+    }
+
+    public function setValue(string $value): static
+    {
+        $this->valeur = $value;
+
+        return $this;
+    }
+
+    public function getRank(): ?int
+    {
+        return $this->rang;
+    }
+
+    public function setRank(int $rank): static
+    {
+        $this->rang = $rank;
+
+        return $this;
+    }
 }

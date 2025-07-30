@@ -486,8 +486,8 @@ function calculHeuresSP($date, $CSRFToken)
 
                                             // MT44884: Remove free break
                                             foreach ($workingHours as $wh) {
-                                                if ($wh->perso_id() == $key1) {
-                                                    $breakTimes = $wh->breaktime();
+                                                if ($wh->getUser() == $key1) {
+                                                    $breakTimes = $wh->getBreaktime();
                                                     $breakTime = $breakTimes[$key3] ?? 0;
                                                     $minutesHebdo -= (float) $breakTime * 60;
                                                     break;

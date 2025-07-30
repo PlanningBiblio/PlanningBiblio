@@ -1444,7 +1444,7 @@ class PlanningController extends BaseController
 
         $floors = array();
         foreach($floorsE as $elem) {
-            $floors[$elem->id()] = $elem->valeur();
+            $floors[$elem->getId()] = $elem->getValue();
         }
 
         if ($db->result) {
@@ -1489,7 +1489,7 @@ class PlanningController extends BaseController
 
         $separations = array();
         foreach ($separationE as $elem) {
-            $separations[$elem->id()] = $elem->nom();
+            $separations[$elem->getId()] = $elem->getName();
         }
 
         $this->separations = $separations;

@@ -2,36 +2,38 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'jours_feries')]
-class PublicHoliday extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'jours_feries')]
+class PublicHoliday
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'string')] // *
-    protected $annee;
+    #[ORM\Column]
+    private ?string $annee = null;
 
-    #[Column(type: 'date')] // *
-    protected $jour;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $jour = null;
 
-    #[Column(type: 'integer')]
-    protected $ferie;
+    #[ORM\Column]
+    private ?int $ferie = null;
 
-    #[Column(type: 'integer')]
-    protected $fermeture;
+    #[ORM\Column]
+    private ?int $fermeture = null;
 
-    #[Column(type: 'text')]
-    protected $nom;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $nom = null;
 
-    #[Column(type: 'text')]
-    protected $commentaire;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $commentaire = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

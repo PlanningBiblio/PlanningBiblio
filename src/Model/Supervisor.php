@@ -1,32 +1,31 @@
 <?php
 
-// FIXME Use Manager instead of Supervisor
-// duplicate class
+// FIXME Use Manager instead of Supervisor : Duplicate class
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'responsables')]
-class Supervisor extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'responsables')]
+class Supervisor
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedName]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $responsable;
+    #[ORM\Column]
+    private ?int $responsable = null;
 
-    #[Column(type: 'integer')] // *
-    protected $notification;
+    #[ORM\Column]
+    private ?int $notification = null;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

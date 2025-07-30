@@ -6,14 +6,10 @@ use App\Model\Holiday;
 use App\Model\PlanningPosition;
 use App\Model\Position;
 use App\Model\WorkingHour;
-
 use App\PlanningBiblio\WorkingHours;
-
 use Symfony\Component\DomCrawler\Crawler;
-
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
-
 
 class PlanningJobControllerTest extends PLBWebTestCase
 {

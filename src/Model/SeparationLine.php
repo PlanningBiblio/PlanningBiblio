@@ -2,17 +2,34 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'lignes')]
-class SeparationLine extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'lignes')]
+class SeparationLine
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedName]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'string')] // *
-    protected $nom;
+    #[ORM\Column]
+    private ?string $nom = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->nom = $name;
+
+        return $this;
+    }
 }

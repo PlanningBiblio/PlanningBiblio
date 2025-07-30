@@ -27,7 +27,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
         $week_planning = $this->builder->build(
             WorkingHour::class,
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => $date,
                 'fin' => $end,
                 'valide_n1' => 1,
@@ -46,7 +46,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
             )
         );
 
-        return $week_planning->id();
+        return $week_planning->getId();
     }
 
     public function testWeekPlanningList()
@@ -168,12 +168,12 @@ class WorkingHourControllerListTest extends PLBWebTestCase
 
         $agents_list = $this->getSelectValues('perso_id');
         $this->assertCount(4, $agents_list);
-        $this->assertTrue(in_array($jdupont->id(), $agents_list), 'jdupont');
-        $this->assertTrue(in_array($abreton->id(), $agents_list), 'abreton');
-        $this->assertTrue(in_array($kboivin->id(), $agents_list), 'kboivin');
+        $this->assertTrue(in_array($jdupont->getId(), $agents_list), 'jdupont');
+        $this->assertTrue(in_array($abreton->getId(), $agents_list), 'abreton');
+        $this->assertTrue(in_array($kboivin->getId(), $agents_list), 'kboivin');
 
         $agent_select = $this->getSelect('perso_id');
-        $agent_select->selectByValue($kboivin->id());
+        $agent_select->selectByValue($kboivin->getId());
 
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
 
@@ -182,7 +182,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
         $this->assertStringNotContainsString('Accepté', $result->text());
 
         //with abreton selected
-        $id = $abreton->id();
+        $id = $abreton->getId();
         $crawler = $this->client->request('GET', "/workinghour/add/$id");
 
         $result = $crawler->filterXPath('//select[@id="validation"]');

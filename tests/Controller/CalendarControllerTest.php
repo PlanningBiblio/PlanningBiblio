@@ -3,9 +3,7 @@
 use App\Model\Agent;
 use App\Model\Absence;
 use App\Model\WorkingHour;
-
 use Symfony\Component\DomCrawler\Crawler;
-
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
@@ -45,7 +43,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent2->id(),
+            'perso_id' => $agent2->getId(),
         ));
 
         $result = $crawler->filterXPath('//div[@class="attendance"]');
@@ -76,7 +74,7 @@ class CalendarControllerTest extends PLBWebTestCase
         (
             WorkingHour::class,
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => $start,
                 'fin' => $end,
                 'valide_n1' => 1,
@@ -97,7 +95,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');
@@ -146,12 +144,12 @@ class CalendarControllerTest extends PLBWebTestCase
         $start = \DateTime::createFromFormat("d/m/Y H:i:s", '26/09/2022 08:00:00');
         $end = \DateTime::createFromFormat("d/m/Y H:i:s", '28/09/2022 19:00:00');
         $validation = \DateTime::createFromFormat("d/m/Y H:i:s", '28/09/2022 08:00:00');
-        $off = $builder->build(Absence::class, array('debut' => $start, 'motif' => 'malade', 'fin' => $end, 'perso_id' => $agent2->id(), 'validation' => $validation, 'valide' => 1, 'supprime' => 0, 'groupe' => '1'));
+        $off = $builder->build(Absence::class, array('debut' => $start, 'motif' => 'malade', 'fin' => $end, 'perso_id' => $agent2->getId(), 'validation' => $validation, 'valide' => 1, 'supprime' => 0, 'groupe' => '1'));
 
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent2->id(),
+            'perso_id' => $agent2->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');
@@ -198,7 +196,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent2->id(),
+            'perso_id' => $agent2->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');
@@ -227,7 +225,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '27/09/2022',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');
@@ -244,7 +242,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');
@@ -269,7 +267,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');

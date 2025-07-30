@@ -2,69 +2,95 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'planning_hebdo')]
-class WorkingHour extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'planning_hebdo')]
+class WorkingHour
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedName]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column(type: 'date')] // *
-    protected $debut;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $debut = null;
 
-    #[Column(type: 'date')] // *
-    protected $fin;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $fin = null;
 
-    #[Column(type: 'text')] // *
-    protected $temps;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $temps = null;
 
-    #[Column(type: 'json')] // *
-    protected $breaktime;
+    #[ORM\Column]
+    private array $breaktime = [];
 
-    #[Column(type: 'datetime')] // *
-    protected $saisie;
+    #[ORM\Column]
+    private ?\DateTime $saisie = null;
 
-    #[Column(type: 'integer')] // *
-    protected $modif;
+    #[ORM\Column]
+    private ?int $modif = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $modification;
+    #[ORM\Column]
+    private ?\DateTime $modification = null;
 
-    #[Column(type: 'integer')] // *
-    protected $valide_n1;
+    #[ORM\Column]
+    private ?int $valide_n1 = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $validation_n1;
+    #[ORM\Column]
+    private ?\DateTime $validation_n1 = null;
 
-    #[Column(type: 'integer')] // *
-    protected $valide;
+    #[ORM\Column]
+    private ?int $valide = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $validation;
+    #[ORM\Column]
+    private ?\DateTime $validation = null;
 
-    #[Column(type: 'integer')] // *
-    protected $actuel;
+    #[ORM\Column]
+    private ?int $actuel = null;
 
-    #[Column(type: 'integer')] // *
-    protected $remplace;
+    #[ORM\Column]
+    private ?int $remplace = null;
 
-    #[Column(type: 'string')] // *
-    protected $cle;
+    #[ORM\Column]
+    private ?string $cle = null;
 
-    #[Column(type: 'integer')] // *
-    protected $exception;
+    #[ORM\Column]
+    private ?int $exception = null;
 
-    #[Column(type: 'integer')] // *
-    protected $nb_semaine;
+    #[ORM\Column]
+    private ?int $nb_semaine = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getBreaktime(): array
+    {
+        return $this->json;
+    }
+
+    public function setBreaktime(array $breaktime): static
+    {
+        $this->breaktime = $breaktime;
+
+        return $this;
+    }
+
+    public function getUser(): int
+    {
+        return $this->perso_id;
+    }
+
+    public function setUser(array $user): static
+    {
+        $this->perso_id = $user;
+
+        return $this;
+    }
 }

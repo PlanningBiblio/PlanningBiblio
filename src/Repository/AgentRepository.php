@@ -18,7 +18,7 @@ use App\Model\PlanningPositionModel;
 use App\Model\RecurringAbsence;
 use App\Model\SaturdayWorkingHours;
 use App\Model\Supervisor;
-// FIXME Use Manager instead of Supervisor
+// FIXME Use Manager instead of Supervisor : Duplicate class
 use App\Model\WorkingHour;
 use App\Model\ConfigParam;
 

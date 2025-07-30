@@ -51,7 +51,7 @@ class ClosingDayControllerTest extends PLBWebTestCase
                 'commentaire' => 'test closing day'
             )
         );
-        $id1 = $public_holiday_1->id();
+        $id1 = $public_holiday_1->getId();
         $public_holiday_2 = $this->builder->build(
             PublicHoliday::class,
             array(
@@ -63,7 +63,7 @@ class ClosingDayControllerTest extends PLBWebTestCase
                 'commentaire' => 'test closing day 2'
             )
         );
-        $id2 = $public_holiday_2->id();
+        $id2 = $public_holiday_2->getId();
 
         $crawler = $client->request('GET', "/closingday");
 

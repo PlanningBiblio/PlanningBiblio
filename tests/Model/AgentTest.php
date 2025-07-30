@@ -172,6 +172,7 @@ class AgentTest extends TestCase
         $config=$GLOBALS['config']['PlanningHebdo'];
 
         $builder->delete(WorkingHour::class);
+
         $pl_post = $builder->build
         (
             WorkingHour::class,
@@ -235,9 +236,9 @@ class AgentTest extends TestCase
         $end = \DateTime::createFromFormat("H:i:s", '23:59:00');
 
         $skill1 = $builder->build(Skill::class, array('nom' => 'basket'));
-        $id1 = $skill1->id();
+        $id1 = $skill1->getId();
         $skill2 = $builder->build(Skill::class, array('nom' => 'volley'));
-        $id2 = $skill2->id();
+        $id2 = $skill2->getId();
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'postes' => json_encode(["$id1", "$id2"])));
 
         $this->assertEquals($id1, $agent->skills()[0]);

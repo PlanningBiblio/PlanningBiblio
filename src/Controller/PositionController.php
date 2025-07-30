@@ -97,8 +97,8 @@ class PositionController extends BaseController
             $new['activites'] = $activites;
             $new['activitesAffichees'] = $activitesAffichees;
             $new['id'] = $value->getId();
-            $new['groupe'] = $groups->find($value->getGroup()) ? $groups->find($value->getGroup())->valeur() : null;
-            $new['etage'] = $floors->find($value->getFloor()) ? $floors->find($value->getFloor())->valeur() : null;
+            $new['groupe'] = $groups->find($value->getGroup()) ? $groups->find($value->getGroup())->getValue() : null;
+            $new['etage'] = $floors->find($value->getFloor()) ? $floors->find($value->getFloor())->getValue() : null;
             $new['statistiques'] = $value->isStatistics();
             $new['bloquant'] = $value->isBlocking();
             $new['obligatoire'] = $value->getMandatory();

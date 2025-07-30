@@ -77,8 +77,8 @@ class SkillController extends BaseController
         $agents = $this->entityManager->getRepository(Agent::class)->findAll();
         foreach ($activites as $skill) {
             foreach ($agents as $agent) {
-                if (in_array($skill->id(), $agent->skills())) {
-                    $activites_utilisees[] = $skill->id();
+                if (in_array($skill->getId(), $agent->skills())) {
+                    $activites_utilisees[] = $skill->getId();
                     continue 2;
                 }
             }
@@ -110,7 +110,7 @@ class SkillController extends BaseController
     public function edit(Request $request, Session $session){
 
         $id =  $request->get('id');
-        $nom = $this->entityManager->getRepository(Skill::class)->find($id)->nom();
+        $nom = $this->entityManager->getRepository(Skill::class)->find($id)->getName();
 
         $this->templateParams(array(
             'skill_name'=>$nom,
@@ -136,7 +136,7 @@ class SkillController extends BaseController
         } else {
             if(!$id){
                 $skill = new Skill();
-                $skill->nom($nom);
+                $skill->setName($nom);
                 try{
                     $this->entityManager->persist($skill);
                     $this->entityManager->flush();
@@ -152,7 +152,7 @@ class SkillController extends BaseController
                 }
             }else{
                 $skill = $this->entityManager->getRepository(Skill::class)->find($id);
-                $skill->nom($nom);
+                $skill->setName($nom);
                 try{
                     $this->entityManager->persist($skill);
                     $this->entityManager->flush();

@@ -256,7 +256,7 @@ class StatisticController extends BaseController
             $floors = array();
             $floorsRepository = $this->entityManager->getRepository(SelectFloor::class)->findAll();
             foreach ($floorsRepository as $f) {
-                $floors[$f->id()] = $f->valeur();
+                $floors[$f->getId()] = $f->getValue();
             }
 
             // Get information from $resultat for each agent
@@ -1703,18 +1703,19 @@ class StatisticController extends BaseController
         $used_groups = array();
 
         // Groups assigned to at least one position
-        $groups = $this->entityManager->getRepository(SelectGroup::class)->findBy(['id' => $keys], ['rang' => 'ASC']);
-        if (!empty($groups)) {
-            $other = new SelectGroup;
-            $other->id(-1);
-            $other->valeur('Autres');
-            $groups[] = $other;
+        $groups = [];
+        $groupsEntity = $this->entityManager->getRepository(SelectGroup::class)->findBy(['id' => $keys], ['rang' => 'ASC']);
+        if (!empty($groupsEntity)) {
+            foreach ($groupsEntity as $group) {
+                $groups[] = ['id' => $group->getId(), 'value' => $group->getValue()];
+            }
+            $groups[] = ['id' => '-1', 'value' => 'Autres'];
         }
 
         // Initialisation des totaux (footer)
         foreach ($groups as $g) {
-            $totauxGroupesHeures[$g->id()] = 0;
-            $totauxGroupesPerso[$g->id()] = array();
+            $totauxGroupesHeures[$g['id']] = 0;
+            $totauxGroupesPerso[$g['id']] = array();
         }
 
         // Teleworking
@@ -1839,13 +1840,13 @@ class StatisticController extends BaseController
                     foreach ($dates as $d) {
                         $tab[$elem['perso_id']][$d[0]] = array('total'=>0);
                         foreach ($groups as $g) {
-                            $tab[$elem['perso_id']][$d[0]]['groupe'][$g->id()] = 0;
+                            $tab[$elem['perso_id']][$d[0]]['groupe'][$g['id']] = 0;
                         }
                     }
 
                     // Totaux par groupe de postes
                     foreach ($groups as $g){
-                        $tab[$elem['perso_id']]['groupe'][$g->id()] = 0;
+                        $tab[$elem['perso_id']]['groupe'][$g['id']] = 0;
                     }
                 }
 
@@ -1870,17 +1871,17 @@ class StatisticController extends BaseController
 
                 // Totaux par groupe de postes
                 foreach ($groups as $g) {
-                    if (is_array($groupes[$g->id()]) and in_array($elem['poste'], $groupes[$g->id()])) {
-                        $tab[$elem['perso_id']]['groupe'][$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                        $tab[$elem['perso_id']][$elem['date']]['groupe'][$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                        $totauxGroupesHeures[$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                    if (is_array($groupes[$g['id']]) and in_array($elem['poste'], $groupes[$g['id']])) {
+                        $tab[$elem['perso_id']]['groupe'][$g['id']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                        $tab[$elem['perso_id']][$elem['date']]['groupe'][$g['id']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                        $totauxGroupesHeures[$g['id']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
 
-                        if (!in_array($g->id(), $used_groups)) {
-                            $used_groups[] = $g->id();
+                        if (!in_array($g['id'], $used_groups)) {
+                            $used_groups[] = $g['id'];
                         }
 
-                        if (!in_array($elem['perso_id'], $totauxGroupesPerso[$g->id()])) {
-                            $totauxGroupesPerso[$g->id()][] = $elem['perso_id'];
+                        if (!in_array($elem['perso_id'], $totauxGroupesPerso[$g['id']])) {
+                            $totauxGroupesPerso[$g['id']][] = $elem['perso_id'];
                         }
                     }
                 }
@@ -1908,7 +1909,7 @@ class StatisticController extends BaseController
 
         // Totaux par groupe de postes
         foreach ($groups as $g) {
-            $totauxGroupesPerso[$g->id()] = count($totauxGroupesPerso[$g->id()]);
+            $totauxGroupesPerso[$g['id']] = count($totauxGroupesPerso[$g['id']]);
         }
 
         // pour chaque jour, on compte les heures et les agents
@@ -1963,7 +1964,7 @@ class StatisticController extends BaseController
 
            foreach ($dates as $d) {
                 foreach ($groups as $g) {
-                    $tab[$key][$d[0]]['groupe'][$g->id()] = heure4($tab[$key][$d[0]]["groupe"][$g->id()]);
+                    $tab[$key][$d[0]]['groupe'][$g['id']] = heure4($tab[$key][$d[0]]["groupe"][$g['id']]);
                 }
             }
 
@@ -2039,8 +2040,8 @@ class StatisticController extends BaseController
         if ($selection_groupe and !empty($groups)) {
             foreach ($groups as $g) {
                 $group_keys[] = array(
-                    'id' => $g->id(), 
-                    'name' => $g->valeur(),
+                    'id' => $g['id'], 
+                    'name' => $g['value'],
                 );
             }
         }
@@ -2852,7 +2853,7 @@ class StatisticController extends BaseController
             }
 
             // Add floor information
-            $elem->setFloor($floors->find($elem->getFloor()) ? $floors->find($elem->getFloor())->valeur() : null);
+            $elem->setFloor($floors->find($elem->getFloor()) ? $floors->find($elem->getFloor())->getValue() : null);
             $result[] = $elem;
         }
 

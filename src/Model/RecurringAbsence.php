@@ -2,39 +2,41 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'absences_recurrentes')]
-class RecurringAbsence extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'absences_recurrentes')]
+class RecurringAbsence
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'string')] // *
-    protected $uid;
+    #[ORM\Column]
+    private ?string $uid = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column(type: 'text')] // *
-    protected $event;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $event = null;
 
-    #[Column(type: 'integer')] // *
-    protected $end;
+    #[ORM\Column]
+    private ?int $end = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $timestamp;
+    #[ORM\Column]
+    private ?\DateTime $timestamp = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $last_update;
+    #[ORM\Column]
+    private ?\DateTime $last_update = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $last_check;
+    #[ORM\Column]
+    private ?\DateTime $last_check = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

@@ -2,28 +2,29 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'edt_samedi')]
-class SaturdayWorkingHours extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'edt_samedi')]
+class SaturdayWorkingHours
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso_id;
+    #[ORM\Column]
+    private ?int $perso_id = null;
 
-    #[Column(type: 'date')] // *
-    protected $semaine;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $semaine = null;
 
-    #[Column(type: 'integer')] // *
-    protected $tableau;
+    #[ORM\Column]
+    private ?int $tableau = null;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }

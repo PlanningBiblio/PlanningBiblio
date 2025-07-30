@@ -43,7 +43,7 @@ class SkillRepository extends EntityRepository
         $results = $builder->getQuery()->getResult();
         $deleted_skill = 0;
         foreach ($results as $result) {
-            $deleted = $this->purge($result->id());
+            $deleted = $this->purge($result->getId());
             if ($deleted) $deleted_skill++;
         }
         return $deleted_skill;
