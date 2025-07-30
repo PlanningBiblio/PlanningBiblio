@@ -3,41 +3,83 @@
 namespace App\Model;
 
 use App\Repository\PlanningPositionLockRepository;
-use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity(repositoryClass: PlanningPositionLockRepository::class)]
-#[Table(name: 'pl_poste_verrou')]
-class PlanningPositionLock extends PLBEntity
+#[ORM\Entity(repositoryClass: PlanningPositionLockRepository::class)]
+#[ORM\Table(name: 'pl_poste_verrou')]
+class PlanningPositionLock
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'date')] // *
-    protected $date;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date = null;
 
-    #[Column(type: 'integer')] // *
-    protected $verrou;
+    #[ORM\Column]
+    private ?int $verrou = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $validation;
+    #[ORM\Column]
+    private ?\DateTime $validation = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso;
+    #[ORM\Column]
+    private ?int $perso = null;
 
-    #[Column(type: 'integer')] // *
-    protected $verrou2;
+    #[ORM\Column]
+    private ?int $verrou2 = null;
 
-    #[Column(type: 'datetime')] // *
-    protected $validation2;
+    #[ORM\Column]
+    private ?\DateTime $validation2 = null;
 
-    #[Column(type: 'integer')] // *
-    protected $perso2;
+    #[ORM\Column]
+    private ?int $perso2 = null;
 
-    #[Column(type: 'integer')] // *
-    protected $vivier;
+    #[ORM\Column]
+    private ?int $vivier = null;
 
-    #[Column(type: 'integer')] // *
-    protected $site;
+    #[ORM\Column]
+    private ?int $site = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getLock2(): ?int
+    {
+        return $this->verrou2;
+    }
+
+    public function setLock2(int $lock2): static
+    {
+        $this->verrou2 = $lock2;
+
+        return $this;
+    }
+
+    public function getValidation2(): ?\DateTime
+    {
+        return $this->validation2;
+    }
+
+    public function setValidation2(\DateTime $validation2): static
+    {
+        $this->validation2 = $validation2;
+
+        return $this;
+    }
+
+    public function getUser2(): ?int
+    {
+        return $this->perso2;
+    }
+
+    public function setUser2(int $user2): static
+    {
+        $this->perso2 = $user2;
+
+        return $this;
+    }
 }

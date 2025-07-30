@@ -2,33 +2,96 @@
 
 namespace App\Model;
 
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
-#[Entity]
-#[Table(name: 'pl_poste_lignes')]
-class PlanningPositionLines extends PLBEntity
+#[ORM\Entity]
+#[ORM\Table(name: 'pl_poste_lignes')]
+class PlanningPositionLines
 {
-    #[Id]
-    #[GeneratedValue]
-    #[Column]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[Column(type: 'integer')] // *
-    protected $numero;
+    #[ORM\Column]
+    private ?int $numero = null;
 
-    #[Column(type: 'integer')] // *
-    protected $tableau;
+    #[ORM\Column]
+    private ?int $tableau = null;
 
-    #[Column(type: 'integer')] // *
-    protected $ligne;
+    #[ORM\Column]
+    private ?int $ligne = null;
 
-    #[Column(type: 'string')] // *
-    protected $poste;
+    #[ORM\Column]
+    private ?string $poste = null;
 
-    #[Column(type: 'string', columnDefinition: "enum('poste', 'ligne', 'titre', 'classe')")] // *
-    protected $type;
+    #[ORM\Column]
+    private ?string $type = 'poste';
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getNumber(): ?int
+    {
+        return $this->numero;
+    }
+
+    public function setNumber(int $number): static
+    {
+        $this->numero = $number;
+
+        return $this;
+    }
+
+    public function getTable(): ?int
+    {
+        return $this->tableau;
+    }
+
+    public function setTable(int $table): static
+    {
+        $this->tableau = $table;
+
+        return $this;
+    }
+
+    public function getLine(): ?int
+    {
+        return $this->ligne;
+    }
+
+    public function setLine(int $line): static
+    {
+        $this->ligne = $line;
+
+        return $this;
+    }
+
+    public function getPosition(): ?int
+    {
+        return $this->poste;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->poste = $position;
+
+        return $this;
+    }
+
+    public function getType(): ?int
+    {
+        return $this->type;
+    }
+
+    public function setType(int $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
 }

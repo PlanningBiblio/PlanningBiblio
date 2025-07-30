@@ -440,11 +440,11 @@ class FrameworkController extends BaseController
                 }
 
                 $line = new PlanningPositionLines();
-                $line->numero($tableauNumero);
-                $line->tableau($tab[1]);
-                $line->ligne($tab[2]);
-                $line->poste($value);
-                $line->type($type);
+                $line->setNumber($tableauNumero);
+                $line->setTable($tab[1]);
+                $line->setLine($tab[2]);
+                $line->setPosition($value);
+                $line->setType($type);
 
                 $this->entityManager->persist($line);
                 $this->entityManager->flush();

@@ -1406,9 +1406,9 @@ class PlanningController extends BaseController
         ]);
 
         if ($lockData) {
-            $this->locked = $lockData->verrou2();
-            $this->lockDate = $lockData->validation2()->format('Y-m-d H:i:s');
-            $this->lockPerson = nom($lockData->perso2());
+            $this->locked = $lockData->getLock2();
+            $this->lockDate = $lockData->getValidation2()->format('Y-m-d H:i:s');
+            $this->lockPerson = nom($lockData->getUser2());
         }
     }
 
