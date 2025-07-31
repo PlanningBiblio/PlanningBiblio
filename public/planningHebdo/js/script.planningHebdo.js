@@ -277,17 +277,19 @@ function plHebdoVerifForm(){
       }
       else {
         if(result["autre_agent"]) {
-          if (is_exception) {
-            message="Une exception est enregistrés pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
+          if (is_exception && is_copy) {
+            message = "La copie de l'exception n'est pas possible sur la période du " + dateFr(result["debut"]) + " au " + dateFr(result["fin"]) + " pour l'agent " + result["autre_agent"];
+          } else if (is_exception) {
+            message="Une exception est enregistrés pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"]);
           } else {
-            message="Un planning est enregistré pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
+            message="Un planning est enregistré pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"]);
           }
           message += "\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
         } else if (result['out_of_range']) {
           message = "Les dates de l'exception sont en dehors de la période du planning d'origine";
           retour = 'false';
         } else {
-          message="Vous avez déjà enregistré un planning pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
+          message="Vous avez déjà enregistré un planning pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"]);
           +"\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
         }
         alert(message);

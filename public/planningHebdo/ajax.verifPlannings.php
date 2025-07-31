@@ -44,10 +44,17 @@ if ($id) {
 }
 
 $filter = "perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut'";
-if ($exception) {
-    $filter .= " AND id <> $exception";
-} elseif ($id) {
-    $filter .= " AND exception <> $id";
+
+// If $id means that it is an update, not a copy
+$copy = false;
+if ($id) {
+    if ($exception) {
+        $filter .= " AND id <> $exception";
+    } else {
+        $filter .= " AND exception <> $id";
+    }
+} else {
+    $copy = true;
 }
 
 $db=new db();
@@ -56,6 +63,16 @@ $db->select("planning_hebdo", "*", "$filter $ignore_id $remplace ");
 $result=array();
 if (!$db->result) {
     $result=array("retour"=>"OK");
+} elseif ($exception and $copy) {
+    if ($db->nb > 1 
+        or $db->result[0]['exception'] != 0
+        or $db->result[0]['debut'] > $debut
+        or $db->result[0]['fin'] < $fin
+    ) {
+        $result = array('retour' => 'NO', 'debut' => $db->result[0]['debut'], 'fin' => $db->result[0]['fin'], 'autre_agent' => $autre_agent);
+    } else {
+        $result = array('retour' => 'OK');
+    }
 } else {
     $result=array("retour"=>"NO","debut"=>$db->result[0]['debut'],"fin"=>$db->result[0]['fin'], "autre_agent"=>$autre_agent);
 }
