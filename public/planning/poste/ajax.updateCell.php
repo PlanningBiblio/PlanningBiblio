@@ -134,7 +134,7 @@ else {
         // History
         if ($logaction) {
             $history = new PlanningPositionHistoryHelper();
-            $history->put($date, $debut, $fin, $site, $poste, $login_id, $perso_id);
+            $history->put($date, $debut, $fin, $site, $poste, $login_id, $perso_id, $perso_id_origine);
         }
 
         // Suppression des anciens éléments
