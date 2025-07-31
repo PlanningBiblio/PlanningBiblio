@@ -566,7 +566,7 @@ class conges
         // Show managed agents only
         $perso_ids = array();
         foreach ($this->agents as $agent) {
-            $perso_ids[] = $agent->id();
+            $perso_ids[] = $agent->getId();
         }
         $agents_req = 'AND `id` IN (' . implode(',', $perso_ids) . ')';
 

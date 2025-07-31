@@ -19,8 +19,7 @@ class Agent
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id')]
-    private ?int $myId = null;
-    // FIXME Replace with $id when the id() setter/getter will be replaced with getId and setId
+    private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $nom = null;
@@ -136,15 +135,9 @@ class Agent
     #[OneToMany(mappedBy: 'responsable', targetEntity: Manager::class, cascade: ['ALL'])]
     private Collection $managed;
 
-    // FIXME Remove function id() when the id() setter/getter will be replaced with getId and setId
-    public function id(): ?int
-    {
-        return $this->myId;
-    }
-
     public function getId(): ?int
     {
-        return $this->myId;
+        return $this->id;
     }
 
     public function getACL(): array
@@ -452,7 +445,7 @@ class Agent
         foreach ($managed as $m) {
             if (!$requested_level
                 or ($requested_level && $m->{$requested_level}())) {
-                $managed_ids[] = $m->getUser()->id();
+                $managed_ids[] = $m->getUser()->getId();
             }
         }
 
@@ -541,7 +534,7 @@ class Agent
     public function isAbsentOn($from, $to)
     {
         $a = new \absences();
-        if ($a->check($this->id(), $from, $to, true)) {
+        if ($a->check($this->id, $from, $to, true)) {
             return true;
         }
 
@@ -551,7 +544,7 @@ class Agent
     public function isOnVacationOn($from, $to)
     {
         $c = new \conges();
-        if ($c->check($this->id(), $from, $to, true)) {
+        if ($c->check($this->id, $from, $to, true)) {
             return true;
         }
 
@@ -582,7 +575,7 @@ class Agent
 
     public function isBlockedOn($date, $start, $end)
     {
-        $id = $this->id();
+        $id = $this->id;
 
         $db=new \db();
         $db->select(

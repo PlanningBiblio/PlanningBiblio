@@ -165,7 +165,7 @@ class WorkingHourController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('workinghour')
             ->getManagedFor($session->get('loginId'));
-        $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
+        $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
         // Recherche des plannings
         $p = new \planningHebdo();

@@ -84,7 +84,7 @@ class OvertimeController extends BaseController
             ->setModule('holiday')
             ->getManagedFor($session->get('loginId'));
 
-        $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
+        $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
         // School year
         $annees = array();
@@ -169,7 +169,7 @@ class OvertimeController extends BaseController
 
         $categories = array();
         foreach ($managed as $index => $m) {
-            $categories[$m->id()] = $m->categorie();
+            $categories[$m->getId()] = $m->categorie();
         }
 
         $this->templateParams(array(

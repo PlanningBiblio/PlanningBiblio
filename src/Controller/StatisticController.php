@@ -1890,7 +1890,7 @@ class StatisticController extends BaseController
 
         // Delete groups which are not used on requested period
         foreach ($groups as $k => $v) {
-            if (!in_array($v->id(), $used_groups)) {
+            if (!in_array($v['id'], $used_groups)) {
                 unset($groups[$k]);
             }
         }

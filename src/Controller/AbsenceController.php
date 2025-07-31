@@ -111,7 +111,7 @@ class AbsenceController extends BaseController
             ->getManagedFor($session->get('loginId'));
 
         // Liste des agents à conserver :
-        $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
+        $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
         $this->templateParams(array(
             'managed'               => $managed,
@@ -1475,7 +1475,7 @@ class AbsenceController extends BaseController
             $agents_db = $this->entityManager->getRepository(Agent::class)->findBy(array('id' => $valid_ids));
 
             foreach ($agents_db as $elem) {
-                $agents[$elem->id()] = $elem;
+                $agents[$elem->getId()] = $elem;
             }
 
             foreach ($valid_ids as $k => $v) {

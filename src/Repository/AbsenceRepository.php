@@ -29,7 +29,7 @@ class AbsenceRepository extends EntityRepository
 
         $deleted_absences = 0;
         foreach ($results as $result) {
-            $this->purge($result->id());
+            $this->purge($result->getId());
             $deleted_absences++;
         }
         return $deleted_absences;

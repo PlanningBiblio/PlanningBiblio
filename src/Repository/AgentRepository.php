@@ -71,7 +71,7 @@ class AgentRepository extends EntityRepository
 
         foreach ($agents as $agent) {
             $delete = true;
-            $perso_id = $agent->id();
+            $perso_id = $agent->getId();
             $classes = [
                 Absence::class,
                 OverTime::class,
@@ -230,7 +230,7 @@ class AgentRepository extends EntityRepository
             }, $loggedin->getManaged());
 
             // Prevent adding logged in twice.
-            if (!$loggedin->isManagerOf(array($loggedin->id()))) {
+            if (!$loggedin->isManagerOf(array($loggedin->getId()))) {
                 $managed[] = $loggedin;
             }
 
@@ -253,7 +253,7 @@ class AgentRepository extends EntityRepository
                 // for working hours.
                 if ($this->check_by_site && $sites_number > 1) {
                     // Always keep logged in agent.
-                    if ($agent->id() == $loggedin->id()) {
+                    if ($agent->getId() == $loggedin->getId()) {
                         continue;
                     }
 
@@ -320,11 +320,11 @@ class AgentRepository extends EntityRepository
         if ($by_agent_param->getValue()) {
             $managed = $this->getManagedFor($loggedin_id);
             foreach ($managed as $m) {
-                if ($loggedin->isManagerOf(array($m->id()), 'level1')) {
+                if ($loggedin->isManagerOf(array($m->getId()), 'level1')) {
                     $l1 = true;
                 }
 
-                if ($loggedin->isManagerOf(array($m->id()), 'level2')) {
+                if ($loggedin->isManagerOf(array($m->getId()), 'level2')) {
                     $l2 = true;
                 }
             }

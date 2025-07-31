@@ -213,14 +213,14 @@ Exemple à ajouter en crontab :
             // Affichage de tous les congés non validé le concernant
             $msg .= "<ul>\n";
             foreach ($dest as $conge) {
-                $link = $config['URL'] . "/holiday/edit/{$conge->id()}";
+                $link = $config['URL'] . "/holiday/edit/{$conge->getId()}";
 
                 $msg .= "<li style='margin-bottom:15px;'>\n";
                 $msg .= "<strong>{$conge->lastname} {$conge->firstname}</strong><br/>\n";
-                $msg .= '<strong>Du ' . $conge->debut()->format('d/m/Y H:i') . ' à ' .  $conge->fin()->format('d/m/Y H:i') . "</strong><br/><br/>\n";
-                $msg .= 'Demandé le ' . $conge->saisie()->format('d/m/Y h:i') . ' par ' . nom($conge->saisie_par(), $agents) . "<br/>\n";
-                if ($conge->valide_n1() > 0) {
-                    $msg .= 'Validation niveau 1 : Accepté le ' . $conge->validation_n1()->format('d/m/Y H:i') . ' par ' . nom($conge->valide_n1(), $agents) . "<br/>\n";
+                $msg .= '<strong>Du ' . $conge->getStart()->format('d/m/Y H:i') . ' à ' .  $conge->getEnd()->format('d/m/Y H:i') . "</strong><br/><br/>\n";
+                $msg .= 'Demandé le ' . $conge->getEntryDate()->format('d/m/Y h:i') . ' par ' . nom($conge->getEntry(), $agents) . "<br/>\n";
+                if ($conge->getValidLevel1() > 0) {
+                    $msg .= 'Validation niveau 1 : Accepté le ' . $conge->validation_n1()->format('d/m/Y H:i') . ' par ' . nom($conge->getValidLevel1(), $agents) . "<br/>\n";
                 }
                 $msg .= "<a href='$link' target='_blank'>$link</a>\n";
                 $msg .= "</li>\n";

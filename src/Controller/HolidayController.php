@@ -110,7 +110,7 @@ class HolidayController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->getManagedFor($session->get('loginId'), $agents_supprimes);
-        $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
+        $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
         // Recherche des agents pour la fonction nom()
         $p = new \personnel();

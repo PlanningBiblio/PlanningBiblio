@@ -384,7 +384,7 @@ class PlanningController extends BaseController
 
         if (!empty($agents)) {
             foreach ($agents as $agent) {
-                $agent_list[] = $agent->id();
+                $agent_list[] = $agent->getId();
             }
         }
 

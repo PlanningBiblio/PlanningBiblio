@@ -47,7 +47,7 @@
             {% endfor %}
           {% endif %}
           {% for g in groups %}
-            <th class='dataTableHeureFR'> {{ g.valeur }} </th>
+            <th class='dataTableHeureFR'> {{ g.value }} </th>
           {% endfor %}
           <th class='dataTableHeureFR'> Total </th>
           <th class='dataTableHeureFR'> Max. </th>
@@ -78,7 +78,7 @@
                   {% for g in groups %}
                     {% if t[d[0]].groupe[g.id] is not null %}
                       <br/>
-                      {{ g.valeur }} : {{ t[d[0]].groupe[g.id] }}
+                      {{ g.value }} : {{ t[d[0]].groupe[g.id] }}
                     {% endif %}
                   {% endfor %}
                {% endif %}
@@ -142,7 +142,7 @@
             {% endif %}
             {% for g in groups %}
               <th style="border-left:  1px solid #000;" class="left-border"> {{ totauxGroupesHeures[g.id] }} </th>
-              {# <th> {{ g.valeur }}{{ totauxGroupesHeures[g.id] }}</th> #}
+              {# <th> {{ g.value }}{{ totauxGroupesHeures[g.id] }}</th> #}
             {% endfor %}
             <th style="border-left:  1px solid #000;" class="left-border" class="left-border">{{ totalHeures }}</th>
             {% if nbSemaines != 1%}
