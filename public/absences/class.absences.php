@@ -712,7 +712,7 @@ class absences
             $absence_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
             $teleworking_reasons = array();
             foreach ($absence_reasons as $reason) {
-                $teleworking_reasons[] = $db->escapeString($reason->valeur());
+                $teleworking_reasons[] = $db->escapeString($reason->getValue());
             }
 
             $filter .= " AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "') ";

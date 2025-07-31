@@ -18,7 +18,7 @@ class AbsenceReasonRepository extends EntityRepository
                                          ->findBy(array('teleworking' => 1));
 
         foreach ($absence_reasons as $reason) {
-            $teleworking_reasons[] = $reason->valeur();
+            $teleworking_reasons[] = $reason->getValue();
         }
 
         return $teleworking_reasons;

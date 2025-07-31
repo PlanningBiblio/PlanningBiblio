@@ -20,7 +20,7 @@ use App\Model\Extensions\TablePrefix;
 
 // Instanciating entity manager.
 $entitiesPath = array(__DIR__.'/../src/Model');
-$emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
+$emConfig = Setup::createAttributeMetadataConfiguration($entitiesPath, true);
 
 // Handle table prefix.
 $evm = new \Doctrine\Common\EventManager;

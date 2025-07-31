@@ -69,7 +69,7 @@ include_once(__DIR__ . '/../init/init.php');
 include_once(__DIR__.'/../init/init_templates.php');
 
 $entitiesPath = array('src/Model');
-$emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
+$emConfig = Setup::createAttributeMetadataConfiguration($entitiesPath, true);
 
 $dbParams = array(
     'driver'   => 'pdo_mysql',

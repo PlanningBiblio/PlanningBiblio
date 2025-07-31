@@ -124,10 +124,10 @@ Exemple à ajouter en crontab :
                 foreach ($manager as $m) {
                     if ($a->getId() == $m->getUser()->getId()) {
                         if ($m->getLevel1Notification()) {
-                            $a->notification_level1[] = $m->responsable()->getMail();
+                            $a->notification_level1[] = $m->getManager()->getMail();
                         }
                         if ($m->getLevel2Notification()) {
-                            $a->notification_level2[] = $m->responsable()->getMail();
+                            $a->notification_level2[] = $m->getManager()->getMail();
                         }
                     }
                 }
@@ -220,7 +220,7 @@ Exemple à ajouter en crontab :
                 $msg .= '<strong>Du ' . $conge->getStart()->format('d/m/Y H:i') . ' à ' .  $conge->getEnd()->format('d/m/Y H:i') . "</strong><br/><br/>\n";
                 $msg .= 'Demandé le ' . $conge->getEntryDate()->format('d/m/Y h:i') . ' par ' . nom($conge->getEntry(), $agents) . "<br/>\n";
                 if ($conge->getValidLevel1() > 0) {
-                    $msg .= 'Validation niveau 1 : Accepté le ' . $conge->validation_n1()->format('d/m/Y H:i') . ' par ' . nom($conge->getValidLevel1(), $agents) . "<br/>\n";
+                    $msg .= 'Validation niveau 1 : Accepté le ' . $conge->getValidLevel1Date()->format('d/m/Y H:i') . ' par ' . nom($conge->getValidLevel1(), $agents) . "<br/>\n";
                 }
                 $msg .= "<a href='$link' target='_blank'>$link</a>\n";
                 $msg .= "</li>\n";

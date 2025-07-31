@@ -28,7 +28,7 @@ class PLBEntityTest extends TestCase
 
         $date = \DateTime::createFromFormat("d/m/Y", '29/12/2022');
         $builder->delete(Absence::class);
-        $absence = $builder->build(Absence::class, array('debut' => $date, 'fin' => $date, 'perso_id' => $agent->id(), 'valide_n1' => 1, 'valide' =>1, 'groupe' => 1));
+        $absence = $builder->build(Absence::class, array('debut' => $date, 'fin' => $date, 'perso_id' => $agent->getId(), 'valide_n1' => 1, 'valide' =>1, 'groupe' => 1));
 
         $this->expectExceptionMessage("This entity cannot be disabled");
         $absence->disable();
@@ -41,7 +41,7 @@ class PLBEntityTest extends TestCase
 
         $date = \DateTime::createFromFormat("d/m/Y", '29/12/2022');
         $builder->delete(Absence::class);
-        $absence = $builder->build(Absence::class, array('debut' => $date, 'fin' => $date, 'perso_id' => $agent->id(), 'valide_n1' => 1, 'valide' =>1, 'groupe' => 1));
+        $absence = $builder->build(Absence::class, array('debut' => $date, 'fin' => $date, 'perso_id' => $agent->getId(), 'valide_n1' => 1, 'valide' =>1, 'groupe' => 1));
 
         $this->expectExceptionMessage("This entity cannot be enabled");
         $absence->enable();

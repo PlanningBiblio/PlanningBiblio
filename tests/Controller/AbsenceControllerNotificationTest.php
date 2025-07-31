@@ -25,7 +25,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         $absence->fin = $date->format('Y-m-d');
         $absence->hre_debut = '00:00:00';
         $absence->hre_fin = '23:59:59';
-        $absence->perso_ids = array($agent->id());
+        $absence->perso_ids = array($agent->getId());
         $absence->commentaires = '';
         $absence->motif = 'AbsenceControllerAbsenceStatusesTest';
         $absence->valide = $status;

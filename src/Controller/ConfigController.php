@@ -77,7 +77,7 @@ class ConfigController extends BaseController
                     break;
             }
             $elem['commentaires'] = str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
-            $elem['commentaires'] = str_replace("[SERVER]", $url->valeur(), $elem['commentaires']);
+            $elem['commentaires'] = str_replace("[SERVER]", $url->getValue(), $elem['commentaires']);
             $category = str_replace('_', '', $elem['categorie']);
             $elements[$category][$cp->getName()] = $elem;
         }

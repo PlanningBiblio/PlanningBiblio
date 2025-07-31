@@ -432,7 +432,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
                     'debut' => $start,
                     'motif' => 'Réunion',
                     'fin' => $end,
-                    'perso_id' => $agents[$i]->id(),
+                    'perso_id' => $agents[$i]->getId(),
                     'validation_n1' => $validation_n1,
                     'valide_n1' => $valide_n1,
                     'validation' => $validation,
@@ -445,9 +445,9 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
 
         $this->logInAgent($agents[$loggedInAgentId], $acl);
 
-        $this->client->request('DELETE', '/absence', ['CSRFToken' => $this->CSRFToken, 'id' => $absence->id()]);
+        $this->client->request('DELETE', '/absence', ['CSRFToken' => $this->CSRFToken, 'id' => $absence->getId()]);
 
-        $test = $this->entityManager->getRepository(Absence::class)->findBy(['id' => $absence->id()]);
+        $test = $this->entityManager->getRepository(Absence::class)->findBy(['id' => $absence->getId()]);
 
         if ($result == 'empty') {
             $this->assertEmpty($test, 'Absence not deleted');

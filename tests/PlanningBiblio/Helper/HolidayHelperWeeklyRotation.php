@@ -40,7 +40,7 @@ class HolidayHelperWeeklyRotation extends TestCase
         $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2022-06-01',
                 'fin' => '2022-12-31',
                 'temps' => json_encode($working_hours),
@@ -56,7 +56,7 @@ class HolidayHelperWeeklyRotation extends TestCase
             'hour_start' => '00:00:00',
             'end' => '2022-06-17',
             'hour_end' => '23:59:59',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();

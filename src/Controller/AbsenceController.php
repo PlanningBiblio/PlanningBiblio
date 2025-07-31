@@ -1480,7 +1480,7 @@ class AbsenceController extends BaseController
 
             foreach ($valid_ids as $k => $v) {
                 $keep = false;
-                $agent_sites = json_decode($agents[$v]->sites());
+                $agent_sites = json_decode($agents[$v]->getSites());
                 if (!is_array($agent_sites)) {
                     unset($valid_ids[$k]);
                     continue;

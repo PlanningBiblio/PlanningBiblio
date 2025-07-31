@@ -33,8 +33,8 @@ class UrlListener
 
         $url = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
 
-        if ($config->valeur() != $url) {
-            $config->valeur($url);
+        if ($config->getValue() != $url) {
+            $config->setValue($url);
             $this->entityManager->flush();
         }
     }

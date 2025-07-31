@@ -80,19 +80,19 @@ class AgentTest extends TestCase
         $post = $builder->build(Position::class, array('statistiques' => 0, 'teleworking' => 0, 'bloquant' => 1));
 
         $builder->delete(PlanningPosition::class);
-        $pl_post = $builder->build(
-            PlanningPosition::class,
-            array(
-                'date' => $date_ok,
-                'poste' => $post->getId(),
-                'debut' => $start,
-                'fin' => $end,
-                'perso_id' => $agent->getId(),
-                'absent' => 0,
-                'supprime' => 0,
-                'grise'=>1
-            )
-        );
+
+        $pl_post = new PlanningPosition();
+        $pl_post->setDate($date_ok);
+        $pl_post->setPosition($post->getId());
+        $pl_post->setStart($start);
+        $pl_post->setEnd($end);
+        $pl_post->setUser($agent->getId());
+        $pl_post->setAbsent(0);
+        $pl_post->setDelete(0);
+        $pl_post->setGrey(1);
+
+        $entityManager->persist($pl_post);
+        $entityManager->flush();
 
         $this->assertFalse($agent->isBlockedOn($date_false->format('Y-m-d'), $start->format('H:i:s'), $end->format('H:i:s')));
         $this->assertFalse($agent->isBlockedOn($date_ok->format('Y-m-d'), '18:00:00', '20:00:00'));
@@ -100,18 +100,19 @@ class AgentTest extends TestCase
 
         $agent2 = $builder->build(Agent::class, array('login' => 'jpie'));
         $post2 = $builder->build(Position::class, array('statistiques' => 0, 'teleworking' => 0, 'bloquant' => 0));
-        $pl_post2 = $builder->build(
-            PlanningPosition::class,
-            array(
-                'date' => $date_ok,
-                'poste' => $post2->getId(),
-                'debut' => $start, 'fin' => $end,
-                'perso_id' => $agent2->getId(),
-                'absent' => 0,
-                'supprime' => 0,
-                'grise'=>1
-            )
-        );
+
+        $pl_post2 = new PlanningPosition();
+        $pl_post2->setDate($date_ok);
+        $pl_post2->setPosition($post2->getId());
+        $pl_post2->setStart($start);
+        $pl_post2->setEnd($end);
+        $pl_post2->setUser($agent2->getId());
+        $pl_post2->setAbsent(0);
+        $pl_post2->setDelete(0);
+        $pl_post2->setGrey(1);
+
+        $entityManager->persist($pl_post2);
+        $entityManager->flush();
 
         $this->assertFalse($agent2->isBlockedOn($date_false->format('Y-m-d'), $start->format('H:i:s'), $end->format('H:i:s')));
         $this->assertFalse($agent2->isBlockedOn($date_ok->format('Y-m-d'), '18:00:00', '20:00:00'));

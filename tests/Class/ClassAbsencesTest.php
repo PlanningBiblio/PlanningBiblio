@@ -28,7 +28,6 @@ class ClassAbsencesTest extends TestCase
         $absence->validation_n1 = '0000-00-00 00:00:00';
         $absence->validation_n2 = '2022-01-05 14:29:22';
         $absence->exdate = '';
-        $absence->id = '';
 
         $ics_content = $absence->build_ics_content();
         $lines = explode(PHP_EOL, $ics_content);

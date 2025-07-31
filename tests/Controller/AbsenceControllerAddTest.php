@@ -51,12 +51,12 @@ class AbsenceControllerAddTest extends PLBWebTestCase
 
         $this->assertTrue(in_array(0, $agents_list), '-- Ajoutez un agent --');
         $this->assertTrue(in_array(1, $agents_list), 'Admin');
-        $this->assertTrue(in_array($jdevoe->id(), $agents_list), 'jdevoe');
-        $this->assertTrue(in_array($abreton->id(), $agents_list), 'abreton');
-        $this->assertTrue(in_array($kboivin->id(), $agents_list), 'kboivin');
+        $this->assertTrue(in_array($jdevoe->getId(), $agents_list), 'jdevoe');
+        $this->assertTrue(in_array($abreton->getId(), $agents_list), 'abreton');
+        $this->assertTrue(in_array($kboivin->getId(), $agents_list), 'kboivin');
 
         $agent_select = $this->getSelect('perso_ids');
-        $agent_select->selectByValue($abreton->id());
+        $agent_select->selectByValue($abreton->getId());
 
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
         $agents_selected = $this->getElementsText('ul#perso_ul1 li');

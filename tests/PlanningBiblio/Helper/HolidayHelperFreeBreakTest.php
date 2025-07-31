@@ -36,7 +36,7 @@ class HolidayHelperFreeBreakTest extends TestCase
         $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2021-12-31',
                 'temps' => json_encode($working_hours),
@@ -52,7 +52,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '09:00:00',
             'end' => '2021-08-30',
             'hour_end' => '17:30:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -67,7 +67,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '09:00:00',
             'end' => '2021-08-30',
             'hour_end' => '16:00:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -82,7 +82,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '10:00:00',
             'end' => '2021-08-30',
             'hour_end' => '16:00:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -97,7 +97,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '11:00:00',
             'end' => '2021-08-30',
             'hour_end' => '17:30:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -112,7 +112,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '14:00:00',
             'end' => '2021-08-30',
             'hour_end' => '17:30:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -127,7 +127,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '12:00:00',
             'end' => '2021-08-31',
             'hour_end' => '17:30:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -144,7 +144,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '12:00:00',
             'end' => '2021-09-01',
             'hour_end' => '17:30:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -160,7 +160,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '09:00:00',
             'end' => '2021-08-30',
             'hour_end' => '13:00:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -182,7 +182,7 @@ class HolidayHelperFreeBreakTest extends TestCase
         $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2021-12-31',
                 'temps' => json_encode($working_hours),
@@ -198,7 +198,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '14:00:00',
             'end' => '2021-08-30',
             'hour_end' => '18:30:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -213,7 +213,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '16:00:00',
             'end' => '2021-08-30',
             'hour_end' => '18:30:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -234,7 +234,7 @@ class HolidayHelperFreeBreakTest extends TestCase
         $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2021-12-31',
                 'temps' => json_encode($working_hours),
@@ -251,7 +251,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '09:00:00',
             'end' => '2021-08-30',
             'hour_end' => '13:00:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -267,7 +267,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '09:00:00',
             'end' => '2021-08-30',
             'hour_end' => '12:00:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -288,7 +288,7 @@ class HolidayHelperFreeBreakTest extends TestCase
         $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2021-12-31',
                 'temps' => json_encode($working_hours),
@@ -305,7 +305,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '12:00:00',
             'end' => '2021-08-30',
             'hour_end' => '13:00:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -323,7 +323,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '13:30:00',
             'end' => '2021-08-30',
             'hour_end' => '14:30:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -338,7 +338,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '12:30:00',
             'end' => '2021-08-30',
             'hour_end' => '13:30:00',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -360,7 +360,7 @@ class HolidayHelperFreeBreakTest extends TestCase
         $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2021-12-31',
                 'temps' => json_encode($working_hours),
@@ -376,7 +376,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '00:00:00',
             'end' => '2021-08-12',
             'hour_end' => '23:59:59',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -389,7 +389,7 @@ class HolidayHelperFreeBreakTest extends TestCase
             'hour_start' => '00:00:00',
             'end' => '2021-08-09',
             'hour_end' => '23:59:59',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'is_recover' => 0,
         ));
         $result = $holidayHlper->getCountedHours();
@@ -424,7 +424,7 @@ class HolidayHelperFreeBreakTest extends TestCase
         $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2023-01-01',
                 'fin' => '2023-12-31',
                 'temps' => json_encode($working_hours),
@@ -441,7 +441,7 @@ class HolidayHelperFreeBreakTest extends TestCase
                 'hour_start' => '00:00:00',
                 'end' => '2023-05-' . $day,
                 'hour_end' => '23:59:59',
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'is_recover' => 0,
             ));
 

@@ -99,7 +99,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $entityManager->persist($info);
         $entityManager->flush();
 
-        $id = $info->id();
+        $id = $info->getId();
 
         $crawler = $this->client->request('GET', "/holiday-info/$id");
 

@@ -149,7 +149,7 @@ class StatisticController extends BaseController
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         // Agents available
@@ -731,7 +731,7 @@ class StatisticController extends BaseController
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         $tab = array();
@@ -1406,7 +1406,7 @@ class StatisticController extends BaseController
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         $tab = array();
@@ -1722,7 +1722,7 @@ class StatisticController extends BaseController
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         // Recherche des heures de SP à effectuer pour tous les agents pour toutes les semaines demandées
@@ -2183,7 +2183,7 @@ class StatisticController extends BaseController
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         $tab = array();
@@ -2504,7 +2504,7 @@ class StatisticController extends BaseController
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         $tab = array();

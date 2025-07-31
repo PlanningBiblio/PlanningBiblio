@@ -18,7 +18,7 @@ class Agent
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id')]
+    #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -33,7 +33,7 @@ class Agent
     #[ORM\Column(type: Types::TEXT)]
     private ?string $statut = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $categorie = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -48,16 +48,16 @@ class Agent
     #[ORM\Column(type: Types::TEXT)]
     private ?string $postes = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $actif = null;
 
     #[ORM\Column]
     private array $droits = [];
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $login = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $password = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -84,16 +84,16 @@ class Agent
     #[ORM\Column(type: Types::TEXT)]
     private ?string $recup = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $supprime = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $mails_responsables = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $matricule = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $code_ics = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -126,13 +126,13 @@ class Agent
     /**
      * @var Collection<int, Manager>
      */
-    #[OneToMany(mappedBy: 'perso_id', targetEntity: Manager::class, cascade: ['ALL'])]
+    #[ORM\OneToMany(mappedBy: 'perso_id', targetEntity: Manager::class, cascade: ['ALL'])]
     private Collection $managers;
 
     /**
      * @var Collection<int, Manager>
      */
-    #[OneToMany(mappedBy: 'responsable', targetEntity: Manager::class, cascade: ['ALL'])]
+    #[ORM\OneToMany(mappedBy: 'responsable', targetEntity: Manager::class, cascade: ['ALL'])]
     private Collection $managed;
 
     public function getId(): ?int
@@ -140,7 +140,7 @@ class Agent
         return $this->id;
     }
 
-    public function getACL(): array
+    public function getACL(): ?array
     {
         return $this->droits;
     }
@@ -434,7 +434,7 @@ class Agent
     public function addManaged(Manager $managed)
     {
         $this->managed->add($managed);
-        $managed->responsable($this);
+        $managed->setManager($this);
     }
 
     public function isManagerOf($agent_ids = array(), $requested_level = null)
@@ -442,9 +442,11 @@ class Agent
         $managed_ids = array();
         $managed = $this->getManaged();
 
+        $levelMethod = $requested_level == 'level1' ? 'getLevel1' : 'getLevel2';
+
         foreach ($managed as $m) {
             if (!$requested_level
-                or ($requested_level && $m->{$requested_level}())) {
+                or ($requested_level && $m->{$levelMethod}())) {
                 $managed_ids[] = $m->getUser()->getId();
             }
         }
@@ -504,7 +506,7 @@ class Agent
         }
 
         // Add mails defined by sites (Multisites-siteX-mail).
-        $sites = json_decode($this->sites());
+        $sites = json_decode($this->sites);
         if (is_array($sites)) {
             foreach ($sites as $site) {
                 $site_mail_config = "Multisites-site$site-mail";
@@ -636,7 +638,7 @@ class Agent
 
     public function inOneOfSites($sites)
     {
-        $agent_sites = json_decode($this->sites(), true);
+        $agent_sites = json_decode($this->sites, true);
 
         if (!is_array($agent_sites)) {
             return false;

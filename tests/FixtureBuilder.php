@@ -55,6 +55,8 @@ class FixtureBuilder
             $metadata->setFieldValue($entity, $field, $value);
         }
 
+        $metadata->setFieldValue($entity, 'id', random_int(1000,9999));
+
         $this->em->persist($entity);
         $this->em->flush();
 
@@ -65,7 +67,7 @@ class FixtureBuilder
     {
         $entities = $this->em->getRepository($model)->findAll();
         foreach ($entities as $entity) {
-            if ($model == 'App\Model\Agent' && ($entity->id() == 1 or $entity->id() == 2)) {
+            if ($model == 'App\Model\Agent' && ($entity->getId() == 1 or $entity->getId() == 2)) {
                 continue;
             }
             $this->em->remove($entity);
@@ -104,6 +106,7 @@ class FixtureBuilder
             case 'date':
                 $value = $this->random_date();
                 break;
+            case 'json':
             case 'json_array':
                 $value = $this->random_json_array();
                 break;
@@ -114,6 +117,7 @@ class FixtureBuilder
                 $value = $this->random_float();
                 break;
             case 'integer':
+            case 'smallint':
                 $value = $this->random_integer();
                 break;
         }

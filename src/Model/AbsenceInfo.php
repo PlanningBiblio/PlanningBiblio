@@ -12,8 +12,7 @@ class AbsenceInfo
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id')]
-    private ?int $myId = null;
-    // FIXME Replace with $id when the id() setter/getter will be replaced with getId and setId
+    private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $debut = null;
@@ -24,15 +23,9 @@ class AbsenceInfo
     #[ORM\Column(type: Types::TEXT)]
     private ?string $texte = null;
 
-    // FIXME Remove function id() when the id() setter/getter will be replaced with getId and setId
-    public function id(): ?int
-    {
-        return $this->myId;
-    }
-
     public function getId(): ?int
     {
-        return $this->myId;
+        return $this->id;
     }
 
     public function getStart(): ?\DateTime

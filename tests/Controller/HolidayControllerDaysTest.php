@@ -299,7 +299,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $id = $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2090-12-31',
                 'temps' => json_encode($workinghours),

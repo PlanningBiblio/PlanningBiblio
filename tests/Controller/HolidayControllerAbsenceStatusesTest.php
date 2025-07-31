@@ -31,7 +31,7 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createHolidayFor($jdevoe);
 
@@ -59,7 +59,7 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
             'minutes'       => '0',
             'rest'          => 0,
             'debit'         => 'credit',
-            'perso_id'      => $agent->id(),
+            'perso_id'      => $agent->getId(),
             'saisie_par'    => 1,
             'valide'        => 1,
             'valide_n1'     => 0,
@@ -70,6 +70,6 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
         $c->CSRFToken = $this->CSRFToken;
         $c->add($data);
 
-        return $c->id;
+        return $c->getId();
     }
 }

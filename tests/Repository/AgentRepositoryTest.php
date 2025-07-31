@@ -25,7 +25,7 @@ class AgentRepositoryTest extends TestCase
 
         $agent1 = $builder->build(Agent::class, array('login' => 'Mike', 'sites' => '["1","2"]'));
         $agent2 = $builder->build(Agent::class, array('login' => 'Erik', 'sites' => '["1","3"]'));
-        $perso_ids = array($agent1->id(), $agent2->id());
+        $perso_ids = array($agent1->getId(), $agent2->getId());
 
         $GLOBALS['config']['Multisites-nombre'] = 1;
         $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids);
@@ -36,7 +36,7 @@ class AgentRepositoryTest extends TestCase
         $this->assertEquals($sites, array('1', '2', '3'));
 
         $agent3 = $builder->build(Agent::class, array('login' => 'Melvin', 'sites' => ''));
-        $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents(array($agent3->id()));
+        $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents(array($agent3->getId()));
         $this->assertEquals($sites, array());
 
 

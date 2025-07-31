@@ -47,7 +47,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
         $greg_wh_id = $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $greg->id(),
+                'perso_id' => $greg->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2021-12-31',
                 'temps' => json_encode($greg_workinghours),
@@ -139,7 +139,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
         $greg_wh_id = $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $greg->id(),
+                'perso_id' => $greg->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2021-12-31',
                 'temps' => json_encode($greg_workinghours),

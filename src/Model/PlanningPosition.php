@@ -58,9 +58,58 @@ class PlanningPosition
         return $this->poste;
     }
 
+    public function setDate(\DateTime $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
     public function setPosition(int $position): static
     {
         $this->poste = $position;
+
+        return $this;
+    }
+    
+    public function setStart(\DateTime $start): static
+    {
+        $this->debut = $start;
+
+        return $this;
+    }
+
+    public function setEnd(\DateTime $end): static
+    {
+        $this->fin = $end;
+
+        return $this;
+    }
+
+    public function setUser(int $user): static
+    {
+        $this->perso_id = $user;
+
+        return $this;
+    }
+    
+    public function setAbsent(string $absent): static
+    {
+        $this->absent = $absent;
+
+        return $this;
+    }
+    
+    public function setDelete(string $delete): static
+    {
+        $this->supprime = $delete;
+
+        return $this;
+    }
+
+    public function setGrey(string $grey): static
+    {
+        $this->grise = $grey;
 
         return $this;
     }

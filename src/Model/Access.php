@@ -12,8 +12,7 @@ class Access
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id')]
-    private ?int $myId = null;
-    // FIXME Replace with $id when the id() setter/getter will be replaced with getId and setId
+    private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
     protected ?string $nom = null;
@@ -33,15 +32,9 @@ class Access
     #[ORM\Column(length: 255)]
     protected ?string $categorie = null;
 
-    // FIXME Remove function id() when the id() setter/getter will be replaced with getId and setId
-    public function id(): ?int
-    {
-        return $this->myId;
-    }
-
     public function getId(): ?int
     {
-        return $this->myId;
+        return $this->id;
     }
     
     public function getGroupId(): ?int

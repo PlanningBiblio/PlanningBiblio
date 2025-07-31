@@ -28,7 +28,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
@@ -51,7 +51,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
@@ -78,7 +78,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
@@ -107,7 +107,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
@@ -136,7 +136,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
@@ -158,7 +158,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $absence_id = $this->createAbsenceFor($loggedin, 0);
 
-        $agent_id = $loggedin->id();
+        $agent_id = $loggedin->getId();
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
@@ -181,7 +181,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
@@ -210,7 +210,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
@@ -241,7 +241,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
@@ -272,7 +272,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
@@ -297,7 +297,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $absence_id = $this->createAbsenceFor($loggedin, 2);
 
-        $agent_id = $loggedin->id();
+        $agent_id = $loggedin->getId();
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
@@ -320,7 +320,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
@@ -349,7 +349,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
@@ -380,7 +380,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
@@ -411,7 +411,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
@@ -441,7 +441,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $absence_id = $this->createAbsenceFor($loggedin, 1);
 
-        $agent_id = $loggedin->id();
+        $agent_id = $loggedin->getId();
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
@@ -464,7 +464,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, -1);
 
@@ -490,7 +490,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 1);
 
@@ -521,7 +521,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 1);
 
@@ -552,7 +552,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, -1);
 
@@ -580,7 +580,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence->fin = $date->format('Y-m-d');
         $absence->hre_debut = '00:00:00';
         $absence->hre_fin = '23:59:59';
-        $absence->perso_ids = array($agent->id());
+        $absence->perso_ids = array($agent->getId());
         $absence->commentaires = '';
         $absence->motif = 'AbsenceControllerAbsenceStatusesTest';
         $absence->valide = $status;

@@ -30,7 +30,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
-        $jdevoe_id = $jdevoe->id();
+        $jdevoe_id = $jdevoe->getId();
         $url = "/ajax/holiday-credit?debut=24/01/2022&fin=24/01/2022&hre_debut=00:00:00&hre_fin=23:59:59&perso_id=$jdevoe_id&start_halfday=morning&end_halfday=morning";
 
         $this->client->request('GET', $url);
@@ -72,7 +72,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         $id = $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2090-12-31',
                 'temps' => json_encode($workinghours),

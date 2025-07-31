@@ -30,7 +30,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/add/$agent_id");
@@ -55,7 +55,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/add/$agent_id");
@@ -84,7 +84,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/add/$agent_id");
@@ -115,7 +115,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/add/$agent_id");
@@ -146,7 +146,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/add/$agent_id");
@@ -170,7 +170,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($loggedin, 0);
 
-        $agent_id = $loggedin->id();
+        $agent_id = $loggedin->getId();
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
@@ -196,7 +196,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
@@ -227,7 +227,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
@@ -260,7 +260,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
@@ -293,7 +293,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
@@ -320,7 +320,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($loggedin, 1);
 
-        $agent_id = $loggedin->id();
+        $agent_id = $loggedin->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
@@ -345,7 +345,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
@@ -375,7 +375,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
@@ -408,7 +408,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
@@ -442,7 +442,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
@@ -474,7 +474,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $wh_id = $this->createWorkinghoursFor($loggedin, 2);
 
-        $agent_id = $loggedin->id();
+        $agent_id = $loggedin->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "workinghour/$wh_id");
@@ -499,7 +499,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
@@ -527,7 +527,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
@@ -560,7 +560,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
@@ -593,7 +593,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
@@ -627,7 +627,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $end = new DateTime('now + 3 day');
 
         $data = array(
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
             'debut' => $start->format('Y-m-d'),
             'fin' => $end->format('Y-m-d'),
             'temps' => json_encode($workinghours),
