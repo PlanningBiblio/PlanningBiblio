@@ -40,14 +40,25 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
-    public function put($date, $beginning, $end, $site, $position, $login_id, $perso_id)
+    public function put($date, $beginning, $end, $site, $position, $login_id, $perso_id, $perso_id_origin = 0)
     {
-        //FIXME check here if we add an agent
-        // in an empty cell or if replace an
-        // existing agent. If we replace, we
-        // must create a double action (play_before).
+        // Check from DB if there is deletion before because $perso_id_origin is not reset when the original cell is empty
+        // (perso_id_origin may be != 0 even if the cell is empty).
+        $before = $this->entityManager->getRepository(PlanningPosition::class)->findOneBy([
+            'date' => \DateTime::createFromFormat('Y-m-d', $date),
+            'site' => $site,
+            'debut' => \DateTime::createFromFormat('H:i:s', $beginning),
+            'fin' => \DateTime::createFromFormat('H:i:s', $end),
+            'poste' => $position,
+        ]);
 
-        $this->save('put', $date, $beginning, $end, $site, $position, $login_id, array($perso_id));
+        $deleteBefore = $before ? true : false;
+
+        if ($deleteBefore) {
+            $this->delete($date, $beginning, $end, $site, $position, $login_id, $perso_id_origin);
+        }
+
+        $this->save('put', $date, $beginning, $end, $site, $position, $login_id, array($perso_id), $deleteBefore);
     }
 
     public function cross($date, $beginning, $end, $site, $position, $login_id, $perso_id = null)
@@ -147,7 +158,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
-    private function save($action, $date, $beginning, $end, $site, $position, $login_id, $perso_ids) {
+    private function save($action, $date, $beginning, $end, $site, $position, $login_id, $perso_ids, $playBefore = false) {
 
         // Format data
         $date = \DateTime::createFromFormat('Y-m-d', $date);
@@ -162,6 +173,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         $history->site($site);
         $history->position($position);
         $history->action($action);
+        $history->play_before($playBefore);
         $history->updated_by($login_id);
         $history->updated_at(new \DateTime());
 
