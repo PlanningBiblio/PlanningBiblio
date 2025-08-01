@@ -26,7 +26,7 @@
           <select name='model' id='model'>
             <option value=''>&nbsp;</option>
             {% for m in models %}
-              <option value='{{ m.getModelId }}'>{{ m.getName }}{% if m.isWeek %} (semaine){% endif %}</option>
+              <option value='{{ m.modelId }}'>{{ m.name }}{% if m.isWeek %} (semaine){% endif %}</option>
             {% endfor %}
           </select>
         </div>
@@ -34,9 +34,9 @@
       {% else %}
 
         {% set model = models | first  %}
-        <input type='hidden' name='model' id='model' value='{{ model.getModelId }}' />
+        <input type='hidden' name='model' id='model' value='{{ model.modelId }}' />
         <div style="margin: 20px auto;">
-          Importer le modèle "{{ model.getName }}"{%if model.isWeek %} (semaine){% endif %} ?
+          Importer le modèle "{{ model.name }}"{%if model.isWeek %} (semaine){% endif %} ?
         </div>
 
     {% endif %}

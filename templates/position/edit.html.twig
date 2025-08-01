@@ -50,10 +50,10 @@
                     <select name='etage' id='etage' style='width:255px' class='ui-widget-content ui-corner-all'>
                       <option value=''>&nbsp;</option>
                       {% for floor in floors %}
-                        {% if etage == floor.getId %}
-                          <option value='{{floor.getId}}' selected=selected>{{ floor.getValue }}</option>
+                        {% if etage == floor.id %}
+                          <option value="{{floor.id}}" selected="selected">{{ floor.value }}</option>
                         {% else %}
-                          <option value='{{floor.getId}}' >{{ floor.getValue }}</option>
+                          <option value="{{floor.id}}" >{{ floor.value }}</option>
                         {% endif %}
                       {% endfor %}
                     </select>
@@ -67,10 +67,10 @@
                       <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
                         <option value=''>&nbsp;</option>
                         {% for group in groups %}
-                          {% if groupe == group.getId %}
-                            <option value='{{ group.getId }}' selected=selected  >{{ group.getValue }}</option>
+                          {% if groupe == group.id %}
+                            <option value="{{ group.id }}" selected="selected"  >{{ group.value }}</option>
                           {% else %}
-                            <option value='{{ group.getId }}'>{{ group.getValue }}</option>
+                            <option value="{{ group.id }}">{{ group.value }}</option>
                           {% endif %}
                         {% endfor %}
                       </select>
@@ -130,10 +130,10 @@
                     <td>Activités :</td>
                     <td>
                       {% for s in skillList %}
-                        {% if s.getId in activites %}
-                          <input type='checkbox' name='activites[]' value='{{ s.getId }}' checked=checked /> {{ s.getName | raw }}<br/>
+                        {% if s.id in activites %}
+                          <input type="checkbox" name="activites[]" value="{{ s.id }}" checked="checked" /> {{ s.name | raw }}<br/>
                         {% else %}
-                          <input type='checkbox' name='activites[]' value='{{ s.getId }}' /> {{ s.getName | raw }}<br/>
+                          <input type="checkbox" name="activites[]" value="{{ s.id }}" /> {{ s.name | raw }}<br/>
                         {% endif %}
                       {% endfor %}
                     </td>
@@ -144,9 +144,9 @@
                       <td style='padding-top:26px;'>
                         {% for c in categoriesList %}
                           {% if c.id in categories %}
-                            <input type='checkbox' name='categories[]' value='{{ c.id }}' checked=checked /> {{ c.valeur | raw }}<br/>
+                            <input type="checkbox" name="categories[]" value="{{ c.id }}" checked="checked" /> {{ c.valeur | raw }}<br/>
                           {% else %}
-                            <input type='checkbox' name='categories[]' value='{{ c.id }}' /> {{ c.valeur | raw }}<br/>
+                            <input type="checkbox" name="categories[]" value="{{ c.id }}" /> {{ c.valeur | raw }}<br/>
                           {% endif %}
                         {% endfor %}
                       </td>
@@ -183,10 +183,10 @@
             <ul id="etages-sortable">
               {% if floors is iterable %}
                 {% for f in floors %}
-                  <li class='ui-state-default' id='li_{{ f.getId }}'>
-                    <span class='pl-icon pl-icon-arrowupdown'></span>
-                    <font id='valeur_{{ f.getId }}'>{{ f.getValue }}</font>
-                    {% if f.getId in usedFloors == false %}
+                  <li class="ui-state-default" id="li_{{ f.id }}">
+                    <span class="pl-icon pl-icon-arrowupdown"></span>
+                    <font id="valeur_{{ f.id }}">{{ f.value }}</font>
+                    {% if f.id in usedFloors == false %}
                       <span class='pl-icon pl-icon-trash' style='position:absolute;left:480px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                     {% endif %}
                   </li>
@@ -209,9 +209,10 @@
             <ul id="groups-sortable">
               {% if groups is iterable %}
                 {% for g in groups %}
-                  <li class='ui-state-default' id='li_{{ g.getId }}'><span class='pl-icon pl-icon-arrowupdown'></span>
-                    <font id='valeur_{{ g.getId }}'>{{ g.getValue }}</font>
-                    {% if g.getId in usedGroups == false %}
+                  <li class="ui-state-default" id="li_{{ g.id }}">
+                    <span class="pl-icon pl-icon-arrowupdown"></span>
+                    <font id="valeur_{{ g.id }}">{{ g.value }}</font>
+                    {% if g.id in usedGroups == false %}
                       <span class='pl-icon pl-icon-trash' style='position:absolute;left:480px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                     {% endif %}
                   </li>

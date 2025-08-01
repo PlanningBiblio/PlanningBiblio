@@ -40,10 +40,10 @@
                         <option value='Tous'>Tous</option>
                           {% for elem in postes_list %}
                             {% if postes is defined %}
-                              {% if elem.getId in postes %}
-                                <option value='{{ elem.getId }}' selected="selected"> {{ elem.getName | raw }} ({{ elem.getFloor | raw }})</option>
+                              {% if elem.id in postes %}
+                                <option value='{{ elem.id }}' selected="selected"> {{ elem.name | raw }} ({{ elem.floor | raw }})</option>
                               {% else %}
-                                <option value='{{ elem.getId }}'>{{ elem.getName | raw }} ({{ elem.getFloor | raw }})</option>
+                                <option value='{{ elem.id }}'>{{ elem.name | raw }} ({{ elem.floor | raw }})</option>
                               {% endif %}
                             {% endif %}
                           {% endfor %}
