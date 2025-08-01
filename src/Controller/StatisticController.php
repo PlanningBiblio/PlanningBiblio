@@ -8,12 +8,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Model\AbsenceReason;
-use App\Model\Holiday;
-use App\Model\PlanningPosition;
-use App\Model\Position;
-use App\Model\SelectFloor;
-use App\Model\SelectGroup;
+use App\Entity\AbsenceReason;
+use App\Entity\Holiday;
+use App\Entity\PlanningPosition;
+use App\Entity\Position;
+use App\Entity\SelectFloor;
+use App\Entity\SelectGroup;
 use App\PlanningBiblio\PresentSet;
 
 $version = 'symfony';

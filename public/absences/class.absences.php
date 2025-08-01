@@ -29,9 +29,9 @@ if (!isset($version) and php_sapi_name() != 'cli') {
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 
-use App\Model\Agent;
-use App\Model\AbsenceReason;
-use App\Model\AbsenceDocument;
+use App\Entity\Agent;
+use App\Entity\AbsenceReason;
+use App\Entity\AbsenceDocument;
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
 
@@ -1147,7 +1147,7 @@ class absences
         $this->responsables=$responsables;
     }
 
-    public function getRecipients($validation, $responsables, App\Model\Agent $agent, $type = 'Absences')
+    public function getRecipients($validation, $responsables, App\Entity\Agent $agent, $type = 'Absences')
     {
         /*
         Retourne la liste des destinataires des notifications en fonction du niveau de validation.

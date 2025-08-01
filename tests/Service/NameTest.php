@@ -2,7 +2,7 @@
 
 namespace App\Tests\Service;
 
-use App\Model\Agent;
+use App\Entity\Agent;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Tests\FixtureBuilder;
 

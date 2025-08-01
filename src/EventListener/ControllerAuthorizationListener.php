@@ -10,8 +10,8 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Yaml\Yaml;
 
-use App\Model\Agent;
-use App\Model\Access;
+use App\Entity\Agent;
+use App\Entity\Access;
 
 use ReflectionClass;
 

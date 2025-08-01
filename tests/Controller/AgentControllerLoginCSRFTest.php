@@ -1,5 +1,5 @@
 <?php
-use App\Model\Agent;
+use App\Entity\Agent;
 
 use Symfony\Component\DomCrawler\Crawler;
 

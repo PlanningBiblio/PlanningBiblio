@@ -2,7 +2,7 @@
 
 namespace App\PlanningBiblio;
 
-use App\Model\Agent;
+use App\Entity\Agent;
 use App\PlanningBiblio\OAuth;
 use App\PlanningBiblio\Logger;
 use App\PlanningBiblio\CalendarUtils;

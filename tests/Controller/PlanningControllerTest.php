@@ -1,10 +1,10 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Absence;
-use App\Model\PlanningPositionLock;
-use App\Model\PlanningPosition;
-use App\Model\PlanningPositionTabAffectation;
+use App\Entity\Agent;
+use App\Entity\Absence;
+use App\Entity\PlanningPositionLock;
+use App\Entity\PlanningPosition;
+use App\Entity\PlanningPositionTabAffectation;
 
 use Symfony\Component\DomCrawler\Crawler;
 

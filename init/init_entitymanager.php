@@ -16,15 +16,15 @@
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
-use App\Model\Extensions\TablePrefix;
+use App\Entity\Extensions\TablePrefix;
 
 // Instanciating entity manager.
-$entitiesPath = array(__DIR__.'/../src/Model');
+$entitiesPath = array(__DIR__.'/../src/Entity');
 $emConfig = Setup::createAttributeMetadataConfiguration($entitiesPath, true);
 
 // Handle table prefix.
 $evm = new \Doctrine\Common\EventManager;
-$tablePrefix = new App\Model\Extensions\TablePrefix($config['dbprefix']);
+$tablePrefix = new App\Entity\Extensions\TablePrefix($config['dbprefix']);
 $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
 
 $dbParams = array(

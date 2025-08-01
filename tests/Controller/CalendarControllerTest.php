@@ -1,8 +1,8 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Absence;
-use App\Model\WorkingHour;
+use App\Entity\Agent;
+use App\Entity\Absence;
+use App\Entity\WorkingHour;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;

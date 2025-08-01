@@ -1,8 +1,8 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Holiday;
-use App\Model\Manager;
+use App\Entity\Agent;
+use App\Entity\Holiday;
+use App\Entity\Manager;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 

@@ -4,7 +4,7 @@ namespace App\PlanningBiblio\Helper;
 
 use App\PlanningBiblio\Helper\BaseHelper;
 
-use App\Model\AbsenceBlock;
+use App\Entity\AbsenceBlock;
 
 class AbsenceBlockHelper extends BaseHelper
 {

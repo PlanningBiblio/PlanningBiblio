@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Model\AbsenceDocument;
-use App\Model\Manager;
-use App\Model\Agent;
+use App\Entity\AbsenceDocument;
+use App\Entity\Manager;
+use App\Entity\Agent;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

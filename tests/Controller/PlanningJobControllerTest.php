@@ -1,11 +1,11 @@
 <?php
 
-use App\Model\Absence;
-use App\Model\Agent;
-use App\Model\Holiday;
-use App\Model\PlanningPosition;
-use App\Model\Position;
-use App\Model\WorkingHour;
+use App\Entity\Absence;
+use App\Entity\Agent;
+use App\Entity\Holiday;
+use App\Entity\PlanningPosition;
+use App\Entity\Position;
+use App\Entity\WorkingHour;
 use App\PlanningBiblio\WorkingHours;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;

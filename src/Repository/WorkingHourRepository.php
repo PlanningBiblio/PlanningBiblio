@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
-use App\Model\WorkingHour;
+use App\Entity\WorkingHour;
 
 class WorkingHourRepository extends EntityRepository
 {

@@ -5,8 +5,8 @@ use PHPUnit\Framework\TestCase;
 use Tests\FixtureBuilder;
 use Symfony\Component\DomCrawler\Crawler;
 
-use App\Model\Absence;
-use App\Model\Agent;
+use App\Entity\Absence;
+use App\Entity\Agent;
 
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 

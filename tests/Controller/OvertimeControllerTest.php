@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\OverTime;
+use App\Entity\Agent;
+use App\Entity\OverTime;
 
 use Symfony\Component\DomCrawler\Crawler;
 

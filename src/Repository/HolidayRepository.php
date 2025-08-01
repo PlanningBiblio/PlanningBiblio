@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Model\Holiday;
+use App\Entity\Holiday;
 use Doctrine\ORM\EntityRepository;
 
 class HolidayRepository extends EntityRepository

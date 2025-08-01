@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Model\AdminInfo;
+use App\Entity\AdminInfo;
 
 class AdminInfoController extends BaseController
 {

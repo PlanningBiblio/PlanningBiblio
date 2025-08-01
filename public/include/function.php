@@ -13,8 +13,8 @@ Page contenant les fonctions PHP communes
 Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
 */
 
-use App\Model\Agent;
-use App\Model\WorkingHour;
+use App\Entity\Agent;
+use App\Entity\WorkingHour;
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\NotificationTransporter\NotificationTransporterInterface;
 

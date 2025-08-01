@@ -3,13 +3,13 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Model\AbsenceReason;
-use App\Model\Agent;
-use App\Model\Model;
-use App\Model\PlanningPositionHistory;
-use App\Model\PlanningPositionLock;
-use App\Model\SelectFloor;
-use App\Model\SeparationLine;
+use App\Entity\AbsenceReason;
+use App\Entity\Agent;
+use App\Entity\Model;
+use App\Entity\PlanningPositionHistory;
+use App\Entity\PlanningPositionLock;
+use App\Entity\SelectFloor;
+use App\Entity\SeparationLine;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 use App\PlanningBiblio\PresentSet;
 use App\PlanningBiblio\Framework;
@@ -379,7 +379,7 @@ class PlanningController extends BaseController
 
         // Find all agents that are not deleted
         $agents = $this->entityManager
-            ->getRepository('App\Model\Agent')
+            ->getRepository('App\Entity\Agent')
             ->findBy(array('supprime' =>'0'));
 
         if (!empty($agents)) {

@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Model\AbsenceDocument;
-use App\Model\Absence;
-use App\Model\AbsenceReason;
-use App\Model\Agent;
+use App\Entity\AbsenceDocument;
+use App\Entity\Absence;
+use App\Entity\AbsenceReason;
+use App\Entity\Agent;
 
 use App\PlanningBiblio\Helper\HourHelper;
 

@@ -5,9 +5,9 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 
-use App\Model\Agent;
-use App\Model\Position;
-use App\Model\Skill;
+use App\Entity\Agent;
+use App\Entity\Position;
+use App\Entity\Skill;
 
 class SkillRepository extends EntityRepository
 {

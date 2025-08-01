@@ -17,8 +17,8 @@ Enregistre la demande de récupération
 require_once(__DIR__ . '/../../init/init_ajax.php');
 include('class.conges.php');
 
-use App\Model\Agent;
-use App\Model\OverTime;
+use App\Entity\Agent;
+use App\Entity\OverTime;
 
 // Initialisation des variables
 $commentaires = $request->get('commentaires');

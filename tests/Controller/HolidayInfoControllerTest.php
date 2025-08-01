@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\HolidayInfo;
+use App\Entity\Agent;
+use App\Entity\HolidayInfo;
 
 use Symfony\Component\DomCrawler\Crawler;
 

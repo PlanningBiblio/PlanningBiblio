@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Model\PlanningPositionLines;
-use App\Model\Position;
+use App\Entity\PlanningPositionLines;
+use App\Entity\Position;
 use App\PlanningBiblio\Framework;
 
 use Symfony\Component\HttpFoundation\Request;

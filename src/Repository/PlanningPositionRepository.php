@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Model\PlanningPosition;
+use App\Entity\PlanningPosition;
 use Doctrine\ORM\EntityRepository;
 
 class PlanningPositionRepository extends EntityRepository

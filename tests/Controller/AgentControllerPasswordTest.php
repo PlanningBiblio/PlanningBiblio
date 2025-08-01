@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Absence;
-use App\Model\Agent;
+use App\Entity\Absence;
+use App\Entity\Agent;
 use App\PlanningBiblio\WorkingHours;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;

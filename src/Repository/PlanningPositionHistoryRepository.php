@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-use App\Model\PlanningPositionHistory;
+use App\Entity\PlanningPositionHistory;
 
 class PlanningPositionHistoryRepository extends EntityRepository
 {

@@ -9,7 +9,7 @@ use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;
 use App\PlanningBiblio\Ldif2Array;
 
-use App\Model\Agent;
+use App\Entity\Agent;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;

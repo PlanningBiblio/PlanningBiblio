@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Position;
+use App\Entity\Agent;
+use App\Entity\Position;
 
 use Symfony\Component\DomCrawler\Crawler;
 

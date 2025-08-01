@@ -2,8 +2,8 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use App\Model\Access;
-use App\Model\Agent;
+use App\Entity\Access;
+use App\Entity\Agent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 

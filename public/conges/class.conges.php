@@ -28,7 +28,7 @@ use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;
-use App\Model\Agent;
+use App\Entity\Agent;
 
 class conges
 {

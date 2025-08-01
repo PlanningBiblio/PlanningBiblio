@@ -3,8 +3,8 @@
 namespace App\PlanningBiblio\Helper;
 
 use App\PlanningBiblio\Helper\BaseHelper;
-use App\Model\PlanningPosition;
-use App\Model\PlanningPositionHistory;
+use App\Entity\PlanningPosition;
+use App\Entity\PlanningPositionHistory;
 
 class PlanningPositionHistoryHelper extends BaseHelper
 {

@@ -14,8 +14,8 @@ page /index pour placer les agents
 Cette page est appelée par la function JavaScript "bataille_navale" utilisé par le fichier planning/poste/menudiv.php
 */
 
-use App\Model\Position;
-use App\Model\PlanningPositionHistory;
+use App\Entity\Position;
+use App\Entity\PlanningPositionHistory;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 
 require_once(__DIR__ . '/../../../init/init_ajax.php');

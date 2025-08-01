@@ -2,9 +2,9 @@
 
 namespace App\Command;
 
-use App\Model\Agent;
-use App\Model\Holiday;
-use App\Model\Manager;
+use App\Entity\Agent;
+use App\Entity\Holiday;
+use App\Entity\Manager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

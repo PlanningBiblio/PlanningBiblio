@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Model\AbsenceReason;
+use App\Entity\AbsenceReason;
 use App\PlanningBiblio\ClosingDay;
 
 use Symfony\Component\HttpFoundation\Request;

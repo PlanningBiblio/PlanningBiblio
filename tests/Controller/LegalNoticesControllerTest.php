@@ -1,6 +1,6 @@
 <?php
 
-use App\Model\Agent;
+use App\Entity\Agent;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;

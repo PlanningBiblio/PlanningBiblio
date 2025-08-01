@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\AdminInfo;
+use App\Entity\Agent;
+use App\Entity\AdminInfo;
 
 use Symfony\Component\DomCrawler\Crawler;
 

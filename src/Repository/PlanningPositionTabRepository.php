@@ -4,13 +4,13 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-use App\Model\HiddenTables;
-use App\Model\PlanningPositionCells;
-use App\Model\PlanningPositionLines;
-use App\Model\PlanningPositionHours;
-use App\Model\PlanningPositionTabAffectation;
-use App\Model\PlanningPositionTab;
-use App\Model\PlanningPositionTabGroup;
+use App\Entity\HiddenTables;
+use App\Entity\PlanningPositionCells;
+use App\Entity\PlanningPositionLines;
+use App\Entity\PlanningPositionHours;
+use App\Entity\PlanningPositionTabAffectation;
+use App\Entity\PlanningPositionTab;
+use App\Entity\PlanningPositionTabGroup;
 
 class PlanningPositionTabRepository extends EntityRepository
 {

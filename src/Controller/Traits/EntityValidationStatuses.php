@@ -3,7 +3,7 @@
 namespace App\Controller\Traits;
 
 use App\PlanningBiblio\ValidationAwareEntity;
-use App\Model\Agent;
+use App\Entity\Agent;
 
 trait EntityValidationStatuses
 {

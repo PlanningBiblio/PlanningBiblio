@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Holiday;
+use App\Entity\Agent;
+use App\Entity\Holiday;
 
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;

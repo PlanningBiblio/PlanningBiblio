@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Model\PlanningPositionLock;
+use App\Entity\PlanningPositionLock;
 use Doctrine\ORM\EntityRepository;
 
 class PlanningPositionLockRepository extends EntityRepository

@@ -5,8 +5,8 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 
-use App\Model\Absence;
-use App\Model\AbsenceDocument;
+use App\Entity\Absence;
+use App\Entity\AbsenceDocument;
 
 class AbsenceRepository extends EntityRepository
 {

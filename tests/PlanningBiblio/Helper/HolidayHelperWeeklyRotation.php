@@ -1,6 +1,6 @@
 <?php
 
-use App\Model\Agent;
+use App\Entity\Agent;
 
 use App\PlanningBiblio\Helper\HolidayHelper;
 use PHPUnit\Framework\TestCase;

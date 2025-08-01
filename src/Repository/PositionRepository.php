@@ -4,8 +4,8 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-use App\Model\Position;
-use App\Model\PlanningPositionLines;
+use App\Entity\Position;
+use App\Entity\PlanningPositionLines;
 
 class PositionRepository extends EntityRepository
 {

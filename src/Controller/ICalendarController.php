@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Model\AbsenceReason;
-use App\Model\Agent;
+use App\Entity\AbsenceReason;
+use App\Entity\Agent;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

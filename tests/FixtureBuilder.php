@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use App\Model\Agent;
+use App\Entity\Agent;
 
 class FixtureBuilder
 {
@@ -67,7 +67,7 @@ class FixtureBuilder
     {
         $entities = $this->em->getRepository($model)->findAll();
         foreach ($entities as $entity) {
-            if ($model == 'App\Model\Agent' && ($entity->getId() == 1 or $entity->getId() == 2)) {
+            if ($model == 'App\Entity\Agent' && ($entity->getId() == 1 or $entity->getId() == 2)) {
                 continue;
             }
             $this->em->remove($entity);

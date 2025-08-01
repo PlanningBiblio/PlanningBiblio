@@ -2,34 +2,34 @@
 
 namespace App\PlanningBiblio;
 
-use App\Model\Absence;
-use App\Model\AbsenceInfo;
-use App\Model\AdminInfo;
-use App\Model\Agent;
-use App\Model\CallForHelp;
-use App\Model\OverTime;
-use App\Model\Detached;
-use App\Model\Holiday;
-use App\Model\HolidayInfo;
-use App\Model\HoursAbsence;
-use App\Model\IPBlocker;
-use App\Model\Logs;
-use App\Model\PlanningNote;
-use App\Model\PlanningNotification;
-use App\Model\PlanningPosition;
-use App\Model\PlanningPositionLock;
-use App\Model\PlanningPositionTab;
-use App\Model\PlanningPositionTabAffectation;
-use App\Model\Position;
-use App\Model\PublicServiceHours;
-use App\Model\PublicHoliday;
-use App\Model\RecurringAbsence;
-use App\Model\SaturdayWorkingHours;
-use App\Model\Skill;
-use App\Model\WorkingHour;
+use App\Entity\Absence;
+use App\Entity\AbsenceInfo;
+use App\Entity\AdminInfo;
+use App\Entity\Agent;
+use App\Entity\CallForHelp;
+use App\Entity\OverTime;
+use App\Entity\Detached;
+use App\Entity\Holiday;
+use App\Entity\HolidayInfo;
+use App\Entity\HoursAbsence;
+use App\Entity\IPBlocker;
+use App\Entity\Logs;
+use App\Entity\PlanningNote;
+use App\Entity\PlanningNotification;
+use App\Entity\PlanningPosition;
+use App\Entity\PlanningPositionLock;
+use App\Entity\PlanningPositionTab;
+use App\Entity\PlanningPositionTabAffectation;
+use App\Entity\Position;
+use App\Entity\PublicServiceHours;
+use App\Entity\PublicHoliday;
+use App\Entity\RecurringAbsence;
+use App\Entity\SaturdayWorkingHours;
+use App\Entity\Skill;
+use App\Entity\WorkingHour;
 use App\PlanningBiblio\Logger;
 
-use App\Model\HiddenTables;
+use App\Entity\HiddenTables;
 
 class DataPurger
 {
@@ -90,23 +90,23 @@ class DataPurger
 
         // Absences
         $deleted_absences = $this->entityManager->getRepository(Absence::class)->purgeAll($limit_date);
-        $this->log("Purging $deleted_absences App\Model\Absence");
+        $this->log("Purging $deleted_absences App\Entity\Absence");
 
         // Agents
         $deleted_agents = $this->entityManager->getRepository(Agent::class)->purgeAll();
-        $this->log("Purging $deleted_agents App\Model\Agent");
+        $this->log("Purging $deleted_agents App\Entity\Agent");
 
         // Planning Position Tab
         $deleted_planning_position_tab = $this->entityManager->getRepository(PlanningPositionTab::class)->purgeAll($limit_date);
-        $this->log("Purging $deleted_planning_position_tab App\Model\PlanningPositionTab");
+        $this->log("Purging $deleted_planning_position_tab App\Entity\PlanningPositionTab");
 
         // Position
         $deleted_position = $this->entityManager->getRepository(Position::class)->purgeAll($limit_date);
-        $this->log("Purging $deleted_position App\Model\Position");
+        $this->log("Purging $deleted_position App\Entity\Position");
 
         // Skills
         $deleted_skill = $this->entityManager->getRepository(Skill::class)->purgeAll($limit_date);
-        $this->log("Purging $deleted_skill App\Model\Skill");
+        $this->log("Purging $deleted_skill App\Entity\Skill");
 
         // Recurring Absences
         $builder = $this->entityManager->createQueryBuilder();
@@ -117,7 +117,7 @@ class DataPurger
                 ->setParameter('ended', "1")
                 ->setParameter('limit_date', $limit_date);
         $results = $builder->getQuery()->getResult();
-        $this->log("Purging $results App\Model\RecurringAbsence");
+        $this->log("Purging $results App\Entity\RecurringAbsence");
 
         $this->entityManager->flush();
         $this->log("End purging old data");

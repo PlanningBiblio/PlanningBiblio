@@ -68,7 +68,7 @@ if ($dbconn) {
 include_once(__DIR__ . '/../init/init.php');
 include_once(__DIR__.'/../init/init_templates.php');
 
-$entitiesPath = array('src/Model');
+$entitiesPath = array('src/Entity');
 $emConfig = Setup::createAttributeMetadataConfiguration($entitiesPath, true);
 
 $dbParams = array(

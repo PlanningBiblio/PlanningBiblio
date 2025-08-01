@@ -2,7 +2,7 @@
 
 namespace App\Cron;
 
-use App\Model\Cron;
+use App\Entity\Cron;
 
 class Crontab {
 

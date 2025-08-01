@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\PublicHoliday;
+use App\Entity\Agent;
+use App\Entity\PublicHoliday;
 use App\PlanningBiblio\ClosingDay;
 use Tests\PLBWebTestCase;
 

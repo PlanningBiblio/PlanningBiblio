@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\AbsenceInfo;
+use App\Entity\Agent;
+use App\Entity\AbsenceInfo;
 
 use Symfony\Component\DomCrawler\Crawler;
 

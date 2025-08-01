@@ -1,8 +1,8 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Manager;
-use App\Model\WorkingHour;
+use App\Entity\Agent;
+use App\Entity\Manager;
+use App\Entity\WorkingHour;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 

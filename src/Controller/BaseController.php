@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Model\ConfigParam;
+use App\Entity\ConfigParam;
 use App\PlanningBiblio\Notifier;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

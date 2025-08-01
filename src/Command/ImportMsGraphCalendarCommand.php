@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\Model\ConfigParam;
+use App\Entity\ConfigParam;
 use App\PlanningBiblio\MSGraphClient;
 
 #[AsCommand(

@@ -5,22 +5,22 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 
-use App\Model\Absence;
-use App\Model\Agent;
-use App\Model\OverTime;
-use App\Model\Detached;
-use App\Model\HiddenTables;
-use App\Model\Holiday;
-use App\Model\PlanningNote;
-use App\Model\PlanningPosition;
-use App\Model\PlanningPositionLock;
-use App\Model\PlanningPositionModel;
-use App\Model\RecurringAbsence;
-use App\Model\SaturdayWorkingHours;
-use App\Model\Supervisor;
+use App\Entity\Absence;
+use App\Entity\Agent;
+use App\Entity\OverTime;
+use App\Entity\Detached;
+use App\Entity\HiddenTables;
+use App\Entity\Holiday;
+use App\Entity\PlanningNote;
+use App\Entity\PlanningPosition;
+use App\Entity\PlanningPositionLock;
+use App\Entity\PlanningPositionModel;
+use App\Entity\RecurringAbsence;
+use App\Entity\SaturdayWorkingHours;
+use App\Entity\Supervisor;
 // FIXME Use Manager instead of Supervisor : Duplicate class
-use App\Model\WorkingHour;
-use App\Model\ConfigParam;
+use App\Entity\WorkingHour;
+use App\Entity\ConfigParam;
 
 class AgentRepository extends EntityRepository
 {

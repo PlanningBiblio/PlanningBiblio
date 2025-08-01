@@ -3,7 +3,7 @@
 use Tests\FixtureBuilder;
 
 use PHPUnit\Framework\TestCase;
-use App\Model\Agent;
+use App\Entity\Agent;
 
 class AgentRepositoryTest extends TestCase
 {

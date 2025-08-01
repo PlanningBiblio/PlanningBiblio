@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Model\ConfigParam;
+use App\Entity\ConfigParam;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

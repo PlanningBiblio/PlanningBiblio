@@ -6,7 +6,7 @@ use App\PlanningBiblio\Helper\BaseHelper;
 use App\PlanningBiblio\Helper\WeekPlanningHelper;
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
-use App\Model\Agent;
+use App\Entity\Agent;
 
 include_once __DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php';
 include_once(__DIR__ . '/../../../public/include/function.php');

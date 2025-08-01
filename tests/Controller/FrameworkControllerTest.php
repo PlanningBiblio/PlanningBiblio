@@ -1,10 +1,10 @@
 <?php
 
-use App\Model\Absence;
-use App\Model\Agent;
-use App\Model\PlanningPosition;
-use App\Model\PlanningPositionTabAffectation;
-use App\Model\PlanningPositionTab;
+use App\Entity\Absence;
+use App\Entity\Agent;
+use App\Entity\PlanningPosition;
+use App\Entity\PlanningPositionTabAffectation;
+use App\Entity\PlanningPositionTab;
 use App\PlanningBiblio\Framework;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;

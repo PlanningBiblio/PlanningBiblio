@@ -91,7 +91,7 @@
             "App\\": "src/",
             "Tests\\": "tests",
             "PlanningBiblio\\": "src/PlanningBiblio",
-            "Model\\": "src/Model"
+            "Model\\": "src/Entity"
         }
     },
     "autoload-dev": {

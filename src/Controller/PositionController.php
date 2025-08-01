@@ -8,10 +8,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Model\Position;
-use App\Model\SelectFloor;
-use App\Model\SelectGroup;
-use App\Model\Skill;
+use App\Entity\Position;
+use App\Entity\SelectFloor;
+use App\Entity\SelectGroup;
+use App\Entity\Skill;
 
 require_once(__DIR__ . '/../../public/postes/class.postes.php');
 require_once(__DIR__ . '/../../public/activites/class.activites.php');

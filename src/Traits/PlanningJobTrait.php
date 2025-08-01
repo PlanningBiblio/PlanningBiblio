@@ -2,8 +2,8 @@
 
 namespace App\Traits;
 
-use App\Model\AbsenceReason;
-use App\Model\Position;
+use App\Entity\AbsenceReason;
+use App\Entity\Position;
 use App\PlanningBiblio\WorkingHours;
 
 trait PlanningJobTrait

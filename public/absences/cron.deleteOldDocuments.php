@@ -8,7 +8,7 @@ require_once __DIR__ . '/../include/function.php';
 require_once __DIR__ . '/class.absences.php';
 require_once __DIR__ . '/../personnel/class.personnel.php';
 
-use App\Model\AbsenceDocument;
+use App\Entity\AbsenceDocument;
 
 $CSRFToken = CSRFToken();
 

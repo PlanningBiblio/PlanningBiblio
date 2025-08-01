@@ -8,9 +8,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Model\Skill;
-use App\Model\Agent;
-use App\Model\Position;
+use App\Entity\Skill;
+use App\Entity\Agent;
+use App\Entity\Position;
 
 require_once(__DIR__.'/../../public/activites/class.activites.php');
 

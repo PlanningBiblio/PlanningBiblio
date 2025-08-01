@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-use App\Model\AbsenceReason;
+use App\Entity\AbsenceReason;
 
 class AbsenceReasonRepository extends EntityRepository
 {

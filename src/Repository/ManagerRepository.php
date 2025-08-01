@@ -4,8 +4,8 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-use App\Model\Manager;
-use App\Model\Agent;
+use App\Entity\Manager;
+use App\Entity\Agent;
 
 class ManagerRepository extends EntityRepository
 {

@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Model\AbsenceInfo;
+use App\Entity\AbsenceInfo;
 
 class AbsenceInfoController extends BaseController
 {

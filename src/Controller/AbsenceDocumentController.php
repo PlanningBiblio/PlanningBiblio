@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Model\AbsenceDocument;
+use App\Entity\AbsenceDocument;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -6,7 +6,7 @@ use App\Controller\BaseController;
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;
 
-use App\Model\Agent;
+use App\Entity\Agent;
 
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Request;

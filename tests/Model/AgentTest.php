@@ -1,13 +1,13 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Access;
-use App\Model\Holiday;
-use App\Model\Skill;
-use App\Model\Position;
-use App\Model\PlanningPosition;
-use App\Model\WorkingHour;
-use App\Model\Absence;
+use App\Entity\Agent;
+use App\Entity\Access;
+use App\Entity\Holiday;
+use App\Entity\Skill;
+use App\Entity\Position;
+use App\Entity\PlanningPosition;
+use App\Entity\WorkingHour;
+use App\Entity\Absence;
 
 use Tests\FixtureBuilder;
 

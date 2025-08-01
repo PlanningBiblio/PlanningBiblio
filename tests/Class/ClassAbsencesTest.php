@@ -2,8 +2,8 @@
 
 use PHPUnit\Framework\TestCase;
 
-use App\Model\Agent;
-use App\Model\ConfigParam;
+use App\Entity\Agent;
+use App\Entity\ConfigParam;
 
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 

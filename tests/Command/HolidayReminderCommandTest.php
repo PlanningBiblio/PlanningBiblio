@@ -3,10 +3,10 @@
 // 
 // namespace App\Tests\Command;
 // 
-// use App\Model\Agent;
-// use App\Model\ConfigParam;
-// use App\Model\Holiday;
-// use App\Model\Manager;
+// use App\Entity\Agent;
+// use App\Entity\ConfigParam;
+// use App\Entity\Holiday;
+// use App\Entity\Manager;
 // use Symfony\Bundle\FrameworkBundle\Console\Application;
 // use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 // use Symfony\Component\Console\Output\OutputInterface;

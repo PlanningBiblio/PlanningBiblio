@@ -6,7 +6,7 @@ use App\Controller\BaseController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
-use App\Model\ConfigParam;
+use App\Entity\ConfigParam;
 
 class ConfigController extends BaseController
 {

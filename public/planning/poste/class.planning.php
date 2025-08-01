@@ -13,9 +13,9 @@ Classe planning
 Utilisée par les fichiers du dossier "planning/poste"
 */
 
-use App\Model\Agent;
-use App\Model\AbsenceReason;
-use App\Model\Position;
+use App\Entity\Agent;
+use App\Entity\AbsenceReason;
+use App\Entity\Position;
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;

@@ -1,9 +1,9 @@
 <?php
 
 
-use App\Model\Agent;
-use App\Model\Access;
-use App\Model\AbsenceDocument;
+use App\Entity\Agent;
+use App\Entity\Access;
+use App\Entity\AbsenceDocument;
 
 use Tests\FixtureBuilder;
 
@@ -35,7 +35,7 @@ class AbsenceDocumentTest extends PLBWebTestCase
         $this->assertEquals('fichier', $info->getFilename(), "filename is fichier");
         $this->assertEquals($date, $info->getDate(), "date is 09/10/2022");
         $this->assertEquals(100, $info->getAbsenceId(), 'absence_id is 100');
-        $this->assertStringContainsString('/src/Model/../../var/upload/test/absences/',$abs_doc->upload_dir(),'upload dir ok');
+        $this->assertStringContainsString('/src/Entity/../../var/upload/test/absences/',$abs_doc->upload_dir(),'upload dir ok');
     }
 }
 

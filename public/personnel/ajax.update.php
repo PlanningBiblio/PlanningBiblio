@@ -14,7 +14,7 @@ Met à jour les fiches des agents sélectionnés à partir de la liste des agent
 Ce script est appelé par la fonction JS personnel/js/index.js : agent_list
 */
 
-use App\Model\Agent;
+use App\Entity\Agent;
 
 require_once(__DIR__ . '/../../init/init_ajax.php');
 
