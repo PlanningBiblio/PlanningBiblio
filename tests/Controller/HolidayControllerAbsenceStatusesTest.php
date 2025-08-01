@@ -70,6 +70,6 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
         $c->CSRFToken = $this->CSRFToken;
         $c->add($data);
 
-        return $c->getId();
+        return $c->id;
     }
 }

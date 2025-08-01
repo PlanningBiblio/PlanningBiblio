@@ -244,7 +244,7 @@ class CJMail implements NotificationTransporterInterface
         }
 
         /* Préparation du sujet */
-        $this->subject = stripslashes($this->subject);
+        $this->subject = stripslashes((string) $this->subject);
         $this->subject = "Planno : " . $this->subject;
 
         /* Préparation du message, html, doctype, signature */
@@ -257,7 +257,7 @@ class CJMail implements NotificationTransporterInterface
         $message .= $this->message;
         $message .= "<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
         $message .= "</body></html>";
-        $message  = stripslashes($message);
+        $message  = stripslashes((string) $message);
         $message  = str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $message);
 
         $this->message = $message;

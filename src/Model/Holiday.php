@@ -367,4 +367,52 @@ class Holiday
 
         return $this;
     }
+
+    public function getPreviousRemainder(): ?float
+    {
+        return $this->reliquat_prec;
+    }
+
+    public function setPreviousRemainder(float $remainder): static
+    {
+        $this->reliquat_prec = $remainder;
+
+        return $this;
+    }
+
+    public function getActualRemainder(): ?float
+    {
+        return $this->reliquat_actuel;
+    }
+
+    public function setActualRemainder(float $remainder): static
+    {
+        $this->reliquat_actuel = $remainder;
+
+        return $this;
+    }
+
+    public function getPreviousAnticipation(): ?float
+    {
+        return $this->anticipation_prec;
+    }
+
+    public function setPreviousAnticipation(float $anticipation): static
+    {
+        $this->anticipation_prec = $anticipation;
+
+        return $this;
+    }
+
+    public function getActualAnticipation(): ?float
+    {
+        return $this->anticipation_actuel;
+    }
+
+    public function setActualAnticipation(float $anticipation): static
+    {
+        $this->anticipation_actuel = $anticipation;
+
+        return $this;
+    }
 }

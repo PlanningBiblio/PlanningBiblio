@@ -27,9 +27,9 @@
                                 <span class='pl-icon pl-icon-edit' title='Edit'></span>
                             </a>
                         </td>
-                        <td>{{ elem.debut | date("d/m/Y") }}</td>
-                        <td>{{ elem.fin | date("d/m/Y")  }}</td>
-                        <td>{{ elem.texte | nl2br }}</td>
+                        <td>{{ elem.start | date("d/m/Y") }}</td>
+                        <td>{{ elem.end | date("d/m/Y")  }}</td>
+                        <td>{{ elem.comment | nl2br }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

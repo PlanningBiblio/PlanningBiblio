@@ -50,9 +50,9 @@
                 {% endif %}
                 {% for a in managed %}
                   {% if a.id == perso_id %}
-                    <option value='{{ a.id }}' selected="selected">{{ a.nom }} {{ a.prenom }}</option>
+                    <option value='{{ a.id }}' selected="selected">{{ a.lastname }} {{ a.firstname }}</option>
                   {% else %}
-                    <option value='{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
+                    <option value='{{ a.id }}'>{{ a.lastname }} {{ a.firstname }}</option>
                   {% endif %}
                 {% endfor %}
               </select>

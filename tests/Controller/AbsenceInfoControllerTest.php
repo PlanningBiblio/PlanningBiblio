@@ -162,7 +162,6 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $entityManager->persist($info);
         $entityManager->flush();
 
-
         $crawler = $this->client->request('GET', "/absences/info");
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');

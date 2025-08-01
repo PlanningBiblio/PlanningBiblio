@@ -28,7 +28,6 @@ class AdminInfoController extends BaseController
 
         $this->templateParams( array('info' => $query->getResult()) );
 
-
         return $this->output('adminInfo/index.html.twig');
     }
 

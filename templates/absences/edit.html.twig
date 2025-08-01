@@ -60,9 +60,9 @@
 
                     {% for a in agents_tous %}
                       {% if a.id in absence.perso_id %}
-                        <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">{{ a.nom }} {{ a.prenom }}</option>
+                        <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">{{ a.lastname }} {{ a.firstname }}</option>
                       {% else %}
-                        <option value='{{ a.id }}' id='option{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
+                        <option value='{{ a.id }}' id='option{{ a.id }}'>{{ a.lastname }} {{ a.firstname }}</option>
                       {% endif %}
                     {% endfor %}
                   </select>

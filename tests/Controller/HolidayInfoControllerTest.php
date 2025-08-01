@@ -29,9 +29,9 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->client->request('POST', '/holiday-info', array('debut' => '05/10/2022 00:00:00', 'fin' => '10/10/2022 00:00:00', 'texte' => 'salut', 'CSRFToken' => '00000'));
         $info = $entityManager->getRepository(HolidayInfo::class)->findOneBy(array('texte' => 'salut'));
 
-        $this->assertEquals('2022-10-05', $info->debut()->format('Y-m-d'), "debut is ok");
-        $this->assertEquals('2022-10-10', $info->fin()->format('Y-m-d'), "fin is ok");
-        $this->assertEquals('salut', $info->texte(), 'info texte is salut');
+        $this->assertEquals('2022-10-05', $info->getStart()->format('Y-m-d'), "debut is ok");
+        $this->assertEquals('2022-10-10', $info->getEnd()->format('Y-m-d'), "fin is ok");
+        $this->assertEquals('salut', $info->getComment(), 'info texte is salut');
 
     }
 
@@ -91,9 +91,9 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
 
         $info = new HolidayInfo();
-        $info->debut($start);
-        $info->fin($end);
-        $info->texte('salut');
+        $info->setStart($start);
+        $info->setEnd($end);
+        $info->setComment('salut');
 
 
         $entityManager->persist($info);
@@ -155,9 +155,9 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $end = new DateTime('+1 month +1 day');
 
         $info = new HolidayInfo();
-        $info->debut($start);
-        $info->fin($end);
-        $info->texte('hello');
+        $info->setStart($start);
+        $info->setEnd($end);
+        $info->setComment('hello');
 
         $entityManager->persist($info);
         $entityManager->flush();

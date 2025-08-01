@@ -217,8 +217,8 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($jdevoe_holiday->getHours(), 21.00, 'Hours is 21 (3 days)');
         $this->assertEquals($jdevoe_holiday->getPreviousCredit(), 11, 'Previous holiday credit is 11');
         $this->assertEquals($jdevoe_holiday->getActualCredit(), 0, 'New holiday credit is 0');
-        $this->assertEquals($jdevoe_holiday->anticipation_prec(), 0, 'Previous remaining is 0');
-        $this->assertEquals($jdevoe_holiday->anticipation_actuel(), 10, 'New remaining is 10');
+        $this->assertEquals($jdevoe_holiday->getPreviousAnticipation(), 0, 'Previous remaining is 0');
+        $this->assertEquals($jdevoe_holiday->getActualAnticipation(), 10, 'New remaining is 10');
 
         $entityManager->refresh($jdevoe);
         $this->assertEquals($jdevoe->getHolidayCredit(), 0, 'credit has updated');
@@ -238,8 +238,8 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($adenis_holiday->getHours(), 21.00, 'Hours is 21 (3 days)');
         $this->assertEquals($adenis_holiday->getPreviousCredit(), 175, 'Previous holiday credit is 175');
         $this->assertEquals($adenis_holiday->getActualCredit(), 164, 'New holiday credit is 164');
-        $this->assertEquals($adenis_holiday->reliquat_prec(), 10, 'Prev remaining is 10');
-        $this->assertEquals($adenis_holiday->reliquat_actuel(), 0, 'New remaining is 0');
+        $this->assertEquals($adenis_holiday->getPreviousRemainder(), 10, 'Prev remaining is 10');
+        $this->assertEquals($adenis_holiday->getActualRemainder(), 0, 'New remaining is 0');
 
         $entityManager->refresh($adenis);
         $this->assertEquals($adenis->getHolidayCredit(), 164, 'credit has updated');

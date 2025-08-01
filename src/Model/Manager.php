@@ -25,7 +25,7 @@ class Manager
     private ?Agent $responsable = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $level1 = 0;
+    private ?int $level1 = 1;
 
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $level2 = 0;
