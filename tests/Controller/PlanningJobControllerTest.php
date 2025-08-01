@@ -76,7 +76,6 @@ class PlanningJobControllerTest extends PLBWebTestCase
         ));
         $id = $post->getId();
 
-
         // Create agents
         $arrivee = \DateTime::createFromFormat("d/m/Y", "01/10/2022");
         $depart = new DateTime('+ 1 year');

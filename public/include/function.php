@@ -1157,8 +1157,10 @@ function loginFailedWait()
     $seconds=$GLOBALS['config']['IPBlocker-Wait']*60;
     $wait=0;
 
+    $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+
     $db=new db();
-    $db->select2("ip_blocker", "timestamp", array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"blocked"), "ORDER BY `timestamp` DESC LIMIT 0,1");
+    $db->select2('ip_blocker', 'timestamp', array('ip' => $ipAddress, 'status' => 'blocked'), 'ORDER BY `timestamp` DESC LIMIT 0,1');
 
     if ($db->result) {
         $timestamp=$db->result[0]['timestamp'];

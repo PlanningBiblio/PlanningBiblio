@@ -31,7 +31,7 @@ class Position
     private ?string $etage = null;
 
     #[ORM\Column]
-    private array $activites = [];
+    private ?array $activites = null;
 
     #[ORM\Column]
     private ?bool $statistiques = true;
@@ -46,10 +46,10 @@ class Position
     private ?bool $lunch = false;
 
     #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $site = null;
+    private ?int $site = 1;
 
     #[ORM\Column]
-    private ? array $categories = null;
+    private ?array $categories = null;
 
     #[ORM\Column]
     private ?\DateTime $supprime = null;
@@ -122,7 +122,7 @@ class Position
         return $this;
     }
 
-    public function getActivities(): array
+    public function getActivities(): ?array
     {
         return $this->activites;
     }
