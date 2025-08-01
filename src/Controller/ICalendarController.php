@@ -208,7 +208,7 @@ class ICalendarController extends BaseController
                 foreach ($absences as $a) {
                     if ($a['debut'] < $elem['date'].' '.$elem['fin']
                         and $a['fin'] > $elem['date'].' '.$elem['debut']
-                        and !($postes[$elem['poste']]['teleworking'] and in_array($a['motif'], $teleworkingReasons))
+                        and !($postes[$elem['poste']]['teleworking'] and isset($a['motif']) and in_array($a['motif'], $teleworkingReasons))
                         ) {
                         continue 2;
                     }

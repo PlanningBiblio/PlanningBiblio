@@ -2,10 +2,11 @@
 
 namespace App\Model;
 
+use App\Repository\WorkingHourRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: WorkingHourRepository::class)]
 #[ORM\Table(name: 'planning_hebdo')]
 class WorkingHour
 {
@@ -27,7 +28,7 @@ class WorkingHour
     private ?string $temps = null;
 
     #[ORM\Column]
-    private array $breaktime = [];
+    private ?array $breaktime = null;
 
     #[ORM\Column]
     private ?\DateTime $saisie = null;
@@ -72,7 +73,7 @@ class WorkingHour
 
     public function getBreaktime(): array
     {
-        return $this->json;
+        return $this->breaktime;
     }
 
     public function setBreaktime(array $breaktime): static

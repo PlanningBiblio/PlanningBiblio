@@ -120,9 +120,9 @@ class PositionController extends BaseController
         if (is_numeric($id)) {
             $position  =  $this->entityManager->getRepository(Position::class)->find($id);
             $nom =  $position->getName();
-            $etage = $position->get->getFloor();
+            $etage = $position->getFloor();
             $groupe = $position->getGroup();
-            $groupe_id = $position->getGroupeId();
+            $groupe_id = $position->getGroupId();
             $categories  =  $position->getCategories() ?  : array();
             $site = $position->getSite();
             $activites = $position->getActivities();
@@ -274,17 +274,16 @@ class PositionController extends BaseController
 
             $activites = $request->get('activites', []);
             $categories = $request->get('categories', []);
-            $site = $request->get('site', 1);
             $bloquant = $request->get('bloquant', true);
             $quota_sp = $request->get('quota_sp', true);
             $lunch = $request->get('lunch', false);
-            $statistiques = $request->get('statistiques', true);
+            $statistiques = (bool) $request->get('statistiques', true);
             $teleworking = $request->get('teleworking', false);
             $etage = $request->get('etage',"");
             $groupe = $request->get('groupe', "");
-            $groupe_id = $request->get('group_id', "");
+            $groupe_id = (int) $request->get('group_id', "");
             $obligatoire = $request->get('obligatoire', 'Obligatoire');
-            $site = $request->get('site', "");
+            $site = (int) $request->get('site', 1);
 
             if (!$id){
                 $position = new Position;
@@ -320,7 +319,7 @@ class PositionController extends BaseController
             } else {
                 $position = $this->entityManager->getRepository(Position::class)->find($id);
                 $position->setName($nom);
-                $position->setName($activites);
+                $position->setActivities($activites);
                 $position->setCategories($categories);
                 $position->setBlocking($bloquant);
                 $position->setQuotaSP($quota_sp);

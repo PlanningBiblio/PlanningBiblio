@@ -2744,7 +2744,7 @@ class StatisticController extends BaseController
             $end = \DateTime::createFromFormat('Y-m-d H:i:s', $elem['date'] . ' ' . $elem['fin']);
 
             foreach ($holidays as $holiday) {
-                if ($holiday->getUserId() == $elem['perso_id'] 
+                if ($holiday->getUser() == $elem['perso_id'] 
                     and $holiday->getStart() < $end
                     and $holiday->getEnd() > $start) {
 

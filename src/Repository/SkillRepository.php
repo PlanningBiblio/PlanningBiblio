@@ -48,5 +48,4 @@ class SkillRepository extends EntityRepository
         }
         return $deleted_skill;
     }
-
 }

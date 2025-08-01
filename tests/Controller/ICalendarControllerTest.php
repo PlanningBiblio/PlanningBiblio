@@ -200,7 +200,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $c->CSRFToken = $this->CSRFToken;
         $c->add($data);
 
-        return $c->getId();
+        return $c->id;
     }
 
     private function createAbsenceFor($agent, $status = 1)
@@ -223,6 +223,6 @@ class ICalendarControllerTest extends PLBWebTestCase
 
         $absence->add();
 
-        return $absence->getId();
+        return $absence->id;
     }
 }

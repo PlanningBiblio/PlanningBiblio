@@ -33,14 +33,14 @@ class Position
     #[ORM\Column]
     private array $activites = [];
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $statistiques = '1';
+    #[ORM\Column]
+    private ?bool $statistiques = true;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $teleworking = '0';
+    #[ORM\Column]
+    private ?bool $teleworking = false;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $bloquant = '1';
+    #[ORM\Column]
+    private ?bool $bloquant = true;
 
     #[ORM\Column]
     private ?bool $lunch = false;
@@ -49,7 +49,7 @@ class Position
     private ?int $site = null;
 
     #[ORM\Column]
-    private array $categories = [];
+    private ? array $categories = null;
 
     #[ORM\Column]
     private ?\DateTime $supprime = null;
@@ -194,7 +194,7 @@ class Position
         return $this;
     }
 
-    public function getCategories(): array
+    public function getCategories(): ?array
     {
         return $this->categories;
     }

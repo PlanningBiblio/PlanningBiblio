@@ -626,7 +626,7 @@ class HolidayController extends BaseController
             'conges_tous'           => $this->config('Conges-tous'),
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'hours_per_day'         => $hoursPerDay,
-            'hours_per_day_in_hhmm' => $hoursPerDayInHoursMinutes,
+            'hours_per_day_in_hhmm' => $hoursPerDayInHoursMinutes ?? null,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
             'reliquat_jours'        => $reliquat_jours,

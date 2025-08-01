@@ -139,7 +139,7 @@ Exemple à ajouter en crontab :
 
         // Assemble les informations des congés et des agents
         foreach ($holidays as $elem) {
-            $agent = $agents[$elem->getUserId()];
+            $agent = $agents[$elem->getUser()];
 
             $tmp = $elem;
             $tmp->lastname = $agent->getLastname();

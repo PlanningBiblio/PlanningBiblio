@@ -43,7 +43,7 @@
                   <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:400px; text-align:center;' >
                     <option value=''>&nbsp;</option>
                     {% for m in managed %}
-                      <option value='{{ m.id }}' {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.nom }} {{ m.prenom }}</option>
+                      <option value='{{ m.id }}' {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.lastname }} {{ m.firstname }}</option>
                     {% endfor %}
                   </select>
                 {% else %}

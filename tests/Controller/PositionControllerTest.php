@@ -29,15 +29,14 @@ class PositionControllerTest extends PLBWebTestCase
 
         $this->client->request('POST', '/position', array('nom' => 'bureau', 'activites' => [], 'categories' => [], 'site' => 1, 'bloquant' => 1, 'statistiques' => 0, 'teleworking' => 1, 'etage' => '', 'groupe' => 'admin', 'groupe_id' => '', 'obligatoire' => 'Obligatoire', 'site' => '', '_token' => $token));
 
-
         $position = $entityManager->getRepository(Position::class)->findOneBy(array('nom' => 'bureau'));
 
         $this->assertEquals($position->getName(), 'bureau', 'post name is bureau');
-        $this->assertEquals($position->getBlocking(), 1, 'post bloquant is 1');
+        $this->assertEquals($position->isBlocking(), 1, 'post bloquant is 1');
         $this->assertEquals($position->isStatistics(), false, 'post statistique is false');
         $this->assertEquals($position->isTeleworking(), true, 'post teleworking is true');
         $this->assertEquals($position->getMandatory(), 'Obligatoire', 'post obligatoire is Obligatoire');
-        $this->assertEquals($position->getGroupe(), 'admin', 'post group is admin');
+        $this->assertEquals($position->getGroup(), 'admin', 'post group is admin');
     }
 
     public function testNewForm()

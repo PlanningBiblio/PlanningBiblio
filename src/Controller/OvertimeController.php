@@ -169,7 +169,7 @@ class OvertimeController extends BaseController
 
         $categories = array();
         foreach ($managed as $index => $m) {
-            $categories[$m->getId()] = $m->categorie();
+            $categories[$m->getId()] = $m->getCategory();
         }
 
         $this->templateParams(array(

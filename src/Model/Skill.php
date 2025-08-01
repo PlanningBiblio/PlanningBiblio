@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Skill
 {
     #[ORM\Id]
-    #[ORM\GeneratedName]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -50,7 +50,7 @@ class Skill
     }
 
     public function disable() {
-        $this->supprime(new \DateTime());
+        $this->supprime = new \DateTime();
     }
 
     public function enable() {

@@ -116,14 +116,14 @@ class Holiday
         return $this->id;
     }
 
-    public function getUserId(): ?int
+    public function getUser(): ?int
     {
         return $this->perso_id;
     }
 
-    public function setUserId(int $userId): static
+    public function setUser(int $user): static
     {
-        $this->perso_id = $userId;
+        $this->perso_id = $user;
 
         return $this;
     }
