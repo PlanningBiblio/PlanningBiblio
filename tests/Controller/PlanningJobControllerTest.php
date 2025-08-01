@@ -82,23 +82,23 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $builder->delete(Agent::class);
         $jdevoe = $this->builder->build(Agent::class, array(
-            'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $jdupont = $this->builder->build(Agent::class, array(
-            'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Pôle Public', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $abreton = $this->builder->build(Agent::class, array(
-            'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $ida = $abreton->getId();
         $kboivin = $this->builder->build(Agent::class, array(
-            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode($id),
+            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode([$id]),
             'service' => 'Pôle Public', 'sites' => json_encode(array("1")), 'actif' =>'Actif',
             'arrivee' => $arrivee, 'depart' => $depart,
             'droits' => [99, 100, 301],
@@ -197,25 +197,25 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $builder->delete(Agent::class);
         $jdevoe = $this->builder->build(Agent::class, array(
-            'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Pôle Public', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $abreton = $this->builder->build(Agent::class, array(
-            'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $ida = $abreton->getId();
         $agentHoliday = $this->builder->build(Agent::class, array(
-            'login' => 'holiday', 'nom' => 'Day', 'prenom' => 'Holy', 'postes' => json_encode($id),
+            'login' => 'holiday', 'nom' => 'Day', 'prenom' => 'Holy', 'postes' => json_encode([$id]),
             'service' => 'Pôle Public', 'sites' => json_encode(array("1")), 'actif' =>'Actif',
             'arrivee' => $arrivee, 'depart' => $depart,
             'droits' => array(99,100)
         ));
 
         $kboivin = $this->builder->build(Agent::class, array(
-            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode($id),
+            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode([$id]),
             'service' => 'Pôle Public', 'sites' => json_encode(array("1")), 'actif' =>'Actif',
             'arrivee' => $arrivee, 'depart' => $depart,
             'droits' => array("6","9","701","3","4","21","1101","1201","22","5","17","1301","25","23","201","202","203","204","401","402","403","404","601","602","603","604","301","302","303","304","1001","1002","1003","1004","901","902","903","904","801","802","803","804",6,99,100,20)
@@ -314,23 +314,23 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $builder->delete(Agent::class);
         $jdevoe = $this->builder->build(Agent::class, array(
-            'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $jdupont = $this->builder->build(Agent::class, array(
-            'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Pôle Public', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $abreton = $this->builder->build(Agent::class, array(
-            'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $ida = $abreton->getId();
         $kboivin = $this->builder->build(Agent::class, array(
-            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode($id),
+            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode([$id]),
             'service' => 'Pôle Public', 'sites' => json_encode(array("1")), 'actif' =>'Actif',
             'arrivee' => $arrivee, 'depart' => $depart,
             'droits' => array("6","9","701","3","4","21","1101","1201","22","5","17","1301","25","23","201","202","203","204","401","402","403","404","601","602","603","604","301","302","303","304","1001","1002","1003","1004","901","902","903","904","801","802","803","804",6,99,100,20)
@@ -411,23 +411,23 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $builder->delete(Agent::class);
         $jdevoe = $this->builder->build(Agent::class, array(
-            'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("2")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $jdupont = $this->builder->build(Agent::class, array(
-            'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Pôle Public', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $abreton = $this->builder->build(Agent::class, array(
-            'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert', 'postes' => json_encode($id), 'actif' =>'Actif',
+            'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert', 'postes' => json_encode([$id]), 'actif' =>'Actif',
             'droits' => array(99,100), 'service' => 'Accueil', 'sites' => json_encode(array("1")),
             'arrivee' => $arrivee, 'depart' => $depart,
         ));
         $ida = $abreton->getId();
         $kboivin = $this->builder->build(Agent::class, array(
-            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode($id),
+            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode([$id]),
             'service' => 'Pôle Public', 'sites' => json_encode(array("1")), 'actif' =>'Actif',
             'arrivee' => $arrivee, 'depart' => $depart,
             'droits' => array("6","9","701","3","4","21","1101","1201","22","5","17","1301","25","23","201","202","203","204","401","402","403","404","601","602","603","604","301","302","303","304","1001","1002","1003","1004","901","902","903","904","801","802","803","804",6,99,100,20)
