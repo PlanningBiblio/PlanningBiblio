@@ -20,7 +20,7 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 
 class AbsenceController extends BaseController
 {
-    use \App\Controller\Traits\EntityValidationStatuses;
+    use \App\Traits\EntityValidationStatuses;
 
     #[Route(path: '/absence', name: 'absence.index', methods: ['GET'])]
     public function index(Request $request)

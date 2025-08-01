@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Traits;
+namespace App\Traits;
 
 use App\PlanningBiblio\ValidationAwareEntity;
 use App\Entity\Agent;
