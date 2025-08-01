@@ -102,11 +102,10 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel', 'postes' => json_encode($id),
             'service' => 'Pôle Public', 'sites' => json_encode(array("1")), 'actif' =>'Actif',
             'arrivee' => $arrivee, 'depart' => $depart,
-            'droits' => array("6","9","701","3","4","21","1101","1201","22","5","17","1301","25","23","201","202","203","204","401","402","403","404","601","602","603","604","301","302","303","304","1001","1002","1003","1004","901","902","903","904","801","802","803","804",6,99,100,20)
+            'droits' => [99, 100, 301],
         ));
 
         $this->logInAgent($kboivin, $kboivin->getACL());
-
         // Create WeekPlanning
         $builder->delete(WorkingHour::class);
 
@@ -137,9 +136,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $result = explode('["callback":protected]', $response);
 
-        $this->assertStringContainsString('"position_name":"' . $post->getName() .'"', $result[0]);
+        $this->assertStringContainsString('"position_name":"' . $post->getName() . '"', $result[0]);
 
-        $this->assertStringContainsString('"position_id":"' . $post->getId() .'"', $result[0]);
+        $this->assertStringContainsString('"position_id":"' . $post->getId() . '"', $result[0]);
 
         $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
 
@@ -155,16 +154,16 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
-        $this->assertStringContainsString('"agent_id":"' .$abreton->getId() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_id":"' . $abreton->getId() . '"', $result[0]);
 
-        $this->assertStringContainsString('"agent_name":"' .$abreton->getLastname() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_name":"' . $abreton->getLastname() . '"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$kboivin->getLastname() .' ' .$kboivin->getFirstname() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' . $kboivin->getLastname() . ' ' . $kboivin->getFirstname() . '"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$jdevoe->getLastname() .' ' .$jdevoe->getFirstname() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' . $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname() . '"', $result[0]);
 
         // Check if the absent agent is in not in the context menu
-        $this->assertStringNotContainsString('"name_title":"' .$jdupont->getLastname() .' ' .$jdupont->getFirstname() .'"', $result[0]);
+        $this->assertStringNotContainsString('"name_title":"' . $jdupont->getLastname() . ' ' . $jdupont->getFirstname() . '"', $result[0]);
     }
 
 
@@ -255,9 +254,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $result = explode('["callback":protected]', $response);
 
-        $this->assertStringContainsString('"position_name":"' . $post->getName() .'"', $result[0]);
+        $this->assertStringContainsString('"position_name":"' . $post->getName() . '"', $result[0]);
 
-        $this->assertStringContainsString('"position_id":"' . $post->getId() .'"', $result[0]);
+        $this->assertStringContainsString('"position_id":"' . $post->getId() . '"', $result[0]);
 
         $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
 
@@ -273,15 +272,15 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
-        $this->assertStringContainsString('"agent_id":"' .$abreton->getId() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_id":"' . $abreton->getId() . '"', $result[0]);
 
-        $this->assertStringContainsString('"agent_name":"' .$abreton->getLastname() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_name":"' . $abreton->getLastname() . '"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$kboivin->getLastname() .' ' .$kboivin->getFirstname() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' . $kboivin->getLastname() . ' ' . $kboivin->getFirstname() . '"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$jdevoe->getLastname() .' ' .$jdevoe->getFirstname() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' . $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname() . '"', $result[0]);
 
-        $this->assertStringContainsString('{"id":"' .$agentHoliday->getId() .'","nom":"' .$agentHoliday->getLastname() .'","prenom":"' .$agentHoliday->getFirstname() .'"', $result[0]);
+        $this->assertStringContainsString('{"id":"' . $agentHoliday->getId() . '","nom":"' . $agentHoliday->getLastname() . '","prenom":"' . $agentHoliday->getFirstname() . '"', $result[0]);
     }
 
 
@@ -353,9 +352,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $result = explode('["callback":protected]', $response);
 
-        $this->assertStringContainsString('"position_name":"' . $post->getName() .'"', $result[0]);
+        $this->assertStringContainsString('"position_name":"' . $post->getName() . '"', $result[0]);
 
-        $this->assertStringContainsString('"position_id":"' . $post->getId() .'"', $result[0]);
+        $this->assertStringContainsString('"position_id":"' . $post->getId() . '"', $result[0]);
 
         $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
 
@@ -371,15 +370,15 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
-        $this->assertStringContainsString('"agent_id":"' .$abreton->getId() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_id":"' . $abreton->getId() . '"', $result[0]);
 
-        $this->assertStringContainsString('"agent_name":"' .$abreton->getLastname() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_name":"' . $abreton->getLastname() . '"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$kboivin->getLastname() .' ' .$kboivin->getFirstname() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' . $kboivin->getLastname() . ' ' . $kboivin->getFirstname() . '"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$jdevoe->getLastname() .' ' .$jdevoe->getFirstname() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' . $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname() . '"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$jdupont->getLastname() .' ' .$jdupont->getFirstname() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' . $jdupont->getLastname() . ' ' . $jdupont->getFirstname() . '"', $result[0]);
     }
 
 
@@ -472,9 +471,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $result = explode('["callback":protected]', $response);
 
-        $this->assertStringContainsString('"position_name":"' . $post->getName() .'"', $result[0]);
+        $this->assertStringContainsString('"position_name":"' . $post->getName() . '"', $result[0]);
 
-        $this->assertStringContainsString('"position_id":"' . $post->getId() .'"', $result[0]);
+        $this->assertStringContainsString('"position_id":"' . $post->getId() . '"', $result[0]);
 
         $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
 
@@ -490,15 +489,15 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $this->assertStringContainsString('"max_agents":"4"', $result[0]);
 
-        $this->assertStringContainsString('"agent_id":"' .$abreton->getId() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_id":"' . $abreton->getId() . '"', $result[0]);
 
-        $this->assertStringContainsString('"agent_name":"' .$abreton->getLastname() .'"', $result[0]);
+        $this->assertStringContainsString('"agent_name":"' . $abreton->getLastname() . '"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$kboivin->getLastname() .' ' .$kboivin->getFirstname() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' . $kboivin->getLastname() . ' ' . $kboivin->getFirstname() . '"', $result[0]);
 
-        $this->assertStringContainsString('"name_title":"' .$jdupont->getLastname() .' ' .$jdupont->getFirstname() .'"', $result[0]);
+        $this->assertStringContainsString('"name_title":"' . $jdupont->getLastname() . ' ' . $jdupont->getFirstname() . '"', $result[0]);
 
         // Check if the agent with wrong site is int the context menu
-        $this->assertStringNotContainsString('"name_title":"' .$jdevoe->getLastname() .' ' .$jdevoe->getFirstname() .'"', $result[0]);
+        $this->assertStringNotContainsString('"name_title":"' . $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname() . '"', $result[0]);
     }
 }

@@ -129,12 +129,12 @@ class PlanningPositionHistory
         return $this;
     }
 
-    public function getAction(): ?int
+    public function getAction(): ?string
     {
         return $this->action;
     }
 
-    public function setAction(int $action): static
+    public function setAction(string $action): static
     {
         $this->action = $action;
 
