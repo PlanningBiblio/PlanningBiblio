@@ -1,8 +1,6 @@
 <?php
 
-
 use App\Entity\Agent;
-use App\Entity\Access;
 use App\Entity\AbsenceDocument;
 
 use Tests\FixtureBuilder;

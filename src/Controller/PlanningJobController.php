@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\Agent;
-use App\Entity\AbsenceReason;
 use App\Entity\PlanningPositionHistory;
 
 use App\PlanningBiblio\WorkingHours;

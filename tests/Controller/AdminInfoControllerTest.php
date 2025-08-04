@@ -2,13 +2,9 @@
 
 use App\Entity\Agent;
 use App\Entity\AdminInfo;
-
 use Symfony\Component\DomCrawler\Crawler;
-
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
-
-
 
 class AdminInfoControllerTest extends PLBWebTestCase
 {
@@ -20,7 +16,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(AdminInfo::class);
-        
 
         $this->logInAgent($agent, array(23));
 
@@ -29,17 +24,13 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $token = $extract_result[0];
 
         $this->client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'salut', '_token' => $token));
-        
 
         $info = $entityManager->getRepository(AdminInfo::class)->findOneBy(array('debut' => '20211005', 'fin' => '20211010'));
 
-
         $this->assertEquals('salut', $info->getComment(), 'info texte is salut');
-        
+
         $this->assertEquals('20211005', $info->getStart(), 'debut is 20211005');
         $this->assertEquals('20211010', $info->getEnd(), 'fin is 20211010');
-    
-
     }
 
     public function testNewForm()
@@ -49,7 +40,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
-        
 
         $this->logInAgent($agent, array(23));
 
@@ -58,8 +48,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
 
         $this->assertSelectorTextContains('h4', 'Ajout d\'une information');
- 
-        
+
         $crawler = new Crawler();
         $crawler = $this->client->request('GET', '/admin/info/add');
 
@@ -96,7 +85,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(AdminInfo::class);
-        
 
         $this->logInAgent($agent, array(23));
 
@@ -109,16 +97,15 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $entityManager->flush();
 
         $id = $info->getId();
-        
+
         $crawler = $this->client->request('GET', "/admin/info/$id");
 
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
 
-
         $this->assertSelectorTextContains('h4', 'Modifications des messages d\'informations');
 
         $this->assertSelectorTextContains('textarea', 'salut');
- 
+
         $result=$crawler->filter('label')->eq(0);
         $this->assertEquals($result->text('Node does not exist', false), 'Date de début','label 1 is Date de début');
 
@@ -139,6 +126,5 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type3"]');
         $this->assertEquals($class->attr('href'),"javascript:deleteAdminInfo($id);",'href a>span>Annuler is admin/info');
-
     }
 }
