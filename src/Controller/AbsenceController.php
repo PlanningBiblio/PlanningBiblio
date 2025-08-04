@@ -247,7 +247,7 @@ class AbsenceController extends BaseController
         $this->agents_multiples = ($this->admin or $this->adminN2 or in_array(9, $this->droits));
         $this->edit_own_absences = ($this->admin or $this->adminN2 or in_array(6, $this->droits));
 
-	$id = $request->get('id');
+        $id = $request->get('id');
 
         if ($id) {
             return $this->update($request);
@@ -271,8 +271,7 @@ class AbsenceController extends BaseController
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
 
-            $absenceDocument = new AbsenceDocument();
-            $file->move($absenceDocument->upload_dir() . $result['id'] . '/' . $ad->getId(), $filename);
+            $file->move($ad->upload_dir() . $result['id'] . '/' . $ad->getId(), $filename);
 
         }
 

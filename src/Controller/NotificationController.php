@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Entity\AbsenceDocument;
 use App\Entity\Manager;
 use App\Entity\Agent;
 

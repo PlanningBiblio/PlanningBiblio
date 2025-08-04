@@ -12,7 +12,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-
 class AbsenceDocumentController extends BaseController
 {
     #[Route(path: '/absences/document/{id}', name: 'absences.document.index', methods: ['GET'])]
@@ -21,8 +20,7 @@ class AbsenceDocumentController extends BaseController
         $id = $request->get('id');
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
 
-        $absenceDocument = new AbsenceDocument();
-        $file = new File($absenceDocument->upload_dir() . $ad->getAbsenceId() . '/' . $ad->getId() . '/' . $ad->getFilename());
+        $file = new File($ad->upload_dir() . $ad->getAbsenceId() . '/' . $ad->getId() . '/' . $ad->getFilename());
 
         $response = new BinaryFileResponse($file);
 
@@ -63,8 +61,7 @@ class AbsenceDocumentController extends BaseController
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
 
-            $absenceDocument = new AbsenceDocument();
-            $file->move($absenceDocument->upload_dir() . $id . '/' . $ad->getId(), $filename);
+            $file->move($ad->upload_dir() . $id . '/' . $ad->getId(), $filename);
         }
         $response = new Response();
         return $response;
@@ -77,12 +74,11 @@ class AbsenceDocumentController extends BaseController
         $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
         $adarray = array();
         foreach ($absdocs as $absdoc) {
-            $adarray[] = array('filename' => $absdoc->filename(), 'id' => $absdoc->getId());
+            $adarray[] = array('filename' => $absdoc->getFilename(), 'id' => $absdoc->getId());
         }
         $response = new Response();
         $response->setContent(json_encode($adarray));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
-
 }
