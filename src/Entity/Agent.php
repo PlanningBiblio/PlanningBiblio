@@ -248,6 +248,18 @@ class Agent
         return $this;
     }
 
+    public function getAnnualCredit(): ?float
+    {
+        return $this->conges_annuel;
+    }
+
+    public function setAnnualCredit(float $annualCredit): static
+    {
+        $this->conges_annuel = $annualCredit;
+
+        return $this;
+    }
+
     public function getHolidayCredit(): ?float
     {
         return $this->conges_credit;

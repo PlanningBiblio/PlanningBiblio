@@ -63,10 +63,10 @@
               {% for manager in agent.managers %}
                 {% if manager.level1 %}
                   <span class="managerl1_{{ agent.id }}"
-                        data-manager="{{ manager.responsable.id }}"
-                        data-notif="{{ manager.notification_level1 }}">
-                    {{ manager.responsable.nom }} {{ manager.responsable.prenom | first }}
-                    {% if manager.notification_level1 %}
+                        data-manager="{{ manager.manager.id }}"
+                        data-notif="{{ manager.level1Notification }}">
+                    {{ manager.manager.lastname }} {{ manager.manager.firstname | first }}
+                    {% if manager.level1Notification %}
                      - Notifications
                     {% endif %}
                   </span>
@@ -78,10 +78,10 @@
               {% for manager in agent.managers %}
                 {% if manager.level2 %}
                   <span class="managerl2_{{ agent.id }}"
-                        data-manager="{{ manager.responsable.id }}"
-                        data-notif="{{ manager.notification_level2 }}">
-                    {{ manager.responsable.nom }} {{ manager.responsable.prenom | first }}
-                    {% if manager.notification_level2 %}
+                        data-manager="{{ manager.manager.id }}"
+                        data-notif="{{ manager.level2Notification }}">
+                    {{ manager.manager.lastname }} {{ manager.manager.firstname | first }}
+                    {% if manager.level2Notification %}
                      - Notifications
                     {% endif %}
                   <span>

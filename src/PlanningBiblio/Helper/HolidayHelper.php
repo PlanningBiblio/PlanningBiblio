@@ -262,7 +262,7 @@ class HolidayHelper extends BaseHelper
         if ($this->config('conges-hours-per-day')) {
             if ($holidays_hours_per_year == null) {
                 $agent = $this->entityManager->find(Agent::class, $perso_id);
-                $holidays_hours_per_year = $agent->conges_annuel();
+                $holidays_hours_per_year = $agent->getAnnualCredit();
             }
             $intervals = $this->config['conges-hours-per-day'];
             foreach ($intervals as $hours => $hours_per_day) {
@@ -388,7 +388,7 @@ class HolidayHelper extends BaseHelper
 
         $perso_id = $this->data['perso_id'];
         $agent = $this->entityManager->find(Agent::class, $perso_id);
-        $annual_hours = $agent->conges_annuel() / 7;
+        $annual_hours = $agent->getAnnualCredit() / 7;
         $counting_chart = $this->config('holiday_counting_chart');
 
         if (empty($counting_chart)) {
