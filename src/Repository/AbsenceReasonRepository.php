@@ -23,4 +23,20 @@ class AbsenceReasonRepository extends EntityRepository
 
         return $teleworking_reasons;
     }
+    
+    public function getCumulativeReasons()
+    {
+        $entityManager = $this->getEntityManager();
+        
+        $cumulative_reasons = array();
+        
+        $absence_reasons = $entityManager->getRepository(AbsenceReason::class)
+                                         ->findBy(array('absence_cumulee' => 1));
+        
+        foreach ($absence_reasons as $reason) {
+            $cumulative_reasons[] = $reason->valeur();
+        }
+        
+        return $cumulative_reasons;
+    }
 }

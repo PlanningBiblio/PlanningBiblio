@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use App\Model\ConfigParam;
 
 require_once(__DIR__ . '/../../public/include/function.php');
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
@@ -150,6 +151,7 @@ class AjaxController extends BaseController
             $reason->type($r[2]);
             $reason->notification_workflow($r[3]);
             $reason->teleworking($r[4]);
+            $reason->absence_cumulee($r[5]);
             $this->entityManager->persist($reason);
         }
         $this->entityManager->flush();
@@ -165,6 +167,7 @@ class AjaxController extends BaseController
 
       $id = $request->get('id');
       $type = $request->get('type');
+      $motif = $request->get('motif');
       $config_name = ($type == "holiday") ? "Conges" : "Absences";
       $groupe = $request->get('groupe');
       $debut = $request->get('debut');
@@ -182,11 +185,23 @@ class AjaxController extends BaseController
       $p->supprime=array(0,1,2);
       $p->fetch();
       $agents = $p->elements;
+      
+      $result['motif'] = $motif;
+	  
+      $result['AbsencesCumuleeAutoriseeTousLesMotifs'] = $this->config('AbsencesCumuleeAutorisee-TousLesMotifs');
+	  // Get cumulative reasons
+      $cumulative_reasons = $this->entityManager->getRepository(AbsenceReason::class)->getCumulativeReasons();
+      $result['cumulativeReasons'] = $cumulative_reasons;
 
       // Pour chaque agent, contrôle si autre absence, si placé sur planning validé, si placé sur planning en cours d'élaboration
       foreach ($perso_ids as $perso_id) {
           if ($type == 'absence') {
               $result['users'][$perso_id]=array("perso_id"=>$perso_id, "autresAbsences"=>array(), "planning"=>null);
+              $result['users'][$perso_id]['nonCumulativeAbsences'] = array();
+              $result['users'][$perso_id]['cumulativeAbsences'] = array();
+              foreach ($cumulative_reasons as $value) {
+                  $result['users'][$perso_id]['cumulativeAbsences'][$value] = array();
+              }
 
               // Contrôle des autres absences
               if ($groupe) {
@@ -221,6 +236,11 @@ class AjaxController extends BaseController
                               $absence = "entre le ".dateFr($elem['debut'])." ".heure2(substr($elem['debut'], -8))." et le ".dateFr($elem['fin'])." ".heure2(substr($elem['fin'], -8)). " ({$elem['motif']})";
                           }
                       }
+					  
+					  if (in_array($elem['motif'], $cumulative_reasons))
+					      $result['users'][$perso_id]['cumulativeAbsences'][$elem['motif']][] = $absence;
+					  else 
+					      $result['users'][$perso_id]['nonCumulativeAbsences'][] = $absence;
 
                       $result['users'][$perso_id]["autresAbsences"][] = $absence;
                   }
