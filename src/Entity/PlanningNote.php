@@ -34,14 +34,14 @@ class PlanningNote
         return $this->id;
     }
 
-    public function getComments(): ?string
+    public function getComment(): ?string
     {
         return $this->text;
     }
 
-    public function setComments(string $comments): static
+    public function setComment(string $comment): static
     {
-        $this->text = $comments;
+        $this->text = $comment;
 
         return $this;
     }

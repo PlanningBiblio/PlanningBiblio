@@ -32,7 +32,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $overTime->setDate($date);
         $overTime->setUser($agent->getId());
         $overTime->setHours('0.5');
-        $overTime->setComments('heures supp');
+        $overTime->setComment('heures supp');
         $overTime->setEntry($agent->getId());
         $overTime->setChange('0');
         $overTime->setValidLevel1('0');
@@ -54,7 +54,7 @@ class OvertimeControllerTest extends PLBWebTestCase
 
         $overTime2 = $entityManager->getRepository(OverTime::class)->findOneBy(array('commentaires' => 'ploup'));
         $this->assertEquals('0.5', $overTime2->getHours(), 'heures is 0.5');
-        $this->assertEquals('heures supp', $overTime2->getComments(), 'Commentaire is heures supp');
+        $this->assertEquals('heures supp', $overTime2->getComment(), 'Commentaire is heures supp');
     }
 
     public function testIndex()
@@ -100,7 +100,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $overTime->setDate($date);
         $overTime->setUser($agent->getId());
         $overTime->setHours('0.5');
-        $overTime->setComments('heures supp');
+        $overTime->setComment('heures supp');
         $overTime->setEntry($agent->getId());
         $overTime->setChange('0');
         $overTime->setValidLevel1('0');
@@ -150,7 +150,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $overTime2->setDate($date);
         $overTime2->setUser($agent_no_overtime->getId());
         $overTime2->setHours('1.5');
-        $overTime2->setComments('plop');
+        $overTime2->setComment('plop');
         $overTime2->setEntry($agent_no_overtime->getId());
         $overTime2->setChange('0');
         $overTime2->setValidLevel1('0');
@@ -191,7 +191,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $overTime->setDate($date);
         $overTime->setUser($agent->getId());
         $overTime->setHours('0.5');
-        $overTime->setComments('heures supp');
+        $overTime->setComment('heures supp');
         $overTime->setEntry($agent->getId());
         $overTime->setChange('0');
         $overTime->setValidLevel1('0');

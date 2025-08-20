@@ -118,14 +118,14 @@ class OverTime
         return $this;
     }
 
-    public function getComments(): ?string
+    public function getComment(): ?string
     {
         return $this->commentaires;
     }
 
-    public function setComments(string $comments): static
+    public function setComment(string $comment): static
     {
-        $this->commentaires = $comments;
+        $this->commentaires = $comment;
 
         return $this;
     }

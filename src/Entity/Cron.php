@@ -118,14 +118,14 @@ class Cron
         return $this;
     }
 
-    public function getComments(): ?string
+    public function getComment(): ?string
     {
         return $this->comments;
     }
 
-    public function setComments(string $comments): static
+    public function setComment(string $comment): static
     {
-        $this->comments = $comments;
+        $this->comments = $comment;
 
         return $this;
     }
