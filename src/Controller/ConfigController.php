@@ -16,9 +16,9 @@ class ConfigController extends BaseController
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
-        $url = $this->entityManager->getRepository(ConfigParam::class)->findOneBy(
-            array('nom' => 'URL')
-        );
+        $url = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'URL'])
+            ->getValue();
 
         $technical = $request->get('options') == 'technical' ? 1 : 0;
 
@@ -41,7 +41,7 @@ class ConfigController extends BaseController
                 'valeur'        => html_entity_decode($cp->getValue(), ENT_QUOTES|ENT_HTML5),
                 'valeurs'       => html_entity_decode($cp->getValues(), ENT_QUOTES|ENT_HTML5),
                 'categorie'     => $cp->getCategory(),
-                'commentaires'  => html_entity_decode($cp->getComments(), ENT_QUOTES|ENT_HTML5),
+                'commentaires'  => html_entity_decode($cp->getComment(), ENT_QUOTES|ENT_HTML5),
                 'extra'         => $cp->getExtra(),
             );
 
@@ -77,7 +77,7 @@ class ConfigController extends BaseController
                     break;
             }
             $elem['commentaires'] = str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
-            $elem['commentaires'] = str_replace("[SERVER]", $url->getValue(), $elem['commentaires']);
+            $elem['commentaires'] = str_replace("[SERVER]", $url, $elem['commentaires']);
             $category = str_replace('_', '', $elem['categorie']);
             $elements[$category][$cp->getName()] = $elem;
         }

@@ -26,11 +26,11 @@ class LoginListener
         $session = $event->getRequest()->getSession();
 
         $config = $this->entityManager->getRepository(ConfigParam::class);
-        $url = $config->findOneBy(array('nom' => 'URL'));
+        $url = $config->findOneBy(array('nom' => 'URL'))->getValue();
 
         // Prevent user accessing to login page if he is already authenticated
         if (!empty($session->get('loginId')) and $route == 'login') {
-            $event->setResponse(new RedirectResponse($url->getValue()));
+            $event->setResponse(new RedirectResponse($url));
         }
 
         // Redirect to the login page if there is no session
@@ -73,7 +73,7 @@ class LoginListener
 
             $routeParams = !empty($routeParams) ? '?' . implode('&', $routeParams) : null;
 
-            $event->setResponse(new RedirectResponse($url->getValue() . '/login' . $routeParams));
+            $event->setResponse(new RedirectResponse($url . '/login' . $routeParams));
         }
     }
 }
