@@ -11,14 +11,13 @@ use App\Entity\OverTime;
 use App\Entity\Detached;
 use App\Entity\HiddenTables;
 use App\Entity\Holiday;
+use App\Entity\Manager;
 use App\Entity\PlanningNote;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionLock;
 use App\Entity\PlanningPositionModel;
 use App\Entity\RecurringAbsence;
 use App\Entity\SaturdayWorkingHours;
-use App\Entity\Supervisor;
-// FIXME Use Manager instead of Supervisor : Duplicate class
 use App\Entity\WorkingHour;
 use App\Entity\ConfigParam;
 
@@ -88,28 +87,27 @@ class AgentRepository extends EntityRepository
 
             foreach ($classes as $class) {
                 $objects = $entityManager->getRepository($class)->findBy(['perso_id' => $perso_id]);
-                if (count($objects)) { $delete = false; break; }
+                if (count($objects)) { $delete = false; continue 2; }
             }
 
             // Special cases:
             // PlanningPositionLock::class
             $planningPositionLockCriteria = new \Doctrine\Common\Collections\Criteria();
             $planningPositionLockCriteria
-                ->orWhere($planningPositionLockCriteria->expr()->contains('perso', $perso_id))
-                ->orWhere($planningPositionLockCriteria->expr()->contains('perso2', $perso_id));
+                ->orWhere($planningPositionLockCriteria->expr()->eq('perso', $perso_id))
+                ->orWhere($planningPositionLockCriteria->expr()->eq('perso2', $perso_id));
 
             $planningPositionLocks = $entityManager->getRepository(PlanningPositionLock::class)->matching($planningPositionLockCriteria);
-            if (count($planningPositionLocks)) { $delete = false; }
+            if (count($planningPositionLocks)) { $delete = false; continue; }
 
-            // Supervisors
-            $supervisorCriteria = new \Doctrine\Common\Collections\Criteria();
-            $supervisorCriteria
-                ->orWhere($supervisorCriteria->expr()->contains('perso_id', $perso_id))
-                ->orWhere($supervisorCriteria->expr()->contains('responsable', $perso_id));
+            // Managers
+            $managerCriteria = new \Doctrine\Common\Collections\Criteria();
+            $managerCriteria
+                ->orWhere($managerCriteria->expr()->eq('perso_id', $agent))
+                ->orWhere($managerCriteria->expr()->eq('responsable', $agent));
 
-            $supervisors = $entityManager->getRepository(Supervisor::class)->matching($supervisorCriteria);
-            // FIXME Use Manager::class instead of Supervisor::class
-            if (count($supervisors)) { $delete = false; }
+            $managers = $entityManager->getRepository(Manager::class)->matching($managerCriteria);
+            if (count($managers)) { $delete = false; continue; }
 
             if ($delete == true) {
                 $entityManager->remove($agent);

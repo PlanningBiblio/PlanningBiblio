@@ -52,7 +52,7 @@ class Agent
     private ?string $actif = null;
 
     #[ORM\Column]
-    private array $droits = [];
+    private ?array $droits = null;
 
     #[ORM\Column]
     private ?string $login = null;
