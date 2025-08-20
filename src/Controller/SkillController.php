@@ -194,10 +194,7 @@ class SkillController extends BaseController
             $session->getFlashBag()->add('notice',"L'activité a bien été supprimée");
             return $this->json("Ok");
         }
-
-
     }
-
 }
 
 ?>
