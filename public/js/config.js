@@ -68,6 +68,7 @@ function mail_config() {
     document.getElementById('Mail-Port_tr').style.display = 'none';
     document.getElementById('Mail-SMTPSecure_tr').style.display = 'none';
     document.getElementById('Mail-SMTPAuth_tr').style.display = 'none';
+    document.getElementById('Mail-SMTPAutoTLS_tr').style.display = 'none';
     document.getElementById('Mail-Username_tr').style.display = 'none';
     document.getElementById('Mail-Password_tr').style.display = 'none';
   } else {
@@ -75,6 +76,7 @@ function mail_config() {
     document.getElementById('Mail-Host_tr').style.display = '';
     document.getElementById('Mail-Port_tr').style.display = '';
     document.getElementById('Mail-SMTPSecure_tr').style.display = '';
+    document.getElementById('Mail-SMTPAutoTLS_tr').style.display = '';
     document.getElementById('Mail-SMTPAuth_tr').style.display = '';
     document.getElementById('Mail-Username_tr').style.display = '';
     document.getElementById('Mail-Password_tr').style.display = '';
@@ -89,6 +91,7 @@ function mailtest(){
   var host = $('#Mail-Host').val();
   var port = $('#Mail-Port').val();
   var secure = $('#Mail-SMTPSecure').val();
+  var autoTLS = $('#Mail-SMTPAutoTLS').prop('checked') ? 1 : 0;
   var auth = $('#Mail-SMTPAuth').prop('checked') ? 1 : 0;
   var user = $('#Mail-Username').val();
   var password = $('#Mail-Password').val();
@@ -112,11 +115,27 @@ function mailtest(){
     return false;
   }
 
+  var data = {
+    mailSmtp: mailSmtp,
+    hostanme: hostname,
+    host: host,
+    port: port,
+    secure: secure,
+    autoTLS: autoTLS,
+    auth: auth,
+    user: user,
+    password: password,
+    fromMail: fromMail,
+    fromName: fromName,
+    signature: signature,
+    planning: planning,
+  }
+
   $.ajax({
     url: url('ajax/mail-test'),
     type: 'post',
     dataType: 'json',
-    data: {mailSmtp: mailSmtp, hostanme: hostname, host: host, port: port, secure: secure, auth: auth, user: user, password: password, fromMail: fromMail, fromName: fromName, signature: signature, planning: planning},
+    data: data,
     success: function(result){
       if(result == 'ok'){
         CJInfo('Le mail de test a été envoyé avec succès. Vérifiez votre messagerie.','success',top1,8000);
