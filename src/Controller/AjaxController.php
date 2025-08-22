@@ -145,8 +145,8 @@ class AjaxController extends BaseController
             $r[2] = isset($r[2]) ? $r[2] : 0;
             $r[3] = isset($r[3]) ? $r[3] : 'A';
             $reason = new AbsenceReason();
-            $reason->setValeur($r[0]);
-            $reason->setRang($r[1]);
+            $reason->setValue($r[0]);
+            $reason->setRank($r[1]);
             $reason->setType($r[2]);
             $reason->setNotificationWorkflow($r[3]);
             $reason->setTeleworking($r[4]);

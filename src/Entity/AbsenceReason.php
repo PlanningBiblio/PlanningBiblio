@@ -47,12 +47,12 @@ class AbsenceReason
         return $this;
     }
 
-    public function getRang(): ?int
+    public function getRank(): ?int
     {
         return $this->rang;
     }
 
-    public function setRang(int $rang): static
+    public function setRank(int $rang): static
     {
         $this->rang = $rang;
 
@@ -83,12 +83,12 @@ class AbsenceReason
         return $this;
     }
 
-    public function getValeur(): ?string
+    public function getValue(): ?string
     {
         return $this->valeur;
     }
 
-    public function setValeur(string $valeur): static
+    public function setValue(string $valeur): static
     {
         $this->valeur = $valeur;
 

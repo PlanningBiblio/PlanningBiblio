@@ -255,7 +255,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste` (
   `poste` int(11) NOT NULL DEFAULT '0',
   `absent` enum('0','1','2') NOT NULL DEFAULT '0',
   `chgt_login` int(4) DEFAULT NULL,
-  `chgt_time` datetime NOT NULL,
+  `chgt_time` DATETIME NULL DEFAULT NULL,
   `debut` time NOT NULL,
   `fin` time NOT NULL,
   `supprime` ENUM('0','1') DEFAULT '0',
