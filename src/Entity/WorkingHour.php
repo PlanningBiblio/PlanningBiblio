@@ -71,7 +71,7 @@ class WorkingHour
         return $this->id;
     }
 
-    public function getBreaktime(): array
+    public function getBreaktime(): ?array
     {
         return $this->breaktime;
     }
@@ -83,7 +83,7 @@ class WorkingHour
         return $this;
     }
 
-    public function getUser(): int
+    public function getUser(): ?int
     {
         return $this->perso_id;
     }

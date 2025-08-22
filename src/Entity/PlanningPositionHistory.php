@@ -17,7 +17,7 @@ class PlanningPositionHistory
     private ?int $id = null;
 
     #[ORM\Column]
-    private array $perso_ids = [];
+    private ?array $perso_ids = [];
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $date = null;
@@ -57,7 +57,7 @@ class PlanningPositionHistory
         return $this->id;
     }
 
-    public function getUsers(): array
+    public function getUsers(): ?array
     {
         return $this->perso_ids;
     }

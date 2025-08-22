@@ -60,8 +60,8 @@ class Absence
     #[ORM\Column]
     private ?int $so = null;
 
-    #[ORM\Column(type: 'string')]
-    private $groupe;
+    #[ORM\Column]
+    private ?string $groupe = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $cal_name = null;
@@ -69,8 +69,8 @@ class Absence
     #[ORM\Column(type: Types::TEXT)]
     private ?string $ical_key = null;
 
-    #[ORM\Column(type: 'string')]
-    private $last_modified;
+    #[ORM\Column]
+    private ?string $last_modified = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $uid = null;
