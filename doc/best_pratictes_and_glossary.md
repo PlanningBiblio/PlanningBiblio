@@ -1,6 +1,17 @@
-# Glossary
+# Best practices and glossary
 
-## Main entities Columns
+## Entities
+
+### Best practices
+
+* To create a new entity, use `bin/console make:entity`
+* When you add a new field, create get and set methods. E.g.: new field `lastname` must be accompanied by `public function getLastname()` and `public function setLastname(string $lastname)`.
+* To get an entity field (except in templates), use getXXX(). E.g.: `$agent->getLastname();`
+* To set an entity field, use setXXX(). E.g.: `$agent->setLastname("new name");`
+* To get an entity field in a template, use the field name without the "get". E.g.: `agent.lastname`
+* See https://symfony.com/doc/current/doctrine.html
+
+### Main entities Columns
 
 | name | old name | comment |
 | ---- | -------- | ------- |
