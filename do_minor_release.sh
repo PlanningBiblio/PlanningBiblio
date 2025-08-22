@@ -62,12 +62,24 @@ fi
 # Update Changelog
 date=$(date +%Y-%m-%d)
 
-echo "*** Version $to   ($date)    ***" > ChangeLog.tmp
-echo "" >> ChangeLog.tmp
-cat ChangeLog.txt >> ChangeLog.tmp
-mv ChangeLog.tmp ChangeLog.txt
+echo "# Changelog Planno" > Changelog.tmp
+echo "" >> Changelog.tmp
+echo "## Version $to ($date)" >> Changelog.tmp
+echo "" >> Changelog.tmp
+echo "### Enhancement" >> Changelog.tmp
+echo "" >> Changelog.tmp
+echo "### Fixes" >> Changelog.tmp
+echo "" >> Changelog.tmp
+echo "### Security" >> Changelog.tmp
+echo "" >> Changelog.tmp
+echo "### Dependencies" >> Changelog.tmp
+echo "" >> Changelog.tmp
+echo "### Plumbing" >> Changelog.tmp
 
-vi ChangeLog.txt
+tail -n +2 Changelog.md >> Changelog.tmp
+mv Changelog.tmp Changelog.md
+
+vi Changelog.md
 
 sed -i "s/$from/$to/g" 'init/init.php'
 sed -i "s/$from/$to/g" 'public/setup/db_data.php'
@@ -79,7 +91,7 @@ sed -i "/# MARKER/i\ \n\$v=\"$to\";\n\nif (version_compare(\$config['Version'], 
 vi public/setup/maj.php +/MARKER
 
 
-git add ChangeLog.txt init/init.php public/setup/db_data.php public/setup/maj.php
+git add Changelog.md init/init.php public/setup/db_data.php public/setup/maj.php
 
 git status
 

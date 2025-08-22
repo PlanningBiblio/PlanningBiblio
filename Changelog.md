@@ -1,0 +1,2472 @@
+# Changelog Planno
+
+## Version 25.05.05 (2025-08-22)
+
+### Dependencies
+
+- MT45367: Migrate from annotations to php attributes #1155
+
+## Version 25.05.04 (2025-08-22)
+
+### Fixes
+
+- MT49412: Fix undo/redo when an agent is replaced #1153
+- MT49213: Allow copies of exceptionnal working hours #1154
+
+## Version 25.05.03 (2025-07-25)
+
+### Fixes
+
+- CAPlanno94: keep the attendee/missing table display preferences in session #1149
+- MT49456: Add '9' to the list of values of the Planning-NbAgentsCellulle parameter #1150
+- MT49473: Correctly initialize 'hours_per_day' for new users #1151
+
+### Enhancement
+
+- MT48262: Holiday reminder: consider the validation scheme #1152
+
+## Version 25.05.02 (2025-07-11)
+
+### Fixes
+
+- MT48793: Improve missing category A display #1143
+- MT49108: We can change our password if we use local authentication #1145
+
+### Enhancement
+
+- MT49000: Default search for statistics until Sundays #1144
+
+## Version 25.05.01 (2025-06-16)
+
+### Enhancement
+
+- MT47833: Move PlanningJobController contextmenu logic to PlanningJobHelper #1121
+- MT46909: Remove the setting 'Mail-UnsubscribeLink' #1139
+- MT48100: Improve hours to days conversions #1140
+- MT48943: Make LDIF import case insensitive #1142
+
+## Version 24.11.15 (2025-05-09)
+
+### Enhancement
+
+- MT48103: Add a setting to ignore lunch breaks #1135
+
+### Security
+
+- Composer update
+
+## Version 24.11.14 (2025-05-09)
+
+### Fixes
+
+- MT46909: Move favicon.ico to the root of the public folder #1136
+
+### Enhancement
+
+- MT48190: Move OIDC, MSGraph and other technical params to the /config/technical page #1128
+- MT46909: Add a new setting to disable the unsubscribe link in the email header #1137
+
+## Version 24.11.13 (2025-04-18)
+
+### Fixes
+
+- MT48091: Fix maj.php #1130
+
+## Version 24.11.12 (2025-04-18)
+
+### Fixes
+
+- MT47502: Apply Absences-Exclusion to statistics: agent/service/status #1122
+- MT47772: Use HourHelper for overtimes #1123
+- Issue #1124: Typo imported outside of working hours #1125
+- MT48343: Fix Unsupported operand types: string - int at StatisticController.php line 1727 #1131
+- MT48437: Fix the copying of frameworks #1134
+
+### Security
+
+- MT48467: Add instructions for robots #1133
+
+### Enhancement
+
+- MT48363: Log OpenID Connect request User Info #1132
+
+## Version 24.11.11 (2025-03-06)
+
+### Fixes
+
+- MT47685: An level 1 admin can delete another agent absence when Absences-validation is disabled #1115
+
+## Version 24.11.10 (2025-03-06)
+
+### Fixes
+
+- MT47572: Do not cross out agents with refused absences #1117
+- MT47806: Fix Undefined property: App\Controller\StatisticController::config #1120
+
+### Documentation
+
+- MT45507: Add position parameter to include it in public service quota #1119
+
+## Version 24.11.09 (2025-02-14)
+
+### Fixes
+
+- MT46949: Fix getRecipients to handle empty values for Absences-notifications-* #1107
+- MT47037: Hide copy/delele icons from working hour list when not admin #1109
+- MT47249: ICS import: init variables motif and motif_autre #1110
+- MT47194: Allow users to delete their own absences #1111
+- MT47535: Fix deletion of AdminInfo, AbsenceInfo and AbsenceBlock #1112
+- MT41625: Fix planning menu display on smartphones #1113
+- MT43912: Use CJInfo for missing category A display #1114
+
+### Enhancement
+
+- MT45507: Add position parameter to include it in public service quota #1108
+
+## Version 24.11.08 (2025-01-24)
+
+### Fixes
+
+- MT45706: Use a helper to convert durations from decimal to hh:mm and vice-versa #1100
+- MT46909: Use HTML5 Doctype for Emails #1106
+
+## Version 24.11.07 (2025-01-17)
+
+### Plumbing
+
+- MT45129: Create PlanningController that gathers the index and week routes #1092
+
+## Version 24.11.06 (2025-01-17)
+
+### Fixes
+
+- MT46921: Initialize variables in class absences
+
+### Enhancements
+
+- MT46713: Improve filtering of absences and holidays displayed under plannings #1104
+
+## Version 24.11.05 (2024-12-20)
+
+### Fixes
+
+- MT46813: Fix undo/redo functions #1103
+
+## Version 24.11.04 (2024-12-19)
+
+### Fixes
+
+- MT46682: do not cross out positions compatible with teleworking when there are teleworking absences #1098
+- Issue #1087: fix link to JS file in templates/agents/edit #1099
+- MT46717: Enhance Statistics by Position #1101
+
+### Plumbing
+
+- MT44184: use symfony/html-sanitizer instead of htmlpurifier #1102
+
+## Version 24.11.03 (2024-12-13)
+
+### Fixes
+
+- MT46579: Agents are no longer displayed "deleted" #1091
+- MT46575: ICS Export: Schedules are exported if absences are ignored #1093
+- MT46598: use jQuery-UI standard classes for dialogboxes #1095
+
+### Enhancements
+
+- MT46595: update-db: display SQL queries with option -v #1094
+
+### Security
+
+- MT46605: composer update #1096
+
+## Version 24.11.02 (2024-12-02)
+
+### Fixes
+
+- Issue #394: Check if a holiday exists before deleting it #1083
+- MT44528: Fix weekly average in statistics #1085
+- MT44985: Framework hours edition: Next start time change only if the … #1089
+
+### Enhancements
+
+- MT43946: Add unsubscribe link in Planno's emails headers. #1079
+- MT46227: MS Graph: do not import the subject if the event is private #1086
+- MT44566: Adapt OpenID connector to Google #1088
+- MT46229: Allow the assignment of absent agents to schedules #1090
+
+## Version 24.11.01 (2024-10-27)
+
+### Fixes
+
+- Issue #1082: Fix undefined key "deleted" in absences/edit.html.twig
+
+## Version 24.11.00 (2024-10-21)
+
+
+## Version 24.05.08 (2024-10-21)
+
+### Fixes
+
+- MT45847: fix recording of negative recovery credits
+
+## Version 24.05.07 (2024-09-26)
+
+### Fixes
+
+- MT45495: Allow edition of absences that include deleted agents #1075
+- MT45462: fix initialization of drop-down menus of the manager module #1076
+- MT45641: Send a separate email to each recipient (no longer use Cci)#1077
+
+## Version 24.05.06 (2024-09-19)
+
+### Enhancements
+
+- MT45515: Enhance planning's notifications #1074
+
+### Fixes
+
+- MT45381: Fix validation status display in working hours #1073
+- MT45069: fix maj.php (19.11: change column if exists recup_samedi)
+
+## Version 24.05.05 (2024-09-05)
+
+### Fixes
+
+- MT45421: Fix Undefined constant HEADER_X_FORWARDED_ALL #1072
+
+## Version 24.05.04 (2024-08-30)
+
+### Fixes
+
+- MT44490: Fix weekly average in statistics #1058
+- MT45306: ImportMSGraph not verbose by default #1067
+- MT44970: Remove alert interval greater than one year on absence search #1069
+
+## Version 24.05.03 (2024-08-30)
+
+### Fixes
+
+- MT45308: CircleCi: Fix dependency problems #1068
+- MT45359: Fix HolidayControllerListTest #1070
+
+### Security
+
+- MT44183 Upgrade to Symfony 6.4 #1071
+
+## Version 24.05.02 (2024-07-19)
+
+### Fixes
+
+- MT44586: Remove HTML entities from framework titles #1046
+- MT44884: Remove free breaks from quotas #1049
+- MT44663: Planook: Disable cell graying #1053
+
+### Enhancements
+
+- MT44618: Planook config: Granularite=15; nb_semaine=1,2 #1047
+- MT44776: Allow to choose the layout for creating logins #1052
+- MT45026: Planook: Allow sending passwords by email #1054
+
+### Plumbing
+
+- MT44619: Delete unsed function AgentController::sites #1048
+
+### Security
+
+- MT45034: Update dependencies
+
+## Version 24.05.01 (2024-05-27)
+
+### Fixes
+
+- MT40420: Fix the calculation of the free break #913
+- MT44093: Fix the display of holiday credits on the My Account page #1025
+- MT44107: Fix PlanningJobControllerTest::testContextMenuWithAgentsIndispo #1027
+- MT44125: deny the deletion of validated holiday #1028
+- MT44129: HolidayRepository::get no longer return deletion information #1029
+- MT44224: Fixes information about events imported from Office 365 #1034
+- MT44329: When multiple recipents are given, Mail-From is used as TO #1039
+- MT44379: Add LDIF-Encoding param + Fix import #1040
+- MT43652: Login case insensitive with OpenIDConnect #1041
+- MT43965: Add the link to the overtime registration request in the notification email #1043
+
+### Enhancements
+
+- MT44098: Show used positions only in statistics #1026
+- MT44188: Choose the Office 365 calendars to import #1033
+- MT44018: Allow to change memory_limit from .env files #1035
+- MT44018: Optimize statistics #1038
+
+### Plumbing
+
+- MT44207: update install.sh #1031
+
+### Security
+
+- MT44262: Compatibility PHP 8.3, remove depreciations, fix unit tests #1042
+
+## Version 24.05.00 (2024-04-16)
+
+## Version 23.11.13 (2024-03-29)
+
+### Enhancements
+
+- MT43887: update database via composer #1020
+
+## Version 23.11.12 (2024-03-29)
+
+### Fixes
+
+- MT43984: Display the correct date on non-validated schedules in week view #1024
+
+## Version 23.11.11 (2024-03-22)
+
+### Fixes
+
+- MT42825: Fix calculation of absence time #1018
+- MT43807: Correctly display negative values in anticipation counters #1019
+- MT43797: Prevent modification of validated holiday and overtime #1021
+- MT43926: Test if the URL is valid in CJICS::purge #1022
+- MT43653: Count holidays in statistics. Fix using wrong variable #1023
+
+## Version 23.11.10 (2024-03-08)
+
+### Fixes
+
+- MT42041: Fix "show table status" queries #944 #1005
+- MT42628: Purge calendars when their checkbox is unchecked #1006
+- MT41791: Do not show 'Everybody' in agent lists #1007
+- MT43653: Count holidays in statistics #1009
+- MT43164: Display the agent's name in the holiday list whatever the validation level #1011
+- MT43770: Prohibit the modification of imported absences #1012
+- MT43773: ICS Export: Remove line breaks from summary #1013
+
+### Security
+
+- MT41345: Enhance CSRF protection #1008
+- Update dependencies
+
+### Enhancements
+
+- MT43743: Standardize the statistics buttons #1010
+- MT43666: Optimize StatisticController #1015
+- MT43804: Optimize PresentSet::all #1017
+
+## Version 23.11.09 (2024-02-22)
+
+### Fixes
+
+- MT43600: Fix error deleting informational messages #1003
+- MT43534: Fix PresentSet::all when called in loop (Statistics / attendees - missing) #1004
+
+## Version 23.11.08 (2024-02-09)
+
+### Fixes
+
+- MT42886: fix the calculation of the forecast credit of compensatory time #992
+- MT43374: Fix check of admin level 2 rights in Holiday Controller #993
+- MT35818: Remove locks from plannings before imports #994
+- MT40653: Right copy does not return to top of page #999
+- MT43319: allow the deletion of non-validated holiday #1000
+- MT43489: Allow user to delete their own absences with the correct ACL #1001
+
+### Plumbing
+
+- MT42880: New release format
+
+### Dependencies
+
+- Update dependencies
+
+## Version 23.11.07 (2024-01-30)
+
+### Plumbing
+
+- MT42880: Enhance do_minor_release.sh
+
+## Version 23.11.06 (2024-01-30)
+
+### Plumbing
+
+- MT42880: New release format (23.11.06). The last 3 digits are deleted.
+
+## Version 23.11.00.005 (2024-01-26)
+
+### Fixes
+
+- MT43165: deny overtime change when validated level 1 #989
+- MT43362: Fix ErrorHighlight error on calendar.js #990
+- MT43231: Import agents if there is conflict on non-blocking positions #991
+
+## Version 23.11.00.004 (2024-01-23)
+
+### Enhancements
+
+- MT42600: Implement Open ID Connect #881
+- MT42575: CircleCI tests with MariaDB 10.11 #964
+- MT42643: Move command PlanningBiblio:PurgeLogTable to app:purge-log-table #967
+
+### Fixes
+
+- MT42815: Escape teleworking reasons when sending planning notifications #978
+- MT43032: Restore anonymous login #982
+- MT43036: Fix a calculation error on statistics per agent #983
+- MT41560: ICS, check if the URL returns a 200 response #985
+- MT43200: fix cron.deleteOldDocuments.php #986
+- MT43250: Import MS Graph : ignore statuses free and tentative #987
+- MT42522: ICS Import: import the description depending on the configuration #988
+
+### Security
+
+- MT42999: Update composer #981
+
+## Version 23.11.00.003 (2023-12-22)
+
+### Enhancements
+
+- MT40023: Stats/Agent: Do not show agents never selected and not in selected sites #970
+- MT42470: Enhance CSS #965
+
+### Fixes
+
+- MT42875: Week number in week cycle should not be reset on new year #980
+- MT42872: add symfony/mime to display attachments #976
+- MT42541: Fix migration scripts #963
+
+## Version 23.11.00.002 (2023-11-30)
+
+### Enhancements
+
+- MT42530 : Filter by site the list of presents displayed under the schedules
+
+### Fixes
+
+- MT40171: Rename Planning Biblio to Planno
+- MT42596: Escape teleworking reasons on planning context menu
+- MT42693: Disable Absence Block on Planook config
+- MT41900: Replace HTTP method DEL with DELETE
+- MT40009: Fix comp time display in 'My Account' when negative
+- MT42019: Use HTML Purifier to sanitize planning comments and model names
+
+## Version 23.11.00.001 (2023-10-27)
+
+### Plumbing
+
+- MT41281: Move planning_hebdo cron files to src/Cron #389
+
+## Version 23.11.00.000 (2023-10-26)
+
+### Fixes
+
+- MT41027: Add absence block, correctly define absence hours #961
+- MT42098: importMSGraphCalendar return 0 on success #957
+- MT42339: Handle SSO tickets in the Login Listener #955
+- MT41956: Fix weekly averages in agent and service statitics #947
+- MT41957: Fix hours statistics by status #946
+- MT41845: Check invitation acceptance when importing ICS events #943
+- MT41894: Fix warning undefined array key VEVENT when importing ics calendars #942
+- MT41650: Use utf8-aware function mb_substr (instead of substr) in plannings #937
+- MT41312: fix statistic by time export #931
+
+### Documentation
+
+- MT41027: Documentation of the absence blocking function #941
+
+### Enhancements
+
+- MT40642: Add LDIF import capabilities #954
+- MT41028: Change the warning message for reccuring absences with end date #951
+
+### Plumbing
+
+- Bump composer/composer from 1.10.26 to 1.10.27 #950
+- MT42179: Upgrade symfony from version 4.4 to 5.4 #948
+- MT39367: Remove FILTER_SANITIZE_STRING depreciations #823
+- Added unit tests for Legal notices #843
+- Add unit tests for Framework Controller #836
+- Added test for WorkingHour right with Absences-notifications-agent-par-agent #793
+- Added test for holiday right with Absences-notifications-agent-par-agent #792
+- Add unit tests for Add Holiday Controller #790
+- Add Unit test for Add Overtime Controller #750
+- MT41281: Move planning_hebdo cron files to src/Cron #389
+
+## Version 23.05.00.004 (2023-07-26)
+
+### Enhancements
+
+- MT41027: Add absence block #932
+
+### Fixes
+
+- MT41411: Use utf8-aware function mb_substr (instead of substr) in plannings #934
+
+### Plumbing
+
+- MT41498: ICS export symfonization #935
+- Added unit tests for context menu #845
+- Add unit tests for PresentSet class #841
+- Unit test model AbsenceDocument #840
+
+## Version 23.05.00.003 (2023-06-29)
+
+### Fixes
+
+- MT41151: Allow /holiday/accounts to be displayed in days #930
+- MT41068: Fix absence statistics display when PlanningHebdo is disabled #928
+- MT41169: Add the background color on Datatable's select #926
+- MT41168: Fix the site selection on statistics / absences #925
+- MT40199: Remove the padlock when deleting plannings #923
+- MT39946: Fix time format parameter for ajax call in absence add #920
+- MT41131: Fix typo in templates/conges/add.html.twig #919
+- MT41094: Don't check journey time between areas when there is only one area #918
+- MT41069: Show borders of all cells in statistics tables #917
+- MT41036: Fix malformed dates on unit tests #915
+- MT40945: Fix the logo's link #914
+- MT31709: Verify only the agent sites when checking for started plannings #892
+
+### Enhancements
+
+- MT41142: Color the logged in agent #924
+- MT41030: Allow to narrow ICS exports to a number of days in the past #922
+- MT41028: Show an alert when a recurring absence is added and the enddate is set #921
+- MT40851: Make Statistics/time table not responsive. #912
+
+## Version 23.05.00.002 (2023-05-12)
+
+### Fixes
+
+- MT40836: Optimize the Planook's logo size #911
+- MT40688: get better performance when displaying statistics on absences #909
+- MT40725/MT38947: Fix display of groups-free position in time statistics, Follow up #906
+
+### Security
+
+- Bump guzzlehttp/psr7 from 2.4.4 to 2.5.0 #905
+
+### Enhancements
+
+- MT40441: Allow direct validation of compensatory time when Conges-val… #894
+
+## Version 23.05.00.001 (2023-04-19)
+
+### Fixes
+
+- MT40694_1: Restore cmp_debut_fin function
+
+## Version 23.05.00 (2023-04-18)
+
+### Security
+
+- 20230131 depreciations #862
+### Fixes
+
+- MT39894: disable calendar synchronizations for new agents by default #901
+
+## Version 22.11.07 (2023-04-17)
+
+### Fixes
+
+- MT39966: Fix comments display under plannings #900
+- MT39836: interpret html tags on comments in weekly view #899
+- MT40252: don't show the alert "select more than 1 year", follow up #897
+- MT40456: fix error 'La demande doit être effectuée dans les 0 jours' #896
+- MT39529: Fix erroneous message on absence add #883
+
+### Security
+
+- Add unit tests for password change with CSRF protection #895
+
+### Enhancements
+
+- MT39901: Responsive Compatibility #886
+
+## Version 22.11.06 (2023-03-16)
+
+### Fixes:
+
+- MT40252: don't show the alert "please select more than 1 year" on leap years #889
+- MT39878: fix undefined variable when using CAS-SQL mode and APP_DEBUG=1 #876
+- MT37657: Add IF NOT EXISTS on the create table absences_documents query #882
+- MT39693: Show closingday in menu only if Conges-Enable is enabled #884
+- MT39992: the week view take into account the site parameter #877
+- MT39412: the datefull twig filter now interpret html tags #864
+
+### Plumbing:
+
+- Bump symfony/http-kernel from 4.4.48 to 4.4.50
+
+## Version 22.10.05 (2023-02-23)
+
+### Enhancements
+
+- MT39895: Add throttle to overtime edits #870
+- MT39034: Add throttle to holiday edits #867
+
+### Fixes
+
+- MT39696: Set Recup-DelaiDefaut to 0 if not correctly set. #880
+- MT39491: Fix save agent save when holidays values are empty #879
+- MT39548: Fix models deletion #875
+- MT39958: Display the time of absence registrations #873
+- MT39932 - remove HTML entities from frameworks title #871
+
+## Version 22.10.00 (2022-11-18)
+
+### Enhancements
+
+- Make disabled notifications should not be considered as an error
+- Ignore absence for remote working when importing planning template
+- Absence deletion does not affect the pl_poste table anymore
+- Show agent that are not on schedule in statistic by agent
+- Add legal notices feature
+
+### Fixes
+
+- Working hours: fix quota comparison
+- add missing div on template holiday/edit
+- Update ics-parser from 1.0.3 to 3.*
+- delete references to planning_hebdo_tables
+- Fix statistic exports
+- Show adequate plannings message for unautorized users
+- Fix lack of CSS when adding a reason/status/level/... in Agents, Position, Absences
+
+### Plumbing
+
+- Remove tableSort and tableSort-bis CSS class
+- CSS Optimization, remove supernumeraries blanks
+- Symfonyze week planning
+- Add unit tests for a recurring absence every 2 weeks
+- Bump apereo/phpcas from 1.5.0 to 1.6.0
+- Add unit tests for index with Planning Not Ready Without Permission
+- Move symfonized page permissions to YAML file
+
+## Version 22.05.00 (2022-06-08)
+
+### Enhancements
+
+- Planook capabilities
+- Set a specific message for recover validation
+- Password complexity
+- Allow custom exclusions from custom_options.php
+
+### Fixes
+
+- Fix Unknown column 'comand'/'nom' in 'field list' (fix_encoding_issues)
+- Make toHis method don't transform sites in working hours
+- Check if position exists when importing template
+- Hide the display of the hour/day equivalence when the necessary setting is not defined
+- Fix check mail config
+- Fix free break calculation condition
+- Statistics: Show hours exceeding less than 30 minutes in green
+- MSGraph sync: Fix update event query and improve logs
+- Fix sending the ICS URL by mail
+- Load data during installation and fix the absences_info table
+- Fix the query that remove duplicates in DBRev 22.04.00.000
+- Define morning end at 12:00 if there is no break in working hours
+- Show translated label for comp_time
+- Show translated label for overtime
+- New theme: rename div id content-holyday to content-form
+- New theme: add the missing <div>, id and class to complete the new theme
+- defined used variable to false when adding new framework
+- PR679 change http to https
+- Modification of the link to the website in all the files & the readme
+- New theme: Fix alignement problem, when adding new workinghour
+- Correctly take into account the number of weeks of working hours.
+- Fix error 500 on the calendar view
+- New theme: Display the schedule date and location when printed
+- New theme: remove the title background and the green background of the planning
+- New theme: Align the site's name with the date when printed
+- make getCountedHours takes week rotation into account
+- Add the version number in the JS and CSS link
+- Typo breakin access to calendar
+- Correctly calculate holiday credits in days on my account
+- Do not display credits in hours on "my account" if conges-mode=jours
+- Do not set SMTP settings when the local mailer is used
+- Add more precision to hours count when adding holiday
+- MSGraph sync: Change isEventEmpty condition
+- Take into account the notification workflow where deleting absence
+- Pass correct notification id to getRecipients and getRecipients2
+- Undefined offset: -1 at /home/planningb/www/planningbiblio/src/Controller/StatisticController.php line 2538
+- Expected parameter 2 to be an array, null given at src/Controller/StatisticController.php line 2671
+
+### Plumbing
+
+- Move working hours history html in PlanningHebdo-Agents condition
+- PHP 8.1 compatibility
+- Change CI configuration for reusable build with different php version Add job
+- For php 8 build Add job for PHP 8.1 and MariaDB 10.6 Use new next-generation
+- Convenience images from circleCI Change the
+- Way installing PHP extensions
+- Write tests for method toHis
+- Unit test for [POST]/admin/info
+- Add unit tests for admin info forms
+- Unit tests for skill list, add and edit forms
+- Add Unit test got log function
+- Add Unit test for PLBEntity Model
+- Add unit tests for position list, add and edit form
+- Delete 2 unused files
+- use the JS function url() when needed
+- add unit tests for Calendar Controller
+- Add unit tests for overtime add, list, and edit form
+- Symfonyze planning, model import and save, planning deletion
+- symfonyze LDAP search / import
+
+## Version 22.04.01 (2022-06-08)
+
+### Enhancements
+
+- Improve validation/notification schema
+- Use the granularity setting for planno-break-timepicker
+
+### Fixes
+
+- Do not execute web cron on CLI (avoid CSRF Exceptions)
+- Transform working hours to His format in agents table
+- Change out-of-work text color to #5394BA
+- prevent include class.conges.php twice
+
+### Plumbing
+
+- Rename comptime to overtime
+
+## Version 22.04.00 (2022-04-01)
+
+### Enhancements
+
+- Display disabled planno-break-timepickers in black
+- Holiday: dynamically get current holiday credits (multi-agents form)
+- Restrict absences list interval to a year maximum
+- Allow edition of imported working hours
+- Data purge capabilities
+- Add a div with class=attendance to isolate attendance information on calendars
+- Ability to change login in agent's form
+- Active class on selected menu: allow to highlight select menu
+- Restrict absences list interval to a year maximum. Follow up
+- ICS import: handle exception on recurring events with the recurrence-id attribute
+- New Planno theme
+- Prevent editing used frameworks only if someone is linked to them
+- Planno title
+
+### Fixes
+
+- Fix error 500 on the calendar view
+- Display the schedule date and location when printed
+- Make getCountedHours takes week rotation into account
+- Force json_decode to return array in getWorkingHoursOn
+- Avoid comparison between H:i:s and H:i when checking the presence of an agent
+- Don't get breaktime from personnel table when planning_hebdo is disabled
+- Check if free breaktime is not empty in agent form
+- Remove PHP Notice when fetching positions
+- Remove HTML entities in column comment of absences list
+- Correctly show percentage values in agents form
+- Fix ICS link in agent profile
+- Correctly set #selected_agent_id if only one agent selected
+- Don't reload holiday form for multiple selection
+- Use dependency injection instead of service container to get Notifeir into controllers
+- rename working hours ACL
+- Typo : Change "no model" message
+- Check if free break is enable into workinghours controller
+- Check defined array keys in workinghour table
+- Remove html entities in read-only agents page
+- Show sites on the read-only agents page
+- Adjust JS function plHebdoMemePlanning to new timepicker widget
+- Take halfday into account in holiday controller
+- Fix the "Call For Help" mail function
+- Absence documents: look for documents in all grouped absences
+- Followup, don't reload holiday edition when changing agent
+- Fix retrieving agent's credits in holiday form
+- Relaod page when changing agent in holiday form (Not for mutliple agent)
+- Fix redirection loop where CAS-ServiceURL is defined
+- Always set absence hours like h:m:s
+- Fix HTML entities in floors and groups dropdown menus
+- Restore "All sites" option in working hours
+- Fix display of html entities on information and absence information messages
+- Initialize the widget calendar with the asked date when using the week view
+- Don't apply compensatory time on... compensatory time
+- Fix AbsenceInfoController to use DateTime
+- convert serialized strings to json on personnel's table
+- fix encoding issues on agents' name in calendar's dropdown menu
+- Fix sending notifications of non-validated holidays
+- Show all site in ready-only agents working hours tab
+- Handle blocked ip address
+- Fix error on free break calculation
+- Agent account: show a range of 5 minutes when granularity if free
+- Don't submit Times and lines forms for used framework
+- Prevent adding exception out of parent's date range
+- Use event id instead of iCalUId to check for empty events
+- Do not filter on first site when gathering absents for statistics
+- Update working hours on 3 digits
+- Get disabled cells in public/planning/poste/semaine.php
+- Show information that end today in absence information list
+- Display all grey cells in the same way
+- Set selected agent id in recup_pose.php
+- force end hours to 23:59:59
+- Allow empty values in planno timepicker
+- DB update, tranform working hours like 00:00:00 to ''
+- Show agent's name in absence form even if he is deleted
+- Correctly hide and show drop, import and print icones in the Planning menu
+- Disable EDTSamedi if PlanningHebdo is enabled
+- Do not publish crossed-out agents on ICS calendars
+- Decode statuses and services of agents
+- Don't send planning's notification to unavailables agents
+- Fix import working hours
+- Use local (from agents working hours) number of weeks in planning_day_index_for
+
+### Plumbing
+
+- Add tests on [GET] /ajax/holiday-credit (halfday enabled)
+- Add unit tests on [POST] /holiday (halfday enabled)
+- Add unit tests on [POST] /holiday (Hours and days)
+- Set production environement
+- Update Symfony version to 4.4
+- Use url function for js calls/redirects
+- Add a Planno notifier as available service container
+- End to end testing capabilities (Symfony/Panther - Chrome driver)
+- Allow symfony-flex plugin without confirmation
+- Use of a hour helper StartEndFromRequest in absences and holidays
+- Optimize DB queries for holiday/credits
+- Allow to load absences without documents for performance improvement
+- Symfonyze holidays accounts list
+- CircleCI: rm -rf vendor to make CirculeCI succeed
+- Symfonyze holidays information
+- Make installer set APP_ENV=prod
+
+## Version 21.10.00 (2021-11-19)
+
+### Enhancements
+
+- Allow holiday for a few hours
+- New rules for free break substraction (#507)
+- Prevent editing used frameworks (#489)
+- Optimize calendars display
+- Add more working hours cycles (MT 30755)
+- Make installer ignore default /home/plb/.my.cnf
+- Remove autocomplete on datepicker elements
+- Planning: notifiy deleted agents
+- Compensatory time regularization (#457)
+- Replace HTML select with jquery timepicker input (#469)
+- Hide unused mail settings (MT 33801)
+- Add green/red color on queries status in updatedabase.php
+- Multiple agents for holidays (#474)
+
+### Fixes
+
+- ICS : Don't import ICS calendars if check_ics is not checked
+- Prevent redirect to wrong URL when config URL is not properly set
+- Handle non validated working hours
+- Remove PHP warnings and useless string in planning/poste/semaine.php
+- Fix redirect after framework deletion
+- Exclude rejected (-1) absences from non validated absences list
+- Add name and firstname as title in planning cells
+- Framework's lines edition: fix updating cells color
+- Remove HTML entities in absence list
+- Restore red marking when an absence is not validated
+- Prevent creating empty working hours for non authorized users
+- Show deleted agent in holiday account: Remove "Active" filter in DB query of fetchAllCredits function
+- Hide/show drop icon when locking/unlocking planning
+- Add clear-string class on datatable columns that needs sort on accents
+- ICS parser gets the right date when the TimeZone contains ":" (#438)
+- broken link to import agents from LDAP (#437)
+- Defined length for check_ics and default for check_hamac
+- Restore rights for /absences/document
+- Fix misuse of ->config in StatisticController
+- Make ICS parser gets the right date when the TimeZone contains ":" (#438)
+- Fix redirect to authentication page
+- Remove http host from redirect url
+- Config : Fix display of conges_mode dialogbox + remove console.log
+- Fix misuse of join function
+- Check the rights with agent's site instead of all sites (MT 32916)
+- Always keep logged in agent in holiday's agents list (MT 32916)
+- Show holiday's agents list according only to getManagedAgents function (MT 32916)
+- Take into account Planning-Heures config params
+- Fix bad instantiation of WorkingHours class
+- Show refused reason for refused level 1compensatory time (MT 32917)
+- Prevent user to change its own password via /myaccount with demo mode enabled (MT 32845)
+- Apply right checking on mono-site mode (MT 33166)
+- Fix import of models
+- Don't sanitize skills data in position index page
+- When checking Deleted agents, update agents dropdown in holidays index
+- Fix day models import
+- Use model_id field instead of id. Initialize variable in models' loop
+- Restore absences start and end hours displaying in absences list
+- Don't override CSRFSession in working hours edition
+- Check if hre_debut and hre_fin are defined (MT 33011)
+- Remove BibLibre address from Mail-From's setting
+- ICS: Prevent deleting non-imported absences
+- Lines with cells specifically disabled are never considered as empty
+- Stop returning errors when importing ICS events
+- Return access denied when editing unknown absence id
+- Make ICS parser gets the right EXDATE when the TimeZone contains (MT 34284)
+
+### Plumbing
+
+- Working hours: add a dedicated method for permissions checking
+- Add unit tests for working hours permissions
+- Load an up-to-date SQL file
+- Add a fixture builder to simplify tests writing
+- Absences: use route names according to PLB naming convention
+- Symfonize absences index
+- Use asset function for links and add an asset version strategy package
+- Move agenda.js to js/plb/caldendar.js
+- Delete unused file class.modeles.php
+- Move postes/js/modif.js to js/plb/position.js
+- Move statistiques.js to js/plb/statistics.js
+- move cron.ics.php from public/ics to src/Cron/Legacy
+- Use common function for getting managed agents in holiday and comptime controllers
+- Use fixture builder in HolidayHelperTest instead of Tests\Utils
+- Symfonyze contextual menu in planning page
+- Add units tests on getManagedAgent
+- Use session flash bag for notice and error messages in framework delete and restore
+- Symfonize login and logout process (#451)
+- Symfonise absence deletion
+
+
+## Version 21.04.00 (2021-04-22)
+
+### Enhancements
+
+- Move function calculPresence in dedicated class (WorkingHours)
+- Allows more permissive entries in working hours
+- Update DataTable libraries and remove flash buttons
+- Use APP_ENV in legacy code (config.php) and move uploaded files
+- Upgrade PHP to 7.4 in composer.json
+-     - Update install.sh : check if PHP version > 7.4, run composer update if needed
+- Upgrade symfony/flex to release 1.9.8
+- Start handling permissions in a YAML file
+- Symfonize framework index (planning/postes_cfg/index.php)
+- Symfonize working hours (edit and save)
+- Symfonize statistics index
+- Symfonize My Account page
+- Symfonize framework's seperation lines
+- Symfonize framework groups
+- Symfonize agents index page
+- Symfonize framework table edit/add
+- Add a param to define the switching time between half-day and full-day
+- Absences for remote working ability
+- Symfonize notifications save
+- Symfonize framework's group deletion
+- Deny holidays if planning started or validated
+- The user can select the validation level when adding an holiday
+- Statistics: remove former folder templates/statistiques
+- Notification page: move notifications.js to public/js/plb. Add baseURL to Ajax query
+- Hamac import: Optimize log
+- Symfonize models
+- Symfonize stats staturday
+- Integration with CircleCI (Continuous integration service)
+- Symfonize statistics absents
+- Symfonize_statistics agent
+- Symfonize statistics position summary
+- Symfonize statistics services
+- Symfonize statistics status
+- Symfonize admin index
+- Symfonize compensatory time
+- Symfonize stats by times
+- Symfonize support position
+- Symfonize framework tables restoring
+- Allow the selection of agents on different sites
+- Ability to check if SQL column exists  (idempotent DBRevs)
+- Move planning framework choice in dedicated twig template
+- Move planning's menu html code in dedicated twig template
+- Functional tests ability
+- Show agents firstname and surname in workinghours list
+
+### Fixes
+
+- Remove HTML entities in closing days
+- Working hours fixes
+- Add validate icon
+- Use PHP default timezone.
+- Keep absence's other reason when there is recurrence
+- Fix display of agents on vacation on the week schedules
+- Prevent warnings in script tools/remove_html_entities_from_absences_reasons.php
+- Prevent the redirection to the 'access denied' page on cli and symfony mode
+- Replace heredoc string by double quotes string at end of weekly
+- planning
+- check if agents are blocked when right copying planning's cell
+- show only managed agents in list and in add form
+- Fix/Statistics : Initialize information about agents
+- Fix reset URL for holiday index and rename related button
+- Write ICS URL from base URL
+- Fix a wrong links on absence and holiday notifications
+- Restore right for self-removing in absence edition
+- Don't sanitize config elements
+- LDAP: Change LDAP-ID-Attribute value from supannAliasLogin to supannaliaslogin
+- Fix wrong reset URL on statistics/attendeesmissing
+- PHP8, fix wrong use of mysqli_connect_errno. Handle id=0 in function nom
+- PHP8, fix wrong use of implode and join functions
+- Prevent skills to be deleted if used by agents
+- Workinghours exception should take into account weeks turnover
+- Mark leaved agents as crossed off when importing models
+
+## Version 20.10.00 (2020-10-09)
+
+### Enhancements
+
+- Add working hours exceptions
+- Retrieve absences from microsoft graph API
+- Add a cron script to purge the log table: planningBibio:PurgeLogTable
+- Check journey times between site / areas
+- Having "Full day" checked by default in absences is configurable
+- Check journey times between absences and jobs
+- Enable web profiler on dev environment
+- Symfonisation of admin -> activites
+- Use Doctrine ORM for skill pages
+- Use fine tuning of hours in holidays forms
+- Mass modification of agents
+- Symfonize agenda/index page
+- Stick planning times row and job columns
+- Symfonize and Doctrinize postes/index.php
+
+### Fixes
+
+- Use fine tuning of hours in absence forms
+- Fix the control of plannings when an absence is recorded
+- Fix removal of reccuring absences
+- Set default value for start and end hours when saving an absence
+- Fix admin info and absences info forms
+- fix retrieving of start hour when adding absence
+- Prevent duplicating working hours via clone option
+
+## Version 20.04.00 (2020-06-15)
+
+### Enhancements
+
+- Include symfony framework
+- Move absences pages into a symfony controller
+- Move absences/info pages into a symfony controller
+- Move admin/info pages into a symfony controller
+- Move agents pages into a symfony controller
+- Move configuration page into a symfony controller
+- Move help page into a symfony controller
+- Move holidays pages into a symfony controller
+- Ability to check permissions on symfony kernel.request event
+- Add unit tests
+- Ability to request holiday in days (optionnal)
+- Ability to request holiday on half day
+- Add a second notifications workflow on absences
+- Ability to add documents on absences
+- Ability to change user password by typing a new one into a form
+- Add free breaktimes on working hours
+- Hamac import : Add intermediate validation and information logging
+- Shows Agendas/Synchro tab on agent's pages when Hamac-csv param is set
+- Disallow changing passwords in demo mode
+- Allow selection of days in other months on datepickers
+- Add a script to launch setup from CLI (for a new installation: run install.sh)
+- Update PHPMailer from 6.0.5 to 6.1.6
+
+### Fixes
+
+- Add raw filter on agent templates for fields services, right and skills
+- Fix undefined indexes on statistiques/service.php & statut.php
+- Fix checking email settings on configuration page
+- Fix the wrong red marking in the diaries
+- Fix wrong SR (without meal) marking on gray cells
+- Fix the creation of status and service CSS classes in the planning.js file
+- Rename recup_samedi to comp_time
+- Fix a warning when a day planning is empty
+- Correct use of PresentSet class in planning/poste/index
+- Fix saving status and services in agent's form
+- Use the port when checking LDAP settings
+- Fix a typo on staticts rights
+- Fix-encoding-issues. Run php -f tools/fix_encoding_issues.php if you have encoding errors after update
+- Change database character encoding to utf8mb4. Run (once) php -f tools/fix_encoding_issues.php to convert your data after update
+- Remove HTML entities from absences reasons. Run php -f tools/remove_html_entities_from_absence_reasons.php
+- Prevent non authorized users to see holidays
+- Fix display and JavaScript errors on my_account page
+- Correct check of admin rights in absence:edit controller
+- Fix absences url in mails
+- Recovery times: restore hours checking and fix error on saving
+- Recovery times: check admin level 2 rights
+- Table creation - apply number of sub-table on first save
+- Table creation: remove PHP warning
+- Use correct array key for recorevery times in my account
+- Fix wrong SQL queries on the departure date in ajax.menudiv.php
+
+## Version 19.10.00 (2019-10-31)
+
+### Enhancements
+
+- Allow planning comments to be always displayed.
+- Show a short 3 digits version number on footer
+- add project information in composer
+- hash passwords improvement
+- Improves performances on statistics pages
+- LDAP authentication improvement
+
+### Fixes
+
+- Do not import deleted agents
+- Fix site verification on structure management
+
+## Version 19.04.03 (2019-07-26)
+
+### Fixes
+
+- Fix misallocation of rights in multisites mode
+- Fix bug #86, Wrong CAS version numbers
+
+## Version 19.04.02 (2019-07-13)
+
+### Fixes
+
+- Fix the error that prevented the import of some plannings
+- Imports gray cells when importing plannings
+- Prioritizes the absence class over the out-of-work-time class in planning views
+
+## Version 19.04.01 (2019-05-17)
+
+### Fixes
+
+- Optimization of statistics: avoid timeout on statistic pages for large dataset
+- Fix version checks in setup/maj.php
+- Fix README.md markdown format
+
+### Enhancements
+
+- Make ICS import compatible with Google invitations and the "Hamac" format
+
+## Version 19.04 (2019-03-28)
+
+### Plumbing
+
+- Implements Doctrine ORM
+- Include conges plugin into the core
+
+### Enhancements
+
+- Move the call to the update script to init.php
+- Define planning unit's emails site by site
+- Allow more than one over time recovery per day
+- Planning template import: show agents out of their work timetable in a red cell
+- ICS importation : check attendees confirmation and update absences validation
+- Over time recovery: create a notifications system
+- GDPR: Anonymize personal data when deleting users
+- Remove a typo in PlanningHebdo-notifications-agent-par-agent's comment
+- add atomic updates system
+- New statistic page: presents/absents agents
+- Demo mode
+
+### Fixes
+
+- Fix anonymous authentication
+- Fix access rights when using multisites mode
+- Planning Hebdo: fix errors of saving copies
+- Fix calendar sync (github: issue #38)
+- Fix wrong link on notifications of recurring absences modification (github issue #36)
+- Conges plugin: Initialize variable last in conges::calculCreditRecup
+- Conges plugin: Remove a warn caused by an undefined index
+
+## Version 2.8.04 (2018-10-29)
+
+### Plumbing
+
+- Add Symfony/HttpFoundation component
+- Code refactoring: move initialization in ini.php
+- Update PHPMailer using composer and set mail->Sender
+- Update phpCAS using composer
+
+### Fixes
+
+- Replace deprecated mcrypt functions with openssl functions
+- Fix an error in the calculation of hours of absence
+
+## Version 2.8.03 (12 septembre 2018)
+
+### Correction
+
+- Correction du problème empêchant l'affichage des absences sans droits d'administration
+- Correction du problème empêchant l'ajout d'absence
+
+## Version 2.8.02 (29 mai 2018)
+
+### Amélioration
+
+- Permet l'utilisation d'un fichier lang/custom.php (voir fichier lang/fr_FR.php)
+
+## Version 2.8.01 (24 mai 2018)
+
+### Améliorations
+
+- Absences : gestion des notifications et des droits d'accès avec l'option "Absences-notifications-agent-par-agent"
+- PlanningHebdo : gestion des notifications et des droits d'accès avec l'option "PlanningHebdo-notifications-agent-par-agent"
+- Configuration : remplace les menus déroulants par des checkboxes pour les paramètres de type boolean
+- Configuration / droits : suppression des options de débogage
+- Heures de présence : permet la sélection de 3 emplois du temps différents selon s'il s'agit d'une semaine standard, avec samedi travaillé ou en ouverture restreinte (option EDTSamedi, incompatible avec PlanningHebdo)
+
+### Correction
+
+- Absences : corrige la position des icônes "suppression agent" dans les fiches absences
+
+## Version 2.8 (11 avril 2018)
+
+### Améliorations
+
+- Agents volants : Permet de distinguer une liste d'agents dans les plannings (attribution d'une couleur). Les agents sont choisi semaine par semaine dans le sous-menu Planning / Agents-volants
+- Planning : Choix d'afficher ou non les heures de SP et les couleurs dans le menu du planning
+- Planning notification : Affichage du nom du site dans les notifications de plannings validés / modifiés
+- ICS : Fonction permettant d'envoyer aux agents l'URL de leur calendrier Planning Biblio
+- Absences : Paramètre permettant d'activer ou non la présélection des agents logués
+- Planning Hebdo : 2 niveaux de validation et circuit de notifications semblable à celui des absences
+- LDAP : Ajout de l'attribut supannAliasLogin
+
+## Version 2.7.15 (27 septembre 2018)
+
+### Améliorations
+
+- Heures de présence : Export des heures de présences vers un fichier CSV (format Kelio/Bodet Software)
+- LDAP : Permet l'import d'un attribut LDAP dans le champ matricule (choix de l'attribut dans la config, param LDAP-Matricule)
+
+## Version 2.7.14 (26 avril 2018)
+
+### Corrections
+
+- Cron : Correction de la recherche des commandes à exécuter une fois par an (pseudo-cron)
+- Plannings semaine : Correction de la position des cellules grisées dans les plannings semaine
+- Plannings semaine : Correction de l'initialisation de la variable $verrou sur l'affichage des plannings semaine
+
+## Version 2.7.14 (26 avril 2018)
+
+### Correction
+
+- Modification des ID de gestion des absences dans la base de données (ceci était fait sur la version 2.7.12 mais supprimé par erreur sur la 2.7.13)
+
+## Version 2.7.13 (25 avril 2018)
+
+### Améliorations
+
+- Importation Hamac
+- Planning : améliore la mise en surbrillance, supprime la latence générée sur certains navigateurs
+
+## Version 2.7.12 (29 janvier 2018)
+
+### Améliorations
+
+- CAS : Ajout du paramètre CAS-ServiceURL pour permettre de forcer l'URL de redirection vers l'application
+- CAS : Amélioration du processus d'authentification CAS et suppression des redirections JavaScript
+
+### Corrections
+
+- Correction de la suppression des agents (CSRFToken)
+- Correction du filtre sur les catégories dans le menu du planning
+
+## Version 2.7.11 (20 janvier 2018)
+
+### Corrections
+
+- Planning : Correction du calcul des heures de SP lorsque les absences sont déduites
+- Absences : Contrôle empêchant l'enregistrement d'une absence sans date de fin
+
+## Version 2.7.10 (20 décembre 2017)
+
+### Corrections
+
+- Planning : corrige une erreur empêchant de barrer les agents dans le planning s'ils étaient sur des absences non-validées
+
+## Version 2.7.09 (19 décembre 2017)
+
+### Corrections
+
+- Absences récurrentes : conserve les exceptions lors de la modification des absences récurrentes
+- Absences récurrentes : Ne double plus la première occurrence lors de la modification des absence récurrentes
+- Absences récurrentes : N'affiche plus l'icône "récurrences" sur les événements ne contenant plus qu'une seule occurrence
+
+## Version 2.7.08 (14 décembre 2017)
+
+### Corrections
+
+- Absences récurrentes : correction des erreurs d'ajout et suppression d'agents lors de la modification d'absences récurrentes toutes occurrences.
+- Absences récurrentes : correction de l'attribut COUNT lors de la modification des événements courant et suivants
+
+## Version 2.7.07 (11 décembre 2017)
+
+### Corrections
+
+- Correction de l'importation des fichiers ICS lorsque le champ DESCRIPTION est inexistant ou vide
+- Correction de l'enregistrement des absences récurrentes lorsque le champ commentaires est vide
+- Correction du filtre sur les absences dans le menudiv
+
+## Version 2.7.05 (28 novembre 2017)
+
+### Améliorations
+
+- Absences récurrentes : Les règles de récurrences sont stockées dans la base de données
+- Absences récurrentes : Recherche perpétuelle des occurrences liées à des absences récurrentes sans date de fin
+
+## Version 2.7.04 (22 novembre 2017)
+
+### Améliorations
+
+- Absences : Enregistrement d'absences récurrentes
+
+## Version 2.7.03 (25 octobre 2017)
+
+### Améliorations
+
+- ICS : permet l'importation des événements non-confirmés. Ceux-ci sont importés comme des absences non-validées.
+- ICS : permet l'utilisation du champ "matricule" dans les openURL d'importation. Peut être utilisé pour importer des fichiers ICS nommés avec l'identifiant Harpege par exemple.
+
+## Version 2.7.02 (12 octobre 2017)
+
+### Améliorations
+
+- Planning : Amélioration de la mise en surbrillance des agents dans le planning
+
+## Version 2.7.01 (7 octobre 2017)
+
+### Améliorations
+
+- Planning : Met en surbrillance les agents survolés dans le menu
+- Planning : Dissociation des droits de modification des plannings : un droit permet de créer, modifier, enregistrer et utiliser les modèles, un autre permet uniquement la modification des plannings
+- Importation ICS : cases à cocher pour autoriser ou refuser l'importation des calendriers ICS agent par agent.
+- Statistiques : Choix des créneaux horaires à afficher dans les statistiques
+- Absences : Ajoute un droit permettant aux non-admin d'ajouter des absences pour plusieurs agents
+- Absences : Permet l'enregistrement d'absences qui se chevauchent, avec avertissement
+- Absences : Permet la sélection de tous les agents lors de l'enregistrement des absences (paramètre Absences / Absences-tous)
+
+### Corrections
+
+- Encodage HTML des caractères dans la base de données, tables acces, config et menu
+- Conversion en base64 des mot de passes cryptés (fonctions encrypt / descrypt)
+- Affichage des agents, initialisation du filtre Service Public / Administratif
+- Affichage des agents, corrige une erreur de script empêchant l'affichage des fiches agents
+- Correction de l'envoi des notifications lors la validation des plannings
+
+## Version 2.7 (30 août 2017)
+
+### Améliorations
+
+- Heures de présence : Gestion de 2 pauses par jour
+- Permet de personnaliser la favicon depuis les thèmes perso. Positionner un fichier nommé favicon.png dans le dossier images du thème
+- Enregistre l'URL de l'application dans la config ($config['URL']), permet de l'utiliser en CLI
+- Permet de griser ponctuellement des cellules depuis le menu du planning
+
+### Corrections
+
+- Décale le menu du planning par rapport au curseur : évite de cliquer trop vite sur le nom d'un agent
+- Corrige l'importation des heures de présence : tout était importé en semaine 1, problématique lorsque la rotation des semaines était activée
+
+### Sécurité
+
+- Correction des vulnérabilités XSRF liées aux fonctions db::insert(2), db::update et db::delete(2)
+- Correction des vulnérabilités XSRF liées à la classe dbh
+
+## Version 2.6.91 (2 juin 2017)
+
+### Amélioration
+
+- Ne recharge plus la page après la modification des menus déroulants paramétrables
+
+### Correction
+
+- Corrige l'encodage des caractères des menus déroulants paramétrables (htmlentities des valeurs des tables select_xxx)
+
+## Version 2.6.9 (24 mai 2017)
+
+### Correction
+
+- Corrige la recherche des semaines avec samedi travaillé (personnel::fetchEDTSamedi). Erreur intégrée suite au renommage des tables en version 2.6.4
+
+### Correction Windows
+
+- Utilise la constante __ DIR __ pour l'inclusion des fichiers (corrige les erreurs d'envoi de mail et de calcul des heures d'absences sous Windows)
+
+## Version 2.6.8 (13 mai 2017)
+
+### Correction Windows
+
+- Modifie le script de mise à jour pour les serveurs Windows afin qu'il renomme correctement les tables en minuscules avec l'ajout d'underscores.
+- Pas de modification pour les serveurs Linux/Unix
+
+### Amélioration
+
+- Contrôle des tables modifiées entre la version 2.6.4 et 2.6.8 lors de l'exécution du script de mise à jour
+
+## Version 2.6.7 (12 mai 2017)
+
+### Corrections
+
+- Corrige une erreur intégrée en version 2.5.1 lors du remplacement des fonctions unserialize par json_decode
+- Cette erreur affectait notamment l'enregistrement des heures de présences
+- Correction apportée : ajout du 2ème paramètre (true) aux fonctions json_decode de façon à forcer la création d'un tableau au lieu d'un objet
+- Correction du calcul des heures d'absences dans le menu du planning. L'erreur existait lorsque les heures de service public étaient enregistrées en pourcentage
+
+## Version 2.6.6 (10 mai 2017)
+
+### Correction
+
+- Importation des plannings : n'importe pas les agents s'ils sont placés sur un autre site
+- Importation des emplois du temps : corrige l'importation pour les agents ne travaillant que le matin
+
+## Version 2.6.5 (6 mai 2017)
+
+### Améliorations
+
+- Affiche pourquoi les agents sont indisponibles dans le menu permettant de placer les agents dans le plannings
+- Ajout d'infobulles dans le menu permettant de placer les agents dans le planning
+
+### Correction
+
+- Exportation ICS : html_entity_decode dans ics/calendar.php sur le nom des agents et les sites
+
+## Version 2.6.4 (25 avril 2017)
+
+### Amélioration
+
+- Les tables et les champs de la base de données sont renommés en minuscules (compatibilité avec le paramètre mysql lower_case_table_names toutes valeurs et compatibilité Windows)
+
+### Correction
+
+- Corrige l'appel à disponibilité
+
+## Version 2.6.3 (20 avril 2017)
+
+### Correction
+
+- Corrige les notifications lors de la modification des plannings (n'envoie que les différences et seulement aux agents pour qui des différences existent)
+
+## Version 2.6.2 (19 avril 2017)
+
+### Correction
+
+- Corrige la recherche des quotas hebdomadaires (menu du planning et feuille de temps)
+
+## Version 2.6 (16 mars 2017)
+
+### Correction
+
+- LDAP - Active Directory : Corrige le script de mise à jour
+
+## Version 2.5.9 (14 mars 2017)
+
+### Correction
+
+- LDAP - Active Directory : renomme l'attribut samAccountName en samaccountname
+- Planning - importation : n'importe pas les agents s'ils sont sur des postes ou horaires supprimés
+
+## Version 2.5.8 (10 mars 2017)
+
+### Correction
+
+- Corrige les problèmes de modification et de suppression des modèles
+- Corrige le problème des agents non-trouvés dans le menu dû à un mauvais encodage de caractères du champ personnel/service
+
+## Version 2.5.7 (8 mars 2017)
+
+### Améliorations
+
+- LDAP : Compatibilité Active Directory
+- LDAP : Test des paramètres depuis la page de configuration
+- Mail : Test des paramètres depuis la page de configuration
+
+### Sécurité
+
+- Mise à jour de PHPMailer (version 2.5.22)
+- Clé personnelle pour le cryptage des mots de passe LDAP et SMTP (include/config.php à modifier manuellement si mise à jour)
+
+### Correction
+
+- Affichage des absents en bas du planning en configuration mono-site
+
+## Version 2.5.6 (6 mars 2017)
+
+### Corrections
+
+- Corrige l'agenda : barre les postes pour lesquels l'agent est absent
+
+## Version 2.5.5 (6 mars 2017)
+
+### Améliorations
+
+- Ajoute un index sur le champ site de la table pl_poste de façon à accélérer les requêtes SQL sur cette table (page planning)
+- Améliore l'affichage du menu permettant de placer les agents dans le planning (Optimisation de la largeur du 2nd tableau)
+
+## Version 2.5.4 (1er mars 2017)
+
+### Améliorations
+
+- Affichage des heures au format 12h34 (Heure, lettre h, minutes) dans toutes les pages de statistiques
+
+### Sécurité
+
+- Correction des vulnérabilités Potential DOM Open Redirect
+- Correction de vulnérabilités XSRF (celles liées à la fonction db::update2)
+
+## Version 2.5.3 (6 février 2017)
+
+### Améliorations
+
+- Optimisation de la fonction nom() : moins de latence dans de nombreux modules, notamment dans le menu permettant de placer les agents dans le planning
+- Affichage des absences non validées dans les plannings : les absences non validées apparaissent en rouge mais ne sont pas barrées. Paramétrable
+- Affichage des heures au format 12h34 (Heure, lettre h, minutes) dans le menu du planning et dans la feuille de temps
+- Amélioration de la modification des menus (groupes de postes, étages des postes, services de rattachement)
+- Feuille de temps : affichage jour par jour des heures par groupe.
+
+### Corrections
+
+- Correction de la fonction createURL : ajout d'un / manquant dans certaines URL
+
+## Version 2.5.2 (15 décembre 2016)
+
+### Améliorations
+
+- Absence en bas du planning : n'affiche que les absences qui concernent le site choisi
+- ICS : Enregistrement d'une URL personnalisée dans la fiche des agents (pour importer les réunions de Google Calendar (par exemple))
+
+### Corrections
+
+- Corrige une erreur empêchant l'enregistrement des dimanches dans les modèles
+
+## Version 2.5.1 (23 novembre 2016)
+
+### Sécurité
+
+- Correction de vulnérabilités (Object Injection)
+
+
+## Version 2.5 (17 novembre 2016)
+
+### Améliorations
+
+- Statistiques : affichage des heures par groupe de postes dans la feuille de temps
+- Personnalisation de l'affichage des cellules en fonction des qualifications des agents (activités) : classes .activite_nom_de_l_activite
+- Personnalisation de l'affichage des postes en fonction des activités requises : Utilisation des classes .tr_activite_nom_de_l_activite
+- Planning: améliore l'affichage des semaines et autorise le masquage des tableaux sur la page semaine
+
+### Corrections
+
+- Planning : correction d'une erreur sur le marquage des absents dans le menu permettant de placer les agents
+
+
+## Version 2.4.8 (29 octobre 2016)
+
+### Améliorations
+
+- Planning : Affichage en rouge des agents pour lesquels il existe des absences non-validées
+- Amélioration de la conversion des heures (suite à la granularité à 5 minutes)
+
+## Version 2.4.6 (27 octobre 2016)
+
+### Corrections
+
+- Remplace la fonction sendmail par CJMail (compatibilité Wamp).
+- PlanningHebdo : Remplace le champ DB key par cle
+- Arrondi les heures du menudiv
+
+## Version 2.4.5 (19 octobre 2016)
+
+### Améliorations
+
+- Agenda : Possibilité de choisir dans la config si on affiche ou non les plages de service public des plannings non-validés dans les agendas.
+
+## Version 2.4.4 (13 octobre 2016)
+
+### Améliorations
+
+- Granularité à 5 minutes (expérimental)
+
+## Version 2.4.3 (4 octobre 2016)
+
+### Améliorations
+
+- Mise à jour de l'aide
+- Ajout d'une alarme sur les événements ICS exportés (10 minutes avant le début de SP)
+
+### Corrections
+
+- Correction d'un problème empêchant la création de lignes de séparation
+
+### Sécurité
+
+- Correction de vulnérabilités XSS, suppression des fichiers d'exemple de phpCAS
+
+## Version 2.4.2 (8 septembre 2016)
+
+### Améliorations
+
+- Compatibilité MySQL 5.7, définie sql-mode=''
+- Vérifie les fuseaux horaires des fichiers ICS importés
+
+### Correction
+
+- Corrige les erreurs de modifications et validations d'absences
+
+## Version 2.4.1 (27 juillet 2016)
+
+### Améliorations
+
+- Importation de fichiers ICS via une tache planifiée. Les fichiers ICS doivent être accessibles en openURL
+- Importation des heures de présences en CSV via une tache planifiée. Les fichiers CSV doivent être accessibles en openURL
+- Exportation des plages de service public des agents sous forme de calendriers ICS
+- Optimisation du menu permettant de placer les agents dans le planning = moins de latence
+- Optimisation de la recherche des sans repas
+
+### Corrections
+
+- Corrige une erreur concernant le masquage des tableaux
+- Corrige le script d'installation (enregistrement des informations dans la base de données)
+- Corrige l'affichage des heures faites dans les tableaux des heures de présences (module planningHebdo)
+- Corrige l'affichage des heures de présences dans les fiches agents (l'erreur existait avec le module planningHebdo)
+- Corrige la validation des absences (l'erreur existait en configuration multi-sites)
+- Feuille de temps : ne compte plus les absences
+- Supprime les éventuels doublons de la table config.
+
+## Version 2.3.4 (27 juin 2016)
+
+### Correction
+
+- t d'installation (db_data) : insertion dans la table activités
+
+## Version 2.3.3 (20 juin 2016)
+
+### Améliorations
+
+- us les informations des plannings non-validés
+
+## Version 2.3.2 (28 mai 2016)
+
+> Jérôme Combes
+
+### Améliorations
+
+- s supprimés sont restaurés si les tableaux sont restaurés
+
+## Version 2.3.1 (10 mai 2016)
+
+> Jérôme Combes
+
+### Améliorations
+
+- Permet la saisie et la modification d'absences de plusieurs agents
+- Mise à jour de la bibliothèque phpCAS (version 1.3.4)
+
+## Version 2.3 (12 avril 2016)
+
+> Jérôme Combes
+
+### Améliorations
+
+- Configuration des tableaux : possibilité de supprimer les tableaux, même s'ils sont utilisés
+- Configuration des tableaux : possibilité de récupérer des tableaux supprimés dans l'année
+- Configuration des tableaux : amélioration de l'affichage des listes de tableaux, groupes et lignes de séparation
+- Configuration des tableaux : possibilité d'ajouter des classes CSS sur les tableaux. Permet de personnaliser l'affichage des tableaux sur la page planning
+- Affichage du planning : possibilité d'ajouter des classes CSS sur les activités. Permet de personnaliser l'affichage des postes correspondants dans le planning
+- Affichage du menu : Utilisation d'une liste ul à la place d'un tableau table pour positionner les éléments du menu. ATTENTION : les thèmes personnalisés doivent être mis à jour.
+- Style : Boutons JQuery-UI dans le planning et gestion des agents
+
+### Corrections
+
+- Setup : variable $dbhost remplace "localhost". $dbhost = valeur du champ hôte du formulaire
+- Corrige la fonction createURL
+- Initialise la variable $error_CJInfo dans la classe sendmail
+
+## Version 2.2.3 (Jérôme Combes, 27 février 2016)
+
+### Correction
+
+- Planning : Corrige le classement par ordre alphabétique dans le menu du planning, même si accents
+- PlanningHebdo : Corrige l'enregistrement du nom de l'agent qui valide les plannings de présence
+
+## Version 2.2.2 (Jérôme Combes, 27 février 2016)
+
+### Correction
+
+- Corrige une erreur sur le masquage des tableaux
+
+## Version 2.2.1 (Jérôme Combes, 23 février 2016)
+
+### Correction
+
+- Corrige une erreur sur le positionnement des cellules grisées
+
+## Version 2.2 (Jérôme Combes, 17 février 2016)
+
+### Amélioration :
+
+- Ajout du blocage d'adresses IP après échec d'authentification (paramétrable dans administration / configuration).
+
+## Version 2.1 (Jérôme Combes, 9 janvier 2016)
+
+### Amélioration :
+
+- Planning : Possibilité de masquer les tableaux du plannings
+- Planning : Les colonnes horaires oubliées lors de la création de la structure sont automatiquement comblées
+- Planning : Envoi d'un mail demandant aux agents s'ils sont volontaires pour occuper le poste choisi depuis le menu du planning
+- Absences : Ajout des informations sur les postes affectés par l'absence dans les notifications par e-mail
+- Classe sendmail : permet la récupération et l'affichage des erreurs SMTP
+
+## Version 2.0.5 (4 décembre 2015)
+
+> Farid Goara, Jérôme Combes
+
+### Améliorations
+
+- Initialisation des heures de fin en fonction des heures de début dans les menus déroulant (absences/congés)
+
+### Corrections
+
+- Corrections de l'affichage de l'agenda pour les rotations sur 3 semaines
+- et pour l'utilisation de plannings de présence différents les semaines avec samedi travaillé
+
+
+## Version 2.0.4 (1er décembre 2015)
+
+> Arthur Suzuki, Christophe Le Guennec, Etienne Cavalié, Guillaume Raimondeau, Jérôme Combes
+
+### Améliorations
+
+- Option permettant d'interdire le dépôt d'absence sur des plannings en cours d'élaboration
+
+### Corrections :
+
+- Corrections de fautes de frappe
+- Correction d'une erreur empêchant l'affichage de la liste des présents en bas du planning
+- Encodage des caractères du le menu permettant de placer les agents
+- Correction du marquage des absents dans le planning
+- Correction d'une erreur empêchant l'affichage des plannings si rotation des emplois du temps sur 3 semaines
+- Correction de la création des URL si serveur HTTPS (lien dans les notifications).
+
+
+## Version 2.0.3 (Jérôme Combes, 2 octobre 2015)
+
+### Corrections :
+
+- Corrige le marquage des absents dans le planning
+- Corrige le choix des notifications d'absences dans la configuration
+
+## Version 2.0.2 (Jérôme Combes, 27 septembre 2015)
+
+### Améliorations :
+
+- Planning : envoie des notifications aux agents concernés par des plannings validés ou modifiés
+
+## Version 2.0.1 (Jérôme Combes, 4 septembre 2015)
+
+### Améliorations :
+
+- Calcul des heures hebdomadaires en fonction des plannings de présence dans le menu permettant de placer les agents et dans la feuille de temps
+- Prise en compte des absences pour le calcul des heures hebdo à effectuer en SP dans le menu du planning et la feuille de temps
+- Ajout d'un droit spécifique à la modification des commentaires des plannings
+
+### Correction :
+
+- Correction d'un bug permettant de placer un agent sur plusieurs postes en même temps
+- Correction d'un bug affichant par erreur que les agents sont placés dans des plannings lors de l'enregistrement d'absence
+- Correction d'un problème de rémanence du menu du planning
+
+## Version 2.0 (Jérôme Combes, 8 juillet 2015)
+
+### Améliorations :
+
+- Intégration du plugin Planning Hebdo
+- Planning Hedbo :
+-  les admins peuvent enregistrer les plannings des autres agents
+-  permet la copie des plannings de présence
+-  config permettant d'autoriser ou non la saisie/modification des planning de présence par les non-admin
+
+## Version 1.9.7 (Jérôme Combes, 20 mai 2015)
+
+### Correction :
+
+- Agents : corrige l'enregistrement des heures de service public et des heures de travail dans la fiche des agents
+
+## Version 1.9.6 (Jérôme Combes, 27 avril 2015)
+
+### Corrections :
+
+- Statistiques : Corrige les erreurs de sélection de dates dans les statistiques
+- Configuration : Corrige l'erreur empêchant la sélection de "Quart d'heure" dans Heures précision
+
+### Améliorations :
+
+- Planning - Sans repas : Améliore la recherche des Sans Repas :
+-   - n'affiche SR que si l'agent est placé en continu entre les heures de début et de fin de la période "sans repas"
+-   - heures de début et de fin de la période sans repas paramétrables
+
+## Version 1.9.5 (Jérôme Combes, 15 avril 2015)
+
+### Corrections :
+
+- Corrige une erreur sur le contrôle des plannings validés lors de l'ajout ou modification d'une absences
+- Corrige un problème de sélection des dates sur la page permettant de voir les absences
+- Optimise la recherche des emplois du temps du plugin Planning Hebdo
+- Supprime les fonctions error_reporting considérées comme des vulnérabilités Information Exposure Through an Error Message
+- Correction des vulnérabilités XSHM
+- Correction des vulnérabilités Client Potentiel XSS
+- Correction des vulnérabilités Reflected XSS (absences/modif.php)
+- Correction de la vulnérabilité LDAP Injection
+- Correction des vulnérabilités Trust Boundary Violation (Sessions statistiques)
+- Renforce l'authentification CAS
+- Corrige les erreurs d'export PDF depuis les DataTables
+- Masque les lignes vides (selon config) lors de la validation Ajax
+
+### Améliorations :
+
+- Améliore l'affichage du menu
+
+## Version 1.9.4 (Jérôme Combes, 7 avril 2015)
+
+### Corrections :
+
+- Correction d'un bug empêchant la copie des tableaux en multi-sites
+- Correction des vulnérabilités SQL Injection
+- Correction des vulnérabilités LDAP Injection
+- Correction des vulnérabilités Reflected XSS
+- Correction des vulnérabilités Stored XSS
+- Correction des vulnérabilités File Manipulation
+
+## Version 1.9.3 (Jérôme Combes, 31 mars 2015)
+
+### Améliorations :
+
+- Accès direct aux pages souhaitées après authentification
+
+### Corrections :
+
+- Corrige les erreurs JavaScript "DataTable" affichées sur certains tableaux
+- Corrige la vulnérabilité permettant de se connecter sans mot de passe (chaînes non échappées dans la requête vérifiant les identifiants)
+
+## Version 1.9.2 (Jérôme Combes, 18 mars 2015)
+
+### Corrections :
+
+- Mise à jour de la bibliothèque PHPMailer
+- Corrige un bug empêchant l'enregistrement des modèles
+- Corrige un bug empêchant l'enregistrement des agents dans les plannings en multisite
+- Initialisations de variables
+
+## Version 1.9.1 (Jérôme Combes, 5 mars 2015)
+
+### Améliorations :
+
+- Planning : Améliore le positionnement du menu permettant de placer les agents
+- Planning : Validation des plannings en Ajax (pas de rafraîchissement de la page)
+- Planning : Ajoute un groupe "Sans service" dans le menu permettant de placer les agents
+- Absences : Affiche les dates de demandes dans la liste et dans les fiches
+- Tableaux : Améliore les scripts de suppression des tableaux, groupes et lignes
+
+### Corrections :
+
+- Tableaux : Corrige l'erreur empêchant la suppression des tableaux
+- Agents : Corrige une erreur de gestion des droits d'accès en multi-sites
+
+
+## Version 1.9 (Jérôme Combes, 21 janvier 2015)
+
+### Améliorations :
+
+- Planning : Ajoute les boutons "Supprimer tout" et "Barrer tout" dans le menu permettant de modifier les cellules
+- Agenda : Amélioration de l'affichage de l'agenda
+
+### Corrections :
+
+- Tableaux : Améliore l'affichage de la page de configuration les horaires
+- Absences : Contrôle si l'absence posée ou modifiée concerne des plannings validés
+- Agenda : Affiche toutes les absences dans les agendas
+
+
+## Version 1.8.9 (Jérôme Combes, 13 janvier 2015)
+
+### Correction :
+
+- Planning : Utilise GET et POST pour transmettre les variables date et site entre les différentes pages de gestion des plannings
+- au lieu d'utiliser les sessions qui étaient problématiques lors de l'utilisation de plusieurs fenêtres
+
+## Version 1.8.8 (Jérôme Combes, 18 décembre 2014)
+
+### Améliorations :
+
+- Absences - notifications : Permet la saisie de plusieurs responsables directs dans la fiche des agents
+- Absences - notifications : Cases à cocher permettant de choisir les destinataires des notifications dans la config.
+-   Ceci offre plus de possibilités pour choisir les destinataires
+- LDAP : connexion au serveur LDAP en anonyme possible (laisser les champs RDN et Password vides).
+
+
+## Version 1.8.7 (Jérôme Combes, 8 décembre 2014)
+
+### Améliorations :
+
+- Planning : Possibilité de ne pas afficher les lignes vides dans les plannings validés (config Planning-lignesVides)
+
+### Corrections :
+
+- Planning : Corrige l'erreur retournée lorsqu'une cellule est vidée (erreur générée en 1.8.6)
+
+
+## Version 1.8.6 (Jérôme Combes, 5 décembre 2014)
+
+### Améliorations :
+
+- Planning : Possibilité de mettre jusqu'à 20 agents par cellule.
+- Absences : Cases à cocher pour les pièces justificatives
+- Absences : Suppression de la page de confirmation lors de l'ajout d'une absence
+- Fiches Agents : Amélioration de l'affichage des droits d'accès
+- JS : Fonction file() remplacée par $.ajax()
+- Réorganisation des dossiers js et themes, création d'un dossier vendor
+- Mise à jour des bibliothèques JQuery, JQuery-ui, DataDatble
+- Ajout de l'extension TableTools pour DataTable (permet d'exporter les tables)
+
+### Corrections :
+
+- Supprime le 0 de trop dans le menudiv
+
+
+## Version 1.8.5 (Jérôme Combes, Christophe Le Guennec, 29 octobre 2014)
+
+### Améliorations :
+
+Multisites : jusqu'à 10 sites
+- Setup : Installation possible sur base de données MySQL distante
+- CAS : Mise à jour de la bibliothèque phpCAS (1.3.3)
+- LDAP : Permet l'authentification LDAP même si le DN n'est pas construit avec uid et ou=people
+
+### Corrections :
+
+- Suppression automatique du personnel le lendemain de la date de départ et non le jour du départ.
+- Affichage des agents dans le menu du planning seulement si la date d'arrivée est dépassée
+
+
+## Version 1.8.4 (Jérôme Combes, 12 septembre 2014)
+
+### Améliorations :
+
+- Les fonctions mysql_* (obsolètes sous PHP5.5) sont remplacées par les fonctions mysqli_*
+
+
+## Version 1.8.3 (Jérôme Combes, 2 juillet 2014)
+
+### Améliorations :
+
+- Importation LDAP
+- Authentification LDAP et CAS
+
+
+## Version 1.8.2 (Jérôme Combes, 26 juin 2014)
+
+### Améliorations :
+
+- Affichage :
+    - gestion des icônes depuis les CSS
+    - utilisation des onglets JQuery-ui tabs
+    - Intégration du thème default si celui renseigné dans la config n'existe pas
+- Nettoyage du fichier js/script.js
+- Planning semaine : ajout des icônes Rafraîchir et imprimer
+- Gestion des versions des plugins pour simplifier les mises à jour de la base de données
+
+
+## Version 1.8.1 (Jérôme Combes, 17 juin 2014)
+
+### Améliorations :
+
+- Remplace les anciens calendriers par des datepickers
+- Absences : Améliore l'affichage des e-mails de notifications d'absences
+- Statistiques absences : n'affiche pas les heures si le plugins planningHebdo n'est pas installé
+
+### Corrections :
+
+- Absences : Affiche les validations dans les mails notifiant les modifications d'absences
+
+
+## Version 1.8 (Jérôme Combes, 12 juin 2014)
+
+### Améliorations :
+
+- Amélioration de l'affichage des pages activités et agenda
+- Ajout des statistiques sur les absences
+- Affichage de tous les plannings de la semaine sur une seule page
+- Permet l'ajout de commentaires en bas des plannings
+
+### Corrections :
+
+- Correction de la fonction PHP decrypt (des -> tripledes)
+- Initialisations de variables dans statistiques/temps.php
+- Initialisations de variables dans planning/poste/menudiv.php (menu déroulant du planning) : réinitialise correctement les couleurs et les heures des agents
+
+
+## Version 1.7.9 (Jérôme Combes, 30 avril 2014)
+
+### Améliorations :
+
+- Ajout des fonctions JS check... et updateTips pour la validation des formulaires JQuery-UI
+- Amélioration du style des formulaires des statistiques et des absences (style JQuery-UI)
+- Amélioration du style des datepickers (style JQuery-UI)
+
+## Version 1.7.8 (Jérôme Combes, 2 avril 2014)
+
+### Améliorations :
+
+- Utilisation d'une nouvelle fonction (absences::getRecipients) pour envoyer les notifications d'absences
+- Permet l'ajout de thèmes (dans le dossier "themes") et leur sélection à partir de la page administration/Configuration (variable $config['Affichage-theme'])
+
+### Corrections :
+
+- Corrige l'affichage des totaux d'heures par jour et par semaine dans les emplois du temps
+
+## Version 1.7.7 (Jérôme Combes, 27 mars 2014)
+
+### Améliorations :
+
+- Permet d'affecter plusieurs sites par agent
+- Suppression des colonnes 19-20 et 20-22 dans les statistiques possible à partir de la page admin/config.
+
+### Sécurité :
+
+- Suppression des checkboxes grisées dans l'onglet "Droits d'accès" des fiches agents si l'agent logué n'a pas les droits de modification
+
+### Corrections :
+
+- Corrige bug empêchant l'affichage des heures d'ouverture dans les statistiques
+- Le login créé lors de l'ajout d'un agent n'est plus tronqué à 20 caractères
+- Modification des variables $config['Absences-notificationsX'] pour éviter les problèmes d'encodage de caractères
+
+## Version 1.7.6 (Jérôme Combes, 17 mars 2014)
+
+### Améliorations :
+
+- Distingue les absences demandées des absences en attente de validation hiérarchique
+- Intègre les congés dans les agendas (plugin)
+
+## Version 1.7.5 (Jérôme Combes, 12 mars 2014)
+
+### Améliorations :
+
+- Ajout d'un lien dans les notifications d'absences pour rebondir sur la fiche "absence"
+
+## Version 1.7.4 (Jérôme Combes, 10 mars 2014)
+
+### Améliorations :
+
+- Les motifs d'absence peuvent être classés avec 2 niveaux (ex: N1: Formation, N2: Formation interne, N3 Formation Mediadix)
+- Permet le renseignement d'un motif "Autre" pour les absences
+- Ajoute une colonne affichant le temps de travail journalier dans les emplois du temps
+- Mise à jour de l'aide en ligne
+
+### Corrections :
+
+- Corrige un bug empêchant le contrôle des catégories A en fin de service
+
+## Version 1.7.2 (Jérôme Combes, 21 février 2014)
+
+### Améliorations :
+
+- Permet d'attribuer les catégories (A,B,C) aux statuts (et aux agents)
+- Et de définir quelle catégorie est requise pour occuper chaque poste.
+- Les lignes des postes peuvent être affichées différemment dans les plannings en fonction de leur catégorie (classe tr_CategorieA, ...)
+- Les agents n'ayant pas la catégorie requise sont placés en agents indisponibles
+- Possibilité de personnaliser l'e-mail de notification de nouvelle absences
+- Possibilité de choisir une liste de destinataires différente pour les notifications d'ajout et de modification d'absence
+
+## Version 1.7.1 (Jérôme Combes, 14 février 2014)
+
+### Améliorations :
+
+- Améliore le positionnement du menu déroulant du planning
+- Affiche les congés dans la liste des absents en bas du planning même si une absence est enregistrée (plugin Conges)
+
+## Version 1.7 (Jérôme Combes, 4 février 2014)
+
+### Améliorations :
+
+- Nombre de tableaux paramétrable
+
+## Version 1.6.8 (Jérôme Combes, 30 janvier 2014)
+
+### Améliorations :
+
+- Correction d'un manque de redirection après authentification CAS
+- Suppression du lien vers fichier js/dialog.js (supprimé plutôt)
+- Modification de la méthode de marquage des congés dans les plannings (plugin)
+
+## Version 1.6.7 (Jérôme Combes, 23 janvier 2014)
+
+### Améliorations :
+
+- Corrections sur les envois de notifications d'absences
+
+## Version 1.6.6 (Jérôme Combes, 20 janvier 2014)
+
+### Améliorations :
+
+- Amélioration du style
+- Permet d'afficher ou non les notifications "Sans Repas" et "Déjà placé"
+
+
+## Version 1.6.5 (Jérôme Combes, 16 janvier 2014)
+
+### Améliorations :
+
+- Amélioration de l'affichage des notifications (JQuery-UI highlight et error)
+- Amélioration des champs date (utilisation de JQuery-UI DatePicker, format JJ/MM/AAAA)
+- Gestion du report des erreurs PHP à partir de la page de configuration
+- Menu déroulant pour sélectionner les agents sur la page affichant la liste des absents
+- Personnalisation des destinataires des notifications d'absences en fonction du degré de validation (admin/config)
+
+### Corrections
+
+- Faute de frappe dans la fiche des agents, onglet activités
+- Remplace les fonctions PHP ereg (obsolètes) par preg_match
+
+## Version 1.6.4 (Jérôme Combes, 17 Décembre 2013)
+
+### Améliorations :
+
+- Modification du logo
+
+### Correction de bugs :
+
+- Correction du bug permettant les logins des utilisateurs supprimés
+- Correction du bug empêchant le changement de mois sur le calendrier de la page principale
+- Correction du bug affichant le mauvais tableau lors de la modification des tableaux (menu admin/les tableaux)
+
+## Version 1.6.3 (Jérôme Combes, 10 Décembre 2013)
+
+### Améliorations :
+
+- Remplace les noms de tableaux (general, reserve, rangement) par des numéros (1,2,3) dans la base de données
+- Autorise 100 lignes par tableau au lieu de 30
+- Permet la sélection des horaires à partir de 7h dans les emplois du temps
+
+### Correction de bugs :
+
+- Correction du tri des dates dans les dataTables
+
+## Version 1.6.2 (Jérôme Combes, 3 Décembre 2013)
+
+### Améliorations :
+
+- Ajout des champs matricule et e-mail du responsable dans la fiche des agents
+- Statistiques sur les samedis travaillés
+- Affichage du nombre d'heures d'ouverture au public dans les statistiques
+- Absences avec validation (selon configuration)
+- Choix des destinataires des notifications lors de la saisie/validation des absences parmi :
+    - tous les gestionnaires d'absences, le responsable hiérarchique de l'agent, l'agent lui-même
+- Permet la saisie des absences aux administrateurs seulement (selon configuration).
+- Mise à jour de l'aide en ligne
+
+## Version 1.6.1 (Jérôme Combes, 14 Novembre 2013)
+
+### Améliorations :
+
+- Ajoute les agents en congés dans la liste des absences en bas du planning (plugin congés)
+- Affiche une alerte en haut du planning s'il n'y a pas d'agents de catégorie A en fin de service
+- Infobulles sur les chiffres du menudiv
+- Amélioration de l'affichage des statistiques
+- Amélioration de l'affichage d'alerte en cas d'enregistrement d'absence sur un planning validé
+- Gestion des sites au niveau des postes et des tableaux
+- Amélioration de l'affichage du tableau "Feuilles de temps" avec les 2 premières colonnes fixes.
+- Ajout des totaux et moyennes par site dans la feuille de temps
+
+### Correction de bugs :
+
+- Correction de l'authentification anonyme
+
+## Version 1.6 (Jérôme Combes, 22 octobre 2013)
+
+### Améliorations :
+
+- Possibilité d'avoir un emploi du temps différent les semaines où le samedis est travaillé
+- Affichage du total d'heures de chaque emploi du temps
+- Possibilité d'afficher directement les agents dans le menu déroulant du planning, sans les classer par catégorie
+- Alerte si l'agent est placé dans 2 plages de SP consécutives (paramétrable)
+- Amélioration de l'affichage de la page de configuration (accordéon)
+
+### Correction de bugs :
+
+- Les agents n'apparaissent plus dans le menu déroulant après leur date de départ
+- La date de départ n'est plus efface lors de la validation de la fiche des agents
+
+## Version 1.5.9 (Jérôme Combes, 11 octobre 2013)
+
+### Améliorations :
+
+- N'affiche plus les agents des autres sites dans la liste des agents indisponibles (avec l'option multi-sites)
+- Ajout du champ "catégorie" dans la fiche des agents avec les choix "titulaire" et "contractuel"
+
+## Version 1.5.8 (Jérôme Combes, 4 octobre 2013)
+
+### Améliorations :
+
+- Style différent dans le planning en fonction du service et/ou du statut de l'agent
+- Style personnalisé dans une feuille de style dédiée (css/custom.css)
+
+## Version 1.5.7 (Jérôme Combes, 26 septembre 2013)
+
+### Améliorations :
+
+- Modification du champ "supprime" de la table "personnel", facilite l'utilisation de la fonction personnel::fetch()
+- Suppression des informations personnel des agents lors de la suppression définitive (garde nom, prenom, statut, service pour les stats et l'historique des plannings)
+- Affiche les jours de fermeture dans les agendas
+
+## Version 1.5.6 (Jérôme Combes, 24 septembre 2013)
+
+### Améliorations :
+
+- Ajout de la bibliothèque JavaScript et des thèmes JQuery-UI
+
+## Version 1.5.5 (Jérôme Combes, 17 septembre 2013)
+
+### Améliorations :
+
+- Corrige la position des sous-menus
+- Supprime la variable $config['url'] simplifiant les migrations
+- Ajout des statistiques par service et par statut
+- Ajout des heures faites sur chaque site dans les statistiques
+- Ajout du filtre sur les sites dans les statistiques
+- Ajout des heures par service et par statut dans les statistiques par poste
+- Permet la modification des étages des postes
+
+## Version 1.5.4 (Jérôme Combes, 4 septembre 2013)
+
+### Améliorations :
+
+- Ajout des infobulles sur les icônes de la page "planning"
+
+### Correction de bugs :
+
+- Corrige les bugs JavaScript qui empêchait la modification du mot de passe et la saisie des plannings de présences (avec le Plugin PlanningHebdo)
+
+## Version 1.5.3 (Jérôme Combes, 2 septembre 2013)
+
+### Améliorations :
+
+- Améliore l'affichage des tableaux en utilisant la feuille de style (classes .tableauStandard et .tableauFiches)
+- Améliore l'affichage des dates (include/function.php : fonction dateFr())
+- Remplacement d'un message dans absences/infos.php ("Informations sur les congés" devient "Informations sur les absences")
+
+### Correction de bugs :
+
+- Corrige la position des sous-menus dans les navigateurs Chrome, IE, Safari ...
+- Corrige le bug empêchant le changement de mois à partir du calendier du planning (style.css #divcalendrier)
+
+
+## Version 1.5.2 (Jérôme Combes, Août 2013)
+
+### Améliorations :
+
+- Statistiques / Feuille de temps : période paramétrable
+- Ajout de la Bibliothèque JQuery
+- Fonction selectTemps prend en 4ème paramètre $class (Class CSS)
+- Fonction JS diffMinutes calcul la différence en minutes entre 2 heures
+
+## Version 1.5.1 (Jérôme Combes, Août 2013)
+
+### Correction de bugs :
+
+- Correction du bug introduit dans la version 1.5 qui empêchait l'affichage des lignes postes lors de la configuration des tableaux.
+-   Fichiers planning/postes_cfg/modif.php, lignes.php, horaires.php et groupes.php
+
+## Version 1.5 (Jérôme Combes, Août 2013)
+
+### Améliorations :
+
+- Gestion de 2 sites
+- Signatures des e-mails paramétrable
+- Les fonctions JS calendrier et verif_form prennent en paramètre optionnel le nom du formulaire
+- La fonction PHP nom prend en paramètre le format de l'affichage du nom
+- Prise en charge de plugins
+- Possibilité d'enregistrer des tâches planifiées
+- Importation des agents et authentification LDAP (plugin ldap)
+- Saisie des plannings de présence par les agents avec validation par l'administrateur (plugin planningHebdo)
+- Gestion des congés (plugin conges)
+
+### Correction de bugs :
+
+- Fichier personnel/suppression-liste.php : correction du contrôle de la session $_SESSION['perso_actif']=="Supprimé", la mauvaise valeur empêchait la suppression définitive
+- Fichier personnel/class.personnel.php : ajout du filtre supprime<>'1' pour ne plus afficher les agents supprimés
+- DB : table acces, ajout du droit permettant l'accès à la page planning/postes_cfg/groupes2.php
+- Fichier planning/postes_cfg/horaires.php : correction de l'erreur qui supprimait les premiers horaires du premier tableau lors de la validation de la modification des horaires
+- Fichier planning/poste/importer.php : correction de l'importation d'un modèle lorsqu'un seul modèle est créé (les imports étaient incohérents dans ce cas car tous les paramètres n'étaient pas transmis lors du clique sur le lien de confirmation ("Oui"))
+- Fichier planning/poste/importer.php : le contrôle des absences prend à présent en compte les absences de quelques heures
+
+## Version 1.4 (Jérôme Combes, Juin 2013)
+
+### Améliorations :
+
+- Conversion des fichiers en utf8.
+- Conversion des caractères spéciaux et accents de la base de données en entités HTML.
+- Nettoyage du code, suppression des fonctions plus utilisées, suppression de fichiers plus utilisés.
+- Ajout d'un paragraphe d'informations sur les fichiers.
+- Mise à jour du calendrier (Calendrier de Sylvain Baudoin, Version 2.5).
+- Coloration des cellules du planning en fonction du statut de l'agent (paramétrable)
+- Affichage des étages des postes dans le planning (paramétrable).
+- Affichage de la liste des absents sur la page du planning
+- Réglages des horaires au quart d'heure près
+
+### Sécurité :
+
+- Redirection vers la page index.php (affichage du planning) si l'utilisateur tente d'accéder directement un fichier php d'un sous-dossier
+
+### Correction de bugs :
+
+- Fichier js/script.js : Modification de la fonction js removeAccents (elle comportait des caractères invalides)
+- Fichier include/footer.php : utilisation de la classe css footer, ajout de la ligne $version=$config['Version'];
+- Fichier statistiques/export.php :
+-   Remplace les variables $_SESSION['debut'] et $_SESSION['fin'] par $_SESSION['stat_debut'] et $_SESSION['stat_fin'] : permet de corriger le bug d'affichage de date dans les statistiques exportées
+
+## Version 1.3.3 (Jérôme Combes, Mai 2013)
+
+### Améliorations :
+
+- Possibilité de choisir les heures hebdomadaires des agents au quart d'heure près (paramétrable dans la page config. avancée)
+- Possibilité d'utiliser 3 plannings hebdomadaires
+
+## Version 1.3.2 (Jérôme Combes, Avril 2013)
+
+### Améliorations :
+
+- Ajout de la définition du timezone (Europe/Paris, page index.php)
+- Modification de la session date --> PLdate des pages planning/poste/index.php, enregistrer.php, importer.php, supprimer.php et validation.php
+- Ajout d'une condition : si un tableau (général, rangement ou réserve) est vide, il n'est pas affiché dans la page planning/poste/index.php
+
+## Version 1.3.1 (Jérôme Combes, Mars 2013)
+
+### Correction de bugs :
+
+- Correction du problème qui empêchait l'affichage du planning suite à l'authentification (initialisation de la variable $service, fichier planning/poste/index.php)
+- Affichage du numéro de version sur la page d'authentification
+- Contrôle si les droits d'accès aux pages 'planning/modeles/* sont renseignés, les ajoute dans le cas contraire (fichier include/maj.php, seule la version 1.O est concernée).
+
+## Version 1.3 (Jérôme Combes, Septembre 2012)
+
+### Améliorations :
+
+- Possibilité de grouper les tableaux par semaine
+- Utilisation de l'id pour les lignes de séparation dans la tables pl_poste_lignes, permet la modification des lignes existantes
+
+## Version 1.2.1 (Jérôme Combes, Février 2012)
+
+### Correction de bugs :
+
+- Renommage du champ text -> texte de la table "infos"
+
+## Version 1.2 (Jérôme Combes, Février 2012)
+
+### Améliorations :
+
+- Nommage des tableaux. Les dates ne sont plus utilisées pour nommer les tableaux. L'utilisateur choisi le nom des tableaux
+- L'utilisateur choisi le tableau voulu lors de la création de planning.
+- Les lignes de séparation des tableaux sont modifiables
+- Possibilité d'ajouter des message d'information
+- Possibilité de choisir le nombre de semaine (1 ou 2) pour les planning personnel (horaires de travail)
+- Possibilité de créer des postes non bloquant (un agent peut être placé sur un poste non-bloquant et en même temps sur un autre poste (bloquant ou non).
+
+
+
+## Version 1.4 en détail
+
+### Améliorations :
+
+- Conversion des fichiers en utf8.
+- Conversion des caractères spéciaux et accents de la base de données en entités HTML.
+- Nettoyage du code, suppression des fonctions plus utilisées, suppression de fichiers plus utilisés.
+- Ajout d'un paragraphe d'informations sur les fichiers.
+- Mise à jour du calendrier (Sylvain Baudoin, Version 2.5).
+- Coloration des cellules du planning en fonction du statut de l'agent (paramétrable)
+- Affichage des étages des postes dans le planning (paramétrable).
+- Affichage de la liste des absents sur la page du planning
+- Réglages des horaires au quart d'heure près
+
+### Détail Conversion :
+
+- Modification des fonctions PHP utilisant htmlentities dans le fichiers db.php (ISO-8859-1 remplacé par UTF-8)
+- Modification des fonctions PHP utilisant html_entity_decode dans le fichier planning/postes_cfg/index.php (ISO-8859-1 remplacé par UTF-8)
+- Fichier planning/poste/menudiv.php :Suppression des fonctions utf8_encode
+- Fichier include/function.php :
+    - Ajout du paramètre $mail->CharSet="utf-8"; dans la fonction mail2 utilisant la class PHPMailer (PHPMailer utilisant ISO-8859-1 par défaut)
+    - Ajout de la fonction PHP "decode" permettant de faire utf8_decode sur tous les éléments d'un tableau via array_map
+    - Création des fonctions is_serialized, removeAccents, pl_stristr
+    - Fonction selectHeures prend le paramètre $quart (default=false) pour afficher les quarts d'heures dans les menus déroulant
+- Fichier statistiques/export.php : Ajout de $lignes=array_map("utf8_decode",$lignes); de façon à encoder l'ensemble du tableau en iso-8859-1 dans le fichiers csv/xls
+- Fichier personnel/valid.php : Ajout des html_entities : de cette façon les ajout et, modification sont codés en entités html dans la base de données
+- Fichier personnel/valid.php : La fonction locale supprime_accents est remplacée par la fonction removeAccents du fichier include/function.php
+- Fichiers personnel/* - personnel/* : remplacement de Supprimé par Supprim&eacute;
+- Fichier planning/modeles/valid.php : ajout de htmlentities avant delete
+- Fichier planning/poste/enregistrer.php : ajout $nom=htmlentities
+- Fichier panning/poste/importer.php : ajout $nom=htmlentities
+- Utilisation des fonctions db::insert2, db::update2 db::delete dans les fichiers suivants :
+    - activites/valid.php; absences/infos.php ; infos/index.php ; planning/modeles/valid.php; postes/valid.php;
+- Utilisation de la fonction htmlentities pour les fichiers suivants :
+    - absences/infos.php ; infos/index.php
+- Fichier include/db.php :
+    - Ajout de la fonction delete2 qui prend un tableau comme 2eme variable (array("id"=>$id))
+    - Ajout if(!is_serialized) avant htmlentities
+    - Ajout du  4eme double_encode=false : evite d'encoder une entité déjà encodée
+    - Ajout de la fonction db::update2latin1 : même fonction que db::update2 mais converti les données ISO-8859-1 en htmlentities : seulement pour la mise à jour vers la version UTF8 du planning
+- Création des fichiers suivants :
+    - absences/class.absences.php ; activites/class.activites.inc ; personnel/class.personnel.inc ; postes/class.postes.inc
+- Fonction personnel::fetch : indexation des résultats avec $id et supprime l'utilisateur toutlemonde si $config['toutlemonde']==0
+- Fichier activites/index.php : utilisation de la function activites::fetch
+- Fichier personnel/index.php : utilisation de personnel::fetch, remplace $db->result par $agents et $db->nb par count($agents)
+    - Remplacement de for($i=0; $i<count($agents), $i++) par foreach($agents as $agent) (Suite à l'indexation de la fonction personnel::fetch)
+- Fichier postes/index.php : utilisation de postes::fetch, remplace $db->result par $postes et $db->nb par count($postes)
+- Fichier absences/voir.php : utilisation de absences::fetch, remplace if($debut ...) par a->fetch(...), remplace $db->result par $absences
+- Fichier setup/db_structure.php : Ajout de "default charset=utf8"
+- DB : tables select_abs, select_services, select_statuts : champ valeur change devient text
+- DB : tables select_abs, select_services, select_statuts : Caractères accentués du champ valeur convertis en entités HTML
+- DB : table personnel : les champs : nom, prenom, mail, statut, service, responsabilite, commentaires, temps, informations et recup deviennent text
+- DB : table personnel : les champs : nom, prenom, mail, statut, service, responsabilite, commentaires, temps, informations sont convertis en entités HTML
+- DB : conversion des données en entités HTML des tables : absences, absences_infos, acces, activites, config, infos, lignes, pl_poste_modeles, pl_poste_modeles_tab, pl_poste_tab, postes
+- DB : table pl_poste_ligne : champ poste converti en entités HTML
+- DB table personnel : Change actif en varchar(20), remplace supprimé par supprim&eacute;
+
+### Détail Nettoyage :
+
+- Fichier postes/valid.php : suppression du bloque if(isset($_GET['groupe'])), suppression des variables $groupe et $groupe_id
+- Nettoyage du setup : modification des fichiers setup/db_structure.php et db_data.php de façon à ne plus utiliser le setup/maj.php
+- Suppressions des fichiers : include/horaires.js ; planning/poste/modeles.php ; planning/poste/statutCouleur.php ; calendrier/date.php ; calendrier/valid.php
+- Fichier include/footer.php : utilisation de la classe css footer
+- Fichier planning/poste/fonctions.php : suppression des fonctions presents et presents2
+- Fichier setup/db_structure.php : suppression des champs conges_* de la table personnel
+- Fichier include/maj.php : suppression des champs conges_* dans la table personnel
+- Fichier personnel/valid.php : suppression des variables $conges_*, modification des requêtes insert et update
+- Fichier personnel/index.php : remplacement de la fonction JS selectAll par checkall
+- Fichier planning/postes_cfg/index.php : remplacement de la fonction JS selectAll par checkall
+- Fichier include/function.php : suppression des fonctions equipe, equipe_infos, deplaces, creerPlanningHebdo, import_jour, synchro_echange, accents, addHeure, comptHeure, import_horaires, responsables, tableau_sans_doublons, tableau_vivier(1 et 2), union, validite_last(1 et 2), validite_tab
+- Fichier personnel/modif.php et valid.php : suppression des variables responsabilite
+- Fichier setup/db_structure.php et include/maj.php : suppression du champs responsabilite de la table personnel
+- Fichier planning/poste/index.php : suppression de la variable $hebdo_valide et des contrôles liés
+- Fichier include/horaires.php : suppression des fonctions horaires_a_soustraire, horaires_form2, horaires_form2b, horaires_soustraits, horaires_cadrage, horaires_form, heure_alpha, heure_num, horaires_num
+- Fichier js/script.js : suppression des fonctions : MM_findObj, MM_validateForm, supprimer_poste, selectAll (remplacée par checkall), Get_Onclick
+- Fichier calendrier/index.php : suppression des "case" pl_fixe et pl_internes
+
+### Détail Calendrier :
+
+- Le dossier include/calendrier contient le script de Sylvain Baudoin.
+- La nouvelle version permet d'appeler une fonction JavaScript en sortie avec la date en paramètre.
+- Le fichier include/calendrier.php appelle le fichier calendrier/calendar.php et permet d'afficher le calendrier dans le planning
+- Création du fichier js/calendrier.js qui contient les fonctions JavaScript de sortie, setPlDate (met à jour la page planning) et SetDate (met à jour les champs date des autres pages)
+- Le fichier include/calendrier.php inclus dans un premier temps la feuille de style par défaut (include/calendrier/calendar.css) puis la feuille de style personnalisée css/calendrier.css
+
+
+### Détail Coloration des cellules du planning en fonction du statut de l'agent :
+
+- ajout des pavés commençant par "if($GLOBALS['config']['statutCouleur']){" dans les fichiers planning/poste/index.php, fonctions.php et menudiv.php
+- DB : ajout de la ligne "statutCouleur" dans la table config.
+
+### Détail autres améliorations :
+
+- Fichier postes/valid.php : ajout de trim($_GET['nom']), vérification si le nom est renseigné en cas d'ajout et de modif, sinon message avec retour et exit.
+- Fichier script.js : déplacé dans le dossier js, fichiers include/header.php, setup/header.php et menudiv.php modifiés en conséquence
+- Fichiers style.css, print.css et calendrier/calendrier.css : déplacés dans le dossier css. fichiers include/haeder.php, setup/header.php et calendrier/index.php modifiés en conséquence
+- Fichier index.php : remplace "script location.href=setup..." par header("Location:..."
+- Fichier authentification.php : remplace "script location.href=setup..." par header("Location:..."
+- Fichier planning/postes_cfg/horaires.php : les scripts JS sont déplacés dans le fichier js/script.js
+- Fichier planning/postes_cfg/lignes.php : les scripts JS sont déplacés dans le fichier js/script.js
+
+### Sécurité :
+
+- Redirection vers la page index.php (affichage du planning) si l'utilisateur tente d'accéder directement un fichier php d'un sous-dossier
+- Tous les sous-dossier ont à présent un fichier class.<nom_du_dossier>.php, ce fichier contient des fonctions utiles à l'ensemble du dossier.
+    -   Ce fichier est appelé par tous les autres fichiers du dossier
+    -   Ce fichier vérifie la présence de la variable $version initiée dans les fichiers index.php et authentification.php.
+    -   Si cette variable est absente, c'est que l'utilisateur tente d'accéder directement aux fichiers, dans ce cas, redirection vers la page index.php
+- Fichier js/script.js : modification des fonctions ItemSelMenu et bataille navale de façon à appeler les fichiers planning/poste/menudiv.php et planning/poste/majdb.php en passant par index.php (index.php?page= ...)
+- Modification des fichiers planning/poste/menudiv.php et planning/poste/majdb.php en conséquance (suppression session_start, modification des fichiers include ...)
+- DB : ajout des fichiers  planning/poste/menudiv.php et planning/poste/majdb.php dans la table acces
+
+### Correction de bugs :
+
+- Fichier js/script.js : Modification de la fonction js removeAccents (elle comportait des caractères invalides)
+- Fichier include/footer.php : utilisation de la classe css footer, ajout de la ligne $version=$config['Version'];
+- Fichier statistiques/export.php :
+    - Remplace les variables $_SESSION['debut'] et $_SESSION['fin'] par $_SESSION['stat_debut'] et $_SESSION['stat_fin'] : permet de corriger le bug d'affichage de date dans les statistiques exportées
