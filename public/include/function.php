@@ -279,6 +279,7 @@ class CJMail implements NotificationTransporterInterface
             $mail->Host = $GLOBALS['config']['Mail-Host'];
             $mail->Port = $GLOBALS['config']['Mail-Port'];
             $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
+            $mail->SMTPAutoTLS = $GLOBALS['config']['Mail-SMTPAutoTLS'];
             $mail->SMTPAuth = $GLOBALS['config']['Mail-SMTPAuth'];
             $mail->Username = $GLOBALS['config']['Mail-Username'];
             $mail->Password = decrypt($GLOBALS['config']['Mail-Password']);

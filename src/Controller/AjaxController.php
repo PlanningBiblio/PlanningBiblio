@@ -86,6 +86,7 @@ class AjaxController extends BaseController
         $host = $request->get('host');
         $port = $request->get('port');
         $secure = $request->get('secure');
+        $autoTLS = $request->get('autoTLS');
         $auth = $request->get('auth');
         $user = $request->get('user');
         $password = $request->get('password');
@@ -102,6 +103,7 @@ class AjaxController extends BaseController
             $GLOBALS['config']['Mail-Host'] = $host;
             $GLOBALS['config']['Mail-Port'] = $port;
             $GLOBALS['config']['Mail-SMTPSecure'] = $secure;
+            $GLOBALS['config']['Mail-SMTPAutoTLS'] = $autoTLS;
             $GLOBALS['config']['Mail-SMTPAuth'] = $auth;
             $GLOBALS['config']['Mail-Username'] = $user;
             $GLOBALS['config']['Mail-Password'] = encrypt($password);
