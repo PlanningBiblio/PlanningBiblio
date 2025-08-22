@@ -1,3 +1,6 @@
+*** Version 25.05.05   (2025-08-22)    ***
+MT45367: Migrate from annotations to php attributes #1155
+
 *** Version 25.05.04   (2025-08-22)    ***
 - Fixes
 MT49412: Fix undo/redo when an agent is replaced #1153
