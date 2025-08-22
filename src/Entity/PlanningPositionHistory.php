@@ -62,7 +62,7 @@ class PlanningPositionHistory
         return $this->perso_ids;
     }
 
-    public function setUsers(array $users): static
+    public function setUsers(?array $users): static
     {
         $this->perso_ids = $users;
 
@@ -74,7 +74,7 @@ class PlanningPositionHistory
         return $this->date;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(?\DateTime $date): static
     {
         $this->date = $date;
 
@@ -86,7 +86,7 @@ class PlanningPositionHistory
         return $this->beginning;
     }
 
-    public function setStart(\DateTime $start): static
+    public function setStart(?\DateTime $start): static
     {
         $this->beginning = $start;
 
@@ -98,7 +98,7 @@ class PlanningPositionHistory
         return $this->end;
     }
 
-    public function setEnd(\DateTime $end): static
+    public function setEnd(?\DateTime $end): static
     {
         $this->end = $end;
 
@@ -110,7 +110,7 @@ class PlanningPositionHistory
         return $this->site;
     }
 
-    public function setSite(int $site): static
+    public function setSite(?int $site): static
     {
         $this->site = $site;
 
@@ -122,7 +122,7 @@ class PlanningPositionHistory
         return $this->position;
     }
 
-    public function setPosition(int $position): static
+    public function setPosition(?int $position): static
     {
         $this->position = $position;
 
@@ -134,7 +134,7 @@ class PlanningPositionHistory
         return $this->action;
     }
 
-    public function setAction(string $action): static
+    public function setAction(?string $action): static
     {
         $this->action = $action;
 
@@ -146,7 +146,7 @@ class PlanningPositionHistory
         return $this->undone;
     }
 
-    public function setUndone(bool $undone): static
+    public function setUndone(?bool $undone): static
     {
         $this->undone = $undone;
 
@@ -158,7 +158,7 @@ class PlanningPositionHistory
         return $this->archive;
     }
 
-    public function setArchive(bool $archive): static
+    public function setArchive(?bool $archive): static
     {
         $this->archive = $archive;
 
@@ -170,7 +170,7 @@ class PlanningPositionHistory
         return $this->play_before;
     }
 
-    public function setPlayBefore(bool $playBefore): static
+    public function setPlayBefore(?bool $playBefore): static
     {
         $this->play_before = $playBefore;
 
@@ -182,7 +182,7 @@ class PlanningPositionHistory
         return $this->updated_by;
     }
 
-    public function setUpdatedBy(int $updatedBy): static
+    public function setUpdatedBy(?int $updatedBy): static
     {
         $this->updated_by = $updatedBy;
 
@@ -194,7 +194,7 @@ class PlanningPositionHistory
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt): static
+    public function setUpdatedAt(?\DateTime $updatedAt): static
     {
         $this->updated_at = $updatedAt;
 

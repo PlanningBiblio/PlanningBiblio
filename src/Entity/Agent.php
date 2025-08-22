@@ -145,7 +145,7 @@ class Agent
         return $this->droits;
     }
 
-    public function setACL(array $acl): static
+    public function setACL(?array $acl): static
     {
         $this->droits = $acl;
 
@@ -157,7 +157,7 @@ class Agent
         return $this->actif;
     }
 
-    public function setActive(string $active): static
+    public function setActive(?string $active): static
     {
         $this->actif = $active;
 
@@ -169,7 +169,7 @@ class Agent
         return $this->conges_anticipation;
     }
 
-    public function setAnticipation(float $anticipation): static
+    public function setAnticipation(?float $anticipation): static
     {
         $this->conges_anticipation = $anticipation;
 
@@ -181,7 +181,7 @@ class Agent
         return $this->arrivee;
     }
 
-    public function setArrival(\DateTime $arrival): static
+    public function setArrival(?\DateTime $arrival): static
     {
         $this->arrivee = $arrival;
 
@@ -193,7 +193,7 @@ class Agent
         return $this->categorie;
     }
 
-    public function setCategory(string $category): static
+    public function setCategory(?string $category): static
     {
         $this->categorie = $category;
 
@@ -205,7 +205,7 @@ class Agent
         return $this->comp_time;
     }
 
-    public function setCompTime(float $compTime): static
+    public function setCompTime(?float $compTime): static
     {
         $this->comp_time = $compTime;
 
@@ -217,7 +217,7 @@ class Agent
         return $this->supprime;
     }
 
-    public function setDeletion(string $deletionStatus): static
+    public function setDeletion(?string $deletionStatus): static
     {
         $this->supprime = $deletionStatus;
 
@@ -229,7 +229,7 @@ class Agent
         return $this->depart;
     }
 
-    public function setDeparture(\DateTime $departure): static
+    public function setDeparture(?\DateTime $departure): static
     {
         $this->depart = $departure;
 
@@ -241,7 +241,7 @@ class Agent
         return $this->prenom;
     }
 
-    public function setFirstname(string $firstname): static
+    public function setFirstname(?string $firstname): static
     {
         $this->supprime = $firstname;
 
@@ -253,7 +253,7 @@ class Agent
         return $this->conges_annuel;
     }
 
-    public function setAnnualCredit(float $annualCredit): static
+    public function setAnnualCredit(?float $annualCredit): static
     {
         $this->conges_annuel = $annualCredit;
 
@@ -265,7 +265,7 @@ class Agent
         return $this->conges_credit;
     }
 
-    public function setHolidayCredit(float $holidayCredit): static
+    public function setHolidayCredit(?float $holidayCredit): static
     {
         $this->conges_credit = $holidayCredit;
 
@@ -277,7 +277,7 @@ class Agent
         return $this->code_ics;
     }
 
-    public function setICSCode(string $iCSCode): static
+    public function setICSCode(?string $iCSCode): static
     {
         $this->code_ics = $iCSCode;
 
@@ -289,7 +289,7 @@ class Agent
         return $this->nom;
     }
 
-    public function setLastname(string $lastname): static
+    public function setLastname(?string $lastname): static
     {
         $this->nom = $lastname;
 
@@ -301,7 +301,7 @@ class Agent
         return $this->login;
     }
 
-    public function setLogin(string $login): static
+    public function setLogin(?string $login): static
     {
         $this->login = $login;
 
@@ -313,7 +313,7 @@ class Agent
         return $this->mail;
     }
 
-    public function setMail(string $mail): static
+    public function setMail(?string $mail): static
     {
         $this->mail = $mail;
 
@@ -325,7 +325,7 @@ class Agent
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(?string $password): static
     {
         $this->password = $password;
 
@@ -337,7 +337,7 @@ class Agent
         return $this->conges_reliquat;
     }
 
-    public function setRemainder(float $remainder): static
+    public function setRemainder(?float $remainder): static
     {
         $this->conges_reliquat = $remainder;
 
@@ -349,7 +349,7 @@ class Agent
         return $this->service;
     }
 
-    public function setService(string $service): static
+    public function setService(?string $service): static
     {
         $this->service = $service;
 
@@ -361,7 +361,7 @@ class Agent
         return $this->sites;
     }
 
-    public function setSites(string $sites): static
+    public function setSites(?string $sites): static
     {
         $this->sites = $sites;
 
@@ -373,7 +373,7 @@ class Agent
         return $this->postes;
     }
 
-    public function setSkills(string $skills): static
+    public function setSkills(?string $skills): static
     {
         $this->postes = $skills;
 
@@ -385,7 +385,7 @@ class Agent
         return $this->statut;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(?string $status): static
     {
         $this->statut = $status;
 
@@ -397,7 +397,7 @@ class Agent
         return $this->heures_hebdo;
     }
 
-    public function setWeeklyServiceHours(string $weeklyServiceHours): static
+    public function setWeeklyServiceHours(?string $weeklyServiceHours): static
     {
         $this->heures_hebdo = $weeklyServiceHours;
 
@@ -409,7 +409,7 @@ class Agent
         return $this->heures_travail;
     }
 
-    public function setWeeklyWorkingHours(float $weeklyWorkingHours): static
+    public function setWeeklyWorkingHours(?float $weeklyWorkingHours): static
     {
         $this->heures_travail = $weeklyWorkingHours;
 
@@ -421,7 +421,7 @@ class Agent
         return $this->temps;
     }
 
-    public function setWorkingHours(string $workingHours): static
+    public function setWorkingHours(?string $workingHours): static
     {
         $this->temps = $workingHours;
 

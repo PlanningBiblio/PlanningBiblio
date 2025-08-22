@@ -33,7 +33,7 @@ class PlanningPositionTabAffectation
         return $this->date;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(?\DateTime $date): static
     {
         $this->date = $date;
 
@@ -45,7 +45,7 @@ class PlanningPositionTabAffectation
         return $this->tableau;
     }
 
-    public function setTable(string $tableau): static
+    public function setTable(?string $tableau): static
     {
         $this->tableau = $table;
 
@@ -57,7 +57,7 @@ class PlanningPositionTabAffectation
         return $this->site;
     }
 
-    public function setSite(string $site): static
+    public function setSite(?string $site): static
     {
         $this->site = $site;
 

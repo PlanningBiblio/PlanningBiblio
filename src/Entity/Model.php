@@ -38,7 +38,7 @@ class Model
         return $this->model_id;
     }
 
-    public function setModelId(int $modelId): static
+    public function setModelId(?int $modelId): static
     {
         $this->model_id = $modelId;
 
@@ -50,7 +50,7 @@ class Model
         return $this->nom;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->nom = $name;
 
@@ -62,7 +62,7 @@ class Model
         return $this->jour;
     }
 
-    public function setDay(int $day): static
+    public function setDay(?int $day): static
     {
         $this->jour = $day;
 
@@ -74,7 +74,7 @@ class Model
         return $this->tableau;
     }
 
-    public function setFramework(int $framework): static
+    public function setFramework(?int $framework): static
     {
         $this->tableau = $framework;
 
@@ -86,7 +86,7 @@ class Model
         return $this->site;
     }
 
-    public function setSite(int $site): static
+    public function setSite(?int $site): static
     {
         $this->site = $site;
 

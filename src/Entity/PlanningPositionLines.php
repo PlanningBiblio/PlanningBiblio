@@ -39,7 +39,7 @@ class PlanningPositionLines
         return $this->numero;
     }
 
-    public function setNumber(int $number): static
+    public function setNumber(?int $number): static
     {
         $this->numero = $number;
 
@@ -51,7 +51,7 @@ class PlanningPositionLines
         return $this->tableau;
     }
 
-    public function setTable(int $table): static
+    public function setTable(?int $table): static
     {
         $this->tableau = $table;
 
@@ -63,7 +63,7 @@ class PlanningPositionLines
         return $this->ligne;
     }
 
-    public function setLine(int $line): static
+    public function setLine(?int $line): static
     {
         $this->ligne = $line;
 
@@ -75,7 +75,7 @@ class PlanningPositionLines
         return $this->poste;
     }
 
-    public function setPosition(int $position): static
+    public function setPosition(?int $position): static
     {
         $this->poste = $position;
 
@@ -87,7 +87,7 @@ class PlanningPositionLines
         return $this->type;
     }
 
-    public function setType(int $type): static
+    public function setType(?int $type): static
     {
         $this->type = $type;
 

@@ -51,7 +51,7 @@ class PlanningPositionModel
         return $this->model_id;
     }
 
-    public function setModelId(int $modelId): static
+    public function setModelId(?int $modelId): static
     {
         $this->model_id = $modelId;
 
@@ -63,7 +63,7 @@ class PlanningPositionModel
         return $this->perso_id;
     }
 
-    public function setUser(int $userId): static
+    public function setUser(?int $userId): static
     {
         $this->perso_id = $userId;
 
@@ -75,7 +75,7 @@ class PlanningPositionModel
         return $this->poste;
     }
 
-    public function setPosition(int $poste): static
+    public function setPosition(?int $poste): static
     {
         $this->poste = $poste;
 
@@ -87,7 +87,7 @@ class PlanningPositionModel
         return $this->commentaires;
     }
 
-    public function setComment(string $comment): static
+    public function setComment(?string $comment): static
     {
         $this->commentaires = $comment;
 
@@ -99,7 +99,7 @@ class PlanningPositionModel
         return $this->debut;
     }
 
-    public function setStart(\DateTime $start): static
+    public function setStart(?\DateTime $start): static
     {
         $this->debut = $start;
 
@@ -111,7 +111,7 @@ class PlanningPositionModel
         return $this->fin;
     }
 
-    public function setEnd(\DateTime $end): static
+    public function setEnd(?\DateTime $end): static
     {
         $this->fin = $end;
 
@@ -123,7 +123,7 @@ class PlanningPositionModel
         return $this->tableau;
     }
 
-    public function setTable(string $tableau): static
+    public function setTable(?string $tableau): static
     {
         $this->tableau = $table;
 
@@ -135,7 +135,7 @@ class PlanningPositionModel
         return $this->jour;
     }
 
-    public function setDay(string $day): static
+    public function setDay(?string $day): static
     {
         $this->jour = $day;
 
@@ -147,7 +147,7 @@ class PlanningPositionModel
         return $this->site;
     }
 
-    public function setSite(int $site): static
+    public function setSite(?int $site): static
     {
         $this->site = $site;
 

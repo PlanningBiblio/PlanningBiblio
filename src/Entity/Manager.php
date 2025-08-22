@@ -46,7 +46,7 @@ class Manager
         return $this->perso_id;
     }
 
-    public function setUser(Agent $user): static
+    public function setUser(?Agent $user): static
     {
         $this->perso_id = $user;
 
@@ -58,7 +58,7 @@ class Manager
         return $this->responsable;
     }
 
-    public function setManager(Agent $user): static
+    public function setManager(?Agent $user): static
     {
         $this->responsable = $user;
 
@@ -70,7 +70,7 @@ class Manager
         return $this->level1;
     }
 
-    public function setLevel1(int $level1): static
+    public function setLevel1(?int $level1): static
     {
         $this->level1 = $level1;
 
@@ -82,7 +82,7 @@ class Manager
         return $this->notification_level1;
     }
 
-    public function setLevel1Notification(int $level1Notification): static
+    public function setLevel1Notification(?int $level1Notification): static
     {
         $this->notification_level1 = $level1Notification;
 
@@ -94,7 +94,7 @@ class Manager
         return $this->level2;
     }
 
-    public function setLevel2(int $level2): static
+    public function setLevel2(?int $level2): static
     {
         $this->level2 = $level2;
 
@@ -106,7 +106,7 @@ class Manager
         return $this->notification_level2;
     }
 
-    public function setLevel2Notification(int $level2Notification): static
+    public function setLevel2Notification(?int $level2Notification): static
     {
         $this->notification_level2 = $level2Notification;
 

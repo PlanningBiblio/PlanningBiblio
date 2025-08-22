@@ -37,7 +37,7 @@ class PlanningPositionTab
         return $this->tableau;
     }
 
-    public function setTable(string $tableau): static
+    public function setTable(?string $tableau): static
     {
         $this->tableau = $table;
 
@@ -49,7 +49,7 @@ class PlanningPositionTab
         return $this->nom;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->nom = $name;
 
@@ -61,7 +61,7 @@ class PlanningPositionTab
         return $this->site;
     }
 
-    public function setSite(int $site): static
+    public function setSite(?int $site): static
     {
         $this->site = $site;
 
@@ -73,7 +73,7 @@ class PlanningPositionTab
         return $this->supprime;
     }
 
-    public function setDelete(\DateTime $delete): static
+    public function setDelete(?\DateTime $delete): static
     {
         $this->supprime = $delete;
 

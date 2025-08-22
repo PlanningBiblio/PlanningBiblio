@@ -39,7 +39,7 @@ class PlanningNote
         return $this->text;
     }
 
-    public function setComment(string $comment): static
+    public function setComment(?string $comment): static
     {
         $this->text = $comment;
 
@@ -51,7 +51,7 @@ class PlanningNote
         return $this->date;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(?\DateTime $date): static
     {
         $this->date = $date;
 
@@ -63,7 +63,7 @@ class PlanningNote
         return $this->site;
     }
 
-    public function setSite(int $site): static
+    public function setSite(?int $site): static
     {
         $this->site = $site;
 
@@ -75,7 +75,7 @@ class PlanningNote
         return $this->timestamp;
     }
 
-    public function setTimestamp(\DateTime $timestamp): static
+    public function setTimestamp(?\DateTime $timestamp): static
     {
         $this->timestamp = $timestamp;
 
@@ -87,7 +87,7 @@ class PlanningNote
         return $this->perso_id;
     }
 
-    public function setUser(int $user): static
+    public function setUser(?int $user): static
     {
         $this->perso_id = $user;
 

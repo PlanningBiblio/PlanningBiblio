@@ -51,7 +51,7 @@ class ConfigParam
         return $this->categorie;
     }
 
-    public function setCategory(string $category): static
+    public function setCategory(?string $category): static
     {
         $this->categorie = $category;
 
@@ -63,7 +63,7 @@ class ConfigParam
         return $this->commentaires;
     }
 
-    public function setComment(string $comments): static
+    public function setComment(?string $comments): static
     {
         $this->commentaires = $comments;
 
@@ -75,7 +75,7 @@ class ConfigParam
         return $this->extra;
     }
 
-    public function setExtra(string $extra): static
+    public function setExtra(?string $extra): static
     {
         $this->extra = $extra;
 
@@ -87,7 +87,7 @@ class ConfigParam
         return $this->nom;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->nom = $name;
 
@@ -99,7 +99,7 @@ class ConfigParam
         return $this->ordre;
     }
 
-    public function setOrder(int $order): static
+    public function setOrder(?int $order): static
     {
         $this->ordre = $order;
 
@@ -111,7 +111,7 @@ class ConfigParam
         return $this->technical;
     }
 
-    public function setTechnical(bool $technical): static
+    public function setTechnical(?bool $technical): static
     {
         $this->technical = $technical;
 
@@ -123,7 +123,7 @@ class ConfigParam
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(?string $type): static
     {
         $this->type = $type;
 
@@ -135,7 +135,7 @@ class ConfigParam
         return $this->valeur;
     }
 
-    public function setValue(string $value): static
+    public function setValue(?string $value): static
     {
         $this->valeur = $value;
 
@@ -147,7 +147,7 @@ class ConfigParam
         return $this->valeurs;
     }
 
-    public function setValues(string $values): static
+    public function setValues(?string $values): static
     {
         $this->valeurs = $values;
 

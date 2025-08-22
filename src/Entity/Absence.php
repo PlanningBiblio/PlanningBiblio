@@ -91,7 +91,7 @@ class Absence
         return $this->debut;
     }
 
-    public function setStart(\DateTime $start): static
+    public function setStart(?\DateTime $start): static
     {
         $this->debut = $start;
 
@@ -103,7 +103,7 @@ class Absence
         return $this->fin;
     }
 
-    public function setEnd(\DateTime $end): static
+    public function setEnd(?\DateTime $end): static
     {
         $this->fin = $end;
 

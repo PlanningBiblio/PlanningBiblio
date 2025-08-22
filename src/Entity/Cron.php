@@ -51,7 +51,7 @@ class Cron
         return $this->m;
     }
 
-    public function setM(string $m): static
+    public function setM(?string $m): static
     {
         $this->m = $m;
 
@@ -63,7 +63,7 @@ class Cron
         return $this->h;
     }
 
-    public function setH(string $h): static
+    public function setH(?string $h): static
     {
         $this->h = $h;
 
@@ -75,7 +75,7 @@ class Cron
         return $this->dom;
     }
 
-    public function setDom(string $dom): static
+    public function setDom(?string $dom): static
     {
         $this->dom = $dom;
 
@@ -87,7 +87,7 @@ class Cron
         return $this->mon;
     }
 
-    public function setMon(string $mon): static
+    public function setMon(?string $mon): static
     {
         $this->mon = $mon;
 
@@ -99,7 +99,7 @@ class Cron
         return $this->dow;
     }
 
-    public function setDow(string $dow): static
+    public function setDow(?string $dow): static
     {
         $this->dow = $dow;
 
@@ -111,7 +111,7 @@ class Cron
         return $this->command;
     }
 
-    public function setCommand(string $command): static
+    public function setCommand(?string $command): static
     {
         $this->command = $command;
 
@@ -123,7 +123,7 @@ class Cron
         return $this->comments;
     }
 
-    public function setComment(string $comment): static
+    public function setComment(?string $comment): static
     {
         $this->comments = $comment;
 
@@ -140,14 +140,14 @@ class Cron
         return $this->last;
     }
 
-    public function setLast(\DateTime $last): static
+    public function setLast(?\DateTime $last): static
     {
         $this->last = $last;
 
         return $this;
     }
 
-    public function setDisabled(bool $disabled): static
+    public function setDisabled(?bool $disabled): static
     {
         $this->disabled = $disabled;
 

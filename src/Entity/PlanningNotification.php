@@ -36,7 +36,7 @@ class PlanningNotification
         return $this->data;
     }
 
-    public function setData(string $data): static
+    public function setData(?string $data): static
     {
         $this->data = $data;
 
@@ -48,7 +48,7 @@ class PlanningNotification
         return $this->date;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(?\DateTime $date): static
     {
         $this->date = $date;
 
@@ -60,7 +60,7 @@ class PlanningNotification
         return $this->site;
     }
 
-    public function setSite(int $site): static
+    public function setSite(?int $site): static
     {
         $this->site = $site;
 
@@ -72,7 +72,7 @@ class PlanningNotification
         return $this->update_time;
     }
 
-    public function setUpdateTime(\DateTime $updateTime): static
+    public function setUpdateTime(?\DateTime $updateTime): static
     {
         $this->update_time = $updateTime;
 

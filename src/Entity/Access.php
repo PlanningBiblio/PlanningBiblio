@@ -42,7 +42,7 @@ class Access
         return $this->groupe_id;
     }
 
-    public function setGroupId(int $groupId): static
+    public function setGroupId(?int $groupId): static
     {
         $this->groupe_id = $groupId;
 

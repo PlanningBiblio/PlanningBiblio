@@ -33,7 +33,7 @@ class AdminInfo
         return $this->debut;
     }
 
-    public function setStart(string $start): static
+    public function setStart(?string $start): static
     {
         $this->debut = $start;
 
@@ -45,7 +45,7 @@ class AdminInfo
         return $this->fin;
     }
 
-    public function setEnd(string $end): static
+    public function setEnd(?string $end): static
     {
         $this->fin = $end;
 
@@ -57,7 +57,7 @@ class AdminInfo
         return $this->texte;
     }
 
-    public function setComment(string $comment): static
+    public function setComment(?string $comment): static
     {
         $this->texte = $comment;
 

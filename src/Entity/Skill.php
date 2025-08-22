@@ -30,7 +30,7 @@ class Skill
         return $this->nom;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->nom = $name;
 
@@ -42,7 +42,7 @@ class Skill
         return $this->supprime;
     }
 
-    public function setDelete(\DateTime $delete): static
+    public function setDelete(?\DateTime $delete): static
     {
         $this->supprime = $delete;
 

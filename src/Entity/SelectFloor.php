@@ -29,7 +29,7 @@ class SelectFloor
         return $this->valeur;
     }
 
-    public function setValue(string $value): static
+    public function setValue(?string $value): static
     {
         $this->valeur = $value;
 
@@ -41,7 +41,7 @@ class SelectFloor
         return $this->rang;
     }
 
-    public function setRank(int $rank): static
+    public function setRank(?int $rank): static
     {
         $this->rang = $rank;
 

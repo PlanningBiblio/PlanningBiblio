@@ -121,7 +121,7 @@ class Holiday
         return $this->perso_id;
     }
 
-    public function setUser(int $user): static
+    public function setUser(?int $user): static
     {
         $this->perso_id = $user;
 
@@ -133,7 +133,7 @@ class Holiday
         return $this->debut;
     }
 
-    public function setStart(\DateTime $start): static
+    public function setStart(?\DateTime $start): static
     {
         $this->debut = $start;
 
@@ -145,7 +145,7 @@ class Holiday
         return $this->fin;
     }
 
-    public function setEnd(\DateTime $end): static
+    public function setEnd(?\DateTime $end): static
     {
         $this->fin = $end;
 
@@ -157,7 +157,7 @@ class Holiday
         return $this->valide_n1;
     }
 
-    public function setValidLevel1(int $userId): static
+    public function setValidLevel1(?int $userId): static
     {
         $this->valide_n1 = $userId;
 
@@ -169,7 +169,7 @@ class Holiday
         return $this->validation_n1;
     }
 
-    public function setValidLevel1Date(\DateTime $date): static
+    public function setValidLevel1Date(?\DateTime $date): static
     {
         $this->validation_n1 = $date;
 
@@ -181,7 +181,7 @@ class Holiday
         return $this->valide;
     }
 
-    public function setValidLevel2(int $userId): static
+    public function setValidLevel2(?int $userId): static
     {
         $this->valide = $userId;
 
@@ -193,7 +193,7 @@ class Holiday
         return $this->validation;
     }
 
-    public function setValidLevel2Date(\DateTime $date): static
+    public function setValidLevel2Date(?\DateTime $date): static
     {
         $this->validation = $date;
 
@@ -205,7 +205,7 @@ class Holiday
         return $this->saisie_par;
     }
 
-    public function setEntry(int $userId): static
+    public function setEntry(?int $userId): static
     {
         $this->saisie_par = $userId;
 
@@ -217,7 +217,7 @@ class Holiday
         return $this->saisie;
     }
 
-    public function setEntryDate(\DateTime $date): static
+    public function setEntryDate(?\DateTime $date): static
     {
         $this->saisie = $date;
 
@@ -229,7 +229,7 @@ class Holiday
         return $this->modif;
     }
 
-    public function setChange(int $userId): static
+    public function setChange(?int $userId): static
     {
         $this->modif = $userId;
 
@@ -241,7 +241,7 @@ class Holiday
         return $this->supprime;
     }
 
-    public function setDelete(int $userId): static
+    public function setDelete(?int $userId): static
     {
         $this->supprime = $userId;
 
@@ -253,7 +253,7 @@ class Holiday
         return $this->information;
     }
 
-    public function setInfo(int $userId): static
+    public function setInfo(?int $userId): static
     {
         $this->information = $userId;
 
@@ -265,7 +265,7 @@ class Holiday
         return $this->halfday;
     }
 
-    public function setHalfDay(int $halfDay): static
+    public function setHalfDay(?int $halfDay): static
     {
         $this->halfday = $halfDay;
 
@@ -277,7 +277,7 @@ class Holiday
         return $this->start_halfday;
     }
 
-    public function setHalfDayStart(string $halfDayStart): static
+    public function setHalfDayStart(?string $halfDayStart): static
     {
         $this->start_halfday = $halfDayStart;
 
@@ -289,7 +289,7 @@ class Holiday
         return $this->end_halfday;
     }
 
-    public function setHalfDayEnd(string $halfDayEnd): static
+    public function setHalfDayEnd(?string $halfDayEnd): static
     {
         $this->end_halfday = $halfDayEnd;
 
@@ -301,7 +301,7 @@ class Holiday
         return $this->debit;
     }
 
-    public function setDebit(string $debit): static
+    public function setDebit(?string $debit): static
     {
         $this->debit = $debit;
 
@@ -313,7 +313,7 @@ class Holiday
         return $this->heures;
     }
 
-    public function setHours(string $hours): static
+    public function setHours(?string $hours): static
     {
         $this->heures = $hours;
 
@@ -325,7 +325,7 @@ class Holiday
         return $this->solde_prec;
     }
 
-    public function setPreviousCredit(float $credit): static
+    public function setPreviousCredit(?float $credit): static
     {
         $this->solde_prec = $credit;
 
@@ -337,7 +337,7 @@ class Holiday
         return $this->solde_actuel;
     }
 
-    public function setActualCredit(float $credit): static
+    public function setActualCredit(?float $credit): static
     {
         $this->solde_actuel = $credit;
 
@@ -349,7 +349,7 @@ class Holiday
         return $this->recup_prec;
     }
 
-    public function setPreviousCompTime(float $compTime): static
+    public function setPreviousCompTime(?float $compTime): static
     {
         $this->recup_prec = $compTime;
 
@@ -361,7 +361,7 @@ class Holiday
         return $this->recup_actuel;
     }
 
-    public function setActualCompTime(float $compTime): static
+    public function setActualCompTime(?float $compTime): static
     {
         $this->recup_actuel = $compTime;
 
@@ -373,7 +373,7 @@ class Holiday
         return $this->reliquat_prec;
     }
 
-    public function setPreviousRemainder(float $remainder): static
+    public function setPreviousRemainder(?float $remainder): static
     {
         $this->reliquat_prec = $remainder;
 
@@ -385,7 +385,7 @@ class Holiday
         return $this->reliquat_actuel;
     }
 
-    public function setActualRemainder(float $remainder): static
+    public function setActualRemainder(?float $remainder): static
     {
         $this->reliquat_actuel = $remainder;
 
@@ -397,7 +397,7 @@ class Holiday
         return $this->anticipation_prec;
     }
 
-    public function setPreviousAnticipation(float $anticipation): static
+    public function setPreviousAnticipation(?float $anticipation): static
     {
         $this->anticipation_prec = $anticipation;
 
@@ -409,7 +409,7 @@ class Holiday
         return $this->anticipation_actuel;
     }
 
-    public function setActualAnticipation(float $anticipation): static
+    public function setActualAnticipation(?float $anticipation): static
     {
         $this->anticipation_actuel = $anticipation;
 

@@ -33,7 +33,7 @@ class AbsenceInfo
         return $this->debut;
     }
 
-    public function setStart(\DateTime $start): static
+    public function setStart(?\DateTime $start): static
     {
         $this->debut = $start;
 
@@ -45,7 +45,7 @@ class AbsenceInfo
         return $this->fin;
     }
 
-    public function setEnd(\DateTime $end): static
+    public function setEnd(?\DateTime $end): static
     {
         $this->fin = $end;
 
@@ -57,7 +57,7 @@ class AbsenceInfo
         return $this->texte;
     }
 
-    public function setComment(string $comment): static
+    public function setComment(?string $comment): static
     {
         $this->texte = $comment;
 

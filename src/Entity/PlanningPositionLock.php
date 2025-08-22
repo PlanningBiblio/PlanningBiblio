@@ -52,7 +52,7 @@ class PlanningPositionLock
         return $this->verrou2;
     }
 
-    public function setLock2(int $lock2): static
+    public function setLock2(?int $lock2): static
     {
         $this->verrou2 = $lock2;
 
@@ -64,7 +64,7 @@ class PlanningPositionLock
         return $this->validation2;
     }
 
-    public function setValidation2(\DateTime $validation2): static
+    public function setValidation2(?\DateTime $validation2): static
     {
         $this->validation2 = $validation2;
 
@@ -76,7 +76,7 @@ class PlanningPositionLock
         return $this->perso2;
     }
 
-    public function setUser2(int $user2): static
+    public function setUser2(?int $user2): static
     {
         $this->perso2 = $user2;
 

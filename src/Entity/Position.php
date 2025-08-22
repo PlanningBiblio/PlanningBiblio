@@ -115,7 +115,7 @@ class Position
         return $this->etage;
     }
 
-    public function setFloor(string $floor): static
+    public function setFloor(?string $floor): static
     {
         $this->etage = $floor;
 

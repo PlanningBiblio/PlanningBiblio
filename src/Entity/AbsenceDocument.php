@@ -35,7 +35,7 @@ class AbsenceDocument
         return $this->absence_id;
     }
 
-    public function setAbsenceId(int $absenceId): static
+    public function setAbsenceId(?int $absenceId): static
     {
         $this->absence_id = $absenceId;
 
@@ -47,7 +47,7 @@ class AbsenceDocument
         return $this->date;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(?\DateTime $date): static
     {
         $this->date = $date;
 
@@ -59,7 +59,7 @@ class AbsenceDocument
         return $this->filename;
     }
 
-    public function setFilename(string $filename): static
+    public function setFilename(?string $filename): static
     {
         $this->filename = $filename;
 

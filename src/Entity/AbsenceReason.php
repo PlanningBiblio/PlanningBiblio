@@ -40,7 +40,7 @@ class AbsenceReason
         return $this->notification_workflow;
     }
 
-    public function setNotificationWorkflow(string $notificationWorkflow): static
+    public function setNotificationWorkflow(?string $notificationWorkflow): static
     {
         $this->notification_workflow = $notificationWorkflow;
 
@@ -52,7 +52,7 @@ class AbsenceReason
         return $this->rang;
     }
 
-    public function setRank(int $rang): static
+    public function setRank(?int $rang): static
     {
         $this->rang = $rang;
 
@@ -64,7 +64,7 @@ class AbsenceReason
         return $this->teleworking;
     }
 
-    public function setTeleworking(int $teleworking): static
+    public function setTeleworking(?int $teleworking): static
     {
         $this->teleworking= $teleworking;
 
@@ -76,7 +76,7 @@ class AbsenceReason
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(?string $type): static
     {
         $this->type = $type;
 
@@ -88,7 +88,7 @@ class AbsenceReason
         return $this->valeur;
     }
 
-    public function setValue(string $valeur): static
+    public function setValue(?string $valeur): static
     {
         $this->valeur = $valeur;
 

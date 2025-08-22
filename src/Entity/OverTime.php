@@ -75,7 +75,7 @@ class OverTime
         return $this->perso_id;
     }
 
-    public function setUser(int $user): static
+    public function setUser(?int $user): static
     {
         $this->perso_id = $user;
 
@@ -87,7 +87,7 @@ class OverTime
         return $this->date;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(?\DateTime $date): static
     {
         $this->date = $date;
 
@@ -99,7 +99,7 @@ class OverTime
         return $this->date2;
     }
 
-    public function setDate2(\DateTime $date): static
+    public function setDate2(?\DateTime $date): static
     {
         $this->date2 = $date;
 
@@ -111,7 +111,7 @@ class OverTime
         return $this->heures;
     }
 
-    public function setHours(float $hours): static
+    public function setHours(?float $hours): static
     {
         $this->heures = $hours;
 
@@ -123,7 +123,7 @@ class OverTime
         return $this->commentaires;
     }
 
-    public function setComment(string $comment): static
+    public function setComment(?string $comment): static
     {
         $this->commentaires = $comment;
 
@@ -135,7 +135,7 @@ class OverTime
         return $this->saisie_par;
     }
 
-    public function setEntry(int $userId): static
+    public function setEntry(?int $userId): static
     {
         $this->saisie_par = $userId;
 
@@ -147,7 +147,7 @@ class OverTime
         return $this->saisie;
     }
 
-    public function setEntryDate(\DateTime $date): static
+    public function setEntryDate(?\DateTime $date): static
     {
         $this->saisie = $date;
 
@@ -159,7 +159,7 @@ class OverTime
         return $this->modif;
     }
 
-    public function setChange(int $userId): static
+    public function setChange(?int $userId): static
     {
         $this->modif = $userId;
 
@@ -171,7 +171,7 @@ class OverTime
         return $this->valide_n1;
     }
 
-    public function setValidLevel1(int $userId): static
+    public function setValidLevel1(?int $userId): static
     {
         $this->valide_n1 = $userId;
 
@@ -183,7 +183,7 @@ class OverTime
         return $this->validation_n1;
     }
 
-    public function setValidLevel1Date(\DateTime $date): static
+    public function setValidLevel1Date(?\DateTime $date): static
     {
         $this->validation_n1 = $date;
 
@@ -195,7 +195,7 @@ class OverTime
         return $this->valide;
     }
 
-    public function setValidLevel2(int $userId): static
+    public function setValidLevel2(?int $userId): static
     {
         $this->valide = $userId;
 
@@ -207,7 +207,7 @@ class OverTime
         return $this->validation;
     }
 
-    public function setValidLevel2Date(\DateTime $date): static
+    public function setValidLevel2Date(?\DateTime $date): static
     {
         $this->validation = $date;
 
@@ -219,7 +219,7 @@ class OverTime
         return $this->solde_prec;
     }
 
-    public function setPreviousCredit(float $credit): static
+    public function setPreviousCredit(?float $credit): static
     {
         $this->solde_prec = $credit;
 
@@ -231,7 +231,7 @@ class OverTime
         return $this->solde_actuel;
     }
 
-    public function setActualCredit(float $credit): static
+    public function setActualCredit(?float $credit): static
     {
         $this->solde_actuel = $credit;
 

@@ -76,7 +76,7 @@ class WorkingHour
         return $this->breaktime;
     }
 
-    public function setBreaktime(array $breaktime): static
+    public function setBreaktime(?array $breaktime): static
     {
         $this->breaktime = $breaktime;
 
@@ -88,7 +88,7 @@ class WorkingHour
         return $this->perso_id;
     }
 
-    public function setUser(array $user): static
+    public function setUser(?array $user): static
     {
         $this->perso_id = $user;
 

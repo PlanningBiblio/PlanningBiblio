@@ -26,7 +26,7 @@ class SeparationLine
         return $this->nom;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->nom = $name;
 
