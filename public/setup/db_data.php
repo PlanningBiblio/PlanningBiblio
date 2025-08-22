@@ -383,6 +383,7 @@ $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `comm
 $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('OIDC-ClientID', 'text', '', 'OpenID Connect Client ID (not to be confused with Secret ID).', 'OpenID Connect', '', 1, 30);";
 $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('OIDC-ClientSecret', 'text', '', 'OpenID Connect Secret Value (not to be confused with Secret ID).', 'OpenID Connect', '', 1, 40);";
 $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('OIDC-LoginAttribute', 'text', '', 'OpenID Connect Login Attribute.', 'OpenID Connect', '', 1, 50);";
+$sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeurs`, `valeur`, `categorie`, `ordre`, `commentaires`, `technical`) VALUES ('OIDC-Debug', 'boolean', '', '0', 'OpenID Connect', '60', 'Debug mode. Logs information to the log table.', 1);";
 
 // Add MS Graph params
 $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES ('MSGraph-TenantID', 'text', '', 'MS Graph Tenant ID.', 'Microsoft Graph API', '', 1, 10);";
