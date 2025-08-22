@@ -53,9 +53,11 @@ class OpenIDConnect
             $user->email = $oidc->requestUserInfo('email');
             $user->login = $oidc->requestUserInfo($this->login_attribute);
 
-            $message = json_encode($oidc->requestUserInfo());
-            $logger = new Logger($this->entityManager);
-            $logger->log($message, 'OpenID Connect');
+            if ($this->config['OIDC-Debug']) {
+                $message = json_encode($oidc->requestUserInfo());
+                $logger = new Logger($this->entityManager);
+                $logger->log($message, 'OpenID Connect');
+            }
 
         } catch (Exception $e) {
             return false;
