@@ -11,7 +11,7 @@ executors:
         default: '8.2'
       mariadb:
         type: string
-        default: '10.6'
+        default: '11.7'
     docker:
       - image: cimg/php:<< parameters.php >>
       - image: cimg/mariadb:<< parameters.mariadb >>
@@ -89,8 +89,7 @@ workflows:
             name: plb
             php: '8.2'
       - install-and-test:
-          name: php:8.3:mariadb10.11
+          name: php:8.3
           e:
             name: plb
             php: '8.3'
-            mariadb: '10.11'
