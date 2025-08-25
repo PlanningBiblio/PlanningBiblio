@@ -1,5 +1,58 @@
+# config/packages/doctrine_migrations.yaml
+
 doctrine_migrations:
-    #dir_name: '%kernel.project_dir%/src/Migrations'
-    # namespace is arbitrary but should be different from App\Migrations
-    # as migrations classes should NOT be autoloaded
-    #namespace: DoctrineMigrations
+    # List of namespace/path pairs to search for migrations, at least one required
+    migrations_paths:
+        #'App\Migrations': '%kernel.project_dir%/src/App'
+        'App\Migrations': '%kernel.project_dir%/src/Migrations'
+        #'AnotherApp\Migrations': '/path/to/other/migrations'
+        #'SomeBundle\Migrations': '@SomeBundle/Migrations'
+
+    # List of additional migration classes to be loaded, optional
+    #migrations:
+        #- 'App\Migrations\Version123'
+        #- 'App\Migrations\Version123'
+
+    # Connection to use for the migrations
+    #connection: default
+
+    # Entity manager to use for migrations. This overrides the "connection" setting.
+    em: default
+
+    storage:
+        # Default (SQL table) metadata storage configuration
+        table_storage:
+            table_name: 'doctrine_migration_versions'
+            version_column_name: 'version'
+            version_column_length: 192
+            executed_at_column_name: 'executed_at'
+
+    # Possible values: "BY_YEAR", "BY_YEAR_AND_MONTH", false
+    #organize_migrations: false
+    organize_migrations: "BY_YEAR"
+
+    # Path to your custom migrations template
+    custom_template: ~
+
+    # Run all migrations in a transaction.
+    all_or_nothing: false
+
+    # Adds an extra check in the generated migrations to ensure that is executed on the same database type.
+    check_database_platform: true
+
+    # Whether or not to wrap migrations in a single transaction.
+    transactional: true
+
+    # Whether or not to enable the profiler collector to calculate and visualize migration status. This adds some queries overhead.
+    # enable_profiler: false
+
+    #services:
+        ## Custom migration sorting service id
+        #'Doctrine\Migrations\Version\Comparator': ~
+
+        ## Custom migration classes factory
+        #'Doctrine\Migrations\Version\MigrationFactory': ~
+
+    #factories:
+        ## Custom migration sorting service id via callables (MyCallableFactory must be a callable)
+        #'Doctrine\Migrations\Version\Comparator': 'MyCallableFactory'
