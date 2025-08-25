@@ -82,24 +82,36 @@ mv Changelog.tmp Changelog.md
 vi Changelog.md
 
 sed -i "s/$from/$to/g" 'init/init.php'
-sed -i "s/$from/$to/g" 'public/setup/db_data.php'
 
 git diff
 
-sed -i "/# MARKER/i\ \n\$v=\"$to\";\n\nif (version_compare(\$config['Version'], \$v) === -1) {\n\n\    \$sql[] = \"UPDATE \`{\$dbprefix}config\` SET \`valeur\`='\$v' WHERE \`nom\`='Version';\";\n}" 'public/setup/maj.php'
+# Create the release migration
+migration=$(bin/console doctrine:migrations:generate)
 
-vi public/setup/maj.php +/MARKER
+migration=$(echo $migration | awk -F"/Version" '{print $2}')
+migration=$(echo $migration | awk -F".php" '{print $1}')
 
+file=migrations/$(date +%Y)/Version$migration.php
 
-git add Changelog.md init/init.php public/setup/db_data.php public/setup/maj.php
+sed -zi 's/ *\/\/.[^\n]*\n//g' $file
+sed -zi 's/ *\/\*.[^\n]*\n//g' $file
+sed -zi 's/ *\*.[^\n]*\n//g' $file
+sed -i "s/return ''/return 'Release $to'/g" $file
+
+lines=$(grep -n '}' $file)
+
+lineUp=$(echo $lines | awk -F":" '{print $2}')
+lineUp=$(echo $lineUp | awk -F" " '{print $2}')
+
+lineDown=$(echo $lines | awk -F":" '{print $3}')
+lineDown=$(echo $lineDown | awk -F" " '{print $2}')
+
+sed -i $lineDown"i\        \$this->addSql(\x22UPDATE {\$dbprefix}config SET valeur = '$from' WHERE nom = 'Version';\x22);" $file
+sed -i $lineUp"i\        \$this->addSql(\x22UPDATE {\$dbprefix}config SET valeur = '$to' WHERE nom = 'Version';\x22);" $file
+
+git add Changelog.md init/init.php $file
 
 git status
-
-# Check if public/setup/atomicupdate/ is empty
-if [ "$(ls 'public/setup/atomicupdate/')" ]; then
-    echo -e "\e[0;33mWarning: public/setup/atomicupdate is not empty. Did you forgot to remove some files?\e[0m\n"
-fi
-
 
 echo -e "\e[0;33mApprove changes ? [yes/no]\e[0m\n"
 read proceed 

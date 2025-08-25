@@ -1,19 +1,15 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2019 Jérôme Combes
+ * Planno
+ * 
+ * @file legacy/migrations/data.php
+ * @author Jérôme Combes <jerome@planningbiblio.fr>
+ * 
+ * @note : 
+ * - File data.php, previously public/setup/db_data.php
+ * - Still used to create the database for unit tests
+ */
 
-@file setup/db_data.php
-@author Jérôme Combes <jerome@planningbiblio.fr>
-@author Alex arnaud <alex.arnaud@biblibre.com >
-
-Description :
-Requêtes SQL insérant les données dans les tables lors de l'installation.
-Ce fichier est appelé par le fichier setup/createdb.php. Les requêtes sont stockées dans le tableau $sql et executées par le
-fichier setup/createdb.php
-*/
 
 // Insertion des droits d'accés
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Personnel - Password', 100, '', 'personnel/password.php');";

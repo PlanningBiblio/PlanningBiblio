@@ -24,8 +24,6 @@ $config['dbport'] = preg_replace($pattern, '\4', $database_url);
 $config['dbname'] = preg_replace($pattern, '\5', $database_url);
 $config['dbprefix'] = $_ENV['DATABASE_PREFIX'];
 
-//$config = parse_ini_file(__DIR__ . '/config.ini');
-
 $dbname = $config['dbname'];
 $dbprefix='';
 
@@ -37,33 +35,18 @@ $sql[]="DROP DATABASE IF EXISTS `$dbname`;";
 $sql[]="CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8 COLLATE utf8_bin;";
 $sql[]="USE $dbname;";
 
-include __DIR__ . '/../public/setup/db_structure.php';
-include __DIR__ . '/../public/setup/db_data.php';
+include __DIR__ . '/../legacy/migrations/schema.php';
+include __DIR__ . '/../legacy/migrations/data.php';
 
 if ($dbconn) {
     foreach ($sql as $elem) {
         mysqli_multi_query($dblink, $elem);
     }
-
-    $atomic_dir = __DIR__ . '/../public/setup/atomicupdate/*.php';
-
-    $sql = array();
-    foreach (glob($atomic_dir) as $file) {
-        try {
-            require_once($file);
-        } catch (Exception $e) {
-            print $e->getMessage() . "\n";
-            continue;
-        }
-    }
-
-    foreach ($sql as $elem) {
-        mysqli_multi_query($dblink, $elem);
-    }
-
     mysqli_close($dblink);
 }
 
+// Run migrations
+exec(__DIR__ . '/../bin/console doctrine:migrations:migrate --env=test -q');
 
 include_once(__DIR__ . '/../init/init.php');
 include_once(__DIR__.'/../init/init_templates.php');

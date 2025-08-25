@@ -85,7 +85,7 @@ class Agent
     private ?string $recup = null;
 
     #[ORM\Column]
-    private ?string $supprime = null;
+    private ?int $supprime = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $mails_responsables = null;
@@ -212,12 +212,12 @@ class Agent
         return $this;
     }
 
-    public function getDeletion(): ?string
+    public function getDeletion(): ?int
     {
         return $this->supprime;
     }
 
-    public function setDeletion(?string $deletionStatus): static
+    public function setDeletion(?int $deletionStatus): static
     {
         $this->supprime = $deletionStatus;
 
@@ -243,7 +243,7 @@ class Agent
 
     public function setFirstname(?string $firstname): static
     {
-        $this->supprime = $firstname;
+        $this->prenom = $firstname;
 
         return $this;
     }

@@ -155,7 +155,7 @@ else
 fi
 
 # Set variables
-data=data/planno_24.04.xx.sql.gz
+data=data/planno_25.05.xx.sql.gz
 secret=$(head /dev/urandom|tr -dc "a-f0-9"|fold -w 32|head -n 1)
 
 # Create the database

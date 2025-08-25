@@ -24,7 +24,7 @@ class RecurringAbsence
     private ?string $event = null;
 
     #[ORM\Column]
-    private ?int $end = null;
+    private ?bool $end = null;
 
     #[ORM\Column]
     private ?\DateTime $timestamp = null;
@@ -38,5 +38,17 @@ class RecurringAbsence
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function isFinished(): ?bool
+    {
+        return $this->end;
+    }
+
+    public function setFinished(bool $finished): static
+    {
+        $this->end = $finished;
+
+        return $this;
     }
 }

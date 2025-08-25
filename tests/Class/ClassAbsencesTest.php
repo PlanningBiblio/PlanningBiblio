@@ -32,9 +32,11 @@ class ClassAbsencesTest extends TestCase
         $ics_content = $absence->build_ics_content();
         $lines = explode(PHP_EOL, $ics_content);
 
+        $timezone = date_default_timezone_get();
+
         $this->assertEquals('BEGIN:VCALENDAR', $lines[0], 'BEGIN == "VCALENDAR"');
-        $this->assertEquals('DTSTART;TZID=UTC:20220117T080000', $lines[14], 'DTSTART;TZID h:m');
-        $this->assertEquals('DTEND;TZID=UTC:20220117T123000', $lines[15], 'DTEND;TZID h:m');
+        $this->assertEquals("DTSTART;TZID=$timezone:20220117T080000", $lines[14], 'DTSTART;TZID h:m');
+        $this->assertEquals("DTEND;TZID=$timezone:20220117T123000", $lines[15], 'DTEND;TZID h:m');
     }
 
     public function testRecipients()

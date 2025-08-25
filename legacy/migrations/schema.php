@@ -1,19 +1,15 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+ * Planno
+ * 
+ * @file legacy/migrations/schema.php
+ * @author Jérôme Combes <jerome@planningbiblio.fr>
+ * 
+ * @note : 
+ * - File schema.php, previously public/setup/db_structure.php
+ * - Still used to create the database for unit tests
+ */
 
-Fichier : setup/db_structure.php
-Création : mai 2011
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
-Description :
-Requêtes SQL créant les tables lors de l'installation.
-Ce fichier est appelé par le fichier setup/createdb.php. Les requêtes sont stockées dans le tableau $sql et executées par le
-fichier setup/createdb.php
-*/
 
 $sql[]="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';";
 
@@ -70,7 +66,7 @@ $sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
   `uid` VARCHAR(50), 
   `perso_id` INT,
   `event` TEXT,
-  `end` ENUM ('0','1') NOT NULL DEFAULT '0',
+  `end` TINYINT(1) NOT NULL DEFAULT 0,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_update` TIMESTAMP,
   `last_check` TIMESTAMP,
@@ -231,7 +227,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `temps` text NOT NULL,
   `informations` text NOT NULL,
   `recup` text NOT NULL,
-  `supprime` ENUM('0','1','2') NOT NULL DEFAULT '0',
+  `supprime` TINYINT(1) NOT NULL DEFAULT 0,
   `mails_responsables` TEXT NOT NULL DEFAULT '',
   `matricule` VARCHAR(100) NULL DEFAULT NULL,
   `code_ics` VARCHAR(100) NULL DEFAULT NULL,
@@ -253,14 +249,14 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste` (
   `perso_id` int(11) NOT NULL DEFAULT '0',
   `date` date NOT NULL DEFAULT '0000-00-00',
   `poste` int(11) NOT NULL DEFAULT '0',
-  `absent` enum('0','1','2') NOT NULL DEFAULT '0',
+  `absent` TINYINT(1) NOT NULL DEFAULT 0,
   `chgt_login` int(4) DEFAULT NULL,
   `chgt_time` DATETIME NULL DEFAULT NULL,
   `debut` time NOT NULL,
   `fin` time NOT NULL,
-  `supprime` ENUM('0','1') DEFAULT '0',
+  `supprime` TINYINT(1) NOT NULL DEFAULT 0,
   `site` INT(3) DEFAULT '1',
-  `grise` ENUM('0','1') DEFAULT '0',
+  `grise` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `date` (`date`),
   KEY `site` (`site`)
@@ -290,7 +286,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_lignes` (
   `tableau` int(11) NOT NULL,
   `ligne` int(11) NOT NULL,
   `poste` varchar(30) NOT NULL,
-  `type` enum('poste','ligne','titre','classe') NOT NULL,
+  `type` VARCHAR(6) NOT NULL DEFAULT 'poste',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
