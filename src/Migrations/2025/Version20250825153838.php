@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250825102935 extends AbstractMigration
+final class Version20250825153838 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -73,7 +73,7 @@ final class Version20250825102935 extends AbstractMigration
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
         );
 
-        $this->addSql('CREATE TABLE absences_recurrentes (id INT AUTO_INCREMENT NOT NULL, uid VARCHAR(50) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, perso_id INT DEFAULT NULL, event TEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, end TINYINT(1) DEFAULT 0 NOT NULL, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, last_update DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, last_check DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, INDEX last_check (last_check), INDEX uid (uid), INDEX perso_id (perso_id), INDEX end (end), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
+        $this->addSql('CREATE TABLE absences_recurrentes (id INT AUTO_INCREMENT NOT NULL, uid VARCHAR(50) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, perso_id INT DEFAULT NULL, event TEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, end TINYINT(1) DEFAULT 0 NOT NULL, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, last_update DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, last_check DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, INDEX end (end), INDEX last_check (last_check), INDEX uid (uid), INDEX perso_id (perso_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
@@ -127,7 +127,7 @@ final class Version20250825102935 extends AbstractMigration
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
         );
 
-        $this->addSql('CREATE TABLE pl_poste (id INT UNSIGNED AUTO_INCREMENT NOT NULL, perso_id INT DEFAULT 0 NOT NULL, date DATE DEFAULT \'0000-00-00\' NOT NULL, poste INT DEFAULT 0 NOT NULL, absent TINYINT(1) DEFAULT 0 NOT NULL, chgt_login INT DEFAULT NULL, chgt_time DATETIME DEFAULT NULL, debut TIME NOT NULL, fin TIME NOT NULL, supprime TINYINT(1) DEFAULT 0, site INT DEFAULT 1, grise TINYINT(1) DEFAULT 0, INDEX date (date), INDEX site (site), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
+        $this->addSql('CREATE TABLE pl_poste (id INT UNSIGNED AUTO_INCREMENT NOT NULL, perso_id INT DEFAULT 0 NOT NULL, date DATE DEFAULT \'0000-00-00\' NOT NULL, poste INT DEFAULT 0 NOT NULL, absent TINYINT(1) DEFAULT 0 NOT NULL, chgt_login INT DEFAULT NULL, chgt_time DATETIME DEFAULT NULL, debut TIME NOT NULL, fin TIME NOT NULL, supprime TINYINT(1) DEFAULT 0 NOT NULL, site INT DEFAULT 1, grise TINYINT(1) DEFAULT 0 NOT NULL, INDEX site (site), INDEX date (date), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
@@ -145,7 +145,7 @@ final class Version20250825102935 extends AbstractMigration
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
         );
 
-        $this->addSql('CREATE TABLE pl_poste_lignes (id INT AUTO_INCREMENT NOT NULL, numero INT NOT NULL, tableau INT NOT NULL, ligne INT NOT NULL, poste VARCHAR(30) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, type VARCHAR(6) CHARACTER SET utf8mb4 DEFAULT \'\' NOT NULL COLLATE `utf8mb4_unicode_ci`, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
+        $this->addSql('CREATE TABLE pl_poste_lignes (id INT AUTO_INCREMENT NOT NULL, numero INT NOT NULL, tableau INT NOT NULL, ligne INT NOT NULL, poste VARCHAR(30) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, type VARCHAR(6) CHARACTER SET utf8mb4 DEFAULT \'poste\' NOT NULL COLLATE `utf8mb4_unicode_ci`, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
@@ -211,7 +211,7 @@ final class Version20250825102935 extends AbstractMigration
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
         );
 
-        $this->addSql('CREATE TABLE absences (id INT AUTO_INCREMENT NOT NULL, perso_id INT DEFAULT 0 NOT NULL, debut DATETIME NOT NULL, fin DATETIME NOT NULL, motif TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, motif_autre TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, commentaires TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, etat TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, demande DATETIME NOT NULL, valide INT DEFAULT 0 NOT NULL, validation DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, valide_n1 INT DEFAULT 0 NOT NULL, validation_n1 DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, pj1 INT DEFAULT 0, pj2 INT DEFAULT 0, so INT DEFAULT 0, groupe VARCHAR(14) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, cal_name VARCHAR(300) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, ical_key TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, last_modified VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, uid TEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, rrule TEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, id_origin INT DEFAULT 0 NOT NULL, INDEX debut (debut), INDEX fin (fin), INDEX cal_name (cal_name(250)), INDEX groupe (groupe), INDEX perso_id (perso_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
+        $this->addSql('CREATE TABLE absences (id INT AUTO_INCREMENT NOT NULL, perso_id INT DEFAULT 0 NOT NULL, debut DATETIME NOT NULL, fin DATETIME NOT NULL, motif TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, motif_autre TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, commentaires TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, etat TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, demande DATETIME NOT NULL, valide INT DEFAULT 0 NOT NULL, validation DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, valide_n1 INT DEFAULT 0 NOT NULL, validation_n1 DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, pj1 INT DEFAULT 0, pj2 INT DEFAULT 0, so INT DEFAULT 0, groupe VARCHAR(14) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, cal_name VARCHAR(300) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, ical_key TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, last_modified VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, uid TEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, rrule TEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, id_origin INT DEFAULT 0 NOT NULL, INDEX groupe (groupe), INDEX perso_id (perso_id), INDEX debut (debut), INDEX fin (fin), INDEX cal_name (cal_name(250)), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
@@ -277,7 +277,7 @@ final class Version20250825102935 extends AbstractMigration
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
         );
 
-        $this->addSql('CREATE TABLE pl_notifications (id INT AUTO_INCREMENT NOT NULL, date DATE DEFAULT NULL, site INT DEFAULT 1 NOT NULL, update_time DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, data TEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, INDEX site (site), INDEX date (date), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
+        $this->addSql('CREATE TABLE pl_notifications (id INT AUTO_INCREMENT NOT NULL, date DATE DEFAULT NULL, site INT DEFAULT 1 NOT NULL, update_time DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, data TEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, INDEX date (date), INDEX site (site), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."

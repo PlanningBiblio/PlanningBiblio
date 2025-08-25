@@ -36,6 +36,7 @@
 | entry | saisie_par | type int (userId) |
 | entryDate | saisie | type datetime |
 | floor | etage |
+| finished | end | for RecurringAbsence |
 | firstname | prenom |
 | group | groupe |
 | groupId | groupe_id |
