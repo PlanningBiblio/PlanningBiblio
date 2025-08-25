@@ -43,12 +43,6 @@ final class Version20250825153838 extends AbstractMigration
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
         );
 
-        $this->addSql('CREATE TABLE pl_poste_history (id INT AUTO_INCREMENT NOT NULL, perso_ids MEDIUMTEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, date DATE DEFAULT \'0000-00-00\' NOT NULL, beginning TIME DEFAULT \'00:00:00\' NOT NULL, end TIME DEFAULT \'00:00:00\' NOT NULL, site INT DEFAULT 1 NOT NULL, position INT DEFAULT 0 NOT NULL, action VARCHAR(10) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, updated_by INT DEFAULT 0 NOT NULL, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
-        $this->abortIf(
-            !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
-            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
-        );
-
         $this->addSql('CREATE TABLE pl_poste_horaires (id INT AUTO_INCREMENT NOT NULL, debut TIME DEFAULT \'00:00:00\' NOT NULL, fin TIME DEFAULT \'00:00:00\' NOT NULL, tableau INT NOT NULL, numero INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
@@ -62,12 +56,6 @@ final class Version20250825153838 extends AbstractMigration
         );
 
         $this->addSql('CREATE TABLE select_etages (id INT AUTO_INCREMENT NOT NULL, valeur TEXT CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, rang INT DEFAULT 0 NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = MyISAM COMMENT = \'\' ');
-        $this->abortIf(
-            !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
-            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
-        );
-
-        $this->addSql('CREATE TABLE conges_CET (id INT AUTO_INCREMENT NOT NULL, perso_id INT NOT NULL, jours INT DEFAULT 0 NOT NULL, commentaires TEXT CHARACTER SET latin1 DEFAULT NULL COLLATE `latin1_swedish_ci`, saisie DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, saisie_par INT NOT NULL, modif INT DEFAULT 0 NOT NULL, modification DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, valide_n1 INT DEFAULT 0 NOT NULL, validation_n1 DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, valide_n2 INT DEFAULT 0 NOT NULL, validation_n2 DATETIME DEFAULT \'0000-00-00 00:00:00\' NOT NULL, refus TEXT CHARACTER SET latin1 DEFAULT NULL COLLATE `latin1_swedish_ci`, solde_prec DOUBLE PRECISION DEFAULT NULL, solde_actuel DOUBLE PRECISION DEFAULT NULL, annee VARCHAR(10) CHARACTER SET latin1 DEFAULT NULL COLLATE `latin1_swedish_ci`, PRIMARY KEY(id)) DEFAULT CHARACTER SET latin1 COLLATE `latin1_swedish_ci` ENGINE = InnoDB COMMENT = \'\' ');
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
@@ -342,12 +330,6 @@ final class Version20250825153838 extends AbstractMigration
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
         );
 
-        $this->addSql('DROP TABLE pl_poste_history');
-        $this->abortIf(
-            !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
-            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
-        );
-
         $this->addSql('DROP TABLE pl_poste_horaires');
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
@@ -361,12 +343,6 @@ final class Version20250825153838 extends AbstractMigration
         );
 
         $this->addSql('DROP TABLE select_etages');
-        $this->abortIf(
-            !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
-            "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
-        );
-
-        $this->addSql('DROP TABLE conges_CET');
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1060Platform,
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1060Platform'."
