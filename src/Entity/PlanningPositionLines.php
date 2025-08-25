@@ -70,24 +70,24 @@ class PlanningPositionLines
         return $this;
     }
 
-    public function getPosition(): ?int
+    public function getPosition(): ?string
     {
         return $this->poste;
     }
 
-    public function setPosition(?int $position): static
+    public function setPosition(?string $position): static
     {
         $this->poste = $position;
 
         return $this;
     }
 
-    public function getType(): ?int
+    public function getType(): ?string
     {
         return $this->type;
     }
 
-    public function setType(?int $type): static
+    public function setType(?string $type): static
     {
         $this->type = $type;
 
