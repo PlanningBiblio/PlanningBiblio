@@ -42,9 +42,23 @@ class Access
         return $this->groupe_id;
     }
 
+    public function setName(?string $name): static
+    {
+        $this->nom = $name;
+
+        return $this;
+    }
+
     public function setGroupId(?int $groupId): static
     {
         $this->groupe_id = $groupId;
+
+        return $this;
+    }
+
+    public function setGroup(?string $group): static
+    {
+        $this->groupe = $group;
 
         return $this;
     }

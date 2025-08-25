@@ -25,7 +25,7 @@ class PlanningPosition
     private ?int $poste = null;
 
     #[ORM\Column]
-    private ?string $absent = null;
+    private ?int $absent = 0;
 
     #[ORM\Column]
     private ?int $chgt_login = null;
@@ -40,13 +40,13 @@ class PlanningPosition
     private ?\DateTime $fin = null;
 
     #[ORM\Column]
-    private ?string $supprime = null;
+    private ?bool $supprime = false;
 
     #[ORM\Column]
     private ?int $site = null;
 
     #[ORM\Column]
-    private ?string $grise = null;
+    private ?bool $grise = false;
 
     public function getId(): ?int
     {
@@ -93,21 +93,36 @@ class PlanningPosition
         return $this;
     }
     
-    public function setAbsent(?string $absent): static
+    public function getAbsent(): ?int
+    {
+        return $this->absent;
+    }
+
+    public function setAbsent(?int $absent): static
     {
         $this->absent = $absent;
 
         return $this;
     }
-    
-    public function setDelete(?string $delete): static
+
+    public function isDelete(): ?bool
+    {
+        return $this->supprime;
+    }
+
+    public function setDelete(?bool $delete): static
     {
         $this->supprime = $delete;
 
         return $this;
     }
 
-    public function setGrey(?string $grey): static
+    public function isGrey(): ?bool
+    {
+        return $this->grise;
+    }
+
+    public function setGrey(?bool $grey): static
     {
         $this->grise = $grey;
 

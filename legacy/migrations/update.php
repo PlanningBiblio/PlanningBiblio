@@ -1,35 +1,29 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+ * Planno
+ * 
+ * @file legacy/migrations/update.php
+ * @author Jérôme Combes <jerome@planningbiblio.fr>
+ * 
+ * @note : 
+ * - File update.php, previously public/setup/maj.php
+ * - Still used to migrate Planning Biblio / Planno from release 2.0 to 25.05
+ */
 
-Fichier : setup/maj.php
-Création : mai 2011
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
-Description :
-Ce fichier permet de mettre à jour la base de données lors de la mise à jour de l'application.
-Cette page est appelée par la page index.php si la version du fichier index.php et différente de la version enregistrée
-dans la base de données
-*/
-
-
-// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
-if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
-    include_once(__DIR__.'/../include/accessDenied.php');
-    exit;
-}
 
 $CSRFToken = CSRFToken();
 
 $cli = php_sapi_name() === 'cli';
 
+if (!$cli) {
+    echo "<!DOCTYPE html><html><head><title>Planno - Maintenance</title></head>\n";
+    echo "<body><h1>Planno - Maintenance</h1><p>\n";
+}
+
 if ($cli) {
     echo "\033[33mMise à jour de la base de données version {$config['Version']} --> $version\e[0m\n";
 } else {
-    echo "Mise à jour de la base de données version {$config['Version']} --> $version<br/>\n";
+    echo "<h2>Mise à jour de la base de données version {$config['Version']} --> $version</h2>\n";
 }
 
 if (version_compare($config['Version'], "2.0") === -1) {
@@ -3863,8 +3857,9 @@ if (isset($check_tables) and $check_tables === true) {
 }
 
 if (!$cli) {
-    echo "<br/><br/><a href='index.php'>Continuer</a>\n";
-    include(__DIR__.'/../include/footer.php');
+    echo "</p><p><strong>Run \"composer install\" to continue.</strong></p>";
+    echo "</body></html>\n";
+    exit;
 }
 
 /**
