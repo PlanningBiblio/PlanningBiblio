@@ -243,7 +243,9 @@ Exemple à ajouter en crontab :
             }
         }
 
-        $io->success('Reminders sent for leave pending validation.');
+        if ($output->isVerbose()) {
+            $io->success('Reminders sent for leave pending validation.');
+        }
 
         return Command::SUCCESS;
     }
