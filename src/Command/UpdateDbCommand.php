@@ -4,9 +4,11 @@ namespace App\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -33,18 +35,41 @@ class UpdateDbCommand extends Command
                 $io->writeln($content);
             }
 
-            $folder = __DIR__ . '/../../var/update/' . $_ENV['APP_ENV'];
-            $file = $folder . '/updateDB-' . date('Ymd-His') . '.txt';
-    
-            if (!file_exists($folder)) {
-                mkdir($folder, 0755, true);
-            }
-    
-            file_put_contents($file, $content);
+            $this->logToFile($content);
         }
 
-        $io->success('Database updated');
+        $migrationsOutput = new BufferedOutput();
 
-        return Command::SUCCESS;
+        $migrations = new ArrayInput([
+            'command' => 'doctrine:migrations:migrate',
+        ]);
+
+        $migrations->setInteractive(false);
+
+        $migrationsReturnCode = $this->getApplication()->doRun($migrations, $migrationsOutput);
+
+        $migrationsContent = $migrationsOutput->fetch();
+
+        $this->logToFile($migrationsContent);
+
+        if ($migrationsReturnCode == 0) {
+            $io->success('Database updated');
+            return Command::SUCCESS;
+        } else {
+            $io->error(preg_replace('/\s+/', ' ', $migrationsContent));
+            return Command::FAILURE;
+        }
+    }
+
+    private function logToFile($content)
+    {
+        $folder = __DIR__ . '/../../var/update/' . $_ENV['APP_ENV'];
+        $file = $folder . '/updateDB-' . date('Ymd-His') . '.txt';
+
+        if (!file_exists($folder)) {
+            mkdir($folder, 0755, true);
+        }
+
+        file_put_contents($file, $content, FILE_APPEND);
     }
 }
