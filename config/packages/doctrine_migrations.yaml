@@ -32,7 +32,7 @@ doctrine_migrations:
     organize_migrations: "BY_YEAR"
 
     # Path to your custom migrations template
-    custom_template: ~
+    custom_template: 'config/packages/doctrine_migrations_custom_template.tpl'
 
     # Run all migrations in a transaction.
     all_or_nothing: false
