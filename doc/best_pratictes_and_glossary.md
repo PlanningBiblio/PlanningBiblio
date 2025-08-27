@@ -80,3 +80,22 @@
 | value | valeur |
 | values | valeurs |
 | workingHours | temps |
+
+## Migrations
+
+> You should no longer use atomic_update and the maj.php file
+
+* To create a new migration, use `bin/console doctrine:migrations:generate`
+    * A new file will be created in src/Migrations/<current_year>/
+    * Edit this file :
+        * add your migration in the "up" function
+        * add the reverse migration in the "down" function
+        * add a description in the getDescription function
+* To display and execute your migrations :
+    * `bin/console doctrine:migrations:list` : show all migration, their status and their description
+    * `bin/console doctrine:migrations:execute --up "App\Migrations\Version<migration_number>"` : execute the specified migration
+    * `bin/console doctrine:migrations:execute --down "App\Migrations\Version<migration_number>"` : rollback the specified migration
+    * `bin/console doctrine:migrations:migrate` : execute all pending migration
+    * `bin/console doctrine:migrations:migrate first` : rollback all migrate
+
+> NB: All pending migrations will be automatically executed during Planno updates. We no longer need to add then to the maj.php file.
