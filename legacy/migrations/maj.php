@@ -1,18 +1,13 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+Planno
 
-Fichier : setup/maj.php
-Création : mai 2011
+@file legacy/migrations/maj.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
-Description :
-Ce fichier permet de mettre à jour la base de données lors de la mise à jour de l'application.
-Cette page est appelée par la page index.php si la version du fichier index.php et différente de la version enregistrée
-dans la base de données
+@note : 
+- File maj.php, previously in the public/setup folder.
+- Still used to migrate Planning Biblio / Planno from release 2.0 to 25.05
 */
 
 

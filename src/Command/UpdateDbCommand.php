@@ -18,8 +18,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class UpdateDbCommand extends Command
 {
+    private string $folder;
+    private string $time;
+
     protected function configure(): void
     {
+        $this->folder = __DIR__ . '/../../var/update/' . $_ENV['APP_ENV'];
+        $this->time = date('Ymd-His');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -42,6 +47,9 @@ class UpdateDbCommand extends Command
 
         $migrations = new ArrayInput([
             'command' => 'doctrine:migrations:migrate',
+            '--allow-no-migration' => true,
+            '--all-or-nothing' => true,
+            '--verbose' => 2,
         ]);
 
         $migrations->setInteractive(false);
@@ -52,10 +60,15 @@ class UpdateDbCommand extends Command
 
         $this->logToFile($migrationsContent);
 
+        if ($output->isVerbose()) {
+            $io->writeln($migrationsContent);
+        }
+
         if ($migrationsReturnCode == 0) {
             $io->success('Database updated');
             return Command::SUCCESS;
         } else {
+            $this->logToFile('[ERROR] One or more migration failed !');
             $io->error(preg_replace('/\s+/', ' ', $migrationsContent));
             return Command::FAILURE;
         }
@@ -63,11 +76,10 @@ class UpdateDbCommand extends Command
 
     private function logToFile($content)
     {
-        $folder = __DIR__ . '/../../var/update/' . $_ENV['APP_ENV'];
-        $file = $folder . '/updateDB-' . date('Ymd-His') . '.txt';
+        $file = $this->folder . '/updateDB-' . $this->time . '.txt';
 
-        if (!file_exists($folder)) {
-            mkdir($folder, 0755, true);
+        if (!file_exists($this->folder)) {
+            mkdir($this->folder, 0755, true);
         }
 
         file_put_contents($file, $content, FILE_APPEND);

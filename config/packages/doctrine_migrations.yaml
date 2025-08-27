@@ -3,8 +3,7 @@
 doctrine_migrations:
     # List of namespace/path pairs to search for migrations, at least one required
     migrations_paths:
-        #'App\Migrations': '%kernel.project_dir%/src/App'
-        'App\Migrations': '%kernel.project_dir%/src/Migrations'
+        'App\Migrations': '%kernel.project_dir%/migrations'
         #'AnotherApp\Migrations': '/path/to/other/migrations'
         #'SomeBundle\Migrations': '@SomeBundle/Migrations'
 
