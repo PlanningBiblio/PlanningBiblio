@@ -1,14 +1,14 @@
 <?php
 /**
-Planno
-
-@file legacy/migrations/maj.php
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
-@note : 
-- File maj.php, previously in the public/setup folder.
-- Still used to migrate Planning Biblio / Planno from release 2.0 to 25.05
-*/
+ * Planno
+ * 
+ * @file legacy/migrations/update.php
+ * @author Jérôme Combes <jerome@planningbiblio.fr>
+ * 
+ * @note : 
+ * - File update.php, previously public/setup/maj.php
+ * - Still used to migrate Planning Biblio / Planno from release 2.0 to 25.05
+ */
 
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
