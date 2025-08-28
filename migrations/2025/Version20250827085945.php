@@ -45,6 +45,6 @@ final class Version20250827085945 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        // Can not rollback change ENUM to TINYINT
+        $this->throwIrreversibleMigrationException('Can not rollback change ENUM to TINYINT');
     }
 }

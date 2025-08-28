@@ -89,7 +89,7 @@
     * A new file will be created in src/Migrations/<current_year>/
     * Edit this file :
         * add your migration in the "up" function
-        * add the reverse migration in the "down" function
+        * add the opposite migration in the "down" function
         * add a description in the getDescription function
 * To display and execute your migrations :
     * `bin/console doctrine:migrations:list` : show all migration, their status and their description
