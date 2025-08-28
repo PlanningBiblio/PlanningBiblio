@@ -44,12 +44,10 @@ class UpdateDbCommand extends Command
         }
 
         $migrationsOutput = new BufferedOutput();
+        $migrationsOutput->setVerbosity(128);
 
         $migrations = new ArrayInput([
             'command' => 'doctrine:migrations:migrate',
-            '--allow-no-migration' => true,
-            '--all-or-nothing' => true,
-            '--verbose' => 2,
         ]);
 
         $migrations->setInteractive(false);
