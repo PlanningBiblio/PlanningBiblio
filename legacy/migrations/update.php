@@ -11,12 +11,6 @@
  */
 
 
-// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
-if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
-    include_once(__DIR__.'/../include/accessDenied.php');
-    exit;
-}
-
 $CSRFToken = CSRFToken();
 
 $cli = php_sapi_name() === 'cli';
@@ -3832,7 +3826,7 @@ if (isset($check_tables) and $check_tables === true) {
 
 if (!$cli) {
     echo "<br/><br/><a href='index.php'>Continuer</a>\n";
-    include(__DIR__.'/../include/footer.php');
+    exit;
 }
 
 /**
