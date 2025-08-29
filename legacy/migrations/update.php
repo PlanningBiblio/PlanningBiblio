@@ -15,10 +15,15 @@ $CSRFToken = CSRFToken();
 
 $cli = php_sapi_name() === 'cli';
 
+if (!$cli) {
+    echo "<!DOCTYPE html><html><head><title>Planno - Maintenance</title></head>\n";
+    echo "<body><h1>Planno - Maintenance</h1><p>\n";
+}
+
 if ($cli) {
     echo "\033[33mMise à jour de la base de données version {$config['Version']} --> $version\e[0m\n";
 } else {
-    echo "Mise à jour de la base de données version {$config['Version']} --> $version<br/>\n";
+    echo "<h2>Mise à jour de la base de données version {$config['Version']} --> $version</h2>\n";
 }
 
 if (version_compare($config['Version'], "2.0") === -1) {
@@ -3825,7 +3830,8 @@ if (isset($check_tables) and $check_tables === true) {
 }
 
 if (!$cli) {
-    echo "<br/><br/><a href='index.php'>Continuer</a>\n";
+    echo "</p><p><strong>Run \"composer install\" to continue.</strong></p>";
+    echo "</body></html>\n";
     exit;
 }
 

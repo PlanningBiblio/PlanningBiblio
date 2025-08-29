@@ -85,6 +85,7 @@ sed -i "s/$from/$to/g" 'init/init.php'
 
 git diff
 
+# Create the release migration
 migration=$(bin/console doctrine:migrations:generate)
 
 migration=$(echo $migration | awk -F"/Version" '{print $2}')
@@ -92,11 +93,26 @@ migration=$(echo $migration | awk -F".php" '{print $1}')
 
 file=migrations/$(date +%Y)/Version$migration.php
 
-sed -i "s/return ''/return 'OK'/g" $file
-sed -i "s/\/\/         \$this->addSql(\x22CREATE TABLE.*/        \$this->addSql(\x22UPDATE {\$dbprefix}config SET valeur = '$to' WHERE nom = 'Version';\x22);/g" $file
-sed -i "s/\/\/         \$this->addSql(\x22DROP TABLE.*/        \$this->addSql(\x22UPDATE {\$dbprefix}config SET valeur = '$from' WHERE nom = 'Version';\x22);/g" $file
-sed -zi 's/\/\/.[^\n]*\n//g' $file
-sed -zi 's/\n\n    \}/\n    \}/g'  $file
+sed -zi 's/ *\/\/.[^\n]*\n//g' $file
+sed -zi 's/ *\/\*.[^\n]*\n//g' $file
+sed -zi 's/ *\*.[^\n]*\n//g' $file
+sed -i "s/return ''/return 'Release $to'/g" $file
+
+sed -zi 's/ *\/\/.[^\n]*\n//g' $file
+sed -zi 's/ *\/\*.[^\n]*\n//g' $file
+sed -zi 's/ *\*.[^\n]*\n//g' $file
+sed -i "s/return ''/return 'Release $to'/g" $file
+
+lines=$(grep -n '}' $file)
+
+lineUp=$(echo $lines | awk -F":" '{print $2}')
+lineUp=$(echo $lineUp | awk -F" " '{print $2}')
+
+lineDown=$(echo $lines | awk -F":" '{print $3}')
+lineDown=$(echo $lineDown | awk -F" " '{print $2}')
+
+sed -i $lineDown"i\        \$this->addSql(\x22UPDATE {\$dbprefix}config SET valeur = '$from' WHERE nom = 'Version';\x22);" $file
+sed -i $lineUp"i\        \$this->addSql(\x22UPDATE {\$dbprefix}config SET valeur = '$to' WHERE nom = 'Version';\x22);" $file
 
 git add Changelog.md init/init.php $file
 
