@@ -1812,6 +1812,10 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
   padding: 0 0 0 0;
 }
 
+#reset-login-form.ui-dialog-content {
+  padding: 1.5em 1em 0.5em 1em;
+}
+
 .ui-dialog-titlebar {
   background: #FFD700;
   border: 1px solid #FFD700;
