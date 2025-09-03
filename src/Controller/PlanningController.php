@@ -54,7 +54,7 @@ class PlanningController extends BaseController
     #[Route(path: '/{site}/{date?}', name: 'homeWithSite', methods: ['GET'], requirements: ['site' => '\d+', 'date' => '\d{4}-\d{2}-\d{2}'])]
     public function index(Request $request)
     {
-        echo "hello";
+        echo "welcome";
         // Show all week plannings.
         if (!$request->get('date') and !empty($_SESSION['week'])) {
           $this->setSite($request);
