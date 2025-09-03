@@ -1416,6 +1416,10 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         // Qualifications (activités) de l'agent
         classes+=' '+result[i]['activites'];
 
+        if (result[i]['is_current_user']) {
+          classes += ' current-user-cell';
+        }
+
         // Sans Repas
         if(result[i]["sr"]){
           // Ajout du sans repas sur la cellule modifiée
