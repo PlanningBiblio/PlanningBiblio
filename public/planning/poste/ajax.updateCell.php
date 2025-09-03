@@ -327,9 +327,9 @@ for ($i=0;$i<count($tab);$i++) {
     $tab[$i]["service"]=removeAccents($tab[$i]["service"]);
 
     // Color the logged in agent.
-    $tab[$i]['color'] = null;
+    $tab[$i]['is_current_user'] = false;
     if (!empty($config['Affichage-Agent']) and $tab[$i]['perso_id'] == $_SESSION['login_id']) {
-      $tab[$i]['color'] = filter_var($config['Affichage-Agent'], FILTER_CALLBACK, ['options' => 'sanitize_color']);
+        $tab[$i]['is_current_user'] = true;
     }
 
     // Ajout des Sans Repas (SR)

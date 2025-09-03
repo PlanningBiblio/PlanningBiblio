@@ -29,6 +29,11 @@
     {% if theme != 'default' %}
     <link rel='StyleSheet' href='{{ asset("themes/" ~ theme ~ "/" ~ theme ~ ".css") }}' type='text/css' media='all'/>
     {% endif %}
+    <style media="screen">
+      .current-user-cell {
+        background-color: {{ config('Affichage-Agent') }};
+      }
+    </style>
     <link rel='icon' type='image/png' href='{{ asset("favicon.ico") }}' />
   </head>
   <body>

@@ -859,18 +859,16 @@ class PlanningController extends BaseController
                             $class_tmp[]='activite_'.strtolower(removeAccents(str_replace(array('/',' ',), '_', $a)));
                         }
                     }
-                    $classe[$i]=implode(" ", $class_tmp);
 
                     // Color the logged in agent.
-                    $color[$i] = null;
                     if (!empty($this->config('Affichage-Agent')) and $elem['perso_id'] == $_SESSION['login_id']) {
-                        $color[$i] = filter_var($this->config('Affichage-Agent'), FILTER_CALLBACK, ['options' => 'sanitize_color']);
-                        $color[$i] = "style='background-color:{$color[$i]};'";
+                        $class_tmp[] = 'current-user-cell';
                     }
+
+                    $classe[$i] = implode(' ', $class_tmp);
 
                     // Création d'une balise span avec les classes cellSpan, et agent_ de façon à les repérer et agir dessus à partir de la fonction JS bataille_navale.
                     $span="<span class='cellSpan agent_{$elem['perso_id']}' title='$title' >$resultat</span>";
-
                     $resultats[$i]=array("text"=>$span, "perso_id"=>$elem['perso_id']);
                     $i++;
                 }
@@ -879,11 +877,11 @@ class PlanningController extends BaseController
 
         $this->cellId++;
 
-        $cellule = "<td id='td{$this->cellId}' colspan='$colspan' style='text-align:center;' class='menuTrigger' oncontextmenu='cellule={$this->cellId}' 
+        $cellule = "<td id='td{$this->cellId}' colspan='$colspan' style='text-align:center;' class='menuTrigger' oncontextmenu='cellule={$this->cellId}'
             data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$this->cellId}' data-perso-id='0'>";
 
         for ($i=0;$i<count($resultats);$i++) {
-            $cellule .= "<div id='cellule{$this->cellId}_$i' class='cellDiv {$classe[$i]} pl-cellule-perso-{$resultats[$i]['perso_id']}' {$color[$i]} 
+            $cellule .= "<div id='cellule{$this->cellId}_$i' class='cellDiv {$classe[$i]} pl-cellule-perso-{$resultats[$i]['perso_id']}'
                 data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
         }
 
