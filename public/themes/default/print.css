@@ -26,14 +26,13 @@ body, #tab_titre {
 }
 
 #h3-Multisites {
-  top: 25mm;
-  left: 10mm;
+  margin: 0;
   font-weight: normal;
 }
 
 .pl-validation {
-  top: 8mm;
-  right: 10mm;
+  top: 15mm;
+  right: 15mm;
   font-weight: normal;
 }
 
