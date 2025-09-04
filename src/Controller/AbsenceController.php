@@ -311,6 +311,15 @@ class AbsenceController extends BaseController
         $absence['commentaires'] = html_entity_decode($a->elements['commentaires'], ENT_QUOTES);
         $agents=$a->elements['agents'];
 
+        // Get notification workflow
+        $workflow = 'A';
+        $reason = $this->entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $absence['motif']]);
+        if ($reason) {
+            $workflow = $reason->getNotificationWorkflow();
+        }
+
+        $absence['workflow'] = $workflow;
+
         $adminN1 = true;
         $adminN2 = true;
         foreach ($agents as $agent) {
@@ -318,7 +327,7 @@ class AbsenceController extends BaseController
                 ->getRepository(Agent::class)
                 ->setModule('absence')
                 ->forAgent($agent['perso_id'])
-                ->getValidationLevelFor($session->get('loginId'));
+                ->getValidationLevelFor($session->get('loginId'), $workflow);
 
             $adminN1 = $N1 === false ? $N1 : $adminN1;
             $adminN2 = $N2 === false ? $N2 : $adminN2;
@@ -362,7 +371,7 @@ class AbsenceController extends BaseController
         $absence['status'] = 'ASKED';
         $absence['status_editable'] = ($adminN1 or $adminN2) ? true : false;
         if ($valide == 0 && $valideN1 > 0) {
-            $absence['status'] = 'ACCEPTED_N1';
+                $absence['status'] = 'ACCEPTED_N1';
         }
         if ($valide > 0) {
             $absence['status'] = 'ACCEPTED_N2';
@@ -466,6 +475,14 @@ class AbsenceController extends BaseController
         $fin = $a->elements['fin'];
         $perso_id = $a->elements['perso_id'];
         $motif = $a->elements['motif'];
+
+        // Get the selected notification workflow in absence reason.
+        $workflow = 'A';
+        $reason = $this->entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
+        if ($reason) {
+            $workflow = $reason->getNotificationWorkflow();
+        }
+
         $commentaires = $a->elements['commentaires'];
         $valideN1 = $a->elements['valide_n1'];
         $valideN2 = $a->elements['valide_n2'];
@@ -479,12 +496,19 @@ class AbsenceController extends BaseController
         // If "Absences-notifications-agent-par-agent" is enabled,
         // check if logged in agent can manage all agents in absence.
         // Else, admin = false.
+        $logged_in = $this->entityManager->find(Agent::class, $session->get('loginId'));
         if ($this->config('Absences-notifications-agent-par-agent') and $this->admin) {
-            $logged_in = $this->entityManager->find(Agent::class, $session->get('loginId'));
             $this->admin = $logged_in->isManagerOf($perso_ids);
         }
 
         $acces = false;
+
+        // Simplified absence validation schema with workflow B
+        if ($this->config('Absences-notifications-agent-par-agent') == 1 &&
+            $logged_in->isManagerOf($perso_ids, 'level1') && 
+            $workflow == 'B') {
+            $acces = true;
+        }
 
         if ($this->adminN2) {
             $acces = true;
@@ -557,13 +581,6 @@ class AbsenceController extends BaseController
             $a->getRecipients2(null, $agents, 2, 500, $debut, $fin);
             $destinataires = $a->recipients;
         } else {
-            // Get the selected notification workflow in absence reason.
-            $workflow = 'A';
-            $reason = $this->entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
-            if ($reason) {
-                $workflow = $reason->getNotificationWorkflow();
-            }
-
             // Foreach agent, search for agents in charge of absences.
             $responsables=array();
             foreach ($agents as $agent) {
@@ -698,8 +715,9 @@ class AbsenceController extends BaseController
         $agent_ids = $request->get('ids') ?? array();
         $module = $request->get('module');
         $entity_id = $request->get('id');
+        $workflow = $request->get('workflow') ?? 'A';
 
-        $this->setStatusesParams($agent_ids, $module, $entity_id);
+        $this->templateParams($this->getStatusesParams($agent_ids, $module, $entity_id, $workflow));
 
         return $this->output('/common/validation-statuses.html.twig');
     }
@@ -855,7 +873,7 @@ class AbsenceController extends BaseController
 
         $baseurl = $this->config('URL');
 
-        // Absence with sevearl agents.
+        // Absence with several agents.
         $perso_ids = $request->get('perso_ids');
         $perso_ids = filter_var_array($perso_ids, FILTER_SANITIZE_NUMBER_INT);
 
@@ -1498,6 +1516,8 @@ class AbsenceController extends BaseController
         // If Absences-notifications-agent-par-agent is true,
         // delete all agents the logged in user cannot create absences for.
         if ($this->config('Absences-notifications-agent-par-agent') and !$this->adminN2) {
+
+            #TODO: Replace this with isManagerOf ?
             $logged_in = $this->entityManager->find(Agent::class, $session->get('loginId'));
             $accepted_ids = array_map(function($m) { return $m->getUser()->getId(); }, $logged_in->getManaged());
             $accepted_ids[] = $session->get('loginId');
