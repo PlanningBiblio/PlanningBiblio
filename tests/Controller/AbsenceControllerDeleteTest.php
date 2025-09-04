@@ -1,7 +1,9 @@
 <?php
 
 use App\Entity\Absence;
+use App\Entity\AbsenceReason;
 use App\Entity\Agent;
+use App\Entity\Manager;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 
@@ -23,6 +25,11 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $agents[2] = $this->builder->build(Agent::class, array('login' => 'kboivin'));
 
         $this->agents = $agents;
+
+        $absenceReason = $this->entityManager->getRepository(AbsenceReason::class)->findOneBy(['valeur' => 'Réunion']);
+        $absenceReason->setNotificationWorkflow('B');
+        $this->entityManager->persist($absenceReason);
+        $this->entityManager->flush();
     }
 
     public function test1()
@@ -402,6 +409,34 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result, 1);
     }
 
+    public function test19()
+    {
+        /**
+         * Absences-validation enabled
+         * Agent is admin level 1 (right 201)
+         * Absence is not his own
+         * Absence workflow is B
+         * The absence can be deleted
+         */
+
+        $this->setParam('Absences-validation', 1);
+        $this->setParam('Absences-notifications-agent-par-agent', 1);
+        $agents = $this->agents;
+        $managed1 = new Manager();
+        $managed1->setUser($agents[0]);
+        $managed1->setLevel1(1);
+        $managed1->setLevel2(0);
+        $agents[1]->addManaged($managed1);
+
+        $acl = [201];
+        $nbAgent = 1;
+        $result = 'empty';
+
+        $validations = [0,1];
+        $this->createAndTest($acl, $nbAgent, $validations, $result, 1);
+    }
+
+
 
 
     private function createAndTest($acl, $nbAgents = 1, $validations = [1,1], $result = 'empty', $loggedInAgentId = 0)
@@ -450,9 +485,9 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $test = $this->entityManager->getRepository(Absence::class)->findBy(['id' => $absence->getId()]);
 
         if ($result == 'empty') {
-            $this->assertEmpty($test, 'Absence not deleted');
+            $this->assertEmpty($test, 'Absence was not been deleted (it should have been deleted)');
         } else {
-            $this->assertNotEmpty($test, 'Absence deleted');
+            $this->assertNotEmpty($test, 'Absence was deleted (it should\'nt have been deleted)');
         }
     }
 }

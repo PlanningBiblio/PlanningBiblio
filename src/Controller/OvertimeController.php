@@ -216,7 +216,7 @@ class OvertimeController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        $this->setStatusesParams(array($perso_id), 'overtime', $id);
+        $this->templateParams($this->getStatusesParams(array($perso_id), 'overtime', $id));
 
 
         // Initialisation des variables (suite)
