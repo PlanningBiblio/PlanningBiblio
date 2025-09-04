@@ -699,7 +699,7 @@ class AbsenceController extends BaseController
         $module = $request->get('module');
         $entity_id = $request->get('id');
 
-        $this->setStatusesParams($agent_ids, $module, $entity_id);
+        $this->templateParams($this->getStatusesParams($agent_ids, $module, $entity_id));
 
         return $this->output('/common/validation-statuses.html.twig');
     }
@@ -1498,6 +1498,8 @@ class AbsenceController extends BaseController
         // If Absences-notifications-agent-par-agent is true,
         // delete all agents the logged in user cannot create absences for.
         if ($this->config('Absences-notifications-agent-par-agent') and !$this->adminN2) {
+
+            #TODO: Replace this with isManagerOf ?
             $logged_in = $this->entityManager->find(Agent::class, $session->get('loginId'));
             $accepted_ids = array_map(function($m) { return $m->getUser()->getId(); }, $logged_in->getManaged());
             $accepted_ids[] = $session->get('loginId');

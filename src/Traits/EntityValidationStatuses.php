@@ -7,10 +7,10 @@ use App\Entity\Agent;
 
 trait EntityValidationStatuses
 {
-    public function setStatusesParams($agent_ids, $module, $entity_id = null)
+    public function getStatusesParams($agent_ids, $module, $entity_id = null)
     {
         if (!$agent_ids) {
-            throw new \Exception("EntityValidationStatuses::setStatusesParams: No agent");
+            throw new \Exception("EntityValidationStatuses::getStatusesParams: No agent");
         }
 
         $show_select = false;
@@ -20,7 +20,7 @@ trait EntityValidationStatuses
 
         // At this point, overtime entities
         // and holiday are treated the same.
-        // This was not the cas in ValidationAwareEntity.
+        // This was not the case in ValidationAwareEntity.
         $module = $module == 'overtime' ? 'holiday' : $module;
 
         $adminN1 = true;
@@ -51,17 +51,18 @@ trait EntityValidationStatuses
             $show_select = 0;
         }
 
-        // Accepted N2 hildays cannot be changed.
+        // Accepted N2 holidays cannot be changed.
         if ($entity_state == 1 && $module == 'holiday') {
             $show_select = 0;
         }
 
-        $this->templateParams(array(
+        $params = array(
             'entity_state_desc' => $entity_state_desc,
             'entity_state'      => $entity_state,
             'show_select'       => $show_select,
             'show_n1'           => $show_n1,
             'show_n2'           => $show_n2,
-        ));
+        );
+        return $params;
     }
 }
