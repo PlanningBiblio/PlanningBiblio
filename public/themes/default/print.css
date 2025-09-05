@@ -26,14 +26,12 @@ body, #tab_titre {
 }
 
 #h3-Multisites {
-  top: 25mm;
-  left: 10mm;
+  margin: 0px 0px auto;
   font-weight: normal;
 }
 
 .pl-validation {
-  top: 8mm;
-  right: 10mm;
+  margin: 50px -80px auto;
   font-weight: normal;
 }
 
@@ -42,5 +40,9 @@ body, #tab_titre {
 }
 
 a, img, .noprint, .popper, .footer, .navigation, .ui-widget-header, div.ui-state-error, .menu_table, .ui-buttoni, #messages_infos, #pl-calendar, .arrow-right {
+  display:none;
+}
+
+.dt-buttons{
   display:none;
 }
