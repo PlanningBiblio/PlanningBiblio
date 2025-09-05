@@ -1,5 +1,17 @@
 # Changelog Planno
 
+## Version 25.05.06 (2025-09-05)
+
+### Enhancement
+
+- MT33227: Add a config param to disable SMTPAutoTLS #1116
+- MT48363: Add a config param to enable/disable OIDC debug mode #1156
+- MT49930: Make HolidayReminder Command silent #1157
+
+### Fixes
+
+- MT50065: Add missing permission for the homeWithSite route #1160
+
 ## Version 25.05.05 (2025-08-22)
 
 ### Dependencies
