@@ -1566,7 +1566,7 @@ class PlanningController extends BaseController
             'date'              => $date,
             'dates'             => $dates,
             'day'               => $jour,
-            'messages_infos'    => $messages_infos,
+            'informationMessages'    => $messages_infos,
             'public_holiday'    => jour_ferie($date),
             'site'              => $site,
             'week_view'         => $weekView,

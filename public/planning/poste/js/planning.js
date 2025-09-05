@@ -24,6 +24,10 @@ perso_nom_origine=null;
 // Enregistrer ces éléments dans une variable globale permet t'intéragir avec eux lors de la modification du planning, notamment pour ajouter et supprimer la class pl-highlight (surbrillance au survol)
 cellules = new Array();
 
+function showInformationMessages(informationMessages) {
+  alert(informationMessages);
+}
+
 // Chargement de la page
 $(document).ready(function(){
 
