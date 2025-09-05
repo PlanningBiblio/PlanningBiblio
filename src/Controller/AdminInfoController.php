@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -31,7 +33,7 @@ class AdminInfoController extends BaseController
         return $this->output('adminInfo/index.html.twig');
     }
 
-    #[Route(path: '/admin/info/add', name: 'admin.info.addform', methods: ['GET'])]
+    #[Route(path: '/admin/info/add', name: 'admin.info.add', methods: ['GET'])]
     public function addform(Request $request)
     {
         $this->templateParams(array(
@@ -44,12 +46,12 @@ class AdminInfoController extends BaseController
         return $this->output('adminInfo/edit.html.twig');
     }
 
-    #[Route(path: '/admin/info/{id}', name: 'admin.info.editform', methods: ['GET'])]
+    #[Route(path: '/admin/info/{id<\d+>}', name: 'admin.info.edit', methods: ['GET'])]
     public function editform(Request $request)
     {
         $id = $request->get('id');
 
-        $info = $this->entityManager->getRepository(AdminInfo::class)->findOneById($id);
+        $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
 
         $this->templateParams(array(
             'id'    => $id,
@@ -72,6 +74,13 @@ class AdminInfoController extends BaseController
         $start = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('start'));
         $end = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('end'));
         $text = trim($request->get('text'));
+
+        $htmlSanitizer = new HtmlSanitizer(
+            (new HtmlSanitizerConfig())->allowSafeElements()
+        );
+
+        $text = $htmlSanitizer->sanitize($text);
+        $text = html_entity_decode($text);
 
         if (empty($end)) {
           $end = $start;

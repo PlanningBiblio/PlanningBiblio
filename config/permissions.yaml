@@ -45,11 +45,11 @@
     - 201
 "account.index":
     - 100
-"admin.info.addform":
+"admin.info.add":
     - 23
 "admin.info.delete":
     - 23
-"admin.info.editform":
+"admin.info.edit":
     - 23
 "admin.info.update":
     - 23

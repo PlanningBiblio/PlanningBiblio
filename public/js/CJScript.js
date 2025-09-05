@@ -76,7 +76,7 @@ function CJInfo(message,type,top,time,myClass){
   if(top==undefined){
     top=82;
   }
-  
+
   if(time==undefined){
     time=8000;
   }
@@ -94,7 +94,7 @@ function CJInfo(message,type,top,time,myClass){
     id=$(this).attr("data-id")>=id?($(this).attr("data-id")+1):id;
     top=$(this).position().top+$(this).height()+5;
   });
-  
+
   message=message.replace(/#BR#/g,"<br/>");
   message=message.replace(/\n/g,"<br/>");
 

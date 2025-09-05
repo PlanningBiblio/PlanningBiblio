@@ -1768,3 +1768,19 @@ function verif_categorieA(){
     }
   });
 }
+
+var currentIndex = 0;
+function showInformationMessages(messages){
+  if (messages.length < 1) return false;
+
+  var msg = messages[currentIndex];
+  CJInfo(msg, null, null, 5000, null);
+  var delay = 5000;
+  if (currentIndex === messages.length - 1) {
+    delay = 10000;
+  }
+  currentIndex = (currentIndex + 1) % messages.length;
+  setTimeout(function() {
+    showInformationMessages(messages);
+  }, delay);
+}
