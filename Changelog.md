@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.05.07 (2025-09-05)
+
+### Enhancement
+
+- MT49909: use Doctrine Migration #1158
+
 ## Version 25.05.06 (2025-09-05)
 
 ### Enhancement
