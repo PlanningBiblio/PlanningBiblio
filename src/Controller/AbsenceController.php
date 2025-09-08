@@ -210,6 +210,8 @@ class AbsenceController extends BaseController
             $agent_preselection = 1;
         }
 
+        $acces = true;
+
         $this->templateParams(array(
             'abences_infos'         => $this->absenceInfos(),
             'admin'                 => $this->admin || $this->adminN2,
@@ -226,9 +228,11 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'reasons'               => $this->availablesReasons(),
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
+            'is_edit'               => false,
+            'access'                => true,
         ));
 
-        return $this->output('absences/add.html.twig');
+        return $this->output('absences/edit.html.twig');
     }
 
     #[Route(path: '/absence', name: 'absence.save', methods: ['POST'])]
@@ -441,6 +445,7 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'display_autre'         => $display_autre,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
+            'is_edit'               => true,
         ));
 
         $this->templateParams(array('documents' => $this->getDocuments($a)));

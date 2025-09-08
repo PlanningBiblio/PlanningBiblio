@@ -1,5 +1,4 @@
 {# absences/edit.html.twig #}
-
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
@@ -15,13 +14,17 @@
     });
   </script>
   <div id="content-admin">
-    <h3>Modification de l'absence</h3>
+    {% if is_edit %}
+      <h3>Modification de l'absence</h3>
+    {% else %}
+      <h3>Ajouter une absence</h3>
+    {% endif %}
     <div class="content-div">
-      {% if not access %}
+      {% if is_edit and not access %}
           Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>
           <a href='{{ asset("absence") }}'>Retour à la liste des absences</a><br/><br/>
       {% else %}
-        <form name='form' id='form' method='post' action='{{ asset("absence") }}' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
+        <form name='form' id='form' method='post' action='{{ asset("absence") }}' enctype='multipart/form-data' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
           <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />
@@ -33,16 +36,37 @@
           <input type='hidden' name='absence_status' id='absence_status' value="{{ absence.status }}" />
 
           <table class='tableauFiches'>
-            {% for agent in agents %}
-              <input type='hidden' name='perso_ids[]' value='{{ agent.perso_id}}' id='hidden{{ agent.perso_id}}' class='perso_ids_hidden'/>
-              <input type="hidden" id="agent_{{ agent.perso_id }}" value="{{ agent.nom }} {{ agent.prenom }} {% if agent.deleted > 0 %} (supprimé) {% endif %}" />
-            {% endfor %}
+            {% if is_edit %}
+              {% for agent in agents %}
+                <input type='hidden' name='perso_ids[]' value='{{ agent.perso_id}}' id='hidden{{ agent.perso_id}}' class='perso_ids_hidden'/>
+                <input type="hidden" id="agent_{{ agent.perso_id }}" value="{{ agent.nom }} {{ agent.prenom }} {% if agent.deleted > 0 %} (supprimé) {% endif %}" />
+              {% endfor %}
+            {% endif %}
 
             {% if agents_multiples %}
               <tr>
                 <td class="textAlignRight"><label>Agent(s)</label></td>
                 <td colspan='2'>
-                  <ul id='perso_ul1' class='perso_ul'></ul>
+                  {% if not is_edit%}
+                    {% if agent_preselection %}
+                      <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/>
+                    {% endif %}
+
+                    <ul id='perso_ul1' class='perso_ul'>
+                      {% if agent_preselection %}
+                        <li id='li{{ loggedin_id }}' class='perso_ids_li'>
+                          {{ loggedin_name }} {{ loggedin_firstname }}
+                          {% if admin %}
+                            <span class='perso-drop' onclick="supprimeAgent({{ loggedin_id }});">
+                              <span class='pl-icon pl-icon-dropblack'></span>
+                            </span>
+                          {% endif %}
+                        </li>
+                      {% endif %}
+                    </ul>
+                  {% else %}
+                    <ul id='perso_ul1' class='perso_ul'></ul>
+                  {% endif %}
                   <ul id='perso_ul2' class='perso_ul'></ul>
                   <ul id='perso_ul3' class='perso_ul'></ul>
                   <ul id='perso_ul4' class='perso_ul'></ul>
@@ -54,39 +78,59 @@
                 <td>
                   <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
                     <option value='0' selected='selected'>-- Ajoutez un agent --</option>
-                    {% if absences_tous %}
+                    {% if absences_tous or config('Absences-tous') %}
                       <option value='tous'>Tous les agents</option>
                     {% endif %}
 
-                    {% for a in agents_tous %}
-                      {% if a.id in absence.perso_id %}
-                        <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">{{ a.lastname }} {{ a.firstname }}</option>
-                      {% else %}
-                        <option value='{{ a.id }}' id='option{{ a.id }}'>{{ a.lastname }} {{ a.firstname }}</option>
-                      {% endif %}
-                    {% endfor %}
+                    {% if not is_edit%}
+                      {% for a in agents_tous %}
+                        {% if a.id in absence.perso_id %}
+                          <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">{{ a.lastname }} {{ a.firstname }}</option>
+                        {% else %}
+                          <option value='{{ a.id }}' id='option{{ a.id }}'>{{ a.lastname }} {{ a.firstname }}</option>
+                        {% endif %}
+                      {% endfor %}
+                    {% else %}
+                      {% for a in agents %}
+                        {% if a.id == loggedin_id and agent_preselection %}
+                          <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">
+                            {{ a.lastname }} {{ a.firstname }}
+                          </option>
+                        {% else %}
+                          <option value='{{ a.id }}' id='option{{ a.id }}'>
+                            {{ a.lastname }} {{ a.firstname }}
+                          </option>
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
                   </select>
                 </td>
               </tr>
             {% else %}
-              {% if agents | length > 1 %}
-                <tr>
-                  <td class="textAlignRight"><label>Agents</label></td>
-                  <td>
-                    <ul>
-                      {% for a in agents %}
-                        <li>{{ a.nom }} {{ a.prenom }}</li>
-                      {% endfor %}
-                    </ul>
-                  </td>
-                </tr>
+              {% if not is_edit%}
+                {% if agents | length > 1 %}
+                  <tr>
+                    <td class="textAlignRight"><label>Agents</label></td>
+                    <td>
+                      <ul>
+                        {% for a in agents %}
+                          <li>{{ a.nom }} {{ a.prenom }}</li>
+                        {% endfor %}
+                      </ul>
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td class="textAlignRight"><label>Agent</label></td>
+                    <td>{{ absence.nom }} {{ absence.prenom }}</td>
+                  </tr>
+                {% endif %}
               {% else %}
-                <tr>
-                  <td class="textAlignRight"><label>Agent</label></td>
-                  <td>{{ absence.nom }} {{ absence.prenom }}</td>
-                </tr>
+                <input type='hidden' name='perso_id' value='{{ loggedin_id }}' class='perso_ids_hidden' />
+                {{ loggedin_name }} {{ loggedin_firstname }}
               {% endif %}
             {% endif %}
+
               <tr>
                 <td class="textAlignRight"><label>Journée(s) entière(s)</label></td>
                 <td>
