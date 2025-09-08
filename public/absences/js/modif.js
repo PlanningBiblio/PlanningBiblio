@@ -207,6 +207,9 @@ $(function() {
     
   });
 
+  $("#motif").change(function(){
+    update_validation_statuses();
+  });
   
   $("#absence-bouton-supprimer").click(function(){
 
@@ -667,7 +670,9 @@ function update_validation_statuses() {
   }
 
   absence_id = $('input[name="id"]').val();
-  var workflow = $('#workflow').val() || 'A';
+
+
+  var workflow = $("select[name=motif] option:selected").attr("data-workflow") || 'A';
 
   $.ajax({
     url: url('absence-statuses'),

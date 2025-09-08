@@ -170,16 +170,16 @@
                       <option value=''></option>
                       {% for r in reasons %}
                         {% if r.type == 2 %}
-                          <option value="{{ r.valeur }}" class="padding20">
+                          <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="padding20">
                             &nbsp;&nbsp;&nbsp;{{ r.valeur }}
                           </option>
                         {% else %}
                           {% if r.type == 1 %}
-                            <option value="{{ r.valeur }}" class="bold" disabled="disabled">
+                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" disabled="disabled">
                               {{ r.valeur }}
                             </option>
                           {% else %}
-                            <option value="{{ r.valeur }}" class="bold">
+                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold">
                               {{ r.valeur }}
                             </option>
                           {% endif %}

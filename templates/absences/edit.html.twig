@@ -160,22 +160,22 @@
                       {% for r in reasons %}
                         {% if r.type == 2 %}
                           {% if r.valeur == absence.motif %}
-                          <option value="{{ r.valeur }}" class="padding20" selected="selected">
+                          <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="padding20" selected="selected">
                           {% else %}
-                          <option value="{{ r.valeur }}" class="padding20">
+                          <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="padding20">
                           {% endif %}
                             &nbsp;&nbsp;&nbsp;{{ r.valeur }}
                           </option>
                         {% else %}
                           {% if r.type == 1 %}
-                            <option value="{{ r.valeur }}" class="bold" disabled="disabled">
+                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" disabled="disabled">
                               {{ r.valeur }}
                             </option>
                           {% else %}
                             {% if r.valeur == absence.motif %}
-                            <option value="{{ r.valeur }}" class="bold" selected="selected">
+                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" selected="selected">
                             {% else %}
-                            <option value="{{ r.valeur }}" class="bold">
+                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold">
                             {% endif %}
                               {{ r.valeur }}
                             </option>

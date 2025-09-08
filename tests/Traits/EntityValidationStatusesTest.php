@@ -1,4 +1,5 @@
 <?php 
+use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\Model;
 use App\Entity\Manager;
@@ -32,8 +33,18 @@ class EntityValidationStatusesTest extends PLBWebTestCase
 
         # descriptions
         $desc_state_0 = "Demandée";
-        $meeting_reason = "Réunion";
-        $meeting_reason = "Formation";
+        $desc_state_1 = "Acceptée";
+        $desc_state_2 = "Acceptée (En attente de validation hiérarchique)";
+        $workflow_b_reason = 'Reason with workflow B';
+
+        # Absence reason with workflow B
+        $ar = new AbsenceReason();
+        $ar->setValue($workflow_b_reason);
+        $ar->setRank(1);
+        $ar->setType(1);
+        $ar->setTeleworking(0);
+        $ar->setNotificationWorkflow('B');
+        $this->entityManager->persist($ar);
 
         # Logged-in user
         # Scenarios: logged in as: myself, no-rights, level1, level2, admin
@@ -44,21 +55,18 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $manager_level1_for_agent1 = $builder->build(Agent::class);
         $manager_level2_for_agent1 = $builder->build(Agent::class);
 
-        $manager1 = new Manager();
-        $manager1->setUser($agent1);
-        $manager1->setLevel1(1);
-        $manager1->setLevel2(0);
-        $manager_level1_for_agent1->addManaged($manager1);
+        $managed1 = new Manager();
+        $managed1->setUser($agent1);
+        $managed1->setLevel1(1);
+        $managed1->setLevel2(0);
+        $manager_level1_for_agent1->addManaged($managed1);
 
-        $manager2 = new Manager();
-        $manager2->setUser($agent1);
-        $manager2->setLevel1(0);
-        $manager2->setLevel2(1);
-        $manager_level2_for_agent1->addManaged($manager2);
+        $managed2 = new Manager();
+        $managed2->setUser($agent1);
+        $managed2->setLevel1(0);
+        $managed2->setLevel2(1);
+        $manager_level2_for_agent1->addManaged($managed2);
 
-
-
-        echo "manager " .  $manager_level1_for_agent1->getId() . " agent " . $agent1->getId(); 
         $this->assertTrue($manager_level1_for_agent1->isManagerOf(array($agent1->getId())));
 
         #$this->logInAgent($agent1, $agent1->getACL());
@@ -97,6 +105,7 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         # MANAGER LEVEL1
         $this->login($manager_level1_for_agent1);
         $_SESSION['login_id'] = $manager_level1_for_agent1->getId();
+
         # CREATION
         $params = $this->getStatusesParams($agents_ids, $module);
         $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
@@ -115,13 +124,22 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->assertTrue($params['show_n1'], 'Show n1');
         $this->assertFalse($params['show_n2'], 'Show n2');
 
-        # MT49914: Simplified absence validation schema for meetings
-        $absence_id = $this->createAbsenceFor($agent1, 0, $meeting_reason); 
+        # Logged-in as manager level1, editing an absence for agent1
+        $absence_id = $this->createAbsenceFor($agent1, 2); 
         $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
-        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
-        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertEquals($desc_state_2, $params['entity_state_desc'], 'entity state description is Accepted (waiting for hierarchy approval)');
+        $this->assertEquals(2, $params['entity_state'], 'entity state');
         $this->assertTrue($params['show_select'], 'showing select');
-        $this->assertFalse($params['show_n1'], 'Show n1 when editing a meeting');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertFalse($params['show_n2'], 'Show n2');
+
+        # MT49914: Simplified absence validation schema with workflow B
+        $absence_id = $this->createAbsenceFor($agent1, 1, $workflow_b_reason); 
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id, 'B');
+        $this->assertEquals($desc_state_1, $params['entity_state_desc'], 'entity state description is Accepted');
+        $this->assertEquals(1, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertFalse($params['show_n1'], 'Don\'t show n1 when editing a workflow B absence');
         $this->assertTrue($params['show_n2'], 'Show n2');
 
         # MANAGER LEVEL2
@@ -145,6 +163,11 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->assertTrue($params['show_n1'], 'Show n1');
         $this->assertTrue($params['show_n2'], 'Show n2');
 
+
+        # Once valid n1:
+        # Logged-in as manager level2, editing a valid n1 absence for agent1 without Workflow B
+
+        # Logged-in as manager level2, editing a valid n1 absence for agent1 with Workflow B
 
 
         # Let's change logged-in user

@@ -40,22 +40,26 @@ trait EntityValidationStatuses
         $show_n1 = $adminN1 || $adminN2;
         $show_n2 = $adminN2;
 
+        // Simplified absence validation schema for workflow B
+        if ($workflow == 'B' && $module == 'absence' && ($entity_state == 0 || $entity_state = 1)) {
+            $show_n1 = false;
+        } 
+
         // Only adminN2 can change statuses of
         // validated N2 entities.
         if (in_array($entity_state, [1, -1]) && !$adminN2) {
-            $show_select = 0;
+            $show_select = false;
         }
 
         // Prevent user without right L1 to directly validate l2
         if (!$adminN1 && $entity_state == 0 && $entity->needsValidationL1()) {
-            $show_select = 0;
+            $show_select = false;
         }
 
         // Accepted N2 holidays cannot be changed.
         if ($entity_state == 1 && $module == 'holiday') {
-            $show_select = 0;
+            $show_select = false;
         }
-
         $params = array(
             'entity_state_desc' => $entity_state_desc,
             'entity_state'      => $entity_state,
