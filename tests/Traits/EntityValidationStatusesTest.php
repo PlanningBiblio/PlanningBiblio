@@ -54,6 +54,7 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $agent1 = $builder->build(Agent::class);
         $manager_level1_for_agent1 = $builder->build(Agent::class);
         $manager_level2_for_agent1 = $builder->build(Agent::class);
+        $manager_level1_level2_for_agent1 = $builder->build(Agent::class);
 
         $managed1 = new Manager();
         $managed1->setUser($agent1);
@@ -67,7 +68,24 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $managed2->setLevel2(1);
         $manager_level2_for_agent1->addManaged($managed2);
 
-        $this->assertTrue($manager_level1_for_agent1->isManagerOf(array($agent1->getId())));
+        $managed3 = new Manager();
+        $managed3->setUser($agent1);
+        $managed3->setLevel1(1);
+        $managed3->setLevel2(1);
+        $manager_level1_level2_for_agent1->addManaged($managed3);
+
+
+        $this->assertTrue( $manager_level1_for_agent1->isManagerOf(array($agent1->getId()), 'level1'));
+        $this->assertFalse($manager_level1_for_agent1->isManagerOf(array($agent1->getId()), 'level2'));
+
+        $this->assertFalse($manager_level2_for_agent1->isManagerOf(array($agent1->getId()), 'level1'));
+        $this->assertTrue( $manager_level2_for_agent1->isManagerOf(array($agent1->getId()), 'level2'));
+
+        $this->assertTrue($manager_level1_level2_for_agent1->isManagerOf(array($agent1->getId()), 'level1'));
+        $this->assertTrue($manager_level1_level2_for_agent1->isManagerOf(array($agent1->getId()), 'level2'));
+
+
+
 
         #$this->logInAgent($agent1, $agent1->getACL());
         $this->login($agent1);
@@ -145,7 +163,17 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         # MANAGER LEVEL2
         $this->login($manager_level2_for_agent1);
         $_SESSION['login_id'] = $manager_level2_for_agent1->getId();
+
         # CREATION
+        $this->setParam('Absences-Validation-N2', 1);
+        $params = $this->getStatusesParams($agents_ids, $module);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertFalse($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        $this->setParam('Absences-Validation-N2', 0);
         $params = $this->getStatusesParams($agents_ids, $module);
         $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
         $this->assertEquals(0, $params['entity_state'], 'entity state');
@@ -155,6 +183,16 @@ class EntityValidationStatusesTest extends PLBWebTestCase
 
         # EDITION
         # Logged-in as manager level2, editing an absence for agent1
+        $this->setParam('Absences-Validation-N2', 1);
+        $absence_id = $this->createAbsenceFor($agent1); 
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertFalse($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        $this->setParam('Absences-Validation-N2', 0);
         $absence_id = $this->createAbsenceFor($agent1); 
         $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
         $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
@@ -162,6 +200,49 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->assertTrue($params['show_select'], 'showing select');
         $this->assertTrue($params['show_n1'], 'Show n1');
         $this->assertTrue($params['show_n2'], 'Show n2');
+
+        # MANAGER LEVEL1 & LEVEL2
+        $this->login($manager_level1_level2_for_agent1);
+        $_SESSION['login_id'] = $manager_level1_level2_for_agent1->getId();
+
+        # CREATION
+        $this->setParam('Absences-Validation-N2', 1);
+        $params = $this->getStatusesParams($agents_ids, $module);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        $this->setParam('Absences-Validation-N2', 0);
+        $params = $this->getStatusesParams($agents_ids, $module);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        # EDITION
+        # Logged-in as manager level 1 & 2, editing an absence for agent1
+        $this->setParam('Absences-Validation-N2', 1);
+        $absence_id = $this->createAbsenceFor($agent1); 
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+        $this->setParam('Absences-Validation-N2', 0);
+        $absence_id = $this->createAbsenceFor($agent1); 
+        $params = $this->getStatusesParams($agents_ids, $module, $absence_id);
+        $this->assertEquals($desc_state_0, $params['entity_state_desc'], 'entity state description is Asked for');
+        $this->assertEquals(0, $params['entity_state'], 'entity state');
+        $this->assertTrue($params['show_select'], 'showing select');
+        $this->assertTrue($params['show_n1'], 'Show n1');
+        $this->assertTrue($params['show_n2'], 'Show n2');
+
+
 
 
         # Once valid n1:
