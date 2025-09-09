@@ -20,20 +20,28 @@
       <h3>Ajouter une absence</h3>
     {% endif %}
     <div class="content-div">
-      {% if is_edit and not access %}
+      {% if not access %}
           Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>
           <a href='{{ asset("absence") }}'>Retour à la liste des absences</a><br/><br/>
       {% else %}
-        <form name='form' id='form' method='post' action='{{ asset("absence") }}' enctype='multipart/form-data' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
-          <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
-          <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
-          <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />
-          <input type='hidden' id='admin' value='{{ admin }}' />
-          <input type='hidden' id='login_id' value='{{ loggedin_id }}' />
-          <input type='hidden' name='groupe' id='groupe' value='{{ absence.groupe }}' />
-          <input type='hidden' name='rrule' id='rrule' value='{{ absence.rrule }}' />
-          <input type='hidden' name='recurrence-modif' id='recurrence-modif' value='' />
-          <input type='hidden' name='absence_status' id='absence_status' value="{{ absence.status }}" />
+        {% if is_edit %}
+          <form name='form' id='form' method='post' action='{{ asset("absence") }}' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
+            <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+            <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+            <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />
+            <input type='hidden' id='admin' value='{{ admin }}' />
+            <input type='hidden' id='login_id' value='{{ loggedin_id }}' />
+            <input type='hidden' name='groupe' id='groupe' value='{{ absence.groupe }}' />
+            <input type='hidden' name='rrule' id='rrule' value='{{ absence.rrule }}' />
+            <input type='hidden' name='recurrence-modif' id='recurrence-modif' value='' />
+            <input type='hidden' name='absence_status' id='absence_status' value="{{ absence.status }}" />
+          {% else %}
+            <form id="form" name='form' action='/absence' method='post' enctype='multipart/form-data'>
+              <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+              <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+              <input type='hidden' id='admin' value='{{ admin }}' />
+              <input type='hidden' id='login_id' value='{{ loggedin_id }}' />
+          {% endif %}
 
           <table class='tableauFiches'>
             {% if is_edit %}
@@ -82,7 +90,7 @@
                       <option value='tous'>Tous les agents</option>
                     {% endif %}
 
-                    {% if not is_edit%}
+                    {% if is_edit%}
                       {% for a in agents_tous %}
                         {% if a.id in absence.perso_id %}
                           <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">{{ a.lastname }} {{ a.firstname }}</option>
@@ -107,7 +115,7 @@
                 </td>
               </tr>
             {% else %}
-              {% if not is_edit%}
+              {% if is_edit %}
                 {% if agents | length > 1 %}
                   <tr>
                     <td class="textAlignRight"><label>Agents</label></td>
@@ -134,20 +142,25 @@
               <tr>
                 <td class="textAlignRight"><label>Journée(s) entière(s)</label></td>
                 <td>
-                  {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-                    <input type='checkbox' name='allday' checked="checked" onclick='all_day();'/>
+                  {% if is_edit %}
+                    {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
+                      <input type='checkbox' name='allday' checked="checked" onclick='all_day();'/>
+                    {% else %}
+                      <input type='checkbox' name='allday' onclick='all_day();'/>
+                    {% endif %}
                   {% else %}
-                    <input type='checkbox' name='allday' onclick='all_day();'/>
+                    <input type='checkbox' name='allday' {% if fullday_checked %} checked="checked" {% endif %} onclick='all_day();'/>
                   {% endif %}
+
                 </td>
               </tr>
               <tr>
                 <td class="textAlignRight"><label>Date de début</label> </td>
                 <td style='white-space:nowrap;'>
-                  <input type='text' name='debut' value='{{ debut }}' style='width:100%;' class='datepicker'/>
+                  <input type='text' name='debut' value='{{ is_edit ? debut : '' }}' style='width:100%;' class='datepicker {{ not is_edit ? 'recurrence-start' : '' }}' id='absence-start'/>
                 </td>
               </tr>
-                {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
+                {% if (hre_debut == '00:00:00' and hre_fin == '23:59:59') or fullday_checked %}
                   <tr id='hre_debut' style="display:none;">
                 {% else %}
                   <tr id='hre_debut'>
@@ -157,7 +170,7 @@
                 </td>
                 <td>
                   <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
-                    value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}"/>
+                    value="{{ (is_edit and hre_debut != '00:00:00') ? hre_debut|date('H:i') : '' }}"/>
                 </td>
               </tr>
               <tr>
@@ -165,18 +178,20 @@
                   <label>Date de fin</label>
                 </td>
                 <td style='white-space:nowrap;'>
-                  <input type='text' name='fin' value='{{ fin }}' style='width:100%;' class='datepicker'/>
+                  <input type='text' name='fin' value='{{ is_edit ? fin : '' }}' style='width:100%;' class='datepicker'/>
                 </td>
               </tr>
                 {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
                   <tr id='hre_fin' style="display:none;" data-hr="{{ hre_fin }}">
+                {% elseif fullday_checked%}
+                  <tr id='hre_fin' style='display:none;' >
                 {% else %}
                   <tr id='hre_fin'>
                 {% endif %}
                   <td class="textAlignRight"><label>Heure de fin</label></td>
                   <td>
                     <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
-                      value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
+                      value="{% if is_edit and hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}} {% else %} {% endif %}"/>
                 </td>
               </tr>
 
@@ -185,10 +200,10 @@
                   <label>Récurrence</label>
                 </td>
                 <td style='padding-bottom:30px;'>
-                  <input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1' disabled='disabled' />
+                  <input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1' {% if is_edit %} disabled='disabled' {% endif %} />
                   <span id='recurrence-info' style='display:none;'>
                     <span id='recurrence-summary'>&nbsp;</span>
-                    <a href='#' id='recurrence-link' style='margin-left:10px; display:none;'>Modifier</a>
+                    <a href='#' id='recurrence-link' style='margin-left:10px; {% if is_edit %}display:none;{% endif %}'>Modifier</a>
                   </span>
                   <input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />
                 </td>
@@ -202,8 +217,8 @@
                     <option value=''></option>
                       {% for r in reasons %}
                         {% if r.type == 2 %}
-                          {% if r.valeur == absence.motif %}
-                          <option value="{{ r.valeur }}" class="padding20" selected="selected">
+                          {% if is_edit and r.valeur == absence.motif %}
+                            <option value="{{ r.valeur }}" class="padding20" selected="selected">
                           {% else %}
                           <option value="{{ r.valeur }}" class="padding20">
                           {% endif %}
@@ -215,8 +230,8 @@
                               {{ r.valeur }}
                             </option>
                           {% else %}
-                            {% if r.valeur == absence.motif %}
-                            <option value="{{ r.valeur }}" class="bold" selected="selected">
+                            {% if is_edit and r.valeur == absence.motif %}
+                              <option value="{{ r.valeur }}" class="bold" selected="selected">
                             {% else %}
                             <option value="{{ r.valeur }}" class="bold">
                             {% endif %}
@@ -227,18 +242,18 @@
                       {% endfor %}
                     </select>
                   {% if admin and not config('Planook') %}
-                    <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer;' id='add-motif-button'/>
+                    <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer;' id='add-motif-button'/></span>
                   {% endif %}
                 </td>
               </tr>
-              {% if display_autre %}
+              {% if is_edit and display_autre %}
                 <tr id='tr_motif_autre'>
               {% else %}
                 <tr style="display:none;" id='tr_motif_autre'>
               {% endif %}
-                <td><label>Motif (autre)</label></td>
+                <td class="textAlignRight"><label>Motif (autre)</label></td>
                 <td>
-                  <input type='text' name='motif_autre' style='width:100%;' value='{{ absence.motif_autre }}' class='ui-widget-content ui-corner-all'/>
+                  <input type='text' name='motif_autre' style='width:100%;' value='{{ is_edit ? absence.motif_autre : '' }}' class='ui-widget-content ui-corner-all'/>
                 </td>
               </tr>
 
@@ -247,68 +262,47 @@
                   <label>Commentaires</label>
                 </td>
                 <td>
-                  <textarea name='commentaires' cols='25' rows='5' class='ui-widget-content ui-corner-all'>{{ absence.commentaires }}</textarea>
+                  <textarea name='commentaires' cols='25' rows='5' class='ui-widget-content ui-corner-all'>{{ is_edit ? absence.commentaires : '' }}</textarea>
                 </td>
               </tr>
 
               {% if right701 %}
                 <tr style='vertical-align:top;'>
                   <td class="textAlignRight"><label>Pièces justificatives</label></td>
-                  <td>
-                    {% if absence.pj1 %}
-                      <div class='absences-pj-fiche'>
-                        PJ1 
-                        <input type='checkbox' name='pj1' id='pj1' checked="checked"/>
-                      </div>
-                    {% else %}
-                      <div class='absences-pj-fiche'>
-                        PJ1 
-                        <input type='checkbox' name='pj1' id='pj1'/>
-                      </div>
-                    {% endif %}
-
-                    {% if absence.pj2 %}
-                      <div class='absences-pj-fiche'>
-                        PJ2 
-                        <input type='checkbox' name='pj2' id='pj2' checked="checked"/>
-                      </div>
-                    {% else %}
-                      <div class='absences-pj-fiche'>
-                        PJ2 
-                        <input type='checkbox' name='pj2' id='pj2'/>
-                      </div>
-                    {% endif %}
-
-                    {% if absence.so %}
-                      <div class='absences-pj-fiche'>
-                        so 
-                        <input type='checkbox' name='so' id='so' checked="checked"/>
-                      </div>
-                    {% else %}
-                      <div class='absences-pj-fiche'>
-                        SO 
-                        <input type='checkbox' name='so' id='so'/>
-                      </div>
-                    {% endif %}
-                  </td>
+                    <td>
+                      {% if is_edit %}
+                        <div class='absences-pj-fiche'>PJ1 <input type='checkbox' name='pj1' id='pj1' {{ absence.pj1 ? 'checked="checked"' : '' }}/></div>
+                        <div class='absences-pj-fiche'>PJ2 <input type='checkbox' name='pj2' id='pj2' {{ absence.pj2 ? 'checked="checked"' : '' }}/></div>
+                        <div class='absences-pj-fiche'>SO <input type='checkbox' name='so' id='so' {{ absence.so ? 'checked="checked"' : '' }}/></div>
+                      {% else %}
+                        <div class='absences-pj-fiche'>PJ1 <input type='checkbox' name='pj1' id='pj1' /></div>
+                        <div class='absences-pj-fiche'>PJ2 <input type='checkbox' name='pj2' id='pj2' /></div>
+                        <div class='absences-pj-fiche'>SO <input type='checkbox' name='so' id='so' /></div>
+                      {% endif %}
+                    </td>
                 </tr>
               {% endif %}
 
                 <tr style='vertical-align:top;'>
-                  <td class="textAlignRight"><label>Documents attachés</label></td>
-                  <td>
-                    <ul id='documentsList'>
-                      {% for document in documents %}
-                        <li id="document_{{ document.id}}"><a href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</a>
-                        {% if absence.editable %}
-                            <a href="javascript:deleteAbsenceDocument({{ document.id }});">supprimer</a></li>
-                        {% endif %}
-                      {% endfor %}
-                    </ul>
-                  </td>
+                  <td class="textAlignRight"><label>{% if is_edit %} Documents attachés {% else %} Attacher un document {% endif %}</label></td>
+                  {% if is_edit %}
+                    <td>
+                      <ul id='documentsList'>
+                        {% for document in documents %}
+                          <li id="document_{{ document.id}}"><a href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</a>
+                          {% if absence.editable %}
+                              <a href="javascript:deleteAbsenceDocument({{ document.id }});">supprimer</a>
+                          {% endif %}
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </td>
+                  {% else %}
+                    <td><input type="file" name="documentFile" id="documentFile" /></td>
+                  {% endif %}
                 </tr>
 
-                {% if absence.editable %}
+                {% if is_edit and absence.editable %}
                     <tr style='vertical-align:top;'>
                     <td class="textAlignRight">
                         <label>Attacher un document</label>
@@ -317,45 +311,210 @@
                     </tr>
                 {% endif %}
 
-              {% if absences_validation %}
+              {% if absences_validation or config('Absences-validation')%}
                 <tr id="validation-line">
-                  <td class="textAlignRight"><label>Validation</label></td>
+                  <td class="textAlignRight"><label>{% if is_edit %} Validation {% else %} État {% endif %}</label></td>
                   <td id="validation-statuses"></td>
                 </tr>
               {% endif %}
 
               <tr>
-                <td class="textAlignRight"><label>Demande</label></td>
-                <td>{{ absence.demande }}</td>
+                {% if is_edit %}
+                  <td class="textAlignRight"><label>Demande</label></td>
+                  <td>{{ absence.demande }}</td>
+                {% else %}
+                  <td>&nbsp;</td>
+                {% endif %}
               </tr>
 
               <tr>
-                <td colspan='2'><br/>
-                  {% if absence.editable %}
-                    <input type='button' class='ui-button ui-button-type3' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/> 
-                    <input type='button' class='ui-button ui-button-type2' value='Annuler' onclick="annuler(1);"/> 
-                    <input type='submit' class='ui-button' value='Valider'/>
+                <td colspan='2' style='text-align:Right;'><br/>
+                  {% if is_edit %}
+                    {% if absence.editable %}
+                      <input type='button' class='ui-button ui-button-type3' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/>
+                      <input type='button' class='ui-button ui-button-type2' value='Annuler' onclick="annuler(1);"/>
+                      <input type='submit' class='ui-button' value='Valider'/>
+                    {% else %}
+                      <a href='{{ asset("absence") }}' class='ui-button'>Retour</a>
+                    {% endif %}
                   {% else %}
-                    <a href='{{ asset("absence") }}' class='ui-button'>Retour</a>
+                    <input type='button' class='ui-button ui-button-type2' value='Annuler' onclick="document.location.href='{{asset('absence')}}';" />
+                    &nbsp;&nbsp;
+                    <input type='submit' class='ui-button' value='Valider' />
                   {% endif %}
-
                 </td>
               </tr>
           </table>
-          <input type='hidden' name='id' value='{{ id }}'/>
+          {% if is_edit %}
+            <input type='hidden' name='id' value='{{ id }}'/>
+          {% endif %}
         </form>
+        {% if is_edit %}
+          <div id="recurrence-form-tmp" title="Récurrence" class='noprint' style='display:none;'>
+            <p>La modification des règles de récurrence n'est pas possible.</p>
+          </div>
 
-        <div id="recurrence-form-tmp" title="Récurrence" class='noprint' style='display:none;'>
-          <p>La modification des règles de récurrence n'est pas possible.</p>
-        </div>
+          <div id="recurrence-alert" title="Modification d'une absence récurrente" class='noprint' style='display:none;'>
+            <p>Souhaitez-vous modifier uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+          </div>
 
-        <div id="recurrence-alert" title="Modification d'une absence récurrente" class='noprint' style='display:none;'>
-          <p>Souhaitez-vous modifier uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
-        </div>
+          <div id="recurrence-alert-suppression" title="Suppression d'une absence récurrente" class='noprint' style="display:none;">
+            <p>Souhaitez-vous supprimer uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+          </div>
+        {% else %}
+          <div class="red info-align">
+            {% if abences_infos %}
+              <b>Informations congés / absences :</b><br/>
+              {% for a in abences_infos %}
+                Du {{ a.debut_fr }} au {{ a.fin_fr }} : {{ a.texte }}<br/>
+              {% endfor %}
+            {% endif %}
 
-        <div id="recurrence-alert-suppression" title="Suppression d'une absence récurrente" class='noprint' style="display:none;">
-          <p>Souhaitez-vous supprimer uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
-        </div>
+          </div>
+          <div id="recurrence-enddate-alert" title="Date de fin de récurrence" class='noprint' style='display:none;'>
+            Pour les absences récurrentes, la date de fin ne doit pas être saisie dans le formulaire d'absence mais dans la fenêtre de configuration de la récurrence.<br/>
+            Voulez-vous supprimer la date de fin choisie ?
+          </div>
+          <div id="recurrence-form" title="Récurrence" class='noprint' style='display:none;'>
+            <p class="validateTips">&nbsp;</p>
+            <form>
+              <table class='tableauFiches'>
+                <tr>
+                  <td>
+                    <label  for='recurrence-freq'>Récurrent :
+                  </td>
+
+                  <td>
+                    <select name='recurrence-freq' id='recurrence-freq' class='recurrence'>
+                      <option value='DAILY'>Tous les jours</option>
+                      <option value='WEEKLY' selected='selected'>Toutes les semaines</option>
+                      <option value='MONTHLY'>Tous les mois</option>
+                    </select>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <label  for='recurrence-interval' >R&eacute;p&eacute;ter tous les : </label>
+                  </td>
+
+                  <td>
+                    <select name='recurrence-interval' id='recurrence-interval' style='width:50%;' class='recurrence'>
+                      <option value='1'>1</option>
+                      <option value='2'>2</option>
+                      <option value='3'>3</option>
+                      <option value='4'>4</option>
+                      <option value='5'>5</option>
+                      <option value='6'>6</option>
+                      <option value='7'>7</option>
+                      <option value='8'>8</option>
+                      <option value='9'>9</option>
+                      <option value='10'>10</option>
+                      <option value='11'>11</option>
+                      <option value='12'>12</option>
+                      <option value='13'>13</option>
+                      <option value='14'>14</option>
+                      <option value='15'>15</option>
+                      <option value='16'>16</option>
+                      <option value='17'>17</option>
+                      <option value='18'>18</option>
+                      <option value='19'>19</option>
+                      <option value='20'>20</option>
+                      <option value='21'>21</option>
+                      <option value='22'>22</option>
+                      <option value='23'>23</option>
+                      <option value='24'>24</option>
+                      <option value='25'>25</option>
+                      <option value='26'>26</option>
+                      <option value='27'>27</option>
+                      <option value='28'>28</option>
+                      <option value='29'>29</option>
+                      <option value='30'>30</option>
+                    </select>
+                    <span id='recurrence-repet-freq'>semaines</span>
+                  </td>
+                </tr>
+
+                <tr id='recurrence-tr-semaine'>
+                  <td>
+                    <label >R&eacute;p&eacute;ter le : </label>
+                  </td>
+
+                  <td>
+                    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day1' value='MO' class='recurrence recurrence-by-day recurrence-by-day1' /><label  for='recurrence-by-day1'>L</label>
+                    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day2' value='TU' class='recurrence recurrence-by-day recurrence-by-day2' /><label  for='recurrence-by-day2'>Ma</label>
+                    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day3' value='WE' class='recurrence recurrence-by-day recurrence-by-day3' /><label  for='recurrence-by-day3'>Me</label>
+                    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day4' value='TH' class='recurrence recurrence-by-day recurrence-by-day4' /><label  for='recurrence-by-day4'>J</label>
+                    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day5' value='FR' class='recurrence recurrence-by-day recurrence-by-day5' /><label  for='recurrence-by-day5'>V</label>
+                    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day6' value='SA' class='recurrence recurrence-by-day recurrence-by-day6' /><label  for='recurrence-by-day6'>S</label>
+                    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day0' value='SU' class='recurrence recurrence-by-day recurrence-by-day0' /><label  for='recurrence-by-day0'>D</label>
+                  </td>
+                </tr>
+
+                <tr id='recurrence-tr-mois' style='display:none;'>
+                  <td>
+                    <label >Répéter chaque : </label>
+                  </td>
+
+                  <td>
+                    <input type='radio' name='recurrence-repet-mois' id='recurrence-repet-mois1' class='recurrence' value='BYMONTHDAY' checked='checked' /><label  for='recurrence-repet-mois1'>jour du mois</label>
+                    <input type='radio' name='recurrence-repet-mois' id='recurrence-repet-mois2' class='recurrence' value='BYDAY' />
+                    <label for='recurrence-repet-mois2' >jour de la semaine</label>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <label  for='recurrence-debut'>Date de d&eacute;but : </label>
+                  </td>
+
+                  <td>
+                    <span id='recurrence-start'></span>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <label  for='recurrence-end'>Fin : </label>
+                  </td>
+
+                  <td>
+                    <ul style='margin:0; padding:0; list-style:none;'>
+                      <li style='margin:5px 0;' id='recurrence-end1-li'>
+                        <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end1' value='never' checked='checked' />
+                        <label  for='recurrence-end1'> Jamais</label>
+                      </li>
+
+                      <li style='margin:5px 0;' id='recurrence-end2-li'>
+                        <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end2' value='count'/>
+                        <label  for='recurrence-end2'>  Après
+                          <input type='text' name='recurrence-count' id='recurrence-count' style='width:30px;' class='recurrence ui-widget ui-corner-all ui-widget-content'/> répétitions
+                        </label>
+                      </li>
+
+                      <li style='margin:5px 0;' id='recurrence-end3-li'>
+                        <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end3' value='until'/>
+                        <label  for='recurrence-end3'> Le
+                          <input type='text' name='recurrence-until' id='recurrence-until' style='width:130px;' class='recurrence datepicker'/>
+                        </label>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <label >R&eacute;sum&eacute; : </label>
+                  </td>
+
+                  <td>
+                    <span id='recurrence-summary-form'>&nbsp;</span>
+                  </td>
+                </tr>
+              </table>
+            </form>
+          </div>
+        {% endif %}
       {% endif %}
       {% include 'absences/reasons.html.twig' %}
     </div>
