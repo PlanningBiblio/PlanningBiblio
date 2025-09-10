@@ -210,15 +210,28 @@ class AbsenceController extends BaseController
             $agent_preselection = 1;
         }
 
+        //TEST TODO
         $acces = true;
+
+        $absence =array(
+            'motif'                 => '',
+            'motif_autre'           => '',
+            'commentaires'          => '',
+            'pj1'                   => '',
+            'pj2'                   => '',
+            'so'                    => '',
+            'editable'              => '',
+
+        );
 
         $this->templateParams(array(
             'abences_infos'         => $this->absenceInfos(),
+            'access'                => $acces,
             'admin'                 => $this->admin || $this->adminN2,
             'adminN1'               => $this->admin ? 1 : 0,
             'adminN2'               => $this->adminN2 ? 1 : 0,
             'agent_preselection'    => $agent_preselection,
-            'agents'                => $managed,
+            'agents_tous'           => $managed,
             'agents_multiples'      => $this->agents_multiples,
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'fullday_checked'       => $this->config('Absences-journeeEntiere'),
@@ -228,8 +241,12 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'reasons'               => $this->availablesReasons(),
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
-            'is_edit'               => false,
-            'access'                => true,
+            //TEST TODO
+            'hre_debut'             => '',
+            'hre_fin'               => '',
+            'debut'                 => '',
+            'fin'                   => '',
+            'display_autre'         => '',
         ));
 
         return $this->output('absences/edit.html.twig');
@@ -445,7 +462,6 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'display_autre'         => $display_autre,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
-            'is_edit'               => true,
         ));
 
         $this->templateParams(array('documents' => $this->getDocuments($a)));
