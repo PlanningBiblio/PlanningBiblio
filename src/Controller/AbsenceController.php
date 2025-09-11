@@ -247,6 +247,7 @@ class AbsenceController extends BaseController
             'debut'                 => '',
             'fin'                   => '',
             'display_autre'         => '',
+            'absence'               => $absence,
         ));
 
         return $this->output('absences/edit.html.twig');
