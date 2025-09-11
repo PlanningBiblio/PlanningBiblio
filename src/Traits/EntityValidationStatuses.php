@@ -35,13 +35,12 @@ trait EntityValidationStatuses
             $adminN1 = $N1 ? $adminN1 : false;
             $adminN2 = $N2 ? $adminN2 : false;
         }
-
         $show_select = $adminN1 || $adminN2;
         $show_n1 = $adminN1 || $adminN2;
         $show_n2 = $adminN2;
 
         // Simplified absence validation schema for workflow B
-        if ($workflow == 'B' && $module == 'absence' && ($entity_state == 0 || $entity_state = 1)) {
+        if ($workflow == 'B' && $module == 'absence') {
             $show_n1 = false;
         } 
 
