@@ -18,6 +18,10 @@ $lang['work_hours_dropdown_accepted'] = 'Accepté';
 $lang['work_hours_dropdown_refused'] = 'Refusé';
 $lang['work_hours_dropdown_accepted_pending'] = 'Accepté (En attente de validation hiérarchique)';
 $lang['work_hours_dropdown_refused_pending'] = 'Refusé (En attente de validation hiérarchique)';
+//TEST TODO
+$lang['work_hours_table_accepted_pending'] = 'En attente de validation hiérarchique';
+$lang['work_hours_table_refused_pending'] = 'En attente de validation hiérarchique';
+
 $lang['send_ics_url_subject'] = 'URL de vos agendas Planno';
 $lang['send_ics_url_message'] = "Chère/Cher [firstname] [lastname],\n\nVoici les URL de vos agendas Planno :\n- Plages de service public : [urlIcs]\n- Plages de service public et absences : [urlIcsWithAbsences]\n\nCordialement,";
 $lang['do_not_change'] = "Ne pas modifier";

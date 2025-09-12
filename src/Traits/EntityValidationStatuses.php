@@ -36,6 +36,9 @@ trait EntityValidationStatuses
             $adminN1 = $N1 ? $adminN1 : false;
             $adminN2 = $N2 ? $adminN2 : false;
         }
+
+        $entity->setAdminFlags($adminN1, $adminN2);
+
         $show_select = $adminN1 || $adminN2;
         $show_n1 = $adminN1 || $adminN2;
         $show_n2 = $adminN2;
