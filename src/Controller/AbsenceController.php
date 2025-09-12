@@ -311,7 +311,6 @@ class AbsenceController extends BaseController
         $absence['commentaires'] = html_entity_decode($a->elements['commentaires'], ENT_QUOTES);
         $agents=$a->elements['agents'];
 
-        // POC_Saclay_Schema_Validation
         // Get notification workflow
         $workflow = 'A';
         $reason = $this->entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $absence['motif']]);
@@ -879,7 +878,7 @@ class AbsenceController extends BaseController
 
         $baseurl = $this->config('URL');
 
-        // Absence with sevearl agents.
+        // Absence with several agents.
         $perso_ids = $request->get('perso_ids');
         $perso_ids = filter_var_array($perso_ids, FILTER_SANITIZE_NUMBER_INT);
 
