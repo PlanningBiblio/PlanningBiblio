@@ -135,6 +135,10 @@ class ClassAbsencesTest extends PLBWebTestCase
         # getRecipients2 on workflow B will never be called with notifications = 3, because it is directly validated at level 2
         $this->assertEquals('agent@example.com', $this->getRecipients($id, 4)[0], "validating a workflow B absence at level 2 notifies agent");
 
+        # Revert params
+        $this->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->setParam('Absences-validation', 0);
+        $this->setParam('Absences-Validation-N2', 0);
 
     }
 
