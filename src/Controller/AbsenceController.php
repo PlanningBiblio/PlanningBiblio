@@ -221,7 +221,13 @@ class AbsenceController extends BaseController
             'pj2'                   => '',
             'so'                    => '',
             'editable'              => '',
-
+            'perso_id'              => '',
+            'groupe'                => '',
+            'rrule'                 => '',
+            'status'                => '',
+            'nom'                   => '',
+            'prenom'                => '',
+            'demande'               => '',
         );
 
         $this->templateParams(array(
@@ -463,6 +469,8 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'display_autre'         => $display_autre,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
+            //TEST TODO
+            'agent_preselection'    =>'',
         ));
 
         $this->templateParams(array('documents' => $this->getDocuments($a)));
