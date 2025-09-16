@@ -214,20 +214,20 @@ class AbsenceController extends BaseController
         $acces = true;
 
         $absence =array(
+            'commentaires'          => '',
+            'demande'               => '',
+            'editable'              => '',
+            'groupe'                => '',
             'motif'                 => '',
             'motif_autre'           => '',
-            'commentaires'          => '',
+            'nom'                   => '',
+            'perso_id'              => '',
             'pj1'                   => '',
             'pj2'                   => '',
-            'so'                    => '',
-            'editable'              => '',
-            'perso_id'              => '',
-            'groupe'                => '',
-            'rrule'                 => '',
-            'status'                => '',
-            'nom'                   => '',
             'prenom'                => '',
-            'demande'               => '',
+            'rrule'                 => '',
+            'so'                    => '',
+            'status'                => '',
         );
 
         $this->templateParams(array(
@@ -449,10 +449,12 @@ class AbsenceController extends BaseController
         $this->templateParams(array(
             'id'                    => $id,
             'access'                => $acces,
-            'absences_tous'         => $this->config('Absences-tous'),
-            'absences_validation'   => $this->config('Absences-validation'),
+            //'absences_tous'         => $this->config('Absences-tous'),
+            //'absences_validation'   => $this->config('Absences-validation'),
             'admin'                 => $admin ? 1 : 0,
             'adminN2'               => $adminN2 ? 1 : 0,
+            //TEST TODO
+            'agent_preselection'    =>'',
             'agents_multiples'      => $agents_multiples,
             'agents'                => $agents,
             'agents_tous'           => $managed,
@@ -469,8 +471,6 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'display_autre'         => $display_autre,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
-            //TEST TODO
-            'agent_preselection'    =>'',
         ));
 
         $this->templateParams(array('documents' => $this->getDocuments($a)));
