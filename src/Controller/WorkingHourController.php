@@ -541,7 +541,21 @@ class WorkingHourController extends BaseController
     public function save(Request $request, Session $session){
         $post = $request->request->all();
         $msg = null;
-        $msgType = null;
+        $msgType = 'notice';
+
+        $route = $post['retour'] == '/myaccount' ? 'account.index' : 'workinghour.index';
+
+        // Check if we get valid working hours
+        if (!array_key_exists('temps', $post)
+            or !is_array($post['temps'])) {
+
+            $error  = 'Une erreur est survenue lors de la récupération des données.#BR#';
+            $error .= 'Aucune modification n\'a été apportée.#BR#';
+            $error .= 'Vérifiez vos droits d\'accès.';
+            $session->getFlashBag()->add('error', $error);
+
+            return $this->redirectToRoute($route);
+        }
 
         foreach ($post['temps'] as $day => $hours) {
             foreach ($hours as $i => $hour) {
@@ -564,13 +578,13 @@ class WorkingHourController extends BaseController
                     if ($post['id']) {
                         $msg = "Une erreur est survenue lors de la copie du planning.";
                     }
-                    $msgType = "error";
+                    $msgType = 'error';
                 } else {
                     $msg = "Le planning a été ajouté avec succès.";
                     if ($post['id']) {
                         $msg = "Le planning a été copié avec succès.";
                     }
-                    $msgType = "success";
+                    $msgType = 'notice';
                 }
                 break;
             case "modif":
@@ -578,10 +592,10 @@ class WorkingHourController extends BaseController
                 $p->update($post);
                 if ($p->error) {
                     $msg = "Une erreur est survenue lors de la modification du planning.";
-                    $msgType = "error";
+                    $msgType = 'error';
                 } else {
                     $msg = "Le planning a été modifié avec succès.";
-                    $msgType = "success";
+                    $msgType = 'notice';
                 }
                 break;
             case "copie":
@@ -589,19 +603,19 @@ class WorkingHourController extends BaseController
                 $p->copy($post);
                 if ($p->error) {
                     $msg = "Une erreur est survenue lors de la modification du planning.";
-                    $msgType = "error";
+                    $msgType = 'error';
                 } else {
                     $msg = "Le planning a été modifié avec succès.";
-                    $msgType = "success";
+                    $msgType = 'notice';
                 }
                 break;
         }
 
-        if($post['retour'] == "/myaccount") {
-            return $this->redirectToRoute("account.index", array("msg"=>$msg, "msgType" => $msgType));
-        } else {
-            return $this->redirectToRoute('workinghour.index', array("msg" => $msg, "msgType" => $msgType));
+        if ($msg) {
+            $session->getFlashBag()->add($msgType, $msg);
         }
+
+        return $this->redirectToRoute($route);
     }
 
     #[Route(path: '/workinghour', name: 'workinghour.delete', methods: ['DELETE'])]
