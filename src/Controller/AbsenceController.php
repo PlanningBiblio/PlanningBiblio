@@ -318,8 +318,6 @@ class AbsenceController extends BaseController
             $workflow = $reason->getNotificationWorkflow();
         }
 
-        $absence['workflow'] = $workflow;
-
         $adminN1 = true;
         $adminN2 = true;
         foreach ($agents as $agent) {
@@ -371,7 +369,7 @@ class AbsenceController extends BaseController
         $absence['status'] = 'ASKED';
         $absence['status_editable'] = ($adminN1 or $adminN2) ? true : false;
         if ($valide == 0 && $valideN1 > 0) {
-                $absence['status'] = 'ACCEPTED_N1';
+            $absence['status'] = 'ACCEPTED_N1';
         }
         if ($valide > 0) {
             $absence['status'] = 'ACCEPTED_N2';
@@ -715,7 +713,7 @@ class AbsenceController extends BaseController
         $agent_ids = $request->get('ids') ?? array();
         $module = $request->get('module');
         $entity_id = $request->get('id');
-        $workflow = $request->get('workflow') ?? 'A';
+        $workflow = $request->get('workflow', 'A');
 
         $this->templateParams($this->getStatusesParams($agent_ids, $module, $entity_id, $workflow));
 
