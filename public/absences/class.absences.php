@@ -1722,7 +1722,7 @@ class absences
                 $a->fin = $fin;
                 $a->hre_debut = $this->hre_debut;
                 $a->hre_fin = $this->hre_fin;
-                $a->demande = $demande;
+                $a->demande = date("Y-m-d H:i:s");
                 $a->groupe = $this->groupe;
                 $a->motif = $this->motif;
                 $a->motif_autre = $this->motif_autre;
