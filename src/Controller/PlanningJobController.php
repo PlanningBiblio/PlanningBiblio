@@ -805,10 +805,15 @@ class PlanningJobController extends BaseController
                 if ($available) {
                     $d = new \datePl($date);
                     $working_hours = $agent->getWorkingHoursOn($date);
-                    $day = $d->planning_day_index_for($agent_id, $working_hours['nb_semaine']);
-
-                    if (!calculSiPresent($start, $end, $working_hours['temps'], $day)) {
+                   
+                    if (empty($working_hours)) {
                         $available = false;
+                    } else {
+                        $day = $d->planning_day_index_for($agent_id, $working_hours['nb_semaine']);
+    
+                        if (!calculSiPresent($start, $end, $working_hours['temps'], $day)) {
+                            $available = false;
+                        }
                     }
                 }
 
