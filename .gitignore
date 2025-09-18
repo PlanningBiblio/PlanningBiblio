@@ -15,9 +15,6 @@ public/themes/*
 !public/themes/planook
 ###< themes ###
 
-public/vendor/*
-!public/vendor/ics-parser
-
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
