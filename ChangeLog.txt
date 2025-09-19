@@ -1,3 +1,12 @@
+*** Version 24.10.17   (2025-09-19)    ***
+- Fixes
+MT48763: CSS: Fix print.css #1162
+MT38108: CSS: Add a padding into the "change login" dialog boxe #1163
+MT50211: PlanningHebdo::fetch returns an empty array instead of null #1164
+MT50212: Check the integrity of working hours #1168
+MT50234: The copy to the right function checks if working hours are available #1171
+
+
 *** Version 24.10.16   (2025-08-22)    ***
 - Fixes
 MT49412: Fix undo/redo when an agent is replaced #1153
