@@ -1,5 +1,17 @@
 # Changelog Planno
 
+## Version 25.05.08 (2025-09-19)
+
+### Fixes
+
+- MT48763: CSS: Fix print.css #1162
+- MT38108: CSS: Add a padding into the "change login" dialog boxe #1163
+- MT50211: PlanningHebdo::fetch returns an empty array instead of null #1164
+- MT48762: CSS: Remove the background color from printing #1167
+- MT50212: Check the integrity of working hours #1168
+- MT49909: Use Doctrine Migration: Move the column type change (ENUM to TINYINT) to legacy/update.php #1170
+- MT50234: The copy to the right function checks if working hours are available #1171
+
 ## Version 25.05.07 (2025-09-05)
 
 ### Enhancement
