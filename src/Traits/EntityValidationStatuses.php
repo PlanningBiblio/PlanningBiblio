@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\PlanningBiblio\ValidationAwareEntity;
 use App\Entity\Agent;
+use App\Entity\ConfigParam;
 
 trait EntityValidationStatuses
 {
@@ -40,7 +41,12 @@ trait EntityValidationStatuses
         $show_n2 = $adminN2;
 
         // Simplified absence validation schema for workflow B
-        if ($workflow == 'B' && $module == 'absence') {
+        $configByAgent = $this->entityManager
+            ->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Absences-notifications-agent-par-agent'])
+            ->getValue();
+
+        if ($module == 'absence' && $configByAgent && $workflow == 'B') {
             $show_n1 = false;
         } 
 
