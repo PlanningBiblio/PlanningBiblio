@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\Absence;
+use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\Manager;
 use Tests\FixtureBuilder;
@@ -24,6 +25,11 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $agents[2] = $this->builder->build(Agent::class, array('login' => 'kboivin'));
 
         $this->agents = $agents;
+
+        $absenceReason = $this->entityManager->getRepository(AbsenceReason::class)->findOneBy(['valeur' => 'Réunion']);
+        $absenceReason->setNotificationWorkflow('B');
+        $this->entityManager->persist($absenceReason);
+        $this->entityManager->flush();
     }
 
     public function test1()
