@@ -5,7 +5,7 @@ use App\Entity\Manager;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-require_once(__DIR__ . '/../../public/absences/class.absences.php');
+require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 
 class AbsenceControllerListTest extends PLBWebTestCase
 {

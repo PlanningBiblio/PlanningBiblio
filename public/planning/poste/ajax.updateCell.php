@@ -20,10 +20,10 @@ use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
 
 require_once(__DIR__ . '/../../../init/init_ajax.php');
 require_once(__DIR__ . '/../../include/function.php');
-require_once(__DIR__ . '/../../absences/class.absences.php');
-require_once(__DIR__ . '/../../activites/class.activites.php');
-require_once(__DIR__ . '/../volants/class.volants.php');
-require_once('class.planning.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.absences.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.activites.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.volants.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.planning.php');
 
 //	Initialisation des variables
 $ajouter = $request->get('ajouter');

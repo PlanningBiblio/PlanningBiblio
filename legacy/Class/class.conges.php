@@ -1,28 +1,15 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-
-@file public/conges/class.conges.php
-@author Jérôme Combes <jerome@planningbiblio.fr>
-@author Etienne Cavalié
-
 Description :
 Fichier regroupant les fonctions utiles à la gestion des congés
 Inclus dans les autres fichiers PHP du dossier conges
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-$version = $GLOBALS['version'] ?? null;
 
-if (!isset($version) and php_sapi_name() != 'cli') {
-    include_once __DIR__."/../include/accessDenied.php";
-}
-
-require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
-require_once __DIR__."/../personnel/class.personnel.php";
-require_once __DIR__."/../absences/class.absences.php";
+require_once 'class.planningHebdo.php';
+require_once 'class.personnel.php';
+require_once 'class.absences.php';
 
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
@@ -905,7 +892,7 @@ class conges
                 // Emploi du temps si plugin planningHebdo
                 if ($GLOBALS['config']['PlanningHebdo']) {
                     $version = $GLOBALS['version'];
-                    include_once __DIR__."/../planningHebdo/class.planningHebdo.php";
+                    include_once 'class.planningHebdo.php';
                     $p=new planningHebdo();
                     $p->perso_id=$perso_id;
                     $p->debut=$date;
@@ -970,6 +957,7 @@ class conges
         $this->responsables=$responsables;
     }
 
+    /*
     public function getSaturday()
     {
         // Liste des samedis des 2 derniers mois
@@ -1008,6 +996,7 @@ class conges
         }
         $this->samedis=$samedis;
     }
+    */
 
 
     /**
@@ -1271,7 +1260,7 @@ class conges
         return $new_id;
     }
 
-
+/*
     public function updateCETCredits()
     {
         $data=$this->data;
@@ -1286,6 +1275,7 @@ class conges
       // Les afficher dans le tableau si demande validée
         }
     }
+    */
 
     public function all($from, $to, $rejected = 0, $sites = [])
     {

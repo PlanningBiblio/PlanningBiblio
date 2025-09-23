@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 
 include_once(__DIR__ . '/../../public/include/function.php');
-include_once(__DIR__ . '/../../public/ldap/class.ldap.php');
+include_once(__DIR__ . '/../../legacy/Class/class.ldap.php');
 
 class AuthorizationsController extends BaseController
 {

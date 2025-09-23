@@ -48,7 +48,7 @@ Variable modifiée
       ...
 */
 
-require_once "class.conges.php";
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
 $perso_ids=array();
 foreach ($tab as $elem) {

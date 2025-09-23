@@ -36,8 +36,8 @@ use App\PlanningBiblio\Framework;
 
 require_once(__DIR__ . '/../../../public/include/config.php');
 require_once(__DIR__ . '/../../../public/include/function.php');
-require_once(__DIR__ . '/../../../public/absences/class.absences.php');
-require_once(__DIR__ . '/../../../public/postes/class.postes.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.absences.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.postes.php');
 
 
 // Génération d'un CSRF Token
@@ -173,7 +173,7 @@ foreach ($dates as $date) {
                                 // Contrôle des congés
                                 $conges=false;
                                 if ($config['Conges-Enable']) {
-                                    require_once(__DIR__ . '/../../../public/conges/class.conges.php');
+                                    require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
                                     $c=new conges();
                                     if ($c->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
                                         $conges=true;

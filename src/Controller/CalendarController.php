@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-require_once(__DIR__.'/../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 
 class CalendarController extends BaseController
 {
@@ -156,7 +156,7 @@ class CalendarController extends BaseController
 
             // Horaires de travail si le module PlanningHebdo est activé
             if ($this->config('PlanningHebdo')) {
-                include_once __DIR__."/../../public/planningHebdo/class.planningHebdo.php";
+                include_once __DIR__ . '/../../legacy/Class/class.planningHebdo.php';
                 $p = new \planningHebdo();
                 $p->perso_id = $perso_id;
                 $p->debut = $current;
@@ -241,7 +241,7 @@ class CalendarController extends BaseController
 
             // Intégration des congés
             if ($this->config('Conges-Enable')) {
-                include_once __DIR__."/../../public/conges/class.conges.php";
+                include_once __DIR__ . '/../../legacy/Class/class.conges.php';
                 $c=new \conges();
                 $c->perso_id = $perso_id;
                 $c->debut = $current." 00:00:00";

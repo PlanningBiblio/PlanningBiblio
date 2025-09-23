@@ -24,8 +24,8 @@ $version = 'cron';
 chdir(__DIR__ . '/../../../public');
 
 require_once(__DIR__ . '/../../../public/include/config.php');
-require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
-require_once(__DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.personnel.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.planningHebdo.php');
 
 $CSVFile = $config['PlanningHebdo-ExportFile'] ?? '/tmp/export-planno-edt.csv';
 $days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;

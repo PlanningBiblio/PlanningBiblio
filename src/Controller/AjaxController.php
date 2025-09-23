@@ -13,9 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . '/../../public/include/function.php');
-require_once(__DIR__ . '/../../public/absences/class.absences.php');
-require_once(__DIR__ . '/../../public/conges/class.conges.php');
-require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
+require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 
 class AjaxController extends BaseController
 {

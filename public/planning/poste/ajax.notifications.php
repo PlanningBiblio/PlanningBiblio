@@ -18,7 +18,7 @@ Page appelée en ajax lors du click sur les cadenas de la page /index
 */
 
 require_once(__DIR__ . '/../../../init/init_ajax.php');
-require_once('class.planning.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.planning.php');
 
 // Initialisation des variables
 $CSRFToken = $request->get('CSRFToken');

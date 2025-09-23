@@ -24,11 +24,11 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
-require_once(__DIR__."/../../vendor/phpmailer/phpmailer/src/Exception.php");
-require_once(__DIR__."/../../vendor/phpmailer/phpmailer/src/PHPMailer.php");
-require_once(__DIR__."/../../vendor/phpmailer/phpmailer/src/SMTP.php");
-require_once(__DIR__."/../../vendor/phpmailer/phpmailer/src/OAuth.php");
-require_once(__DIR__.'/../personnel/class.personnel.php');
+require_once(__DIR__ . '/../../vendor/phpmailer/phpmailer/src/Exception.php');
+require_once(__DIR__ . '/../../vendor/phpmailer/phpmailer/src/PHPMailer.php');
+require_once(__DIR__ . '/../../vendor/phpmailer/phpmailer/src/SMTP.php');
+require_once(__DIR__ . '/../../vendor/phpmailer/phpmailer/src/OAuth.php');
+require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -395,7 +395,7 @@ function calculHeuresSP($date, $CSRFToken)
         $version='ajax';
     }
     require_once "horaires.php";
-    require_once __DIR__."/../personnel/class.personnel.php";
+    require_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 
     $d=new datePl($date);
     $dates=$d->dates;
@@ -415,7 +415,7 @@ function calculHeuresSP($date, $CSRFToken)
 
     // Recherche des heures de SP avec le module planningHebdo
     if ($config['PlanningHebdo']) {
-        require_once(__DIR__."/../planningHebdo/class.planningHebdo.php");
+        require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
         // Vérifie si la table planning_hebdo a été mise à jour depuis le dernier calcul
         $p=new planningHebdo();

@@ -15,7 +15,7 @@ Script appelé par la fonction JS ldaptest() (admin/js/config?js) lors du click 
 */
 
 require_once(__DIR__ . '/../../init/init_ajax.php');
-include_once('class.ldap.php');
+include_once(__DIR__ . '/../../legacy/Class/class.ldap.php');
 
 $filter = $request->get('filter');
 $host = $request->get('host');

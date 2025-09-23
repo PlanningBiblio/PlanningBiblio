@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use App\Entity\Agent;
 use App\Entity\ConfigParam;
 
-require_once(__DIR__ . '/../../public/absences/class.absences.php');
+require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 
 class ClassAbsencesTest extends TestCase
 {

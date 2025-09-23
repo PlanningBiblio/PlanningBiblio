@@ -15,7 +15,7 @@ Enregistre dans la base de donées les notes en bas des plannings
 */
 
 require_once(__DIR__ . '/../../../init/init_ajax.php');
-require_once('class.planning.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.planning.php');
 
 $CSRFToken = $request->get('CSRFToken');
 $date = $request->get('date');

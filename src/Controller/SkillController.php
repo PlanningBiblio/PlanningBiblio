@@ -12,7 +12,7 @@ use App\Entity\Skill;
 use App\Entity\Agent;
 use App\Entity\Position;
 
-require_once(__DIR__.'/../../public/activites/class.activites.php');
+require_once(__DIR__ . '/../../legacy/Class/class.activites.php');
 
 class SkillController extends BaseController
 {

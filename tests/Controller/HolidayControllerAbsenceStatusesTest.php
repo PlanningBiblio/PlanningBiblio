@@ -4,7 +4,7 @@ use App\Entity\Agent;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 
-require_once(__DIR__ . '/../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
 class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
 {

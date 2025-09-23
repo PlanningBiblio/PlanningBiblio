@@ -8,7 +8,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use App\Entity\Absence;
 use App\Entity\Agent;
 
-require_once(__DIR__ . '/../../public/absences/class.absences.php');
+require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 
 class ClassAbsencesRRulesTest extends TestCase
 {

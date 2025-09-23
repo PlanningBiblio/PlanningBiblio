@@ -11,8 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-require_once (__DIR__."/../../public/personnel/class.personnel.php");
-require_once (__DIR__."/../../public/planningHebdo/class.planningHebdo.php");
+require_once (__DIR__ . '/../../legacy/Class/class.personnel.php');
+require_once (__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
 
 class AccountController extends BaseController

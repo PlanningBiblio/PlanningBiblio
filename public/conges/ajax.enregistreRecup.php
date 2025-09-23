@@ -15,7 +15,7 @@ Enregistre la demande de récupération
 */
 
 require_once(__DIR__ . '/../../init/init_ajax.php');
-include('class.conges.php');
+include(__DIR__ . '/../../legacy/Class/class.conges.php');
 
 use App\Entity\Agent;
 use App\Entity\OverTime;

@@ -1,15 +1,5 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
-
-Fichier : statistiques/class.statistiques.php
-Création : 16 janvier 2013
-Dernière modification : 20 septembre 2017
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
 Classe statistiques
 
@@ -17,11 +7,6 @@ Utilisée par les fichiers du dossier "statistiques"
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-$version = $GLOBALS['version'] ?? null;
-
-if (!isset($version)) {
-    include_once "../include/accessDenied.php";
-}
 
 // AJouter les html_entity_decode latin1
 // AJouter les variables $nom, (agents,service,statut)

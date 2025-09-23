@@ -1,16 +1,5 @@
 <?php
 /**
-Planning Biblio, Version 2.8
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
-
-Fichier : planning/volants/class.volants.php
-Création : 7 avril 2018
-Dernière modification : 7 avril 2018
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
-
 Description :
 Classe utilisée pour la gestion des agents volants
 
@@ -18,8 +7,8 @@ Cette page est appelée par la page planning/volants/index.php
 */
 
 
-require_once __DIR__.'/../../include/function.php';
-require_once __DIR__.'/../../personnel/class.personnel.php';
+require_once __DIR__ . '/../../public/include/function.php';
+require_once 'class.personnel.php';
 
 class volants
 {

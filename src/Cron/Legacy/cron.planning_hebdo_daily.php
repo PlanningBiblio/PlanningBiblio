@@ -11,7 +11,7 @@ Description :
 Fichier executant des tâches planifiées quotidiennement pour le module planningHebdo.
 */
 
-require_once(__DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.planningHebdo.php');
 require_once(__DIR__ . '/../../../public/include/db.php');
 
 $CSRFSession = $GLOBALS['CSRFSession'];
