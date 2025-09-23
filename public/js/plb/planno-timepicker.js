@@ -10,10 +10,20 @@ plannoTimepickerParams = {
   }
 };
 
+$( document ).ready(function() {
+
+  $('body').on('blur',".planno-timepicker", function(){
+    str = $(this).val();
+
+    if (!str.match(/^(?:[01]\d|2[0-3]):[0-5]\d$/)) {
+      $(this).val('');
+    }
+  });
+});
+
 (function( $ ) {
   $.fn.plannoTimepicker = function(params) {
     params = $.extend(plannoTimepickerParams, params);
-
     $(this).timepicker(params);
 
     $(this).attr('autocomplete', 'off');
@@ -21,6 +31,11 @@ plannoTimepickerParams = {
 })( jQuery );
 
 function timePickerChange(date, obj) {
+
+  if (date == false) {
+    $(obj).val('');
+    $(obj).focus();
+  }
   if ($(obj).hasClass('checkdate')) {
     dateChange(obj);
   }
