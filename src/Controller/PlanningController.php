@@ -18,14 +18,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-require_once(__DIR__ . '/../../public/absences/class.absences.php');
-require_once(__DIR__ . '/../../public/activites/class.activites.php');
-require_once(__DIR__ . '/../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
+require_once(__DIR__ . '/../../legacy/Class/class.activites.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../public/include/function.php');
-require_once(__DIR__ . '/../../public/planning/poste/class.planning.php');
+require_once(__DIR__ . '/../../legacy/Class/class.planning.php');
 require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
-require_once(__DIR__ . '/../../public/planning/volants/class.volants.php');
-require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
+require_once(__DIR__ . '/../../legacy/Class/class.volants.php');
+require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
 // TODO FIXME : hidden tables do not work correctly on week view
 

@@ -15,8 +15,8 @@ Recupére le nombre d'heure de reliquat pour un agent donné
 Utilisé pour l'alimentation du CET, formulaire de la page conges/cet.php
 */
 
-include(__DIR__.'/../include/config.php');
-include "class.conges.php";
+include(__DIR__ . '/../include/config.php');
+include(__DIR__ . '/../../legacy/Class/class.conges.php');
 
 $c=new conges();
 $c->perso_id=$_GET['perso_id'];

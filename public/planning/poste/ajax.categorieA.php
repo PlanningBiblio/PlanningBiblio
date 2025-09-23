@@ -20,7 +20,7 @@ Affiche "true" ou "false"
 
 // Includes
 include "../../include/config.php";
-include "class.planning.php";
+include (__DIR__ . '/../../../legacy/Class/class.planning.php');
 
 // Recherche s'il y a des agents de catégorie A en fin de service
 $p=new planning();

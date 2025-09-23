@@ -20,7 +20,7 @@ Page appelée par la fonction JavaScript "export_stat" lors du clique sur les li
 require_once(__DIR__ . '/../../init/init_ajax.php');
 require_once(__DIR__ . '/../include/sanitize.php');
 require_once(__DIR__ . '/../include/function.php');
-require_once('class.statistiques.php');
+require_once(__DIR__ . '/../../legacy/Class/class.statistiques.php');
 
 
 // Initialisation des variables

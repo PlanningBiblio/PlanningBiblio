@@ -13,8 +13,8 @@ use App\Entity\SelectFloor;
 use App\Entity\SelectGroup;
 use App\Entity\Skill;
 
-require_once(__DIR__ . '/../../public/postes/class.postes.php');
-require_once(__DIR__ . '/../../public/activites/class.activites.php');
+require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
+require_once(__DIR__ . '/../../legacy/Class/class.activites.php');
 
 class PositionController extends BaseController
 {

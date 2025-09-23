@@ -1,25 +1,11 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
-
-Fichier : ldap/class.ldap.php
-Création : 2 juillet 2014
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
 Fonctions permettant les authentifications LDAP et CAS
 Fichier inclus par ldap/auth.php
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-$version = $GLOBALS['version'] ?? null;
-
-if (!isset($version)) {
-    include_once "../include/accessDenied.php";
-}
 
 function authCAS($logger)
 {

@@ -24,7 +24,7 @@ $version = 'cron';
 chdir(__DIR__ . '/../../../public');
 
 require_once(__DIR__ . '/../../../public/include/config.php');
-require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.personnel.php');
 
 $agentIdentifier = $config['PlanningHebdo-ImportAgentId'] ?? 'login';
 

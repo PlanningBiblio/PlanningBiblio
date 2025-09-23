@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-include_once(__DIR__ . '/../../public/conges/class.conges.php');
-include_once(__DIR__ . '/../../public/personnel/class.personnel.php');
+include_once(__DIR__ . '/../../legacy/Class/class.conges.php');
+include_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 
 class OvertimeController extends BaseController
 {

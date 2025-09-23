@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
-require_once(__DIR__ . '/../../public/postes/class.postes.php');
+require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 
 class FrameworkController extends BaseController
 {

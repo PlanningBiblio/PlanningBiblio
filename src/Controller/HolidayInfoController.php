@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-require_once(__DIR__ . '/../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
 class HolidayInfoController extends BaseController
 {

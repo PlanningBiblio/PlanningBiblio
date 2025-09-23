@@ -16,7 +16,7 @@ Script appelé en ajax via la fonction resetICSURL() (js/script.js)
 */
 
 require_once(__DIR__ . '/../../init/init_ajax.php');
-require_once(__DIR__ . '/../personnel/class.personnel.php');
+require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 
 $id = $request->get('id');
 $CSRFToken = $request->get('CSRFToken');

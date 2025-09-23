@@ -11,8 +11,8 @@ Description :
 Tâche planifiée de suppression des reliquats de congés
 */
 
-require_once(__DIR__ . '/../../../public/conges/class.conges.php');
-require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.conges.php');
+require_once(__DIR__ . '/../../../legacy/Class/class.personnel.php');
 require_once(__DIR__ . '/../../../public/include/db.php');
 
 $CSRFSession = $GLOBALS['CSRFSession'];

@@ -9,7 +9,7 @@ use App\Entity\Manager;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 
-require_once(__DIR__ . '/../../public/absences/class.absences.php');
+require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 
 class ClassAbsencesTest extends PLBWebTestCase
 {

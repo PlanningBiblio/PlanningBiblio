@@ -1,28 +1,15 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-
-@file public/conges/class.conges.php
-@author Jérôme Combes <jerome@planningbiblio.fr>
-@author Etienne Cavalié
-
 Description :
 Fichier regroupant les fonctions utiles à la gestion des congés
 Inclus dans les autres fichiers PHP du dossier conges
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-$version = $GLOBALS['version'] ?? null;
 
-if (!isset($version) and php_sapi_name() != 'cli') {
-    include_once __DIR__."/../include/accessDenied.php";
-}
-
-require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
-require_once __DIR__."/../personnel/class.personnel.php";
-require_once __DIR__."/../absences/class.absences.php";
+require_once 'class.planningHebdo.php';
+require_once 'class.personnel.php';
+require_once 'class.absences.php';
 
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
@@ -905,7 +892,7 @@ class conges
                 // Emploi du temps si plugin planningHebdo
                 if ($GLOBALS['config']['PlanningHebdo']) {
                     $version = $GLOBALS['version'];
-                    include_once __DIR__."/../planningHebdo/class.planningHebdo.php";
+                    include_once 'class.planningHebdo.php';
                     $p=new planningHebdo();
                     $p->perso_id=$perso_id;
                     $p->debut=$date;
@@ -969,46 +956,6 @@ class conges
         }
         $this->responsables=$responsables;
     }
-
-    public function getSaturday()
-    {
-        // Liste des samedis des 2 derniers mois
-        $perso_id=isset($this->perso_id)?$this->perso_id:$_SESSION['login_id'];
-        $samedis=array();
-        $current=date("Y-m-d");
-        while ($current>date("Y-m-d", strtotime("-2 month", time()))) {
-            $d=new datePl($current);
-            if ($d->position==6) {
-                $samedis[$current]=array("date"=>$current,"heures"=>0,"recup"=>null);
-            }
-            $current=date("Y-m-d", strtotime("-1 day", strtotime($current)));
-        }
-
-        // Pour chaque samedi
-        foreach ($samedis as $samedi) {
-            // Vérifions si l'agent a travaillé et récupérons les heures correspondantes
-            $db=new db();
-            $db->select("pl_poste", "*", "date='{$samedi['date']}' AND perso_id='$perso_id' AND absent='0'");
-            $heures=0;
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $heures+=diff_heures($elem['debut'], $elem['fin'], "decimal");
-                }
-            }
-            $samedis[$samedi['date']]['heures']=number_format($heures, 2, '.', ' ');
-
-            // Vérifions si une demande de récupération à déjà été faite
-            $db=new db();
-            $db->select("recuperations", "*", "date='{$samedi['date']}' AND perso_id='$perso_id'");
-            if ($db->result) {
-                $samedis[$samedi['date']]['recup']=$db->result[0]['etat'];
-                $samedis[$samedi['date']]['valide']=$db->result[0]['valide'];
-                $samedis[$samedi['date']]['heures_validees']=$db->result[0]['heures'];
-            }
-        }
-        $this->samedis=$samedis;
-    }
-
 
     /**
     * @method maj
@@ -1269,22 +1216,6 @@ class conges
         $db->update('personnel', array('comp_time' => $new_comp_time), array('id' => $perso_id));
 
         return $new_id;
-    }
-
-
-    public function updateCETCredits()
-    {
-        $data=$this->data;
-        if (!empty($data) and $data['valide_n2']>0) {
-            $jours=$data['jours'];
-            $heures=intval($jours)*7;
-            $db=new db();
-            $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}personnel` SET `conges_reliquat`=(`conges_reliquat`-$heures)
-	WHERE `id`='{$data['perso_id']}'");
-
-            // METTRE A JOUR LES CHAMPS solde_prec et solde_actuel
-      // Les afficher dans le tableau si demande validée
-        }
     }
 
     public function all($from, $to, $rejected = 0, $sites = [])

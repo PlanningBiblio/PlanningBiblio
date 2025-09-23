@@ -13,7 +13,7 @@ use Tests\FixtureBuilder;
 
 use PHPUnit\Framework\TestCase;
 
-require_once(__DIR__ . '/../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
 class AgentTest extends TestCase
 {

@@ -16,11 +16,11 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-require_once(__DIR__ . "/../../public/personnel/class.personnel.php");
-require_once(__DIR__ . "/../../public/activites/class.activites.php");
-require_once(__DIR__ . "/../../public/planningHebdo/class.planningHebdo.php");
-require_once(__DIR__ . "/../../public/conges/class.conges.php");
-require_once(__DIR__ . "/../../public/ldap/class.ldap.php");
+require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
+require_once(__DIR__ . '/../../legacy/Class/class.activites.php');
+require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
+require_once(__DIR__ . '/../../legacy/Class/class.ldap.php');
 
 class AgentController extends BaseController
 {

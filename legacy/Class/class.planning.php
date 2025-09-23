@@ -1,12 +1,5 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-
-@file public/planning/poste/class.planning.php
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
 Classe planning
 
@@ -18,12 +11,6 @@ use App\Entity\AbsenceReason;
 use App\Entity\Position;
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-$version = $GLOBALS['version'] ?? null;
-
-if (!isset($version)) {
-    include_once "../../include/accessDenied.php";
-}
-
 
 class planning
 {
@@ -388,8 +375,8 @@ class planning
     public function notifications()
     {
         $version="ajax";
-        require_once "../../personnel/class.personnel.php";
-        require_once "../../postes/class.postes.php";
+        require_once 'class.personnel.php';
+        require_once 'class.postes.php';
         $config=$GLOBALS['config'];
     
         // Liste des agents actifs

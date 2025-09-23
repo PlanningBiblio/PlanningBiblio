@@ -102,7 +102,7 @@ class PresentSet
     private static function getPlanningHebdo($date)
     {
         // if module PlanningHebdo: search related plannings.
-        require_once __DIR__ . '/../../public/planningHebdo/class.planningHebdo.php';
+        require_once __DIR__ . '/../../legacy/Class/class.planningHebdo.php';
 
         $p = new \planningHebdo();
         $p->debut = $date;

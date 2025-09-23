@@ -29,7 +29,7 @@ $version=$argv[0];
 chdir(__DIR__ . '/../../../public/');
 
 require_once( __DIR__ . '/../../../public/include/config.php');
-require_once( __DIR__ . '/../../../public/personnel/class.personnel.php');
+require_once( __DIR__ . '/../../../legacy/Class/class.personnel.php');
 
 /**
  * @note Default configuration for Hamac

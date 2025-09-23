@@ -66,7 +66,7 @@ class Crontab {
 
             // Absences : Met à jour la table absences avec les événements récurrents sans date de fin (J + 2ans)
             // 1 fois par jour
-            require_once __DIR__ . '/../../public/absences/class.absences.php';
+            require_once __DIR__ . '/../../legacy/Class/class.absences.php';
 
             $a = new \absences();
             $a->CSRFToken = $GLOBALS['CSRFSession'];
