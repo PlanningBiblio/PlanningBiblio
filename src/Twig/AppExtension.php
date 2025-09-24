@@ -52,7 +52,7 @@ class AppExtension extends AbstractExtension
         return dateAlpha($date);
     }
 
-    public function dateFr($date)
+    public function dateFr($date): ?string
     {
         return dateFr($date, true);
     }

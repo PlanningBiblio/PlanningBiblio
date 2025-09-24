@@ -103,7 +103,7 @@ class db
                 $result=array();
                 $tab=mysqli_fetch_assoc($req);
                 foreach ($tab as $key => $value) {
-                    if (isset($isCryptedPassword) and $isCryptedPassword===true) {
+                    if (isset($isCryptedPassword) and $isCryptedPassword) {
                         $result[$key]=filter_var($value, FILTER_UNSAFE_RAW);
                     } else {
                         $result[$key] = $this->sanitize_string ? htmlspecialchars(strval($value)) : filter_var($value, FILTER_UNSAFE_RAW);   
@@ -560,6 +560,9 @@ class dbh
     public $error;
     public $msg;
     public $nb;
+    /**
+     * @var \PDO
+     */
     public $pdo;
     public $stmt;
     public $result;

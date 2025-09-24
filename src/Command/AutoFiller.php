@@ -36,7 +36,7 @@ class AutoFiller extends Command
     protected static $defaultName = 'AutoFiller:Fill';
     protected static $defaultDescription = 'Fills one day';
 
-    private $entityManager;
+    private \Doctrine\ORM\EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {

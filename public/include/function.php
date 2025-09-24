@@ -34,14 +34,26 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class datePl
 {
+    /**
+     * @var array{string, string, string, string, string, string, string}
+     */
     public $dates;
     public $date;
     public $jour;
     public $jour_complet;
+    /**
+     * @var 'semaine'|'samedi'|'dimanche'
+     */
     public $sam;
     public $sem;
     public $semaine;
+    /**
+     * @var int|null
+     */
     public $semaine3;
+    /**
+     * @var string
+     */
     public $position;
     public $nb_semaine;
   

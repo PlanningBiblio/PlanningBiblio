@@ -19,15 +19,15 @@ class MSGraphClient
     private $start_year = '2000';
 
     private $calendarUtils;
-    private $dbprefix;
+    private string $dbprefix;
     private $entityManager;
     private $full;
     private $graphUsers;
     private $incomingEvents;
     private $localEvents;
-    private $logger;
+    private \App\PlanningBiblio\Logger $logger;
     private $login_suffix;
-    private $oauth;
+    private \App\PlanningBiblio\OAuth $oauth;
     private $reason_name;
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full, $stdout)

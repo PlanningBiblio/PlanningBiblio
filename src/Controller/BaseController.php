@@ -23,7 +23,7 @@ class BaseController extends AbstractController
 
     private $config = array();
 
-    protected $logger;
+    protected \Psr\Log\LoggerInterface $logger;
 
     protected $notifier;
 

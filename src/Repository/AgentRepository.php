@@ -110,7 +110,7 @@ class AgentRepository extends EntityRepository
             $managers = $entityManager->getRepository(Manager::class)->matching($managerCriteria);
             if (count($managers) > 0) { $delete = false; continue; }
 
-            if ($delete === true) {
+            if ($delete) {
                 $entityManager->remove($agent);
                 $deleted_agents++;
             }

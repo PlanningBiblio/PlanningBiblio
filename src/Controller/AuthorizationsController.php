@@ -76,7 +76,7 @@ class AuthorizationsController extends BaseController
         $redirect_url = $request->get('redirURL') ?? '/index.php';
 
         $authArgs = null;
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS' && (array_key_exists('oups', $_SESSION) and array_key_exists('Auth-Mode', $_SESSION['oups']) and $_SESSION['oups']['Auth-Mode'] == 'CAS')) {
+        if (substr($this->config('Auth-Mode'), 0, 3) === 'CAS' && (array_key_exists('oups', $_SESSION) and array_key_exists('Auth-Mode', $_SESSION['oups']) and $_SESSION['oups']['Auth-Mode'] == 'CAS')) {
             $authArgs = '?noCAS';
         }
 
