@@ -14,7 +14,7 @@ use App\Entity\PlanningPositionTabGroup;
 
 class PlanningPositionTabRepository extends EntityRepository
 {
-    public function purge($id)
+    public function purge($id): int
     {
         $planningPositionTab = $this->find($id);
         $tableau = $planningPositionTab->tableau();

@@ -11,7 +11,7 @@ use App\Entity\Skill;
 
 class SkillRepository extends EntityRepository
 {
-    public function purge($id)
+    public function purge($id): int
     {
         $entityManager = $this->getEntityManager();
         $all_skills = $entityManager->getRepository(Position::class)->getAllSkills();

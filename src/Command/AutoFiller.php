@@ -82,7 +82,7 @@ class AutoFiller extends Command
         return $return;
     }
 
-    private function autoFill($io, $date, $login, $site)
+    private function autoFill($io, $date, $login, $site): int
     {
         $session = $this->container->get('session');
         $f = new Framework();
@@ -121,7 +121,7 @@ class AutoFiller extends Command
         return 0;
     }
 
-    private function test1($io, $date, $login, $site)
+    private function test1($io, $date, $login, $site): int
     {
 
         $f = new Framework();
