@@ -109,4 +109,28 @@ class Absence
 
         return $this;
     }
+
+    public function getValidLevel1(): ?int
+    {
+        return $this->valide_n1;
+    }
+
+    public function setValidLevel1(?int $valid): static
+    {
+        $this->valide_n1 = $valid;
+
+        return $this;
+    }
+
+    public function getValidLevel2(): ?int
+    {
+        return $this->valide;
+    }
+
+    public function setValidLevel2(?int $valid): static
+    {
+        $this->valide = $valid;
+
+        return $this;
+    }
 }

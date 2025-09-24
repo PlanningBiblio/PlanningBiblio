@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\PlanningBiblio\ValidationAwareEntity;
+use App\Entity\Absence;
 use App\Entity\Agent;
 
 trait EntityValidationStatuses
@@ -22,6 +23,11 @@ trait EntityValidationStatuses
         // and holiday are treated the same.
         // This was not the cas in ValidationAwareEntity.
         $module = $module == 'overtime' ? 'holiday' : $module;
+
+        if ($module == 'absence') {
+            $absence = $this->entityManager->getRepository(Absence::class)->find($entity_id);
+            $statuses = [$absence->getValidLevel1(), $absence->getValideLevel2()];
+        }
 
         $adminN1 = true;
         $adminN2 = true;
