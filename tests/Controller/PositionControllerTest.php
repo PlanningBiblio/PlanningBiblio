@@ -27,7 +27,7 @@ class PositionControllerTest extends PLBWebTestCase
         $extract_result = $crawler->filter('input[name="_token"]')->extract(array('value'));
         $token = $extract_result[0];
 
-        $this->client->request('POST', '/position', array('nom' => 'bureau', 'activites' => [], 'categories' => [], 'site' => 1, 'bloquant' => 1, 'statistiques' => 0, 'teleworking' => 1, 'etage' => '', 'groupe' => 'admin', 'groupe_id' => '', 'obligatoire' => 'Obligatoire', 'site' => '', '_token' => $token));
+        $this->client->request('POST', '/position', array('nom' => 'bureau', 'activites' => [], 'categories' => [], 'bloquant' => 1, 'statistiques' => 0, 'teleworking' => 1, 'etage' => '', 'groupe' => 'admin', 'groupe_id' => '', 'obligatoire' => 'Obligatoire', 'site' => '', '_token' => $token));
 
         $position = $entityManager->getRepository(Position::class)->findOneBy(array('nom' => 'bureau'));
 

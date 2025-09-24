@@ -312,7 +312,7 @@ class personnel
 
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
-        $db->delete("edt_samedi", array('semaine' => ">=$debut", 'semaine' => "<=$fin", 'perso_id' => $perso_id));
+        $db->delete("edt_samedi", array('semaine' => "<=$fin", 'perso_id' => $perso_id));
 
         if (!empty($eDTSamedi)) {
             $insert=array();
