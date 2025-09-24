@@ -41,7 +41,8 @@ class ValidationAwareEntity
         $this->type = $entity_type;
 
         if (!$entity_id) {
-            return $this;
+            $this;
+            return;
         }
 
         if ($entity_type == 'absence') {
