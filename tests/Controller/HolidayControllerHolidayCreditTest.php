@@ -23,7 +23,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         $this->logInAgent($admin, array(100));
     }
 
-    public function testHolidayOnHalfday()
+    public function testHolidayOnHalfday(): void
     {
         $entityManager = $this->entityManager;
 

@@ -494,7 +494,7 @@ class planning
             $notificationType="nouveauPlanning";
 
             // Enregistrement des infos dans la table BDD
-            $insert=array("date"=>$date, "site"=>$site, "data"=>json_encode((array)$tab));
+            $insert=array("date"=>$date, "site"=>$site, "data"=>json_encode($tab));
             $db2=new db();
             $db2->CSRFToken = $this->CSRFToken;
             $db2->insert("pl_notifications", $insert);
@@ -552,7 +552,7 @@ class planning
             }
 
             // Modification des infos dans la BDD
-            $update=array("data"=>json_encode((array)$tab));
+            $update=array("data"=>json_encode($tab));
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
             $db->update("pl_notifications", $update, array("date"=>$date, "site"=>$site));

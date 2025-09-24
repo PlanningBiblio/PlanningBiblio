@@ -12,7 +12,7 @@ use Tests\FixtureBuilder;
 class ICalendarControllerTest extends PLBWebTestCase
 {
 
-    public function testICalendar()
+    public function testICalendar(): void
     {
         $this->builder->delete(Agent::class);
 

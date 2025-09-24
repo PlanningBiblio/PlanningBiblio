@@ -26,7 +26,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->logInAgent($admin, array(100));
     }
 
-    public function testHolidayOneAgentAllDayNonValidated()
+    public function testHolidayOneAgentAllDayNonValidated(): void
     {
         $entityManager = $this->entityManager;
 
@@ -75,7 +75,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->assertEquals($jdevoe->getCompTime(), 35, "comp time didn't change");
     }
 
-    public function testHolidayOneAgentAllDay()
+    public function testHolidayOneAgentAllDay(): void
     {
         $entityManager = $this->entityManager;
 
@@ -120,7 +120,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->assertEquals($jdevoe->getCompTime(), 35, "comp time didn't change");
     }
 
-    public function testHolidayOneAgentOneHour()
+    public function testHolidayOneAgentOneHour(): void
     {
         $entityManager = $this->entityManager;
 
@@ -171,7 +171,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
 
     }
 
-    public function testHolidayOneAgentOneDayOnCompTime()
+    public function testHolidayOneAgentOneDayOnCompTime(): void
     {
         $entityManager = $this->entityManager;
 

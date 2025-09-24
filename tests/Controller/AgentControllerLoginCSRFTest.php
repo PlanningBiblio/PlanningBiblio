@@ -16,7 +16,7 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testLoginChangeWithFakeCSRF()
+    public function testLoginChangeWithFakeCSRF(): void
     {
         global $entityManager;
         $_SESSION['oups']['CSRFToken'] = '00000';
@@ -42,7 +42,7 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
 
     }
 
-    public function testLoginChangeWithOkCSRF()
+    public function testLoginChangeWithOkCSRF(): void
     {
         global $entityManager;
         $_SESSION['oups']['CSRFToken'] = '00000';

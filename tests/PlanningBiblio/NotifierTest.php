@@ -9,7 +9,7 @@ require_once(__DIR__ . '/../../public/include/function.php');
 
 class NotifierTest extends TestCase
 {
-    public function testWithErrors() {
+    public function testWithErrors(): void {
         $GLOBALS['config']['Mail-IsEnabled'] = 1;
 
         $notifier = new Notifier();
@@ -23,7 +23,7 @@ class NotifierTest extends TestCase
         $this->assertEquals($expected, $notifier->getError(), 'Use notifier without a valid message code');
     }
 
-    public function testGetSubject()
+    public function testGetSubject(): void
     {
         $GLOBALS['config']['Mail-IsEnabled'] = 1;
 
@@ -35,7 +35,7 @@ class NotifierTest extends TestCase
         $this->assertEquals('Création de compte', $notifier->subject, 'Subject is "Création de compte"');
     }
 
-    public function testGetBody()
+    public function testGetBody(): void
     {
         $GLOBALS['config']['Mail-IsEnabled'] = 1;
 
@@ -59,7 +59,7 @@ class NotifierTest extends TestCase
         $this->assertEquals($expected, $notifier->body, 'Get body with placeholders replacements');
     }
 
-    public function testTransporter()
+    public function testTransporter(): void
     {
         $GLOBALS['config']['Mail-IsEnabled'] = 1;
 
@@ -72,7 +72,7 @@ class NotifierTest extends TestCase
         $this->assertEquals('', $notifier->getError(), 'No transporter error');
     }
 
-    public function testDefaultTransporter()
+    public function testDefaultTransporter(): void
     {
         $GLOBALS['config']['Mail-IsEnabled'] = 1;
 
@@ -84,7 +84,7 @@ class NotifierTest extends TestCase
         $this->assertEquals('', $notifier->getError(), 'No transporter error');
     }
 
-    public function testMailRecipients()
+    public function testMailRecipients(): void
     {
         $GLOBALS['config']['Mail-IsEnabled'] = 1;
         $GLOBALS['config']['Mail-From'] = 'notifications@planno.fr';

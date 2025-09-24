@@ -16,7 +16,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testList()
+    public function testList(): void
     {
 
         $this->setParam('Absences-notifications-agent-par-agent', 0);
@@ -80,7 +80,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->assertEquals('Devoe John', $tbody->eq(2)->filter('td')->eq(3)->html());
     }
 
-    public function testListMultiSites()
+    public function testListMultiSites(): void
     {
         $this->setParam('Absences-notifications-agent-par-agent', 0);
         $this->setParam('Multisites-nombre', 2);
@@ -128,7 +128,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->assertEquals('Devoe John', $tbody->eq(1)->filter('td')->eq(3)->html());
     }
 
-    public function testListWithAbsencesNotificationsAgentParAgent()
+    public function testListWithAbsencesNotificationsAgentParAgent(): void
     {
         $this->setParam('Absences-notifications-agent-par-agent', 1);
         $this->setParam('Multisites-nombre', 2);

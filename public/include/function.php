@@ -257,7 +257,7 @@ class CJMail implements NotificationTransporterInterface
         $message .= $this->message;
         $message .= "<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
         $message .= "</body></html>";
-        $message  = stripslashes((string) $message);
+        $message  = stripslashes($message);
         $message  = str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $message);
 
         $this->message = $message;

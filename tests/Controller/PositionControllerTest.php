@@ -12,7 +12,7 @@ use Tests\FixtureBuilder;
 
 class PositionControllerTest extends PLBWebTestCase
 {
-    public function testAdd()
+    public function testAdd(): void
     {
         $entityManager = $this->entityManager;
 
@@ -39,7 +39,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($position->getGroup(), 'admin', 'post group is admin');
     }
 
-    public function testNewForm()
+    public function testNewForm(): void
     {
         $entityManager = $this->entityManager;
 
@@ -118,7 +118,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('* Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste', $result->text('Node does not exist', false), 'noteBasDePage is ok');
     }
 
-    public function testFormEdit()
+    public function testFormEdit(): void
     {
         $entityManager = $this->entityManager;
 
@@ -223,7 +223,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('* Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste', $result->text('Node does not exist', false), 'noteBasDePage is ok');
     }
 
-    public function testPositionList()
+    public function testPositionList(): void
     {
         $entityManager = $this->entityManager;
 
