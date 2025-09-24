@@ -443,7 +443,7 @@ class Agent
         return $this->managers->toArray();
     }
 
-    public function addManaged(Manager $managed)
+    public function addManaged(Manager $managed): void
     {
         $this->managed->add($managed);
         $managed->setManager($this);
@@ -493,13 +493,11 @@ class Agent
 
         // Multisites rights associated with page access
         $multisites_rights = array(201,301);
-        if ($multisites > 1) {
-            if (in_array($accesses[0]->getGroupId(), $multisites_rights)) {
-                for ($i = 1; $i <= $multisites; $i++) {
-                    $droit = $accesses[0]->getGroupId() -1 + $i;
-                    if (in_array($droit, $droits)) {
-                        return true;
-                    }
+        if ($multisites > 1 && in_array($accesses[0]->getGroupId(), $multisites_rights)) {
+            for ($i = 1; $i <= $multisites; $i++) {
+                $droit = $accesses[0]->getGroupId() -1 + $i;
+                if (in_array($droit, $droits)) {
+                    return true;
                 }
             }
         }
@@ -533,9 +531,7 @@ class Agent
             }
         }
 
-        $unit_mails = array_unique($unit_mails);
-
-        return $unit_mails;
+        return array_unique($unit_mails);
     }
 
     public function get_manager_emails() {
@@ -615,7 +611,7 @@ class Agent
         return false;
     }
 
-    public function skills()
+    public function skills(): array
     {
         $skills = json_decode($this->postes);
         return is_array($skills) ? $skills : [];

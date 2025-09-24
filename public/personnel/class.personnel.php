@@ -41,7 +41,7 @@ class personnel
     {
     }
 
-    public function delete($liste)
+    public function delete($liste): void
     {
         // Suppresion des informations de la table personnel
         // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
@@ -88,7 +88,7 @@ class personnel
 
         // Filtre selon le champ actif (administratif, service public)
         $actif = htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
-        if ($actif) {
+        if ($actif !== '' && $actif !== '0') {
             $filter['actif'] = $actif;
         }
 
@@ -191,7 +191,7 @@ class personnel
      * @result array : si $id est un chiffre : $this->elements[0] contient les informations de l'agent
      * @result array : si $id est un tableau : $this->elements contient les informations des agents avec l'id des agents comme clé
      */
-    public function fetchById($id)
+    public function fetchById($id): void
     {
         if (is_numeric($id)) {
             $db=new db();
@@ -300,8 +300,7 @@ class personnel
     {
         $db=new db();
         $db->query("SHOW TABLE STATUS FROM `{$GLOBALS['config']['dbname']}` LIKE '{$GLOBALS['config']['dbprefix']}personnel';");
-        $result = isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
-        return $result;
+        return isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
     }
   
     public function updateEDTSamedi($eDTSamedi, $debut, $fin, $perso_id)

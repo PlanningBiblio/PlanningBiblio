@@ -63,7 +63,7 @@ class conges
     {
     }
 
-    public function add($data)
+    public function add($data): void
     {
         $data['fin']=$data['fin']?$data['fin']:$data['debut'];
         $data['debit']=isset($data['debit'])?$data['debit']:"credit";
@@ -112,7 +112,7 @@ class conges
         }
     }
 
-    public function calculCredit($debut, $hre_debut, $fin, $hre_fin, $perso_id)
+    public function calculCredit($debut, $hre_debut, $fin, $hre_fin, $perso_id): void
     {
         // Calcul du nombre d'heures correspondant aux congés demandés
         $current=$debut;
@@ -184,7 +184,7 @@ class conges
     * Calcule les crédits de récupération disponible pour l'agent $perso_id à la date $date
     * Les crédits obtenus à des dates supérieures sont déduits
     */
-    public function calculCreditRecup($perso_id, $date = null, $id = null)
+    public function calculCreditRecup($perso_id, $date = null, $id = null): array
     {
         if (!$date) {
             $date = date('Y-m-d');
@@ -285,10 +285,8 @@ class conges
                 // On adapte le compteur prévisionnel avec les enregistrements de la table congés
                 // - si la date choisie est inférieure à la date de remise à zéro ou s'il n'y a pas de remise à zéro
                 // - ou si la date de l'enregistrement est supérieure ou égale à la date de remise à zéro
-                if ($date < $reset_date or $elem['debut'] >= $reset_date) {
-                    if ($elem['valide'] == 0 and ($elem['valide_n1'] >= 0 or $GLOBALS['config']['Conges-Validation-N2'] == 0)) {
-                        $balance3 -= (float) $elem['heures'];
-                    }
+                if (($date < $reset_date or $elem['debut'] >= $reset_date) && ($elem['valide'] == 0 and ($elem['valide_n1'] >= 0 or $GLOBALS['config']['Conges-Validation-N2'] == 0))) {
+                    $balance3 -= (float) $elem['heures'];
                 }
             }
         }
@@ -334,7 +332,7 @@ class conges
         return (bool) $db->result;
     }
 
-    public function delete()
+    public function delete(): void
     {
         // Marque une demande de congé comme supprimée
         // Contrôle si le congé avait été validé.
@@ -442,7 +440,7 @@ class conges
     }
 
 
-    public function fetch()
+    public function fetch(): void
     {
         // Filtre de recherche
         $filter="1";
@@ -796,7 +794,7 @@ class conges
     }
 
 
-    public function fetchCredit()
+    public function fetchCredit(): void
     {
         if (!$this->perso_id) {
             $this->elements=array("annuel"=>null,"anticipation"=>null,"credit"=>null,"recup"=>null,"reliquat"=>null,
@@ -839,7 +837,7 @@ class conges
         }
     }
 
-    public function getRecup()
+    public function getRecup(): void
     {
         $debut=$this->debut?$this->debut:date("Y-m-d", strtotime("-1 month", time()));
         $fin=$this->fin?$this->fin:date("Y-m-d", strtotime("+1 year", time()));
@@ -888,7 +886,7 @@ class conges
         }
     }
 
-    public function getResponsables($debut=null, $fin=null, $perso_id=0)
+    public function getResponsables($debut=null, $fin=null, $perso_id=0): void
     {
         $responsables=array();
         $droitsConges=array();
@@ -910,11 +908,7 @@ class conges
                     $p->valide=true;
                     $p->fetch();
 
-                    if (empty($p->elements)) {
-                        $temps=array();
-                    } else {
-                        $temps=$p->elements[0]['temps'];
-                    }
+                    $temps = empty($p->elements) ? array() : $p->elements[0]['temps'];
                 }
                 // Vérifions le numéro de la semaine de façon à contrôler le bon planning de présence hebdomadaire
                 $d=new datePl($date);
@@ -957,17 +951,15 @@ class conges
         foreach ($db->result as $elem) {
             $d=json_decode(html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             foreach ($droitsConges as $elem2) {
-                if (is_array($d)) {
-                    if (in_array($elem2, $d) and !in_array($elem, $responsables)) {
-                        $responsables[]=$elem;
-                    }
+                if (is_array($d) && (in_array($elem2, $d) and !in_array($elem, $responsables))) {
+                    $responsables[]=$elem;
                 }
             }
         }
         $this->responsables=$responsables;
     }
 
-    public function getSaturday()
+    public function getSaturday(): void
     {
         // Liste des samedis des 2 derniers mois
         $perso_id=isset($this->perso_id)?$this->perso_id:$_SESSION['login_id'];
@@ -1057,12 +1049,11 @@ class conges
 
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
-            $inserted_id = $db->insert("conges", $insert);
-            return $inserted_id;
+            return $db->insert("conges", $insert);
         }
     }
 
-    public function update($data)
+    public function update($data): void
     {
         $data['debit']=isset($data['debit'])?$data['debit']:"credit";
         $data['hre_debut']=$data['hre_debut']?$data['hre_debut']:"00:00:00";
@@ -1113,7 +1104,7 @@ class conges
         }
     }
 
-    private function calcCreditsOnValidation($data) {
+    private function calcCreditsOnValidation($data): void {
         // On débite les crédits dans la fiche de l'agent
         // Recherche des crédits actuels
 
@@ -1267,7 +1258,7 @@ class conges
     }
 
 
-    public function updateCETCredits()
+    public function updateCETCredits(): void
     {
         $data=$this->data;
         if (!empty($data) and $data['valide_n2']>0) {
@@ -1311,7 +1302,7 @@ class conges
 
     }
 
-    public static function exists($agent_id, $from, $to, $id = null) {
+    public static function exists($agent_id, $from, $to, $id = null): ?array {
         $db = new db();
         $db->select('conges', null, "`id`<>'$id' AND `perso_id`='$agent_id' AND `debut` < '$to' AND `fin` > '$from' AND `supprime`='0' AND `information`='0' AND `valide`>='0' ", "ORDER BY `debut`,`fin`");
         if (!$db->result) {

@@ -404,7 +404,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
 
 
 
-    private function createAndTest($acl, $nbAgents = 1, $validations = [1,1], $result = 'empty', $loggedInAgentId = 0)
+    private function createAndTest($acl, $nbAgents = 1, $validations = [1,1], $result = 'empty', $loggedInAgentId = 0): void
     {
         $acl = array_merge($acl, [99,100]);
         $agents = $this->agents;

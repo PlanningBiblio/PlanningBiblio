@@ -342,7 +342,7 @@ class AgentController extends BaseController
             $informations = stripslashes($db->result[0]['informations']);
             $recup = stripslashes($db->result[0]['recup']);
             $sites = html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-            $sites = $sites?json_decode($sites, true):array();
+            $sites = $sites !== '' && $sites !== '0'?json_decode($sites, true):array();
             $action = "modif";
             $titre = $nom." ".$prenom;
 
@@ -496,7 +496,7 @@ class AgentController extends BaseController
             $end = 40;
             $times = array();
             for ($i = 1; $i < $end; $i++) {
-                $times[] = array($i + 0, $i . 'h00');
+                $times[] = array($i, $i . 'h00');
                 $minute = 0;
                 for ($y = 1; $y < $nb_interval; $y++) {
                     $minute = sprintf("%02d", $minute + $granularite);
@@ -573,9 +573,7 @@ class AgentController extends BaseController
         }
 
         // URL du fichier ICS Planno
-        if ($id and isset($ics)) {
-            if ($this->config('ICS-Code')) {
-            }
+        if (($id and isset($ics)) && $this->config('ICS-Code')) {
         }
 
         // List of excluded rights with Planook configuration
@@ -764,7 +762,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent', name: 'agent.save', methods: ['POST'])]
-    public function save(Request $request)
+    public function save(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
 
         $params = $request->request->all();
@@ -807,7 +805,7 @@ class AgentController extends BaseController
         if ($this->config('EDTSamedi') == 2) {
             $eDTSamedi = array();
             foreach ($params as $k => $v) {
-                if (substr($k, 0, 10) == 'EDTSamedi_' and $v > 1) {
+                if (substr($k, 0, 10) === 'EDTSamedi_' and $v > 1) {
                     $eDTSamedi[] = array(substr($k, -10), $v);
                 }
             }
@@ -1052,7 +1050,7 @@ class AgentController extends BaseController
         }
     }
 
-    private function changeAgentPassword(Request $request, $agent_id, $password) {
+    private function changeAgentPassword(Request $request, $agent_id, $password): \Symfony\Component\HttpFoundation\Response {
 
         $agent = $this->entityManager->find(Agent::class, $agent_id);
 
@@ -1116,7 +1114,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/check-password', name: 'ajax.checkpassword', methods: ['GET'])]
-    public function check_password(Request $request)
+    public function check_password(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $password = $request->get('password');
         $response = new Response();
@@ -1134,7 +1132,7 @@ class AgentController extends BaseController
         if (strlen($password) < $minimum_password_length) {
             return false;
         }
-        if (!preg_match("#[0-9]+#", $password)) {
+        if (!preg_match("#d+#", $password)) {
             return false;
         }
         if (!preg_match("#[A-Z]+#", $password)) {
@@ -1154,7 +1152,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/is-current-password', name: 'ajax.iscurrentpassword', methods: ['GET'])]
-    public function isCurrentPassword(Request $request)
+    public function isCurrentPassword(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
 
@@ -1349,7 +1347,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent/ldap', name: 'agent.ldap.import', methods: ['POST'])]
-    public function ldap_import(Request $request, Session $session)
+    public function ldap_import(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $actif = 'Actif';
@@ -1502,7 +1500,7 @@ class AgentController extends BaseController
 
 
     #[Route(path: '/agent/ldif', name: 'agent.ldif.import', methods: ['POST'])]
-    public function ldif_import(Request $request, Session $session)
+    public function ldif_import(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $erreurs = false;
@@ -1662,7 +1660,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent', name: 'agent.delete', methods: ['DELETE'])]
-    public function deleteAgent(Request $request, Session $session)
+    public function deleteAgent(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
         // Initialisation des variables
         $id = $request->get('id');
@@ -1781,10 +1779,10 @@ class AgentController extends BaseController
 
         switch ($this->config('Auth-LoginLayout')) {
             case 'lastname.firstname' :
-                if ($lastname) {
+                if ($lastname !== '' && $lastname !== '0') {
                     $tmp[] = $lastname;
                 }
-                if ($firstname) {
+                if ($firstname !== '' && $firstname !== '0') {
                     $tmp[] = $firstname;
                 }
                 break;
@@ -1798,10 +1796,10 @@ class AgentController extends BaseController
                 break;
 
             default :
-                if ($firstname) {
+                if ($firstname !== '' && $firstname !== '0') {
                     $tmp[] = $firstname;
                 }
-                if ($lastname) {
+                if ($lastname !== '' && $lastname !== '0') {
                     $tmp[] = $lastname;
                 }
                 break;

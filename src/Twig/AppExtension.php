@@ -71,7 +71,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function hourFromHis($hours)
+    public function hourFromHis($hours): string
     {
         if ($hours) {
             return heure3($hours);
@@ -145,7 +145,7 @@ class AppExtension extends AbstractExtension
         if (empty($menu)) {
             $uri = substr($requested_url, strlen($config['URL']));
 
-            if ($uri == '/') {
+            if ($uri === '/') {
                 return true;
             }
 
@@ -184,14 +184,7 @@ class AppExtension extends AbstractExtension
                 return true;
             }
         }
-
-        if ($menu == 'index') {
-            if (strpos($requested_url, 'week') !== false) {
-                return true;
-            }
-        }
-
-        return false;
+        return $menu == 'index' && strpos($requested_url, 'week') !== false;
     }
 
     public function htmlFilter($html)

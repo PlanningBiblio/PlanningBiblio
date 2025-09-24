@@ -257,7 +257,7 @@ class AbsenceController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        $result = $this->save_new($request, $this->admin);
+        $result = $this->save_new($request);
 
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
@@ -398,7 +398,7 @@ class AbsenceController extends BaseController
         }
 
         // We prohibit the modification of the absence if it has been imported
-        if ($ical_key and substr($cal_name, 0, 14) != 'PlanningBiblio') {
+        if ($ical_key and substr($cal_name, 0, 14) !== 'PlanningBiblio') {
             $absence['editable'] = false;
             $admin=false;
         }
@@ -448,7 +448,7 @@ class AbsenceController extends BaseController
     }
 
     #[Route(path: '/absence', name: 'absence.delete', methods: ['DELETE'])]
-    public function delete_absence(Request $request)
+    public function delete_absence(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();
 
@@ -522,11 +522,11 @@ class AbsenceController extends BaseController
         $message.="Début : ".dateFr($debut);
         $hre_debut=substr($debut, -8);
         $hre_fin=substr($fin, -8);
-        if ($hre_debut!="00:00:00") {
+        if ($hre_debut !== "00:00:00") {
             $message.=" ".heure3($hre_debut);
         }
         $message.="<br/>Fin : ".dateFr($fin);
-        if ($hre_fin!="23:59:59") {
+        if ($hre_fin !== "23:59:59") {
             $message.=" ".heure3($hre_fin);
         }
         $message.="<br/><br/>Motif : $motif<br/>";
@@ -915,7 +915,7 @@ class AbsenceController extends BaseController
         // modification is prohibited.
         $iCalKey = $a->elements['ical_key'];
         $cal_name = $a->elements['cal_name'];
-        if ($iCalKey and substr($cal_name, 0, 23) != 'PlanningBiblio-Absences') {
+        if ($iCalKey and substr($cal_name, 0, 23) !== 'PlanningBiblio-Absences') {
             return $this->output('access-denied.html.twig');
         }
 
@@ -971,14 +971,14 @@ class AbsenceController extends BaseController
           or !empty($agents_supprimes)
           or $debut1 != $debut_sql
           or $fin1 != $fin_sql
-          or htmlentities($motif1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
-          or htmlentities($motif_autre1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
-          or htmlentities($commentaires1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
+          or htmlentities($motif1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) !== htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
+          or htmlentities($motif_autre1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) !== htmlentities($motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
+          or htmlentities($commentaires1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) !== htmlentities($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
           or $valide1 != $valide
           or $rrule1 != $rrule
-          or empty($pj1_1) != empty($pj1)
-          or empty($pj2_1) != empty($pj2)
-          or empty($so_1) != empty($so)
+          or empty($pj1_1) !== empty($pj1)
+          or empty($pj2_1) !== empty($pj2)
+          or empty($so_1) !== empty($so)
           );
 
         // If no change, back to absences lists.
@@ -1388,7 +1388,7 @@ class AbsenceController extends BaseController
         }
 
         $message.="<li>Motif : $motif";
-        if ($motif_autre) {
+        if ($motif_autre !== '' && $motif_autre !== '0') {
             $message.=" / $motif_autre";
         }
         $message.="</li>";
@@ -1515,7 +1515,7 @@ class AbsenceController extends BaseController
         return $valid_ids;
     }
 
-    private function setAdminPermissions()
+    private function setAdminPermissions(): void
     {
         // If can validate level 1: admin = true.
         // If can validate level 2: adminN2 = true.
@@ -1568,7 +1568,7 @@ class AbsenceController extends BaseController
 
     private function reasonTypes(): array
     {
-        $reason_types = array(
+        return array(
             array(
                 'id' => 0,
                 'valeur' => 'N1 cliquable'
@@ -1582,8 +1582,6 @@ class AbsenceController extends BaseController
                 'valeur' => 'N2'
             )
         );
-
-        return $reason_types;
     }
 
     /**

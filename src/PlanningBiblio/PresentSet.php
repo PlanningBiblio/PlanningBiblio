@@ -64,24 +64,16 @@ class PresentSet
             $jour = $date_planning->planning_day_index_for($elem['id'], $week_number);
 
             // Si l'emploi du temps est renseigné
-            if (!empty($temps) and array_key_exists($jour, $temps)) {
-                // S'il y a une heure de début (matin ou midi)
-                if ($temps[$jour][0] or $temps[$jour][2]) {
-                    $heures=$temps[$jour];
-                }
+            // S'il y a une heure de début (matin ou midi)
+            if ((!empty($temps) and array_key_exists($jour, $temps)) && ($temps[$jour][0] or $temps[$jour][2])) {
+                $heures=$temps[$jour];
             }
 
             // S'il y a des horaires correctement renseignés
             $siteAgent=null;
             if ($heures and !in_array($elem['id'], $absents)) {
-                if ($config['Multisites-nombre']>1) {
-                    if (!empty($heures[4])) {
-                        if ($heures[4] == -1) {
-                            $siteAgent = "Tout site";
-                        } else {
-                            $siteAgent=$config['Multisites-site'.$heures[4]];
-                        }
-                    }
+                if ($config['Multisites-nombre'] > 1 && !empty($heures[4])) {
+                    $siteAgent = $heures[4] == -1 ? "Tout site" : $config['Multisites-site'.$heures[4]];
                 }
                 $siteAgent=$siteAgent?$siteAgent.", ":null;
 

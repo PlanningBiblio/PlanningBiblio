@@ -66,7 +66,6 @@ function nb30($debut, $fin)
 {
     $tmpFin=explode(":", $fin);
     $tmpDebut=explode(":", $debut);
-    $time=(($tmpFin[0]*60)+$tmpFin[1]-($tmpDebut[0]*60)-$tmpDebut[1])/15;
-    return $time;
+    return (($tmpFin[0]*60)+$tmpFin[1]-($tmpDebut[0]*60)-$tmpDebut[1])/15;
 }
 //		-------------	FIN paramétrage de la largeur des colonnes		--------------//

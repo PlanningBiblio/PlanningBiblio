@@ -79,7 +79,7 @@ class ValidationAwareEntity
         return 0;
     }
 
-    public function status()
+    public function status(): array
     {
         $mode = 'male';
         if ($this->type == 'absence') {

@@ -84,7 +84,7 @@ class WorkingHours
             $substracted = 0;
             foreach (array(2, 1, 0) as $i) {
                 if (isset($tab[$i])) {
-                    if (!$substracted) {
+                    if ($substracted === 0) {
                         $tab[$i][1] = $this->substractBreak($tab[$i][1], $break);
                     }
                     $substracted = 1;
@@ -105,9 +105,8 @@ class WorkingHours
     private function substractBreak($hour, $interval): string
     {
          $minutes = $interval * 60;
-         $new_hour = date('H:i:s', strtotime("- $minutes minutes $hour"));
 
-         return $new_hour;
+         return date('H:i:s', strtotime("- $minutes minutes $hour"));
     }
 
 }

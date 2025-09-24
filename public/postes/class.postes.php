@@ -34,14 +34,14 @@ class postes
     {
     }
 
-    public function delete()
+    public function delete(): void
     {
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
         $db->update("postes", array("supprime"=>"SYSDATE"), array("id"=>$this->id));
     }
 
-    public function fetch($sort="nom", $name=null, $group=null)
+    public function fetch($sort="nom", $name=null, $group=null): void
     {
         // Floors
         $floors = array();

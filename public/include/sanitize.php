@@ -51,11 +51,9 @@ function sanitize_dateFr($input)
 {
     $reponse_filtre = null;
     // Vérifions si le format est valide
-    if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $input, $matches)) {
-        // Vérifions si la date existe
-        if (checkdate($matches[2], $matches[1], $matches[3])) {
-            $reponse_filtre = $input;
-        }
+    // Vérifions si la date existe
+    if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $input, $matches) && checkdate($matches[2], $matches[1], $matches[3])) {
+        $reponse_filtre = $input;
     }
     return $reponse_filtre;
 }
@@ -64,11 +62,9 @@ function sanitize_dateSQL($input)
 {
     $reponse_filtre = null;
     // Vérifions si le format est valide
-    if (preg_match('#^(\d{4})-(\d{2})-(\d{2})$#', $input, $matches)) {
-        // Vérifions si la date existe
-        if (checkdate($matches[2], $matches[3], $matches[1])) {
-            $reponse_filtre = $input;
-        }
+    // Vérifions si la date existe
+    if (preg_match('#^(\d{4})-(\d{2})-(\d{2})$#', $input, $matches) && checkdate($matches[2], $matches[3], $matches[1])) {
+        $reponse_filtre = $input;
     }
     return $reponse_filtre;
 }
@@ -77,14 +73,9 @@ function sanitize_dateTimeSQL($input)
 {
     $reponse_filtre = null;
     // Vérifions si le format est valide
-    if (preg_match('#^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$#', $input, $matches)) {
-        // Vérifions si la date existe
-        if (checkdate($matches[2], $matches[3], $matches[1])
-    and (intval($matches[4])>-1) and (intval($matches[4])<24)
-    and (intval($matches[5])>-1) and (intval($matches[5])<60)
-    and (intval($matches[6])>-1) and (intval($matches[6])<60)) {
-            $reponse_filtre = $input;
-        }
+    // Vérifions si la date existe
+    if (preg_match('#^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$#', $input, $matches) && (checkdate($matches[2], $matches[3], $matches[1]) and intval($matches[4]) > -1 and intval($matches[4]) < 24 and intval($matches[5]) > -1 and intval($matches[5]) < 60 and intval($matches[6]) > -1 and intval($matches[6]) < 60)) {
+        $reponse_filtre = $input;
     }
     return $reponse_filtre;
 }
@@ -124,7 +115,7 @@ function sanitize_on($input)
 
 // sanitize_on01 retourne 0 par défaut, sinon 1
 // Permet par exemple de controler les checkboxes
-function sanitize_on01($input)
+function sanitize_on01($input): int
 {
     $reponse_filtre = 0;
     // Vérifions si le format est valide

@@ -21,7 +21,7 @@ class AjaxController extends BaseController
 {
 
     #[Route(path: '/ajax/sanitize-html', name: 'ajax.sanitizehtml', methods: ['POST'])]
-    public function ajax_sanitize_html(Request $request)
+    public function ajax_sanitize_html(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $text = $request->get('text');
         $response = new Response();
@@ -33,7 +33,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/agents-by-sites', name: 'ajax.agentsbysites', methods: ['GET'])]
-    public function agentsBySites(Request $request)
+    public function agentsBySites(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();
 
@@ -61,7 +61,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/holiday-delete', name: 'ajax.holidaydelete', methods: ['GET'])]
-    public function deleteHoliday(Request $request)
+    public function deleteHoliday(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');
@@ -75,7 +75,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/mail-test', name: 'ajax.mailtest', methods: ['POST'])]
-    public function mailTest(Request $request)
+    public function mailTest(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
 
         include_once(__DIR__ . '/../../public/include/config.php');
@@ -132,7 +132,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/edit-absence-reasons', name: 'ajax.editabsencereasons', methods: ['POST'])]
-    public function editAbsenceReasons(Request $request)
+    public function editAbsenceReasons(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $data = $request->get('data');
@@ -161,7 +161,7 @@ class AjaxController extends BaseController
 
 
     #[Route(path: '/ajax/holiday-absence-control', name: 'ajax.holiday.absence.control', methods: ['GET'])]
-    public function holidayAbsenceControl(Request $request)
+    public function holidayAbsenceControl(Request $request): \Symfony\Component\HttpFoundation\Response
     {
       $session = $request->getSession();
 
@@ -204,9 +204,9 @@ class AjaxController extends BaseController
               if ($db->result) {
                   foreach ($db->result as $elem) {
                       // Si absence sur une seule journée
-                      if (substr($elem['debut'], 0, 10) == substr($elem['fin'], 0, 10)) {
+                      if (substr($elem['debut'], 0, 10) === substr($elem['fin'], 0, 10)) {
                           // Si journée complète
-                          if (substr($elem['debut'], -8) == '00:00:00' and substr($elem['fin'], -8) == '23:59:59') {
+                          if (substr($elem['debut'], -8) === '00:00:00' and substr($elem['fin'], -8) === '23:59:59') {
                               $absence = "le ".dateFr($elem['debut']). " ({$elem['motif']})";
                           // Si journée incomplète
                           } else {
@@ -216,7 +216,7 @@ class AjaxController extends BaseController
                       // Si absence sur plusieurs journées
                       else {
                           // Si journées complètes
-                          if (substr($elem['debut'], -8) == '00:00:00' and substr($elem['fin'], -8) == '23:59:59') {
+                          if (substr($elem['debut'], -8) === '00:00:00' and substr($elem['fin'], -8) === '23:59:59') {
                               $absence = "entre le ".dateFr($elem['debut'])." et le ".dateFr($elem['fin']). " ({$elem['motif']})";
                           // Si journées incomplètes
                           } else {
@@ -270,7 +270,7 @@ class AjaxController extends BaseController
           // Tableau des plannings en cours d'élaboration
           $planningsEnElaboration=array();
 
-          if ($sites != "") {
+          if ($sites !== "") {
               // Pour chaque dates
               $date = $date_debut;
               while ($date <= $date_fin) {

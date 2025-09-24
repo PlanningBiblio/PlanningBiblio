@@ -21,7 +21,7 @@ class HourHelper extends BaseHelper
         }
         $result['hours'] = (int) floor($decimal_duration);
         if ($negative) {
-            $result['hours'] = 0 - $result['hours'];
+            $result['hours'] = -$result['hours'];
         }
 
         # Considering minutes only from now:
@@ -38,11 +38,7 @@ class HourHelper extends BaseHelper
             $result['minutes'] = 0;
         }
 
-        if ($result['hours'] == 0 && $negative) {
-            $result['hours'] = '-0';
-        } else {
-            $result['hours'] = (string) $result['hours'];
-        }
+        $result['hours'] = $result['hours'] == 0 && $negative ? '-0' : (string) $result['hours'];
 
         if ($result['hours'] == 0 && $result['minutes'] == 0) {
             $result['as_string'] = '';
@@ -76,7 +72,7 @@ class HourHelper extends BaseHelper
         return sprintf("%.9f", $result);
     }
 
-    public static function StartEndFromRequest($request)
+    public static function StartEndFromRequest($request): array
     {
         $start = $request->get('hre_debut');
         $end = $request->get('hre_fin');

@@ -21,7 +21,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
     }
 
 
-    public function createWeekPlanningFor($agent)
+    public function createWeekPlanningFor($agent): void
     {
 
         $start = \DateTime::createFromFormat("d/m/Y", "01/10/2021");

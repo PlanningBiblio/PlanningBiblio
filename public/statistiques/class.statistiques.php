@@ -356,7 +356,7 @@ class statistiques
     public $fin;
     public $selectedSites;
 
-    public function ouverture()
+    public function ouverture(): void
     {
 
     // Recherche du nombre d'heures, de jours et de semaine d'ouverture au public par site
@@ -424,7 +424,7 @@ class statistiques
     /**
      * Count average hours
      */
-    public static function average($numberOfHours, $start, $end = null, $type = 'weekly')
+    public static function average($numberOfHours, $start, $end = null, $type = 'weekly'): float
     {
         $end = $end ?? $start;
         $numberOfHours = floatval($numberOfHours);

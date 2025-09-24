@@ -48,7 +48,7 @@ class PlanningPositionTabRepository extends EntityRepository
         return 1;
     }
 
-    public function purgeAll($limit_date) {
+    public function purgeAll($limit_date): int {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')
@@ -60,13 +60,13 @@ class PlanningPositionTabRepository extends EntityRepository
         $deleted_planning_position_tab = 0;
         foreach ($results as $result) {
             $deleted = $this->purge($result->getId());
-            if ($deleted) $deleted_planning_position_tab++;
+            if ($deleted !== 0) $deleted_planning_position_tab++;
         }
         return $deleted_planning_position_tab;
     }
 
 
-    private function removeObjects($class, $field, $value) {
+    private function removeObjects($class, $field, $value): void {
         $entityManager = $this->getEntityManager();
         $objects = $entityManager->getRepository($class)->findBy([$field => $value]);
         foreach ($objects as $object) {

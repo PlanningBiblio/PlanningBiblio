@@ -50,22 +50,20 @@ class AgentRepository extends EntityRepository
                 }
             }
         }
-        $all_skills = array_unique($all_skills);
-        return $all_skills;
+        return array_unique($all_skills);
     }
 
     public function getMaxId() {
         $entityManager = $this->getEntityManager();
-        $id = $entityManager->createQueryBuilder()
+
+        return $entityManager->createQueryBuilder()
             ->select('MAX(a.id)')
             ->from(Agent::class, 'a')
             ->getQuery()
             ->getSingleScalarResult();
-
-        return $id;
     }
 
-    public function purgeAll()
+    public function purgeAll(): int
     {
         $agents = $this->findBy(['supprime' => '2']);
         $entityManager = $this->getEntityManager();
@@ -101,7 +99,7 @@ class AgentRepository extends EntityRepository
                 ->orWhere($planningPositionLockCriteria->expr()->eq('perso2', $perso_id));
 
             $planningPositionLocks = $entityManager->getRepository(PlanningPositionLock::class)->matching($planningPositionLockCriteria);
-            if (count($planningPositionLocks)) { $delete = false; continue; }
+            if (count($planningPositionLocks) > 0) { $delete = false; continue; }
 
             // Managers
             $managerCriteria = new \Doctrine\Common\Collections\Criteria();
@@ -110,9 +108,9 @@ class AgentRepository extends EntityRepository
                 ->orWhere($managerCriteria->expr()->eq('responsable', $agent));
 
             $managers = $entityManager->getRepository(Manager::class)->matching($managerCriteria);
-            if (count($managers)) { $delete = false; continue; }
+            if (count($managers) > 0) { $delete = false; continue; }
 
-            if ($delete == true) {
+            if ($delete) {
                 $entityManager->remove($agent);
                 $deleted_agents++;
             }
@@ -273,7 +271,7 @@ class AgentRepository extends EntityRepository
         return array($loggedin);
     }
 
-    public function getValidationLevelFor($loggedin_id)
+    public function getValidationLevelFor($loggedin_id): array
     {
 
         $entityManager = $this->getEntityManager();
@@ -373,9 +371,7 @@ class AgentRepository extends EntityRepository
                     ->setParameter('deleted', '0');
         }
 
-        $agents = $builder->getQuery()->getResult();
-
-        return $agents;
+        return $builder->getQuery()->getResult();
     }
 
     /* Returns an array of sites for the given agents */
@@ -398,7 +394,6 @@ class AgentRepository extends EntityRepository
             }
         }
         $sites_array = array_unique($sites_array);
-        $sites_array = array_values($sites_array);
-        return $sites_array;
+        return array_values($sites_array);
     }
 }

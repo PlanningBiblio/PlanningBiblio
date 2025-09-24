@@ -58,7 +58,7 @@ class ConfigController extends BaseController
                     $options=explode(",", $elem['valeurs']);
                     $selected = null;
                     foreach ($options as $option) {
-                        $selected = $option == htmlentities($elem['valeur'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false) ? $elem['valeur'] : $selected;
+                        $selected = $option === htmlentities($elem['valeur'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false) ? $elem['valeur'] : $selected;
                     }
                     $elem['valeur'] = $selected;
                     $elem['options'] = $options;
@@ -95,7 +95,7 @@ class ConfigController extends BaseController
 
 
     #[Route(path: '/config', name: 'config.update')] // , methods={"POST"})
-    public function update(Request $request, Session $session)
+    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -122,11 +122,7 @@ class ConfigController extends BaseController
                 }
                 // boolean and checkboxes elements.
                 if (!isset($params[$cp->getName()])) {
-                    if ($cp->getType() == 'boolean') {
-                        $params[$cp->getName()] = '0';
-                    } else {
-                        $params[$cp->getName()] = array();
-                    }
+                    $params[$cp->getName()] = $cp->getType() == 'boolean' ? '0' : array();
                 }
                 $value = $params[$cp->getName()];
 
@@ -135,7 +131,7 @@ class ConfigController extends BaseController
                 }
 
                 // Passwords
-                if (substr($cp->getName(), -9) == '-Password') {
+                if (substr($cp->getName(), -9) === '-Password') {
                     $value = encrypt($value);
                 }
                 // Checkboxes

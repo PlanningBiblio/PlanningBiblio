@@ -120,7 +120,7 @@ class SkillController extends BaseController
 
 
     #[Route(path: '/skill', name: 'skill.save', methods: ['POST'])]
-    public function save(Request $request, Session $session){
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $id = $request->get('id');
         $nom = $request->get('nom');
 
@@ -171,7 +171,7 @@ class SkillController extends BaseController
     }
 
     #[Route(path: '/skill', name: 'skill.delete', methods: ['DELETE'])]
-    public function delete_skill(Request $request, Session $session){
+    public function delete_skill(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
 
         $id = $request->get('id');
 

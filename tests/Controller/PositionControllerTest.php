@@ -71,7 +71,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Statistiques :',$result->text('Node does not exist', false), 'label is Statistiques: ');
         $this->assertStringContainsString('Compatible télétravail :',$result->text('Node does not exist', false), 'label is Compatible télétravail');
 
-        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :','label is Nom du post');
+        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :');
         $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance audiovisuel');
         $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance autoformation');
         $this->assertStringContainsString(' Communication', $result->eq(1)->text('Node does not exist', false), 'checkBox is Communication');
@@ -171,7 +171,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Statistiques :',$result->text('Node does not exist', false), 'label is Statistiques: ');
         $this->assertStringContainsString('Compatible télétravail :',$result->text('Node does not exist', false), 'label is Compatible télétravail');
 
-        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :','label is Nom du post');
+        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :');
         $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance audiovisuel');
         $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance autoformation');
         $this->assertStringContainsString(' Communication', $result->eq(1)->text('Node does not exist', false), 'checkBox is Communication');

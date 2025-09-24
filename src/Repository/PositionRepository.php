@@ -24,11 +24,10 @@ class PositionRepository extends EntityRepository
                 }
             }
         }
-        $all_skills = array_unique($all_skills);
-        return $all_skills;
+        return array_unique($all_skills);
     }
 
-    public function purgeAll($limit_date) {
+    public function purgeAll($limit_date): int {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')

@@ -128,7 +128,7 @@ class PlanningController extends BaseController
         $pasDeDonneesSemaine = $this->noWeekDataFor($this->dates[4], $site);
 
         $tab = 0;
-        if ($show_framework_select) {
+        if ($show_framework_select !== 0) {
             $db = new \db();
             $db->select2("pl_poste_tab", "*", array("supprime"=>null), "order by `nom` DESC");
             $frameworks = $db->result;
@@ -260,7 +260,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/deleteplanning', name: 'planning.delete', methods: ['POST'])]
-    public function delete_planning(Request $request, Session $session)
+    public function delete_planning(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $week = $request->get('week');
@@ -509,11 +509,8 @@ class PlanningController extends BaseController
                     // Do not import agents placed on other site
                     if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
                         foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
-                            if (in_array($as['poste'], $blockingPositions)
-                                and in_array($elem2['poste'], $blockingPositions) ) {
-                                if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
-                                    continue 2;
-                                }
+                            if ((in_array($as['poste'], $blockingPositions) and in_array($elem2['poste'], $blockingPositions)) && ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) ) {
+                                continue 2;
                             }
                         }
                     }
@@ -644,7 +641,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/setFramework', name: 'planning.setFramework', methods: ['POST'])]
-    public function setFramework(Request $request)
+    public function setFramework(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -673,7 +670,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/setFrameworkGroup', name: 'planning.setFrameworkGroup', methods: ['POST'])]
-    public function setFrameworkGroup(Request $request)
+    public function setFrameworkGroup(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -888,12 +885,11 @@ class PlanningController extends BaseController
         }
 
         $cellule .= '<a class="pl-icon arrow-right" role="button"></a>';
-        $cellule .= "</td>\n";
 
-        return $cellule;
+        return $cellule . "</td>\n";
     }
 
-    private function createPlannings($request, $view)
+    private function createPlannings($request, $view): void
     {
         list($site, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
 
@@ -1130,12 +1126,12 @@ class PlanningController extends BaseController
         return $tabs;
     }
 
-    private function getAbsenceReasons()
+    private function getAbsenceReasons(): void
     {
         $this->absenceReasons = $this->entityManager->getRepository(AbsenceReason::class);
     }
 
-    private function getAbsences($date)
+    private function getAbsences($date): void
     {
         $a = new \absences();
         $a->valide = false;
@@ -1211,7 +1207,7 @@ class PlanningController extends BaseController
             }
 
             if ($this->config('Absences-planning') != 2) {
-                $class = $class == 'tr1' ? 'tr2' : 'tr1';
+                $class = $class === 'tr1' ? 'tr2' : 'tr1';
                 $absences[$index]['class'] = $class . ' ' . $bold;
             } else {
                 $absences[$index]['class'] = $bold;
@@ -1242,7 +1238,7 @@ class PlanningController extends BaseController
         return $categories;
     }
 
-    private function getCells($date, $site)
+    private function getCells($date, $site): void
     {
         $dbprefix = $this->config('dbprefix');
         $skills = $this->getSkills();
@@ -1312,7 +1308,7 @@ class PlanningController extends BaseController
         return $t->elements;
     }
 
-    private function getFrameworkStructure($tab)
+    private function getFrameworkStructure($tab): array
     {
         $t = new Framework();
         $t->id = $tab;
@@ -1352,7 +1348,7 @@ class PlanningController extends BaseController
         return $hiddenTables;
     }
 
-    private function getHolidays($date, $site = null)
+    private function getHolidays($date, $site = null): array
     {
         if ($this->config('Conges-Enable')) {
             $c = new \conges();
@@ -1365,7 +1361,7 @@ class PlanningController extends BaseController
         return [];
     }
 
-    private function getInfoMessages($dates, $date, $view)
+    private function getInfoMessages($dates, $date, $view): ?string
     {
         switch ($view) {
             case 'week' :
@@ -1395,7 +1391,7 @@ class PlanningController extends BaseController
         return $messages_infos;
     }
 
-    private function getLockData(String $date = null)
+    private function getLockData(String $date = null): void
     {
         $this->locked = 0;
         $this->lockDate = null;
@@ -1415,7 +1411,7 @@ class PlanningController extends BaseController
         }
     }
 
-    private function getPermissionsFor($site)
+    private function getPermissionsFor($site): array
     {
         $autorisationN1 = (in_array((300 + $site), $this->permissions)
             or in_array((1000 + $site), $this->permissions));
@@ -1433,7 +1429,7 @@ class PlanningController extends BaseController
         return array($autorisationN1, $autorisationN2, $autorisationNotes);
     }
 
-    private function getPositions()
+    private function getPositions(): void
     {
         $positions = array();
 
@@ -1485,7 +1481,7 @@ class PlanningController extends BaseController
         $this->positions = $positions;
     }
 
-    private function getSeparations()
+    private function getSeparations(): void
     {
         // Separation lines
         $separationE = $this->entityManager->getRepository(SeparationLine::class)->findAll();
@@ -1511,7 +1507,7 @@ class PlanningController extends BaseController
     {
         switch ($this->config('nb_semaine')) {
             case 2:
-                $type_sem = $semaine % 2 ? 'Impaire' : 'Paire';
+                $type_sem = $semaine % 2 !== 0 ? 'Impaire' : 'Paire';
                 $affSem = "$type_sem ($semaine)";
                 break;
             case 3: 
@@ -1526,7 +1522,7 @@ class PlanningController extends BaseController
         return $affSem;
     }
 
-    private function initPlanning($request, $view)
+    private function initPlanning($request, $view): array
     {
         $weekView = $view == 'week';
         $_SESSION['week'] = $weekView;
@@ -1627,7 +1623,7 @@ class PlanningController extends BaseController
         return false;
     }
 
-    private function setDates(Request $request)
+    private function setDates(Request $request): void
     {
         $session = $request->getSession();
 
@@ -1656,7 +1652,7 @@ class PlanningController extends BaseController
         );
     }
 
-    private function setSite(Request $request)
+    private function setSite(Request $request): void
     {
         $session = $request->getSession();
 

@@ -159,7 +159,7 @@ class CJICS
         $calName = null;                // Nom du calendrier
 
         // Test if the URL is valid
-        if (substr($src, 0, 4) == 'http') {
+        if (substr($src, 0, 4) === 'http') {
             $test = @get_headers($src, 1);
 
             if (empty($test)) {
@@ -267,11 +267,9 @@ class CJICS
             logs("Agent #$perso_id : Calendrier: $calName, Fuseau horaire: $calTimeZone", "ICS", $CSRFToken);
         }
 
-        if (!is_array($events) or empty($events)) {
-            if ($this->logs) {
-                logs("Agent #$perso_id : Aucun élément trouvé dans le fichier $src", "ICS", $CSRFToken);
-                $events = array();
-            }
+        if ((!is_array($events) or empty($events)) && $this->logs) {
+            logs("Agent #$perso_id : Aucun élément trouvé dans le fichier $src", "ICS", $CSRFToken);
+            $events = array();
         }
 
         // Récupération de l'email de l'agent
@@ -314,10 +312,8 @@ class CJICS
         foreach ($tmp as $elem) {
 
             // Run custom exclusions
-            if (!empty($config['ICS-custom-exclusion'])) {
-                if ($config['ICS-custom-exclusion']($elem)) {
-                    continue;
-                }
+            if (!empty($config['ICS-custom-exclusion']) && $config['ICS-custom-exclusion']($elem)) {
+                continue;
             }
 
             // Ne traite pas les événéments ayant le status X-MICROSOFT-CDO-INTENDEDSTATUS différent de BUSY (si le paramètre X-MICROSOFT-CDO-INTENDEDSTATUS existe)
@@ -369,10 +365,8 @@ class CJICS
             }
 
             // Ignore events with SUMMARY defined in $config['ics_exclude_summary']
-            if (isset($config['ics_exclude_summary']) and is_array($config['ics_exclude_summary'])) {
-              if ( in_array($elem['SUMMARY'], $config['ics_exclude_summary'])) {
-                  continue;
-              }
+            if ((isset($config['ics_exclude_summary']) and is_array($config['ics_exclude_summary'])) && in_array($elem['SUMMARY'], $config['ics_exclude_summary'])) {
+              continue;
             }
 
             // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
@@ -482,7 +476,7 @@ class CJICS
 
                 // Les événements ICS sur des journées complètes ont comme date de fin J+1 à 0h00
                 // Donc si la date de fin est à 0h00, on retire une seconde pour la rammener à J
-                $offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
+                $offset = date("H:i:s", strtotime($elem["DTEND_tz"])) === "00:00:00" ? "-1 second" : null;
                 $fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]." $offset"));
 
                 // Par défaut, nous mettons dans le champ motif l'information enregistrée dans la config, paramètre ICS-PatternX (ex: Agenda personnel)
