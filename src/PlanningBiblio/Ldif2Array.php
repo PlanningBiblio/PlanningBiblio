@@ -126,7 +126,7 @@ class Ldif2Array {
 
         /* First pass, rawdata is splitted into raw blocks */
         foreach($arr1 as $v) {
-            if (trim($v) == '') {
+            if (trim($v) === '') {
                 ++$i;
                 $j = 0;
             } else {

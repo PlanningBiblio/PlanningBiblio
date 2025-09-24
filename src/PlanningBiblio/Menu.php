@@ -12,7 +12,7 @@ class Menu
 
             $conditionsArray = explode('&', $allConditions);
             foreach ($conditionsArray as $condition) {
-                if (substr($condition, 0, 7)=="config=") {
+                if (substr($condition, 0, 7) === "config=") {
                     $tmp = substr($condition, 7);
                     $values = explode(";", $tmp);
                     foreach ($values as $value) {
@@ -20,7 +20,7 @@ class Menu
                             return false;
                         }
                     }
-                } elseif (substr($condition, 0, 8)=="config!=") {
+                } elseif (substr($condition, 0, 8) === "config!=") {
                     $tmp = substr($condition, 8);
                     $values = explode(";", $tmp);
                     foreach ($values as $value) {
@@ -44,7 +44,7 @@ class Menu
         foreach ($db->result as $elem) {
 
             if ($this->checkCondition($elem['condition'])) {
-                $url = substr($elem['url'], 0, 1) == '/' ? substr($elem['url'], 1) : 'index.php?page=' . $elem['url'];
+                $url = substr($elem['url'], 0, 1) === '/' ? substr($elem['url'], 1) : 'index.php?page=' . $elem['url'];
                 $menu[$elem['niveau1']][$elem['niveau2']]['titre']=$elem['titre'];
                 $menu[$elem['niveau1']][$elem['niveau2']]['url'] = $url;
             }

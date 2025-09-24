@@ -493,13 +493,11 @@ class Agent
 
         // Multisites rights associated with page access
         $multisites_rights = array(201,301);
-        if ($multisites > 1) {
-            if (in_array($accesses[0]->getGroupId(), $multisites_rights)) {
-                for ($i = 1; $i <= $multisites; $i++) {
-                    $droit = $accesses[0]->getGroupId() -1 + $i;
-                    if (in_array($droit, $droits)) {
-                        return true;
-                    }
+        if ($multisites > 1 && in_array($accesses[0]->getGroupId(), $multisites_rights)) {
+            for ($i = 1; $i <= $multisites; $i++) {
+                $droit = $accesses[0]->getGroupId() -1 + $i;
+                if (in_array($droit, $droits)) {
+                    return true;
                 }
             }
         }

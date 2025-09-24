@@ -13,7 +13,7 @@ require_once(__DIR__.'/../../vendor/autoload.php');
 use Symfony\Component\Dotenv\Dotenv;
 
 // Security : Allow direct access to ajax files : add $version = 'ajax';
-if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
+if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'){
   $version = 'ajax';
 }
 

@@ -342,7 +342,7 @@ class AgentController extends BaseController
             $informations = stripslashes($db->result[0]['informations']);
             $recup = stripslashes($db->result[0]['recup']);
             $sites = html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-            $sites = $sites?json_decode($sites, true):array();
+            $sites = $sites !== '' && $sites !== '0'?json_decode($sites, true):array();
             $action = "modif";
             $titre = $nom." ".$prenom;
 
@@ -573,9 +573,7 @@ class AgentController extends BaseController
         }
 
         // URL du fichier ICS Planno
-        if ($id and isset($ics)) {
-            if ($this->config('ICS-Code')) {
-            }
+        if (($id and isset($ics)) && $this->config('ICS-Code')) {
         }
 
         // List of excluded rights with Planook configuration
@@ -807,7 +805,7 @@ class AgentController extends BaseController
         if ($this->config('EDTSamedi') == 2) {
             $eDTSamedi = array();
             foreach ($params as $k => $v) {
-                if (substr($k, 0, 10) == 'EDTSamedi_' and $v > 1) {
+                if (substr($k, 0, 10) === 'EDTSamedi_' and $v > 1) {
                     $eDTSamedi[] = array(substr($k, -10), $v);
                 }
             }
@@ -1090,7 +1088,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/change-own-password', name: 'ajax.changeownpassword', methods: ['POST'])]
-    public function changeOwnPassword(Request $request)
+    public function changeOwnPassword(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();
@@ -1781,10 +1779,10 @@ class AgentController extends BaseController
 
         switch ($this->config('Auth-LoginLayout')) {
             case 'lastname.firstname' :
-                if ($lastname) {
+                if ($lastname !== '' && $lastname !== '0') {
                     $tmp[] = $lastname;
                 }
-                if ($firstname) {
+                if ($firstname !== '' && $firstname !== '0') {
                     $tmp[] = $firstname;
                 }
                 break;
@@ -1798,10 +1796,10 @@ class AgentController extends BaseController
                 break;
 
             default :
-                if ($firstname) {
+                if ($firstname !== '' && $firstname !== '0') {
                     $tmp[] = $firstname;
                 }
-                if ($lastname) {
+                if ($lastname !== '' && $lastname !== '0') {
                     $tmp[] = $lastname;
                 }
                 break;

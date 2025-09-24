@@ -58,7 +58,7 @@ class ConfigController extends BaseController
                     $options=explode(",", $elem['valeurs']);
                     $selected = null;
                     foreach ($options as $option) {
-                        $selected = $option == htmlentities($elem['valeur'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false) ? $elem['valeur'] : $selected;
+                        $selected = $option === htmlentities($elem['valeur'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false) ? $elem['valeur'] : $selected;
                     }
                     $elem['valeur'] = $selected;
                     $elem['options'] = $options;
@@ -131,7 +131,7 @@ class ConfigController extends BaseController
                 }
 
                 // Passwords
-                if (substr($cp->getName(), -9) == '-Password') {
+                if (substr($cp->getName(), -9) === '-Password') {
                     $value = encrypt($value);
                 }
                 // Checkboxes

@@ -59,7 +59,7 @@ class db
         $this->conn->set_charset("utf8mb4");
 
         mysqli_query($this->conn, "SET SESSION sql_mode = ''");
-        if (mysqli_connect_errno()) {
+        if (mysqli_connect_errno() !== 0) {
             $this->error=true;
             $this->msg=mysqli_connect_error();
         }
@@ -71,7 +71,7 @@ class db
       * @return string
       * @access public
       */
-    public function escapeString($str)
+    public function escapeString($str): ?string
     {
         if (!$this->conn) {
             $this->connect();
@@ -97,7 +97,7 @@ class db
         if (!$req) {
             $this->error=true;
             $this->error=mysqli_error($this->conn);
-        } elseif (strtolower(substr(trim($requete), 0, 6))=="select" or strtolower(substr(trim($requete), 0, 4))=="show") {
+        } elseif (strtolower(substr(trim($requete), 0, 6)) === "select" or strtolower(substr(trim($requete), 0, 4)) === "show") {
             $this->nb=mysqli_num_rows($req);
             for ($i=0;$i<$this->nb;$i++) {
                 $result=array();
@@ -108,7 +108,7 @@ class db
                     } else {
                         $result[$key] = $this->sanitize_string ? htmlspecialchars(strval($value)) : filter_var($value, FILTER_UNSAFE_RAW);   
                     }
-                    $isCryptedPassword=$key=="type" and $value=="password";
+                    $isCryptedPassword=$key === "type" and $value=="password";
                 }
                 $this->result[]=$result;
             }
@@ -464,7 +464,7 @@ class db
         }
 
         // BETWEEN
-        if (substr(strval($value), 0, 7)=="BETWEEN") {
+        if (substr(strval($value), 0, 7) === "BETWEEN") {
             $tmp=trim(substr($value, 7));
             $tmp=explode("AND", $tmp);
             $value1=htmlentities(trim($tmp[0]), ENT_QUOTES | ENT_IGNORE, "UTF-8", false);
@@ -475,7 +475,7 @@ class db
         }
 
         // IN
-        elseif (substr(strval($value), 0, 2)=="IN") {
+        elseif (substr(strval($value), 0, 2) === "IN") {
             $tmp=trim(substr($value, 2));
             $tmp=explode(",", $tmp);
 
@@ -488,7 +488,7 @@ class db
             return "{$key} IN ('$values')";
         }
 
-        elseif (substr(strval($value), 0, 6)=="NOT IN") {
+        elseif (substr(strval($value), 0, 6) === "NOT IN") {
             $tmp=trim(substr($value, 6));
             $tmp=explode(",", $tmp);
 
@@ -507,30 +507,30 @@ class db
         }
 
         // Opérateurs =, >, <, >=, <=, <>
-        elseif (substr($value, 0, 2)==">=") {
+        elseif (substr($value, 0, 2) === ">=") {
             $operator=">=";
             $value=trim(substr($value, 2));
-        } elseif (substr($value, 0, 2)=="<=") {
+        } elseif (substr($value, 0, 2) === "<=") {
             $operator="<=";
             $value=trim(substr($value, 2));
-        } elseif (substr($value, 0, 2)=="<>") {
+        } elseif (substr($value, 0, 2) === "<>") {
             $operator="<>";
             $value=trim(substr($value, 2));
-        } elseif (substr($value, 0, 1)=="=") {
+        } elseif (substr($value, 0, 1) === "=") {
             $operator="=";
             $value=trim(substr($value, 1));
-        } elseif (substr($value, 0, 1)==">") {
+        } elseif (substr($value, 0, 1) === ">") {
             $operator=">";
             $value=trim(substr($value, 1));
-        } elseif (substr($value, 0, 1)=="<") {
+        } elseif (substr($value, 0, 1) === "<") {
             $operator="<";
             $value=trim(substr($value, 1));
         // Losrsqu'une chaîne contient < directement suivi d'un caractère alpha, la chaîne est supprimée.
     // On permet donc l'utilisation du signe < suivi d'un espace
-        } elseif (substr($value, 0, 2)=="< ") {
+        } elseif (substr($value, 0, 2) === "< ") {
             $operator="<";
             $value=trim(substr($value, 2));
-        } elseif (substr($value, 0, 4)=="LIKE") {
+        } elseif (substr($value, 0, 4) === "LIKE") {
             $operator="LIKE";
             $value=trim(substr($value, 4));
         }

@@ -55,20 +55,18 @@ class ClosingDay
 
             // Recherche des jours fériés avec la fonction "jour_ferie"
             for ($date=$this->debut;$date<$this->fin;$date=date("Y-m-d", strtotime("+1 day", strtotime($date)))) {
-                if (jour_ferie($date)) {
-                    if (!in_array($date, $tmp)) {
-                        $line = array(
-                            "jour" => $date,
-                            "ferie" => 1,
-                            "fermeture" => 0,
-                            "nom" => jour_ferie($date),
-                            "commentaire" => "Ajouté automatiquement"
-                        );
-                        if ($this->index and $this->index=="date") {
-                            $tab[$date]=$line;
-                        } else {
-                            $tab[]=$line;
-                        }
+                if (jour_ferie($date) && !in_array($date, $tmp)) {
+                    $line = array(
+                        "jour" => $date,
+                        "ferie" => 1,
+                        "fermeture" => 0,
+                        "nom" => jour_ferie($date),
+                        "commentaire" => "Ajouté automatiquement"
+                    );
+                    if ($this->index and $this->index=="date") {
+                        $tab[$date]=$line;
+                    } else {
+                        $tab[]=$line;
                     }
                 }
             }

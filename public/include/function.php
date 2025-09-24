@@ -81,26 +81,26 @@ class datePl
         $this->semaine3 = $this->weekId($this->nb_semaine);
     }
 
-    private function weekId($nb_semaine) {
+    private function weekId($nb_semaine): ?int {
 
         if ($nb_semaine == 1) {
             return 1;
         }
 
         if ($nb_semaine == 2) {
-            return $this->semaine % 2 ? 1 : 2;
+            return $this->semaine % 2 !== 0 ? 1 : 2;
         }
 
         $interval = $this->getNumberOfWeeksSinceStartDate($this->date);
         if ($nb_semaine == 3) {
             $week_id = null;
-            if (!((int) $interval % 3)) {
+            if ((int) $interval % 3 === 0) {
                 $week_id = 1;
             }
-            if (!((int) ($interval + 2) % 3)) {
+            if ((int) ($interval + 2) % 3 === 0) {
                 $week_id = 2;
             }
-            if (!((int) ($interval + 1) % 3)) {
+            if ((int) ($interval + 1) % 3 === 0) {
                 $week_id = 3;
             }
 
@@ -390,7 +390,7 @@ function calculHeuresSP($date, $CSRFToken): array
     $version = $GLOBALS['version'];
 
     // Securité : Traitement pour une reponse Ajax
-    if (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    if (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
         $version='ajax';
     }
     require_once "horaires.php";
@@ -458,40 +458,35 @@ function calculHeuresSP($date, $CSRFToken): array
                             foreach ($dates as $key2 => $jour) {
                                 // On cherche le planning de présence valable pour chaque journée
                                 foreach ($ph->elements as $edt) {
-                                    if ($edt['perso_id']==$value1["id"]) {
-                                        // Planning de présence trouvé
-                                        if ($jour>=$edt['debut'] and $jour<=$edt['fin']) {
-                                            // $pause = true si pause détectée le midi
-                                            $pause=false;
-                                            // Offset : pour semaines 1,2,3 ...
-                                            $offset=($semaine3*7)-7;
-                                            $key3=$key2+$offset;
-                                            // Si heure de début et de fin de matiné
-                                            if (array_key_exists($key3, $edt['temps']) and $edt['temps'][$key3][0] and $edt['temps'][$key3][1]) {
-                                                $minutesHebdo+=diff_heures($edt['temps'][$key3][0], $edt['temps'][$key3][1], "minutes");
-                                                $pause=true;
-                                            }
-                                            // Si heure de début et de fin d'après midi
-                                            if (array_key_exists($key3, $edt['temps']) and $edt['temps'][$key3][2] and $edt['temps'][$key3][3]) {
-                                                $minutesHebdo+=diff_heures($edt['temps'][$key3][2], $edt['temps'][$key3][3], "minutes");
-                                                $pause=true;
-                                            }
-                                            // Si pas de pause le midi
-                                            if (!$pause) {
-                                                // Et heure de début et de fin de journée
-                                                if (array_key_exists($key3, $edt['temps']) and $edt['temps'][$key3][0] and $edt['temps'][$key3][3]) {
-                                                    $minutesHebdo+=diff_heures($edt['temps'][$key3][0], $edt['temps'][$key3][3], "minutes");
-                                                }
-                                            }
-
-                                            // MT44884: Remove free break
-                                            foreach ($workingHours as $wh) {
-                                                if ($wh->getUser() == $key1) {
-                                                    $breakTimes = $wh->getBreaktime();
-                                                    $breakTime = $breakTimes[$key3] ?? 0;
-                                                    $minutesHebdo -= (float) $breakTime * 60;
-                                                    break;
-                                                }
+                                    // Planning de présence trouvé
+                                    if ($edt['perso_id'] == $value1["id"] && ($jour >= $edt['debut'] and $jour <= $edt['fin'])) {
+                                        // $pause = true si pause détectée le midi
+                                        $pause=false;
+                                        // Offset : pour semaines 1,2,3 ...
+                                        $offset=($semaine3*7)-7;
+                                        $key3=$key2+$offset;
+                                        // Si heure de début et de fin de matiné
+                                        if (array_key_exists($key3, $edt['temps']) and $edt['temps'][$key3][0] and $edt['temps'][$key3][1]) {
+                                            $minutesHebdo+=diff_heures($edt['temps'][$key3][0], $edt['temps'][$key3][1], "minutes");
+                                            $pause=true;
+                                        }
+                                        // Si heure de début et de fin d'après midi
+                                        if (array_key_exists($key3, $edt['temps']) and $edt['temps'][$key3][2] and $edt['temps'][$key3][3]) {
+                                            $minutesHebdo+=diff_heures($edt['temps'][$key3][2], $edt['temps'][$key3][3], "minutes");
+                                            $pause=true;
+                                        }
+                                        // Si pas de pause le midi
+                                        // Et heure de début et de fin de journée
+                                        if (!$pause && (array_key_exists($key3, $edt['temps']) and $edt['temps'][$key3][0] and $edt['temps'][$key3][3])) {
+                                            $minutesHebdo+=diff_heures($edt['temps'][$key3][0], $edt['temps'][$key3][3], "minutes");
+                                        }
+                                        // MT44884: Remove free break
+                                        foreach ($workingHours as $wh) {
+                                            if ($wh->getUser() == $key1) {
+                                                $breakTimes = $wh->getBreaktime();
+                                                $breakTime = $breakTimes[$key3] ?? 0;
+                                                $minutesHebdo -= (float) $breakTime * 60;
+                                                break;
                                             }
                                         }
                                     }
@@ -564,11 +559,9 @@ function calculHeuresSP($date, $CSRFToken): array
                                     $pause=true;
                                 }
                                 // Si pas de pause le midi
-                                if (!$pause) {
-                                    // Et heure de début et de fin de journée
-                                    if (array_key_exists($key3, $temps) and $temps[$key3][0] and $temps[$key3][3]) {
-                                        $minutesHebdo+=diff_heures($temps[$key3][0], $temps[$key3][3], "minutes");
-                                    }
+                                // Et heure de début et de fin de journée
+                                if (!$pause && (array_key_exists($key3, $temps) and $temps[$key3][0] and $temps[$key3][3])) {
+                                    $minutesHebdo+=diff_heures($temps[$key3][0], $temps[$key3][3], "minutes");
                                 }
                             }
                         }
@@ -610,13 +603,11 @@ function calculSiPresent($debut, $fin, $temps, $jour): bool
     $wh = new WorkingHours($temps);
     $tab = $wh->hoursOf($jour);
 
-    if ($config['Planning-IgnoreBreaks']) {
-        if (count($tab) > 1) {
-            $end = end($tab);
-            $tab = [
-                0 => [$tab[0][0], $end[1]],
-            ];
-        }
+    if ($config['Planning-IgnoreBreaks'] && count($tab) > 1) {
+        $end = end($tab);
+        $tab = [
+            0 => [$tab[0][0], $end[1]],
+        ];
     }
 
     // Confrontation du créneau de service public aux tableaux
@@ -699,7 +690,7 @@ function cmp_nom($a, $b): int
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
 
-    if (strtolower($a['nom']) == strtolower($b['nom'])) {
+    if (strtolower($a['nom']) === strtolower($b['nom'])) {
       return 0;
     }
 
@@ -712,7 +703,7 @@ function cmp_nom_prenom($a, $b): int
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $a['prenom']=html_entity_decode($a['prenom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['prenom']=html_entity_decode($b['prenom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
-    if (strtolower($a['nom']) == strtolower($b['nom'])) {
+    if (strtolower($a['nom']) === strtolower($b['nom'])) {
         return (strtolower($a['prenom']) > strtolower($b['prenom'])) ? 1 : -1;
     }
     return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
@@ -724,9 +715,9 @@ function cmp_nom_prenom_debut_fin($a, $b): int
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $a['prenom']=html_entity_decode($a['prenom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['prenom']=html_entity_decode($b['prenom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
-    if (strtolower($a['nom']) == strtolower($b['nom'])) {
-        if (strtolower($a['prenom']) == strtolower($b['prenom'])) {
-            if (strtolower($a['debut']) == strtolower($b['debut'])) {
+    if (strtolower($a['nom']) === strtolower($b['nom'])) {
+        if (strtolower($a['prenom']) === strtolower($b['prenom'])) {
+            if (strtolower($a['debut']) === strtolower($b['debut'])) {
                 return (strtolower($a['fin']) > strtolower($b['fin'])) ? 1 : -1;
             }
             return (strtolower($a['debut']) > strtolower($b['debut'])) ? 1 : -1;
@@ -758,7 +749,7 @@ function cmp_prenom_nom($a, $b): int
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $a['prenom']=html_entity_decode($a['prenom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['prenom']=html_entity_decode($b['prenom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
-    if (strtolower($a['prenom']) == strtolower($b['prenom'])) {
+    if (strtolower($a['prenom']) === strtolower($b['prenom'])) {
         return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
     }
     return (strtolower($a['prenom']) > strtolower($b['prenom'])) ? 1 : -1;
@@ -799,7 +790,7 @@ function CSRFToken()
     return $CSRFToken;
 }
 
-function date_time($date)
+function date_time($date): ?string
 {
     if ($date=="0000-00-00 00:00:00") {
         return null;
@@ -810,7 +801,7 @@ function date_time($date)
         $h=substr($date, 11, 2);
         $min=substr($date, 14, 2);
         $today=date("d/m/Y");
-        return $today == "$j/$m/$a" ? "$h:$min" : "$j/$m/$a $h:$min";
+        return $today === "$j/$m/$a" ? "$h:$min" : "$j/$m/$a $h:$min";
     }
 }
 
@@ -892,14 +883,14 @@ function dateAlpha2($date): string
     return $day."<br/>".$dayOfMonth." ".$month;
 }
 
-function dateFr($date, $heure=null)
+function dateFr($date, $heure=null): ?string
 {
     if ($date=="0000-00-00" or $date=="00/00/0000" or $date=="" or !$date) {
         return null;
     }
-    if (substr($date, 4, 1)=="-") {
+    if (substr($date, 4, 1) === "-") {
         $dateFr=substr($date, 8, 2)."/".substr($date, 5, 2)."/".substr($date, 0, 4);
-        if ($heure and substr($date, 13, 1)==":" and substr($date, 11, 8)!="00:00:00" and substr($date, 11, 8)!="23:59:59") {
+        if ($heure and substr($date, 13, 1) === ":" and substr($date, 11, 8) !== "00:00:00" and substr($date, 11, 8) !== "23:59:59") {
             $dateFr.=" ".substr($date, 11, 2)."h".substr($date, 14, 2);
         }
         return $dateFr;
@@ -950,7 +941,7 @@ function decrypt($crypted_token)
     return $decrypted_token;
 }
 
-function encrypt($string)
+function encrypt($string): ?string
 {
     if ($string === null) {
         return null;
@@ -990,7 +981,7 @@ function getJSFiles($page, $version)
     $folder=substr($page, 0, -$pos);
     if ($folder and is_dir("{$folder}js")) {
         foreach (scandir("{$folder}js") as $elem) {
-            if (substr($elem, -3)==".js") {
+            if (substr($elem, -3) === ".js") {
                 echo "<script type='text/JavaScript' src='{$folder}js/{$elem}?version=$version'></script>\n";
             }
         }
@@ -1018,10 +1009,10 @@ function heure3($heure): string
 {
     $heure=str_replace(":", "h", $heure);
     $heure=substr($heure, 0, 5);
-    if (substr($heure, 3, 2)=="00") {
+    if (substr($heure, 3, 2) === "00") {
         $heure=substr($heure, 0, 3);
     }
-    if (substr($heure, 0, 1)=="0") {
+    if (substr($heure, 0, 1) === "0") {
         $heure=substr($heure, 1, strlen($heure));
     }
     return $heure;
@@ -1182,7 +1173,7 @@ function logs($msg, $program=null, $CSRFToken=null): void
  * @param string $format: format de la chaîne retournée (ex: nom p)
  * @param array $agents : liste de tous les agents (permet de réduire le nombre de requêtes SQL et la latence si la fonction nom est utilisée dans une boucle
  */
-function nom($id, $format="nom p", $agents=array())
+function nom($id, $format="nom p", $agents=array()): ?string
 {
 
   // id 99999 == cron (tâche planifiée)
@@ -1273,7 +1264,7 @@ function recurrenceRRuleText($rrule): string
       $text = ($interval == 1 or $interval == null) ? 'Tous les mois' : "Tous les $interval mois";
 
       if ($byday) {
-          if (substr($byday, 0, 2) == '-1') {
+          if (substr($byday, 0, 2) === '-1') {
               $n = 'Le dernier ';
               $d = substr($byday, 2);
           } else {
@@ -1283,13 +1274,13 @@ function recurrenceRRuleText($rrule): string
           }
           $day = str_replace(array('MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'), array(' lundi', ' mardi', ' mercredi', ' jeudi', ' vendredi', ' samedi', ' dimanche'), $d);
 
-          $text = $text == 'Tous les mois' ? $n.$day.' de chaque mois' : $n.$day.', tous les '.$interval.' mois';
+          $text = $text === 'Tous les mois' ? $n.$day.' de chaque mois' : $n.$day.', tous les '.$interval.' mois';
       }
 
       if ($bymonthday) {
           $n = $bymonthday;
           $n_text = $n == 1 ? 'Le 1<sup>er</sup>' : "Le $n";
-          $text = $text == 'Tous les mois' ? "$n_text de chaque mois" : "$n_text, tous les $interval mois";
+          $text = $text === 'Tous les mois' ? "$n_text de chaque mois" : "$n_text, tous les $interval mois";
       }
       break;
   }

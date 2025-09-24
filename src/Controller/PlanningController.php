@@ -128,7 +128,7 @@ class PlanningController extends BaseController
         $pasDeDonneesSemaine = $this->noWeekDataFor($this->dates[4], $site);
 
         $tab = 0;
-        if ($show_framework_select) {
+        if ($show_framework_select !== 0) {
             $db = new \db();
             $db->select2("pl_poste_tab", "*", array("supprime"=>null), "order by `nom` DESC");
             $frameworks = $db->result;
@@ -509,11 +509,8 @@ class PlanningController extends BaseController
                     // Do not import agents placed on other site
                     if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
                         foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
-                            if (in_array($as['poste'], $blockingPositions)
-                                and in_array($elem2['poste'], $blockingPositions) ) {
-                                if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
-                                    continue 2;
-                                }
+                            if ((in_array($as['poste'], $blockingPositions) and in_array($elem2['poste'], $blockingPositions)) && ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) ) {
+                                continue 2;
                             }
                         }
                     }
@@ -1210,7 +1207,7 @@ class PlanningController extends BaseController
             }
 
             if ($this->config('Absences-planning') != 2) {
-                $class = $class == 'tr1' ? 'tr2' : 'tr1';
+                $class = $class === 'tr1' ? 'tr2' : 'tr1';
                 $absences[$index]['class'] = $class . ' ' . $bold;
             } else {
                 $absences[$index]['class'] = $bold;
@@ -1364,7 +1361,7 @@ class PlanningController extends BaseController
         return [];
     }
 
-    private function getInfoMessages($dates, $date, $view)
+    private function getInfoMessages($dates, $date, $view): ?string
     {
         switch ($view) {
             case 'week' :
@@ -1510,7 +1507,7 @@ class PlanningController extends BaseController
     {
         switch ($this->config('nb_semaine')) {
             case 2:
-                $type_sem = $semaine % 2 ? 'Impaire' : 'Paire';
+                $type_sem = $semaine % 2 !== 0 ? 'Impaire' : 'Paire';
                 $affSem = "$type_sem ($semaine)";
                 break;
             case 3: 

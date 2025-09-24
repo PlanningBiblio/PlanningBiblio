@@ -416,15 +416,15 @@ class FrameworkController extends BaseController
 
         // Insertion des données dans la table pl_poste_lignes
         foreach ($form_post as $key => $value) {
-            if ($value and substr($key, 0, 6) == "select") {
+            if ($value and substr($key, 0, 6) === "select") {
                 $tab = explode("_", $key);  //1: tableau ; 2 lignes
-                if (substr($tab[1], -5) == "Titre") {
+                if (substr($tab[1], -5) === "Titre") {
                     $type = "titre";
                     $tab[1] = substr($tab[1], 0, -5);
-                } elseif (substr($tab[1], -6) == "Classe") {
+                } elseif (substr($tab[1], -6) === "Classe") {
                     $type = "classe";
                     $tab[1] = substr($tab[1], 0, -6);
-                } elseif (substr($value, -5) == "Ligne") {
+                } elseif (substr($value, -5) === "Ligne") {
                     $type = "ligne";
                     $value = substr($value, 0, -5);
                 } else {
@@ -451,7 +451,7 @@ class FrameworkController extends BaseController
         // Insertion des données dans la table pl_poste_cellules
         $values=array();
         foreach ($form_post as $key => $value) {
-            if ($value and substr($key, 0, 8)=="checkbox") {
+            if ($value and substr($key, 0, 8) === "checkbox") {
                 $tab = explode("_", $key);  //1: tableau ; 2 lignes ; 3 colonnes
                 $values[] = array(
                     ":numero"   =>$tableauNumero,

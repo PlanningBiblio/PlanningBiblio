@@ -99,7 +99,7 @@ class AgentRepository extends EntityRepository
                 ->orWhere($planningPositionLockCriteria->expr()->eq('perso2', $perso_id));
 
             $planningPositionLocks = $entityManager->getRepository(PlanningPositionLock::class)->matching($planningPositionLockCriteria);
-            if (count($planningPositionLocks)) { $delete = false; continue; }
+            if (count($planningPositionLocks) > 0) { $delete = false; continue; }
 
             // Managers
             $managerCriteria = new \Doctrine\Common\Collections\Criteria();
@@ -108,9 +108,9 @@ class AgentRepository extends EntityRepository
                 ->orWhere($managerCriteria->expr()->eq('responsable', $agent));
 
             $managers = $entityManager->getRepository(Manager::class)->matching($managerCriteria);
-            if (count($managers)) { $delete = false; continue; }
+            if (count($managers) > 0) { $delete = false; continue; }
 
-            if ($delete == true) {
+            if ($delete === true) {
                 $entityManager->remove($agent);
                 $deleted_agents++;
             }

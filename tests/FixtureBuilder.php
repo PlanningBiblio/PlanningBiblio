@@ -75,7 +75,7 @@ class FixtureBuilder
         $this->em->flush();
     }
 
-    private function getDefaultFixture($model)
+    private function getDefaultFixture($model): ?object
     {
         $namespace = explode('\\', $model);
         $name = end($namespace);

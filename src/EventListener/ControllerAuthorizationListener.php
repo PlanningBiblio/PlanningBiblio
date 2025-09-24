@@ -46,7 +46,7 @@ class ControllerAuthorizationListener
             return;
         }
 
-        if (substr($page, 0, 12) == '/unsubscribe') {
+        if (substr($page, 0, 12) === '/unsubscribe') {
             return;
         }
 
@@ -105,13 +105,11 @@ class ControllerAuthorizationListener
 
         // Multisites rights associated with page access
         $multisites_rights = array(201,301);
-        if ($multisites > 1) {
-            if (in_array($accesses[0], $multisites_rights)) {
-                for ($i = 1; $i <= $multisites; $i++) {
-                    $droit = $accesses[0] -1 + $i;
-                    if (in_array($droit, $this->droits)) {
-                        return true;
-                    }
+        if ($multisites > 1 && in_array($accesses[0], $multisites_rights)) {
+            for ($i = 1; $i <= $multisites; $i++) {
+                $droit = $accesses[0] -1 + $i;
+                if (in_array($droit, $this->droits)) {
+                    return true;
                 }
             }
         }

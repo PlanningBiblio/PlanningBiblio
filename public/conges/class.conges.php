@@ -285,10 +285,8 @@ class conges
                 // On adapte le compteur prévisionnel avec les enregistrements de la table congés
                 // - si la date choisie est inférieure à la date de remise à zéro ou s'il n'y a pas de remise à zéro
                 // - ou si la date de l'enregistrement est supérieure ou égale à la date de remise à zéro
-                if ($date < $reset_date or $elem['debut'] >= $reset_date) {
-                    if ($elem['valide'] == 0 and ($elem['valide_n1'] >= 0 or $GLOBALS['config']['Conges-Validation-N2'] == 0)) {
-                        $balance3 -= (float) $elem['heures'];
-                    }
+                if (($date < $reset_date or $elem['debut'] >= $reset_date) && ($elem['valide'] == 0 and ($elem['valide_n1'] >= 0 or $GLOBALS['config']['Conges-Validation-N2'] == 0))) {
+                    $balance3 -= (float) $elem['heures'];
                 }
             }
         }
@@ -953,10 +951,8 @@ class conges
         foreach ($db->result as $elem) {
             $d=json_decode(html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             foreach ($droitsConges as $elem2) {
-                if (is_array($d)) {
-                    if (in_array($elem2, $d) and !in_array($elem, $responsables)) {
-                        $responsables[]=$elem;
-                    }
+                if (is_array($d) && (in_array($elem2, $d) and !in_array($elem, $responsables))) {
+                    $responsables[]=$elem;
                 }
             }
         }
@@ -1306,7 +1302,7 @@ class conges
 
     }
 
-    public static function exists($agent_id, $from, $to, $id = null) {
+    public static function exists($agent_id, $from, $to, $id = null): ?array {
         $db = new db();
         $db->select('conges', null, "`id`<>'$id' AND `perso_id`='$agent_id' AND `debut` < '$to' AND `fin` > '$from' AND `supprime`='0' AND `information`='0' AND `valide`>='0' ", "ORDER BY `debut`,`fin`");
         if (!$db->result) {

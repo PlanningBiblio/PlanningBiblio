@@ -101,7 +101,7 @@ class HourHelperTest extends TestCase
         foreach ($hours as $hour) {
             for ($i = 0; $i < 60; $i++) {
 
-                if ($hour == '-0' && $i == 0) {
+                if ($hour === '-0' && $i == 0) {
                     # There is no point in testing -0.0, as it is stricly equal to 0.0
                     continue;
                 }

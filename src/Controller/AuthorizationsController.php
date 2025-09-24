@@ -48,7 +48,7 @@ class AuthorizationsController extends BaseController
             }
         }
 
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS' and !empty($this->config('CAS-Hostname'))) {
+        if (substr($this->config('Auth-Mode'), 0, 3) === 'CAS' and !empty($this->config('CAS-Hostname'))) {
             $sSOLink = 'Se connecter avec un compte CAS';
         }
 
@@ -76,12 +76,8 @@ class AuthorizationsController extends BaseController
         $redirect_url = $request->get('redirURL') ?? '/index.php';
 
         $authArgs = null;
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {
-            if (array_key_exists('oups', $_SESSION)
-                and array_key_exists('Auth-Mode', $_SESSION['oups'])
-                and $_SESSION['oups']['Auth-Mode'] == 'CAS') {
-                $authArgs = '?noCAS';
-            }
+        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS' && (array_key_exists('oups', $_SESSION) and array_key_exists('Auth-Mode', $_SESSION['oups']) and $_SESSION['oups']['Auth-Mode'] == 'CAS')) {
+            $authArgs = '?noCAS';
         }
 
         if ($login != 'admin') {
@@ -179,7 +175,7 @@ class AuthorizationsController extends BaseController
             $authArgs = $_SESSION['oups']['Auth-Mode'] == 'CAS' ? null: '?noCAS';
         }
 
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS'
+        if (substr($this->config('Auth-Mode'), 0, 3) === 'CAS'
             and $_SESSION['oups']['Auth-Mode'] == 'CAS') {
 
             $cas_url = 'https://'
@@ -208,7 +204,7 @@ class AuthorizationsController extends BaseController
     {
         $session = $request->getSession();
 
-        if ((substr($this->config('Auth-Mode'), 0, 3) == 'CAS' or $this->config('Auth-Mode') == 'OpenIDConnect')
+        if ((substr($this->config('Auth-Mode'), 0, 3) === 'CAS' or $this->config('Auth-Mode') == 'OpenIDConnect')
             and !isset($_GET['noCAS'])
             and empty($session->get('loginId'))
             and !isset($_POST['login'])
@@ -223,7 +219,7 @@ class AuthorizationsController extends BaseController
             // authCAS function redirect user to the CAS server.
             // Once authenticated, it checks if the login exists.
             // If yes, it create the session and log the action.
-            if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {
+            if (substr($this->config('Auth-Mode'), 0, 3) === 'CAS') {
                 $login = authCAS($logger);
 
             // OpenID Connect

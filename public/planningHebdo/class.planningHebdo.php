@@ -431,12 +431,10 @@ class planningHebdo
         }
 
         // Responsables directs
-        if (in_array(2, $categories)) {
-            if (is_array($mails_responsables)) {
-                foreach ($mails_responsables as $elem) {
-                    if (!in_array(trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
-                        $recipients[]=trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-                    }
+        if (in_array(2, $categories) && is_array($mails_responsables)) {
+            foreach ($mails_responsables as $elem) {
+                if (!in_array(trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
+                    $recipients[]=trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
                 }
             }
         }
@@ -454,10 +452,8 @@ class planningHebdo
         }
 
         // L'agent
-        if (in_array(4, $categories)) {
-            if (!in_array(trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
-                $recipients[]=trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-            }
+        if (in_array(4, $categories) && !in_array(trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
+            $recipients[]=trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
         }
 
         $this->recipients=$recipients;

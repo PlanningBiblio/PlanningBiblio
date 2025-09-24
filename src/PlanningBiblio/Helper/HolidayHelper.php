@@ -134,55 +134,50 @@ class HolidayHelper extends BaseHelper
             // Convert free break as fixed break if needed
             $free_break_already_removed = false;
 
-            if (!empty($planning['breaktimes'][$day_id])) {
-                if (!$this->hasFixedBreak($planning['times'][$day_id])) {
-    
-                    $free_break_already_removed = true;
-                    $free_break_start = $this->config('PlanningHebdo-DebutPauseLibre');
-                    $free_break_end = $this->config('PlanningHebdo-FinPauseLibre');
-                    $free_break_duration = $planning['breaktimes'][$day_id] * 60;
-    
-                    $planning['times'][$day_id] = $this->standardizeTime($planning['times'][$day_id]);
-    
-                    if (strtotime($debutConges) >= strtotime($free_break_start) &&
-                        strtotime($finConges)   <= strtotime($free_break_end)) {
-    
-                        // If the holiday is shorter than the free break, the free break starts at the beginning of the holiday
-                        $planning["times"][$day_id][1] = $debutConges;
-                        $planning["times"][$day_id][2] = date('H:i:s', strtotime("+ $free_break_duration minutes $debutConges"));
-    
-    
-                    } elseif ($free_break_start < $planning['times'][$day_id][0]) {
-    
-                        // If working hours start after the period defined in config, we move the break at the beginning of working hours
-                        $free_break_start = $planning['times'][$day_id][0];
-                        $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
-                        $planning["times"][$day_id][1] = $free_break_start;
-                        $planning["times"][$day_id][2] = $fixed_free_break_end;
-    
-    
-                    } elseif ($free_break_end > $planning['times'][$day_id][3]) {
-    
-                        // If working hours end before the period defined in config, we move the break at the end of working hours
-                        $free_break_end = $planning['times'][$day_id][3];
-                        $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
-                        $planning["times"][$day_id][1] = $fixed_free_break_start;
-                        $planning["times"][$day_id][2] = $free_break_end;
-    
-                    } elseif (substr($debutConges, 0, 2) >= 12) {
-    
-                        // If the holiday is in the afternoon, the free break is at the end of its period.
-                        $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
-                        $planning["times"][$day_id][1] = $fixed_free_break_start;
-                        $planning["times"][$day_id][2] = $free_break_end;
-    
-                    } else {
-    
-                        // If the holiday is in the morning, the free break is at the beginning of its period.
-                        $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
-                        $planning["times"][$day_id][1] = $free_break_start;
-                        $planning["times"][$day_id][2] = $fixed_free_break_end;
-                    }
+            if (!empty($planning['breaktimes'][$day_id]) && !$this->hasFixedBreak($planning['times'][$day_id])) {
+                $free_break_already_removed = true;
+                $free_break_start = $this->config('PlanningHebdo-DebutPauseLibre');
+                $free_break_end = $this->config('PlanningHebdo-FinPauseLibre');
+                $free_break_duration = $planning['breaktimes'][$day_id] * 60;
+                $planning['times'][$day_id] = $this->standardizeTime($planning['times'][$day_id]);
+                if (strtotime($debutConges) >= strtotime($free_break_start) &&
+                    strtotime($finConges)   <= strtotime($free_break_end)) {
+
+                    // If the holiday is shorter than the free break, the free break starts at the beginning of the holiday
+                    $planning["times"][$day_id][1] = $debutConges;
+                    $planning["times"][$day_id][2] = date('H:i:s', strtotime("+ $free_break_duration minutes $debutConges"));
+
+
+                } elseif ($free_break_start < $planning['times'][$day_id][0]) {
+
+                    // If working hours start after the period defined in config, we move the break at the beginning of working hours
+                    $free_break_start = $planning['times'][$day_id][0];
+                    $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
+                    $planning["times"][$day_id][1] = $free_break_start;
+                    $planning["times"][$day_id][2] = $fixed_free_break_end;
+
+
+                } elseif ($free_break_end > $planning['times'][$day_id][3]) {
+
+                    // If working hours end before the period defined in config, we move the break at the end of working hours
+                    $free_break_end = $planning['times'][$day_id][3];
+                    $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
+                    $planning["times"][$day_id][1] = $fixed_free_break_start;
+                    $planning["times"][$day_id][2] = $free_break_end;
+
+                } elseif (substr($debutConges, 0, 2) >= 12) {
+
+                    // If the holiday is in the afternoon, the free break is at the end of its period.
+                    $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
+                    $planning["times"][$day_id][1] = $fixed_free_break_start;
+                    $planning["times"][$day_id][2] = $free_break_end;
+
+                } else {
+
+                    // If the holiday is in the morning, the free break is at the beginning of its period.
+                    $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
+                    $planning["times"][$day_id][1] = $free_break_start;
+                    $planning["times"][$day_id][2] = $fixed_free_break_end;
                 }
             }
 

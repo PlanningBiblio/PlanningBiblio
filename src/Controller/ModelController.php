@@ -35,7 +35,7 @@ class ModelController extends BaseController
 
         $multi_sites = $this->config('Multisites-nombre') > 1 ? 1 : 0;
         $sites = array();
-        if ($multi_sites) {
+        if ($multi_sites !== 0) {
             for ($i=1; $i < $this->config('Multisites-nombre')+1; $i++) {
                 $sites[$i] = $this->config("Multisites-site$i");
             }

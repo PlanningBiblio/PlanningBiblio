@@ -204,9 +204,9 @@ class AjaxController extends BaseController
               if ($db->result) {
                   foreach ($db->result as $elem) {
                       // Si absence sur une seule journée
-                      if (substr($elem['debut'], 0, 10) == substr($elem['fin'], 0, 10)) {
+                      if (substr($elem['debut'], 0, 10) === substr($elem['fin'], 0, 10)) {
                           // Si journée complète
-                          if (substr($elem['debut'], -8) == '00:00:00' and substr($elem['fin'], -8) == '23:59:59') {
+                          if (substr($elem['debut'], -8) === '00:00:00' and substr($elem['fin'], -8) === '23:59:59') {
                               $absence = "le ".dateFr($elem['debut']). " ({$elem['motif']})";
                           // Si journée incomplète
                           } else {
@@ -216,7 +216,7 @@ class AjaxController extends BaseController
                       // Si absence sur plusieurs journées
                       else {
                           // Si journées complètes
-                          if (substr($elem['debut'], -8) == '00:00:00' and substr($elem['fin'], -8) == '23:59:59') {
+                          if (substr($elem['debut'], -8) === '00:00:00' and substr($elem['fin'], -8) === '23:59:59') {
                               $absence = "entre le ".dateFr($elem['debut'])." et le ".dateFr($elem['fin']). " ({$elem['motif']})";
                           // Si journées incomplètes
                           } else {
@@ -270,7 +270,7 @@ class AjaxController extends BaseController
           // Tableau des plannings en cours d'élaboration
           $planningsEnElaboration=array();
 
-          if ($sites != "") {
+          if ($sites !== "") {
               // Pour chaque dates
               $date = $date_debut;
               while ($date <= $date_fin) {

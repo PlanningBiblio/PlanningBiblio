@@ -156,17 +156,15 @@ class HolidayController extends BaseController
 
             // If Conges-Recuperations is 1, also search
             // credits updates.
-            if ($this->config('Conges-Recuperations') == '1') {
-                if ($elem['debit'] == null) {
-                    if ($voir_recup and $elem['recup_actuel'] == $elem['recup_prec']) {
-                        continue;
-                    }
-                    if (!$voir_recup
-                        and $elem['solde_actuel'] == $elem['solde_prec']
-                        and $elem['reliquat_actuel'] == $elem['reliquat_prec']
-                        and $elem['anticipation_actuel'] == $elem['anticipation_prec']) {
-                        continue;
-                    }
+            if ($this->config('Conges-Recuperations') == '1' && $elem['debit'] == null) {
+                if ($voir_recup and $elem['recup_actuel'] == $elem['recup_prec']) {
+                    continue;
+                }
+                if (!$voir_recup
+                    and $elem['solde_actuel'] == $elem['solde_prec']
+                    and $elem['reliquat_actuel'] == $elem['reliquat_prec']
+                    and $elem['anticipation_actuel'] == $elem['anticipation_prec']) {
+                    continue;
                 }
             }
 
@@ -403,7 +401,7 @@ class HolidayController extends BaseController
         }
 
         $displayHeures=null;
-        if ($hre_debut=="00:00:00" and $hre_fin=="23:59:59") {
+        if ($hre_debut === "00:00:00" and $hre_fin === "23:59:59") {
             $displayHeures="style='display:none;'";
         }
 
@@ -803,10 +801,8 @@ class HolidayController extends BaseController
         // For the last day
         // If the 2nd period doesn't exist and if the first period starts after 12:00,
         // we suppose that this period is an afternoon and use the first hour to define morning_end
-        if (empty($hours_last_day[1][0])) {
-            if ($hours_last_day[0][0] >= '12:00:00') {
-                $morning_end = $hours_last_day[0][0];
-            }
+        if (empty($hours_last_day[1][0]) && $hours_last_day[0][0] >= '12:00:00') {
+            $morning_end = $hours_last_day[0][0];
         }
 
         $result = array(
@@ -1151,25 +1147,25 @@ class HolidayController extends BaseController
         switch ($valide) {
         // Modification sans validation
         case 0:
-          $sujet = $recover ? "Modification d'une récupération" : "Modification de congés";
+          $sujet = $recover !== 0 ? "Modification d'une récupération" : "Modification de congés";
           $notifications='2';
           break;
         // Validations Niveau 2
         case 1:
-          $sujet = $recover ? "Validation d'une récupération" : "Validation de congés";
+          $sujet = $recover !== 0 ? "Validation d'une récupération" : "Validation de congés";
           $notifications='4';
           break;
         case -1:
-          $sujet = $recover ? "Refus d'une récupération" : "Refus de congés";
+          $sujet = $recover !== 0 ? "Refus d'une récupération" : "Refus de congés";
           $notifications='4';
           break;
         // Validations Niveau 1
         case 2:
-          $sujet = $recover ? $lang['comp_time_subject_accepted_pending'] : $lang['leave_subject_accepted_pending'];
+          $sujet = $recover !== 0 ? $lang['comp_time_subject_accepted_pending'] : $lang['leave_subject_accepted_pending'];
           $notifications='3';
           break;
         case -2:
-          $sujet = $recover ? $lang['comp_time_subject_refused_pending'] : $lang['leave_subject_refused_pending'];
+          $sujet = $recover !== 0 ? $lang['comp_time_subject_refused_pending'] : $lang['leave_subject_refused_pending'];
           $notifications='3';
           break;
         }
@@ -1248,6 +1244,6 @@ class HolidayController extends BaseController
         // ajout d'un lien permettant de rebondir sur la demande
         $url = $this->config('URL') . "/holiday/edit/$id";
 
-        return $message . ("<p>Lien vers la demande de " . $recover ? "récupération" : "congé" . " :<br/><a href='$url'>$url</a></p>");
+        return $message . ("<p>Lien vers la demande de " . $recover !== '' ? "récupération" : "congé" . " :<br/><a href='$url'>$url</a></p>");
     }
 }

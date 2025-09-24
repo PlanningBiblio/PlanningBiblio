@@ -84,7 +84,7 @@ class WorkingHours
             $substracted = 0;
             foreach (array(2, 1, 0) as $i) {
                 if (isset($tab[$i])) {
-                    if (!$substracted) {
+                    if ($substracted === 0) {
                         $tab[$i][1] = $this->substractBreak($tab[$i][1], $break);
                     }
                     $substracted = 1;

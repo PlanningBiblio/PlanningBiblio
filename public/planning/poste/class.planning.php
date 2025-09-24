@@ -265,10 +265,9 @@ class planning
                     $heuresHebdo = round($heuresHebdo, 2);
                 }
 
-                if (!$config['ClasseParService']) {
-                    if ($elem['id']==2) {		// on retire l'utilisateur "tout le monde"
-                        continue;
-                    }
+                if (!$config['ClasseParService'] && $elem['id'] == 2) {
+                    // on retire l'utilisateur "tout le monde"
+                    continue;
                 }
         
                 $title = $elem['nom'] . ' ' . $elem['prenom'];
@@ -289,18 +288,15 @@ class planning
 
                 // Déjà placés
                 $elem['placed'] = 0;
-                if ($config['Planning-dejaPlace']) {
-                    if (in_array($elem['id'], $deja)) {	// Déjà placé pour ce poste
-                        $elem['placed'] = 1;
-                    }
+                if ($config['Planning-dejaPlace'] && in_array($elem['id'], $deja)) {
+                    // Déjà placé pour ce poste
+                    $elem['placed'] = 1;
                 }
 
                 // Vérifie si l'agent fera 2 plages de service public de suite
                 $elem['two_sr'] = 0;
-                if ($config['Alerte2SP']) {
-                    if (in_array($elem['id'], $deuxSP)) {
-                        $elem['two_sr'] = 1;
-                    }
+                if ($config['Alerte2SP'] && in_array($elem['id'], $deuxSP)) {
+                    $elem['two_sr'] = 1;
                 }
 
                 $elem['journey'] = 0;
@@ -568,7 +564,7 @@ class planning
 
         // Send notifications of initial validation or modification depending on the chosen parameters
         // Settings values : -2 = disabled ; -1 = do not check the date ; 0+ = for dates between today and today + value
-        $setting = $notificationType == 'nouveauPlanning' ? $config['Planning-InitialNotification'] : $config['Planning-ChangeNotification'];
+        $setting = $notificationType === 'nouveauPlanning' ? $config['Planning-InitialNotification'] : $config['Planning-ChangeNotification'];
 
         if ($setting == '-2') {
             return;
@@ -584,7 +580,7 @@ class planning
             }
         }
 
-        $sujet=$notificationType=="nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
+        $sujet=$notificationType === "nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
 
         // Tous les agents qui doivent être notifiés.
         foreach ($perso_ids as $elem) {
@@ -592,7 +588,7 @@ class planning
             $agent = isset($tab[$elem]) ? $tab[$elem]['prenom'].' '.$tab[$elem]['nom'] : $oldData[$elem]['prenom'].' '.$oldData[$elem]['nom'];
             $location = $GLOBALS['config']['Multisites-nombre'] > 1 ? '<br/>Site : <strong>' . $GLOBALS['config']["Multisites-site{$site}"] . '</strong>' : null;
 
-            $message=$notificationType=="nouveauPlanning"?"Validation du planning":"Modification du planning";
+            $message=$notificationType === "nouveauPlanning"?"Validation du planning":"Modification du planning";
             $message .= "<br/><br/>Agent : <strong>$agent</strong>";
             $message .= "<br/>Date : <strong>".dateFr($date)."</strong>";
             $message .= $location;
@@ -605,7 +601,7 @@ class planning
                 foreach ($tab[$elem]["planning"] as $e) {
                     // On marque en gras les modifications
                     $exists=true;
-                    if ($notificationType=="planningModifie") {
+                    if ($notificationType === "planningModifie") {
                         $exists=false;
                         if (isset($oldData[$elem])) {
                             foreach ($oldData[$elem]["planning"] as $o) {

@@ -231,7 +231,7 @@ trait PlanningJobTrait
 
         // Count day hours for all agent.
         $day_hours = array();
-        if ($break_countdown) {
+        if ($break_countdown !== 0) {
             $db = new \db();
             $dateSQL = $db->escapeString($date);
 
@@ -395,7 +395,7 @@ trait PlanningJobTrait
                     $exclusion[$elem['id']][]="horaires";
                 }
 
-                if ($break_countdown) {
+                if ($break_countdown !== 0) {
                     $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
 
                     $is_a_break = $positions->find($poste)->isLunch();
@@ -512,10 +512,8 @@ trait PlanningJobTrait
                 }
 
                 // Remove agents that are not in requested category.
-                if (!empty($statuts)) {
-                    if (!in_array($elem['statut'], $statuts)) {
-                        $exclusion[$elem['id']][] = 'categories';
-                    }
+                if (!empty($statuts) && !in_array($elem['statut'], $statuts)) {
+                    $exclusion[$elem['id']][] = 'categories';
                 }
 
                 // Remove agent working on other site.
@@ -612,7 +610,7 @@ trait PlanningJobTrait
         $newtab = array();
         foreach ($agents_dispo as $elem) {
             if ($elem['id']!=2) {
-                if (!trim($elem['service'])) {
+                if (trim($elem['service']) === '' || trim($elem['service']) === '0') {
                     $newtab["Sans service"][]=$elem['id'];
                 } else {
                     $newtab[$elem['service']][]=$elem['id'];

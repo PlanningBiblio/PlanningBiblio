@@ -445,12 +445,10 @@ class absences
             // Merge overlapping slots
             foreach ($absences as $key => $value) {
                 foreach ($absences as $key2 => $value2) {
-                    if ($key != $key2 and $value['perso_id'] == $value2['perso_id']) {
-                        if ($value['debut'] < $value2['fin'] and $value['fin'] > $value2['debut']) {
-                            $absences[$key2]['debut'] = $value['debut'] <= $value2['debut'] ? $value['debut'] : $value2['debut'];
-                            $absences[$key2]['fin'] = $value['fin'] >= $value2['fin'] ? $value['fin'] : $value2['fin'];
-                            unset($absences[$key]);
-                        }
+                    if (($key != $key2 and $value['perso_id'] == $value2['perso_id']) && ($value['debut'] < $value2['fin'] and $value['fin'] > $value2['debut'])) {
+                        $absences[$key2]['debut'] = $value['debut'] <= $value2['debut'] ? $value['debut'] : $value2['debut'];
+                        $absences[$key2]['fin'] = $value['fin'] >= $value2['fin'] ? $value['fin'] : $value2['fin'];
+                        unset($absences[$key]);
                     }
                 }
             }
@@ -546,7 +544,7 @@ class absences
 
         $hre_debut=substr($debut, -8);
         $hre_fin=substr($fin, -8);
-        $hre_fin=$hre_fin=="00:00:00"?"23:59:59":$hre_fin;
+        $hre_fin=$hre_fin === "00:00:00"?"23:59:59":$hre_fin;
         $debut=substr($debut, 0, 10);
         $fin=substr($fin, 0, 10);
 
@@ -570,8 +568,8 @@ class absences
                 }
             }
 
-            $debutAbsence=$current==$debut?$hre_debut:"00:00:00";
-            $finAbsence=$current==$fin?$hre_fin:"23:59:59";
+            $debutAbsence=$current === $debut?$hre_debut:"00:00:00";
+            $finAbsence=$current === $fin?$hre_fin:"23:59:59";
             $debutAbsence=strtotime($debutAbsence);
             $finAbsence=strtotime($finAbsence);
 
@@ -804,7 +802,7 @@ class absences
                     $agents=array();
                     foreach ($db->result as $elem2) {
                         $groupe2 = $elem2['groupe'].$elem2['debut'].$elem2['fin'];
-                        if ($groupe2 == $groupe) {
+                        if ($groupe2 === $groupe) {
                             $perso_ids[]=$elem2['perso_id'];
                             $agents[]=$elem2['nom']." ".$elem2['prenom'];
 
@@ -836,7 +834,7 @@ class absences
                 $fin=dateFr(substr($elem['fin'], 0, 10));
                 $debutHeure=substr($elem['debut'], -8);
                 $finHeure=substr($elem['fin'], -8);
-                if ($debutHeure=="00:00:00" and $finHeure=="23:59:59") {
+                if ($debutHeure === "00:00:00" and $finHeure === "23:59:59") {
                     $debutHeure=null;
                     $finHeure=null;
                 } else {
@@ -919,7 +917,7 @@ class absences
             }
         }
     
-        if ($result) {
+        if ($result !== []) {
             $this->elements=$result;
         }
     }
@@ -962,7 +960,7 @@ class absences
             }
         }
 
-        if ($all) {
+        if ($all !== []) {
             $this->elements=$all;
         }
     }
@@ -1103,10 +1101,8 @@ class absences
                 // Récupération du numéro du site concerné par la date courante
                 $j=$jour-1+($semaine*7)-7;
                 $site=null;
-                if (is_array($temps)) {
-                    if (array_key_exists($j, $temps) and array_key_exists(4, $temps[$j])) {
-                        $site = intval($temps[$j][4]);
-                    }
+                if (is_array($temps) && (array_key_exists($j, $temps) and array_key_exists(4, $temps[$j]))) {
+                    $site = intval($temps[$j][4]);
                 }
                 // Ajout du numéro du droit correspondant à la gestion des absences de ce site
                 if ($site and !in_array(($droit + $site), $droitsAbsences)) {
@@ -1184,12 +1180,10 @@ class absences
         }
 
         // Responsables directs
-        if (in_array(1, $categories)) {
-            if (is_array($mails_responsables)) {
-                foreach ($mails_responsables as $elem) {
-                    if (!in_array(trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
-                        $recipients[]=trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-                    }
+        if (in_array(1, $categories) && is_array($mails_responsables)) {
+            foreach ($mails_responsables as $elem) {
+                if (!in_array(trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
+                    $recipients[]=trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
                 }
             }
         }
@@ -1208,10 +1202,8 @@ class absences
         }
 
         // L'agent
-        if (in_array(3, $categories)) {
-            if (!in_array(trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
-                $recipients[]=trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-            }
+        if (in_array(3, $categories) && !in_array(trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
+            $recipients[]=trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
         }
 
         $this->recipients = array_unique(array_filter($recipients));

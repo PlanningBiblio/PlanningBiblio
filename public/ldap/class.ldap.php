@@ -108,11 +108,9 @@ function authLDAP($login, $password)
       or die("Impossible de se connecter au serveur LDAP");
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
-        if ($ldapconn) {
-            if (@ldap_bind($ldapconn, $dn, $password)) {
-                $auth=true;
-                $_SESSION['oups']['Auth-Mode']="LDAP";
-            }
+        if ($ldapconn && @ldap_bind($ldapconn, $dn, $password)) {
+            $auth=true;
+            $_SESSION['oups']['Auth-Mode']="LDAP";
         }
     }
     return $auth;
@@ -174,13 +172,13 @@ if (!function_exists('ldap_escape')) {
         // Create the base char map to escape
         $flags = (int)$flags;
         $charMap = array();
-        if ($flags & LDAP_ESCAPE_FILTER) {
+        if (($flags & LDAP_ESCAPE_FILTER) !== 0) {
             $charMap += $charMaps[LDAP_ESCAPE_FILTER];
         }
-        if ($flags & LDAP_ESCAPE_DN) {
+        if (($flags & LDAP_ESCAPE_DN) !== 0) {
             $charMap += $charMaps[LDAP_ESCAPE_DN];
         }
-        if (!$charMap) {
+        if ($charMap === []) {
             $charMap = $charMaps[0];
         }
 
@@ -194,7 +192,7 @@ if (!function_exists('ldap_escape')) {
         $result = strtr($subject, $charMap);
 
         // Encode leading/trailing spaces if LDAP_ESCAPE_DN is passed
-        if ($flags & LDAP_ESCAPE_DN) {
+        if (($flags & LDAP_ESCAPE_DN) !== 0) {
             if ($result[0] === ' ') {
                 $result = '\\20' . substr($result, 1);
             }

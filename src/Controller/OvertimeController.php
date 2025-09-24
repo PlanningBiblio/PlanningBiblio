@@ -364,10 +364,10 @@ class OvertimeController extends BaseController
                 $message .= "Date : ".dateFr($recup['date']);
                 $message .= "<br/>\n";
                 $message .= "Nombre d'heures : ".heure4($update['heures']);
-                if ($update['commentaires']) {
+                if ($update['commentaires'] !== '' && $update['commentaires'] !== '0') {
                     $message.="<br/><br/><u>Commentaires</u> :<br/>".str_replace("\n", "<br/>", $update['commentaires']);
                 }
-                if ($update['refus']) {
+                if ($update['refus'] !== '' && $update['refus'] !== '0') {
                     $message.="<br/><br/><u>Motif du refus</u> :<br/>".str_replace("\n", "<br/>", $update['refus']);
                 }
 

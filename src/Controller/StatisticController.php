@@ -318,10 +318,8 @@ class StatisticController extends BaseController
 
                     foreach ($resultat as $elem) {
 
-                        if (in_array($type, ['service', 'status'])) {
-                            if (!isset($elem['object_id']) or $d != $elem['object_id']) {
-                                continue;
-                            }
+                        if (in_array($type, ['service', 'status']) && (!isset($elem['object_id']) or $d != $elem['object_id'])) {
+                            continue;
                         }
 
                         if (($type =='agent' and !empty($elem['perso_id']) and $d == $elem['perso_id'])
@@ -1530,7 +1528,7 @@ class StatisticController extends BaseController
             }
         }
 
-        if ($tab) {
+        if ($tab !== []) {
             //	Recherche du nombre de jours concernés
             $db = new \db();
             $debutREQ = $db->escapeString($debutSQL);
@@ -1601,7 +1599,7 @@ class StatisticController extends BaseController
     {
         //    Initialisation des variables
         $CSRFToken = trim($request->get("CSRFToken") ?? '');
-        if (!$CSRFToken) {
+        if ($CSRFToken === '' || $CSRFToken === '0') {
             $CSRFToken = $GLOBALS['CSRFSession'];
         }
 
@@ -2629,7 +2627,7 @@ class StatisticController extends BaseController
         // passage en session du tableau pour le fichier export.php
         $_SESSION['stat_tab'] = $tab;
 
-        if($tab){
+        if($tab !== []){
             foreach($tab as $key => $elem){
                 $siteEtage = array();
                 if ($nbSites >1) {

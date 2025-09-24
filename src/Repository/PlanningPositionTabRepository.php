@@ -60,7 +60,7 @@ class PlanningPositionTabRepository extends EntityRepository
         $deleted_planning_position_tab = 0;
         foreach ($results as $result) {
             $deleted = $this->purge($result->getId());
-            if ($deleted) $deleted_planning_position_tab++;
+            if ($deleted !== 0) $deleted_planning_position_tab++;
         }
         return $deleted_planning_position_tab;
     }
