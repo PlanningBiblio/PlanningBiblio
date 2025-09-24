@@ -333,11 +333,7 @@ for ($i=0;$i<count($tab);$i++) {
     }
 
     // Ajout des Sans Repas (SR)
-    if ($sansRepas === true or in_array($tab[$i]['perso_id'], $sansRepas)) {
-        $tab[$i]["sr"] = 1;
-    } else {
-        $tab[$i]["sr"] = 0;
-    }
+    $tab[$i]["sr"] = ($sansRepas === true or in_array($tab[$i]['perso_id'], $sansRepas)) ? 1 : 0;
 
     // Marquage des absences de la table absences
     foreach ($absences as $absence) {

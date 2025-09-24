@@ -38,7 +38,7 @@ class planning
     public $validation;
 
 
-    public function fetch()
+    public function fetch(): void
     {
         if (!$this->date) {
             return;
@@ -112,7 +112,7 @@ class planning
     }
 
     // Affiche la liste des agents dans le menudiv
-    public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $quotaSP, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey)
+    public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $quotaSP, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey): void
     {
         $config=$GLOBALS['config'];
         $dbprefix=$config['dbprefix'];
@@ -385,7 +385,7 @@ class planning
     * @param string $this->date , date au format YYYY-MM-DD
     * Envoie des notifications en cas de validation ou changement de planning aux agents concernés
     */
-    public function notifications()
+    public function notifications(): void
     {
         $version="ajax";
         require_once "../../personnel/class.personnel.php";
@@ -696,7 +696,7 @@ class planning
   
     // Notes
     // Récupère les notes (en bas des plannings)
-    public function getNotes()
+    public function getNotes(): void
     {
         $date = $this->date;
 
@@ -749,7 +749,7 @@ class planning
         }
     }
 
-    public function update_cell_add_agents($date, $debut, $fin, $poste, $site, $perso_id, $login_id, $CSRFToken)
+    public function update_cell_add_agents($date, $debut, $fin, $poste, $site, $perso_id, $login_id, $CSRFToken): void
     {
         $insert = array(
             "date" => $date,
@@ -768,7 +768,7 @@ class planning
     }
 
     // Insertion, mise à jour des notes
-    public function updateNotes()
+    public function updateNotes(): void
     {
         $date=$this->date;
         $site=$this->site;

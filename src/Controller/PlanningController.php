@@ -260,7 +260,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/deleteplanning', name: 'planning.delete', methods: ['POST'])]
-    public function delete_planning(Request $request, Session $session)
+    public function delete_planning(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $week = $request->get('week');
@@ -644,7 +644,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/setFramework', name: 'planning.setFramework', methods: ['POST'])]
-    public function setFramework(Request $request)
+    public function setFramework(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -673,7 +673,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/setFrameworkGroup', name: 'planning.setFrameworkGroup', methods: ['POST'])]
-    public function setFrameworkGroup(Request $request)
+    public function setFrameworkGroup(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -888,12 +888,11 @@ class PlanningController extends BaseController
         }
 
         $cellule .= '<a class="pl-icon arrow-right" role="button"></a>';
-        $cellule .= "</td>\n";
 
-        return $cellule;
+        return $cellule . "</td>\n";
     }
 
-    private function createPlannings($request, $view)
+    private function createPlannings($request, $view): void
     {
         list($site, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
 
@@ -1130,12 +1129,12 @@ class PlanningController extends BaseController
         return $tabs;
     }
 
-    private function getAbsenceReasons()
+    private function getAbsenceReasons(): void
     {
         $this->absenceReasons = $this->entityManager->getRepository(AbsenceReason::class);
     }
 
-    private function getAbsences($date)
+    private function getAbsences($date): void
     {
         $a = new \absences();
         $a->valide = false;
@@ -1242,7 +1241,7 @@ class PlanningController extends BaseController
         return $categories;
     }
 
-    private function getCells($date, $site)
+    private function getCells($date, $site): void
     {
         $dbprefix = $this->config('dbprefix');
         $skills = $this->getSkills();
@@ -1395,7 +1394,7 @@ class PlanningController extends BaseController
         return $messages_infos;
     }
 
-    private function getLockData(String $date = null)
+    private function getLockData(String $date = null): void
     {
         $this->locked = 0;
         $this->lockDate = null;
@@ -1433,7 +1432,7 @@ class PlanningController extends BaseController
         return array($autorisationN1, $autorisationN2, $autorisationNotes);
     }
 
-    private function getPositions()
+    private function getPositions(): void
     {
         $positions = array();
 
@@ -1485,7 +1484,7 @@ class PlanningController extends BaseController
         $this->positions = $positions;
     }
 
-    private function getSeparations()
+    private function getSeparations(): void
     {
         // Separation lines
         $separationE = $this->entityManager->getRepository(SeparationLine::class)->findAll();
@@ -1627,7 +1626,7 @@ class PlanningController extends BaseController
         return false;
     }
 
-    private function setDates(Request $request)
+    private function setDates(Request $request): void
     {
         $session = $request->getSession();
 
@@ -1656,7 +1655,7 @@ class PlanningController extends BaseController
         );
     }
 
-    private function setSite(Request $request)
+    private function setSite(Request $request): void
     {
         $session = $request->getSession();
 

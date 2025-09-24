@@ -538,7 +538,7 @@ class WorkingHourController extends BaseController
     }
 
     #[Route(path: '/workinghour', name: 'workinghour.save', methods: ['POST'])]
-    public function save(Request $request, Session $session){
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $post = $request->request->all();
         $msg = null;
         $msgType = null;
@@ -605,7 +605,7 @@ class WorkingHourController extends BaseController
     }
 
     #[Route(path: '/workinghour', name: 'workinghour.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session){
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get("id");
 

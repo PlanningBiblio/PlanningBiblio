@@ -139,11 +139,7 @@ class StatisticController extends BaseController
         $_SESSION["stat_{$type}_sites"] = $selectedSites;
 
         // Filter sites for SQL queries
-        if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL = '0,' . implode(',', $selectedSites);
-        } else {
-            $sitesSQL = '0,1';
-        }
+        $sitesSQL = ($nbSites > 1 and is_array($selectedSites)) ? '0,' . implode(',', $selectedSites) : '0,1';
 
         // Teleworking
         $teleworking_absence_reasons = array();
@@ -716,11 +712,7 @@ class StatisticController extends BaseController
         $_SESSION['stat_samedis_sites'] = $selectedSites;
 
         // Filtre les sites dans les requêtes SQL
-        if ($nbSites>1) {
-            $sitesSQL = "0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL = "0,1";
-        }
+        $sitesSQL = $nbSites > 1 ? "0,".implode(",", $selectedSites) : "0,1";
 
         //		--------------		Récupération de la liste des agents pour le menu déroulant		------------------------
         $db=new \db();
@@ -1393,11 +1385,7 @@ class StatisticController extends BaseController
         $_SESSION['stat_poste_sites'] = $selectedSites;
 
         // Filtre les sites dans les requêtes SQL
-        if ($nbSites>1 and is_array($selectedSites)) {
-            $sitesSQL =" 0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL = "0,1";
-        }
+        $sitesSQL = ($nbSites > 1 and is_array($selectedSites)) ? " 0,".implode(",", $selectedSites) : "0,1";
 
         // Teleworking
         $teleworking_absence_reasons = array();
@@ -1573,11 +1561,7 @@ class StatisticController extends BaseController
                 if ($elem[0][2]) {
                     $siteEtage[]=$elem[0][2];
                 }
-                if (!empty($siteEtage)) {
-                    $siteEtage="(".implode(" ", $siteEtage).")";
-                } else {
-                    $siteEtage=null;
-                }
+                $siteEtage = !empty($siteEtage) ? "(".implode(" ", $siteEtage).")" : null;
 
                 $elem["siteEtage"] = $siteEtage;
                 $elem[2] = heure4($elem[2]);
@@ -2168,11 +2152,7 @@ class StatisticController extends BaseController
         $_SESSION['stat_poste_sites'] = $selectedSites;
 
         // Filtre les sites dans les requêtes SQL
-        if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL = "0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL = "0,1";
-        }
+        $sitesSQL = ($nbSites > 1 and is_array($selectedSites)) ? "0,".implode(",", $selectedSites) : "0,1";
 
         // Teleworking
         $teleworking_absence_reasons = array();
@@ -2344,11 +2324,7 @@ class StatisticController extends BaseController
                 $siteEtage[] = $elem[0][2];
             }
 
-            if (!empty($siteEtage)) {
-                $siteEtage = "(".implode(" ", $siteEtage).")";
-            } else {
-                $siteEtage = null;
-            }
+            $siteEtage = !empty($siteEtage) ? "(".implode(" ", $siteEtage).")" : null;
     
             $jour = ($nbJours > 0) ? floatval($elem[2]) / $nbJours : 0;
             $hebdo = \statistiques::average($elem[2], $debut, $fin);
@@ -2489,11 +2465,7 @@ class StatisticController extends BaseController
         $_SESSION['stat_poste_sites'] = $selectedSites;
 
         // Filtre les sites dans les requêtes SQL
-        if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL = "0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL = "0,1";
-        }
+        $sitesSQL = ($nbSites > 1 and is_array($selectedSites)) ? "0,".implode(",", $selectedSites) : "0,1";
 
         // Teleworking
         $teleworking_absence_reasons = array();
@@ -2671,11 +2643,7 @@ class StatisticController extends BaseController
                 if ($tab[$key][0][2]) {
                     $siteEtage[] = $tab[$key][0][2];
                 }
-                if (!empty($siteEtage)) {
-                    $siteEtage="(".implode(" ", $siteEtage).")";
-                } else {
-                    $siteEtage=null;
-                }
+                $siteEtage = !empty($siteEtage) ? "(".implode(" ", $siteEtage).")" : null;
                 $jour = ($nbJours > 0) ? $tab[$key][2] / $nbJours : 0;
                 $hebdo = \statistiques::average($tab[$key][2], $debut, $fin);
 
@@ -2774,11 +2742,7 @@ class StatisticController extends BaseController
         }
 
         if (!$hours) {
-            if ($session->get('statisticsInit')) {
-                $hours = $session->get('statisticsHours');
-            } else { 
-                $hours = $this->config('Statistiques-Heures');
-            }
+            $hours = $session->get('statisticsInit') ? $session->get('statisticsHours') : $this->config('Statistiques-Heures');
         }
 
         return $hours;

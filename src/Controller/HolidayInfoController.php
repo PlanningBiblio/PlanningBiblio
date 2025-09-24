@@ -89,7 +89,7 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info', name: 'holiday_info.update', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
@@ -124,7 +124,7 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info', name: 'holiday_info.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session)
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');

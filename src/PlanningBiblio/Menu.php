@@ -36,7 +36,7 @@ class Menu
         return true;
     }
 
-    public function fetch()
+    public function fetch(): void
     {
         $menu = array();
         $db = new \db();
@@ -44,11 +44,7 @@ class Menu
         foreach ($db->result as $elem) {
 
             if ($this->checkCondition($elem['condition'])) {
-                if (substr($elem['url'], 0, 1) == '/') {
-                    $url = substr($elem['url'], 1);
-                } else {
-                    $url = 'index.php?page=' . $elem['url'];
-                }
+                $url = substr($elem['url'], 0, 1) == '/' ? substr($elem['url'], 1) : 'index.php?page=' . $elem['url'];
                 $menu[$elem['niveau1']][$elem['niveau2']]['titre']=$elem['titre'];
                 $menu[$elem['niveau1']][$elem['niveau2']]['url'] = $url;
             }

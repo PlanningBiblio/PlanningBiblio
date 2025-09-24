@@ -63,7 +63,7 @@ class FixtureBuilder
         return $entity;
     }
 
-    public function delete($model)
+    public function delete($model): void
     {
         $entities = $this->em->getRepository($model)->findAll();
         foreach ($entities as $entity) {
@@ -138,7 +138,7 @@ class FixtureBuilder
         return $randstring;
     }
 
-    private function random_date()
+    private function random_date(): \DateTime
     {
         return new \DateTime(date('Y-m-d'));
     }
@@ -148,7 +148,7 @@ class FixtureBuilder
         return array();
     }
 
-    private function random_datetime()
+    private function random_datetime(): \DateTime
     {
         return new \DateTime(date("Y-m-d H:i:s"));
     }

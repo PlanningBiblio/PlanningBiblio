@@ -66,7 +66,7 @@ class PlanningPositionTabRepository extends EntityRepository
     }
 
 
-    private function removeObjects($class, $field, $value) {
+    private function removeObjects($class, $field, $value): void {
         $entityManager = $this->getEntityManager();
         $objects = $entityManager->getRepository($class)->findBy([$field => $value]);
         foreach ($objects as $object) {

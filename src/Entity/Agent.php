@@ -443,7 +443,7 @@ class Agent
         return $this->managers->toArray();
     }
 
-    public function addManaged(Manager $managed)
+    public function addManaged(Manager $managed): void
     {
         $this->managed->add($managed);
         $managed->setManager($this);
@@ -533,9 +533,7 @@ class Agent
             }
         }
 
-        $unit_mails = array_unique($unit_mails);
-
-        return $unit_mails;
+        return array_unique($unit_mails);
     }
 
     public function get_manager_emails() {

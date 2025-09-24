@@ -356,7 +356,7 @@ class statistiques
     public $fin;
     public $selectedSites;
 
-    public function ouverture()
+    public function ouverture(): void
     {
 
     // Recherche du nombre d'heures, de jours et de semaine d'ouverture au public par site

@@ -134,7 +134,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->assertEquals(count($content), 23, 'No exports for deleted agents');
     }
 
-    private function createPlanningPositionFor($agent)
+    private function createPlanningPositionFor($agent): void
     {
         $date = new DateTime('now - 3 day');
         $now = new DateTime();

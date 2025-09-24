@@ -35,7 +35,7 @@ class ControllerAuthorizationListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $page = $event->getRequest()->getPathInfo();
         $page = preg_replace('/([a-z-\/]*).*/', "$1", $page);
@@ -119,7 +119,7 @@ class ControllerAuthorizationListener
         return false;
     }
 
-    private function triggerAccessDenied(RequestEvent $event){
+    private function triggerAccessDenied(RequestEvent $event): void{
 
         $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
 

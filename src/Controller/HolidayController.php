@@ -266,7 +266,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/holidays-hours-to-days', name: 'ajax.holidays-hours-to-days', methods: ['GET'])]
-    public function hoursToDays(Request $request, Session $session)
+    public function hoursToDays(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $hours_to_convert = $request->get('hours_to_convert');
         $hours_per_year = $request->get('hours_per_year');
@@ -516,7 +516,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/holiday', name: 'holiday.save', methods: ['POST'])]
-    public function add_confirm(Request $request, Session $session)
+    public function add_confirm(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $result = $this->save($request);
 
@@ -763,7 +763,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/holiday-halfday-hours', name: 'ajax.holiday-halfday-hours', methods: ['GET'])]
-    public function halfdayHours(Request $request)
+    public function halfdayHours(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $agent = $request->get('agent');
         $start = $request->get('start');
@@ -821,7 +821,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/check-planning', name: 'ajax.checkplanning', methods: ['POST'])]
-    public function checkPlanning(Request $request)
+    public function checkPlanning(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $perso_ids = json_decode($request->get('perso_ids'));
         $start =dateSQL($request->get('start'));
@@ -861,7 +861,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/holiday-credit', name: 'ajax.holidaycredit', methods: ['GET'])]
-    public function checkCredit(Request $request)
+    public function checkCredit(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         // Initilisation des variables
         $id = $request->get('id');
@@ -910,7 +910,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/current-credits', name: 'ajax.currentcredits', methods: ['get'])]
-    public function current_credits(Request $request)
+    public function current_credits(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $agent_id = $request->get('id');
 
@@ -1247,8 +1247,7 @@ class HolidayController extends BaseController
 
         // ajout d'un lien permettant de rebondir sur la demande
         $url = $this->config('URL') . "/holiday/edit/$id";
-        $message.="<p>Lien vers la demande de " . ($recover ? "récupération" : "congé") . " :<br/><a href='$url'>$url</a></p>";
 
-        return $message;
+        return $message . ("<p>Lien vers la demande de " . $recover ? "récupération" : "congé" . " :<br/><a href='$url'>$url</a></p>");
     }
 }

@@ -257,7 +257,7 @@ class PositionController extends BaseController
     }
 
     #[Route(path: '/position', name: 'position.save', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $nom = $request->get('nom');
@@ -353,7 +353,7 @@ class PositionController extends BaseController
     }
 
     #[Route(path: '/position', name: 'position.delete', methods: ['DELETE'])]
-     public function delete_position(Request $request, Session $session){
+     public function delete_position(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
 
         $id = $request->get('id');
         $p = $this->entityManager->getRepository(Position::class)->find($id);

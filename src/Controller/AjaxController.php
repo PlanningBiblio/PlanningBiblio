@@ -21,7 +21,7 @@ class AjaxController extends BaseController
 {
 
     #[Route(path: '/ajax/sanitize-html', name: 'ajax.sanitizehtml', methods: ['POST'])]
-    public function ajax_sanitize_html(Request $request)
+    public function ajax_sanitize_html(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $text = $request->get('text');
         $response = new Response();
@@ -33,7 +33,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/agents-by-sites', name: 'ajax.agentsbysites', methods: ['GET'])]
-    public function agentsBySites(Request $request)
+    public function agentsBySites(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();
 
@@ -61,7 +61,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/holiday-delete', name: 'ajax.holidaydelete', methods: ['GET'])]
-    public function deleteHoliday(Request $request)
+    public function deleteHoliday(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');
@@ -75,7 +75,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/mail-test', name: 'ajax.mailtest', methods: ['POST'])]
-    public function mailTest(Request $request)
+    public function mailTest(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
 
         include_once(__DIR__ . '/../../public/include/config.php');
@@ -132,7 +132,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/edit-absence-reasons', name: 'ajax.editabsencereasons', methods: ['POST'])]
-    public function editAbsenceReasons(Request $request)
+    public function editAbsenceReasons(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $data = $request->get('data');
@@ -161,7 +161,7 @@ class AjaxController extends BaseController
 
 
     #[Route(path: '/ajax/holiday-absence-control', name: 'ajax.holiday.absence.control', methods: ['GET'])]
-    public function holidayAbsenceControl(Request $request)
+    public function holidayAbsenceControl(Request $request): \Symfony\Component\HttpFoundation\Response
     {
       $session = $request->getSession();
 

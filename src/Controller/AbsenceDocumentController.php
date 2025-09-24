@@ -15,16 +15,14 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class AbsenceDocumentController extends BaseController
 {
     #[Route(path: '/absences/document/{id}', name: 'absences.document.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         $id = $request->get('id');
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
 
         $file = new File($ad->upload_dir() . $ad->getAbsenceId() . '/' . $ad->getId() . '/' . $ad->getFilename());
 
-        $response = new BinaryFileResponse($file);
-
-        return $response;
+        return new BinaryFileResponse($file);
     }
 
     #[Route(path: '/absences/document/{id}', name: 'absences.document.delete', methods: ['DELETE'])]
@@ -39,8 +37,7 @@ class AbsenceDocumentController extends BaseController
         $ad->deleteFile();
         $this->entityManager->remove($ad);
         $this->entityManager->flush();
-        $response = new Response();
-        return $response;
+        return new Response();
     }
 
    #[Route(path: '/absences/document/{id_absence}', name: 'absences.document.add', methods: ['POST'])]
@@ -63,12 +60,11 @@ class AbsenceDocumentController extends BaseController
 
             $file->move($ad->upload_dir() . $id . '/' . $ad->getId(), $filename);
         }
-        $response = new Response();
-        return $response;
+        return new Response();
     }
 
    #[Route(path: '/absences/documents/{id_absence}', name: 'absences.document.list', methods: ['GET'])]
-    public function list(Request $request, Session $session)
+    public function list(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         $id = $request->get('id_absence');
         $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);

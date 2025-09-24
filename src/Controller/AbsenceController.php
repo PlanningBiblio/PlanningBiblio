@@ -448,7 +448,7 @@ class AbsenceController extends BaseController
     }
 
     #[Route(path: '/absence', name: 'absence.delete', methods: ['DELETE'])]
-    public function delete_absence(Request $request)
+    public function delete_absence(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();
 
@@ -1515,7 +1515,7 @@ class AbsenceController extends BaseController
         return $valid_ids;
     }
 
-    private function setAdminPermissions()
+    private function setAdminPermissions(): void
     {
         // If can validate level 1: admin = true.
         // If can validate level 2: adminN2 = true.
@@ -1568,7 +1568,7 @@ class AbsenceController extends BaseController
 
     private function reasonTypes(): array
     {
-        $reason_types = array(
+        return array(
             array(
                 'id' => 0,
                 'valeur' => 'N1 cliquable'
@@ -1582,8 +1582,6 @@ class AbsenceController extends BaseController
                 'valeur' => 'N2'
             )
         );
-
-        return $reason_types;
     }
 
     /**

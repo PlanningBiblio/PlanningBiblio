@@ -243,7 +243,7 @@ class OvertimeController extends BaseController
     }
 
     #[Route(path: '/overtime', name: 'overtime.save', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get('id');

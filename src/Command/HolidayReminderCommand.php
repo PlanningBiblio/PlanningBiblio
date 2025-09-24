@@ -148,11 +148,7 @@ Exemple à ajouter en crontab :
 
             // Consider the validation scheme (config Absences-notifications-agent-par-agent)
             if ($config['Absences-notifications-agent-par-agent']) {
-                if ($elem->getValidLevel1() == 0) {
-                    $tmp->recipients = $agent->notification_level1;
-                } else { 
-                    $tmp->recipients = $agent->notification_level2;
-                }
+                $tmp->recipients = $elem->getValidLevel1() == 0 ? $agent->notification_level1 : $agent->notification_level2;
 
             } else {
                 // TODO : Use Absences-notifications-A1, Absences-notifications-B1 instead of Conges-Rappels-N1, then remove param Conges-Rappels-N1

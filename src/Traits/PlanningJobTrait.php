@@ -554,11 +554,7 @@ trait PlanningJobTrait
                         $motifExclusion[$elem['id']][]="skills";
                     }
                     if (in_array('categories', $exclusion[$elem['id']])) {
-                        if ($categories_nb > 1) {
-                            $motifExclusion[$elem['id']][]="no_cat";
-                        } else {
-                            $motifExclusion[$elem['id']][]="wrong_cat";
-                        }
+                        $motifExclusion[$elem['id']][] = $categories_nb > 1 ? "no_cat" : "wrong_cat";
                     }
                     if (in_array('absence', $exclusion[$elem['id']])) {
                         $motifExclusion[$elem['id']][] = 'absence';
@@ -642,11 +638,7 @@ trait PlanningJobTrait
             }
         }
 
-        if (array_key_exists("Autres", $newtab)) {
-            $listparservices[] = implode(',', $newtab['Autres']);
-        } else {
-            $listparservices[] = null;
-        }
+        $listparservices[] = array_key_exists("Autres", $newtab) ? implode(',', $newtab['Autres']) : null;
         $tab_agent = implode(';', $listparservices);
 
         $tableaux = array(

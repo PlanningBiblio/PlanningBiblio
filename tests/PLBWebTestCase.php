@@ -110,13 +110,11 @@ class PLBWebTestCase extends PantherTestCase
         };
     }
 
-    protected function getSelect($id = null)
+    protected function getSelect($id = null): \Facebook\WebDriver\WebDriverSelect
     {
         $driver = $this->client->getWebDriver();
 
-        $select = new WebDriverSelect($driver->findElement(WebDriverBy::id($id)));
-
-        return $select;
+        return new WebDriverSelect($driver->findElement(WebDriverBy::id($id)));
     }
 
     /**

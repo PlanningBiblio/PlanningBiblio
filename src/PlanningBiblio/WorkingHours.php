@@ -105,9 +105,8 @@ class WorkingHours
     private function substractBreak($hour, $interval): string
     {
          $minutes = $interval * 60;
-         $new_hour = date('H:i:s', strtotime("- $minutes minutes $hour"));
 
-         return $new_hour;
+         return date('H:i:s', strtotime("- $minutes minutes $hour"));
     }
 
 }

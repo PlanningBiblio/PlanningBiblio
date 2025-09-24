@@ -71,7 +71,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function hourFromHis($hours)
+    public function hourFromHis($hours): string
     {
         if ($hours) {
             return heure3($hours);

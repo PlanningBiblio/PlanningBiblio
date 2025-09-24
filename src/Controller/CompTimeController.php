@@ -106,7 +106,7 @@ class CompTimeController extends BaseController
     }
 
     #[Route(path: '/comptime', name: 'comptime.save', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $session = $request->getSession();
 

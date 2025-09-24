@@ -646,8 +646,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $db = new \db();
         $db->CSRFToken = $this->CSRFToken;
-        $id = $db->insert('planning_hebdo', $data);
 
-        return $id;
+        return $db->insert('planning_hebdo', $data);
     }
 }

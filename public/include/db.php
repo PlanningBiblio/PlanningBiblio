@@ -53,7 +53,7 @@ class db
         $this->dbprefix=$GLOBALS['config']['dbprefix'];
     }
 
-    public function connect()
+    public function connect(): void
     {
         $this->conn=mysqli_connect($this->host, $this->user, $this->password, $this->dbname);
         $this->conn->set_charset("utf8mb4");
@@ -79,12 +79,10 @@ class db
 
 	if (is_null($str))
 	  return $str;
-
-        $str=mysqli_real_escape_string($this->conn, $str);
-        return $str;
+        return mysqli_real_escape_string($this->conn, $str);
     }
 
-    public function query($requete, $request_inserted_id = false)
+    public function query($requete, $request_inserted_id = false): void
     {
         if (!$this->conn) {
             $this->connect();
@@ -108,11 +106,7 @@ class db
                     if (isset($isCryptedPassword) and $isCryptedPassword===true) {
                         $result[$key]=filter_var($value, FILTER_UNSAFE_RAW);
                     } else {
-                        if ($this->sanitize_string) {
-                            $result[$key] = htmlspecialchars(strval($value));
-                        } else {
-                            $result[$key] = filter_var($value, FILTER_UNSAFE_RAW);
-                        }   
+                        $result[$key] = $this->sanitize_string ? htmlspecialchars(strval($value)) : filter_var($value, FILTER_UNSAFE_RAW);   
                     }
                     $isCryptedPassword=$key=="type" and $value=="password";
                 }
@@ -122,12 +116,12 @@ class db
         $this->disconnect();
     }
 
-    public function disconnect()
+    public function disconnect(): void
     {
         mysqli_close($this->conn);
     }
 
-    public function select($table, $infos=null, $where=null, $options=null)
+    public function select($table, $infos=null, $where=null, $options=null): void
     {
         $infos=$infos?$infos:"*";
         $where=$where?$where:"1";
@@ -147,7 +141,7 @@ class db
       Si array : array(champ1=>valeur1, champ2=>valeur2, ...)
     @param string option : permet d'ajouter des options de recherche après where, ex : order by
     */
-    public function select2($table, $infos="*", $where="1", $options=null)
+    public function select2($table, $infos="*", $where="1", $options=null): void
     {
         $this->connect();
         $dbprefix=$this->dbprefix;
@@ -158,11 +152,7 @@ class db
         if (is_array($infos)) {
             $tmp=array();
             foreach ($infos as $elem) {
-                if (is_array($elem)) {
-                    $tmp[]="{$elem['name']} AS `{$elem['as']}`";
-                } else {
-                    $tmp[]=$elem;
-                }
+                $tmp[] = is_array($elem) ? "{$elem['name']} AS `{$elem['as']}`" : $elem;
             }
             $infos=implode(",", $tmp);
         }
@@ -592,12 +582,12 @@ class dbh
     );
     }
 
-    public function exec($sql)
+    public function exec($sql): void
     {
         $this->pdo->exec($sql);
     }
 
-    public function prepare($sql)
+    public function prepare($sql): void
     {
         $this->stmt=$this->pdo->prepare($sql);
     }
@@ -642,7 +632,7 @@ class dbh
       Si array : array(champ1=>valeur1, champ2=>valeur2, ...) à utiliser de préférence car les valeurs sont échapées par PDO_MySQL
     @param string option : permet d'ajouter des options de recherche après where, ex : order by
     */
-    public function select($table, $infos="*", $where="1", $options=null)
+    public function select($table, $infos="*", $where="1", $options=null): void
     {
         $table=$this->dbprefix.$table;
 

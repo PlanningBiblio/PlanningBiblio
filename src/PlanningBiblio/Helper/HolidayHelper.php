@@ -350,11 +350,7 @@ class HolidayHelper extends BaseHelper
         // If the 2nd period doesn't exist and the first start before 12:00,
         // morning_end is 12:00
         if (empty($hours_last_day[1][0])) {
-            if ($hours_last_day[0][0] >= '12:00:00') {
-                $morning_end = $hours_last_day[0][0];
-            } else {
-                $morning_end = '12:00:00';
-            }
+            $morning_end = $hours_last_day[0][0] >= '12:00:00' ? $hours_last_day[0][0] : '12:00:00';
         }
 
         if ($start == $end && $start_halfday == 'morning') {
@@ -473,7 +469,7 @@ class HolidayHelper extends BaseHelper
         return false;
     }
 
-    private function hasFixedBreak($times)
+    private function hasFixedBreak($times): bool
     {
         $indexes = array(0,1,2,3,5,6);
 
@@ -484,9 +480,7 @@ class HolidayHelper extends BaseHelper
             }
         }
 
-        $break = $slots > 2;
-
-        return $break;
+        return $slots > 2;
     }
 
     /** The standardizeTime function fills cells 0 and 3 in all cases to be able to place the break on cells 1 and 2

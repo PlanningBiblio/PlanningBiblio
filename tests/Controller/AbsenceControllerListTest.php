@@ -190,7 +190,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->assertEquals('Breton Aubert', $tbody->eq(2)->filter('td')->eq(3)->html());
     }
 
-    private function createAbsenceFor($agent, $status = 0)
+    private function createAbsenceFor($agent, $status = 0): void
     {
         $date = new DateTime('now + 3 day');
 

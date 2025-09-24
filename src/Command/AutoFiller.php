@@ -77,9 +77,7 @@ class AutoFiller extends Command
             $io->note(sprintf('Using default login : %s', $login));
         }
 
-        $return = $this->autoFill($io, $date, $login, $site);
-
-        return $return;
+        return $this->autoFill($io, $date, $login, $site);
     }
 
     private function autoFill($io, $date, $login, $site): int
@@ -384,9 +382,7 @@ class AutoFiller extends Command
             return (explode(',', $var));
         };
 
-        $output = array_map($func, $output);
-
-        return $output;
+        return array_map($func, $output);
     }
 
 }

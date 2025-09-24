@@ -58,9 +58,8 @@ class MSCalendarUtils
                 $rrule .= ';BYMONTH=' . $recurrence->pattern->month;
                 break;
         }
-        $rrule .= $this->returnEnd($recurrence);
         //echo $rrule . "\n";
-        return $rrule;
+        return $rrule . $this->returnEnd($recurrence);
     }
 
     private function returnStart($recurrence): string {

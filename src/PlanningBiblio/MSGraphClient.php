@@ -59,7 +59,7 @@ class MSGraphClient
         $this->full = $full;
     }
 
-    public function retrieveEvents() {
+    public function retrieveEvents(): void {
         $this->log("Start absences import from MS Graph Calendars");
         $this->log("full scan: $this->full");
         $this->getIncomingEvents();
@@ -79,7 +79,7 @@ class MSGraphClient
         return $range;
     }
 
-    private function getIncomingEvents() {
+    private function getIncomingEvents(): void {
         $this->incomingEvents = array();
         $this->graphUsers = array();
         $users = $this->entityManager->getRepository(Agent::class)->findBy(['supprime' => 0, 'check_ms_graph' => 1]);
@@ -118,7 +118,7 @@ class MSGraphClient
         $this->log("Amount of incoming events: " . count($this->incomingEvents));
     }
 
-    private function addToIncomingEvents($user, $response, $from, $to, $nextLink = null) {
+    private function addToIncomingEvents($user, $response, $from, $to, $nextLink = null): void {
         if ($nextLink) {
             $response = $this->sendGet($nextLink, true);
             if (!$response || $response->code != 200) {
@@ -150,7 +150,7 @@ class MSGraphClient
         return !($response && $response->code == 200);
     }
 
-    private function getLocalEvents() {
+    private function getLocalEvents(): void {
         $usersSQLIds = implode(',', $this->graphUsers);
 
         if ($this->full) {
@@ -186,7 +186,7 @@ class MSGraphClient
         return $response && $response->code == 200;
     }
 
-    private function deleteEvents() {
+    private function deleteEvents(): void {
         // The SQL calls in this function should be replaced by doctrine calls when available
         $query = "DELETE FROM " . $this->dbprefix . "absences WHERE ical_key=:ical_key AND perso_id=:perso_id";
         $statement = $this->entityManager->getConnection()->prepare($query);
@@ -200,7 +200,7 @@ class MSGraphClient
         }
     }
 
-    private function insertOrUpdateEvents() {
+    private function insertOrUpdateEvents(): void {
         // The SQL calls in this function should be replaced by doctrine calls when available
         foreach ($this->incomingEvents as $eventArray) {
             $incomingEvent = $eventArray['event'];
@@ -283,7 +283,7 @@ class MSGraphClient
         return $response;
     }
 
-    private function log($message) {
+    private function log($message): void {
         $this->logger->log($message, "MSGraphClient");
     }
 

@@ -31,7 +31,7 @@ class volants
     {
     }
   
-    public function fetch($date)
+    public function fetch($date): void
     {
 
     // Date du lundi
@@ -68,7 +68,7 @@ class volants
         $this->tous = $tous;
     }
   
-    public function set($date, $ids, $CSRFToken)
+    public function set($date, $ids, $CSRFToken): void
     {
         $db = new db();
         $db->CSRFToken = $CSRFToken;

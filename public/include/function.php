@@ -140,8 +140,7 @@ class datePl
 
         $interval=$dateNow->diff($dateFrom);
         $interval=$interval->format("%a");
-        $interval /= 7;
-        return $interval;
+        return $interval / 7;
     }
 
     public function planning_day_index_for($agent_id, $week_number = 0)
@@ -264,7 +263,7 @@ class CJMail implements NotificationTransporterInterface
     }
 
 
-    public function setPHPMailer($to)
+    public function setPHPMailer($to): \PHPMailer\PHPMailer\PHPMailer
     {
         $mail = new PHPMailer();
         $mail->setLanguage('fr');
@@ -384,7 +383,7 @@ function authSQL($login, $password)
 * pour gagner du temps lors des appels suivants.
 * Fonction utilisée par planning::menudivAfficheAgents et dans le script statistiques/temps.php
 */
-function calculHeuresSP($date, $CSRFToken)
+function calculHeuresSP($date, $CSRFToken): array
 {
     $config = $GLOBALS['config'];
     $em = $GLOBALS['entityManager'];
@@ -793,14 +792,7 @@ function CSRFToken()
     }
   
     // PHP 7
-    if (phpversion() >= 7) {
-        $CSRFToken = bin2hex(random_bytes(32));
-    }
-
-    // PHP 5.3+
-    else {
-        $CSRFToken = bin2hex(openssl_random_pseudo_bytes(32));
-    }
+    $CSRFToken = phpversion() >= 7 ? bin2hex(random_bytes(32)) : bin2hex(openssl_random_pseudo_bytes(32));
 
     $_SESSION['oups']['CSRFToken'] = $CSRFToken;
 
@@ -818,12 +810,7 @@ function date_time($date)
         $h=substr($date, 11, 2);
         $min=substr($date, 14, 2);
         $today=date("d/m/Y");
-        if ($today=="$j/$m/$a") {
-            $date="$h:$min";
-        } else {
-            $date="$j/$m/$a $h:$min";
-        }
-        return $date;
+        return $today == "$j/$m/$a" ? "$h:$min" : "$j/$m/$a $h:$min";
     }
 }
 
@@ -917,8 +904,7 @@ function dateFr($date, $heure=null)
         }
         return $dateFr;
     } else {
-        $dateEn=substr($date, 6, 4)."-".substr($date, 3, 2)."-".substr($date, 0, 2);
-        return $dateEn;
+        return substr($date, 6, 4)."-".substr($date, 3, 2)."-".substr($date, 0, 2);
     }
 }
 
@@ -1025,8 +1011,7 @@ function heure2($heure)
 
     $h=$heure[0];
     $m=$heure[1];
-    $heure=$h."h".$m;
-    return $heure;
+    return $h."h".$m;
 }
 
 function heure3($heure): string
@@ -1271,19 +1256,11 @@ function recurrenceRRuleText($rrule): string
 
     switch ($freq) {
     case 'DAILY':
-      if ($interval == 1 or $interval == null) {
-          $text = 'Tous les jours';
-      } else {
-          $text = "Tous les $interval jours";
-      }
+      $text = ($interval == 1 or $interval == null) ? 'Tous les jours' : "Tous les $interval jours";
       break;
 
     case 'WEEKLY':
-      if ($interval == 1 or $interval == null) {
-          $text = 'Chaque semaine';
-      } else {
-          $text = "Toutes les $interval semaines";
-      }
+      $text = ($interval == 1 or $interval == null) ? 'Chaque semaine' : "Toutes les $interval semaines";
 
       if ($byday) {
           $days = str_replace(array('MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'), array(' lundis', ' mardis', ' mercredis', ' jeudis', ' vendredis', ' samedis', ' dimanches'), $byday);
@@ -1293,11 +1270,7 @@ function recurrenceRRuleText($rrule): string
       break;
 
     case 'MONTHLY':
-      if ($interval == 1 or $interval == null) {
-          $text = 'Tous les mois';
-      } else {
-          $text = "Tous les $interval mois";
-      }
+      $text = ($interval == 1 or $interval == null) ? 'Tous les mois' : "Tous les $interval mois";
 
       if ($byday) {
           if (substr($byday, 0, 2) == '-1') {

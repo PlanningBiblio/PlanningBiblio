@@ -58,10 +58,8 @@ function authCAS($logger): string
         }
     }
 
-    $login = htmlspecialchars(strval($login));
-
     // Si authentification CAS et utilisateur existe : retourne son login
-    return $login;
+    return htmlspecialchars(strval($login));
 }
 
 function authLDAP($login, $password)
@@ -144,7 +142,6 @@ if (!function_exists('ldap_escape')) {
      * @param string $ignore Set of characters to leave untouched
      * @param int $flags Any combination of LDAP_ESCAPE_* flags to indicate the
      *                   set(s) of characters to escape.
-     * @return string
      */
     function ldap_escape($subject, $ignore = '', $flags = 0): string
     {

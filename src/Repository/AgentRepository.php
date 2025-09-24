@@ -50,19 +50,17 @@ class AgentRepository extends EntityRepository
                 }
             }
         }
-        $all_skills = array_unique($all_skills);
-        return $all_skills;
+        return array_unique($all_skills);
     }
 
     public function getMaxId() {
         $entityManager = $this->getEntityManager();
-        $id = $entityManager->createQueryBuilder()
+
+        return $entityManager->createQueryBuilder()
             ->select('MAX(a.id)')
             ->from(Agent::class, 'a')
             ->getQuery()
             ->getSingleScalarResult();
-
-        return $id;
     }
 
     public function purgeAll(): int
@@ -373,9 +371,7 @@ class AgentRepository extends EntityRepository
                     ->setParameter('deleted', '0');
         }
 
-        $agents = $builder->getQuery()->getResult();
-
-        return $agents;
+        return $builder->getQuery()->getResult();
     }
 
     /* Returns an array of sites for the given agents */
@@ -398,7 +394,6 @@ class AgentRepository extends EntityRepository
             }
         }
         $sites_array = array_unique($sites_array);
-        $sites_array = array_values($sites_array);
-        return $sites_array;
+        return array_values($sites_array);
     }
 }
