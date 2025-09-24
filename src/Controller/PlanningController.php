@@ -1609,12 +1609,7 @@ class PlanningController extends BaseController
         $dates = implode(",", $dates);
         $db = new \db();
         $db->select2('pl_poste', '*', array('date' => "IN$dates", 'site' => $site));
-
-        if ($db->result) {
-            return false;
-        }
-
-        return true;
+        return !$db->result;
     }
 
     private function positionExists($agent, $positions, $horaires): bool

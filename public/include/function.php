@@ -1233,10 +1233,7 @@ function nom($id, $format="nom p", $agents=array())
 
 function pl_stristr($haystack, $needle): bool
 {
-    if (stristr(removeAccents($haystack), removeAccents(trim($needle)))) {
-        return true;
-    }
-    return false;
+    return (bool) stristr(removeAccents($haystack), removeAccents(trim($needle)));
 }
 
 function removeAccents($string)

@@ -147,10 +147,7 @@ class MSGraphClient
     private function isEventEmpty($login, $id): bool {
         $query = "/users/$login" . $this->login_suffix . '/events/' . $id;
         $response = $this->sendGet($query);
-        if ($response && $response->code == 200) {
-            return false;
-        }
-        return true;
+        return !($response && $response->code == 200);
     }
 
     private function getLocalEvents() {
@@ -186,10 +183,7 @@ class MSGraphClient
     private function isGraphUser($user): bool {
         $login = $user->getLogin();
         $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar');
-        if ($response && $response->code == 200) {
-            return true;
-        }
-        return false;
+        return $response && $response->code == 200;
     }
 
     private function deleteEvents() {

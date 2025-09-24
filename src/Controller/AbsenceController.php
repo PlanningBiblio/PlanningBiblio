@@ -1617,11 +1617,6 @@ class AbsenceController extends BaseController
         if ($this->edit_own_absences and count($perso_ids) == 1 and in_array($session->get('loginId'), $perso_ids)) {
             return true;
         }
-
-        if ($this->agents_multiples and $this->edit_own_absences and in_array($session->get('loginId'), $perso_ids)) {
-            return true;
-        }
-
-        return false;
+        return $this->agents_multiples and $this->edit_own_absences and in_array($session->get('loginId'), $perso_ids);
     }
 }

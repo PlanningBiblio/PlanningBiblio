@@ -646,10 +646,6 @@ class WorkingHourController extends BaseController
         }
 
         $valide_n2 = $this->workinghours['valide'] ?? 0;
-        if ($valide_n2 && !$this->adminN2) {
-            return false;
-        }
-
-        return true;
+        return !($valide_n2 && !$this->adminN2);
     }
 }

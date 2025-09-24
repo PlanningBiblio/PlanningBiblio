@@ -673,10 +673,7 @@ class absences
     
         $db=new db();
         $db->select2("absences", null, $filter);
-        if ($db->result) {
-            return true;
-        }
-        return false;
+        return (bool) $db->result;
     }
 
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)

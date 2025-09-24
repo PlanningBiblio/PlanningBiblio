@@ -41,12 +41,7 @@ class WeekPlanningHelper extends BaseHelper
 
         $day_planning = $this->week_planning[$day_index];
         $day = new DayPlanningHelper($day_planning);
-
-        if ($day->IsWorked()) {
-            return true;
-        }
-
-        return false;
+        return $day->IsWorked();
     }
 
     public function getTimes($date, $agent = null, $planning = null )

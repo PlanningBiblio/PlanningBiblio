@@ -80,7 +80,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function userCan($right, $site = 0)
+    public function userCan($right, $site = 0): bool
     {
         $droits = $GLOBALS['droits'];
 
@@ -152,12 +152,7 @@ class AppExtension extends AbstractExtension
             if (preg_match('/^\/(\/d{4}-\d{2}-\d{2})/', $uri)) {
                 return true;
             }
-
-            if (preg_match('/^\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri)) {
-                return true;
-            }
-
-            return false;
+            return (bool) preg_match('/^\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri);
         }
 
         if(strpos($requested_url, "{$config['URL']}/$menu") !== false){

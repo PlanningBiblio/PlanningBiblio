@@ -331,10 +331,7 @@ class conges
     
         $db=new db();
         $db->select2("conges", null, $filter);
-        if ($db->result) {
-            return true;
-        }
-        return false;
+        return (bool) $db->result;
     }
 
     public function delete()

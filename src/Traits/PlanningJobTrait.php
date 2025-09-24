@@ -18,12 +18,7 @@ trait PlanningJobTrait
         }
 
         $droits = $GLOBALS['droits'];
-
-        if (!in_array((300 + $site), $droits) and !in_array((1000 + $site), $droits)) {
-            return false;
-        }
-
-        return true;
+        return !(!in_array((300 + $site), $droits) and !in_array((1000 + $site), $droits));
     }
 
     public function getContextMenuInfos($site, $date, $debut, $fin, $perso_id, $perso_nom, $poste, $CSRFToken, $session) {
