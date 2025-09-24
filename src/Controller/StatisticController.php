@@ -1858,8 +1858,7 @@ class StatisticController extends BaseController
                     if (!array_key_exists("site{$elem['site']}", $tab[$elem['perso_id']])) {
                         $tab[$elem['perso_id']]["site{$elem['site']}"] = 0;
                     }
-                    $tab[$elem['perso_id']]["site{$elem['site']}"] += diff_heures($elem['debut'], $elem['fin'], "decimal");    // ajout des heures sur toutes la période par site
-                    $tab[$elem['perso_id']]["site{$elem['site']}"] = $tab[$elem['perso_id']]["site{$elem['site']}"];
+                    $tab[$elem['perso_id']]["site{$elem['site']}"] += diff_heures($elem['debut'], $elem['fin'], "decimal");
                 }
 
                 $totalHeures+=diff_heures($elem['debut'], $elem['fin'], "decimal");        // compte la somme des heures sur la période
@@ -2028,7 +2027,6 @@ class StatisticController extends BaseController
                 $siteHeures[$i] = "-";
             }
             if (array_key_exists($i, $siteAgents) and $siteAgents[$i]!=0) {
-                $siteAgents[$i] = $siteAgents[$i];
             } else {
                 $siteAgents[$i] = "-";
             } 
