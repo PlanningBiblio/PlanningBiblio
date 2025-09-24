@@ -18,13 +18,13 @@ class WorkingHourController extends BaseController
 {
     use \App\Traits\EntityValidationStatuses;
 
-    private $imported = false;
-    private $adminN1 = false;
-    private $adminN2 = false;
+    private bool $imported = false;
+    private bool $adminN1 = false;
+    private bool $adminN2 = false;
     private $workinghours = array();
 
     #[Route(path: '/ajax/workinghour-tables', name: 'ajax.workinghourtables', methods: ['GET'])]
-    public function tables(Request $request)
+    public function tables(Request $request): \Symfony\Component\HttpFoundation\Response
     {
 
         $nbSemaine = $request->get('weeks');
@@ -56,7 +56,7 @@ class WorkingHourController extends BaseController
             default:
                 $cellule = array();
                 for ($i = 1; $i <= $nbSemaine; $i++) {
-                    array_push($cellule, "Semaine $i");
+                    $cellule[] = "Semaine $i";
                 }
                 break;
         }
@@ -122,12 +122,11 @@ class WorkingHourController extends BaseController
 
 
     #[Route(path: '/workinghour', name: 'workinghour.index', methods: ['GET'])]
-    public function index(Request $request, Session $session){
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
         // Initialisation des variables
         $debut = $request->get("debut");
         $fin = $request->get("fin");
         $reset = $request->get("reset");
-        $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -148,7 +147,6 @@ class WorkingHourController extends BaseController
         }
         $_SESSION['oups']['planningHebdoDebut'] = $debut;
         $_SESSION['oups']['planningHebdoFin'] = $fin;
-        $message = null;
 
         // Droits d'administration
         // Seront utilisés pour n'afficher que les agents gérés si l'option "PlanningHebdo-notifications-agent-par-agent" est cochée
@@ -156,9 +154,7 @@ class WorkingHourController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('workinghour')
             ->getValidationLevelFor($session->get('loginId'));
-
-        $notAdmin = !($adminN1 or $adminN2);
-        $admin = ($adminN1 or $adminN2);
+        $admin = ($adminN1 || $adminN2);
 
         // Droits de gestion des plannings de présence agent par agent
         $managed = $this->entityManager
@@ -172,7 +168,7 @@ class WorkingHourController extends BaseController
         $p->merge_exception = false;
         $p->debut=  dateFr($debut);
         $p->fin = dateFr($fin);
-        if (!empty($perso_ids)) {
+        if ($perso_ids !== []) {
             $p->perso_ids = $perso_ids;
         }
         $p->fetch();
@@ -258,10 +254,9 @@ class WorkingHourController extends BaseController
     }
 
     #[Route(path: '/workinghour/add/{agent_id<\d+>?}', name: 'workinghour.add', methods: ['GET'])]
-    public function add(Request $request, Session $session) {
+    public function add(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response {
         // Initialisation des variables
         $retour = $request->get('retour');
-        $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
@@ -278,14 +273,13 @@ class WorkingHourController extends BaseController
 
         $this->setStatusesParams(array($perso_id), 'workinghour');
 
-        $notAdmin = !($adminN1 or $adminN2);
-        $admin = ($adminN1 or $adminN2);
+        $notAdmin = !$adminN1 && !$adminN2;
+        $admin = ($adminN1 || $adminN2);
         $modifAutorisee = true;
         $debut1 = null;
         $fin1 = null;
         $debut1Fr = null;
         $fin1Fr = null;
-        $remplace = null;
         $sites = array();
         $nbSemaine = $this->config('nb_semaine');
         $nbSites = $this->config('Multisites-nombre');
@@ -349,7 +343,7 @@ class WorkingHourController extends BaseController
     }
 
     #[Route(path: '/workinghour/{id<\d+>}', name: 'workinghour.edit', methods: ['GET'])]
-    public function edit(Request $request, Session $session){
+    public function edit(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\RedirectResponse{
         // Initialisation des variables
         $copy = $request->get('copy');
         $request_exception = $request->get('exception');
@@ -357,9 +351,8 @@ class WorkingHourController extends BaseController
         $retour = $request->get('retour');
         $is_exception = 0;
         $exception_id = '';
-        $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
-        $pause2_enabled = $this->config('PlanningHebdo-Pause2');
+        $this->config('PlanningHebdo-Pause2');
         $nbSemaine = $this->config('nb_semaine');
         $nbSites = $this->config('Multisites-nombre');
         $validation = "";
@@ -403,8 +396,7 @@ class WorkingHourController extends BaseController
         $fin1Fr = dateFr($fin1);
         $perso_id = $p->elements[0]['perso_id'];
         $temps = $p->elements[0]['temps'];
-        $breaktime = $p->elements[0]['breaktime'];
-        $thisNbSemaine = !empty($p->elements[0]['nb_semaine']) ? $p->elements[0]['nb_semaine'] : 1;
+        $thisNbSemaine = empty($p->elements[0]['nb_semaine']) ? 1 : $p->elements[0]['nb_semaine'];
 
         // Sécurité
         list($this->adminN1, $this->adminN2) = $this->entityManager
@@ -412,7 +404,7 @@ class WorkingHourController extends BaseController
             ->setModule('workinghour')
             ->forAgent($perso_id)
             ->getValidationLevelFor($session->get('loginId'));
-        $admin = ($this->adminN1 or $this->adminN2);
+        $admin = ($this->adminN1 || $this->adminN2);
 
         $this->setStatusesParams(array($perso_id), 'workinghour', $id);
 
@@ -425,7 +417,7 @@ class WorkingHourController extends BaseController
             $exception_id = $p->elements[0]['exception'];
         }
 
-        if ($copy or $request_exception) {
+        if ($copy || $request_exception) {
             $valide_n1 = 0;
             $valide_n2 = 0;
         } else {
@@ -446,10 +438,10 @@ class WorkingHourController extends BaseController
         $action = "modif";
         $modifAutorisee = $this->can_edit();
 
-        if (!($this->adminN1 or $this->adminN2) and $valide_n2 > 0) {
+        if (!$this->adminN1 && !$this->adminN2 && $valide_n2 > 0) {
             $action = "copie";
         }
-        if ($copy or $request_exception) {
+        if ($copy || $request_exception) {
             $action = "ajout";
         }
 
@@ -498,7 +490,7 @@ class WorkingHourController extends BaseController
         $this->templateParams(
             array(
                 "action"             => $action,
-                "admin"              => ($this->adminN1 or $this->adminN2),
+                "admin"              => ($this->adminN1 || $this->adminN2),
                 "adminN1"            => $this->adminN1,
                 "adminN2"            => $this->adminN2,
                 "cle"                => $cle,
@@ -538,7 +530,7 @@ class WorkingHourController extends BaseController
     }
 
     #[Route(path: '/workinghour', name: 'workinghour.save', methods: ['POST'])]
-    public function save(Request $request, Session $session){
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $post = $request->request->all();
         $msg = null;
         $msgType = null;
@@ -605,7 +597,7 @@ class WorkingHourController extends BaseController
     }
 
     #[Route(path: '/workinghour', name: 'workinghour.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session){
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get("id");
 
@@ -640,8 +632,8 @@ class WorkingHourController extends BaseController
             return false;
         }
 
-        $admin = ($this->adminN1 or $this->adminN2);
-        if (!$admin and !$this->config('PlanningHebdo-Agents')) {
+        $admin = ($this->adminN1 || $this->adminN2);
+        if (!$admin && !$this->config('PlanningHebdo-Agents')) {
             return false;
         }
 

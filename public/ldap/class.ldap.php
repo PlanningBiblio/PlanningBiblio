@@ -18,7 +18,7 @@ Fichier inclus par ldap/auth.php
 $version = $GLOBALS['version'] ?? null;
 
 if (!isset($version)) {
-    include_once "../include/accessDenied.php";
+    include_once __DIR__ . "/../include/accessDenied.php";
 }
 
 function authCAS($logger): string
@@ -53,15 +53,13 @@ function authCAS($logger): string
         $attr = $config['CAS-LoginAttribute'];
         $attributes = phpCAS::getAttributes();
 
-        if (!empty($attributes[$attr]) and is_string($attributes[$attr])) {
+        if (!empty($attributes[$attr]) && is_string($attributes[$attr])) {
             $login = $attributes[$attr];
         }
     }
 
-    $login = htmlspecialchars(strval($login));
-
     // Si authentification CAS et utilisateur existe : retourne son login
-    return $login;
+    return htmlspecialchars(strval($login));
 }
 
 function authLDAP($login, $password)
@@ -110,17 +108,15 @@ function authLDAP($login, $password)
       or die("Impossible de se connecter au serveur LDAP");
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
-        if ($ldapconn) {
-            if (@ldap_bind($ldapconn, $dn, $password)) {
-                $auth=true;
-                $_SESSION['oups']['Auth-Mode']="LDAP";
-            }
+        if ($ldapconn && @ldap_bind($ldapconn, $dn, $password)) {
+            $auth=true;
+            $_SESSION['oups']['Auth-Mode']="LDAP";
         }
     }
     return $auth;
 }
 
-function cmp_ldap($a, $b)
+function cmp_ldap($a, array $b): int
 {	//tri par nom puis prenom (sn et givenname)
     if ($a['sn'][0] == $b['sn'][0] && isset($a['givenname'])) {
         if ($a['givenname'][0] == $b['givenname'][0]) {
@@ -144,7 +140,6 @@ if (!function_exists('ldap_escape')) {
      * @param string $ignore Set of characters to leave untouched
      * @param int $flags Any combination of LDAP_ESCAPE_* flags to indicate the
      *                   set(s) of characters to escape.
-     * @return string
      */
     function ldap_escape($subject, $ignore = '', $flags = 0): string
     {
@@ -177,13 +172,13 @@ if (!function_exists('ldap_escape')) {
         // Create the base char map to escape
         $flags = (int)$flags;
         $charMap = array();
-        if ($flags & LDAP_ESCAPE_FILTER) {
+        if (($flags & LDAP_ESCAPE_FILTER) !== 0) {
             $charMap += $charMaps[LDAP_ESCAPE_FILTER];
         }
-        if ($flags & LDAP_ESCAPE_DN) {
+        if (($flags & LDAP_ESCAPE_DN) !== 0) {
             $charMap += $charMaps[LDAP_ESCAPE_DN];
         }
-        if (!$charMap) {
+        if ($charMap === []) {
             $charMap = $charMaps[0];
         }
 
@@ -197,7 +192,7 @@ if (!function_exists('ldap_escape')) {
         $result = strtr($subject, $charMap);
 
         // Encode leading/trailing spaces if LDAP_ESCAPE_DN is passed
-        if ($flags & LDAP_ESCAPE_DN) {
+        if (($flags & LDAP_ESCAPE_DN) !== 0) {
             if ($result[0] === ' ') {
                 $result = '\\20' . substr($result, 1);
             }

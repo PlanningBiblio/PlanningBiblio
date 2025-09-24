@@ -21,7 +21,7 @@ ini_set("display_errors", 0);
 session_start();
 
 // Includes
-require_once "../../include/config.php";
+require_once __DIR__ . "/../../include/config.php";
 
 $perso_id=$_SESSION['login_id'];
 $tableId=filter_input(INPUT_POST, "tableId", FILTER_SANITIZE_NUMBER_INT);

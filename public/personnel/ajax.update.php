@@ -25,7 +25,7 @@ if (!in_array(21, $_SESSION['droits'])) {
 
 // CSFR Protection
 $CSRFToken = $request->get('CSRFToken');
-if ( !isset($_SESSION['oups']['CSRFToken']) or $CSRFToken != $_SESSION['oups']['CSRFToken']) {
+if ( !isset($_SESSION['oups']['CSRFToken']) || $CSRFToken != $_SESSION['oups']['CSRFToken']) {
     error_log("CSRF Token Exception {$_SERVER['SCRIPT_NAME']}");
     echo json_encode("CSRF Token Exception {$_SERVER['SCRIPT_NAME']}");
     exit;
@@ -65,7 +65,7 @@ foreach ($agents as $agent) {
         $agent->setActive($actif);
     }
 
-    if ($contrat != '-1') {
+    if ($contrat !== '-1') {
         $agent->setCategory($contrat);
     }
 
@@ -77,11 +77,11 @@ foreach ($agents as $agent) {
         $agent->setWeeklyWorkingHours($heures_travail);
     }
 
-    if ($service != '-1') {
+    if ($service !== '-1') {
         $agent->setService($service);
     }
 
-    if ($statut != '-1') {
+    if ($statut !== '-1') {
         $agent->setStatus($statut);
     }
 

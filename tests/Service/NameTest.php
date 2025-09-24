@@ -10,7 +10,7 @@ class NameTest extends KernelTestCase
 {
     public function testSomething(): void
     {
-        $kernel = self::bootKernel();
+        self::bootKernel();
 
         $builder = new FixtureBuilder();
 

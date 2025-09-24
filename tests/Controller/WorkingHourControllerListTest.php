@@ -17,7 +17,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
         $GLOBALS['config']['Absences-validation'] = 1;
     }
 
-    private function createWorkingHoursFor($agent, $status = 0)
+    private function createWorkingHoursFor($agent)
     {
         $_SESSION['login_id'] = 1;
 
@@ -76,10 +76,10 @@ class WorkingHourControllerListTest extends PLBWebTestCase
             'sites' => '["2"]', 'droits' => array(3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,901,1001,1002,1101,1201,1301)
         ));
 
-        $this->createWorkingHoursFor($jdupont, 2);
-        $this->createWorkingHoursFor($jdevoe, 2);
-        $this->createWorkingHoursFor($abreton, 2);
-        $this->createWorkingHoursFor($kboivin, 2);
+        $this->createWorkingHoursFor($jdupont);
+        $this->createWorkingHoursFor($jdevoe);
+        $this->createWorkingHoursFor($abreton);
+        $this->createWorkingHoursFor($kboivin);
 
         // Make kboivin manager of jdupont
         $manager = new Manager();
@@ -144,10 +144,10 @@ class WorkingHourControllerListTest extends PLBWebTestCase
             'sites' => '["2"]', 'droits' => array(3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,901,1001,1002,1101,1201,1301)
         ));
 
-        $this->createWorkingHoursFor($jdupont, 2);
-        $this->createWorkingHoursFor($jdevoe, 2);
-        $this->createWorkingHoursFor($abreton, 2);
-        $this->createWorkingHoursFor($kboivin, 2);
+        $this->createWorkingHoursFor($jdupont);
+        $this->createWorkingHoursFor($jdevoe);
+        $this->createWorkingHoursFor($abreton);
+        $this->createWorkingHoursFor($kboivin);
 
         // Make kboivin manager of jdupont
         $manager = new Manager();

@@ -22,8 +22,12 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class HolidayController extends BaseController
 {
+    /**
+     * @var mixed
+     */
+    public $droits;
     #[Route(path: '/holiday/index', name: 'holiday.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
 
@@ -45,15 +49,15 @@ class HolidayController extends BaseController
             ->setModule('holiday')
             ->getValidationLevelFor($session->get('loginId'));
 
-        if (($admin or $adminN2) and $perso_id==null) {
+        if (($admin || $adminN2) && $perso_id == null) {
             $perso_id = $_SESSION['oups']['conges_perso_id'] ?? $session->get('loginId');
         } elseif ($perso_id==null) {
             $perso_id = $session->get('loginId');
         }
 
         $agents_supprimes=isset($_SESSION['oups']['conges_agents_supprimes'])?$_SESSION['oups']['conges_agents_supprimes']:false;
-        $agents_supprimes=($annee and $supprimes)?true:$agents_supprimes;
-        $agents_supprimes=($annee and !$supprimes)?false:$agents_supprimes;
+        $agents_supprimes=($annee && $supprimes)?true:$agents_supprimes;
+        $agents_supprimes=($annee && !$supprimes)?false:$agents_supprimes;
 
         if (!$annee) {
             $annee=isset($_SESSION['oups']['conges_annee'])?$_SESSION['oups']['conges_annee']:(date("m")<9?date("Y")-1:date("Y"));
@@ -138,8 +142,8 @@ class HolidayController extends BaseController
             'to_year'               => $annee + 1,
             'years'                 => $annees,
             'forthcoming'           => $congesAffiches == "aVenir" ? 1 : 0,
-            'balance'               => $this->config('Conges-Recuperations') == '0' or !$voir_recup ? 1 : 0,
-            'recovery'              => $this->config('Conges-Recuperations') == '0' or $voir_recup ? 1 : 0,
+            'balance'               => $this->config('Conges-Recuperations') == '0' || $voir_recup ? 0 : 1,
+            'recovery'              => $this->config('Conges-Recuperations') == '0' || $voir_recup ? 1 : 0,
             'perso_ids'             => $perso_ids,
             'show_hours_to_days'    => $holiday_helper->showHoursToDays() ? 1 : 0,
         );
@@ -156,17 +160,12 @@ class HolidayController extends BaseController
 
             // If Conges-Recuperations is 1, also search
             // credits updates.
-            if ($this->config('Conges-Recuperations') == '1') {
-                if ($elem['debit'] == null) {
-                    if ($voir_recup and $elem['recup_actuel'] == $elem['recup_prec']) {
-                        continue;
-                    }
-                    if (!$voir_recup
-                        and $elem['solde_actuel'] == $elem['solde_prec']
-                        and $elem['reliquat_actuel'] == $elem['reliquat_prec']
-                        and $elem['anticipation_actuel'] == $elem['anticipation_prec']) {
-                        continue;
-                    }
+            if ($this->config('Conges-Recuperations') == '1' && $elem['debit'] == null) {
+                if ($voir_recup && $elem['recup_actuel'] == $elem['recup_prec']) {
+                    continue;
+                }
+                if (!$voir_recup && $elem['solde_actuel'] == $elem['solde_prec'] && $elem['reliquat_actuel'] == $elem['reliquat_prec'] && $elem['anticipation_actuel'] == $elem['anticipation_prec']) {
+                    continue;
                 }
             }
 
@@ -204,14 +203,14 @@ class HolidayController extends BaseController
             $elem['recuperations'] = '';
             $elem['anticipation'] = '';
 
-            if ($elem['saisie_par'] and $elem['perso_id']!=$elem['saisie_par']) {
+            if ($elem['saisie_par'] && $elem['perso_id'] != $elem['saisie_par']) {
                 $elem['status'] .= " par ".nom($elem['saisie_par'], 'nom p', $agents);
             }
 
             if ($elem['valide'] < 0) {
                 $elem['status'] = "Refusé, ".nom(-$elem['valide'], 'nom p', $agents);
                 $elem['statusDate'] = $elem['validation'];
-            } elseif ($elem['valide'] or $elem['information']) {
+            } elseif ($elem['valide'] || $elem['information']) {
                 $elem['status'] = "Validé, ".nom($elem['valide'], 'nom p', $agents);
                 $elem['statusDate'] = $elem['validation'];
             } elseif ($elem['valide_n1']) {
@@ -266,7 +265,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/holidays-hours-to-days', name: 'ajax.holidays-hours-to-days', methods: ['GET'])]
-    public function hoursToDays(Request $request, Session $session)
+    public function hoursToDays(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $hours_to_convert = $request->get('hours_to_convert');
         $hours_per_year = $request->get('hours_per_year');
@@ -282,11 +281,10 @@ class HolidayController extends BaseController
 
     #[Route(path: '/holiday/edit', name: 'holiday.update', methods: ['POST'])]
     #[Route(path: '/holiday/edit/{id}', name: 'holiday.edit', methods: ['GET'])]
-    public function edit(Request $request, Session $session)
+    public function edit(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\RedirectResponse
     {
         $id = $request->get('id');
         $confirm = $request->get('confirm');
-        $dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
 
         // Elements du congé demandé
@@ -297,7 +295,7 @@ class HolidayController extends BaseController
         $perso_id = $data['perso_id'];
 
         // FIXME: move into a dedicated model's method when possible: $holiday->isEditable().
-        if ($c->elements[0]['information'] != 0 or $c->elements[0]['supprime'] != 0) {
+        if ($c->elements[0]['information'] != 0 || $c->elements[0]['supprime'] != 0) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -314,7 +312,7 @@ class HolidayController extends BaseController
                 $msgType = "error";
                 $result['back_to'] = 'holiday';
 
-                if ($this->config('Conges-Recuperations') and $data['debit'] == 'recuperation') {
+                if ($this->config('Conges-Recuperations') && $data['debit'] == 'recuperation') {
                     $msg = "La récupération n'a pas pu être modifiée car elle a déjà été validée.";
                     $msgType = "error";
                     $result['back_to'] = 'recover';
@@ -350,7 +348,7 @@ class HolidayController extends BaseController
             ->forAgent($perso_id)
             ->getValidationLevelFor($session->get('loginId'));
 
-        if (!$adminN1 and !$adminN2 and $perso_id != $session->get('loginId')) {
+        if (!$adminN1 && !$adminN2 && $perso_id != $session->get('loginId')) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -360,16 +358,13 @@ class HolidayController extends BaseController
 
         $this->templateParams(array('CSRFToken' => $GLOBALS['CSRFSession']));
         $valide=$data['valide']>0;
-        $displayRefus = ($data['valide_n1'] < 0 and ($adminN1 or $adminN2)) ? null : "display:none;";
+        $displayRefus = ($data['valide_n1'] < 0 && ($adminN1 || $adminN2)) ? null : "display:none;";
         $displayRefus = $data['valide'] > 0 ? "display:none;" : $displayRefus;
         $debut=dateFr(substr($data['debut'], 0, 10));
         $fin=dateFr(substr($data['fin'], 0, 10));
         $hre_debut=substr($data['debut'], -8);
         $hre_fin=substr($data['fin'], -8);
-        $jours=number_format(($data['heures']/7), 2, ".", " ");
         $tmp=explode(".", $data['heures']);
-        $heures=$tmp[0];
-        $minutes=$tmp[1];
 
         // Crédits
         $p = new \personnel();
@@ -385,25 +380,22 @@ class HolidayController extends BaseController
         $reliquat = number_format($conges_reliquat, 2, '.', ' ');
         $anticipation = number_format($conges_anticipation, 2, '.', ' ');
         $recuperation = number_format((float) $balance[1], 2, '.', ' ');
-        $recuperation2=heure4($recuperation, true);
+        heure4($recuperation, true);
         if ($balance[4] < 0) {
             $balance[4] = 0;
         }
         $request_type = 'holiday';
-        if ($this->config('Conges-Recuperations') == 1 and $data['debit']=="recuperation") {
+        if ($this->config('Conges-Recuperations') == 1 && $data['debit'] == "recuperation") {
             $request_type = 'recover';
         }
 
         $show_allday = 0;
-        if ($this->config('Conges-Mode') == 'heures'
-            and (!$this->config('Conges-Recuperations')
-                or $this->config('Conges-Heures')
-                or $data['debit']=="recuperation")) {
+        if ($this->config('Conges-Mode') == 'heures' && (!$this->config('Conges-Recuperations') || $this->config('Conges-Heures') || $data['debit'] == "recuperation")) {
             $show_allday = 1;
         }
 
         $displayHeures=null;
-        if ($hre_debut=="00:00:00" and $hre_fin=="23:59:59") {
+        if ($hre_debut === "00:00:00" && $hre_fin === "23:59:59") {
             $displayHeures="style='display:none;'";
         }
 
@@ -473,14 +465,14 @@ class HolidayController extends BaseController
         $this->templateParams($templateParams);
 
         $saisie_par = '';
-        if ($data['saisie_par'] and $data['saisie_par'] != $data['perso_id']) {
+        if ($data['saisie_par'] && $data['saisie_par'] != $data['perso_id']) {
             $saisie_par = nom($data['saisie_par']);
         }
         $this->templateParams(array('saisie_par' => $saisie_par));
 
         // Si droit de validation niveau 2 sans avoir le droit de validation niveau 1,
         // on affiche l'état de validation niveau 1
-        if ($adminN2 and !$adminN1) {
+        if ($adminN2 && !$adminN1) {
             if ($data['valide_n1'] == 0) {
                 $validation_n1 = "Congé demandé";
             } elseif ($data['valide_n1'] > 0) {
@@ -497,16 +489,14 @@ class HolidayController extends BaseController
         ));
 
         $save_button = 0;
-        if ((!$valide and ($adminN1 or $adminN2)) or ($data['valide'] == 0 and $data['valide_n1'] == 0)) {
+        if (!$valide && ($adminN1 || $adminN2) || $data['valide'] == 0 && $data['valide_n1'] == 0) {
             $save_button = 1;
         }
         $this->templateParams(array('save_button' => $save_button));
 
         $delete_button = 0;
 
-        if (($data['valide_n1'] == 0 and $data['valide'] == 0)
-            or ($data['valide'] == 0 and $adminN1)
-            or $adminN2) {
+        if ($data['valide_n1'] == 0 && $data['valide'] == 0 || $data['valide'] == 0 && $adminN1 || $adminN2) {
             $delete_button = 1;
         }
 
@@ -516,7 +506,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/holiday', name: 'holiday.save', methods: ['POST'])]
-    public function add_confirm(Request $request, Session $session)
+    public function add_confirm(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $result = $this->save($request);
 
@@ -535,7 +525,7 @@ class HolidayController extends BaseController
 
     #[Route(path: '/holiday/new', name: 'holiday.new', methods: ['GET', 'POST'])]
     #[Route(path: '/holiday/new/{perso_id}', name: 'holiday.new.new', methods: ['GET', 'POST'])]
-    public function add(Request $request)
+    public function add(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
 
@@ -606,9 +596,7 @@ class HolidayController extends BaseController
         }
 
         $show_allday = 0;
-        if ($this->config('Conges-Mode') == 'heures'
-            and (!$this->config('Conges-Recuperations')
-                or $this->config('Conges-Heures'))) {
+        if ($this->config('Conges-Mode') == 'heures' && (!$this->config('Conges-Recuperations') || $this->config('Conges-Heures'))) {
             $show_allday = 1;
         }
 
@@ -675,7 +663,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/holiday/accounts', name: 'holiday.accounts', methods: ['GET'])]
-    public function account(Request $request)
+    public function account(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
 
@@ -684,7 +672,7 @@ class HolidayController extends BaseController
         $sites = array();
 
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
+            if (in_array((400+$i), $droits) || in_array((600+$i), $droits)) {
                 $admin = true;
                 $sites[] = $i;
             }
@@ -700,40 +688,35 @@ class HolidayController extends BaseController
         // Initialisation des variables
         $agents_supprimes = isset($_SESSION['oups']['conges_agents_supprimes'])
             ? $_SESSION['oups']['conges_agents_supprimes'] : false;
-        $agents_supprimes = (isset($_GET['get']) and isset($_GET['supprimes']))
+        $agents_supprimes = (isset($_GET['get']) && isset($_GET['supprimes']))
             ? true: $agents_supprimes;
-        $agents_supprimes = (isset($_GET['get']) and !isset($_GET['supprimes']))
+        $agents_supprimes = (isset($_GET['get']) && !isset($_GET['supprimes']))
             ? false : $agents_supprimes;
 
         $credits_effectifs = isset($_SESSION['oups']['conges_credits_effectifs'])
             ? $_SESSION['oups']['conges_credits_effectifs'] : true;
-        $credits_effectifs = (isset($_GET['get']) and isset($_GET['effectifs']))
+        $credits_effectifs = (isset($_GET['get']) && isset($_GET['effectifs']))
             ?true : $credits_effectifs;
-        $credits_effectifs = (isset($_GET['get']) and !isset($_GET['effectifs']))
+        $credits_effectifs = (isset($_GET['get']) && !isset($_GET['effectifs']))
             ? false: $credits_effectifs;
 
         $credits_en_attente = isset($_SESSION['oups']['conges_credits_attente'])
             ? $_SESSION['oups']['conges_credits_attente'] : true;
-        $credits_en_attente = (isset($_GET['get']) and isset($_GET['attente']))
+        $credits_en_attente = (isset($_GET['get']) && isset($_GET['attente']))
             ? true : $credits_en_attente;
-        $credits_en_attente = (isset($_GET['get']) and !isset($_GET['attente']))
+        $credits_en_attente = (isset($_GET['get']) && !isset($_GET['attente']))
             ?false : $credits_en_attente;
 
         global $hours_to_days;
         $hours_to_days = $_SESSION['oups']['conges_hours_to_days'] ?? false;
         $hours_to_days = $_GET['hours_to_days'] ?? $hours_to_days;
-        $hours_to_days = (isset($_GET['get']) and !isset($_GET['hours_to_days']))
+        $hours_to_days = (isset($_GET['get']) && !isset($_GET['hours_to_days']))
             ? false : $hours_to_days;
 
         $_SESSION['oups']['conges_agents_supprimes'] = $agents_supprimes;
         $_SESSION['oups']['conges_credits_effectifs'] = $credits_effectifs;
         $_SESSION['oups']['conges_credits_attente'] = $credits_en_attente;
         $_SESSION['oups']['conges_hours_to_days'] = $hours_to_days;
-
-        $checked1=$agents_supprimes?"checked='checked'":null;
-        $checked2=$credits_effectifs?"checked='checked'":null;
-        $checked3=$credits_en_attente?"checked='checked'":null;
-        $checked4=$hours_to_days?"checked='checked'":null;
 
         // Look for managed agents only
         $managed = $this->entityManager
@@ -763,14 +746,14 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/holiday-halfday-hours', name: 'ajax.holiday-halfday-hours', methods: ['GET'])]
-    public function halfdayHours(Request $request)
+    public function halfdayHours(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $agent = $request->get('agent');
         $start = $request->get('start');
         $end = $request->get('end');
 
         $response = new Response();
-        if (!$agent or !$start or !$end) {
+        if (!$agent || !$start || !$end) {
             $response->setContent('Wrong parameters');
             $response->setStatusCode(404);
             return $response;
@@ -787,26 +770,20 @@ class HolidayController extends BaseController
         // If the 2nd period exists, afternoon_start = the first hour of this period
         if (!empty($hours_first_day[1][0])) {
             $afternoon_start = $hours_first_day[1][0];
-
-        } else {
+        } elseif ($hours_first_day[0][0] >= '12:00:00') {
             // If the 2nd period doesn't exist and if the first period starts after 12:00,
             // we suppose that this period is an afternoon and use the first hour to define afternoon_start
-            if ($hours_first_day[0][0] >= '12:00:00') {
-                $afternoon_start = $hours_first_day[0][0];
-
+            $afternoon_start = $hours_first_day[0][0];
             // Else, afternoon_start = the end of the single period
-            } else {
-                $afternoon_start = $hours_first_day[0][1];
-            }
+        } else {
+            $afternoon_start = $hours_first_day[0][1];
         }
 
         // For the last day
         // If the 2nd period doesn't exist and if the first period starts after 12:00,
         // we suppose that this period is an afternoon and use the first hour to define morning_end
-        if (empty($hours_last_day[1][0])) {
-            if ($hours_last_day[0][0] >= '12:00:00') {
-                $morning_end = $hours_last_day[0][0];
-            }
+        if (empty($hours_last_day[1][0]) && $hours_last_day[0][0] >= '12:00:00') {
+            $morning_end = $hours_last_day[0][0];
         }
 
         $result = array(
@@ -821,7 +798,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/check-planning', name: 'ajax.checkplanning', methods: ['POST'])]
-    public function checkPlanning(Request $request)
+    public function checkPlanning(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $perso_ids = json_decode($request->get('perso_ids'));
         $start =dateSQL($request->get('start'));
@@ -846,11 +823,11 @@ class HolidayController extends BaseController
                 $agent_infos = $agent->elements[0];
                 $unknownHours++;
                 if ($unknownHours <= $maxAgentsDisplay) {
-                    array_push($agents, $agent_infos['prenom'] . " " . $agent_infos['nom']);
+                    $agents[] = $agent_infos['prenom'] . " " . $agent_infos['nom'];
                 }
             }
         }
-        if (!empty($agents)) {
+        if ($agents !== []) {
             $message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour les agents suivants: " . implode(', ', $agents);
             if ($unknownHours > $maxAgentsDisplay) {
                 $agentsLeft = $unknownHours - $maxAgentsDisplay;
@@ -861,7 +838,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/holiday-credit', name: 'ajax.holidaycredit', methods: ['GET'])]
-    public function checkCredit(Request $request)
+    public function checkCredit(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         // Initilisation des variables
         $id = $request->get('id');
@@ -910,7 +887,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/current-credits', name: 'ajax.currentcredits', methods: ['get'])]
-    public function current_credits(Request $request)
+    public function current_credits(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $agent_id = $request->get('id');
 
@@ -929,7 +906,7 @@ class HolidayController extends BaseController
         return $this->json($holiday_account);
     }
 
-    private function save($request)
+    private function save(\Symfony\Component\HttpFoundation\Request $request): array
     {
         $session = $request->getSession();
 
@@ -1099,7 +1076,7 @@ class HolidayController extends BaseController
     /**
      * @return mixed[]
      */
-    private function update($request): array
+    private function update(\Symfony\Component\HttpFoundation\Request $request): array
     {
         $post = $request->request->all();
 
@@ -1151,25 +1128,25 @@ class HolidayController extends BaseController
         switch ($valide) {
         // Modification sans validation
         case 0:
-          $sujet = $recover ? "Modification d'une récupération" : "Modification de congés";
+          $sujet = $recover !== 0 ? "Modification d'une récupération" : "Modification de congés";
           $notifications='2';
           break;
         // Validations Niveau 2
         case 1:
-          $sujet = $recover ? "Validation d'une récupération" : "Validation de congés";
+          $sujet = $recover !== 0 ? "Validation d'une récupération" : "Validation de congés";
           $notifications='4';
           break;
         case -1:
-          $sujet = $recover ? "Refus d'une récupération" : "Refus de congés";
+          $sujet = $recover !== 0 ? "Refus d'une récupération" : "Refus de congés";
           $notifications='4';
           break;
         // Validations Niveau 1
         case 2:
-          $sujet = $recover ? $lang['comp_time_subject_accepted_pending'] : $lang['leave_subject_accepted_pending'];
+          $sujet = $recover !== 0 ? $lang['comp_time_subject_accepted_pending'] : $lang['leave_subject_accepted_pending'];
           $notifications='3';
           break;
         case -2:
-          $sujet = $recover ? $lang['comp_time_subject_refused_pending'] : $lang['leave_subject_refused_pending'];
+          $sujet = $recover !== 0 ? $lang['comp_time_subject_refused_pending'] : $lang['leave_subject_refused_pending'];
           $notifications='3';
           break;
         }
@@ -1213,7 +1190,7 @@ class HolidayController extends BaseController
         );
 
         $result['back_to'] = 'holiday';
-        if ($this->config('Conges-Recuperations') and $post['debit'] == 'recuperation') {
+        if ($this->config('Conges-Recuperations') && $post['debit'] == 'recuperation') {
             $result['back_to'] = 'recover';
             $result['msg'] = "La demande de récupération a été modifiée avec succès";
         }
@@ -1224,7 +1201,7 @@ class HolidayController extends BaseController
     /**
      * Make mail message
      */
-    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id, $recover = 0): string {
+    private function makeMail($subject, string $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id, int $recover = 0): string {
         $message  = "<b><u>$subject :</u></b><br/>";
         $message .= "<ul><li>Agent : <strong>$name</strong></li>";
         $message .= "<li>Début : <strong>$begin";
@@ -1240,15 +1217,14 @@ class HolidayController extends BaseController
         if ($comment) {
             $message.="<li>Commentaires :<br/>$comment</li>";
         }
-        if ($refusal and $status == -1) {
+        if ($refusal && $status == -1) {
             $message.="<li>Motif du refus :<br/>$refusal</li>";
         }
         $message .="</ul>";
 
         // ajout d'un lien permettant de rebondir sur la demande
         $url = $this->config('URL') . "/holiday/edit/$id";
-        $message.="<p>Lien vers la demande de " . ($recover ? "récupération" : "congé") . " :<br/><a href='$url'>$url</a></p>";
 
-        return $message;
+        return $message . ("<p>Lien vers la demande de " . $recover !== 0 ? "récupération" : "congé" . " :<br/><a href='$url'>$url</a></p>");
     }
 }

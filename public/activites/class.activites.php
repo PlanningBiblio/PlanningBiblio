@@ -18,8 +18,8 @@ Page appelée par les pages du dossier activites
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
 
-if (!isset($version) and php_sapi_name() != 'cli') {
-    include_once "../include/accessDenied.php";
+if (!isset($version) && php_sapi_name() != 'cli') {
+    include_once __DIR__ . "/../include/accessDenied.php";
 }
 
 class activites
@@ -29,18 +29,14 @@ class activites
     public $deleted;
     public $CSRFToken;
 
-    public function __construct()
-    {
-    }
-
-    public function delete()
+    public function delete(): void
     {
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
         $db->update("activites", array("supprime"=>"SYSDATE"), array("id"=>$this->id));
     }
 
-    public function fetch()
+    public function fetch(): void
     {
         $activites=array();
         $db=new db();

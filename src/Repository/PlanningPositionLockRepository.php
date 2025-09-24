@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityRepository;
 class PlanningPositionLockRepository extends EntityRepository
 {
 
-    public function delete($start, $end = null, $site = 1)
+    public function delete($start, $end = null, $site = 1): void
     {
         $end = $end ?? $start;
 
@@ -20,6 +20,6 @@ class PlanningPositionLockRepository extends EntityRepository
                 ->setParameter('start', $start)
                 ->setParameter('end', $end)
                 ->setParameter('site', $site);
-        $results = $builder->getQuery()->getResult();
+        $builder->getQuery()->getResult();
     }
 }

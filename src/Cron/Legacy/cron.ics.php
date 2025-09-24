@@ -65,9 +65,9 @@ $servers=array(1=>null, 2=>null);
 $var=array(1=>null, 2=>null);
 
 for ($i=1; $i<3; $i++) {
-    if (trim($config["ICS-Server$i"])) {
+    if (trim($config["ICS-Server$i"]) !== '' && trim($config["ICS-Server$i"]) !== '0') {
         $servers[$i]=trim($config["ICS-Server$i"]);
-        if ($servers[$i]) {
+        if ($servers[$i] !== '' && $servers[$i] !== '0') {
             $pos1=strpos($servers[$i], "[");
 
             if ($pos1) {
@@ -99,7 +99,7 @@ foreach ($agents as $agent) {
     $fin = $config['ICS-Server3'] ? 3 : 2;
     for ($i=1; $i <= $fin; $i++) {
         if ($i<3) {
-            if (!$servers[$i] or !$var[$i]) {
+            if (!$servers[$i] || !$var[$i]) {
                 continue;
             }
       
@@ -158,16 +158,16 @@ foreach ($agents as $agent) {
         }
     
         // Test si le fichier existe
-        if (substr($url, 0, 1) == '/' and !file_exists($url)) {
+        if (substr($url, 0, 1) === '/' && !file_exists($url)) {
             logs("Agent #{$agent['id']} : Le fichier $url n'existe pas", "ICS", $CSRFToken);
             continue;
         }
     
         // Test si l'URL existe
-        if (substr($url, 0, 4) == 'http') {
+        if (substr($url, 0, 4) === 'http') {
             $test = @get_headers($url, 1);
 
-            if (empty($test)) {
+            if ($test === [] || $test === false) {
                 logs("Agent #{$agent['id']} : $url is not a valid URL", "ICS", $CSRFToken);
                 continue;
             }

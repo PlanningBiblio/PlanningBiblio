@@ -16,7 +16,7 @@ Utilisé pour l'alimentation du CET, formulaire de la page conges/cet.php
 */
 
 include(__DIR__.'/../include/config.php');
-include "class.conges.php";
+include __DIR__ . "/class.conges.php";
 
 $c=new conges();
 $c->perso_id=$_GET['perso_id'];

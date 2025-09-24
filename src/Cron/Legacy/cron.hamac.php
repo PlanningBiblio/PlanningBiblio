@@ -41,7 +41,7 @@ $status_validated = $config['hamac_status_validated'] ?? array(2,5);
 // If null or false : deleted entries will not be removed. If interger >= 0 : entries with end upper than today minor the specified value will be deleted
 $days_before = $config['hamac_days_before'] ?? null;
 $debug = $config['Hamac-debug'] ?? false;
-$motif = !empty(trim($config['Hamac-motif'])) ? trim($config['Hamac-motif']) : 'Hamac';
+$motif = in_array(trim($config['Hamac-motif']), ['', '0'], true) ? 'Hamac' : trim($config['Hamac-motif']);
 
 $CSRFToken = CSRFToken();
 
@@ -68,10 +68,8 @@ if (file_exists($lockFile)) {
         logs("Lock file is less than 10 minutes old. Exit !", "Hamac", $CSRFToken);
         exit;
     }
-} else {
-    if ($debug) {
-        logs("Lock file " . $lockFile . " does not exist.", "Hamac", $CSRFToken);
-    }
+} elseif ($debug) {
+    logs("Lock file " . $lockFile . " does not exist.", "Hamac", $CSRFToken);
 }
 // On créé le fichier .lock
 $inF=fopen($lockFile, "w");
@@ -111,10 +109,8 @@ foreach ($agents as $elem) {
         if ($debug) {
             logs("\$elem['id'] = " . $elem['id'] . " - \$perso_ids[\$elem[\$key]] = " . $perso_ids[$elem[$key]], "Hamac", $CSRFToken);
         }
-    } else {
-        if ($debug) {
-            logs("\$elem['check_hamac'] = false", "Hamac", $CSRFToken);
-        }
+    } elseif ($debug) {
+        logs("\$elem['check_hamac'] = false", "Hamac", $CSRFToken);
     }
 }
 
@@ -230,7 +226,7 @@ while ($tab = fgetcsv($inF, 1024, ';')) {
 
     // Si l'absence a été supprimée, on la supprime de la base (status 9)
     // Important : Faire la suppression avant le contrôle des status car le status 9 sera ignoré à la prochaine étape
-    if ($tab[6] == 9 and in_array($uid, $uids)) {
+    if ($tab[6] == 9 && in_array($uid, $uids)) {
         if ($debug) {
             logs("Status = 9, absence supprimée, on passe à la ligne suivante dans le CSV", "Hamac", $CSRFToken);
         }
@@ -322,12 +318,7 @@ while ($tab = fgetcsv($inF, 1024, ';')) {
     }
     $absence = $absences[$uid];
 
-    if ($absence['perso_id'] != $perso_id
-    or $absence['debut'] != $debut
-    or $absence['fin'] != $fin
-    or $absence['commentaires'] != $commentaires
-    or $absence['valide_n1'] != $valide_n1
-    or $absence['valide'] != $valide_n2) {
+    if ($absence['perso_id'] != $perso_id || $absence['debut'] != $debut || $absence['fin'] != $fin || $absence['commentaires'] != $commentaires || $absence['valide_n1'] != $valide_n1 || $absence['valide'] != $valide_n2) {
         // Si l'absence a changé, on met à jour la base de données
         if ($debug) {
             logs("Si l'absence a changé, on met à jour la base de données", "Hamac", $CSRFToken);
@@ -349,7 +340,7 @@ fclose($inF);
 
 // Remove entries deleted from source file
 // $dbd : DB Delete
-if (!empty($absences_db)) {
+if ($absences_db !== []) {
     $dbd = new dbh();
     $dbd->CSRFToken = $CSRFToken;
     $dbd->prepare("DELETE FROM `{$dbprefix}absences` WHERE `cal_name` = 'hamac' AND `ical_key` = :ical_key;");

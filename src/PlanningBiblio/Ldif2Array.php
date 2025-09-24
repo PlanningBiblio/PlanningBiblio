@@ -22,25 +22,25 @@ class Ldif2Array {
     * stores file name
     * @type string
     */
-    var $file;
+    public $file;
 
     /**
     * store data
     * @type string
     */
-    var $rawdata;
+    public $rawdata;
 
     /**
     * store entries
     * @type array
     */
-    var $entries = array();
+    public $entries = array();
 
     /**
     * encoding
     * @type string
     */
-    var $encoding;
+    public $encoding;
 
 
     //== constructor ====================================================================
@@ -57,7 +57,7 @@ class Ldif2Array {
     * Convert string to UTF-8
     * @return string
     */
-    private function convert($string)
+    private function convert(string $string): string|array|false
     {
         if ($this->encoding != 'UTF-8') {
             $string = mb_convert_encoding($string, 'UTF-8', $this->encoding);
@@ -76,22 +76,19 @@ class Ldif2Array {
 
 
     /**
-    * Sanity check before building the array, returns false if error
-    * @return bool
-    */
+     * Sanity check before building the array, returns false if error
+     */
     function makeArray(): bool {
-       if($this->file == '') {
-         if($this->rawdata == '') {
-           echo "No filename specified, aborting";
-           return false;
-         }
-       } else {
-         if(!file_exists($this->file)) {
+       if ($this->file == '') {
+           if($this->rawdata == '') {
+             echo "No filename specified, aborting";
+             return false;
+           }
+       } elseif (!file_exists($this->file)) {
            echo "File $this->file does not exist, aborting";
            return false;
-         } else {
-           $this->rawdata = file_get_contents($this->file);
-         }
+       } else {
+         $this->rawdata = file_get_contents($this->file);
        }
 
        if($this->rawdata == '') {
@@ -101,22 +98,13 @@ class Ldif2Array {
 
        $this->parse2Array();
        return true;
-
-       if(!$this->splitEntries()) {
-         echo "Could not extract data from this file, aborting";
-         return false;
-       }
-       $this->splitBlocks();
-       sort($this->entries);
-       return true;
     }
 
 
     /**
-    * Build the array in two passes
-    * @return void
-    */
-    function parse2Array() {
+     * Build the array in two passes
+     */
+    function parse2Array(): void {
         /**
         * Thanks to Vladimir Struchkov <great_boba yahoo com> for providing the
         * code to extract base64 encoded values
@@ -128,7 +116,7 @@ class Ldif2Array {
 
         /* First pass, rawdata is splitted into raw blocks */
         foreach($arr1 as $v) {
-            if (trim($v) == '') {
+            if (trim($v) === '') {
                 ++$i;
                 $j = 0;
             } else {
@@ -150,9 +138,10 @@ class Ldif2Array {
                     $decode = false;
                     $arr = explode(':', $v2);
                     $count = count($arr);
-                    if ($count != 2)
+                    if ($count != 2) {
                         for($i = $count-1; $i>1; --$i)
                             $arr[$i-1] .= ':' . $arr[$i];
+                    }
                     $i = $arr[0];
 
                     // handling arrays in ldap entry
@@ -164,12 +153,11 @@ class Ldif2Array {
                     } else {
                       $this->entries[$k1][$i] = trim($this->convert($arr[1]));
                     }
+                } elseif ($decode) {
+                    // base64 encoded, next chunk
+                    $this->entries[$k1][$i] .= trim(base64_decode($v2));
                 } else {
-                    if ($decode) { // base64 encoded, next chunk
-                        $this->entries[$k1][$i] .= trim(base64_decode($v2));
-                    } else {
-                        $this->entries[$k1][$i] = trim($this->convert($v2));
-                    }
+                    $this->entries[$k1][$i] = trim($this->convert($v2));
                 }
             }
         }

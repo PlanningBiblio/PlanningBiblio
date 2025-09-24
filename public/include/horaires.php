@@ -19,10 +19,10 @@ Mise en forme des heures, soustraction d'horaires,
 $version = $GLOBALS['version'] ?? null;
 
 if (!isset($version)) {
-    include_once "accessDenied.php";
+    include_once __DIR__ . "/accessDenied.php";
 }
 
-function diff_heures($debut, $fin, $format)
+function diff_heures($debut, $fin, $format): int|float|null
 {
     $debut=explode(":", $debut);
     $fin=explode(":", $fin);
@@ -31,8 +31,10 @@ function diff_heures($debut, $fin, $format)
     $diff=$fin-$debut;
   
     switch ($format) {
-    case "minutes": return $diff; break;
-    case "decimal": return $diff/60; break;
-    case "heures": return $diff/60; break;		// heures + min *100/60
+    case "minutes": return $diff;
+    case "decimal":
+    case "heures":
+        return $diff/60;		// heures + min *100/60
   }
+    return null;
 }

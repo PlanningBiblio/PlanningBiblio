@@ -19,7 +19,7 @@ Page appelée en ajax lors du click sur les cadenas de la page /index
 */
 
 require_once(__DIR__ . '/../../../init/init_ajax.php');
-require_once('class.planning.php');
+require_once(__DIR__ . '/class.planning.php');
 
 // Initialisation des variables
 $CSRFToken = $request->get('CSRFToken');
@@ -40,7 +40,7 @@ $droit=($config['Multisites-nombre']>1)?(300+$site):12;
 $db=new db();
 $db->select2("personnel", "droits", array("id"=>$perso_id));
 $droits_agent=json_decode(html_entity_decode($db->result[0]['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-if (!in_array((300+$site), $droits_agent) and !in_array((1000+$site), $droits_agent)) {
+if (!in_array((300+$site), $droits_agent) && !in_array((1000+$site), $droits_agent)) {
     echo json_encode(array("Accès refusé","error"));
     exit;
 }
@@ -71,7 +71,7 @@ if ($db->result) {
     $db->insert("pl_poste_verrou", $insert);
 }
 
-if (!$db->error and $verrou==1) {
+if (!$db->error && $verrou == 1) {
     // Affichage du message "..validé avec succès"
     $result=array("Le planning a &eacute;t&eacute; valid&eacute; avec succ&egrave;s","highlight");
     // Affichage du Div "Validation : ..."
@@ -80,7 +80,7 @@ if (!$db->error and $verrou==1) {
     $result[]=$validation;
     echo json_encode($result);
     exit;
-} elseif (!$db->error and $verrou==0) {
+} elseif (!$db->error && $verrou == 0) {
     echo json_encode(array("Le planning a &eacute;t&eacute; d&eacute;verrouill&eacute; avec succ&egrave;s","highlight"));
     exit;
 }

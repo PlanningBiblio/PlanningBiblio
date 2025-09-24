@@ -18,7 +18,7 @@ class LoginListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $route = $event->getRequest()->getPathInfo();
         $route = ltrim($route, '/');
@@ -29,7 +29,7 @@ class LoginListener
         $url = $config->findOneBy(array('nom' => 'URL'))->getValue();
 
         // Prevent user accessing to login page if he is already authenticated
-        if (!empty($session->get('loginId')) and $route == 'login') {
+        if (!empty($session->get('loginId')) && $route === 'login') {
             $event->setResponse(new RedirectResponse($url));
         }
 
@@ -39,7 +39,7 @@ class LoginListener
             return;
         }
 
-        if (substr($route, 0, 11) == 'unsubscribe') {
+        if (substr($route, 0, 11) === 'unsubscribe') {
             return;
         }
 
@@ -56,7 +56,7 @@ class LoginListener
 
             // Anonymous login
             $login = $event->getRequest()->get('login');
-            if ($login and $login === 'anonyme' and $config->findOneBy(array('nom' => 'Auth-Anonyme'))->getValue()) {
+            if ($login && $login === 'anonyme' && $config->findOneBy(array('nom' => 'Auth-Anonyme'))->getValue()) {
                 $_SESSION['login_id']=999999999;
                 $_SESSION['login_nom']="Anonyme";
                 $_SESSION['login_prenom']="";
@@ -67,11 +67,11 @@ class LoginListener
             }
 
             // Requested route
-            if (!empty($route)) {
+            if ($route !== '' && $route !== '0') {
                 $routeParams[] = 'redirURL=' . $route;
             }
 
-            $routeParams = !empty($routeParams) ? '?' . implode('&', $routeParams) : null;
+            $routeParams = $routeParams === [] ? null : '?' . implode('&', $routeParams);
 
             $event->setResponse(new RedirectResponse($url . '/login' . $routeParams));
         }

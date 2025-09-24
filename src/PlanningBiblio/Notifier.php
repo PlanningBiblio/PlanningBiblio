@@ -7,7 +7,7 @@ use App\PlanningBiblio\Notifier\Message;
 
 class Notifier
 {
-    private $transporter;
+    private \App\PlanningBiblio\NotificationTransporter\NotificationTransporterInterface $transporter;
 
     private $recipients;
 
@@ -29,7 +29,7 @@ class Notifier
         $this->setTransporter(new \CJMail());
     }
 
-    public function send()
+    public function send(): void
     {
         if (!$this->config['Mail-IsEnabled']) {
             return;
@@ -66,40 +66,40 @@ class Notifier
         }
     }
 
-    public function setTransporter(NotificationTransporterInterface $transporter)
+    public function setTransporter(NotificationTransporterInterface $transporter): static
     {
         $this->transporter = $transporter;
 
         return $this;
     }
 
-    public function getTransporter()
+    public function getTransporter(): \App\PlanningBiblio\NotificationTransporter\NotificationTransporterInterface
     {
         return $this->transporter;
     }
 
-    public function setRecipients($recipients)
+    public function setRecipients($recipients): static
     {
         $this->recipients = $recipients;
 
         return $this;
     }
 
-    public function setMessageCode($code)
+    public function setMessageCode($code): static
     {
         $this->message_code = $code;
 
         return $this;
     }
 
-    public function setMessageParameters($parameters)
+    public function setMessageParameters($parameters): static
     {
         $this->message_parameters = $parameters;
 
         return $this;
     }
 
-    private function setPlaceHolders($string)
+    private function setPlaceHolders($string): string|array
     {
         $params = $this->message_parameters;
         $tokens = array();

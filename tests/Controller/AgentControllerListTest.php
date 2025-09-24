@@ -23,7 +23,7 @@ class AgentControllerListTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100), 'supprime' => 0, 'actif' => 'Actif',
         ));
-        $id_jdevoe = $jdevoe->getId();
+        $jdevoe->getId();
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
             'droits' => array(99,100), 'supprime' => 0, 'actif' => 'Actif',
@@ -33,12 +33,12 @@ class AgentControllerListTest extends PLBWebTestCase
             'login' => 'bsuppr', 'nom' => 'Suppr', 'prenom' => 'Bientôt',
             'droits' => array(99,100), 'supprime' => 0, 'actif' => 'Actif',
         ));
-        $id_agent_suppr = $agent_suppr->getId();
+        $agent_suppr->getId();
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
             'droits' => array(21,4,99,100), 'supprime' => 0, 'actif' => 'Actif',
         ));
-        $id_kboivin = $kboivin->getId();
+        $kboivin->getId();
 
         // Login with agent having rights for absences
         $this->login($kboivin);

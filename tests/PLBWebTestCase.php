@@ -56,7 +56,7 @@ class PLBWebTestCase extends PantherTestCase
         $entityManager->flush();
 
         $GLOBALS['droits'] = $rights;
-        $crawler = $this->client->request('GET', '/login');
+        $this->client->request('GET', '/login');
         $session = $this->client->getRequest()->getSession();
         $session->set('loginId', $agent->getId());
         $session->save();
@@ -92,7 +92,7 @@ class PLBWebTestCase extends PantherTestCase
         $form['login'] = $agent->getLogin();
         $form['password'] = 'MyPass';
 
-        $crawler = $this->client->submit($form);
+        $this->client->submit($form);
 
         $this->client->waitForVisibility('html');
     }
@@ -110,13 +110,11 @@ class PLBWebTestCase extends PantherTestCase
         };
     }
 
-    protected function getSelect($id = null)
+    protected function getSelect($id = null): \Facebook\WebDriver\WebDriverSelect
     {
         $driver = $this->client->getWebDriver();
 
-        $select = new WebDriverSelect($driver->findElement(WebDriverBy::id($id)));
-
-        return $select;
+        return new WebDriverSelect($driver->findElement(WebDriverBy::id($id)));
     }
 
     /**

@@ -13,9 +13,8 @@ require_once(__DIR__ . '/../../public/conges/class.conges.php');
 class HolidayInfoController extends BaseController
 {
     #[Route(path: '/holiday-info', name: 'holiday_info.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
-        $CSRFSession = $GLOBALS['CSRFSession'];
         $dbprefix = $GLOBALS['dbprefix'];
         $admin = false;
         $today = date("Y-m-d");
@@ -43,7 +42,7 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info/add', name: 'holiday_info.add', methods: ['GET'])]
-    public function add(Request $request)
+    public function add(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
@@ -62,7 +61,7 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info/{id}', name: 'holiday_info.edit', methods: ['GET'])]
-    public function edit(Request $request)
+    public function edit(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
@@ -89,7 +88,7 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info', name: 'holiday_info.update', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
@@ -124,7 +123,7 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info', name: 'holiday_info.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session)
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
@@ -147,7 +146,7 @@ class HolidayInfoController extends BaseController
         $droits = $GLOBALS['droits'];
 
         for ($i = 1; $i <= $this->config('Multisites-nombre') ; $i++) {
-            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
+            if (in_array((400+$i), $droits) || in_array((600+$i), $droits)) {
                 return true;
             }
         }

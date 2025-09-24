@@ -13,7 +13,7 @@ class LegalNoticesController extends BaseController
 {
 
     #[Route(path: '/legal-notices', name: 'legal-notices', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
 

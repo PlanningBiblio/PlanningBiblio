@@ -16,7 +16,7 @@ Inclus dans les autres fichiers PHP du dossier conges
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
 
-if (!isset($version) and php_sapi_name() != 'cli') {
+if (!isset($version) && php_sapi_name() != 'cli') {
     include_once __DIR__."/../include/accessDenied.php";
 }
 
@@ -59,11 +59,7 @@ class conges
     public $supprime = true;
     public $valide;
 
-    public function __construct()
-    {
-    }
-
-    public function add($data)
+    public function add($data): void
     {
         $data['fin']=$data['fin']?$data['fin']:$data['debut'];
         $data['debit']=isset($data['debit'])?$data['debit']:"credit";
@@ -106,13 +102,13 @@ class conges
         }
 
         // En cas de validation, on débite les crédits dans la fiche de l'agent et on barre l'agent s'il est déjà placé dans le planning
-        if (isset($data['valide_init']) and $data['valide_init'] == 1 and !$db->error) {
+        if (isset($data['valide_init']) && $data['valide_init'] == 1 && !$db->error) {
             $data['id'] = $this->id;
             $this->calcCreditsOnValidation($data);
         }
     }
 
-    public function calculCredit($debut, $hre_debut, $fin, $hre_fin, $perso_id)
+    public function calculCredit($debut, $hre_debut, $fin, $hre_fin, $perso_id): void
     {
         // Calcul du nombre d'heures correspondant aux congés demandés
         $current=$debut;
@@ -184,7 +180,7 @@ class conges
     * Calcule les crédits de récupération disponible pour l'agent $perso_id à la date $date
     * Les crédits obtenus à des dates supérieures sont déduits
     */
-    public function calculCreditRecup($perso_id, $date = null, $id = null)
+    public function calculCreditRecup($perso_id, $date = null, $id = null): array
     {
         if (!$date) {
             $date = date('Y-m-d');
@@ -201,7 +197,7 @@ class conges
 
         $db = new db();
         $db->select2('cron', array('dom', 'mon', 'disabled'), array('command' => 'cron.holiday_reset_comp_time.php'), 'limit 1');
-        if ($db->result and $db->result[0]['disabled'] == 0 and is_numeric($db->result[0]['dom']) and is_numeric($db->result[0]['mon'])) {
+        if ($db->result && $db->result[0]['disabled'] == 0 && is_numeric($db->result[0]['dom']) && is_numeric($db->result[0]['mon'])) {
             $dom = $db->result[0]['dom'];
             $mon = $db->result[0]['mon'];
             $reset_date = strtotime("$mon/$dom");
@@ -214,7 +210,7 @@ class conges
         }
 
         // Mise à zéro du compte si la date choisie est après la remise à zéro
-        if ($reset_date and $date >= $reset_date) {
+        if ($reset_date && $date >= $reset_date) {
             $balance1 = 0;
         }
     
@@ -238,15 +234,15 @@ class conges
             // On adapte les compteurs avec les enregistrements de la table récupération
             // - si la date choisie est inférieure à la date de remise à zéro
             // - ou si la date de l'enregistrement est supérieure ou égale à la date de remise à zéro
-            if ((($date < $reset_date) or ! $reset_date) or $elem['date'] >= $reset_date) {
+            if ($date < $reset_date || ! $reset_date || $elem['date'] >= $reset_date) {
 
                 // On ajoute les demandes de crédits non validées au solde prévisionnel
-                if ($elem['valide'] == 0 and ($elem['valide_n1'] >= 0 or $GLOBALS['config']['Conges-Validation-N2'] == 0)) {
+                if ($elem['valide'] == 0 && ($elem['valide_n1'] >= 0 || $GLOBALS['config']['Conges-Validation-N2'] == 0)) {
                     $balance3 += (float) $elem['heures'];
                 }
 
                 // On ajoute les crédits validés aux compteurs si la date choisie est supérieure à la date de remise à zéro
-                if ($reset_date and $elem['valide'] > 0 and $date >= $reset_date) {
+                if ($reset_date && $elem['valide'] > 0 && $date >= $reset_date) {
                     $balance1 += (float) $elem['heures'];
                     $balance3 += (float) $elem['heures'];
                 }
@@ -279,16 +275,14 @@ class conges
         $leave_tab = $db->result;
 
         // On déduit les demandes de récupérations non-validées au solde prévisionnel
-        if ($reset_date and !empty($leave_tab)) {
+        if ($reset_date && !empty($leave_tab)) {
             foreach ($leave_tab as $elem) {
 
                 // On adapte le compteur prévisionnel avec les enregistrements de la table congés
                 // - si la date choisie est inférieure à la date de remise à zéro ou s'il n'y a pas de remise à zéro
                 // - ou si la date de l'enregistrement est supérieure ou égale à la date de remise à zéro
-                if ($date < $reset_date or $elem['debut'] >= $reset_date) {
-                    if ($elem['valide'] == 0 and ($elem['valide_n1'] >= 0 or $GLOBALS['config']['Conges-Validation-N2'] == 0)) {
-                        $balance3 -= (float) $elem['heures'];
-                    }
+                if (($date < $reset_date or $elem['debut'] >= $reset_date) && ($elem['valide'] == 0 && ($elem['valide_n1'] >= 0 || $GLOBALS['config']['Conges-Validation-N2'] == 0))) {
+                    $balance3 -= (float) $elem['heures'];
                 }
             }
         }
@@ -334,7 +328,7 @@ class conges
         return (bool) $db->result;
     }
 
-    public function delete()
+    public function delete(): void
     {
         // Marque une demande de congé comme supprimée
         // Contrôle si le congé avait été validé.
@@ -392,12 +386,12 @@ class conges
                     if ($key == 'regul_id'){
                         continue;
                     }
-                    if ($key!="id" and !is_numeric($key)) {
+                    if ($key != "id" && !is_numeric($key)) {
                         $insert[$key]=$result[$key];
                     }
                 }
 
-                if (!empty($insert)) {
+                if ($insert !== []) {
                     $insert["solde_prec"]=$perso_credit;
                     $insert["recup_prec"]=$perso_recup;
                     $insert["reliquat_prec"]=$perso_reliquat;
@@ -442,7 +436,7 @@ class conges
     }
 
 
-    public function fetch()
+    public function fetch(): void
     {
         // Filtre de recherche
         $filter="1";
@@ -463,12 +457,10 @@ class conges
             } else {
                 $filter.=" AND `debut`<='$fin' AND `fin`>='$debut'";
             }
+        } elseif ($this->bornesExclues) {
+            $filter.=" AND `fin`>'$date'";
         } else {
-            if ($this->bornesExclues) {
-                $filter.=" AND `fin`>'$date'";
-            } else {
-                $filter.=" AND `fin`>='$date'";
-            }
+            $filter.=" AND `fin`>='$date'";
         }
 
         // Suppressions et informations
@@ -495,10 +487,10 @@ class conges
         foreach ($p->elements as $elem) {
             $keep = true;
 
-            if ($GLOBALS['config']['Multisites-nombre'] > 1 and !empty($this->sites)) {
+            if ($GLOBALS['config']['Multisites-nombre'] > 1 && !empty($this->sites)) {
                 $keep = false;
                 foreach ($this->sites as $site) {
-                    if (is_array($elem['sites']) and in_array($site, $elem['sites'])) {
+                    if (is_array($elem['sites']) && in_array($site, $elem['sites'])) {
                         $keep = true;
                         break;
                     }
@@ -553,7 +545,7 @@ class conges
     }
 
 
-    public function fetchAllCredits()
+    public function fetchAllCredits(): ?bool
     {
         // Recheche de tous les crédits de congés afin de les afficher dans la page congés / Crédits
 
@@ -642,7 +634,7 @@ class conges
                 if (!array_key_exists("validation", $tab[$elem['perso_id']])) {
                     $tab[$elem['perso_id']]['validation']="0000-00-00 00:00:00";
                 }
-                if (!array_key_exists("maj2", $tab[$elem['perso_id']]) and $elem['info_date']>$tab[$elem['perso_id']]['validation']) {
+                if (!array_key_exists("maj2", $tab[$elem['perso_id']]) && $elem['info_date'] > $tab[$elem['perso_id']]['validation']) {
                     $tab[$elem['perso_id']]['conge_restant']=$elem['solde_actuel'];
                     $tab[$elem['perso_id']]['reliquat_restant']=$elem['reliquat_actuel'];
                     $tab[$elem['perso_id']]['recup_restant']=$elem['recup_actuel'];
@@ -667,7 +659,7 @@ class conges
                 if (empty($tab[$elem['perso_id']]['validation'])) {
                     $tab[$elem['perso_id']]['validation'] = '0000-00-00 00:00:00';
                 }
-                if (!array_key_exists("maj3", $tab[$elem['perso_id']]) and $elem['validation']>$tab[$elem['perso_id']]['validation']) {
+                if (!array_key_exists("maj3", $tab[$elem['perso_id']]) && $elem['validation'] > $tab[$elem['perso_id']]['validation']) {
                     $tab[$elem['perso_id']]['recup_restant']=$elem['solde_actuel'];
                     $tab[$elem['perso_id']]['maj3']=true;
                 }
@@ -697,7 +689,7 @@ class conges
                 }
                 $heures=floatval($elem['heures']);
                 // Déduisons en priorité les reliquats
-                if ($tab[$elem['perso_id']]['reliquat_en_attente']>0 and floatval($tab[$elem['perso_id']]['reliquat_en_attente'])-$heures<0) {
+                if ($tab[$elem['perso_id']]['reliquat_en_attente'] > 0 && floatval($tab[$elem['perso_id']]['reliquat_en_attente']) - $heures < 0) {
                     $heures-=floatval($tab[$elem['perso_id']]['reliquat_en_attente']);
                     $tab[$elem['perso_id']]['reliquat_en_attente']=0;
                 } elseif ($tab[$elem['perso_id']]['reliquat_en_attente']>0) {
@@ -724,22 +716,20 @@ class conges
                         continue;
                     }
                     // Puis les crédits
-                } else {
-                    if ($tab[$elem['perso_id']]['conge_en_attente']-$heures<0) {
-                        $heures-=$tab[$elem['perso_id']]['conge_en_attente'];
-                        $tab[$elem['perso_id']]['conge_en_attente']=0;
-                        // Et récup si crédit insuffisant
-                        if ($tab[$elem['perso_id']]['recup_en_attente']-$heures<0) {
-                            $heures-=$tab[$elem['perso_id']]['recup_en_attente'];
-                            $tab[$elem['perso_id']]['recup_en_attente']=0;
-                        } else {
-                            $tab[$elem['perso_id']]['recup_en_attente']-=$heures;
-                            continue;
-                        }
+                } elseif ($tab[$elem['perso_id']]['conge_en_attente']-$heures<0) {
+                    $heures-=$tab[$elem['perso_id']]['conge_en_attente'];
+                    $tab[$elem['perso_id']]['conge_en_attente']=0;
+                    // Et récup si crédit insuffisant
+                    if ($tab[$elem['perso_id']]['recup_en_attente']-$heures<0) {
+                        $heures-=$tab[$elem['perso_id']]['recup_en_attente'];
+                        $tab[$elem['perso_id']]['recup_en_attente']=0;
                     } else {
-                        $tab[$elem['perso_id']]['conge_en_attente']-=$heures;
+                        $tab[$elem['perso_id']]['recup_en_attente']-=$heures;
                         continue;
                     }
+                } else {
+                    $tab[$elem['perso_id']]['conge_en_attente']-=$heures;
+                    continue;
                 }
                 // Et enfin le solde débiteur
                 $tab[$elem['perso_id']]['anticipation_en_attente']+=$heures;
@@ -793,10 +783,11 @@ class conges
             }
         }
         $this->elements=$tab;
+        return null;
     }
 
 
-    public function fetchCredit()
+    public function fetchCredit(): void
     {
         if (!$this->perso_id) {
             $this->elements=array("annuel"=>null,"anticipation"=>null,"credit"=>null,"recup"=>null,"reliquat"=>null,
@@ -839,14 +830,14 @@ class conges
         }
     }
 
-    public function getRecup()
+    public function getRecup(): void
     {
         $debut=$this->debut?$this->debut:date("Y-m-d", strtotime("-1 month", time()));
         $fin=$this->fin?$this->fin:date("Y-m-d", strtotime("+1 year", time()));
         $filter="`date` BETWEEN '$debut' AND '$fin'";
 
         // Recherche avec l'id de l'agent
-        if ($this->admin and $this->perso_id) {
+        if ($this->admin && $this->perso_id) {
             $filter.=" AND `perso_id`='{$this->perso_id}'";
         }
 
@@ -888,7 +879,7 @@ class conges
         }
     }
 
-    public function getResponsables($debut=null, $fin=null, $perso_id=0)
+    public function getResponsables($debut=null, $fin=null, $perso_id=0): void
     {
         $responsables=array();
         $droitsConges=array();
@@ -910,11 +901,7 @@ class conges
                     $p->valide=true;
                     $p->fetch();
 
-                    if (empty($p->elements)) {
-                        $temps=array();
-                    } else {
-                        $temps=$p->elements[0]['temps'];
-                    }
+                    $temps = empty($p->elements) ? array() : $p->elements[0]['temps'];
                 }
                 // Vérifions le numéro de la semaine de façon à contrôler le bon planning de présence hebdomadaire
                 $d=new datePl($date);
@@ -929,18 +916,18 @@ class conges
                     }
                     // Ajout du numéro du droit correspondant à la gestion des congés de ce site
                     // Validation niveau 1
-                    if (!in_array((400+$site), $droitsConges) and $site) {
+                    if (!in_array((400+$site), $droitsConges) && $site) {
                         $droitsConges[]=400+$site;
                     }
                     // Validation niveau 2
-                    if (!in_array((600+$site), $droitsConges) and $site) {
+                    if (!in_array((600+$site), $droitsConges) && $site) {
                         $droitsConges[]=600+$site;
                     }
                 }
                 $date=date("Y-m-d", strtotime("+1 day", strtotime($date)));
             }
             // Si les jours de conges ne concernent aucun site, on ajoute les responsables de tous les sites par sécurité
-            if (empty($droitsConges)) {
+            if ($droitsConges === []) {
                 for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
                     $droitsConges[]=400+$i;
                     $droitsConges[]=600+$i;
@@ -957,20 +944,18 @@ class conges
         foreach ($db->result as $elem) {
             $d=json_decode(html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             foreach ($droitsConges as $elem2) {
-                if (is_array($d)) {
-                    if (in_array($elem2, $d) and !in_array($elem, $responsables)) {
-                        $responsables[]=$elem;
-                    }
+                if (is_array($d) && (in_array($elem2, $d) && !in_array($elem, $responsables))) {
+                    $responsables[]=$elem;
                 }
             }
         }
         $this->responsables=$responsables;
     }
 
-    public function getSaturday()
+    public function getSaturday(): void
     {
         // Liste des samedis des 2 derniers mois
-        $perso_id=isset($this->perso_id)?$this->perso_id:$_SESSION['login_id'];
+        $perso_id=$this->perso_id !== null?$this->perso_id:$_SESSION['login_id'];
         $samedis=array();
         $current=date("Y-m-d");
         while ($current>date("Y-m-d", strtotime("-2 month", time()))) {
@@ -1008,14 +993,13 @@ class conges
 
 
     /**
-    * @method maj
-    * @param array $credits
-    * @param string $modif
-    * @param bool $cron
-    * @param int $origin_id. Holiday id that generated this regularization.
-    * Les crédits obtenus à des dates supérieures sont déduits
-    */
-    public function maj($credits, $action="modif", $cron=false, $origin_id = 0)
+     * @method maj
+     * @param string $modif
+     * @param bool $cron
+     * @param int $origin_id. Holiday id that generated this regularization.
+     * Les crédits obtenus à des dates supérieures sont déduits
+     */
+    public function maj(array $credits, $action="modif", $cron=false, $origin_id = 0)
     {
         // Ajoute une ligne faisant apparaître la mise à jour des crédits dans le tableau Congés
         if ($action=="modif") {
@@ -1057,12 +1041,12 @@ class conges
 
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
-            $inserted_id = $db->insert("conges", $insert);
-            return $inserted_id;
+            return $db->insert("conges", $insert);
         }
+        return null;
     }
 
-    public function update($data)
+    public function update($data): void
     {
         $data['debit']=isset($data['debit'])?$data['debit']:"credit";
         $data['hre_debut']=$data['hre_debut']?$data['hre_debut']:"00:00:00";
@@ -1089,12 +1073,12 @@ class conges
 
         if ($data['valide']) {
             // Validation Niveau 2
-            if ($data['valide']==-1 or $data['valide']==1) {
+            if ($data['valide'] == -1 || $data['valide'] == 1) {
                 $update["valide"]=$data['valide']*$_SESSION['login_id']; // login_id positif si accepté, négatif si refusé
                 $update["validation"]=date("Y-m-d H:i:s");
             }
             // Validation Niveau 1
-            elseif ($data['valide']==-2 or $data['valide']==2) {
+            elseif ($data['valide'] == -2 || $data['valide'] == 2) {
                 $update["valide_n1"]=($data['valide']/2)*$_SESSION['login_id']; // login_id positif si accepté, négatif si refusé
                 $update["validation_n1"]=date("Y-m-d H:i:s");
                 $update['valide']=0;
@@ -1108,12 +1092,12 @@ class conges
         $db->update("conges", $update, array("id"=>$data['id']));
   
         // En cas de validation, on débite les crédits dans la fiche de l'agent et on barre l'agent s'il est déjà placé dans le planning
-        if ($data['valide']=="1" and !$db->error) {
+        if ($data['valide'] == "1" && !$db->error) {
             $this->calcCreditsOnValidation($data);
         }
     }
 
-    private function calcCreditsOnValidation($data) {
+    private function calcCreditsOnValidation(array $data): void {
         // On débite les crédits dans la fiche de l'agent
         // Recherche des crédits actuels
 
@@ -1171,39 +1155,30 @@ class conges
                     }
                 }
             }
-
             if ($reste3) {
                 $anticipation=floatval($anticipation)+$reste3;
             }
-        }
-
-        // Si les congés et les récupérations sont traitées différement (config['Conges-Recuperations'] = 1 / Dissocier
-        else {
-            if ($data["debit"]=="credit") {
-                // Calcul du reliquat après décompte
-                $reste=0;
-                $reliquat -= $heures;
-                if ($reliquat<0) {
-                    $reste=-$reliquat;
-                    $reliquat=0;
-                }
-                // Calcul du crédit de congés
-                $credit -= $reste;
-                if ($credit<0) {
-                    $reste=-$credit;
-                    $credit=0;
-                } else {
-                    $reste = 0;
-                }
-                if ($reste) {
-                    $anticipation=floatval($anticipation)+$reste;
-                }
+        } elseif ($data["debit"]=="credit") {
+            // Calcul du reliquat après décompte
+            $reste=0;
+            $reliquat -= $heures;
+            if ($reliquat<0) {
+                $reste=-$reliquat;
+                $reliquat=0;
             }
-
-            // Calcul du crédit de récupération
-            else {
-                $recuperation -= $heures;
+            // Calcul du crédit de congés
+            $credit -= $reste;
+            if ($credit<0) {
+                $reste=-$credit;
+                $credit=0;
+            } else {
+                $reste = 0;
             }
+            if ($reste) {
+                $anticipation=floatval($anticipation)+$reste;
+            }
+        } else {
+            $recuperation -= $heures;
         }
 
         // Mise à jour des compteurs dans la table personnel
@@ -1236,7 +1211,7 @@ class conges
         $db->update("conges", $updateConges, array("id"=>$data['id']));
     }
 
-    private function applyRegularization($data, $regul) {
+    private function applyRegularization(array $data, $regul) {
         $perso_id = $data['perso_id'];
 
         $p = new personnel();
@@ -1267,10 +1242,10 @@ class conges
     }
 
 
-    public function updateCETCredits()
+    public function updateCETCredits(): void
     {
         $data=$this->data;
-        if (!empty($data) and $data['valide_n2']>0) {
+        if (!empty($data) && $data['valide_n2'] > 0) {
             $jours=$data['jours'];
             $heures=intval($jours)*7;
             $db=new db();
@@ -1311,7 +1286,7 @@ class conges
 
     }
 
-    public static function exists($agent_id, $from, $to, $id = null) {
+    public static function exists($agent_id, $from, $to, $id = null): ?array {
         $db = new db();
         $db->select('conges', null, "`id`<>'$id' AND `perso_id`='$agent_id' AND `debut` < '$to' AND `fin` > '$from' AND `supprime`='0' AND `information`='0' AND `valide`>='0' ", "ORDER BY `debut`,`fin`");
         if (!$db->result) {

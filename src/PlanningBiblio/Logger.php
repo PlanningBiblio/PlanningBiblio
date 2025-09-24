@@ -15,7 +15,7 @@ class Logger
         $this->stdout = $stdout;
     }
 
-    public function log($message, $application) {
+    public function log(string $message, $application): void {
         if ($this->stdout) {
             echo $message . "\n";
 	    }

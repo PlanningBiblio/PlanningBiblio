@@ -14,7 +14,7 @@ use App\Entity\AbsenceInfo;
 class AbsenceInfoController extends BaseController
 {
     #[Route(path: '/absences/info', name: 'absences.info.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         $today = date('Y-m-d');
 
@@ -33,7 +33,7 @@ class AbsenceInfoController extends BaseController
     }
 
     #[Route(path: '/absences/info/add', name: 'absences.info.add', methods: ['GET'])]
-    public function add(Request $request)
+    public function add(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $this->templateParams(array(
             'id'    => null,
@@ -46,7 +46,7 @@ class AbsenceInfoController extends BaseController
     }
 
     #[Route(path: '/absences/info/{id}', name: 'absences.info.edit', methods: ['GET'])]
-    public function edit(Request $request)
+    public function edit(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $id = $request->get('id');
 
@@ -63,7 +63,7 @@ class AbsenceInfoController extends BaseController
     }
 
     #[Route(path: '/absences/info', name: 'absences.info.update', methods: ['POST'])]
-    public function update(Request $request, Session $session)
+    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -102,7 +102,7 @@ class AbsenceInfoController extends BaseController
     }
 
     #[Route(path: '/absences/info', name: 'absences.info.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session)
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();

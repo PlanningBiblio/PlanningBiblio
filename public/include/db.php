@@ -23,8 +23,8 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
-require_once "function.php";
-require_once "sanitize.php";
+require_once __DIR__ . "/function.php";
+require_once __DIR__ . "/sanitize.php";
 
 class db
 {
@@ -36,7 +36,7 @@ class db
     public $conn;
     public $result;
     public $nb;
-    public $error;
+    public $error = false;
     public $msg;
     public $CSRFToken = false;
     public $sanitize_string = false;
@@ -48,18 +48,16 @@ class db
         $this->dbname=$GLOBALS['config']['dbname'];
         $this->user=$GLOBALS['config']['dbuser'];
         $this->password=$GLOBALS['config']['dbpass'];
-        $this->error=false;
-        $this->conn=null;
         $this->dbprefix=$GLOBALS['config']['dbprefix'];
     }
 
-    public function connect()
+    public function connect(): void
     {
         $this->conn=mysqli_connect($this->host, $this->user, $this->password, $this->dbname);
         $this->conn->set_charset("utf8mb4");
 
         mysqli_query($this->conn, "SET SESSION sql_mode = ''");
-        if (mysqli_connect_errno()) {
+        if (mysqli_connect_errno() !== 0) {
             $this->error=true;
             $this->msg=mysqli_connect_error();
         }
@@ -71,20 +69,18 @@ class db
       * @return string
       * @access public
       */
-    public function escapeString($str)
+    public function escapeString($str): ?string
     {
         if (!$this->conn) {
             $this->connect();
         }
-
-	if (is_null($str))
-	  return $str;
-
-        $str=mysqli_real_escape_string($this->conn, $str);
-        return $str;
+        if (is_null($str)) {
+            return $str;
+        }
+        return mysqli_real_escape_string($this->conn, $str);
     }
 
-    public function query($requete, $request_inserted_id = false)
+    public function query($requete, $request_inserted_id = false): void
     {
         if (!$this->conn) {
             $this->connect();
@@ -99,22 +95,21 @@ class db
         if (!$req) {
             $this->error=true;
             $this->error=mysqli_error($this->conn);
-        } elseif (strtolower(substr(trim($requete), 0, 6))=="select" or strtolower(substr(trim($requete), 0, 4))=="show") {
+        } elseif (strtolower(substr(trim($requete), 0, 6)) === "select" || strtolower(substr(trim($requete), 0, 4)) === "show") {
             $this->nb=mysqli_num_rows($req);
             for ($i=0;$i<$this->nb;$i++) {
                 $result=array();
                 $tab=mysqli_fetch_assoc($req);
                 foreach ($tab as $key => $value) {
-                    if (isset($isCryptedPassword) and $isCryptedPassword===true) {
+                    if (isset($isCryptedPassword) && $isCryptedPassword) {
                         $result[$key]=filter_var($value, FILTER_UNSAFE_RAW);
+                    } elseif ($this->sanitize_string) {
+                        $result[$key] = htmlspecialchars(strval($value));
                     } else {
-                        if ($this->sanitize_string) {
-                            $result[$key] = htmlspecialchars(strval($value));
-                        } else {
-                            $result[$key] = filter_var($value, FILTER_UNSAFE_RAW);
-                        }   
+                        $result[$key] = filter_var($value, FILTER_UNSAFE_RAW);
                     }
-                    $isCryptedPassword=$key=="type" and $value=="password";
+                    if ($isCryptedPassword = $key === "type") {
+                    }
                 }
                 $this->result[]=$result;
             }
@@ -122,12 +117,12 @@ class db
         $this->disconnect();
     }
 
-    public function disconnect()
+    public function disconnect(): void
     {
         mysqli_close($this->conn);
     }
 
-    public function select($table, $infos=null, $where=null, $options=null)
+    public function select($table, $infos=null, $where=null, $options=null): void
     {
         $infos=$infos?$infos:"*";
         $where=$where?$where:"1";
@@ -147,7 +142,7 @@ class db
       Si array : array(champ1=>valeur1, champ2=>valeur2, ...)
     @param string option : permet d'ajouter des options de recherche après where, ex : order by
     */
-    public function select2($table, $infos="*", $where="1", $options=null)
+    public function select2($table, $infos="*", $where="1", $options=null): void
     {
         $this->connect();
         $dbprefix=$this->dbprefix;
@@ -158,11 +153,7 @@ class db
         if (is_array($infos)) {
             $tmp=array();
             foreach ($infos as $elem) {
-                if (is_array($elem)) {
-                    $tmp[]="{$elem['name']} AS `{$elem['as']}`";
-                } else {
-                    $tmp[]=$elem;
-                }
+                $tmp[] = is_array($elem) ? "{$elem['name']} AS `{$elem['as']}`" : $elem;
             }
             $infos=implode(",", $tmp);
         }
@@ -208,8 +199,8 @@ class db
         $table1Where=array(),
         $table2Where=array(),
         $options=null
-  ) {
-        if (empty($table1) or empty($table2)) {
+  ): ?bool {
+        if (empty($table1) || empty($table2)) {
             $this->error=true;
             return false;
         }
@@ -262,6 +253,7 @@ class db
 
         // Execution de la requête
         $this->query($query);
+        return null;
     }
 
     /**
@@ -286,8 +278,8 @@ class db
         $table1Where=array(),
         $table2Where=array(),
         $options=null
-  ) {
-        if (empty($table1) or empty($table2)) {
+  ): ?bool {
+        if (empty($table1) || empty($table2)) {
             $this->error=true;
             return false;
         }
@@ -340,11 +332,12 @@ class db
 
         // Execution de la requête
         $this->query($query);
+        return null;
     }
 
-    public function update($table, $set, $where="1")
+    public function update($table, $set, $where="1"): ?bool
     {
-        if (!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
+        if (!$this->CSRFToken || !isset($_SESSION['oups']['CSRFToken']) || $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
             $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
             error_log($this->error);
             return false;
@@ -368,9 +361,9 @@ class db
                 } elseif (substr($set[$field], 0, 7)==="CONCAT(") {
                     $tmp[]="`{$field}`={$set[$field]}";
                 } else {
-                    $set[$field] = !is_null($set[$field]) ?
-			mysqli_real_escape_string($this->conn, $set[$field])
-			: $set[$field];
+                    $set[$field] = is_null($set[$field]) ?
+			$set[$field]
+			: mysqli_real_escape_string($this->conn, $set[$field]);
                     $tmp[]="`{$field}`='{$set[$field]}'";
                 }
             }
@@ -386,11 +379,12 @@ class db
         }
         $requete="UPDATE `{$dbprefix}$table` SET $set WHERE $where;";
         $this->query($requete);
+        return null;
     }
 
-    public function delete($table, $where="1")
+    public function delete($table, $where="1"): ?bool
     {
-        if (!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
+        if (!$this->CSRFToken || !isset($_SESSION['oups']['CSRFToken']) || $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
             $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
             error_log($this->error);
             return false;
@@ -403,9 +397,9 @@ class db
             $keys=array_keys($where);
             $tmp=array();
             foreach ($keys as $key) {
-                $value = !is_null($where[$key])
-		    ? mysqli_real_escape_string($this->conn, $where[$key])
-		    : $where[$key];
+                $value = is_null($where[$key])
+		    ? $where[$key]
+		    : mysqli_real_escape_string($this->conn, $where[$key]);
                 $tmp[]=$this->makeSearch($key, $value);
             }
             $where=implode(" AND ", $tmp);
@@ -413,11 +407,12 @@ class db
 
         $requete="DELETE FROM `{$dbprefix}$table` WHERE $where";
         $this->query($requete);
+        return null;
     }
 
-    public function insert($table, $values, $options=null)
+    public function insert($table, array $values, $options=null)
     {
-        if (!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
+        if (!$this->CSRFToken || !isset($_SESSION['oups']['CSRFToken']) || $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
             $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
             error_log($this->error);
             return false;
@@ -431,11 +426,12 @@ class db
         $tab=array();
         if (array_key_exists(0, $values)) {
             $fields=array_keys($values[0]);
-            for ($i=0;$i<count($values);$i++) {
+            $counter = count($values);
+            for ($i=0;$i<$counter;$i++) {
                 foreach ($fields as $elem) {
-                    $values[$i][$elem] = !is_null($values[$i][$elem])
-			? mysqli_real_escape_string($this->conn, $values[$i][$elem])
-			: $values[$i][$elem];
+                    $values[$i][$elem] = is_null($values[$i][$elem])
+			? $values[$i][$elem]
+			: mysqli_real_escape_string($this->conn, $values[$i][$elem]);
 		}
             }
             $fields=implode("`,`", $fields);
@@ -446,9 +442,9 @@ class db
         } else {
             $fields=array_keys($values);
             foreach ($fields as $elem) {
-                $values[$elem] = !is_null($values[$elem])
-		    ? mysqli_real_escape_string($this->conn, $values[$elem])
-		    : $values[$elem];
+                $values[$elem] = is_null($values[$elem])
+		    ? $values[$elem]
+		    : mysqli_real_escape_string($this->conn, $values[$elem]);
             }
             $fields=implode("`,`", $fields);
             $tab[]="'".implode("','", $values)."'";
@@ -469,12 +465,12 @@ class db
         // Par défaut, opérateur =
         $operator="=";
     
-        if (!strstr($key, "`") and !strstr($key, ".")) {
+        if (!strstr($key, "`") && !strstr($key, ".")) {
             $key="`$key`";
         }
 
         // BETWEEN
-        if (substr(strval($value), 0, 7)=="BETWEEN") {
+        if (substr(strval($value), 0, 7) === "BETWEEN") {
             $tmp=trim(substr($value, 7));
             $tmp=explode("AND", $tmp);
             $value1=htmlentities(trim($tmp[0]), ENT_QUOTES | ENT_IGNORE, "UTF-8", false);
@@ -485,7 +481,7 @@ class db
         }
 
         // IN
-        elseif (substr(strval($value), 0, 2)=="IN") {
+        elseif (substr(strval($value), 0, 2) === "IN") {
             $tmp=trim(substr($value, 2));
             $tmp=explode(",", $tmp);
 
@@ -498,7 +494,7 @@ class db
             return "{$key} IN ('$values')";
         }
 
-        elseif (substr(strval($value), 0, 6)=="NOT IN") {
+        elseif (substr(strval($value), 0, 6) === "NOT IN") {
             $tmp=trim(substr($value, 6));
             $tmp=explode(",", $tmp);
 
@@ -517,30 +513,30 @@ class db
         }
 
         // Opérateurs =, >, <, >=, <=, <>
-        elseif (substr($value, 0, 2)==">=") {
+        elseif (substr($value, 0, 2) === ">=") {
             $operator=">=";
             $value=trim(substr($value, 2));
-        } elseif (substr($value, 0, 2)=="<=") {
+        } elseif (substr($value, 0, 2) === "<=") {
             $operator="<=";
             $value=trim(substr($value, 2));
-        } elseif (substr($value, 0, 2)=="<>") {
+        } elseif (substr($value, 0, 2) === "<>") {
             $operator="<>";
             $value=trim(substr($value, 2));
-        } elseif (substr($value, 0, 1)=="=") {
+        } elseif (substr($value, 0, 1) === "=") {
             $operator="=";
             $value=trim(substr($value, 1));
-        } elseif (substr($value, 0, 1)==">") {
+        } elseif (substr($value, 0, 1) === ">") {
             $operator=">";
             $value=trim(substr($value, 1));
-        } elseif (substr($value, 0, 1)=="<") {
+        } elseif (substr($value, 0, 1) === "<") {
             $operator="<";
             $value=trim(substr($value, 1));
         // Losrsqu'une chaîne contient < directement suivi d'un caractère alpha, la chaîne est supprimée.
     // On permet donc l'utilisation du signe < suivi d'un espace
-        } elseif (substr($value, 0, 2)=="< ") {
+        } elseif (substr($value, 0, 2) === "< ") {
             $operator="<";
             $value=trim(substr($value, 2));
-        } elseif (substr($value, 0, 4)=="LIKE") {
+        } elseif (substr($value, 0, 4) === "LIKE") {
             $operator="LIKE";
             $value=trim(substr($value, 4));
         }
@@ -570,9 +566,12 @@ class dbh
     public $error;
     public $msg;
     public $nb;
+    /**
+     * @var \PDO
+     */
     public $pdo;
     public $stmt;
-    public $result;
+    public $result = array();
 
 
     public function __construct()
@@ -582,7 +581,6 @@ class dbh
         $this->dbuser=$GLOBALS['config']['dbuser'];
         $this->dbpass=$GLOBALS['config']['dbpass'];
         $this->dbprefix=$GLOBALS['config']['dbprefix'];
-        $this->result=array();
 
         $this->pdo=new PDO(
             "mysql:host={$this->dbhost};dbname={$this->dbname};charset=utf8mb4",
@@ -592,19 +590,19 @@ class dbh
     );
     }
 
-    public function exec($sql)
+    public function exec($sql): void
     {
         $this->pdo->exec($sql);
     }
 
-    public function prepare($sql)
+    public function prepare($sql): void
     {
         $this->stmt=$this->pdo->prepare($sql);
     }
 
-    public function execute($data=array())
+    public function execute($data=array()): ?bool
     {
-        if (!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
+        if (!$this->CSRFToken || !isset($_SESSION['oups']['CSRFToken']) || $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
             $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
             $this->msg = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
             error_log($this->error);
@@ -629,6 +627,7 @@ class dbh
 
         $this->error=$errors[1];
         $this->msg=$errors;
+        return null;
     }
 
     /**
@@ -642,7 +641,7 @@ class dbh
       Si array : array(champ1=>valeur1, champ2=>valeur2, ...) à utiliser de préférence car les valeurs sont échapées par PDO_MySQL
     @param string option : permet d'ajouter des options de recherche après where, ex : order by
     */
-    public function select($table, $infos="*", $where="1", $options=null)
+    public function select($table, $infos="*", $where="1", $options=null): void
     {
         $table=$this->dbprefix.$table;
 

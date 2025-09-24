@@ -13,7 +13,7 @@ Fonctions utilisées par les pages des dossiers planning/poste et planning/poste
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
-    include_once "../../include/accessDenied.php";
+    include_once __DIR__ . "/../../include/accessDenied.php";
     exit;
 }
 
@@ -54,7 +54,7 @@ function groupe($poste)
 {
     $db=new db();
     $db->query("SELECT `groupe_id` FROM `{$GLOBALS['config']['dbprefix']}postes` WHERE `id`='$poste';");
-    if ($db->result and $db->result[0]['groupe_id']!=0) {
+    if ($db->result && $db->result[0]['groupe_id'] != 0) {
         $poste=$db->result[0]['groupe_id'];
     }
     return $poste;
@@ -62,11 +62,10 @@ function groupe($poste)
 //--------		FIN Vérifier si le poste demandé appartient à un groupe, si oui, on recherche les personnes qualifiées pour ce groupe (poste=groupe) ---------//
 
 //		-------------	paramétrage de la largeur des colonnes		--------------//
-function nb30($debut, $fin)
+function nb30($debut, $fin): int|float
 {
     $tmpFin=explode(":", $fin);
     $tmpDebut=explode(":", $debut);
-    $time=(($tmpFin[0]*60)+$tmpFin[1]-($tmpDebut[0]*60)-$tmpDebut[1])/15;
-    return $time;
+    return (($tmpFin[0]*60)+$tmpFin[1]-($tmpDebut[0]*60)-$tmpDebut[1])/15;
 }
 //		-------------	FIN paramétrage de la largeur des colonnes		--------------//

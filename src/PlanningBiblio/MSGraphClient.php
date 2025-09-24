@@ -13,21 +13,29 @@ use Unirest\Request;
 class MSGraphClient
 {
 
-    private $base_url = 'https://graph.microsoft.com/v1.0';
-    private $cal_name = 'MSGraph-';
+    /**
+     * @var \App\PlanningBiblio\MSCalendarUtils
+     */
+    public $msCalendarUtils;
+    /**
+     * @var list<string>
+     */
+    public $ignoredStatuses;
+    private string $base_url = 'https://graph.microsoft.com/v1.0';
+    private string $cal_name = 'MSGraph-';
     // Start year for full scan
-    private $start_year = '2000';
+    private string $start_year = '2000';
 
     private $calendarUtils;
-    private $dbprefix;
+    private string $dbprefix = '';
     private $entityManager;
     private $full;
-    private $graphUsers;
-    private $incomingEvents;
+    private ?array $graphUsers = null;
+    private ?array $incomingEvents = null;
     private $localEvents;
-    private $logger;
+    private \App\PlanningBiblio\Logger $logger;
     private $login_suffix;
-    private $oauth;
+    private \App\PlanningBiblio\OAuth $oauth;
     private $reason_name;
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full, $stdout)
@@ -44,26 +52,25 @@ class MSGraphClient
 
         $config = new ArrayCollection($config);
 
-        $absenceReason = $config->filter(function($element) {return $element->getName() == 'MSGraph-AbsenceReason';})->first()->getValue();
-        $loginSuffix = $config->filter(function($element) {return $element->getName() == 'MSGraph-LoginSuffix';})->first()->getValue();
-        $ignoredStatuses = $config->filter(function($element) {return $element->getName() == 'MSGraph-IgnoredStatuses';})->first()->getValue();
+        $absenceReason = $config->filter(function($element): bool {return $element->getName() == 'MSGraph-AbsenceReason';})->first()->getValue();
+        $loginSuffix = $config->filter(function($element): bool {return $element->getName() == 'MSGraph-LoginSuffix';})->first()->getValue();
+        $ignoredStatuses = $config->filter(function($element): bool {return $element->getName() == 'MSGraph-IgnoredStatuses';})->first()->getValue();
 
         $this->logger = new Logger($entityManager, $stdout);
         $this->oauth = new OAuth($this->logger, $clientid, $clientsecret, $tokenURL, $authURL, $options);
         $this->msCalendarUtils = new MSCalendarUtils();
         $this->entityManager = $entityManager;
-        $this->dbprefix = '';
         $this->reason_name = $absenceReason ?? 'Outlook';
         $this->login_suffix = $loginSuffix ?? null;
-        $this->ignoredStatuses = !empty($ignoredStatuses) ? explode(';', $ignoredStatuses) : ['free', 'tentative'];
+        $this->ignoredStatuses = empty($ignoredStatuses) ? ['free', 'tentative'] : explode(';', $ignoredStatuses);
         $this->full = $full;
     }
 
-    public function retrieveEvents() {
+    public function retrieveEvents(): void {
         $this->log("Start absences import from MS Graph Calendars");
         $this->log("full scan: $this->full");
         $this->getIncomingEvents();
-        if (!empty($this->graphUsers)) {
+        if ($this->graphUsers !== null && $this->graphUsers !== []) {
             $this->getLocalEvents();
             $this->deleteEvents();
             $this->insertOrUpdateEvents();
@@ -79,13 +86,13 @@ class MSGraphClient
         return $range;
     }
 
-    private function getIncomingEvents() {
+    private function getIncomingEvents(): void {
         $this->incomingEvents = array();
         $this->graphUsers = array();
         $users = $this->entityManager->getRepository(Agent::class)->findBy(['supprime' => 0, 'check_ms_graph' => 1]);
         foreach ($users as $user) {
             if ($this->isGraphUser($user)) {
-                array_push($this->graphUsers, $user->getId());
+                $this->graphUsers[] = $user->getId();
                 $currentYear = date("Y");
                 if ($this->full) {
                     $yearCount = 0;
@@ -118,7 +125,7 @@ class MSGraphClient
         $this->log("Amount of incoming events: " . count($this->incomingEvents));
     }
 
-    private function addToIncomingEvents($user, $response, $from, $to, $nextLink = null) {
+    private function addToIncomingEvents($user, $response, string $from, string $to, $nextLink = null): void {
         if ($nextLink) {
             $response = $this->sendGet($nextLink, true);
             if (!$response || $response->code != 200) {
@@ -144,13 +151,13 @@ class MSGraphClient
         }
     }
 
-    private function isEventEmpty($login, $id): bool {
+    private function isEventEmpty($login, string $id): bool {
         $query = "/users/$login" . $this->login_suffix . '/events/' . $id;
         $response = $this->sendGet($query);
         return !($response && $response->code == 200);
     }
 
-    private function getLocalEvents() {
+    private function getLocalEvents(): void {
         $usersSQLIds = implode(',', $this->graphUsers);
 
         if ($this->full) {
@@ -171,7 +178,7 @@ class MSGraphClient
         $this->log("Amount of local events: " . count($this->localEvents));
     }
 
-    private function getCalendarView($user, $from, $to) {
+    private function getCalendarView($user, string $from, string $to) {
         $login = $user->getLogin();
         $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/calendarView?startDateTime=' . $from . 'T00:00:00.0000000&endDateTime=' . $to . 'T00:00:00.0000000&$top=200');
         if ($response && $response->code == 200) {
@@ -186,7 +193,7 @@ class MSGraphClient
         return $response && $response->code == 200;
     }
 
-    private function deleteEvents() {
+    private function deleteEvents(): void {
         // The SQL calls in this function should be replaced by doctrine calls when available
         $query = "DELETE FROM " . $this->dbprefix . "absences WHERE ical_key=:ical_key AND perso_id=:perso_id";
         $statement = $this->entityManager->getConnection()->prepare($query);
@@ -200,7 +207,7 @@ class MSGraphClient
         }
     }
 
-    private function insertOrUpdateEvents() {
+    private function insertOrUpdateEvents(): void {
         // The SQL calls in this function should be replaced by doctrine calls when available
         foreach ($this->incomingEvents as $eventArray) {
             $incomingEvent = $eventArray['event'];
@@ -265,7 +272,7 @@ class MSGraphClient
         }
     }
 
-    private function sendGet($request, $absolute = false, $retry = 0) {
+    private function sendGet(string $request, $absolute = false, int|float $retry = 0) {
         $token = $this->oauth->getToken();
         $headers['Authorization'] = "Bearer $token";
         $response = null;
@@ -283,7 +290,7 @@ class MSGraphClient
         return $response;
     }
 
-    private function log($message) {
+    private function log(string $message): void {
         $this->logger->log($message, "MSGraphClient");
     }
 

@@ -7,10 +7,7 @@ use App\Entity\Agent;
 
 class AgentRepositoryTest extends TestCase
 {
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    private $entityManager;
+    private \Doctrine\ORM\EntityManager $entityManager;
 
     protected function setUp(): void
     {

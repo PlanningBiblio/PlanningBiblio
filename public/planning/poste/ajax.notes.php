@@ -15,7 +15,7 @@ Enregistre dans la base de donées les notes en bas des plannings
 */
 
 require_once(__DIR__ . '/../../../init/init_ajax.php');
-require_once('class.planning.php');
+require_once(__DIR__ . '/class.planning.php');
 
 $CSRFToken = $request->get('CSRFToken');
 $date = $request->get('date');
@@ -34,7 +34,7 @@ $required3 = 1000 + $site; // Droits de modifier les plannings
 
 $droits = $_SESSION['droits'];
 
-if (!in_array($required1, $droits) and !in_array($required2, $droits) and !in_array($required3, $droits)) {
+if (!in_array($required1, $droits) && !in_array($required2, $droits) && !in_array($required3, $droits)) {
     echo json_encode(array("error"=>"Vous n'avez pas le droit de modifier les commentaires"));
     exit;
 }

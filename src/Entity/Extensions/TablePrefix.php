@@ -7,7 +7,7 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
 class TablePrefix implements EventSubscriber
 {
-    protected $prefix = '';
+    protected string $prefix;
 
     public function __construct($prefix)
     {
@@ -22,7 +22,7 @@ class TablePrefix implements EventSubscriber
         return ['loadClassMetadata'];
     }
 
-    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs): void
     {
         $classMetadata = $eventArgs->getClassMetadata();
 

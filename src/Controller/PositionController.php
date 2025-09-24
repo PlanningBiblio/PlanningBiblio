@@ -19,13 +19,13 @@ require_once(__DIR__ . '/../../public/activites/class.activites.php');
 class PositionController extends BaseController
 {
     #[Route(path: '/position', name: 'position.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         //            Affichage de la liste des postes
         $groupe = "Tous";
         $this->templateParams(array('groupe' =>$groupe));
 
-        $nom = $request->get('nom');
+        $request->get('nom');
 
         // Contrôle si le poste est utilisé dans un tableau non-supprimé (tables pl_poste_lignes et pl_poste_tab)
         $postes_utilises = array();
@@ -112,7 +112,7 @@ class PositionController extends BaseController
 
     #[Route(path: '/position/add', name: 'position.add', methods: ['GET'])]
     #[Route(path: '/position/{id}', name: 'position.edit', methods: ['GET'])]
-    public function edit(Request $request)
+    public function edit(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         // Initialisation des variables
         $id = $request->get('id');
@@ -129,15 +129,15 @@ class PositionController extends BaseController
             $obligatoire = $position->getMandatory() == 'Obligatoire' ? 'checked="checked"' : '';
             $renfort = $position->getMandatory() == 'Renfort' ? 'checked="checked"' : '';
             $stat1 = $position->isStatistics() ? 'checked="checked"' : '';
-            $stat2 = !$position->isStatistics() ? 'checked="checked"' : '';
+            $stat2 = $position->isStatistics() ? '' : 'checked="checked"';
             $quota_sp1 = $position->isQuotaSP() ? 'checked="checked"' : '';
-            $quota_sp2 = !$position->isQuotaSP() ? 'checked="checked"' : '';
+            $quota_sp2 = $position->isQuotaSP() ? '' : 'checked="checked"';
             $bloq1 = $position->isBlocking() ? 'checked="checked"' : '';
-            $bloq2 = !$position->isBlocking() ? 'checked="checked"' : '';
+            $bloq2 = $position->isBlocking() ? '' : 'checked="checked"';
             $teleworking1 = $position->isTeleworking() ? 'checked="checked"' : '';
-            $teleworking2 = !$position->isTeleworking() ? 'checked="checked"' : '';
+            $teleworking2 = $position->isTeleworking() ? '' : 'checked="checked"';
             $lunch1 = $position->isLunch() ? 'checked="checked"' : '';
-            $lunch2 = !$position->isLunch() ? 'checked="checked"' : '';
+            $lunch2 = $position->isLunch() ? '' : 'checked="checked"';
         } else {
             $id = null;
             $nom =  null;
@@ -257,9 +257,9 @@ class PositionController extends BaseController
     }
 
     #[Route(path: '/position', name: 'position.save', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
-        $CSRFToken = $request->get('CSRFToken');
+        $request->get('CSRFToken');
         $nom = $request->get('nom');
         $id = $request->get('id');
 
@@ -353,7 +353,7 @@ class PositionController extends BaseController
     }
 
     #[Route(path: '/position', name: 'position.delete', methods: ['DELETE'])]
-     public function delete_position(Request $request, Session $session){
+     public function delete_position(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
 
         $id = $request->get('id');
         $p = $this->entityManager->getRepository(Position::class)->find($id);

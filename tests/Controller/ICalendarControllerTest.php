@@ -49,7 +49,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->assertEquals($content->{'error'}, "L'id de l'agent n'est pas fourni", 'Agent ID not provided');
 
         // Unknown id
-        $response = $this->client->request('GET', "/ical", array("id" => 42));
+        $this->client->request('GET', "/ical", array("id" => 42));
         $content = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals($content->{'error'}, "id inconnu", 'Unknown agent ID');
 
@@ -134,17 +134,17 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->assertEquals(count($content), 23, 'No exports for deleted agents');
     }
 
-    private function createPlanningPositionFor($agent)
+    private function createPlanningPositionFor($agent): void
     {
         $date = new DateTime('now - 3 day');
-        $now = new DateTime();
+        new DateTime();
 
         $this->builder->delete(PlanningPosition::class);
         $this->builder->delete(PlanningPositionLock::class);
 
         $post = $this->entityManager->getRepository(Position::class)->findOneBy(array('nom' => 'Rangement 4'));
 
-        $pl_post = $this->builder->build(
+        $this->builder->build(
             PlanningPosition::class,
             array(
                 'date' => $date,
@@ -160,7 +160,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         );
 
 
-        $pl_post_lock = $this->builder->build
+        $this->builder->build
         (
             PlanningPositionLock::class,
             array(

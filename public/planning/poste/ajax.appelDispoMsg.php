@@ -21,7 +21,7 @@ ini_set("display_errors", 0);
 session_start();
 
 // Includes
-require_once "../../include/config.php";
+require_once __DIR__ . "/../../include/config.php";
 
 $tab=array(null,null);
 

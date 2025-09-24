@@ -31,31 +31,30 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class PlanningController extends BaseController
 {
-    private $admin1 = false;
-    private $admin2 = false;
-    private $adminNotes = false;
+    private bool $admin1 = false;
+    private bool $admin2 = false;
+    private bool $adminNotes = false;
     private $absenceReasons;
     private $absences = [];
-    private $cellId = 0;
+    private int $cellId = 0;
     private $cells = [];
     private $date;
-    private $dates = [];
+    private array $dates = [];
     private $locked = 0;
     private $lockDate;
-    private $lockPerson;
-    private $holidays = [];
-    private $positions = [];
-    private $schedules = [];
-    private $separations = [];
+    private ?string $lockPerson = null;
+    private array $holidays = [];
+    private array $positions = [];
+    private array $separations = [];
     private $site = 1;
 
 
     #[Route(path: '/{date?}', name: 'home', methods: ['GET'], requirements: ['date' => '\d{4}-\d{2}-\d{2}'])]
     #[Route(path: '/{site}/{date?}', name: 'homeWithSite', methods: ['GET'], requirements: ['site' => '\d+', 'date' => '\d{4}-\d{2}-\d{2}'])]
-    public function index(Request $request)
+    public function index(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         // Show all week plannings.
-        if (!$request->get('date') and !empty($_SESSION['week'])) {
+        if (!$request->get('date') && !empty($_SESSION['week'])) {
           $this->setSite($request);
           return $this->redirectToRoute('planning.week', ['site' => $this->site]);
         }
@@ -77,12 +76,12 @@ class PlanningController extends BaseController
         // Index page only
         $currentFramework = $this->getCurrentFramework($date, $site);
         $show_framework_select = 0;
-        if(!$currentFramework and $autorisationN2) {
+        if(!$currentFramework && $autorisationN2) {
             $show_framework_select = 1;
         }
 
         $not_ready = 0;
-        if(!$currentFramework and !$autorisationN2) {
+        if(!$currentFramework && !$autorisationN2) {
             $not_ready = 1;
         }
 
@@ -128,7 +127,7 @@ class PlanningController extends BaseController
         $pasDeDonneesSemaine = $this->noWeekDataFor($this->dates[4], $site);
 
         $tab = 0;
-        if ($show_framework_select) {
+        if ($show_framework_select !== 0) {
             $db = new \db();
             $db->select2("pl_poste_tab", "*", array("supprime"=>null), "order by `nom` DESC");
             $frameworks = $db->result;
@@ -155,7 +154,7 @@ class PlanningController extends BaseController
             return $this->output('planning/poste/index.html.twig');
         }
 
-        if (!$this->locked and !$this->admin1) {
+        if (!$this->locked && !$this->admin1) {
             $this->templateParams(array(
                 'absences_planning'   => [],
                 'presents'            => 0,
@@ -187,9 +186,7 @@ class PlanningController extends BaseController
                 // all the day
                 if (!empty($absences_planning)) {
                     foreach ($absences_planning as $elem) {
-                        if ($elem['debut'] <= $date . ' 00:00:00'
-                            and $elem['fin'] >= $date . ' 23:59:59'
-                            and $elem['valide'] > 0) {
+                        if ($elem['debut'] <= $date . ' 00:00:00' && $elem['fin'] >= $date . ' 23:59:59' && $elem['valide'] > 0) {
                             $absents[]=$elem['perso_id'];
                         }
                     }
@@ -253,14 +250,14 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/week/{date?}', name: 'planning.week', methods: ['GET'], requirements: ['date' => '\d{4}-\d{2}-\d{2}'])]
-    public function week(Request $request)
+    public function week(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $this->createPlannings($request, 'week');
         return $this->output('planning/poste/week.html.twig');
     }
 
     #[Route(path: '/deleteplanning', name: 'planning.delete', methods: ['POST'])]
-    public function delete_planning(Request $request, Session $session)
+    public function delete_planning(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $week = $request->get('week');
@@ -325,7 +322,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/modelimport', name: 'model.import', methods: ['POST'])]
-    public function model_import(Request $request, Session $session)
+    public function model_import(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');;
@@ -495,7 +492,7 @@ class PlanningController extends BaseController
                 foreach ($db->result as $elem2) {
 
                     // Don't import deleted agents
-                    if ($elem2['perso_id'] > 0 and !in_array($elem2['perso_id'], $agent_list)) {
+                    if ($elem2['perso_id'] > 0 && !in_array($elem2['perso_id'], $agent_list)) {
                         continue;
                     }
 
@@ -509,11 +506,8 @@ class PlanningController extends BaseController
                     // Do not import agents placed on other site
                     if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
                         foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
-                            if (in_array($as['poste'], $blockingPositions)
-                                and in_array($elem2['poste'], $blockingPositions) ) {
-                                if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
-                                    continue 2;
-                                }
+                            if ((in_array($as['poste'], $blockingPositions) and in_array($elem2['poste'], $blockingPositions)) && ($as['debut'] < $elem2['fin'] && $as['fin'] > $elem2['debut']) ) {
+                                continue 2;
                             }
                         }
                     }
@@ -542,7 +536,7 @@ class PlanningController extends BaseController
                         // Exclude absence with remote working reason only for teleworking compliants positions.
                         $position = isset($all_positions[$elem2['poste']]) ? $all_positions[$elem2['poste']] : null;
                         if ($position && $position['teleworking'] == 1) {
-                            $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons))
+                            $teleworking_exception = (!empty($teleworking_reasons) && is_array($teleworking_reasons))
                                 ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
                             $filter .= " $teleworking_exception";
                         }
@@ -566,8 +560,8 @@ class PlanningController extends BaseController
                     $week_number = 0;
 
                     if ($this->config('PlanningHebdo')) {
-                        $temps = !empty($tempsPlanningHebdo[$elem2['perso_id']]['temps']) ? $tempsPlanningHebdo[$elem2['perso_id']]['temps'] : array();
-                        $week_number = !empty($tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine']) ? $tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine'] : 0 ;
+                        $temps = empty($tempsPlanningHebdo[$elem2['perso_id']]['temps']) ? array() : $tempsPlanningHebdo[$elem2['perso_id']]['temps'];
+                        $week_number = empty($tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine']) ? 0 : $tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine'] ;
                     } else {
                         $agent = $this->entityManager->find(Agent::class, $elem2['perso_id']);
                         if (!empty($agent)) {
@@ -589,7 +583,7 @@ class PlanningController extends BaseController
                 }
 
                 // insertion des données dans le planning du jour
-                if (!empty($values)) {
+                if ($values !== []) {
                     // Suppression des anciennes données
                     $db=new \db();
                     $db->CSRFToken = $CSRFToken;
@@ -611,7 +605,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/modelform', name: 'model.form', methods: ['GET'])]
-    public function model_form(Request $request)
+    public function model_form(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');;
@@ -620,8 +614,6 @@ class PlanningController extends BaseController
         if (!in_array((300+$site), $this->permissions)) {
             return $this->output('access-denied.html.twig');
         }
-
-        $semaine = " ";
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
 
@@ -644,7 +636,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/setFramework', name: 'planning.setFramework', methods: ['POST'])]
-    public function setFramework(Request $request)
+    public function setFramework(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -673,7 +665,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/setFrameworkGroup', name: 'planning.setFrameworkGroup', methods: ['POST'])]
-    public function setFrameworkGroup(Request $request)
+    public function setFrameworkGroup(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -722,7 +714,7 @@ class PlanningController extends BaseController
         return $this->redirectToRoute('home');
     }
 
-    private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site): string
+    private function createCell(string $date, string $debut, string $fin, int|float $colspan, $poste): string
     {
         $resultats=array();
         $classe=array();
@@ -737,7 +729,7 @@ class PlanningController extends BaseController
             foreach ($this->cells as $elem) {
                 $title=null;
 
-                if ($elem['poste']==$poste and $elem['debut']==$debut and $elem['fin']==$fin) {
+                if ($elem['poste'] == $poste && $elem['debut'] == $debut && $elem['fin'] == $fin) {
                     //		Affichage du nom et du prénom
                     $nom_affiche=$elem['nom'];
                     $title = $elem['nom'];
@@ -749,19 +741,19 @@ class PlanningController extends BaseController
                     $resultat = $nom_affiche;
 
                     //		Affichage des sans repas
-                    if ($elem['nom'] and ($sansRepas === true or in_array($elem['perso_id'], $sansRepas))) {
+                    if ($elem['nom'] && ($sansRepas === true || in_array($elem['perso_id'], $sansRepas))) {
                         $resultat.="<font class='sansRepas'>&nbsp;(SR)</font>";
                     }
 
                     $class_tmp=array();
 
                     // Cellule grisée depuis le menudiv
-                    if (isset($elem['grise']) and $elem['grise'] == 1) {
+                    if (isset($elem['grise']) && $elem['grise'] == 1) {
                         $class_tmp[]= 'cellule_grise';
                     }
 
                     //		On barre les absents (agents barrés directement dans le plannings, table pl_poste)
-                    if ($elem['absent'] == 1 or $elem['supprime']) {
+                    if ($elem['absent'] == 1 || $elem['supprime']) {
                         $class_tmp[]="red";
                         $class_tmp[]="striped";
                     }
@@ -788,19 +780,18 @@ class PlanningController extends BaseController
                         // Skip teleworking absences if the position is compatible with
                         if ($this->positions[$poste]['teleworking']) {
                             $reason = $this->absenceReasons->findOneBy(array('valeur' => $absence['motif']));
-                            if (!empty($reason) and $reason->getTeleworking() == 1) {
+                            if (!empty($reason) && $reason->getTeleworking() == 1) {
                                 continue;
                             }
                         }
 
-                        if (($this->config('Absences-Exclusion') == 1 and $absence['valide'] == 99999)
-                            or $this->config('Absences-Exclusion') == 2) {
+                        if ($this->config('Absences-Exclusion') == 1 && $absence['valide'] == 99999 || $this->config('Absences-Exclusion') == 2) {
                             continue;
                         }
 
-                        if ($absence['perso_id'] == $elem['perso_id'] and $absence['debut'] < $date . ' ' . $fin and $absence['fin'] > $date . ' ' . $debut) {
+                        if ($absence['perso_id'] == $elem['perso_id'] && $absence['debut'] < $date . ' ' . $fin && $absence['fin'] > $date . ' ' . $debut) {
                             // Absence validée : rouge barré
-                            if ($absence['valide'] > 0 or $this->config('Absences-validation') == 0) {
+                            if ($absence['valide'] > 0 || $this->config('Absences-validation') == 0) {
                                 $class_tmp[] = 'red';
                                 $class_tmp[] = 'striped';
                                 $absence_valide = true;
@@ -825,7 +816,7 @@ class PlanningController extends BaseController
 
                         // On marque les congés
                         foreach ($this->holidays as $conge) {
-                            if ($conge['perso_id'] == $elem['perso_id'] and $conge['debut'] < "$date {$elem['fin']}" and $conge['fin'] > "$date {$elem['debut']}") {
+                            if ($conge['perso_id'] == $elem['perso_id'] && $conge['debut'] < "$date {$elem['fin']}" && $conge['fin'] > "$date {$elem['debut']}") {
                                 // Congé validé : orange barré
                                 if ($conge['valide'] > 0) {
                                     $class_tmp[] = 'orange';
@@ -834,7 +825,7 @@ class PlanningController extends BaseController
                                     break;  // Garder le break à cet endroit pour que les congés validées prennent le dessus sur les non-validés
                                 }
                                 // congé non-validée : orange, sauf si une absence validée existe
-                                elseif ($this->config('Absences-non-validees') and !$absence_valide) {
+                                elseif ($this->config('Absences-non-validees') && !$absence_valide) {
                                     $class_tmp[] = 'orange';
                                     $title = $nom_affiche . ' : Congé non-validé';
                                 }
@@ -842,7 +833,7 @@ class PlanningController extends BaseController
                         }
 
                         // Il peut y avoir des absences  et des congés validés et non validés. Si une absence ou un congé est validé, la cellule sera barrée et on n'affichera pas "Congé non-validé"
-                        if ($conge_valide or $absence_valide) {
+                        if ($conge_valide || $absence_valide) {
                             $title = null;
                         }
                     }
@@ -854,7 +845,7 @@ class PlanningController extends BaseController
                     if ($elem['service']) {
                         $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));
                     }
-                    if (isset($elem['activites']) and is_array($elem['activites'])) {
+                    if (isset($elem['activites']) && is_array($elem['activites'])) {
                         foreach ($elem['activites'] as $a) {
                             $class_tmp[]='activite_'.strtolower(removeAccents(str_replace(array('/',' ',), '_', $a)));
                         }
@@ -863,7 +854,7 @@ class PlanningController extends BaseController
 
                     // Color the logged in agent.
                     $color[$i] = null;
-                    if (!empty($this->config('Affichage-Agent')) and $elem['perso_id'] == $_SESSION['login_id']) {
+                    if (!empty($this->config('Affichage-Agent')) && $elem['perso_id'] == $_SESSION['login_id']) {
                         $color[$i] = filter_var($this->config('Affichage-Agent'), FILTER_CALLBACK, ['options' => 'sanitize_color']);
                         $color[$i] = "style='background-color:{$color[$i]};'";
                     }
@@ -881,19 +872,19 @@ class PlanningController extends BaseController
 
         $cellule = "<td id='td{$this->cellId}' colspan='$colspan' style='text-align:center;' class='menuTrigger' oncontextmenu='cellule={$this->cellId}' 
             data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$this->cellId}' data-perso-id='0'>";
+        $counter = count($resultats);
 
-        for ($i=0;$i<count($resultats);$i++) {
+        for ($i=0;$i<$counter;$i++) {
             $cellule .= "<div id='cellule{$this->cellId}_$i' class='cellDiv {$classe[$i]} pl-cellule-perso-{$resultats[$i]['perso_id']}' {$color[$i]} 
                 data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
         }
 
         $cellule .= '<a class="pl-icon arrow-right" role="button"></a>';
-        $cellule .= "</td>\n";
 
-        return $cellule;
+        return $cellule . "</td>\n";
     }
 
-    private function createPlannings($request, $view)
+    private function createPlannings(\Symfony\Component\HttpFoundation\Request $request, string $view): void
     {
         list($site, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
 
@@ -901,13 +892,13 @@ class PlanningController extends BaseController
         $schedules = array();
         $end = 0;
 
-        if ($view == 'week') {
+        if ($view === 'week') {
             $end = $this->config('Dimanche') ? 6 : 5;
         }
 
         for ($j = 0; $j <= $end; $j++) {
             $schedule = array();
-            $date = $view == 'week' ? $dates[$j] : $date;
+            $date = $view === 'week' ? $dates[$j] : $date;
             $schedule['date'] = $date;
 
             // Verrouillage du planning
@@ -927,7 +918,7 @@ class PlanningController extends BaseController
             // ----------- FIN Choix du tableau --------- //
 
             // ----------- Vérification si le planning est validé ------------ //
-            if ($locked or $autorisationN1) {
+            if ($locked || $autorisationN1) {
 
                 // ------------ Planning display --------------------//
 
@@ -938,7 +929,7 @@ class PlanningController extends BaseController
                 $this->getCells($date, $site);
                 $this->getHolidays($date);
 
-                $tabs = $this->createTables($request, $tab, $locked, $date, $site);
+                $tabs = $this->createTables($request, $tab, $locked, $date);
 
                 $schedule['tabs'] = $tabs;
             }
@@ -946,8 +937,6 @@ class PlanningController extends BaseController
             $schedule['comments'] = $comments[$date][$site];
             $schedules[] = $schedule;
         }
-
-        $this->schedules = $schedules;
 
         $this->templateParams(array(
             'locked' => $this->locked,
@@ -958,7 +947,7 @@ class PlanningController extends BaseController
         ));
     }
 
-    private function createTables($request, $tab, $locked, $date, $site)
+    private function createTables(\Symfony\Component\HttpFoundation\Request $request, array $tab, $locked, string $date)
     {
         // Get framework structure, start and end hours.
         list($tabs, $startTime, $endTime) = $this->getFrameworkStructure($tab);
@@ -994,7 +983,7 @@ class PlanningController extends BaseController
 
             // Colonnes manquantes entre le début et la fin
             foreach ($tab['horaires'] as $key => $value) {
-                if ($key == 0 or $value['debut'] == $tab['horaires'][$key-1]['fin']) {
+                if ($key == 0 || $value['debut'] == $tab['horaires'][$key-1]['fin']) {
                     $tmp[] = $value;
                 } elseif ($value['debut'] > $tab['horaires'][$key-1]['fin']) {
                     $tmp[] = array(
@@ -1053,7 +1042,7 @@ class PlanningController extends BaseController
                 // Check if the line is empty.
                 // Don't show empty lines if Planning-vides is disabled.
                 $emptyLine = null;
-                if (!$this->config('Planning-lignesVides') and $locked and $this->isAnEmptyLine($ligne['poste'])) {
+                if (!$this->config('Planning-lignesVides') && $locked && $this->isAnEmptyLine($ligne['poste'])) {
                     $emptyLine="empty-line";
                 }
 
@@ -1062,7 +1051,7 @@ class PlanningController extends BaseController
                 $ligne['separation'] = '';
 
                 // Position lines
-                if ($ligne['type'] == 'poste' and $ligne['poste']) {
+                if ($ligne['type'] == 'poste' && $ligne['poste']) {
 
                     $ligne['is_position'] = 1;
 
@@ -1080,7 +1069,7 @@ class PlanningController extends BaseController
                     // Position name
                     $ligne['position_name'] = $positions[$ligne['poste']]['nom'];
 
-                    if ($this->config('Affichage-etages') and !empty($positions[$ligne['poste']]['etage'])) {
+                    if ($this->config('Affichage-etages') && !empty($positions[$ligne['poste']]['etage'])) {
                         $ligne['position_name'] .= ' (' . $positions[$ligne['poste']]['etage'] . ')';
                     }
 
@@ -1095,7 +1084,7 @@ class PlanningController extends BaseController
                         // du tableau et si la colonne a été ajoutée automatiquement.
                         $horaires['disabled'] = 0;
 
-                        if (in_array("{$ligne['ligne']}_{$k}", $tab['cellules_grises']) or in_array($i-1, $cellules_grises)) {
+                        if (in_array("{$ligne['ligne']}_{$k}", $tab['cellules_grises']) || in_array($i-1, $cellules_grises)) {
                             $horaires['disabled'] = 1;
                             $horaires['colspan'] = nb30($horaires['debut'], $horaires['fin']);
 
@@ -1109,7 +1098,7 @@ class PlanningController extends BaseController
 
                         // function createCell(date,debut,fin,colspan,affichage,poste,site)
                         else {
-                            $horaires['position_cell'] = $this->createCell($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site);
+                            $horaires['position_cell'] = $this->createCell($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), $ligne['poste']);
                         }
                         $i++;
                         $k++;
@@ -1130,12 +1119,12 @@ class PlanningController extends BaseController
         return $tabs;
     }
 
-    private function getAbsenceReasons()
+    private function getAbsenceReasons(): void
     {
         $this->absenceReasons = $this->entityManager->getRepository(AbsenceReason::class);
     }
 
-    private function getAbsences($date)
+    private function getAbsences($date): void
     {
         $a = new \absences();
         $a->valide = false;
@@ -1178,7 +1167,7 @@ class PlanningController extends BaseController
         $class = 'tr1';
         foreach ($absences as $index => $elem) {
             $absences[$index]['valide'] = 1;
-            if ($elem['valide'] < 0 or ($elem['valide'] == 0 and $this->config('Absences-non-validees') == 0)) {
+            if ($elem['valide'] < 0 || $elem['valide'] == 0 && $this->config('Absences-non-validees') == 0) {
                 unset ($absences[$index]);
                 continue;
             }
@@ -1192,7 +1181,7 @@ class PlanningController extends BaseController
             if ($elem['fin']<"$date 23:59:59") {
                 $fin = substr($elem['fin'], -8);
             }
-            if ($debut and $fin) {
+            if ($debut && $fin) {
                 $heures = " de ".heure2($debut)." à ".heure2($fin);
             } elseif ($debut) {
                 $heures = " à partir de ".heure2($debut);
@@ -1211,7 +1200,7 @@ class PlanningController extends BaseController
             }
 
             if ($this->config('Absences-planning') != 2) {
-                $class = $class == 'tr1' ? 'tr2' : 'tr1';
+                $class = $class === 'tr1' ? 'tr2' : 'tr1';
                 $absences[$index]['class'] = $class . ' ' . $bold;
             } else {
                 $absences[$index]['class'] = $bold;
@@ -1242,7 +1231,7 @@ class PlanningController extends BaseController
         return $categories;
     }
 
-    private function getCells($date, $site)
+    private function getCells($date, $site): void
     {
         $dbprefix = $this->config('dbprefix');
         $skills = $this->getSkills();
@@ -1312,7 +1301,7 @@ class PlanningController extends BaseController
         return $t->elements;
     }
 
-    private function getFrameworkStructure($tab)
+    private function getFrameworkStructure(array $tab): array
     {
         $t = new Framework();
         $t->id = $tab;
@@ -1334,7 +1323,7 @@ class PlanningController extends BaseController
         return array($tabs, $debut, $fin);
     }
 
-    private function getHiddenTables($request, $tab)
+    private function getHiddenTables(\Symfony\Component\HttpFoundation\Request $request, array $tab)
     {
         $session = $request->getSession();
 
@@ -1352,7 +1341,7 @@ class PlanningController extends BaseController
         return $hiddenTables;
     }
 
-    private function getHolidays($date, $site = null)
+    private function getHolidays(string $date, array|int|float|string|bool|null $site = null): array
     {
         if ($this->config('Conges-Enable')) {
             $c = new \conges();
@@ -1365,7 +1354,7 @@ class PlanningController extends BaseController
         return [];
     }
 
-    private function getInfoMessages($dates, $date, $view)
+    private function getInfoMessages($dates, $date, string $view): ?string
     {
         switch ($view) {
             case 'week' :
@@ -1395,7 +1384,7 @@ class PlanningController extends BaseController
         return $messages_infos;
     }
 
-    private function getLockData(String $date = null)
+    private function getLockData(String $date = null): void
     {
         $this->locked = 0;
         $this->lockDate = null;
@@ -1415,16 +1404,13 @@ class PlanningController extends BaseController
         }
     }
 
-    private function getPermissionsFor($site)
+    private function getPermissionsFor($site): array
     {
-        $autorisationN1 = (in_array((300 + $site), $this->permissions)
-            or in_array((1000 + $site), $this->permissions));
+        $autorisationN1 = (in_array((300 + $site), $this->permissions) || in_array((1000 + $site), $this->permissions));
 
         $autorisationN2 = in_array((300 + $site), $this->permissions);
 
-        $autorisationNotes = (in_array((300 + $site), $this->permissions)
-            or in_array((800 + $site), $this->permissions)
-            or in_array(1000 + $site, $this->permissions));
+        $autorisationNotes = (in_array((300 + $site), $this->permissions) || in_array((800 + $site), $this->permissions) || in_array(1000 + $site, $this->permissions));
 
         $this->admin1 = $autorisationN1;
         $this->admin2 = $autorisationN2;
@@ -1433,7 +1419,7 @@ class PlanningController extends BaseController
         return array($autorisationN1, $autorisationN2, $autorisationNotes);
     }
 
-    private function getPositions()
+    private function getPositions(): void
     {
         $positions = array();
 
@@ -1485,7 +1471,7 @@ class PlanningController extends BaseController
         $this->positions = $positions;
     }
 
-    private function getSeparations()
+    private function getSeparations(): void
     {
         // Separation lines
         $separationE = $this->entityManager->getRepository(SeparationLine::class)->findAll();
@@ -1507,11 +1493,11 @@ class PlanningController extends BaseController
         return $a->elements;
     }
 
-    private function getWeekData($site, $semaine, $semaine3)
+    private function getWeekData($semaine, $semaine3)
     {
         switch ($this->config('nb_semaine')) {
             case 2:
-                $type_sem = $semaine % 2 ? 'Impaire' : 'Paire';
+                $type_sem = $semaine % 2 !== 0 ? 'Impaire' : 'Paire';
                 $affSem = "$type_sem ($semaine)";
                 break;
             case 3: 
@@ -1526,9 +1512,9 @@ class PlanningController extends BaseController
         return $affSem;
     }
 
-    private function initPlanning($request, $view)
+    private function initPlanning(\Symfony\Component\HttpFoundation\Request $request, string $view): array
     {
-        $weekView = $view == 'week';
+        $weekView = $view === 'week';
         $_SESSION['week'] = $weekView;
 
         $this->setDates($request);
@@ -1547,7 +1533,7 @@ class PlanningController extends BaseController
         // Vérification des droits de modification (Autorisation)
         list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
 
-        $affSem = $this->getWeekData($site, $semaine, $semaine3);
+        $affSem = $this->getWeekData($semaine, $semaine3);
 
         // Positions and separation lines
         $this->getPositions();
@@ -1612,14 +1598,14 @@ class PlanningController extends BaseController
         return !$db->result;
     }
 
-    private function positionExists($agent, $positions, $horaires): bool
+    private function positionExists(array $agent, $positions, $horaires): bool
     {
         if (!in_array($agent['poste'], $positions)) {
             return false;
         }
 
         foreach ($horaires as $h) {
-            if ($h['debut'] == $agent['debut'] and $h['fin'] == $agent['fin']) {
+            if ($h['debut'] == $agent['debut'] && $h['fin'] == $agent['fin']) {
                 return true;
             }
         }
@@ -1627,16 +1613,16 @@ class PlanningController extends BaseController
         return false;
     }
 
-    private function setDates(Request $request)
+    private function setDates(Request $request): void
     {
         $session = $request->getSession();
 
         $date = $request->get('date');
         $date = filter_var($date, FILTER_CALLBACK, ['options' => 'sanitize_dateSQL']);
 
-        if (!$date and array_key_exists('PLdate', $_SESSION)) {
+        if (!$date && array_key_exists('PLdate', $_SESSION)) {
             $date = $_SESSION['PLdate'];
-        } elseif (!$date and !array_key_exists('PLdate', $_SESSION)) {
+        } elseif (!$date && !array_key_exists('PLdate', $_SESSION)) {
             $date = date("Y-m-d");
         }
 
@@ -1656,7 +1642,7 @@ class PlanningController extends BaseController
         );
     }
 
-    private function setSite(Request $request)
+    private function setSite(Request $request): void
     {
         $session = $request->getSession();
 
@@ -1666,7 +1652,7 @@ class PlanningController extends BaseController
         // Site is $_GET['site'] if it is set, else we take
         // SESSION ['site'] or agent's site.
 
-        if (!$site and !empty($_SESSION['site'])) {
+        if (!$site && !empty($_SESSION['site'])) {
             $site = $_SESSION['site'];
         }
 

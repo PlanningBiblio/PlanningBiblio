@@ -20,10 +20,17 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 
 class AbsenceController extends BaseController
 {
+    public $dbprefix;
+    public $droits;
+    public $admin;
+    public $adminN2;
+    public $agents_multiples;
+    public $session;
+    public $edit_own_absences;
     use \App\Traits\EntityValidationStatuses;
 
     #[Route(path: '/absence', name: 'absence.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
 
@@ -52,7 +59,7 @@ class AbsenceController extends BaseController
             ->setModule('absence')
             ->getValidationLevelFor($session->get('loginId'));
 
-        if ($admin or $adminN2) {
+        if ($admin || $adminN2) {
             $perso_id = $request->get('perso_id');
             if ($perso_id === null) {
                 $perso_id = $_SESSION['oups']['absences_perso_id'] ?? $session->get('loginId');
@@ -65,8 +72,8 @@ class AbsenceController extends BaseController
         }
 
         $agents_supprimes = isset($_SESSION['oups']['absences_agents_supprimes'])?$_SESSION['oups']['absences_agents_supprimes']:false;
-        $agents_supprimes = (isset($_GET['debut']) and isset($_GET['supprimes']))?true:$agents_supprimes;
-        $agents_supprimes = (isset($_GET['debut']) and !isset($_GET['supprimes']))?false:$agents_supprimes;
+        $agents_supprimes = (isset($_GET['debut']) && isset($_GET['supprimes']))?true:$agents_supprimes;
+        $agents_supprimes = (isset($_GET['debut']) && !isset($_GET['supprimes']))?false:$agents_supprimes;
 
         if ($reset) {
             $debut = null;
@@ -123,7 +130,7 @@ class AbsenceController extends BaseController
         if ($absences) {
             foreach ($absences as $elem) {
 
-                if ($admin or $adminN2) {
+                if ($admin || $adminN2) {
                     $continue = true;
                     foreach ($elem['perso_ids'] as $perso) {
                         if (in_array($perso, $perso_ids)) {
@@ -154,7 +161,7 @@ class AbsenceController extends BaseController
                 $elem['status_style'] = $etatStyle;
 
                 $elem['view_details'] = 0;
-                if ($admin or $adminN2 or (!$this->config('Absences-adminSeulement') and in_array(6, $droits))) {
+                if ($admin || $adminN2 || !$this->config('Absences-adminSeulement') && in_array(6, $droits)) {
                     $elem['view_details'] = 1;
                 }
                 $elem['commentaires'] = html_entity_decode($elem['commentaires'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
@@ -171,7 +178,7 @@ class AbsenceController extends BaseController
     }
 
     #[Route(path: '/absence/add', name: 'absence.add', methods: ['GET'])]
-    public function add(Request $request)
+    public function add(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
 
@@ -183,9 +190,9 @@ class AbsenceController extends BaseController
             ->setModule('absence')
             ->getValidationLevelFor($session->get('loginId'));
 
-        $this->agents_multiples = (($this->admin or $this->adminN2) or in_array(9, $this->droits));
+        $this->agents_multiples = ($this->admin || $this->adminN2 || in_array(9, $this->droits));
 
-        if ($this->config('Absences-adminSeulement') and !($this->admin or $this->adminN2)) {
+        if ($this->config('Absences-adminSeulement') && (!$this->admin && !$this->adminN2)) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -206,7 +213,7 @@ class AbsenceController extends BaseController
 
         // If logged is not admin,
         // force him to be pre-selected.
-        if (!$this->admin and !$this->adminN2) {
+        if (!$this->admin && !$this->adminN2) {
             $agent_preselection = 1;
         }
 
@@ -244,8 +251,8 @@ class AbsenceController extends BaseController
 
         $this->setAdminPermissions();
 
-        $this->agents_multiples = ($this->admin or $this->adminN2 or in_array(9, $this->droits));
-        $this->edit_own_absences = ($this->admin or $this->adminN2 or in_array(6, $this->droits));
+        $this->agents_multiples = ($this->admin || $this->adminN2 || in_array(9, $this->droits));
+        $this->edit_own_absences = ($this->admin || $this->adminN2 || in_array(6, $this->droits));
 
         $id = $request->get('id');
 
@@ -253,11 +260,11 @@ class AbsenceController extends BaseController
             return $this->update($request);
         }
 
-        if ($this->config('Absences-adminSeulement') and !$this->admin and !$this->adminN2) {
+        if ($this->config('Absences-adminSeulement') && !$this->admin && !$this->adminN2) {
             return $this->output('access-denied.html.twig');
         }
 
-        $result = $this->save_new($request, $this->admin);
+        $result = $this->save_new($request);
 
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
@@ -289,7 +296,7 @@ class AbsenceController extends BaseController
     }
 
     #[Route(path: '/absence/{id<\d+>}', name: 'absence.edit', methods: ['GET'])]
-    public function edit(Request $request)
+    public function edit(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
 
@@ -324,7 +331,7 @@ class AbsenceController extends BaseController
             $adminN2 = $N2 === false ? $N2 : $adminN2;
         }
 
-        $agents_multiples = ($adminN1 or $adminN2 or in_array(9, $this->droits));
+        $agents_multiples = ($adminN1 || $adminN2 || in_array(9, $this->droits));
 
         $debutSQL=filter_var($a->elements['debut'], FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
         $finSQL=filter_var($a->elements['fin'], FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
@@ -347,20 +354,19 @@ class AbsenceController extends BaseController
 
         $absence['editable'] = false;
 
-        if ($admin
-            or ($valide==0 and $valideN1==0)
-            or $this->config('Absences-validation')==0) {
+        if ($admin || $valide == 0 && $valideN1 == 0 || $this->config('Absences-validation') == 0) {
             $absence['editable'] = true;
         }
 
         // Prevent non admin to edit
         // Own absence with other agents
-        if (!$admin and count($agents) > 1 and !in_array(9, $this->droits)) {
+        if (!$admin && count($agents) > 1 && !in_array(9, $this->droits)) {
             $absence['editable'] = false;
         }
 
         $absence['status'] = 'ASKED';
-        $absence['status_editable'] = $adminN1 or $adminN2;
+        if (!$absence['status_editable'] = $adminN1) {
+        }
         if ($valide == 0 && $valideN1 > 0) {
             $absence['status'] = 'ACCEPTED_N1';
         }
@@ -381,15 +387,15 @@ class AbsenceController extends BaseController
         // Sécurité
         // Droit 6 = modification de ses propres absences
         // Les admins ont toujours accès à cette page
-        $acces = ($adminN1 or $adminN2);
+        $acces = ($adminN1 || $adminN2);
         if (!$acces) {
             // Les non admin ayant le droits de modifier leurs absences ont accès si l'absence les concerne
-            $agent_ids = array_map(function($a) { return $a['perso_id'];}, $agents);
-            $acces = (in_array(6, $this->droits) and in_array($session->get('loginId'), $agent_ids));
+            $agent_ids = array_map(function(array $a) { return $a['perso_id'];}, $agents);
+            $acces = (in_array(6, $this->droits) && in_array($session->get('loginId'), $agent_ids));
         }
 
         // Si config Absences-adminSeulement, seuls les admins ont accès à cette page
-        if ($this->config('Absences-adminSeulement') and !($adminN1 or $adminN2)) {
+        if ($this->config('Absences-adminSeulement') && (!$adminN1 && !$adminN2)) {
             $acces=false;
         }
 
@@ -398,7 +404,7 @@ class AbsenceController extends BaseController
         }
 
         // We prohibit the modification of the absence if it has been imported
-        if ($ical_key and substr($cal_name, 0, 14) != 'PlanningBiblio') {
+        if ($ical_key && substr($cal_name, 0, 14) !== 'PlanningBiblio') {
             $absence['editable'] = false;
             $admin=false;
         }
@@ -448,7 +454,7 @@ class AbsenceController extends BaseController
     }
 
     #[Route(path: '/absence', name: 'absence.delete', methods: ['DELETE'])]
-    public function delete_absence(Request $request)
+    public function delete_absence(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();
 
@@ -464,7 +470,6 @@ class AbsenceController extends BaseController
         $a->fetchById($id);
         $debut = $a->elements['debut'];
         $fin = $a->elements['fin'];
-        $perso_id = $a->elements['perso_id'];
         $motif = $a->elements['motif'];
         $commentaires = $a->elements['commentaires'];
         $valideN1 = $a->elements['valide_n1'];
@@ -479,7 +484,7 @@ class AbsenceController extends BaseController
         // If "Absences-notifications-agent-par-agent" is enabled,
         // check if logged in agent can manage all agents in absence.
         // Else, admin = false.
-        if ($this->config('Absences-notifications-agent-par-agent') and $this->admin) {
+        if ($this->config('Absences-notifications-agent-par-agent') && $this->admin) {
             $logged_in = $this->entityManager->find(Agent::class, $session->get('loginId'));
             $this->admin = $logged_in->isManagerOf($perso_ids);
         }
@@ -494,8 +499,8 @@ class AbsenceController extends BaseController
             $acces = true;
         }
 
-        if (!$acces and ($this->config('Absences-validation') == 0 or ($valideN1 == 0 and $valideN2 == 0))) {
-            $acces = (in_array(6, $this->droits) and in_array($session->get('loginId'), $perso_ids));
+        if (!$acces && ($this->config('Absences-validation') == 0 || $valideN1 == 0 && $valideN2 == 0)) {
+            $acces = (in_array(6, $this->droits) && in_array($session->get('loginId'), $perso_ids));
         }
 
         if (!$acces) {
@@ -522,11 +527,11 @@ class AbsenceController extends BaseController
         $message.="Début : ".dateFr($debut);
         $hre_debut=substr($debut, -8);
         $hre_fin=substr($fin, -8);
-        if ($hre_debut!="00:00:00") {
+        if ($hre_debut !== "00:00:00") {
             $message.=" ".heure3($hre_debut);
         }
         $message.="<br/>Fin : ".dateFr($fin);
-        if ($hre_fin!="23:59:59") {
+        if ($hre_fin !== "23:59:59") {
             $message.=" ".heure3($hre_fin);
         }
         $message.="<br/><br/>Motif : $motif<br/>";
@@ -655,25 +660,22 @@ class AbsenceController extends BaseController
 
               break;
           }
-
-        // Si pas de récurrence, suppression dans la table 'absences'
+            // Si pas de récurrence, suppression dans la table 'absences'
+        } elseif ($groupe) {
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("absences", array("groupe"=>$groupe));
         } else {
-            if ($groupe) {
-                $db=new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->delete("absences", array("groupe"=>$groupe));
-            } else {
-                $db=new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->delete("absences", array("id"=>$id));
-            }
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("absences", array("id"=>$id));
         }
 
         $msg=urlencode("L'absence a été supprimée avec succès");
         $msgType="success";
 
         $msg2 = null;
-        if (!empty($errors) && $errors[0] != '') {
+        if ($errors !== [] && $errors[0] != '') {
             $msg2="<ul>";
             foreach ($errors as $error) {
                     $msg2.="<li>$error</li>";
@@ -693,7 +695,7 @@ class AbsenceController extends BaseController
     }
 
     #[Route(path: '/absence-statuses', name: 'absence.statuses', methods: ['GET'])]
-    public function absence_validation_statuses(Request $request)
+    public function absence_validation_statuses(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $agent_ids = $request->get('ids') ?? array();
         $module = $request->get('module');
@@ -704,7 +706,7 @@ class AbsenceController extends BaseController
         return $this->output('/common/validation-statuses.html.twig');
     }
 
-    private function getDocuments($absence) {
+    private function getDocuments(\absences $absence) {
         $groupe = $absence->elements['groupe'];
         $absdocs = array();
 
@@ -723,7 +725,7 @@ class AbsenceController extends BaseController
             $db->select('absences', 'id', "groupe='$groupe'");
             $grouped_absences = $db->result;
             if (!$grouped_absences) {
-                return;
+                return null;
             }
 
             foreach ($grouped_absences as $a) {
@@ -742,7 +744,7 @@ class AbsenceController extends BaseController
         return $docsarray;
     }
 
-    private function save_new(Request $request)
+    private function save_new(Request $request): \Symfony\Component\HttpFoundation\Response|array
     {
         $session = $request->getSession();
 
@@ -758,9 +760,9 @@ class AbsenceController extends BaseController
         $access = false;
         if ($this->admin) {
             $access = true;
-        } elseif (count($perso_ids) == 1 and in_array($session->get('loginId'), $perso_ids)) {
+        } elseif (count($perso_ids) == 1 && in_array($session->get('loginId'), $perso_ids)) {
             $access = true;
-        } elseif ($this->agents_multiples and in_array($session->get('loginId'), $perso_ids)) {
+        } elseif ($this->agents_multiples && in_array($session->get('loginId'), $perso_ids)) {
             $access = true;
         }
 
@@ -819,7 +821,7 @@ class AbsenceController extends BaseController
 
 
         // Confirmation de l'enregistrement
-        if ($this->config('Absences-validation') and !$this->admin) {
+        if ($this->config('Absences-validation') && !$this->admin) {
             $msg="La demande d'absence a été enregistrée";
         } else {
             $msg="L'absence a été enregistrée";
@@ -834,7 +836,7 @@ class AbsenceController extends BaseController
 
     }
 
-    private function update(Request $request)
+    private function update(Request $request): \Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\RedirectResponse
     {
         $session = $request->getSession();
 
@@ -853,7 +855,7 @@ class AbsenceController extends BaseController
 
         list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
 
-        $baseurl = $this->config('URL');
+        $this->config('URL');
 
         // Absence with sevearl agents.
         $perso_ids = $request->get('perso_ids');
@@ -861,7 +863,7 @@ class AbsenceController extends BaseController
 
         // If many agents, create absences group
         // if it doesn't exist.
-        if (count($perso_ids) > 1 and !$groupe) {
+        if (count($perso_ids) > 1 && !$groupe) {
             // Group id.
             $groupe = time() . "-" . rand(100, 999);
         }
@@ -915,7 +917,7 @@ class AbsenceController extends BaseController
         // modification is prohibited.
         $iCalKey = $a->elements['ical_key'];
         $cal_name = $a->elements['cal_name'];
-        if ($iCalKey and substr($cal_name, 0, 23) != 'PlanningBiblio-Absences') {
+        if ($iCalKey && substr($cal_name, 0, 23) !== 'PlanningBiblio-Absences') {
             return $this->output('access-denied.html.twig');
         }
 
@@ -967,18 +969,7 @@ class AbsenceController extends BaseController
 
         // Comparaison des anciennes données et des nouvelles
         $modification = (
-          !empty($agents_ajoutes)
-          or !empty($agents_supprimes)
-          or $debut1 != $debut_sql
-          or $fin1 != $fin_sql
-          or htmlentities($motif1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
-          or htmlentities($motif_autre1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
-          or htmlentities($commentaires1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
-          or $valide1 != $valide
-          or $rrule1 != $rrule
-          or empty($pj1_1) != empty($pj1)
-          or empty($pj2_1) != empty($pj2)
-          or empty($so_1) != empty($so)
+          $agents_ajoutes !== [] || $agents_supprimes !== [] || $debut1 != $debut_sql || $fin1 != $fin_sql || htmlentities($motif1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) !== htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) || htmlentities($motif_autre1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) !== htmlentities($motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) || htmlentities($commentaires1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) !== htmlentities($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) || $valide1 != $valide || $rrule1 != $rrule || empty($pj1_1) !== empty($pj1) || empty($pj2_1) !== empty($pj2) || empty($so_1) !== empty($so)
           );
 
         // If no change, back to absences lists.
@@ -1009,13 +1000,13 @@ class AbsenceController extends BaseController
 
             $admin = false;
             foreach ($sites_agents as $site) {
-                if (in_array((200+$site), $this->droits) or in_array((500+$site), $this->droits)) {
+                if (in_array((200+$site), $this->droits) || in_array((500+$site), $this->droits)) {
                     $admin = true;
                     break;
                 }
             }
 
-            if (!$admin and !$acces) {
+            if (!$admin && !$acces) {
                 $this->session->getFlashBag()->add('notice', "Vous n'êtes pas autorisé(e) à modifier cette absence.");
                 return $this->redirectToRoute('absence.index');
             }
@@ -1031,7 +1022,7 @@ class AbsenceController extends BaseController
         $validation_n2 = $validation1_n2;
 
         // On met à jour les infos seulement si une modification apparaît sur le champ "validation"de façon à garder l'horodatage initial ($valide != $valide1)
-        if ($this->config('Absences-validation') and $valide != $valide1) {
+        if ($this->config('Absences-validation') && $valide != $valide1) {
 
             // Back to asked status.
             $valide_n1 = 0;
@@ -1040,14 +1031,14 @@ class AbsenceController extends BaseController
             $validation_n2 = '0000-00-00 00:00:00';
 
             // Validated or refused level 2
-            if ($valide == 1 or $valide == -1) {
+            if ($valide == 1 || $valide == -1) {
                 $valide_n1 = $valide1_n1;
                 $validation_n1 = $validation1_n1;
                 $valide_n2 = $valide * $session->get('loginId');
                 $validation_n2 = date("Y-m-d H:i:s");
             }
             // Validated or refused level 1.
-            elseif ($valide == 2 or $valide == -2) {
+            elseif ($valide == 2 || $valide == -2) {
                 $valide_n1 = ($valide / 2) * $session->get('loginId');
                 $validation_n1 = date("Y-m-d H:i:s");
             }
@@ -1211,7 +1202,7 @@ class AbsenceController extends BaseController
                 $a->motif_autre = $motif_autre;
                 $a->CSRFToken = $CSRFToken;
                 $a->rrule = $rrule;
-                if (!empty($add_exdate)) {
+                if ($add_exdate !== '0') {
                     $a->exdate = $add_exdate;
                 }
                 $a->valide = $valide;
@@ -1259,7 +1250,7 @@ class AbsenceController extends BaseController
             foreach ($agents_ajoutes as $agent) {
                 $insert[] = array_merge($data, array('perso_id'=>$agent['id']));
             }
-            if (!empty($insert)) {
+            if ($insert !== []) {
                 $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->insert("absences", $insert);
@@ -1286,23 +1277,21 @@ class AbsenceController extends BaseController
         // Si pas de validation, la notification est envoyée au 1er groupe
         if ($this->config('Absences-validation') == '0') {
             $notifications=2;
+        } elseif ($valide1_n2 <= 0 && $valide_n2 > 0) {
+            $sujet="Validation d'une absence";
+            $notifications=4;
+        } elseif ($valide1_n2 >= 0 && $valide_n2 < 0) {
+            $sujet="Refus d'une absence";
+            $notifications=4;
+        } elseif ($valide1_n1 <= 0 && $valide_n1 > 0) {
+            $sujet="Acceptation d'une absence (en attente de validation hiérarchique)";
+            $notifications=3;
+        } elseif ($valide1_n1 >= 0 && $valide_n1 < 0) {
+            $sujet="Refus d'une absence (en attente de validation hiérarchique)";
+            $notifications=3;
         } else {
-            if ($valide1_n2<=0 and $valide_n2>0) {
-                $sujet="Validation d'une absence";
-                $notifications=4;
-            } elseif ($valide1_n2>=0 and $valide_n2<0) {
-                $sujet="Refus d'une absence";
-                $notifications=4;
-            } elseif ($valide1_n1<=0 and $valide_n1>0) {
-                $sujet="Acceptation d'une absence (en attente de validation hiérarchique)";
-                $notifications=3;
-            } elseif ($valide1_n1>=0 and $valide_n1<0) {
-                $sujet="Refus d'une absence (en attente de validation hiérarchique)";
-                $notifications=3;
-            } else {
-                $sujet="Modification d'une absence";
-                $notifications=2;
-            }
+            $sujet="Modification d'une absence";
+            $notifications=2;
         }
 
         $workflow = 'A';
@@ -1388,7 +1377,7 @@ class AbsenceController extends BaseController
         }
 
         $message.="<li>Motif : $motif";
-        if ($motif_autre) {
+        if ($motif_autre !== '' && $motif_autre !== '0') {
             $message.=" / $motif_autre";
         }
         $message.="</li>";
@@ -1425,10 +1414,6 @@ class AbsenceController extends BaseController
         $m->message = $message;
         $m->to = $destinataires;
         $m->send();
-
-        // Si erreur d'envoi de mail, affichage de l'erreur
-        $msg2=null;
-        $msg2Type=null;
         if ($m->error && $m->error_CJInfo) {
             $this->session->getFlashBag()->add('error', $m->error_CJInfo);
         }
@@ -1440,7 +1425,7 @@ class AbsenceController extends BaseController
     /**
      * @return mixed[]
      */
-    private function filterAgents($request): array
+    private function filterAgents(\Symfony\Component\HttpFoundation\Request $request): array
     {
         $session = $request->getSession();
 
@@ -1464,11 +1449,11 @@ class AbsenceController extends BaseController
         }
 
         // Keep only managed agent on multi-sites mode
-        if ($this->config('Multisites-nombre') > 1 and !$this->config('Absences-notifications-agent-par-agent')) {
+        if ($this->config('Multisites-nombre') > 1 && !$this->config('Absences-notifications-agent-par-agent')) {
 
             $managed_sites = array();
             for ($i = 1; $i < 31; $i++) {
-                if (in_array((200 + $i), $_SESSION['droits']) or in_array((500 + $i), $_SESSION['droits'])) {
+                if (in_array((200 + $i), $_SESSION['droits']) || in_array((500 + $i), $_SESSION['droits'])) {
                     $managed_sites[] = $i;
                 }
             }
@@ -1500,7 +1485,7 @@ class AbsenceController extends BaseController
 
         // If Absences-notifications-agent-par-agent is true,
         // delete all agents the logged in user cannot create absences for.
-        if ($this->config('Absences-notifications-agent-par-agent') and !$this->adminN2) {
+        if ($this->config('Absences-notifications-agent-par-agent') && !$this->adminN2) {
             $logged_in = $this->entityManager->find(Agent::class, $session->get('loginId'));
             $accepted_ids = array_map(function($m) { return $m->getUser()->getId(); }, $logged_in->getManaged());
             $accepted_ids[] = $session->get('loginId');
@@ -1515,7 +1500,7 @@ class AbsenceController extends BaseController
         return $valid_ids;
     }
 
-    private function setAdminPermissions()
+    private function setAdminPermissions(): void
     {
         // If can validate level 1: admin = true.
         // If can validate level 2: adminN2 = true.
@@ -1568,7 +1553,7 @@ class AbsenceController extends BaseController
 
     private function reasonTypes(): array
     {
-        $reason_types = array(
+        return array(
             array(
                 'id' => 0,
                 'valeur' => 'N1 cliquable'
@@ -1582,8 +1567,6 @@ class AbsenceController extends BaseController
                 'valeur' => 'N2'
             )
         );
-
-        return $reason_types;
     }
 
     /**
@@ -1606,17 +1589,17 @@ class AbsenceController extends BaseController
         return $absences_infos;
     }
 
-    private function canEdit($session, $perso_ids): bool
+    private function canEdit(\Symfony\Component\HttpFoundation\Session\SessionInterface $session, array|bool|null $perso_ids): bool
     {
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((200+$i), $this->droits) or in_array((500+$i), $this->droits)) {
+            if (in_array((200+$i), $this->droits) || in_array((500+$i), $this->droits)) {
                 return true;
             }
         }
 
-        if ($this->edit_own_absences and count($perso_ids) == 1 and in_array($session->get('loginId'), $perso_ids)) {
+        if ($this->edit_own_absences && count($perso_ids) == 1 && in_array($session->get('loginId'), $perso_ids)) {
             return true;
         }
-        return $this->agents_multiples and $this->edit_own_absences and in_array($session->get('loginId'), $perso_ids);
+        return $this->agents_multiples && $this->edit_own_absences && in_array($session->get('loginId'), $perso_ids);
     }
 }

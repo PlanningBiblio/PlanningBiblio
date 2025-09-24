@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'absences_documents')]
 class AbsenceDocument
 {
-    private $upload_dir = '';
+    private string $upload_dir = '';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -66,15 +66,17 @@ class AbsenceDocument
         return $this;
     }
 
-    public function deleteFile() {
-        if (!$this->absence_id || !$this->filename || !$this->id) return;
+    public function deleteFile(): void {
+        if (!$this->absence_id || !$this->filename || !$this->id) {
+            return;
+        }
 
         unlink($this->upload_dir() . $this->absence_id . '/' . $this->id . '/' . $this->filename);
         rmdir($this->upload_dir() . $this->absence_id . '/' . $this->id);
     }
 
-    public function upload_dir() {
-        if (!$this->upload_dir) {
+    public function upload_dir(): string {
+        if ($this->upload_dir === '' || $this->upload_dir === '0') {
             $this->upload_dir = __DIR__ . '/../../var/upload/' . $_ENV['APP_ENV'] . '/absences/';
         }
 

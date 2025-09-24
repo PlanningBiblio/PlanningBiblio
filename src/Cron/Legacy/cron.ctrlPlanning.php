@@ -64,7 +64,7 @@ for ($i=0;$i<=$jours;$i++) {
     $jour_semaine=date("w", $time);
 
     // Si le jour courant est un dimanche et que la bibliothèque n'ouvre pas les dimanches, on ne l'ajoute pas
-    if ($jour_semaine!=0 or $config['Dimanche']) {
+    if ($jour_semaine != 0 || $config['Dimanche']) {
         $dates[]=date("Y-m-d", $time);
     }
 
@@ -146,7 +146,7 @@ foreach ($dates as $date) {
                             continue;
                         }
                         // Si on ne veut pas des postes de renfort et si le poste n'est pas obligatoire, on l'exclus
-                        if (!$config['Rappels-Renfort'] and $postes[$l['poste']]['obligatoire']!="Obligatoire") {
+                        if (!$config['Rappels-Renfort'] && $postes[$l['poste']]['obligatoire'] != "Obligatoire") {
                             continue;
                         }
 
@@ -180,23 +180,20 @@ foreach ($dates as $date) {
                             }
     
                             // Si l'agent n'est ni absent, ni en congés : on a une présence
-                            if (!$absent and !$conges) {
+                            if (!$absent && !$conges) {
                                 $tousAbsents=false;
                                 break;
                             }
                         }
 
                         // Si la dernière execution de la requête ne donne pas de résultat ou que tous les agents issus du résultat sont absents
-                        if (empty($result) or $tousAbsents) {
-                            // On enregistre dans le table les informations de la cellule
-
-                            // On regroupe les horaires qui se suivent sur un même poste
-                            if (!empty($tab) and $tab[$i]['fin']==$h['debut'] and $tab[$i]['poste_id']==$l['poste']) {
-                                $tab[$i]["fin"]=$h['fin'];
-                            } else {
-                                $i++;
-                                $tab[$i]=array("poste"=>$postes[$l['poste']]['nom'], "poste_id"=>$l['poste'], "debut"=>$h['debut'], "fin"=>$h['fin']);
-                            }
+                        // On enregistre dans le table les informations de la cellule
+                        // On regroupe les horaires qui se suivent sur un même poste
+                        if ($tab !== [] && $tab[$i]['fin'] == $h['debut'] && $tab[$i]['poste_id'] == $l['poste']) {
+                            $tab[$i]["fin"]=$h['fin'];
+                        } else {
+                            $i++;
+                            $tab[$i]=array("poste"=>$postes[$l['poste']]['nom'], "poste_id"=>$l['poste'], "debut"=>$h['debut'], "fin"=>$h['fin']);
                         }
                     }
                 }

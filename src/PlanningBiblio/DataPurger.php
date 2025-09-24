@@ -34,20 +34,21 @@ use App\Entity\HiddenTables;
 class DataPurger
 {
 
-    private $dbprefix;
+    /**
+     * @var \App\PlanningBiblio\Logger
+     */
+    public $logger;
     private $delay;
     private $entityManager;
-    private $stdout;
 
     public function __construct($entityManager, $delay, $stdout)
     {
-        $this->dbprefix = $_ENV['DATABASE_PREFIX'];
         $this->delay = $delay;
         $this->entityManager = $entityManager;
         $this->logger = new Logger($entityManager, $stdout);
     }
 
-    public function purge() {
+    public function purge(): void {
         $GLOBALS['entityManager'] = $this->entityManager;
         $this->log("Start purging $this->delay years old data");
 
@@ -123,7 +124,7 @@ class DataPurger
         $this->log("End purging old data");
     }
 
-    private function simplePurge($class, $field, $operator, $value) {
+    private function simplePurge(string $class, string $field, string $operator, \DateTime $value): void {
         $builder = $this->entityManager->createQueryBuilder();
         $builder->delete()
                 ->from($class, 'a')
@@ -133,7 +134,7 @@ class DataPurger
         $this->log("Purging $results $class");
     }
 
-    private function log($message) {
+    private function log(string $message): void {
         $this->logger->log($message, "DataPurger");
     }
 

@@ -14,7 +14,7 @@ use App\Entity\AdminInfo;
 class AdminInfoController extends BaseController
 {
     #[Route(path: '/admin/info', name: 'admin.info.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         $today = date('Ymd');
 
@@ -32,7 +32,7 @@ class AdminInfoController extends BaseController
     }
 
     #[Route(path: '/admin/info/add', name: 'admin.info.addform', methods: ['GET'])]
-    public function addform(Request $request)
+    public function addform(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $this->templateParams(array(
             'id'    => null,
@@ -45,7 +45,7 @@ class AdminInfoController extends BaseController
     }
 
     #[Route(path: '/admin/info/{id}', name: 'admin.info.editform', methods: ['GET'])]
-    public function editform(Request $request)
+    public function editform(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $id = $request->get('id');
 
@@ -62,7 +62,7 @@ class AdminInfoController extends BaseController
     }
 
     #[Route(path: '/admin/info', name: 'admin.info.update', methods: ['POST'])]
-    public function update(Request $request, Session $session)
+    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -100,7 +100,7 @@ class AdminInfoController extends BaseController
     }
 
     #[Route(path: '/admin/info', name: 'admin.info.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session)
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();

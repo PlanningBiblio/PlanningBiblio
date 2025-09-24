@@ -28,7 +28,7 @@ class AgentControllerPasswordTest extends PLBWebTestCase
         $clear = "Password_1";
         $crypted = password_hash($clear, PASSWORD_BCRYPT);
 
-        $crypted2 = password_hash('Password_changed2', PASSWORD_BCRYPT);
+        password_hash('Password_changed2', PASSWORD_BCRYPT);
 
         $agent = $this->builder->build(Agent::class, array(
             'login' => 'agent_password', 'supprime' => 0,'password' => $crypted,
@@ -73,7 +73,7 @@ class AgentControllerPasswordTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,99,401,601));
 
-        $crawler = $this->client->request('POST', '/ajax/change-own-password', array(
+        $this->client->request('POST', '/ajax/change-own-password', array(
             'current_password' => 'Password_1',
             'password' => 'Password_changed2',
             '_token' => 'fake_token',

@@ -22,8 +22,8 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,401,601));
 
-        $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
-        $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
+        \DateTime::createFromFormat("d/m/Y", '05/10/2022');
+        \DateTime::createFromFormat("d/m/Y", '10/10/2022');
 
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->client->request('POST', '/holiday-info', array('debut' => '05/10/2022 00:00:00', 'fin' => '10/10/2022 00:00:00', 'texte' => 'salut', 'CSRFToken' => '00000'));
@@ -39,8 +39,6 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
     public function testNewForm(): void
     {
-        $entityManager = $this->entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));

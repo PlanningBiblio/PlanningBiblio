@@ -18,7 +18,7 @@ require_once(__DIR__.'/../../public/postes/class.postes.php');
 class ICalendarController extends BaseController
 {
     #[Route(path: 'ical', name: 'ical.index', methods: ['GET'])]
-    public function index(Request $request, Session $session){
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
 
         $module = 'Ical export';
 
@@ -36,7 +36,7 @@ class ICalendarController extends BaseController
         $agent = null;
 
         // Définition de l'id de l'agent si l'argument login est donné
-        if (!$id and $login) {
+        if (!$id && $login) {
             $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(array('login' => $login));
             if ($agent) {
                 $id = $agent->getId();
@@ -46,7 +46,7 @@ class ICalendarController extends BaseController
         }
 
         // Définition de l'id de l'agent si l'argument mail est donné
-        if (!$id and $mail) {
+        if (!$id && $mail) {
             $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(array('mail' => $mail));
             if ($agent) {
                 $id = $agent->getId();
@@ -206,9 +206,7 @@ class ICalendarController extends BaseController
 
                 // Exclusion des absences
                 foreach ($absences as $a) {
-                    if ($a['debut'] < $elem['date'].' '.$elem['fin']
-                        and $a['fin'] > $elem['date'].' '.$elem['debut']
-                        and !($postes[$elem['poste']]['teleworking'] and isset($a['motif']) and in_array($a['motif'], $teleworkingReasons))
+                    if ($a['debut'] < $elem['date'] . ' ' . $elem['fin'] && $a['fin'] > $elem['date'] . ' ' . $elem['debut'] && !($postes[$elem['poste']]['teleworking'] && isset($a['motif']) && in_array($a['motif'], $teleworkingReasons))
                         ) {
                         continue 2;
                     }
@@ -219,13 +217,7 @@ class ICalendarController extends BaseController
                 }
 
                 // Regroupe les plages de SP qui se suivent sur le même poste
-                if (isset($tab[$i-1])
-                    and $tab[$i-1]['date'] == $elem['date']
-                    and $tab[$i-1]['debut'] == $elem['fin']
-                    and $tab[$i-1]['poste'] == $elem['poste']
-                    and $tab[$i-1]['site'] == $elem['site']
-                    and $tab[$i-1]['supprime'] == $elem['supprime']
-                    and $tab[$i-1]['absent'] == $elem['absent']) {
+                if (isset($tab[$i-1]) && $tab[$i-1]['date'] == $elem['date'] && $tab[$i-1]['debut'] == $elem['fin'] && $tab[$i-1]['poste'] == $elem['poste'] && $tab[$i-1]['site'] == $elem['site'] && $tab[$i-1]['supprime'] == $elem['supprime'] && $tab[$i-1]['absent'] == $elem['absent']) {
                     $tab[$i-1]['debut'] = $elem['debut'];
                 } else {
                     $tab[$i++] = $elem;
@@ -247,9 +239,9 @@ class ICalendarController extends BaseController
                     'id' => $id,
                     'start' => strtotime($elem['date']." ".$elem['debut']),
                     'end' => strtotime($elem['date']." ".$elem['fin']),
-                    'site' => !empty($sites[$elem['site']]) ? $sites[$elem['site']] : null,
+                    'site' => empty($sites[$elem['site']]) ? null : $sites[$elem['site']],
                     'siteId' => $elem['site'],
-                    'floor' => !empty($postes[$elem['poste']]['etage']) ? ' ' . $postes[$elem['poste']]['etage'] : null,
+                    'floor' => empty($postes[$elem['poste']]['etage']) ? null : ' ' . $postes[$elem['poste']]['etage'],
                     'position' => $postes[$elem['poste']]['nom'],
                     'positionId' => $elem['poste'],
                     'organizer' => $organizer,
@@ -261,7 +253,7 @@ class ICalendarController extends BaseController
             }
         }
 
-        if (isset($absences) and $get_absences) {
+        if (isset($absences) && $get_absences) {
 
           // Complète le tableau $ical
 

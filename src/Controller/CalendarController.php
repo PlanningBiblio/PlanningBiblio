@@ -16,7 +16,7 @@ require_once(__DIR__.'/../../public/personnel/class.personnel.php');
 class CalendarController extends BaseController
 {
     #[Route(path: 'calendar', name: 'calendar.index', methods: ['GET'])]
-    public function index(Request $request, Session $session){
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
         $debut = $request->get('debut');
         $fin = $request->get('fin');
 
@@ -172,19 +172,19 @@ class CalendarController extends BaseController
                 }
             }
             $horaires = null;
-            if (is_array($temps) and array_key_exists($jour, $temps)) {
+            if (is_array($temps) && array_key_exists($jour, $temps)) {
                 $horaires = $temps[$jour];
             }
 
             $current_date = ucfirst($d->jour_complet);
             if (is_array($postes)) {
                 foreach ($postes as $elem) {
-                    if ($elem['date'] == $current and (in_array($current, $verrou[$elem['site']]) or $nonValides)) {
+                    if ($elem['date'] == $current && (in_array($current, $verrou[$elem['site']]) || $nonValides)) {
                         // Contrôle des absences depuis la table absence
                         if (is_array($absences)) {
                             foreach ($absences as $a) {
-                                if ($a['debut'] < $elem['date'].' '.$elem['fin'] and $a['fin'] > $elem['date'].' '.$elem['debut']) {
-                                    if ($elem['teleworking'] and in_array($a['motif'], $teleworkingReasons)) {
+                                if ($a['debut'] < $elem['date'] . ' ' . $elem['fin'] && $a['fin'] > $elem['date'] . ' ' . $elem['debut']) {
+                                    if ($elem['teleworking'] && in_array($a['motif'], $teleworkingReasons)) {
                                         continue;
                                     }
 
@@ -203,7 +203,7 @@ class CalendarController extends BaseController
                 foreach ($absences as $elem) {
                     $abs_deb = substr($elem['debut'], 0, 10);
                     $abs_fin = substr($elem['fin'], 0, 10);
-                    if (($abs_deb < $current and $abs_fin>$current) or $abs_deb==$current or $abs_fin==$current) {
+                    if ($abs_deb < $current && $abs_fin > $current || $abs_deb == $current || $abs_fin == $current) {
                         $current_abs[] = $elem;
                     }
                 }
@@ -211,7 +211,7 @@ class CalendarController extends BaseController
             $closed = false;
             $nom = null;
             // Jours fériés : affiche Bibliothèque fermée et passe au jour suivant
-            if (array_key_exists($current, $joursFeries) and $joursFeries[$current]['fermeture']) {
+            if (array_key_exists($current, $joursFeries) && $joursFeries[$current]['fermeture']) {
                 $closed = true;
                 $nom = $joursFeries[$current]['nom'];
             }
@@ -221,17 +221,17 @@ class CalendarController extends BaseController
             $absences_affichage = array();
 
             foreach ($current_abs as $elem) {
-                if ($elem['debut'] <= $current." 00:00:00" and $elem['fin'] >= $current." 23:59:59") {
+                if ($elem['debut'] <= $current . " 00:00:00" && $elem['fin'] >= $current . " 23:59:59") {
                     $absent = true;
                     $absences_affichage[] = "Toute la journée : ".$elem['motif'];
-                } elseif (substr($elem['debut'], 0, 10) == $current and substr($elem['fin'], 0, 10)==$current) {
+                } elseif (substr($elem['debut'], 0, 10) == $current && substr($elem['fin'], 0, 10) == $current) {
                     $deb = heure2(substr($elem['debut'], -8));
                     $fi = heure2(substr($elem['fin'], -8));
                     $absences_affichage[] = "De $deb &agrave; $fi : ".$elem['motif'];
-                } elseif (substr($elem['debut'], 0, 10) == $current and $elem['fin'] >= $current." 23:59:59") {
+                } elseif (substr($elem['debut'], 0, 10) == $current && $elem['fin'] >= $current . " 23:59:59") {
                     $deb = heure2(substr($elem['debut'], -8));
                     $absences_affichage[]="&Agrave; partir de $deb : ".$elem['motif'];
-                } elseif ($elem['debut'] <= $current." 00:00:00" and substr($elem['fin'], 0, 10)==$current) {
+                } elseif ($elem['debut'] <= $current . " 00:00:00" && substr($elem['fin'], 0, 10) == $current) {
                     $fi = heure2(substr($elem['fin'], -8));
                     $absences_affichage[] = "Jusqu'&agrave; $fi : ".$elem['motif'];
                 } else {
@@ -251,21 +251,22 @@ class CalendarController extends BaseController
                 $conges_affichage = array();
 
                 if (!empty($c->elements)) {
-                    for ($i = 0;$i < count($c->elements); $i++) {
+                    $counter = count($c->elements);
+                    for ($i = 0;$i < $counter; $i++) {
                         $conge = $c->elements[$i];
                         // Si en congé toute la journée, n'affiche pas les horaires de présence habituels et les absences enregistrées
                         // (remplace le message d'absence)
-                        if ($conge['debut'] <= $current." 00:00:00" and $conge['fin'] >= $current." 23:59:59") {
+                        if ($conge['debut'] <= $current . " 00:00:00" && $conge['fin'] >= $current . " 23:59:59") {
                             $absent = true;
                             $conges_affichage[] = "Toute la journ&eacute;e : Cong&eacute;";
-                        } elseif (substr($conge['debut'], 0, 10) == $current and substr($conge['fin'], 0, 10)==$current) {
+                        } elseif (substr($conge['debut'], 0, 10) == $current && substr($conge['fin'], 0, 10) == $current) {
                             $deb = heure2(substr($conge['debut'], -8));
                             $fi = heure2(substr($conge['fin'], -8));
                             $conges_affichage[] = "De $deb &agrave; $fi : Cong&eacute;";
-                        } elseif (substr($conge['debut'], 0, 10) == $current and $conge['fin'] >= $current." 23:59:59") {
+                        } elseif (substr($conge['debut'], 0, 10) == $current && $conge['fin'] >= $current . " 23:59:59") {
                             $deb = heure2(substr($conge['debut'], -8));
                             $conges_affichage[] = "&Agrave; partir de $deb : Cong&eacute;";
-                        } elseif ($conge['debut'] <= $current." 00:00:00" and substr($conge['fin'], 0, 10) == $current) {
+                        } elseif ($conge['debut'] <= $current . " 00:00:00" && substr($conge['fin'], 0, 10) == $current) {
                             $fi = heure2(substr($conge['fin'], -8));
                             $conges_affichage[] = "Jusqu'&agrave; $fi : Cong&eacute;";
                         } else {
@@ -273,14 +274,14 @@ class CalendarController extends BaseController
                         }
                         // Modifie l'index "absent" du tableau $current_postes pour barrer les postes concernés par le congé
                         for ($j = 0; $j < count($current_postes); $j++) {
-                            if ($current." ".$current_postes[$j]['debut'] < $conge['fin'] and $current." ".$current_postes[$j]['fin'] > $conge['debut']) {
+                            if ($current . " " . $current_postes[$j]['debut'] < $conge['fin'] && $current . " " . $current_postes[$j]['fin'] > $conge['debut']) {
                                 $current_postes[$j]['absent'] = 1;
                             }
                         }
                     }
                 }
                 // Si congé sur une partie de la journée seulement, complète le message d'absence
-                if (!empty($conges_affichage)) {
+                if ($conges_affichage !== []) {
                     $absences_affichage = array_merge($absences_affichage, $conges_affichage);
                 }
             }
@@ -289,52 +290,48 @@ class CalendarController extends BaseController
             if (!$absent) {
                 $site_name = $this->config('Multisites-site1');
                 $site = 1;
-                if ($nbSites > 1 and isset($horaires[4])) {
+                if ($nbSites > 1 && isset($horaires[4])) {
                     $site = $horaires[4];
-                    if ($site != '-1') {
-                        $site_name = $this->config("Multisites-site$site");
-                    } else {
-                        $site_name = '';
-                    }
+                    $site_name = $site != '-1' ? $this->config("Multisites-site$site") : '';
                 }
                 $schedule = array();
-                if (!empty($horaires[0]) and !empty($horaires[1])) {
+                if (!empty($horaires[0]) && !empty($horaires[1])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[0]),
                         'end'=> heure2($horaires[1])
                     );
-                } elseif (!empty($horaires[0]) and !empty($horaires[5])) {
+                } elseif (!empty($horaires[0]) && !empty($horaires[5])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[0]),
                         'end'=> heure2($horaires[5])
                     );
-                } elseif (!empty($horaires[0]) and !empty($horaires[3])) {
+                } elseif (!empty($horaires[0]) && !empty($horaires[3])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[0]),
                         'end'=> heure2($horaires[3])
                     );
                 }
 
-                if (!empty($horaires[2]) and !empty($horaires[5])) {
+                if (!empty($horaires[2]) && !empty($horaires[5])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[2]),
                         'end'=> heure2($horaires[5])
                     );
-                } elseif (!empty($horaires[2]) and !empty($horaires[3])) {
+                } elseif (!empty($horaires[2]) && !empty($horaires[3])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[2]),
                         'end'=> heure2($horaires[3])
                     );
                 }
 
-                if (!empty($horaires[6]) and !empty($horaires[3])) {
+                if (!empty($horaires[6]) && !empty($horaires[3])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[6]),
                         'end'=> heure2($horaires[3])
                     );
                 }
 
-                if (!empty($schedule)){
+                if ($schedule !== []){
                     $presence = array(
                         'site_name' => $site_name,
                         'site'      => $site,
@@ -343,27 +340,26 @@ class CalendarController extends BaseController
                 }
             }
             // Affichage des absences
-            if (!empty($absences_affichage)) {
+            if ($absences_affichage !== []) {
                 $nbAbs = count($absences_affichage);
             }
 
             $positions = array();
-            if (!empty($current_postes)) {
+            if ($current_postes !== []) {
             //Regroupe les horaires des mêmes postes
                 $tmp = array();
                 $j = 0;
-                for ($i = 0; $i < count($current_postes); $i++) {
+                $counter = count($current_postes);
+                for ($i = 0; $i < $counter; $i++) {
                     $current_postes[$i]['absent'] = $current_postes[$i]['absent'] == 1;
 
                     if ($i == 0) {
                         $tmp[$j] = $current_postes[$i];
+                    } elseif ($current_postes[$i]['site'] == $tmp[$j]['site'] && $current_postes[$i]['poste'] == $tmp[$j]['poste'] && $current_postes[$i]['absent'] == $tmp[$j]['absent'] && $current_postes[$i]['debut'] == $tmp[$j]['fin']) {
+                        $tmp[$j]['fin'] = $current_postes[$i]['fin'];
                     } else {
-                        if ($current_postes[$i]['site'] == $tmp[$j]['site'] and $current_postes[$i]['poste'] == $tmp[$j]['poste'] and $current_postes[$i]['absent'] == $tmp[$j]['absent'] and $current_postes[$i]['debut'] == $tmp[$j]['fin']){
-                            $tmp[$j]['fin'] = $current_postes[$i]['fin'];
-                        } else {
-                            $j++;
-                            $tmp[$j] = $current_postes[$i];
-                        }
+                        $j++;
+                        $tmp[$j] = $current_postes[$i];
                     }
 
                 }

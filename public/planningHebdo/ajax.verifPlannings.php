@@ -15,7 +15,7 @@ Fichier appelé en arrière plan par la fonction JS plHebdoVerifForm (js/script.
 */
 
 session_start();
-include "../include/config.php";
+include __DIR__ . "/../include/config.php";
 
 // Initialisation des variables
 $debut=filter_input(INPUT_GET, "debut", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
@@ -63,11 +63,8 @@ $db->select("planning_hebdo", "*", "$filter $ignore_id $remplace ");
 $result=array();
 if (!$db->result) {
     $result=array("retour"=>"OK");
-} elseif ($exception and $copy) {
-    if ($db->nb > 1 
-        or $db->result[0]['exception'] != 0
-        or $db->result[0]['debut'] > $debut
-        or $db->result[0]['fin'] < $fin
+} elseif ($exception && $copy) {
+    if ($db->nb > 1 || $db->result[0]['exception'] != 0 || $db->result[0]['debut'] > $debut || $db->result[0]['fin'] < $fin
     ) {
         $result = array('retour' => 'NO', 'debut' => $db->result[0]['debut'], 'fin' => $db->result[0]['fin'], 'autre_agent' => $autre_agent);
     } else {
@@ -87,7 +84,7 @@ if ($exception) {
     $parent_start = $db->result[0]['debut'];
     $parent_end = $db->result[0]['fin'];
 
-    if ($debut < $parent_start or $fin > $parent_end) {
+    if ($debut < $parent_start || $fin > $parent_end) {
         $result=array(
             'retour' => 'NO',
             'out_of_range' => 1

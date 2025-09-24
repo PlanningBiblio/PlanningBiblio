@@ -9,6 +9,10 @@ use Symfony\Component\HttpFoundation\Request;
 class OpenIDConnect
 {
 
+    /**
+     * @var mixed
+     */
+    private $login_attribute;
     private $config;
     private $entityManager;
     private $provider;
@@ -23,14 +27,13 @@ class OpenIDConnect
         $this->entityManager = $GLOBALS['entityManager'];
 
         $this->provider = $this->config['OIDC-Provider'];
-        $this->cacert = $this->config['OIDC-CACert'];
         $this->client_id = $this->config['OIDC-ClientID'];
         $this->client_secret = $this->config['OIDC-ClientSecret'];
-        $this->login_attribute = !empty($this->config['OIDC-LoginAttribute']) ? $this->config['OIDC-LoginAttribute'] : 'email';
+        $this->login_attribute = empty($this->config['OIDC-LoginAttribute']) ? 'email' : $this->config['OIDC-LoginAttribute'];
     }
 
 
-    public function auth(Request $request)
+    public function auth(Request $request): false|\stdClass
     {
         $session = $request->getSession();
 
@@ -67,10 +70,10 @@ class OpenIDConnect
     }
 
 
-    public function logout(Request $request)
+    public function logout(Request $request): ?bool
     {
         if (stristr($this->provider, 'google')) {
-            return;
+            return null;
         }
 
         $session = $request->getSession();
@@ -88,5 +91,6 @@ class OpenIDConnect
         } catch (Exception $e) {
             return false;
         }
+        return null;
     }
 }

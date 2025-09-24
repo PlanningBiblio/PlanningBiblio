@@ -58,17 +58,8 @@ class MSCalendarUtils
                 $rrule .= ';BYMONTH=' . $recurrence->pattern->month;
                 break;
         }
-        $rrule .= $this->returnEnd($recurrence);
         //echo $rrule . "\n";
-        return $rrule;
-    }
-
-    private function returnStart($recurrence): string {
-        $start = '';
-        if ($recurrence->range->startDate) {
-            $start = 'DTSTART;TZID=' . $this->convertTimeZone($recurrence->range->recurrenceTimeZone) . ':' . $this->convertStartDate($recurrence->range->startDate);
-        }
-        return $start;
+        return $rrule . $this->returnEnd($recurrence);
     }
 
     private function returnEnd($recurrence): string {
@@ -87,35 +78,18 @@ class MSCalendarUtils
         return (substr(strtoupper($weekday), 0, 2));
     }
 
-    private function convertStartDate($date) {
-        return (str_replace('-', '', $date) . 'T000000');
-    }
-
-    private function convertEndDate($date) {
-        return (str_replace('-', '', $date) . 'T235959');
-    }
-
     private function convertUntilDate($date) {
         return (str_replace('-', '', $date) . 'T215959Z');
     }
 
-    private function convertPosition($position) {
+    private function convertPosition($position): ?int {
         switch ($position) {
-            case "first": return 1; break;
-            case "second": return 2; break;
-            case "third": return 3; break;
-            case "fourth": return 4; break;
-            case "last": return -1; break;
+            case "first": return 1;
+            case "second": return 2;
+            case "third": return 3;
+            case "fourth": return 4;
+            case "last": return -1;
         }
-    }
-
-    private function convertTimeZone($timezone) {
-        // This needs to be completed if other timezones are used
-        switch ($timezone) {
-            case "Romance Standard Time": 
-                return "Europe/Paris";
-                //return "Europe/Berlin";
-                break;
-        } 
+        return null;
     }
 }

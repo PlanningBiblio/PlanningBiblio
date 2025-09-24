@@ -23,7 +23,7 @@ class OvertimeController extends BaseController
     private Array $droits;
 
     #[Route(path: '/overtime', name: 'overtime.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
 
@@ -41,7 +41,7 @@ class OvertimeController extends BaseController
             ->setModule('holiday')
             ->getValidationLevelFor($session->get('loginId'));
 
-        if (($admin or $adminN2) and $perso_id === null) {
+        if (($admin || $adminN2) && $perso_id === null) {
             $perso_id = isset($_SESSION['oups']['recup_perso_id'])
                 ? $_SESSION['oups']['recup_perso_id']
                 : $session->get('loginId');
@@ -65,11 +65,10 @@ class OvertimeController extends BaseController
 
         $debut = $annee . '-09-01';
         $fin = ($annee + 1) . '-08-31';
-        $message = null;
 
         // Search for existing overtimes
         $c = new \conges();
-        $c->admin = ($admin or $adminN2);
+        $c->admin = ($admin || $adminN2);
         $c->debut = $debut;
         $c->fin = $fin;
         if ($perso_id != 0) {
@@ -96,7 +95,7 @@ class OvertimeController extends BaseController
             'years'     => $annees,
             'year_from' => $annee,
             'year_to'   => $annee + 1,
-            'admin'     => ($admin or $adminN2),
+            'admin'     => ($admin || $adminN2),
         ));
 
         $overtimes = array();
@@ -110,7 +109,7 @@ class OvertimeController extends BaseController
             $validation="Demandé";
             $validation_date = dateFr($elem['saisie'], true);
             $validationStyle="font-weight:bold;";
-            if ($elem['saisie_par'] and $elem['saisie_par']!=$elem['perso_id']) {
+            if ($elem['saisie_par'] && $elem['saisie_par'] != $elem['perso_id']) {
                 $validation.=" par ".nom($elem['saisie_par']);
             }
             $credits=null;
@@ -119,7 +118,7 @@ class OvertimeController extends BaseController
                 $validation = $lang['leave_table_accepted'] ." par ". nom($elem['valide']);
                 $validation_date = dateFr($elem['validation'], true);
                 $validationStyle=null;
-                if ($elem['solde_prec']!=null and $elem['solde_actuel']!=null) {
+                if ($elem['solde_prec'] != null && $elem['solde_actuel'] != null) {
                     $credits=heure4($elem['solde_prec'])." → ".heure4($elem['solde_actuel']);
                     if ($holiday_helper->showHoursToDays()) {
                         $credits .= "<br />" . $holiday_helper->hoursToDays($elem['solde_prec'], $elem['perso_id']) . "j &rarr; " . $holiday_helper->hoursToDays($elem['solde_actuel'], $elem['perso_id']) . "j";
@@ -139,7 +138,7 @@ class OvertimeController extends BaseController
                 $validationStyle="font-weight:bold;";
             }
 
-            $date2 = ($elem['date2'] and $elem['date2']!="0000-00-00") ? " & ".dateFr($elem['date2']) : null;
+            $date2 = ($elem['date2'] && $elem['date2'] != "0000-00-00") ? " & ".dateFr($elem['date2']) : null;
             $hours = HourHelper::decimalToHoursMinutes($elem['heures'])['as_string'];
 
             $overtime = array(
@@ -193,7 +192,7 @@ class OvertimeController extends BaseController
     }
 
     #[Route(path: '/overtime/{id}', name: 'overtime.edit', methods: ['GET'])]
-    public function edit(Request $request)
+    public function edit(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
         $id = $request->get('id');
@@ -212,7 +211,7 @@ class OvertimeController extends BaseController
             ->getValidationLevelFor($session->get('loginId'));
 
         // Prevent non manager to access other agents request.
-        if (!$adminN1 and !$adminN2 and $perso_id != $session->get('loginId')) {
+        if (!$adminN1 && !$adminN2 && $perso_id != $session->get('loginId')) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -227,9 +226,7 @@ class OvertimeController extends BaseController
         $recup['time'] = $result['hours'] . ':' . $result['minutes'];
         $recup['editable'] = $recup['valide'] <= 0 ? 1 : 0;
         $recup['save'] = (
-            ($adminN2 and $recup['valide'] <= 0 )  // Level 2 off or refused
-            or (($adminN1 or $adminN2) and $recup['valide'] = 0) // Level 2 off
-            or $recup['valide_n1'] == 0 // Level 1 off
+            $adminN2 && $recup['valide'] <= 0 || ($adminN1 || $adminN2) && $recup['valide'] = 0 || $recup['valide_n1'] == 0 // Level 1 off
             ) ? 1 : 0;
 
         $this->templateParams(array(
@@ -243,7 +240,7 @@ class OvertimeController extends BaseController
     }
 
     #[Route(path: '/overtime', name: 'overtime.save', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get('id');
@@ -285,15 +282,15 @@ class OvertimeController extends BaseController
         );
 
         // FIXME this should be checked better.
-        if ($validation !== null and ($adminN1 or $adminN2)) {
+        if ($validation !== null && ($adminN1 || $adminN2)) {
             // Validation level 1
-            if ($validation == 2 or $validation == -2) {
+            if ($validation == 2 || $validation == -2) {
                 $update['valide_n1'] = $validation / 2 * $session->get('loginId') ;
                 $update['validation_n1'] = date("Y-m-d H:i:s");
             }
 
             // Validation level 2
-            if ($validation == 1 or $validation == -1) {
+            if ($validation == 1 || $validation == -1) {
                 $update['valide'] = $validation * $session->get('loginId') ;
                 $update['validation'] = date("Y-m-d H:i:s");
             }
@@ -321,7 +318,7 @@ class OvertimeController extends BaseController
                 }
 
                 // Update overtime credit if it is validated
-                if (isset($update['valide']) and $update['valide'] > 0) {
+                if (isset($update['valide']) && $update['valide'] > 0) {
                     $db = new \db();
                     $db->select('personnel', 'comp_time', "id='$perso_id'");
                     $solde_prec = $db->result[0]['comp_time'];
@@ -340,16 +337,16 @@ class OvertimeController extends BaseController
                 $nom = $agent->getLastname();
                 $prenom = $agent->getFirstname();
 
-                if (isset($update['valide']) and $update['valide'] > 0) {
+                if (isset($update['valide']) && $update['valide'] > 0) {
                     $sujet = $lang['overtime_subject_accepted'];
                     $notifications = 4;
-                } elseif (isset($update['valide']) and $update['valide'] < 0) {
+                } elseif (isset($update['valide']) && $update['valide'] < 0) {
                     $sujet = $lang['overtime_subject_refused'];
                     $notifications = 4;
-                } elseif (isset($update['valide_n1']) and $update['valide_n1'] > 0) {
+                } elseif (isset($update['valide_n1']) && $update['valide_n1'] > 0) {
                     $sujet = $lang['overtime_subject_accepted_pending'];
                     $notifications = 3;
-                } elseif (isset($update['valide_n1']) and $update['valide_n1'] < 0) {
+                } elseif (isset($update['valide_n1']) && $update['valide_n1'] < 0) {
                     $sujet = $lang['overtime_subject_refused_pending'];
                     $notifications = 3;
                 } else {
@@ -364,10 +361,10 @@ class OvertimeController extends BaseController
                 $message .= "Date : ".dateFr($recup['date']);
                 $message .= "<br/>\n";
                 $message .= "Nombre d'heures : ".heure4($update['heures']);
-                if ($update['commentaires']) {
+                if ($update['commentaires'] !== '' && $update['commentaires'] !== '0') {
                     $message.="<br/><br/><u>Commentaires</u> :<br/>".str_replace("\n", "<br/>", $update['commentaires']);
                 }
-                if ($update['refus']) {
+                if ($update['refus'] !== '' && $update['refus'] !== '0') {
                     $message.="<br/><br/><u>Motif du refus</u> :<br/>".str_replace("\n", "<br/>", $update['refus']);
                 }
 

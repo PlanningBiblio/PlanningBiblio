@@ -48,7 +48,7 @@ Variable modifiée
       ...
 */
 
-require_once "class.conges.php";
+require_once __DIR__ . "/class.conges.php";
 
 $perso_ids=array();
 foreach ($tab as $elem) {
@@ -66,7 +66,8 @@ $c->bornesExclues=true;
 $c->fetch();
 
 if (!empty($c->elements)) {
-    for ($i=0;$i<count($tab);$i++) {
+    $counter = count($tab);
+    for ($i=0;$i<$counter;$i++) {
         $tab[$i]['conges']=0;
         foreach ($c->elements as $elem) {
             if ($tab[$i]['perso_id']==$elem['perso_id']) {

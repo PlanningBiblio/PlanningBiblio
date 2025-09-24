@@ -17,8 +17,8 @@ modification a eue lieu à l'aide de la fonction JavaScript refresh_poste
 Cette page est appelée par la fonction JavaScript refresh_poste
 */
 
-require_once "../../include/config.php";
-require_once "class.planning.php";
+require_once __DIR__ . "/../../include/config.php";
+require_once __DIR__ . "/class.planning.php";
 
 $date=$_POST['date'];
 $site=$_POST['site'];

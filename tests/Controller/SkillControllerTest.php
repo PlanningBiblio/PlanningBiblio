@@ -34,8 +34,6 @@ class SkillControllerTest extends PLBWebTestCase
 
     public function testNewForm(): void
     {
-        $entityManager = $this->entityManager;
-
         $builder = $this->builder;
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));

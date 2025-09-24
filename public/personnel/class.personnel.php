@@ -20,7 +20,7 @@ Page appelée par les autres fichiers du dossier personnel
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
 
-if (!isset($version) and php_sapi_name() != 'cli') {
+if (!isset($version) && php_sapi_name() != 'cli') {
     include_once(__DIR__.'/../include/accessDenied.php');
 }
 
@@ -37,11 +37,7 @@ class personnel
 
     public $responsablesParAgent;
 
-    public function __construct()
-    {
-    }
-
-    public function delete($liste)
+    public function delete($liste): void
     {
         // Suppresion des informations de la table personnel
         // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
@@ -82,13 +78,13 @@ class personnel
         $db->delete("planning_hebdo", "`perso_id` IN ($liste)");
     }
 
-    public function fetch($tri="nom", $actif=null, $name=null)
+    public function fetch($tri="nom", $actif=null, $name=null): ?bool
     {
         $filter = array('id' => '<> 2');
 
         // Filtre selon le champ actif (administratif, service public)
         $actif = htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
-        if ($actif) {
+        if ($actif !== '' && $actif !== '0') {
             $filter['actif'] = $actif;
         }
 
@@ -162,7 +158,7 @@ class personnel
         if ($name) {
             $result=array();
             foreach ($all as $elem) {
-                if (pl_stristr($elem['nom'], $name) or pl_stristr($elem['prenom'], $name)) {
+                if (pl_stristr($elem['nom'], $name) || pl_stristr($elem['prenom'], $name)) {
                     $result[$elem['id']]=$elem;
                     $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     $result[$elem['id']]['mails_responsables'] = explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
@@ -182,6 +178,7 @@ class personnel
         }
 
         $this->elements=$result;
+        return null;
     }
 
 
@@ -191,7 +188,7 @@ class personnel
      * @result array : si $id est un chiffre : $this->elements[0] contient les informations de l'agent
      * @result array : si $id est un tableau : $this->elements contient les informations des agents avec l'id des agents comme clé
      */
-    public function fetchById($id)
+    public function fetchById($id): void
     {
         if (is_numeric($id)) {
             $db=new db();
@@ -237,9 +234,9 @@ class personnel
      * @return int $this->offset : calcul l'offset à appliquer pour la recherche, dans l'emploi du temps adéquat, des heures d'un jour donné
      * (Attention, l'offset est valide pour la dernière valeur retournée. Ce qui est suffisant pour l'utilisation de cette fonction dans l'agenda et le menudiv car dans les 2 cas, une seule semaine est recherchée et donc une seule valeur est retournée)
      */
-    public function fetchEDTSamedi($perso_id, $debut, $fin)
+    public function fetchEDTSamedi($perso_id, $debut, $fin): ?bool
     {
-        if (!$GLOBALS['config']['EDTSamedi'] or $GLOBALS['config']['PlanningHebdo']) {
+        if (!$GLOBALS['config']['EDTSamedi'] || $GLOBALS['config']['PlanningHebdo']) {
             return false;
         }
 
@@ -258,6 +255,7 @@ class personnel
                 $this->offset = (intval($elem['tableau']) - 1) * 7 ;
             }
         }
+        return null;
     }
   
     /**
@@ -300,13 +298,12 @@ class personnel
     {
         $db=new db();
         $db->query("SHOW TABLE STATUS FROM `{$GLOBALS['config']['dbname']}` LIKE '{$GLOBALS['config']['dbprefix']}personnel';");
-        $result = isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
-        return $result;
+        return isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
     }
   
-    public function updateEDTSamedi($eDTSamedi, $debut, $fin, $perso_id)
+    public function updateEDTSamedi($eDTSamedi, $debut, $fin, $perso_id): ?bool
     {
-        if (!$GLOBALS['config']['EDTSamedi'] or $GLOBALS['config']['PlanningHebdo']) {
+        if (!$GLOBALS['config']['EDTSamedi'] || $GLOBALS['config']['PlanningHebdo']) {
             return false;
         }
 
@@ -332,5 +329,6 @@ class personnel
             $db->CSRFToken = $this->CSRFToken;
             $db->insert("edt_samedi", $insert);
         }
+        return null;
     }
 }

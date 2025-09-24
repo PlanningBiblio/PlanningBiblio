@@ -35,7 +35,7 @@ class PlanningControllerTest extends PLBWebTestCase
         $result = $crawler->filter('.decalage-gauche p');
         $this->assertEquals("Le planning du $today n'est pas prêt.", $result->text('Node does not exist', false));
 
-        $pl_post_lock = $this->builder->build
+        $this->builder->build
         (
             PlanningPositionLock::class,
             array(
@@ -48,7 +48,7 @@ class PlanningControllerTest extends PLBWebTestCase
             )
         );
 
-        $pl_post_tab_affect = $this->builder->build
+        $this->builder->build
         (
             PlanningPositionTabAffectation::class,
             array(

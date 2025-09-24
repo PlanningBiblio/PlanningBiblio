@@ -15,11 +15,7 @@ class ClosingDay
     public $index;
     public $CSRFToken;
 
-    public function __construct()
-    {
-    }
-
-    public function fetch()
+    public function fetch(): void
     {
         $tab=array();
         $annees=array();
@@ -47,7 +43,7 @@ class ClosingDay
             }
         }
 
-        if (empty($tab) or $this->auto) {
+        if ($tab === [] || $this->auto) {
             $tmp=array();
             foreach ($tab as $elem) {
                 $tmp[]=$elem['jour'];
@@ -55,20 +51,18 @@ class ClosingDay
 
             // Recherche des jours fériés avec la fonction "jour_ferie"
             for ($date=$this->debut;$date<$this->fin;$date=date("Y-m-d", strtotime("+1 day", strtotime($date)))) {
-                if (jour_ferie($date)) {
-                    if (!in_array($date, $tmp)) {
-                        $line = array(
-                            "jour" => $date,
-                            "ferie" => 1,
-                            "fermeture" => 0,
-                            "nom" => jour_ferie($date),
-                            "commentaire" => "Ajouté automatiquement"
-                        );
-                        if ($this->index and $this->index=="date") {
-                            $tab[$date]=$line;
-                        } else {
-                            $tab[]=$line;
-                        }
+                if (jour_ferie($date) && !in_array($date, $tmp)) {
+                    $line = array(
+                        "jour" => $date,
+                        "ferie" => 1,
+                        "fermeture" => 0,
+                        "nom" => jour_ferie($date),
+                        "commentaire" => "Ajouté automatiquement"
+                    );
+                    if ($this->index && $this->index == "date") {
+                        $tab[$date]=$line;
+                    } else {
+                        $tab[]=$line;
                     }
                 }
             }
@@ -77,7 +71,7 @@ class ClosingDay
         $this->elements=$tab;
     }
 
-    public function fetchByDate($date)
+    public function fetchByDate($date): void
     {
         // Recherche du jour férié correspondant à la date $date
         $tab=array();
@@ -89,7 +83,7 @@ class ClosingDay
         $this->elements=$tab;
     }
 
-    public function fetchYears()
+    public function fetchYears(): void
     {
         $db=new \db();
         $db->select("jours_feries", "annee", null, "GROUP BY `annee` desc");
@@ -100,13 +94,13 @@ class ClosingDay
         }
     }
 
-    public function update($p)
+    public function update(array $p): void
     {
         $error=false;
         $data=array();
         $keys=array_keys($p['jour']);
         foreach ($keys as $elem) {
-            if ($p['jour'][$elem] and $p['jour'][$elem]!="0000-00-00") {
+            if ($p['jour'][$elem] && $p['jour'][$elem] != "0000-00-00") {
                 $ferie=isset($p['ferie'][$elem])?1:0;
                 $fermeture=isset($p['fermeture'][$elem])?1:0;
                 $data[]=array("annee"=>$p['annee'],"jour"=>dateSQL($p['jour'][$elem]),"ferie"=>$ferie,"fermeture"=>$fermeture,"nom"=>$p['nom'][$elem],"commentaire"=>$p['commentaire'][$elem]);
@@ -117,7 +111,7 @@ class ClosingDay
         $db->delete("jours_feries", array('annee' => $p['annee']));
         $error=$db->error?true:$error;
 
-        if (!empty($data)) {
+        if ($data !== []) {
             $db=new \db();
             $db->CSRFToken = $this->CSRFToken;
             $db->insert("jours_feries", $data);

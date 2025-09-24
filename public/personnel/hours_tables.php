@@ -79,7 +79,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
     $hours_tab .= "<tbody>\n";
 
     $disabled = "disabled";
-    if (in_array(21, $droits) and !$config['PlanningHebdo']) {
+    if (in_array(21, $droits) && !$config['PlanningHebdo']) {
         $disabled = "";
     }
     for ($i = $debut[$j]; $i <= $fin[$j]; $i++) {
@@ -161,7 +161,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         }
 
         if ($config['Multisites-nombre']>1) {
-            if ($disabled) {
+            if ($disabled !== '' && $disabled !== '0') {
                 $site=null;
                 if (isset($temps[$i-1][4])) {
                     $site="Multisites-site".$temps[$i-1][4];
@@ -174,10 +174,10 @@ for ($j = 0; $j < $nb_semaine; $j++) {
                 $hours_tab .= "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
                 $hours_tab .= "<option value='' class='edt-site-0'>&nbsp;</option>\n";
                 for ($l=1;$l<=$config['Multisites-nombre'];$l++) {
-                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$l) ? "selected='selected'" : null;
+                    $selected = (isset($temps[$i-1][4]) && $temps[$i-1][4] == $l) ? "selected='selected'" : null;
                     $hours_tab .= "<option value='$l' $selected class='edt-site-$l'>{$config["Multisites-site{$l}"]}</option>\n";
                 }
-                $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4] == -1) ? "selected='selected'" : null;
+                $selected = (isset($temps[$i-1][4]) && $temps[$i-1][4] == -1) ? "selected='selected'" : null;
                 $hours_tab .= "<option value='-1' $selected class='edt-site--1'>Tout site</option>\n";
                 $hours_tab .= "</select></td>";
             }
@@ -230,7 +230,7 @@ if ($EDTSamedi) {
         $d=new datePl((date("Y")+$i)."-08-31");
         $dernierLundi=$d->dates[0];
 
-        if (date("Y-m-d")>=$premierLundi and date("Y-m-d")<=$dernierLundi) {
+        if (date("Y-m-d") >= $premierLundi && date("Y-m-d") <= $dernierLundi) {
             $currentTab="#EDTA-$i";
         }
         $current=$premierLundi;
@@ -242,7 +242,7 @@ if ($EDTSamedi) {
 
         while ($current <= $dernierLundi) {
             // Evite de mettre la même semaine (fin août - début septembre) dans 2 années universitaires
-            if (isset($last) and $current==$last) {
+            if (isset($last) && $current == $last) {
                 $last=$current;
                 $current=date("Y-m-d", strtotime("+7 day", strtotime($current)));
                 continue;
@@ -282,7 +282,7 @@ if ($EDTSamedi) {
                 $hours_tab .= "<br/>\n";
             }
 
-            if ($j==17 or $j==35) {
+            if ($j == 17 || $j == 35) {
                 $hours_tab .= "</td><td>";
             }
             $j++;

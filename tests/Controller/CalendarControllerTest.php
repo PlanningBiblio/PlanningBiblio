@@ -70,7 +70,7 @@ class CalendarControllerTest extends PLBWebTestCase
 
         $start = \DateTime::createFromFormat("d/m/Y H:i:s", '25/09/2022 08:00:00');
         $end = \DateTime::createFromFormat("d/m/Y H:i:s", '29/09/2022 19:00:00');
-        $pl_post = $builder->build
+        $builder->build
         (
             WorkingHour::class,
             array(
@@ -144,7 +144,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $start = \DateTime::createFromFormat("d/m/Y H:i:s", '26/09/2022 08:00:00');
         $end = \DateTime::createFromFormat("d/m/Y H:i:s", '28/09/2022 19:00:00');
         $validation = \DateTime::createFromFormat("d/m/Y H:i:s", '28/09/2022 08:00:00');
-        $off = $builder->build(Absence::class, array('debut' => $start, 'motif' => 'malade', 'fin' => $end, 'perso_id' => $agent2->getId(), 'validation' => $validation, 'valide' => 1, 'supprime' => 0, 'groupe' => '1'));
+        $builder->build(Absence::class, array('debut' => $start, 'motif' => 'malade', 'fin' => $end, 'perso_id' => $agent2->getId(), 'validation' => $validation, 'valide' => 1, 'supprime' => 0, 'groupe' => '1'));
 
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',

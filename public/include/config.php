@@ -13,7 +13,7 @@ require_once(__DIR__.'/../../vendor/autoload.php');
 use Symfony\Component\Dotenv\Dotenv;
 
 // Security : Allow direct access to ajax files : add $version = 'ajax';
-if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
+if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'){
   $version = 'ajax';
 }
 
@@ -64,7 +64,7 @@ $config['secret'] = $_ENV['APP_SECRET'];
 
 $dbprefix = $config['dbprefix'];
 
-include 'db.php';
+include __DIR__ . '/db.php';
 
 // Get config values from DB
 $db = new db();
@@ -87,6 +87,6 @@ if (file_exists($custom_options_file)) {
 }
 
 // $version not set means direct access to an unauthorized file ==> load the access denied page
-if (!isset($version) and php_sapi_name() != 'cli') {
-  include_once "accessDenied.php";
+if (!isset($version) && php_sapi_name() != 'cli') {
+  include_once __DIR__ . "/accessDenied.php";
 }

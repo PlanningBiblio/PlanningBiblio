@@ -22,7 +22,7 @@ class BaseEvent extends Event
         return $this->has_response == 1;
     }
 
-    public function setResponse( $response )
+    public function setResponse( $response ): void
     {
         $this->has_response = 1;
         $this->$response = $response;

@@ -8,17 +8,17 @@ class FakeMailTransporter implements NotificationTransporterInterface
 {
     public $error = '';
 
-    public function setSubject($subject)
+    public function setSubject($subject): static
     {
         return $this;
     }
 
-    public function setBody($body)
+    public function setBody($body): static
     {
         return $this;
     }
 
-    public function setRecipients($recipients)
+    public function setRecipients($recipients): static
     {
         return $this;
     }

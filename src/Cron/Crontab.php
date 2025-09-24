@@ -6,7 +6,7 @@ use App\Entity\Cron;
 
 class Crontab {
 
-    private $crons_dir = __DIR__ . '/../../src/Cron/Legacy/';
+    private string $crons_dir = __DIR__ . '/../../src/Cron/Legacy/';
 
     private $executable_crons = array();
 
@@ -25,7 +25,7 @@ class Crontab {
             $date_cron = $cron->getLast()->format('Y-m-d H:m:s');
 
             // Daily crons.
-            if ($cron->getDom() == '*' and $cron->getMon() == '*' and $cron->getDow() == '*') {
+            if ($cron->getDom() == '*' && $cron->getMon() == '*' && $cron->getDow() == '*') {
                 if ($date_cron < $today) {
                     $this->executable_crons[] = $cron;
                 }
@@ -33,7 +33,7 @@ class Crontab {
             }
 
             // Yearly Cron
-            if ($cron->getDom() != '*' and $cron->getMon() != '*') {
+            if ($cron->getDom() != '*' && $cron->getMon() != '*') {
                 $command_date = strtotime("{$cron->getMon()}/{$cron->getDom()}");
                 if ($command_date > time()) {
                     $command_date = strtotime('-1 year', $command_date);
@@ -53,7 +53,7 @@ class Crontab {
         return $this->executable_crons;
     }
 
-    public function execute()
+    public function execute(): void
     {
         if (php_sapi_name() != 'cli') {
 
@@ -74,7 +74,7 @@ class Crontab {
         }
     }
 
-    public static function update_cron($cron)
+    public static function update_cron($cron): void
     {
         $last = date_create();
 

@@ -19,7 +19,7 @@ require_once(__DIR__ . '/../../public/postes/class.postes.php');
 class FrameworkController extends BaseController
 {
     #[Route(path: '/framework', name: 'framework.index', methods: ['GET'])]
-    public function index (Request $request, Session $session){
+    public function index (Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
         $nbSites = $this->config('Multisites-nombre');
 
         // Tableaux
@@ -45,11 +45,7 @@ class FrameworkController extends BaseController
 
         if($tableaux){
             foreach ($tableaux as &$elem) {
-                if (array_key_exists($elem['tableau'], $tabAffect)) {
-                    $utilisation=dateFr($tabAffect[$elem['tableau']]);
-                } else {
-                    $utilisation="Jamais";
-                }
+                $utilisation = array_key_exists($elem['tableau'], $tabAffect) ? dateFr($tabAffect[$elem['tableau']]) : "Jamais";
                 $elem['tabAffect'] = $utilisation;
 
                 if ($nbSites > 1){
@@ -60,11 +56,7 @@ class FrameworkController extends BaseController
         // Récupération de tableaux supprimés dans l'année
         if (!empty($tableauxSupprimes)) {
             foreach ($tableauxSupprimes as &$elem) {
-                if (array_key_exists($elem['tableau'], $tabAffect)) {
-                    $utilisation=dateFr($tabAffect[$elem['tableau']]);
-                } else {
-                    $utilisation="Jamais";
-                }
+                $utilisation = array_key_exists($elem['tableau'], $tabAffect) ? dateFr($tabAffect[$elem['tableau']]) : "Jamais";
                 $elem['tabAffect'] = $utilisation;
             }
         }
@@ -108,7 +100,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework/info', name: 'framework.save_table_info', methods: ['POST'])]
-    public function saveInfo(Request $request, Session $session){
+    public function saveInfo(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $post = $request->request->all();
         $id = $post["id"];
         $CSRFToken = $post["CSRFToken"];
@@ -164,22 +156,22 @@ class FrameworkController extends BaseController
         }
     }
      #[Route(path: '/framework/add', name: 'framework.add_table', methods: ['GET'])]
-     public function addTable (Request $request, Session $session){
+     public function addTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
         $CSRFToken = $GLOBALS['CSRFSession'];
         $cfgType = $request->get("cfg-type");
         $cfgTypeGet = $request->get("cfg-type");
         $tableauNumero = $request->request->get("numero");
-        $tableauGet = $request->get("numero");
+        $request->get("numero");
         $nbSites = $this->config('Multisites-nombre');
 
         // Choix de l'onglet (cfg-type)
         if ($cfgTypeGet) {
             $cfgType = $cfgTypeGet;
         }
-        if (!$cfgType and in_array("cfg_type", $_SESSION)) {
+        if (!$cfgType && in_array("cfg_type", $_SESSION)) {
             $cfgType = $_SESSION['cfg_type'];
         }
-        if (!$cfgType and !in_array("cfg_type", $_SESSION)) {
+        if (!$cfgType && !in_array("cfg_type", $_SESSION)) {
             $cfgType = "infos";
         }
         $_SESSION['cfg_type'] = $cfgType;
@@ -220,7 +212,7 @@ class FrameworkController extends BaseController
 
      }
     #[Route(path: '/framework/{id}', name: 'framework.edit_table', methods: ['GET'])]
-    public function editTable (Request $request, Session $session){
+    public function editTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
         $CSRFToken = $GLOBALS['CSRFSession'];
         $cfgType = $request->get("cfg-type");
         $tableauNumero = $request->request->get("id");
@@ -233,7 +225,7 @@ class FrameworkController extends BaseController
         }
 
         // Choix de l'onglet (cfg-type)
-        if (!$cfgType and in_array("cfg_type", $_SESSION)) {
+        if (!$cfgType && in_array("cfg_type", $_SESSION)) {
             $cfgType = in_array("cfg_type", $_SESSION) ? $_SESSION['cfg_type'] : 'infos';
         }
         $_SESSION['cfg_type'] = $cfgType;
@@ -343,7 +335,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework', name: 'framework.save_table', methods: ['POST'])]
-    public function saveTable (Request $request, Session $session){
+    public function saveTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableauNumero = $post['numero'];
@@ -368,9 +360,9 @@ class FrameworkController extends BaseController
             $keys = array_keys($post);
 
             foreach ($keys as $key) {
-                if ($key != "page" and $key != "action" and $key != "numero") {
+                if ($key != "page" && $key != "action" && $key != "numero") {
                     $tmp = explode("_", $key);				// debut_1_22
-                    if (array_key_exists(1, $tmp) and array_key_exists(2, $tmp)) {
+                    if (array_key_exists(1, $tmp) && array_key_exists(2, $tmp)) {
                         if (empty($tab[$tmp[1]."_".$tmp[2]])) {
                             $tab[$tmp[1]."_".$tmp[2]] = array($tmp[1]);
                         }	// tab[0]=tableau
@@ -385,7 +377,7 @@ class FrameworkController extends BaseController
             }
             $values = array();
             foreach ($tab as $elem) {
-                if ($elem[1] and $elem[2]) {
+                if ($elem[1] && $elem[2]) {
                     $values[] = array("debut"=>$elem[1], "fin"=>$elem[2], "tableau"=>$elem[0], "numero"=>$tableauNumero);
                 }
             }
@@ -405,7 +397,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: 'framework-table/save-line', name: 'framework.save_table_line', methods: ['POST'])]
-    public function saveTableLine(Request $request, Session $session){
+    public function saveTableLine(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $form_post = $request->request->all();
         $CSRFToken = $form_post['CSRFToken'];
         $tableauNumero = $form_post['id'];
@@ -424,15 +416,15 @@ class FrameworkController extends BaseController
 
         // Insertion des données dans la table pl_poste_lignes
         foreach ($form_post as $key => $value) {
-            if ($value and substr($key, 0, 6) == "select") {
+            if ($value && substr($key, 0, 6) === "select") {
                 $tab = explode("_", $key);  //1: tableau ; 2 lignes
-                if (substr($tab[1], -5) == "Titre") {
+                if (substr($tab[1], -5) === "Titre") {
                     $type = "titre";
                     $tab[1] = substr($tab[1], 0, -5);
-                } elseif (substr($tab[1], -6) == "Classe") {
+                } elseif (substr($tab[1], -6) === "Classe") {
                     $type = "classe";
                     $tab[1] = substr($tab[1], 0, -6);
-                } elseif (substr($value, -5) == "Ligne") {
+                } elseif (substr($value, -5) === "Ligne") {
                     $type = "ligne";
                     $value = substr($value, 0, -5);
                 } else {
@@ -459,7 +451,7 @@ class FrameworkController extends BaseController
         // Insertion des données dans la table pl_poste_cellules
         $values=array();
         foreach ($form_post as $key => $value) {
-            if ($value and substr($key, 0, 8)=="checkbox") {
+            if ($value && substr($key, 0, 8) === "checkbox") {
                 $tab = explode("_", $key);  //1: tableau ; 2 lignes ; 3 colonnes
                 $values[] = array(
                     ":numero"   =>$tableauNumero,
@@ -469,7 +461,7 @@ class FrameworkController extends BaseController
                 );
             }
         }
-        if (!empty($values)) {
+        if ($values !== []) {
             $sql="INSERT INTO `{$dbprefix}pl_poste_cellules` (`numero`,`tableau`,`ligne`,`colonne`) ";
             $sql.="VALUES (:numero, :tableau, :ligne, :colonne)";
 
@@ -485,7 +477,7 @@ class FrameworkController extends BaseController
     }
 
      #[Route(path: '/framework', name: 'framework.delete_table', methods: ['DELETE'])]
-    public function deleteTable (Request $request, Session $session){
+    public function deleteTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableau = $post['tableau'];
@@ -511,7 +503,7 @@ class FrameworkController extends BaseController
     }
 
      #[Route(path: '/framework-batch_delete', name: 'framework.delete_selected_tables', methods: ['GET'])]
-    public function deleteSelectedTables (Request $request, Session $session){
+    public function deleteSelectedTables (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $CSRFToken = $request->get("CSRFToken");
         $ids = $request->get("ids");
         $dbprefix = $GLOBALS['dbprefix'];
@@ -531,7 +523,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework/restore_table', name: 'framework.restore_table', methods: ['POST'])]
-    public function restoreTable (Request $request, Session $session) {
+    public function restoreTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse {
         $CSRFToken = $request->get("CSRFToken");
         $id = $request->get("id");
         $name = $request->get("name");
@@ -552,7 +544,7 @@ class FrameworkController extends BaseController
             }
         }
 
-        if (!empty($postes)) {
+        if ($postes !== []) {
             $postes_str = implode(',', $postes);
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
@@ -567,9 +559,9 @@ class FrameworkController extends BaseController
                 ->getQuery();
 
             $result = $query->getResult();
-            $skills = array_map(function($s) { return $s['activites'][0]; }, $result);
+            $skills = array_map(function(array $s) { return $s['activites'][0]; }, $result);
 
-            if (!empty($skills)) {
+            if ($skills !== []) {
                 $skills = implode(',', $skills);
                 $db=new \db();
                 $db->CSRFToken = $CSRFToken;
@@ -587,9 +579,9 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-group/add', name: 'framework.add_group', methods: ['GET'])]
-    public function addGroup (Request $request, Session $session){
+    public function addGroup (Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
         // Initialisation des variables
-        $id = $request->get("id");
+        $request->get("id");
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
 
@@ -634,7 +626,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-group/{id}', name: 'framework.edit_group', methods: ['GET'])]
-    public function editGroup (Request $request, Session $session){
+    public function editGroup (Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
         // Initialisation des variables
         $id = $request->get("id");
         $CSRFToken = $GLOBALS['CSRFSession'];
@@ -690,7 +682,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-group', name: 'framework.save_group', methods: ['POST'])]
-    public function saveGroup (Request $request, Session $session){
+    public function saveGroup (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         unset($post['CSRFToken']);
@@ -704,7 +696,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-group', name: 'framework.delete_group', methods: ['DELETE'])]
-    public function deleteGroup (Request $request, Session $session){
+    public function deleteGroup (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $CSRFToken =  $request->request->get("CSRFToken");
         $id = $request->request->get("id");
         
@@ -716,7 +708,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-line/add', name: 'framework.add_line', methods: ['GET'])]
-    public function addLine (Request $request, Session $session){
+    public function addLine (Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
         $CSRFToken = $GLOBALS['CSRFSession'];
 
         $this->templateParams(
@@ -728,7 +720,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-line/{id}', name: 'framework.edit_line', methods: ['GET'])]
-    public function editLine (Request $request, Session $session){
+    public function editLine (Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
         // Initialisation des variables
         $CSRFToken = $GLOBALS['CSRFSession'];
         $id = $request->get('id');
@@ -749,7 +741,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-line', name: 'framework.save_line', methods: ['POST'])]
-    public function saveLine (Request $request, Session $session){
+    public function saveLine (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $post = $request->request->all();
         $id = $post['id'];
         $nom = $post['nom'];
@@ -788,7 +780,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-line', name: 'framework.delete_line', methods: ['DELETE'])]
-    public function deleteLine (Request $request, Session $session){
+    public function deleteLine (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $post = $request->request->all();
         $id = $post['id'];
         $CSRFToken = $post['CSRFToken'];
@@ -801,7 +793,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework/copy', name: 'framework.copy_table', methods: ['POST'])]
-    public function copyTable (Request $request, Session $session){
+    public function copyTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
 
         // Initilisation des variables
         $CSRFToken = $request->get('CSRFToken');
@@ -868,7 +860,7 @@ class FrameworkController extends BaseController
         $db->select2("pl_poste_cellules", array("ligne","colonne","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`ligne`,`colonne`");
         if ($db->result) {
             foreach ($db->result as $elem) {
-                if (array_key_exists('ligne', $elem) and array_key_exists('colonne', $elem)) {
+                if (array_key_exists('ligne', $elem) && array_key_exists('colonne', $elem)) {
                     $values[] = array(":ligne"=>$elem['ligne'], ":colonne"=>$elem['colonne'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
                 }
             }

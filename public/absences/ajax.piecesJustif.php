@@ -16,7 +16,7 @@ Appelé lors du clic sur les cases à cocher, évènement $(".absences-pj input[
 */
 
 require_once(__DIR__ . '/../../init/init_ajax.php');
-require_once('class.absences.php');
+require_once(__DIR__ . '/class.absences.php');
 
 $id = $request->get('id');
 $pj = $request->get('pj');

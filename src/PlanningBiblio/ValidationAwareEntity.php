@@ -12,7 +12,7 @@ class ValidationAwareEntity
 
     private $entity;
 
-    private $status_desc = array(
+    private array $status_desc = array(
         'feminine' => array(
             0 => 'Demandée',
             1 => 'Acceptée',
@@ -41,24 +41,23 @@ class ValidationAwareEntity
         $this->type = $entity_type;
 
         if (!$entity_id) {
-            $this;
             return;
         }
 
         if ($entity_type == 'absence') {
-            $this->entity = self::load_absence($entity_id);
+            $this->entity = $this->load_absence($entity_id);
         }
 
         if ($entity_type == 'holiday') {
-            $this->entity = self::load_holiday($entity_id);
+            $this->entity = $this->load_holiday($entity_id);
         }
 
         if ($entity_type == 'overtime') {
-            $this->entity = self::load_overtime($entity_id);
+            $this->entity = $this->load_overtime($entity_id);
         }
 
         if ($entity_type == 'workinghour') {
-            $this->entity = self::load_workinghours($entity_id);
+            $this->entity = $this->load_workinghours($entity_id);
         }
     }
 
@@ -68,7 +67,7 @@ class ValidationAwareEntity
             return $this->config['Absences-Validation-N2'];
         }
 
-        if ($this->type == 'holiday' or $this->type == 'overtime') {
+        if ($this->type == 'holiday' || $this->type == 'overtime') {
             return $this->config['Conges-Validation-N2'];
         }
 
@@ -79,7 +78,7 @@ class ValidationAwareEntity
         return 0;
     }
 
-    public function status()
+    public function status(): array
     {
         $mode = 'male';
         if ($this->type == 'absence') {
@@ -99,9 +98,7 @@ class ValidationAwareEntity
             $valide_n1 = $this->entity['valide_n1'];
         }
 
-        if ($this->type == 'holiday'
-            or $this->type == 'workinghour'
-            or $this->type == 'overtime') {
+        if ($this->type == 'holiday' || $this->type == 'workinghour' || $this->type == 'overtime') {
 
             $valide_n2 = $this->entity['valide'];
             $valide_n1 = $this->entity['valide_n1'];
@@ -130,7 +127,7 @@ class ValidationAwareEntity
         return array(0, $this->status_desc[$mode][0]);
     }
 
-    private static function load_absence($id)
+    private function load_absence($id)
     {
         $absence = new \absences();
         $absence->fetchById($id);
@@ -138,7 +135,7 @@ class ValidationAwareEntity
         return $absence->elements;
     }
 
-    private static function load_holiday($id)
+    private function load_holiday($id)
     {
         $c = new \conges();
         $c->id = $id;
@@ -147,7 +144,7 @@ class ValidationAwareEntity
         return $c->elements[0];
     }
 
-    private static function load_overtime($id)
+    private function load_overtime($id)
     {
         $c = new \conges();
         $c->recupId = $id;
@@ -156,7 +153,7 @@ class ValidationAwareEntity
         return $c->elements[0];
     }
 
-    private static function load_workinghours($id)
+    private function load_workinghours($id)
     {
         $p = new \planningHebdo();
         $p->id = $id;

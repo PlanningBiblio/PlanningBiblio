@@ -30,18 +30,14 @@ class postes
     public $elements = array();
     public $site;
 
-    public function __construct()
-    {
-    }
-
-    public function delete()
+    public function delete(): void
     {
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
         $db->update("postes", array("supprime"=>"SYSDATE"), array("id"=>$this->id));
     }
 
-    public function fetch($sort="nom", $name=null, $group=null)
+    public function fetch($sort="nom", $name=null, $group=null): void
     {
         // Floors
         $floors = array();
@@ -76,7 +72,7 @@ class postes
         $result=$all;
 
         //	If name, keep only matching results
-        if (!empty($all) and $name) {
+        if ($all !== [] && $name) {
             $result=array();
             foreach ($all as $elem) {
                 if (pl_stristr($elem['nom'], $name)) {

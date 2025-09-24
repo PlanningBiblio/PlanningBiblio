@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'pl_poste_modeles')]
 class PlanningPositionModel
 {
+    public $commentaires;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

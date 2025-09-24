@@ -17,7 +17,7 @@ class HolidayControllerListTest extends PLBWebTestCase
         $GLOBALS['config']['Absences-validation'] = 1;
     }
 
-    private function createHolidayFor($agent, $status = 0)
+    private function createHolidayFor($agent)
     {
         $_SESSION['login_id'] = 1;
 
@@ -70,10 +70,10 @@ class HolidayControllerListTest extends PLBWebTestCase
             'sites' => '["2"]', 'droits' => array(202,502,99,100), 'temps' => json_encode($workinghours)
         ));
 
-        $this->createHolidayFor($jdupont, 2);
-        $this->createHolidayFor($jdevoe, 2);
-        $this->createHolidayFor($abreton, 2);
-        $this->createHolidayFor($kboivin, 2);
+        $this->createHolidayFor($jdupont);
+        $this->createHolidayFor($jdevoe);
+        $this->createHolidayFor($abreton);
+        $this->createHolidayFor($kboivin);
 
         // Make kboivin manager of jdupont
         $manager = new Manager();
@@ -92,7 +92,7 @@ class HolidayControllerListTest extends PLBWebTestCase
         $thisMonth = $date->format('n');
         $date = new DateTime('now + 3 days');
         $holidayMonth = $date->format('n');
-        if ($thisMonth == 8 and $holidayMonth == 9) {
+        if ($thisMonth == 8 && $holidayMonth == 9) {
             $year++;
         }
 
@@ -167,10 +167,10 @@ class HolidayControllerListTest extends PLBWebTestCase
             'sites' => '["2"]', 'droits' => array(3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,901,1001,1002,1101,1201,1301)
         ));
 
-        $this->createHolidayFor($jdupont, 2);
-        $this->createHolidayFor($jdevoe, 2);
-        $this->createHolidayFor($abreton, 2);
-        $this->createHolidayFor($kboivin, 2);
+        $this->createHolidayFor($jdupont);
+        $this->createHolidayFor($jdevoe);
+        $this->createHolidayFor($abreton);
+        $this->createHolidayFor($kboivin);
 
         // Make kboivin manager of jdupont
         $manager = new Manager();

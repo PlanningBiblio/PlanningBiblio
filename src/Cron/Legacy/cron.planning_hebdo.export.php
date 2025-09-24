@@ -83,7 +83,7 @@ while ($current < $end) {
 
     // Si utilisation de 2 plannings hebdo (semaine paire et semaine impaire)
     // Si semaine paire, position +=7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
-    if (!$config['EDTSamedi'] or $config['PlanningHebdo']) {
+    if (!$config['EDTSamedi'] || $config['PlanningHebdo']) {
         $jour += ($d->semaine3 - 1) * 7;
     }
 
@@ -119,30 +119,30 @@ while ($current < $end) {
             if (isset($elem["temps"][$jour])) {
 
                 // Première période : matinée : index 0 (début) et 1 (fin)
-                if (!empty($elem["temps"][$jour][0]) and !empty($elem["temps"][$jour][1])) {
+                if (!empty($elem["temps"][$jour][0]) && !empty($elem["temps"][$jour][1])) {
                     $temps[] = substr($elem["temps"][$jour][0], 0, 5);
                     $temps[] = substr($elem["temps"][$jour][1], 0, 5);
                 }
                 // Deuxième période : après-midi : index 2 (début) et 3 (fin)
                 // Seulement s'il n'y a pas de 3ème période (voir cas suivant)
-                if (!empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][3]) and empty($elem["temps"][$jour][5])) {
+                if (!empty($elem["temps"][$jour][2]) && !empty($elem["temps"][$jour][3]) && empty($elem["temps"][$jour][5])) {
                     $temps[] = substr($elem["temps"][$jour][2], 0, 5);
                     $temps[] = substr($elem["temps"][$jour][3], 0, 5);
                 }
                 // Si 2 pauses sont enregistrées, les index 5 et 6 viennent s'intercaler entre les index 2 et 3. Les périodes sont donc composées des index 2 (début1) et 5 (fin1) et 6 (début2) et 3 (fin2)
-                if (!empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][5])) {
+                if (!empty($elem["temps"][$jour][2]) && !empty($elem["temps"][$jour][5])) {
                     $temps[] = substr($elem["temps"][$jour][2], 0, 5);
                     $temps[] = substr($elem["temps"][$jour][5], 0, 5);
                     $temps[] = substr($elem["temps"][$jour][6], 0, 5);
                     $temps[] = substr($elem["temps"][$jour][3], 0, 5);
                 }
                 // Journée complète : heures enregistrées sans pause entre les index 0 et 3
-                if (!empty($elem["temps"][$jour][0]) and empty($elem["temps"][$jour][2]) and empty($elem["temps"][$jour][5]) and !empty($elem["temps"][$jour][3])) {
+                if (!empty($elem["temps"][$jour][0]) && empty($elem["temps"][$jour][2]) && empty($elem["temps"][$jour][5]) && !empty($elem["temps"][$jour][3])) {
                     $temps[] = substr($elem["temps"][$jour][0], 0, 5);
                     $temps[] = substr($elem["temps"][$jour][3], 0, 5);
                 }
                 // Journée complète : heures enregistrées sans pause entre les index 0 et 5
-                if (!empty($elem["temps"][$jour][0]) and empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][5]) and empty($elem["temps"][$jour][3])) {
+                if (!empty($elem["temps"][$jour][0]) && empty($elem["temps"][$jour][2]) && !empty($elem["temps"][$jour][5]) && empty($elem["temps"][$jour][3])) {
                     $temps[] = substr($elem["temps"][$jour][0], 0, 5);
                     $temps[] = substr($elem["temps"][$jour][5], 0, 5);
                 }

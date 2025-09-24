@@ -75,7 +75,7 @@ Exemple à ajouter en crontab :
             $jour_semaine = date("w", $time);
 
             // Si le jour courant est un dimanche et que l'établissement n'ouvre pas les dimanches, on ne l'ajoute pas
-            if ($jour_semaine != 0 or $config['Dimanche']) {
+            if ($jour_semaine != 0 || $config['Dimanche']) {
                 $dates[] = date('Y-m-d', $time);
             }
 
@@ -148,12 +148,7 @@ Exemple à ajouter en crontab :
 
             // Consider the validation scheme (config Absences-notifications-agent-par-agent)
             if ($config['Absences-notifications-agent-par-agent']) {
-                if ($elem->getValidLevel1() == 0) {
-                    $tmp->recipients = $agent->notification_level1;
-                } else { 
-                    $tmp->recipients = $agent->notification_level2;
-                }
-
+                $tmp->recipients = $elem->getValidLevel1() == 0 ? $agent->notification_level1 : $agent->notification_level2;
             } else {
                 // TODO : Use Absences-notifications-A1, Absences-notifications-B1 instead of Conges-Rappels-N1, then remove param Conges-Rappels-N1
                 // Ajoute les destinataires pour les congés n'étant pas validés en N1 en fonction du paramètre $config['Conges-Rappels-N1']

@@ -8,6 +8,14 @@ use App\PlanningBiblio\WorkingHours;
 
 class WeekPlanningHelper extends BaseHelper
 {
+    /**
+     * @var bool
+     */
+    public $error;
+    /**
+     * @var string
+     */
+    public $message;
     private $week_planning;
 
     public function __construct($week_planning = array())
@@ -18,7 +26,7 @@ class WeekPlanningHelper extends BaseHelper
         parent::__construct();
     }
 
-    public function NumberWorkingDays()
+    public function NumberWorkingDays(): int
     {
         $workings_days = 0;
         foreach ($this->week_planning as $day) {
@@ -44,7 +52,7 @@ class WeekPlanningHelper extends BaseHelper
         return $day->IsWorked();
     }
 
-    public function getTimes($date, $agent = null, $planning = null )
+    public function getTimes($date, $agent = null, $planning = null ): array
     {
         if (!$planning) {
             $planning = $this->getPlanning($date, $agent);
@@ -64,7 +72,7 @@ class WeekPlanningHelper extends BaseHelper
         return $wh->hoursOf($day);
     }
 
-    public function getPlanning($date, $agent)
+    public function getPlanning($date, $agent): ?array
     {
          $p =new \planningHebdo();
          $p->perso_id = $agent;
@@ -76,7 +84,7 @@ class WeekPlanningHelper extends BaseHelper
          if (empty($p->elements)) {
             $this->error = true;
             $this->message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
-            return;
+            return null;
          }
          $times = $p->elements[0]['temps'];
          $breaktimes = $p->elements[0]['breaktime'];

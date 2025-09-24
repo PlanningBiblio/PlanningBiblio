@@ -21,7 +21,7 @@ use App\Entity\Position;
 $version = $GLOBALS['version'] ?? null;
 
 if (!isset($version)) {
-    include_once "../../include/accessDenied.php";
+    include_once __DIR__ . "/../../include/accessDenied.php";
 }
 
 
@@ -38,7 +38,7 @@ class planning
     public $validation;
 
 
-    public function fetch()
+    public function fetch(): void
     {
         if (!$this->date) {
             return;
@@ -57,7 +57,7 @@ class planning
   
   
     // Recherche les agents de catégorie A en fin de service
-    public function finDeService()
+    public function finDeService(): ?bool
     {
         $date=$this->date;
         $site=$this->site;
@@ -81,7 +81,7 @@ class planning
                 $perso_ids[]=$elem['perso_id'];
             }
         }
-        if (empty($perso_ids)) {
+        if ($perso_ids === []) {
             return false;
         }
         $perso_ids=implode(",", $perso_ids);
@@ -98,7 +98,7 @@ class planning
                 $statuts[]=$elem['statut'];
             }
         }
-        if (empty($statuts)) {
+        if ($statuts === []) {
             return false;
         }
         $statuts=implode("','", $statuts);
@@ -109,19 +109,16 @@ class planning
         if ($db->result) {
             $this->categorieA=true;
         }
+        return null;
     }
 
     // Affiche la liste des agents dans le menudiv
-    public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $quotaSP, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey)
+    public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $quotaSP, $nbAgents, $sr_init, $hide, $deuxSP, array $motifExclusion, $absences_non_validees, $journey, $absences_journey): void
     {
         $config=$GLOBALS['config'];
-        $dbprefix=$config['dbprefix'];
         $d=new datePl($date);
         $j1=$d->dates[0];
         $j7=$d->dates[6];
-        $semaine=$d->semaine;
-        $semaine3=$d->semaine3;
-        $site=$this->site;
 
         if ($hide) {
             $display="display:none;";
@@ -202,7 +199,7 @@ class planning
                     // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent, on passe (continue 2)
                     foreach ($absencesDB as $a) {
-                        if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                        if ($elem['perso_id'] == $a['perso_id'] && $a['debut'] < $elem['date'] . ' ' . $elem['fin'] && $a['fin'] > $elem['date'] . " " . $elem['debut']) {
                             continue 2;
                         }
                     }
@@ -215,7 +212,7 @@ class planning
                     if ($GLOBALS['config']['Planning-Heures']) {
                         $h = diff_heures($elem['debut'], $elem['fin'], "decimal");
                         $hres_jour = $elem['date'] == $date ? $h : 0;
-                        $hres_semaine = ($elem['date'] >= $j1 and $elem['date'] <= $j7) ? $h : 0;
+                        $hres_semaine = ($elem['date'] >= $j1 && $elem['date'] <= $j7) ? $h : 0;
                         $hres_4sem = $h;
             
                         if (!isset($heures[$elem['perso_id']])) {
@@ -239,13 +236,13 @@ class planning
                 $heuresHebdoTitle="Quota hebdomadaire";
         
                 // Heures hebdomadaires avec prise en compte des absences
-                if ($config["Planning-Absences-Heures-Hebdo"] and array_key_exists($elem['id'], $heuresAbsencesTab)) {
+                if ($config["Planning-Absences-Heures-Hebdo"] && array_key_exists($elem['id'], $heuresAbsencesTab)) {
                     $heuresAbsences=$heuresAbsencesTab[$elem['id']];
                     if (is_numeric($heuresAbsences)) {
                         if ($heuresAbsences>0) {
                             // On informe du pourcentage sur les heures d'absences
                             $pourcent=null;
-                            if (strpos($elem["heures_hebdo"], "%") and $elem["heures_hebdo"]!="100%") {
+                            if (strpos($elem["heures_hebdo"], "%") && $elem["heures_hebdo"] != "100%") {
                                 $pourcent=" {$elem["heures_hebdo"]}";
                             }
               
@@ -265,10 +262,9 @@ class planning
                     $heuresHebdo = round($heuresHebdo, 2);
                 }
 
-                if (!$config['ClasseParService']) {
-                    if ($elem['id']==2) {		// on retire l'utilisateur "tout le monde"
-                        continue;
-                    }
+                if (!$config['ClasseParService'] && $elem['id'] == 2) {
+                    // on retire l'utilisateur "tout le monde"
+                    continue;
                 }
         
                 $title = $elem['nom'] . ' ' . $elem['prenom'];
@@ -283,24 +279,21 @@ class planning
 
                 // Si sans repas, on ajoute (SR) à l'affichage
                 $elem['no_lunch'] = 0;
-                if ($sansRepas === true or in_array($elem['id'], $sansRepas)) {
+                if ($sansRepas === true || in_array($elem['id'], $sansRepas)) {
                     $elem['no_lunch'] = 1;
                 }
 
                 // Déjà placés
                 $elem['placed'] = 0;
-                if ($config['Planning-dejaPlace']) {
-                    if (in_array($elem['id'], $deja)) {	// Déjà placé pour ce poste
-                        $elem['placed'] = 1;
-                    }
+                if ($config['Planning-dejaPlace'] && in_array($elem['id'], $deja)) {
+                    // Déjà placé pour ce poste
+                    $elem['placed'] = 1;
                 }
 
                 // Vérifie si l'agent fera 2 plages de service public de suite
                 $elem['two_sr'] = 0;
-                if ($config['Alerte2SP']) {
-                    if (in_array($elem['id'], $deuxSP)) {
-                        $elem['two_sr'] = 1;
-                    }
+                if ($config['Alerte2SP'] && in_array($elem['id'], $deuxSP)) {
+                    $elem['two_sr'] = 1;
                 }
 
                 $elem['journey'] = 0;
@@ -350,7 +343,7 @@ class planning
                         $elem['color'] = 'red';
                     } elseif ($hres_jour>7) {			// plus de 7h:jour : rouge
                         $elem['color'] = 'red';
-                    } elseif ( (floatval($heuresHebdo) - floatval($hres_sem)) <= 0.5 and (floatval($hres_sem) - floatval($heuresHebdo)) <= 0.5 ) {  // 0,5 du quota hebdo : vert
+                    } elseif ( floatval($heuresHebdo) - floatval($hres_sem) <= 0.5 && floatval($hres_sem) - floatval($heuresHebdo) <= 0.5 ) {  // 0,5 du quota hebdo : vert
                         $elem['color'] = 'green';
                     } elseif ($hres_sem>$heuresHebdo) {			// plus du quota hebdo : rouge
                         $elem['color'] = 'red';
@@ -365,7 +358,7 @@ class planning
                 if ($elem['service']) {
                     $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));
                 }
-                $classe=empty($class_tmp)?null:implode(" ", $class_tmp);
+                $classe=$class_tmp === []?null:implode(" ", $class_tmp);
 
                 $elem['display'] = $display;
                 $elem['class'] = $classe;
@@ -385,11 +378,11 @@ class planning
     * @param string $this->date , date au format YYYY-MM-DD
     * Envoie des notifications en cas de validation ou changement de planning aux agents concernés
     */
-    public function notifications()
+    public function notifications(): void
     {
         $version="ajax";
-        require_once "../../personnel/class.personnel.php";
-        require_once "../../postes/class.postes.php";
+        require_once __DIR__ . "/../../personnel/class.personnel.php";
+        require_once __DIR__ . "/../../postes/class.postes.php";
         $config=$GLOBALS['config'];
     
         // Liste des agents actifs
@@ -443,9 +436,9 @@ class planning
             $filter = '';
             $position = isset($postes[$elem['poste']]) ? $postes[$elem['poste']] : null;
             if ($position && $position['teleworking'] == 1) {
-                $teleworking_exception = (!empty($teleworking_reasons))
-                    ? "AND `motif` NOT IN ('$teleworking_reasons')"
-                    : null;
+                $teleworking_exception = (empty($teleworking_reasons))
+                    ? null
+                    : "AND `motif` NOT IN ('$teleworking_reasons')";
 
                 $filter .= " $teleworking_exception";
             }
@@ -527,9 +520,7 @@ class planning
             // Pour chaque agent présent dans le nouveau tableau
             foreach ($tab as $key => $value) {
                 foreach ($value["planning"] as $k => $v) {
-                    if (!isset($oldData[$key])
-            or (!isset($oldData[$key]["planning"][$k]))
-            or ($v != $oldData[$key]["planning"][$k])) {
+                    if (!isset($oldData[$key]) || !isset($oldData[$key]["planning"][$k]) || $v != $oldData[$key]["planning"][$k]) {
                         $perso_ids[]=$key;
                         continue 2;
                     }
@@ -540,9 +531,7 @@ class planning
             // Pour chaque agent présent dans l'ancien tableau
             foreach ($oldData as $key => $value) {
                 foreach ($value["planning"] as $k => $v) {
-                    if (!isset($tab[$key])
-            or (!isset($tab[$key]["planning"][$k]))
-            or ($v != $tab[$key]["planning"][$k])) {
+                    if (!isset($tab[$key]) || !isset($tab[$key]["planning"][$k]) || $v != $tab[$key]["planning"][$k]) {
                         if (!in_array($key, $perso_ids)) {
                             $perso_ids[]=$key;
                         }
@@ -568,7 +557,7 @@ class planning
 
         // Send notifications of initial validation or modification depending on the chosen parameters
         // Settings values : -2 = disabled ; -1 = do not check the date ; 0+ = for dates between today and today + value
-        $setting = $notificationType == 'nouveauPlanning' ? $config['Planning-InitialNotification'] : $config['Planning-ChangeNotification'];
+        $setting = $notificationType === 'nouveauPlanning' ? $config['Planning-InitialNotification'] : $config['Planning-ChangeNotification'];
 
         if ($setting == '-2') {
             return;
@@ -579,12 +568,12 @@ class planning
             $now = new DateTimeImmutable('midnight');
             $diff = intval($now->diff($datePlanning)->format('%R%a'));
 
-            if ($diff < 0 or $diff > $setting) {
+            if ($diff < 0 || $diff > $setting) {
                 return;
             }
         }
 
-        $sujet=$notificationType=="nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
+        $sujet=$notificationType === "nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
 
         // Tous les agents qui doivent être notifiés.
         foreach ($perso_ids as $elem) {
@@ -592,7 +581,7 @@ class planning
             $agent = isset($tab[$elem]) ? $tab[$elem]['prenom'].' '.$tab[$elem]['nom'] : $oldData[$elem]['prenom'].' '.$oldData[$elem]['nom'];
             $location = $GLOBALS['config']['Multisites-nombre'] > 1 ? '<br/>Site : <strong>' . $GLOBALS['config']["Multisites-site{$site}"] . '</strong>' : null;
 
-            $message=$notificationType=="nouveauPlanning"?"Validation du planning":"Modification du planning";
+            $message=$notificationType === "nouveauPlanning"?"Validation du planning":"Modification du planning";
             $message .= "<br/><br/>Agent : <strong>$agent</strong>";
             $message .= "<br/>Date : <strong>".dateFr($date)."</strong>";
             $message .= $location;
@@ -605,7 +594,7 @@ class planning
                 foreach ($tab[$elem]["planning"] as $e) {
                     // On marque en gras les modifications
                     $exists=true;
-                    if ($notificationType=="planningModifie") {
+                    if ($notificationType === "planningModifie") {
                         $exists=false;
                         if (isset($oldData[$elem])) {
                             foreach ($oldData[$elem]["planning"] as $o) {
@@ -696,7 +685,7 @@ class planning
   
     // Notes
     // Récupère les notes (en bas des plannings)
-    public function getNotes()
+    public function getNotes(): void
     {
         $date = $this->date;
 
@@ -728,7 +717,7 @@ class planning
                 $notes = str_replace(array("&lt;br/&gt;","#br#"), "<br/>", $notes);
                 $notesTextarea = str_replace("<br/>", "\n", $notes);
     
-                if ($elem['perso_id'] and $elem['timestamp']) {
+                if ($elem['perso_id'] && $elem['timestamp']) {
                     $validation = nom($elem['perso_id']).", ".dateFr($elem['timestamp'], true);
                 } else {
                     $validation = null;
@@ -743,13 +732,13 @@ class planning
                     'textarea' => $notesTextarea,
                     'validation' => $validation,
                     'display' => (bool) trim(strval($notes)),
-                    'deleted' => ($validation and !trim(strval($notes))) ? 'Suppression du commentaire : ' : null,
+                    'deleted' => ($validation && !trim(strval($notes))) ? 'Suppression du commentaire : ' : null,
                );
             }
         }
     }
 
-    public function update_cell_add_agents($date, $debut, $fin, $poste, $site, $perso_id, $login_id, $CSRFToken)
+    public function update_cell_add_agents($date, $debut, $fin, $poste, $site, $perso_id, $login_id, $CSRFToken): void
     {
         $insert = array(
             "date" => $date,
@@ -768,7 +757,7 @@ class planning
     }
 
     // Insertion, mise à jour des notes
-    public function updateNotes()
+    public function updateNotes(): void
     {
         $date=$this->date;
         $site=$this->site;
@@ -809,7 +798,7 @@ class planning
 
         $lunch_positions = implode(',', $lunch_positions);
        
-        if (isset($poste) and $positions->find($poste)->isLunch()) {
+        if (isset($poste) && $positions->find($poste)->isLunch()) {
             return array();
         }
 
@@ -817,7 +806,7 @@ class planning
         $sr_fin=$GLOBALS['config']['Planning-SR-fin'];
     
         // Si la plage couvre complétement la période de sans repas, on retourne true, tous les agents seront marqués en sans repas
-        if ($debut <= $sr_debut and $fin >= $sr_fin) {
+        if ($debut <= $sr_debut && $fin >= $sr_fin) {
             return true;
         }
     
@@ -825,12 +814,12 @@ class planning
         $sr=array();
     
         // Si la plage interrogée est dans ou à cheval sur la période de sans repas
-        if ($debut<$sr_fin and $fin>$sr_debut) {
+        if ($debut < $sr_fin && $fin > $sr_debut) {
 
       // Recherche dans la base de données des autres plages concernées
             $db=new db();
 
-            if (!empty($lunch_positions)) {
+            if ($lunch_positions !== '' && $lunch_positions !== '0') {
                 $db->select("pl_poste", "*", "date = '$date' AND debut < '$sr_fin' AND fin > '$sr_debut' AND poste NOT IN ($lunch_positions)", "ORDER BY debut,fin");
             } else {
                 $db->select2("pl_poste", "*", array("date"=>$date, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
@@ -861,11 +850,12 @@ class planning
                 // = Possibilité que la période soit complète, on met SR=1
                 foreach ($result as $key => $value) {
                     $sansRepas=false;
-                    if ($value[0]["debut"]<=$sr_debut and $value[count($value)-1]["fin"]>=$sr_fin) {
+                    if ($value[0]["debut"] <= $sr_debut && $value[count($value)-1]["fin"] >= $sr_fin) {
                         $sansRepas=true;
                         // On consulte toutes les plages à la recherche d'une interruption. Si interruption, sr=0 et on quitte la boucle
                         $last_end=$value[0]['fin'];
-                        for ($i=1;$i<count($value);$i++) {
+                        $counter = count($value);
+                        for ($i=1;$i<$counter;$i++) {
                             if ($value[$i]['debut']>$last_end) {
                                 $sansRepas=false;
                                 continue 2;

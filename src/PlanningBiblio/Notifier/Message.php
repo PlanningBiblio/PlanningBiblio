@@ -6,9 +6,9 @@ use Exception;
 
 class Message
 {
-    private $message;
+    private ?object $message = null;
 
-    private $error;
+    private ?string $error = null;
 
     public function __construct($code = null)
     {
@@ -22,7 +22,7 @@ class Message
         }
     }
 
-    public function error()
+    public function error(): ?string
     {
         return $this->error;
     }

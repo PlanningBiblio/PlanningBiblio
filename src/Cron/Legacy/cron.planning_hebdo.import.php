@@ -64,7 +64,7 @@ if (!empty($p->elements)) {
 $CSVFile = trim($config['PlanningHebdo-CSV']);
 logs("Importation du fichier $CSVFile", "PlanningHebdo", $CSRFToken);
 
-if (!$CSVFile or !file_exists($CSVFile)) {
+if (!$CSVFile || !file_exists($CSVFile)) {
     logs("Fichier $CSVFile non trouvé", "PlanningHebdo", $CSRFToken);
     exit;
 }
@@ -78,7 +78,9 @@ $temps = array();
 foreach ($lines as $line) {
     $cells=explode(";", $line);
     // Pour chaque cellule
-    for ($i=0; $i<count($cells); $i++) {
+    $counter = count($cells);
+    // Pour chaque cellule
+    for ($i=0; $i<$counter; $i++) {
         $cells[$i] = trim($cells[$i]);
     
         // Mise en form de la date
@@ -88,7 +90,7 @@ foreach ($lines as $line) {
     
         // Mise en forme des heures
         if ($i>1) {
-            if (isset($cells[$i]) and $cells[$i]) {
+            if (isset($cells[$i]) && $cells[$i]) {
                 // supprime les h et les : de façon à traiter tous les formats de de la même façon (formats acceptés : 0000, 00h00, 00:00, 000, 0h00, 0:00)
                 $cells[$i] = str_replace(array("h",":"), null, $cells[$i]);
                 $min = substr($cells[$i], -2);
@@ -114,14 +116,14 @@ foreach ($lines as $line) {
   
     // Si les heures de l'après-midi sont nulles (mises à 00:00:00 en lignes 103), on leurs affecte la valeur "null".
     // (Attention, l'affectation systèmatique de la valeur null en ligne 103 est problèmatique)
-    if ($cells[4] == "00:00:00" and $cells[5] == "00:00:00") {
+    if ($cells[4] == "00:00:00" && $cells[5] == "00:00:00") {
         $cells[4]=null;
         $cells[5]=null;
     }
   
     // Si les heures de la 2eme pause sont nulles (mises à 00:00:00 en lignes 103), on leurs affecte la valeur "null".
     // (Attention, l'affectation systèmatique de la valeur null en ligne 103 est problèmatique)
-    if ($cells[6] == "00:00:00" and $cells[7] == "00:00:00") {
+    if ($cells[6] == "00:00:00" && $cells[7] == "00:00:00") {
         $cells[6]=null;
         $cells[7]=null;
     }
@@ -219,11 +221,7 @@ if ($db->result) {
 $insert = array();
 foreach ($tab as $elem) {
     if (!in_array($elem[":cle"], $cles_db)) {
-        if ($elem[':debut'] <= date('Y-m-d') and $elem[':fin'] >= date('Y-m-d')) {
-            $elem[':actuel'] = "1";
-        } else {
-            $elem[':actuel'] = "0";
-        }
+        $elem[':actuel'] = ($elem[':debut'] <= date('Y-m-d') and $elem[':fin'] >= date('Y-m-d')) ? "1" : "0";
         $insert[]=$elem;
     }
 }

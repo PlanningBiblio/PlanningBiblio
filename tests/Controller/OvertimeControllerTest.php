@@ -182,8 +182,8 @@ class OvertimeControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100));
 
-        $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
-        $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
+        \DateTime::createFromFormat("d/m/Y", '05/10/2022');
+        \DateTime::createFromFormat("d/m/Y", '10/10/2022');
 
         $date = new DateTime('+1 day');
 

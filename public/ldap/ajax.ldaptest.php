@@ -15,7 +15,7 @@ Script appelé par la fonction JS ldaptest() (admin/js/config?js) lors du click 
 */
 
 require_once(__DIR__ . '/../../init/init_ajax.php');
-include_once('class.ldap.php');
+include_once(__DIR__ . '/class.ldap.php');
 
 $filter = $request->get('filter');
 $host = $request->get('host');
@@ -31,23 +31,20 @@ $port = filter_var($port, FILTER_SANITIZE_NUMBER_INT);
 // Connexion au serveur LDAP
 $url = $protocol.'://'.$host.':'.$port;
 
-if ($fp=@fsockopen($host, $port, $errno, $errstr, 5)) {
-    if ($ldapconn = ldap_connect($url)) {
-        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
-        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
-
-        if (ldap_bind($ldapconn, $rdn, $password)) {
-            if (ldap_search($ldapconn, $suffix, $filter, array($idAttribute))) {
-                echo json_encode('ok');
-                exit;
-            } else {
-                echo json_encode('search');
-                exit;
-            }
+if (($fp = @fsockopen($host, $port, $errno, $errstr, 5)) && $ldapconn = ldap_connect($url)) {
+    ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+    ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+    if (ldap_bind($ldapconn, $rdn, $password)) {
+        if (ldap_search($ldapconn, $suffix, $filter, array($idAttribute))) {
+            echo json_encode('ok');
+            exit;
         } else {
-            echo json_encode('bind');
+            echo json_encode('search');
             exit;
         }
+    } else {
+        echo json_encode('bind');
+        exit;
     }
 }
 

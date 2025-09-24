@@ -17,7 +17,7 @@ require_once(__DIR__.'/../../public/activites/class.activites.php');
 class SkillController extends BaseController
 {
     #[Route(path: '/skill', name: 'skill.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         //        Recherche des activites
 
@@ -95,7 +95,7 @@ class SkillController extends BaseController
     }
 
     #[Route(path: '/skill/add', name: 'skill.add', methods: ['GET'])]
-    public function add(Request $request, Session $session){
+    public function add(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
 
         $this->templateParams(array(
             'skill_name'=>'',
@@ -105,7 +105,7 @@ class SkillController extends BaseController
     }
 
     #[Route(path: '/skill/{id}', name: 'skill.edit', methods: ['GET'])]
-    public function edit(Request $request, Session $session){
+    public function edit(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
 
         $id =  $request->get('id');
         $nom = $this->entityManager->getRepository(Skill::class)->find($id)->getName();
@@ -120,50 +120,48 @@ class SkillController extends BaseController
 
 
     #[Route(path: '/skill', name: 'skill.save', methods: ['POST'])]
-    public function save(Request $request, Session $session){
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $id = $request->get('id');
         $nom = $request->get('nom');
 
-        if(!$nom){
+        if (!$nom) {
             $session->getFlashbag()->add('error',"Le nom ne peut pas être vide");
             if(!$id){
                 return $this->redirectToRoute('skill.add');
             } else {
                 return $this->redirectToRoute('skill.edit', array('id' => $id));
             }
-        } else {
-            if(!$id){
-                $skill = new Skill();
-                $skill->setName($nom);
-                try{
-                    $this->entityManager->persist($skill);
-                    $this->entityManager->flush();
-                }
-                catch(Exception $e){
-                    $error = $e->getMessage();
-                }
-                if (isset($error)) {
-                    $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'ajout de l'activité " );
-                    $this->logger->error($error);
-                } else {
-                    $session->getFlashBag()->add('notice', "L'activité a été ajoutée avec succès");
-                }
-            }else{
-                $skill = $this->entityManager->getRepository(Skill::class)->find($id);
-                $skill->setName($nom);
-                try{
-                    $this->entityManager->persist($skill);
-                    $this->entityManager->flush();
-                }
-                catch(Exception $e){
-                    $error = $e->getMessage();
-                }
-                if(isset($error)) {
-                    $session->getFlashBag()->add('error', "Une erreur est survenue lors de la modification de l'activité " );
-                    $this->logger->error($error);
-                } else {
-                    $session->getFlashBag()->add('notice',"L'activité a été modifiée avec succès");
-                }
+        } elseif (!$id) {
+            $skill = new Skill();
+            $skill->setName($nom);
+            try{
+                $this->entityManager->persist($skill);
+                $this->entityManager->flush();
+            }
+            catch(Exception $e){
+                $error = $e->getMessage();
+            }
+            if (isset($error)) {
+                $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'ajout de l'activité " );
+                $this->logger->error($error);
+            } else {
+                $session->getFlashBag()->add('notice', "L'activité a été ajoutée avec succès");
+            }
+        } else{
+            $skill = $this->entityManager->getRepository(Skill::class)->find($id);
+            $skill->setName($nom);
+            try{
+                $this->entityManager->persist($skill);
+                $this->entityManager->flush();
+            }
+            catch(Exception $e){
+                $error = $e->getMessage();
+            }
+            if(isset($error)) {
+                $session->getFlashBag()->add('error', "Une erreur est survenue lors de la modification de l'activité " );
+                $this->logger->error($error);
+            } else {
+                $session->getFlashBag()->add('notice',"L'activité a été modifiée avec succès");
             }
         }
 
@@ -171,7 +169,7 @@ class SkillController extends BaseController
     }
 
     #[Route(path: '/skill', name: 'skill.delete', methods: ['DELETE'])]
-    public function delete_skill(Request $request, Session $session){
+    public function delete_skill(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
 
         $id = $request->get('id');
 

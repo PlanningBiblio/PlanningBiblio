@@ -51,9 +51,9 @@ class ImportMsGraphCalendarCommand extends Command
 
         $config = new ArrayCollection($config);
 
-        $tenantid = $config->filter(function($element) {return $element->getName() == 'MSGraph-TenantID';})->first()->getValue();
-        $clientid = $config->filter(function($element) {return $element->getName() == 'MSGraph-ClientID';})->first()->getValue();
-        $clientsecret = $config->filter(function($element) {return $element->getName() == 'MSGraph-ClientSecret';})->first()->getValue();
+        $tenantid = $config->filter(function($element): bool {return $element->getName() == 'MSGraph-TenantID';})->first()->getValue();
+        $clientid = $config->filter(function($element): bool {return $element->getName() == 'MSGraph-ClientID';})->first()->getValue();
+        $clientsecret = $config->filter(function($element): bool {return $element->getName() == 'MSGraph-ClientSecret';})->first()->getValue();
 
         if (!$tenantid || !$clientid || !$clientsecret) {
             $io->error('At least one of the following is not defined: MSGraph-TenantID, MSGraph-ClientID, MSGraph-ClientSecret. Please check your configuration.');

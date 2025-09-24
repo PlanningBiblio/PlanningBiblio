@@ -13,7 +13,7 @@ class ClosingDayController extends BaseController
 {
 
     #[Route(path: '/closingday', name: 'closingday.index', methods: ['GET'])]
-    public function index(Request $request){
+    public function index(Request $request): \Symfony\Component\HttpFoundation\Response{
         // Initalisation des variables
         $annee_courante = date("n") < 9 ? (date("Y")-1)."-".(date("Y")) : (date("Y"))."-".(date("Y")+1);
         $annee_suivante = date("n") < 9 ? (date("Y"))."-".(date("Y")+1) : (date("Y")+1)."-".(date("Y")+2);
@@ -47,16 +47,8 @@ class ClosingDayController extends BaseController
         // Affichage des jours fériés enregistrés
         $i = 0;
         foreach ($jours as $elem) {
-            if ($elem['ferie']){
-                $ferie = true;
-            }else{
-                $ferie = false;
-            }
-            if ($elem['fermeture']){
-                $fermeture = true;
-            }else{
-                $fermeture = false;
-            }
+            $ferie = (bool) $elem['ferie'];
+            $fermeture = (bool) $elem['fermeture'];
             $date = dateFr($elem['jour']);
             $commentaire = $elem['commentaire'];
             $nom = $elem['nom'];
@@ -88,7 +80,7 @@ class ClosingDayController extends BaseController
     }
 
     #[Route(path: '/closingday', name: 'closingday.save', methods: ['POST'])]
-    public function save(Request $request, Session $session){
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $post = $request->request->all();
         $CSRFToken = $request->get('CSRFToken');
 

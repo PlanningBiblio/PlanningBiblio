@@ -20,7 +20,7 @@ Utilisée par les fichiers du dossier "statistiques"
 $version = $GLOBALS['version'] ?? null;
 
 if (!isset($version)) {
-    include_once "../include/accessDenied.php";
+    include_once __DIR__ . "/../include/accessDenied.php";
 }
 
 // AJouter les html_entity_decode latin1
@@ -64,7 +64,7 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
     }
 
     $neverSelected = array();
-    if ($nom == 'agent' and !empty ($tab['neverSelected'])) {
+    if ($nom == 'agent' && !empty ($tab['neverSelected'])) {
         $neverSelected = $tab['neverSelected'];
         unset($tab['neverSelected']);
     }
@@ -92,7 +92,7 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
             }
             $cellules[]=$poste[1];				// Nom du poste
             $site=null;
-            if ($poste["site"]>0 and $GLOBALS['config']['Multisites-nombre']>1) {
+            if ($poste["site"] > 0 && $GLOBALS['config']['Multisites-nombre'] > 1) {
                 $site=$GLOBALS['config']["Multisites-site{$poste['site']}"]." ";
             }
             if ($GLOBALS['config']['Multisites-nombre']>1) {
@@ -222,7 +222,7 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
   
     ksort($heures);
   
-    foreach ($heures as $k1 => $v1) {
+    foreach (array_keys($heures) as $k1) {
         $lignes[]=null;
         $tmp = explode('-', $k1);
         $hres = heure3($tmp[0]).'-'.heure3($tmp[1]);
@@ -318,7 +318,7 @@ function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours): array
   
     ksort($heures);
   
-    foreach ($heures as $k1 => $v1) {
+    foreach (array_keys($heures) as $k1) {
         $lignes[]=null;
         $tmp = explode('-', $k1);
         $hres = heure3($tmp[0]).'-'.heure3($tmp[1]);
@@ -352,11 +352,15 @@ function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours): array
 
 class statistiques
 {
+    /**
+     * @var string
+     */
+    public $ouvertureTexte;
     public $debut;
     public $fin;
     public $selectedSites;
 
-    public function ouverture()
+    public function ouverture(): void
     {
 
     // Recherche du nombre d'heures, de jours et de semaine d'ouverture au public par site
@@ -367,7 +371,7 @@ class statistiques
         $totalJours=array();
         $totalSemaines=array();
 
-        if ($GLOBALS['config']['Multisites-nombre']>1 and is_array($selectedSites)) {
+        if ($GLOBALS['config']['Multisites-nombre'] > 1 && is_array($selectedSites)) {
             $reqSites="AND `site` IN (0,".implode(",", $selectedSites).")";
         } else {
             $reqSites=null;
@@ -382,7 +386,7 @@ class statistiques
             $lastEnd=null;
             if ($db->result) {
                 foreach ($db->result as $elem) {
-                    if ($elem['date']==$lastDate and $elem['debut']<$lastEnd) {
+                    if ($elem['date'] == $lastDate && $elem['debut'] < $lastEnd) {
                         $totalHeures[$i]+=diff_heures($lastEnd, $elem['fin'], "decimal");
                     } else {
                         $totalHeures[$i]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
@@ -411,7 +415,7 @@ class statistiques
             } else {
                 $echo.="<br/>Ouverture au public : ";
             }
-            if (is_array($selectedSites) and in_array($i, $selectedSites)) {
+            if (is_array($selectedSites) && in_array($i, $selectedSites)) {
                 $echo.=heure4($totalHeures[$i]);
                 $echo.=", {$totalJours[$i]} jours, ";
                 $echo.=number_format($totalSemaines[$i], 1, ',', ' ')." semaines";
@@ -424,7 +428,7 @@ class statistiques
     /**
      * Count average hours
      */
-    public static function average($numberOfHours, $start, $end = null, $type = 'weekly')
+    public static function average($numberOfHours, $start, $end = null, $type = 'weekly'): float
     {
         $end = $end ?? $start;
         $numberOfHours = floatval($numberOfHours);
@@ -435,7 +439,6 @@ class statistiques
             case 'weekly':
             default:
                 return $numberOfHours / ($totalNumberOfDays / 7);
-            break;
         }
     }
 

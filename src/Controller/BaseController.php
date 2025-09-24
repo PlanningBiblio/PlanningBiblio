@@ -23,7 +23,7 @@ class BaseController extends AbstractController
 
     private $config = array();
 
-    protected $logger;
+    protected \Psr\Log\LoggerInterface $logger;
 
     protected $notifier;
 
@@ -35,7 +35,7 @@ class BaseController extends AbstractController
             ini_set('memory_limit', $_ENV['MEMORY_LIMIT']);
         }
 
-        $request = $requestStack->getCurrentRequest();
+        $requestStack->getCurrentRequest();
 
         $this->entityManager = $GLOBALS['entityManager'];
 
@@ -55,13 +55,13 @@ class BaseController extends AbstractController
         $this->config = $GLOBALS['config'];
     }
 
-    public function setNotifier(Notifier $notifier) {
+    public function setNotifier(Notifier $notifier): void {
         $this->notifier = $notifier;
     }
 
     protected function templateParams( array $params = array() )
     {
-        if ( empty($params) ) {
+        if ( $params === [] ) {
             return $this->templateParams;
         }
 
@@ -72,7 +72,7 @@ class BaseController extends AbstractController
         return $this;
     }
 
-    protected function output($templateName)
+    protected function output(string $templateName): \Symfony\Component\HttpFoundation\Response
     {
         return $this->render($templateName, $this->templateParams);
     }
@@ -107,7 +107,7 @@ class BaseController extends AbstractController
         return true;
     }
 
-    protected function returnError($error, $module = 'Planno', $status = 200)
+    protected function returnError(string $error, string $module = 'Planno', int $status = 200): \Symfony\Component\HttpFoundation\Response
     {
         $this->logger->error($module . ':' . $error);
         $response = new Response();

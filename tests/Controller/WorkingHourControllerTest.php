@@ -21,7 +21,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
         // User without rights.
         $this->logInAgent($agent, array(100));
         $this->client->request('GET', '/workinghour');
-        $response = $this->client->getResponse()->getContent();
+        $this->client->getResponse()->getContent();
         $this->assertEquals(
             200,
             $this->client->getResponse()->getStatusCode(),

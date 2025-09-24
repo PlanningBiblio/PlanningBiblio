@@ -79,7 +79,7 @@ class ClassAbsencesTest extends TestCase
     protected function setParam($name, $value)
     {
         global $entityManager;
-        $absence = new absences();
+        new absences();
         $GLOBALS['config'][$name] = $value;
         $param = $entityManager
             ->getRepository(ConfigParam::class)

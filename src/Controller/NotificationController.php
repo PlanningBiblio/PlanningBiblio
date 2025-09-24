@@ -15,7 +15,7 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 class NotificationController extends BaseController {
 
     #[Route(path: '/notification', name: 'notification.index', methods: ['GET'])]
-    public function index(Request $request){
+    public function index(Request $request): \Symfony\Component\HttpFoundation\Response{
         // Initialisation des variables
         $nbSites = $this->config("Multisites-nombre");
         $actif = $request->get("actif");
@@ -74,7 +74,7 @@ class NotificationController extends BaseController {
                         }
                     }
                 }
-                $sites=!empty($tmp)?implode(", ", $tmp):null;
+                $sites=$tmp === []?null:implode(", ", $tmp);
             }
 
             $agent['sites_list'] = $sites;
@@ -99,13 +99,13 @@ class NotificationController extends BaseController {
     }
 
     #[Route(path: '/notification', name: 'notification.save', methods: ['POST'])]
-    public function save(Request $request){
+    public function save(Request $request): \Symfony\Component\HttpFoundation\JsonResponse{
         $agents = $request->get('agents');
         $responsables = $request->get('responsables');
         $notifications = $request->get('notifications');
         $responsablesl2 = $request->get('responsablesl2');
         $notificationsl2 = $request->get('notificationsl2');
-        $CSRFToken = $request->get('CSRFToken');
+        $request->get('CSRFToken');
 
         $agents = html_entity_decode($agents, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         $responsables = html_entity_decode($responsables, ENT_QUOTES|ENT_IGNORE, 'UTF-8');

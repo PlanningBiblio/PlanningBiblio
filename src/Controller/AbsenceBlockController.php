@@ -13,7 +13,7 @@ use App\Entity\AbsenceBlock;
 class AbsenceBlockController extends BaseController
 {
     #[Route("/absence/block", name: "absence.block.index", methods: ["GET"])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         $blocks = $this->entityManager->getRepository(AbsenceBlock::class)
             ->findBy(
@@ -27,7 +27,7 @@ class AbsenceBlockController extends BaseController
     }
 
     #[Route("/absence/block/add", name: "absence.block.add", methods: ["GET"])]
-    public function add(Request $request)
+    public function add(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $this->templateParams(array(
             'id'    => null,
@@ -40,7 +40,7 @@ class AbsenceBlockController extends BaseController
     }
 
     #[Route("/absence/block/{id<\d+>}", name: "absence.block.edit", methods: ["GET"])]
-    public function edit(Request $request)
+    public function edit(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $id = $request->get('id');
 
@@ -57,7 +57,7 @@ class AbsenceBlockController extends BaseController
     }
 
     #[Route("/absence/block", name: "absence.block.update", methods: ["POST"])]
-    public function update(Request $request, Session $session)
+    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             $session->getFlashBag()->add('error', 'CSRF Token Error');
@@ -97,7 +97,7 @@ class AbsenceBlockController extends BaseController
     }
 
     #[Route("/absence/block", name: "absence.block.delete", methods: ["DELETE"])]
-    public function delete(Request $request, Session $session)
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();

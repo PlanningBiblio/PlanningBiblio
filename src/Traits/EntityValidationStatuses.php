@@ -7,7 +7,7 @@ use App\Entity\Agent;
 
 trait EntityValidationStatuses
 {
-    public function setStatusesParams($agent_ids, $module, $entity_id = null)
+    public function setStatusesParams($agent_ids, $module, $entity_id = null): void
     {
         if (!$agent_ids) {
             throw new \Exception("EntityValidationStatuses::setStatusesParams: No agent");

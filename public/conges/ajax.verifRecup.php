@@ -16,7 +16,7 @@ Appelé en arrière plan par la fonction JS verifRecup()
 */
 
 include(__DIR__ . '/../../init/init_ajax.php');
-include "class.conges.php";
+include __DIR__ . "/class.conges.php";
 
 $date=dateFr($_GET['date']);
 $perso_id=is_numeric($_GET['perso_id'])?$_GET['perso_id']:$_SESSION['login_id'];

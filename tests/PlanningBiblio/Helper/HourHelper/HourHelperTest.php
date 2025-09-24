@@ -89,7 +89,7 @@ class HourHelperTest extends TestCase
         $result = $hh->hoursMinutesToDecimal('-0', -1);
 
         $this->expectException(InvalidArgumentException::class);
-        $result = $hh->hoursMinutesToDecimal('-0', 60);
+        $hh->hoursMinutesToDecimal('-0', 60);
     }
 
     public function testHoursMinutesToDecimalAndDecimalToHoursMinutesBijection(): void
@@ -101,7 +101,7 @@ class HourHelperTest extends TestCase
         foreach ($hours as $hour) {
             for ($i = 0; $i < 60; $i++) {
 
-                if ($hour == '-0' && $i == 0) {
+                if ($hour === '-0' && $i == 0) {
                     # There is no point in testing -0.0, as it is stricly equal to 0.0
                     continue;
                 }
@@ -136,6 +136,6 @@ class HourHelperTest extends TestCase
         $this->assertEquals('3', $result, '3 return 3');
 
         $this->expectException('ArgumentCountError');
-        $result = $hh->toHis();
+        $hh->toHis();
     }
 }

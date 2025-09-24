@@ -18,7 +18,7 @@ class AuthorizationsController extends BaseController
 {
 
     #[Route(path: '/login', name: 'login', methods: ['GET'])]
-    public function login(Request $request, LoggerInterface $logger = null)
+    public function login(Request $request, LoggerInterface $logger = null): \Symfony\Component\HttpFoundation\Response
     {
 
         $error = $this->redirectCAS($request, $logger);
@@ -38,7 +38,7 @@ class AuthorizationsController extends BaseController
         // SSO Link
         $sSOLink = null;
 
-        if ($this->config('Auth-Mode') == 'OpenIDConnect' and !empty($this->config('OIDC-Provider'))) {
+        if ($this->config('Auth-Mode') == 'OpenIDConnect' && !empty($this->config('OIDC-Provider'))) {
             if (stristr($this->config('OIDC-Provider'), 'google')) {
                 $sSOLink = 'Se connecter avec un compte Google';
             } elseif (stristr($this->config('OIDC-Provider'), 'microsoft')) {
@@ -48,7 +48,7 @@ class AuthorizationsController extends BaseController
             }
         }
 
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS' and !empty($this->config('CAS-Hostname'))) {
+        if (substr($this->config('Auth-Mode'), 0, 3) === 'CAS' && !empty($this->config('CAS-Hostname'))) {
             $sSOLink = 'Se connecter avec un compte CAS';
         }
 
@@ -65,7 +65,7 @@ class AuthorizationsController extends BaseController
     }
 
     #[Route(path: '/login', name: 'login.check', methods: ['POST'])]
-    public function check_login(Request $request, LoggerInterface $logger = null)
+    public function check_login(Request $request, LoggerInterface $logger = null): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         $this->redirectCAS($request, $logger);
 
@@ -76,12 +76,8 @@ class AuthorizationsController extends BaseController
         $redirect_url = $request->get('redirURL') ?? '/index.php';
 
         $authArgs = null;
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {
-            if (array_key_exists('oups', $_SESSION)
-                and array_key_exists('Auth-Mode', $_SESSION['oups'])
-                and $_SESSION['oups']['Auth-Mode'] == 'CAS') {
-                $authArgs = '?noCAS';
-            }
+        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS' && (array_key_exists('oups', $_SESSION) && array_key_exists('Auth-Mode', $_SESSION['oups']) && $_SESSION['oups']['Auth-Mode'] == 'CAS')) {
+            $authArgs = '?noCAS';
         }
 
         if ($login != 'admin') {
@@ -102,9 +98,7 @@ class AuthorizationsController extends BaseController
                 // CAS auth with SQL fallback.
                 case 'CAS-SQL':
                     $auth = false;
-                    if ($login and $_POST['auth'] == 'CAS'
-                        and array_key_exists('login_id', $_SESSION)
-                        and $login == $session->get('loginId')) {
+                    if ($login && $_POST['auth'] == 'CAS' && array_key_exists('login_id', $_SESSION) && $login == $session->get('loginId')) {
                         $auth = true;
                     }
                     if (!$auth) {
@@ -114,11 +108,11 @@ class AuthorizationsController extends BaseController
             }
         }
 
-        if ($this->config('Auth-Mode') == 'SQL' or $login == 'admin') {
+        if ($this->config('Auth-Mode') == 'SQL' || $login == 'admin') {
             $auth = authSQL($login, $password);
         }
 
-        if ($authArgs and $redirect_url) {
+        if ($authArgs && $redirect_url) {
             $authArgs .= '&amp;redirURL=' . urlencode($redirect_url);
         } elseif ($redirect_url) {
             $authArgs = '?redirURL=' . urlencode($redirect_url);
@@ -166,7 +160,7 @@ class AuthorizationsController extends BaseController
     }
 
     #[Route(path: '/logout', name: 'logout', methods: ['GET'])]
-    public function logout(Request $request)
+    public function logout(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         session_destroy();
 
@@ -179,8 +173,7 @@ class AuthorizationsController extends BaseController
             $authArgs = $_SESSION['oups']['Auth-Mode'] == 'CAS' ? null: '?noCAS';
         }
 
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS'
-            and $_SESSION['oups']['Auth-Mode'] == 'CAS') {
+        if (substr($this->config('Auth-Mode'), 0, 3) === 'CAS' && $_SESSION['oups']['Auth-Mode'] == 'CAS') {
 
             $cas_url = 'https://'
                 . $this->config('CAS-Hostname')
@@ -198,21 +191,17 @@ class AuthorizationsController extends BaseController
     }
 
     #[Route(path: '/access-denied', name: 'access-denied', methods: ['GET'])]
-    public function denied(Request $request)
+    public function denied(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $content = $this->renderView('access-denied.html.twig');
         return new Response($content, 403);
     }
 
-    private function redirectCAS(Request $request, $logger): string
+    private function redirectCAS(Request $request, ?\Psr\Log\LoggerInterface $logger): string
     {
         $session = $request->getSession();
 
-        if ((substr($this->config('Auth-Mode'), 0, 3) == 'CAS' or $this->config('Auth-Mode') == 'OpenIDConnect')
-            and !isset($_GET['noCAS'])
-            and empty($session->get('loginId'))
-            and !isset($_POST['login'])
-            and !isset($_POST['acces'])) {
+        if ((substr($this->config('Auth-Mode'), 0, 3) === 'CAS' || $this->config('Auth-Mode') == 'OpenIDConnect') && !isset($_GET['noCAS']) && empty($session->get('loginId')) && !isset($_POST['login']) && !isset($_POST['acces'])) {
 
             $redirURL = $_GET['redirURL'] ?? '';
             // TODO : replace "$_SESSION['oups']['Auth-Mode']" with $session->set('Auth-Mode', 'SSO') 
@@ -223,7 +212,7 @@ class AuthorizationsController extends BaseController
             // authCAS function redirect user to the CAS server.
             // Once authenticated, it checks if the login exists.
             // If yes, it create the session and log the action.
-            if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {
+            if (substr($this->config('Auth-Mode'), 0, 3) === 'CAS') {
                 $login = authCAS($logger);
 
             // OpenID Connect

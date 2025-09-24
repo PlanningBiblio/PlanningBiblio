@@ -149,7 +149,7 @@ class CJICS
      * @param int $this->perso_id (optionnel)
      * Supprime de la table $this->table tous les événements du calendrier $this->src pour l'agent défini par $this->perso_id
      */
-    public function purge()
+    public function purge(): ?bool
     {
         // Initialisation des variables
         $CSRFToken = $this->CSRFToken;
@@ -159,10 +159,10 @@ class CJICS
         $calName = null;                // Nom du calendrier
 
         // Test if the URL is valid
-        if (substr($src, 0, 4) == 'http') {
+        if (substr($src, 0, 4) === 'http') {
             $test = @get_headers($src, 1);
 
-            if (empty($test)) {
+            if ($test === [] || $test === false) {
                 logs("Agent #$perso_id : $src is not a valid URL", "ICS", $CSRFToken);
                 return false;
             }
@@ -180,7 +180,7 @@ class CJICS
         $calName=$ical->calendarName();
         $calName = removeAccents($calName);
 
-        if (empty($calName)) {
+        if ($calName === '' || $calName === '0' || $calName === []) {
             $calName = "imported_calendar_{$this->number}_for_agent_$perso_id";
         }
 
@@ -198,6 +198,7 @@ class CJICS
         $db = new db();
         $db->CSRFToken = $CSRFToken;
         $db->delete($table, array('cal_name' => $calName, 'perso_id' => $perso_id));
+        return null;
     }
 
     /**
@@ -208,7 +209,7 @@ class CJICS
      * @param string $this->CSRFToken : Jeton XSRF
      * Met à jour la table définie par $this->table pour l'agent défini par $this->perso_id depuis le fichier ICS $this->src
      */
-    public function updateTable()
+    public function updateTable(): ?bool
     {
         // Initialisation des variables
         $CSRFToken = $this->CSRFToken;
@@ -241,7 +242,7 @@ class CJICS
         // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
         try {
             $ical   = new ICal($src);
-            $events = !empty($ical->cal['VEVENT']) ? $ical->cal['VEVENT'] : array();
+            $events = empty($ical->cal['VEVENT']) ? array() : $ical->cal['VEVENT'];
         } catch(Exception $e) {
             if ($this->logs) {
                 $error = $e->getMessage();
@@ -255,7 +256,7 @@ class CJICS
         $calName = $ical->calendarName();
         $calName = removeAccents($calName);
 
-        if (empty($calName)) {
+        if ($calName === '' || $calName === '0' || $calName === []) {
             $calName = "imported_calendar_{$this->number}_for_agent_$perso_id";
         }
 
@@ -267,11 +268,9 @@ class CJICS
             logs("Agent #$perso_id : Calendrier: $calName, Fuseau horaire: $calTimeZone", "ICS", $CSRFToken);
         }
 
-        if (!is_array($events) or empty($events)) {
-            if ($this->logs) {
-                logs("Agent #$perso_id : Aucun élément trouvé dans le fichier $src", "ICS", $CSRFToken);
-                $events = array();
-            }
+        if ((!is_array($events) or empty($events)) && $this->logs) {
+            logs("Agent #$perso_id : Aucun élément trouvé dans le fichier $src", "ICS", $CSRFToken);
+            $events = array();
         }
 
         // Récupération de l'email de l'agent
@@ -314,19 +313,17 @@ class CJICS
         foreach ($tmp as $elem) {
 
             // Run custom exclusions
-            if (!empty($config['ICS-custom-exclusion'])) {
-                if ($config['ICS-custom-exclusion']($elem)) {
-                    continue;
-                }
+            if (!empty($config['ICS-custom-exclusion']) && $config['ICS-custom-exclusion']($elem)) {
+                continue;
             }
 
             // Ne traite pas les événéments ayant le status X-MICROSOFT-CDO-INTENDEDSTATUS différent de BUSY (si le paramètre X-MICROSOFT-CDO-INTENDEDSTATUS existe)
-            if (isset($elem['X-MICROSOFT-CDO-INTENDEDSTATUS']) and $elem['X-MICROSOFT-CDO-INTENDEDSTATUS'] != "BUSY") {
+            if (isset($elem['X-MICROSOFT-CDO-INTENDEDSTATUS']) && $elem['X-MICROSOFT-CDO-INTENDEDSTATUS'] != "BUSY") {
                 continue;
             }
 
             // Ignore dates referenced in the RECURRENCE-ID attribute of other events that have the same UID
-            if (!isset($elem['RECURRENCE-ID']) and array_key_exists($elem['UID'], $events_with_recurrence_id)) {
+            if (!isset($elem['RECURRENCE-ID']) && array_key_exists($elem['UID'], $events_with_recurrence_id)) {
 	        foreach ($events_with_recurrence_id[$elem['UID']]['DATES'] as $date) {
                     $d = date("Ymd\THis", strtotime($date));
                     if ($d == $elem['DTSTART_tz']) {
@@ -339,7 +336,7 @@ class CJICS
             if (isset($elem['EXDATE'])) {
                 $exdate1 = preg_replace('/.*:(.[^:]*)$/', "$1", $elem['EXDATE']);
                 $exdate_array = explode(",", $exdate1);
-                if ($exdate_array and !empty($exdate_array)) {
+                if ($exdate_array && $exdate_array !== []) {
                     foreach ($exdate_array as $exdate) {
                         $exdate = date("Ymd\THis", strtotime($exdate));
                         if ($exdate == $elem['DTSTART_tz']) {
@@ -360,8 +357,8 @@ class CJICS
             }
 
             // Add "[PRE]" exclusion for Hamac import
-            if (!empty($prodID) and stristr($prodID, 'Serveur de planning Cocktail')) {
-              if (isset($config['ics_exclude_summary']) and is_array($config['ics_exclude_summary'])) {
+            if (!empty($prodID) && stristr($prodID, 'Serveur de planning Cocktail')) {
+              if (isset($config['ics_exclude_summary']) && is_array($config['ics_exclude_summary'])) {
                 $config['ics_exclude_summary'][] = '[PRE]';
               } else {
                 $config['ics_exclude_summary'] = array('[PRE]');
@@ -369,10 +366,8 @@ class CJICS
             }
 
             // Ignore events with SUMMARY defined in $config['ics_exclude_summary']
-            if (isset($config['ics_exclude_summary']) and is_array($config['ics_exclude_summary'])) {
-              if ( in_array($elem['SUMMARY'], $config['ics_exclude_summary'])) {
-                  continue;
-              }
+            if ((isset($config['ics_exclude_summary']) and is_array($config['ics_exclude_summary'])) && in_array($elem['SUMMARY'], $config['ics_exclude_summary'])) {
+              continue;
             }
 
             // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
@@ -390,14 +385,11 @@ class CJICS
 
                     foreach ($elem['ATTENDEE_array'] as $key => $value) {
 
-                        if (!empty($value)
-                            and is_string($value)
-                            and strpos($value, $email)) {
+                        if (!empty($value) && is_string($value) && strpos($value, $email)) {
 
                             $attendee_agent = $elem['ATTENDEE_array'][$key - 1] ?? array();
 
-                            if (!empty($attendee_agent['PARTSTAT'])
-                                and $attendee_agent['PARTSTAT'] == 'ACCEPTED') {
+                            if (!empty($attendee_agent['PARTSTAT']) && $attendee_agent['PARTSTAT'] == 'ACCEPTED') {
 
                                 $add = true;
                                 break;
@@ -435,7 +427,7 @@ class CJICS
 
         // Suppression des événements supprimés ou modifiés de la base de données
         $nb = count($deleted);
-        if (!empty($deleted)) {
+        if ($deleted !== []) {
             $db=new dbh();
             $db->CSRFToken = $CSRFToken;
             $db->prepare("DELETE FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE `id`=:id;");
@@ -457,7 +449,7 @@ class CJICS
 
         // Insertion des nouveux éléments ou des éléments modifiés dans la table $table : insertion dans la base de données
         $nb=0;
-        if (!empty($insert)) {
+        if ($insert !== []) {
             $db=new dbh();
             $req = "INSERT INTO `{$GLOBALS['config']['dbprefix']}$table`
                 (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`, `id_origin`, `last_modified`)
@@ -482,7 +474,7 @@ class CJICS
 
                 // Les événements ICS sur des journées complètes ont comme date de fin J+1 à 0h00
                 // Donc si la date de fin est à 0h00, on retire une seconde pour la rammener à J
-                $offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
+                $offset = date("H:i:s", strtotime($elem["DTEND_tz"])) === "00:00:00" ? "-1 second" : null;
                 $fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]." $offset"));
 
                 // Par défaut, nous mettons dans le champ motif l'information enregistrée dans la config, paramètre ICS-PatternX (ex: Agenda personnel)
@@ -499,16 +491,16 @@ class CJICS
                 // The DESCRIPTION is added to the comment field depending on the configuration
                 $description = null;
                 if ($this->desc) {
-                    $description = !empty($elem['DESCRIPTION']) ? str_replace("\\n", "\n", $elem['DESCRIPTION']) : '';
+                    $description = empty($elem['DESCRIPTION']) ? '' : str_replace("\\n", "\n", $elem['DESCRIPTION']);
                 }
 
                 // If SUMMARY is stored in the "Absence Reason" field, we do not add it to the comment field
                 if ($this->pattern == '[SUMMARY]') {
-                    $commentaires = !empty($description) ? $description : '';
+                    $commentaires = empty($description) ? '' : $description;
                 // Else, SUMMARY and DESCRIPTION are stored in the comment field
                 } else {
-                    $commentaires = !empty($elem['SUMMARY']) ? $elem['SUMMARY'] : '';
-                    if ($commentaires and !empty($description)) {
+                    $commentaires = empty($elem['SUMMARY']) ? '' : $elem['SUMMARY'];
+                    if ($commentaires && !empty($description)) {
                         $commentaires .= "<br/>\n";
                     }
                     if (!empty($description)) {
@@ -565,8 +557,8 @@ class CJICS
                     }
                 }
 
-                $rrule = !empty($elem['RRULE']) ? $elem['RRULE'] : '';
-                $last_modified = !empty($elem['X-LAST-MODIFIED-STRING']) ? $elem['X-LAST-MODIFIED-STRING'] : null;
+                $rrule = empty($elem['RRULE']) ? '' : $elem['RRULE'];
+                $last_modified = empty($elem['X-LAST-MODIFIED-STRING']) ? null : $elem['X-LAST-MODIFIED-STRING'];
                 // Préparation de l'insertion dans la base de données
                 $tab[] = array(
                   ":perso_id" => $perso_id,
@@ -606,9 +598,10 @@ class CJICS
         if ($this->logs) {
             logs("Agent #$perso_id : $nb événement(s) importé(s)", "ICS", $CSRFToken);
         }
+        return null;
     }
 
-    private static function splitLine($line) {
+    private static function splitLine(string $line): string {
 
         if (strlen($line) > 75) {
             $tab = mb_str_split($line, 75);

@@ -443,7 +443,7 @@ class Agent
         return $this->managers->toArray();
     }
 
-    public function addManaged(Manager $managed)
+    public function addManaged(Manager $managed): void
     {
         $this->managed->add($managed);
         $managed->setManager($this);
@@ -457,8 +457,7 @@ class Agent
         $levelMethod = $requested_level == 'level1' ? 'getLevel1' : 'getLevel2';
 
         foreach ($managed as $m) {
-            if (!$requested_level
-                or ($requested_level && $m->{$levelMethod}())) {
+            if (!$requested_level || $requested_level && $m->{$levelMethod}()) {
                 $managed_ids[] = $m->getUser()->getId();
             }
         }
@@ -473,7 +472,7 @@ class Agent
     }
 
     public function can_access(array $accesses): bool {
-        if (empty($accesses)) {
+        if ($accesses === []) {
             return false;
         }
 
@@ -493,13 +492,11 @@ class Agent
 
         // Multisites rights associated with page access
         $multisites_rights = array(201,301);
-        if ($multisites > 1) {
-            if (in_array($accesses[0]->getGroupId(), $multisites_rights)) {
-                for ($i = 1; $i <= $multisites; $i++) {
-                    $droit = $accesses[0]->getGroupId() -1 + $i;
-                    if (in_array($droit, $droits)) {
-                        return true;
-                    }
+        if ($multisites > 1 && in_array($accesses[0]->getGroupId(), $multisites_rights)) {
+            for ($i = 1; $i <= $multisites; $i++) {
+                $droit = $accesses[0]->getGroupId() -1 + $i;
+                if (in_array($droit, $droits)) {
+                    return true;
                 }
             }
         }
@@ -533,12 +530,10 @@ class Agent
             }
         }
 
-        $unit_mails = array_unique($unit_mails);
-
-        return $unit_mails;
+        return array_unique($unit_mails);
     }
 
-    public function get_manager_emails() {
+    public function get_manager_emails(): array {
         $emails_string = $this->mails_responsables;
 
         if ($emails_string == '') {
@@ -600,7 +595,7 @@ class Agent
             }
         }
 
-        if (empty($postes)) {
+        if ($postes === []) {
             return false;
         }
 
@@ -615,7 +610,7 @@ class Agent
         return false;
     }
 
-    public function skills()
+    public function skills(): array
     {
         $skills = json_decode($this->postes);
         return is_array($skills) ? $skills : [];
@@ -637,8 +632,7 @@ class Agent
 
         $managed_sites = array();
         for ($i = 1; $i <= $sites_number; $i++) {
-            if (in_array($needed_l1 + $i, $rights)
-                or in_array($needed_l2 + $i, $rights)) {
+            if (in_array($needed_l1 + $i, $rights) || in_array($needed_l2 + $i, $rights)) {
                 $managed_sites[] = $i;
             }
         }

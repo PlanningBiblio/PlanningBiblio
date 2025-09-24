@@ -15,7 +15,7 @@ include_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 class AppExtension extends AbstractExtension
 {
 
-    private $blacklistedTags = ['script'];
+    private array $blacklistedTags = ['script'];
 
     /**
      * @return array
@@ -47,17 +47,17 @@ class AppExtension extends AbstractExtension
         ];
     }
 
-    public function dateFull($date)
+    public function dateFull($date): string|false
     {
         return dateAlpha($date);
     }
 
-    public function dateFr($date)
+    public function dateFr($date): ?string
     {
         return dateFr($date, true);
     }
 
-    public function digit($number, $digits): string
+    public function digit($number, string $digits): string
     {
         return sprintf('%0' . $digits . 'd', $number);
     }
@@ -71,7 +71,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function hourFromHis($hours)
+    public function hourFromHis($hours): string
     {
         if ($hours) {
             return heure3($hours);
@@ -145,7 +145,7 @@ class AppExtension extends AbstractExtension
         if (empty($menu)) {
             $uri = substr($requested_url, strlen($config['URL']));
 
-            if ($uri == '/') {
+            if ($uri === '/') {
                 return true;
             }
 
@@ -184,20 +184,14 @@ class AppExtension extends AbstractExtension
                 return true;
             }
         }
-
-        if ($menu == 'index') {
-            if (strpos($requested_url, 'week') !== false) {
-                return true;
-            }
-        }
-
-        return false;
+        return $menu == 'index' && strpos($requested_url, 'week') !== false;
     }
 
     public function htmlFilter($html)
     {
-	if (!$html)
-	  return $html;
+	if (!$html) {
+        return $html;
+    }
 
         foreach ($this->blacklistedTags as $tag) {
             $html = preg_replace("/<$tag.*?>(.*)?<\/$tag>/im","$1",$html);
@@ -206,7 +200,7 @@ class AppExtension extends AbstractExtension
         return $html;
     }
 
-    public function colspan($start, $end) {
+    public function colspan($start, $end): int|float {
         return nb30($start, $end);
     }
 

@@ -175,7 +175,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $this->assertEquals($jdevoe_holiday->getHalfDayEnd(), 'morning', 'end_halfday is afternoon');
     }
 
-    private function addWorkingHours($agent, $times)
+    private function addWorkingHours($agent, array $times): void
     {
         $workinghours = array(
             0 => array('0' => $times[0], '1' => $times[1], '2' => $times[2], '3' => $times[3]),
@@ -188,7 +188,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
 
         $db = new \db();
         $db->CSRFToken = '00000';
-        $id = $db->insert(
+        $db->insert(
             'planning_hebdo',
             array(
                 'perso_id' => $agent->getId(),
@@ -202,7 +202,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         );
     }
 
-    private function deleteWorkingHours()
+    private function deleteWorkingHours(): void
     {
         $db = new \db();
         $db->CSRFToken = '00000';
@@ -212,7 +212,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
     /**
      * @return mixed[]
      */
-    private function getHolidayData($replace = array()): array
+    private function getHolidayData(array $replace = array()): array
     {
         $data = array(
             'CSRFToken' => '00000',

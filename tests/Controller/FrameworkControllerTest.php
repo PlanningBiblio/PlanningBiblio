@@ -45,7 +45,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $Y = date("Y") + 1;
         $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
 
-        $tab1 = $this->builder->build(
+        $this->builder->build(
             PlanningPositionTab::class,
             array(
                 'tableau' => '1',
@@ -54,7 +54,7 @@ class FrameworkControllerTest extends PLBWebTestCase
                 'supprime' => $date,
             )
         );
-        $tab2 = $this->builder->build(
+        $this->builder->build(
             PlanningPositionTab::class,
             array(
                 'tableau' => '1',
@@ -63,7 +63,7 @@ class FrameworkControllerTest extends PLBWebTestCase
                 'supprime' => $date,
             )
         );
-        $tab3 = $this->builder->build(
+        $this->builder->build(
             PlanningPositionTab::class,
             array(
                 'tableau' => '1',
@@ -291,7 +291,7 @@ class FrameworkControllerTest extends PLBWebTestCase
 
         $db = new \db();
         $db->CSRFToken = '00000';
-        $id = $db->insert("pl_poste_tab", array(
+        $db->insert("pl_poste_tab", array(
             'nom' => 'tab1',
             'site' => '1',
             )
@@ -357,7 +357,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $Y = date("Y");
         $date = \DateTime::createFromFormat("d/m/Y H:i:s", "$d/$m/$Y 00:00:00");
 
-        $tab1_affectation = $this->builder->build(
+        $this->builder->build(
             PlanningPositionTabAffectation::class,
             array(
                 'site' => '1',
@@ -366,7 +366,7 @@ class FrameworkControllerTest extends PLBWebTestCase
             )
         );
 
-        $planning_position = $this->builder->build(
+        $this->builder->build(
             PlanningPosition::class,
             array(
                 'perso_id' => $agent->getId(),
@@ -425,7 +425,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $d = date("d")-2;
         $m = date("m");
         $Y = date("Y");
-        $date = \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
+        \DateTime::createFromFormat("d/m/Y", "$d/$m/$Y");
 
         $db = new \db();
         $db->CSRFToken = '00000';

@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class AdminController extends BaseController
 {
     #[Route(path: '/admin', name: 'admin.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $droits = $GLOBALS['droits'];
 
@@ -23,7 +23,7 @@ class AdminController extends BaseController
                 $access_model = true;
             }
 
-            if (in_array((1100 + $i), $droits) or in_array((1200 + $i), $droits)) {
+            if (in_array((1100 + $i), $droits) || in_array((1200 + $i), $droits)) {
                 $access_working_hours = true;
             }
         }

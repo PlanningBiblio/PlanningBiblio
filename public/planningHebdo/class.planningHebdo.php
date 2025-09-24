@@ -39,16 +39,12 @@ class planningHebdo
     public $merge_exception = true;
     public Array $recipients;
 
-    public function __construct()
-    {
-    }
-
-    public function add($data)
+    public function add($data): void
     {
         // Modification du format des dates de début et de fin si elles sont en français
         if (array_key_exists("debut", $data)) {
-            $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['debut']);
-            $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['fin']);
+            $data['debut']=preg_replace("/(d{2})\\/(d{2})\\/(d{4})/", "$3-$2-$1", $data['debut']);
+            $data['fin']=preg_replace("/(d{2})\\/(d{2})\\/(d{4})/", "$3-$2-$1", $data['fin']);
         }
         $data['breaktime'] = isset($data['breaktime']) ? $data['breaktime'] : null;
         $data['exception'] = $data['exception'] ?? 0;
@@ -62,7 +58,7 @@ class planningHebdo
             $parent_start = $db->result[0]['debut'];
             $parent_end = $db->result[0]['fin'];
 
-            if ($data['debut'] < $parent_start or $data['fin'] > $parent_end) {
+            if ($data['debut'] < $parent_start || $data['fin'] > $parent_end) {
                 $this->error = true;
                 return;
             }
@@ -153,11 +149,11 @@ class planningHebdo
         }
     }
 
-    public function copy($data)
+    public function copy(array $data): ?bool
     {
         // Modification du format des dates de début et de fin si elles sont en français
-        $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['debut']);
-        $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['fin']);
+        $data['debut']=preg_replace("/(d{2})\\/(d{2})\\/(d{4})/", "$3-$2-$1", $data['debut']);
+        $data['fin']=preg_replace("/(d{2})\\/(d{2})\\/(d{4})/", "$3-$2-$1", $data['fin']);
 
         $this->id=$data['id'];
         $this->fetch();
@@ -165,11 +161,11 @@ class planningHebdo
 
         // Check if something changed, if not: return
         $compare_temps = strcmp(json_encode($actuel['temps']), json_encode($data['temps']));
-        $compare_dates = ($data['debut'] != $actuel['debut'] or $data['fin'] != $actuel['fin']);
+        $compare_dates = ($data['debut'] != $actuel['debut'] || $data['fin'] != $actuel['fin']);
         $compare_perso_id = $data['perso_id'] != $actuel['perso_id'];
         
         // If nothing changed: return
-        if (!$compare_temps and !$compare_dates and !$compare_perso_id) {
+        if (!$compare_temps && !$compare_dates && !$compare_perso_id) {
             return false;
         }
 
@@ -177,14 +173,14 @@ class planningHebdo
         $pl=array();
 
         // If dates didn't change, don't create multiple copies (only one copy : end of this method)
-        if ($data['debut'] != $actuel['debut'] or $data['fin'] != $actuel['fin']) {
+        if ($data['debut'] != $actuel['debut'] || $data['fin'] != $actuel['fin']) {
             // Copie de l'ancien planning
             $pl[0]=$actuel;
             $pl[0]['remplace']=$actuel['id'];
         }
 
         // Modification de la date de fin de la copie et création d'une 2ème copie si les 2 dates sont modifiées
-        if ($data['debut']>$actuel['debut'] and $data['fin']<$actuel['fin']) {
+        if ($data['debut'] > $actuel['debut'] && $data['fin'] < $actuel['fin']) {
             $pl[0]['fin']=date("Y-m-d", strtotime("-1 Day", strtotime($data['debut'])));
             $pl[1]=$actuel;
             $pl[1]['debut']=date("Y-m-d", strtotime("+1 Day", strtotime($data['fin'])));
@@ -212,9 +208,10 @@ class planningHebdo
         $data['validation'] = 0;
         $p=new planningHebdo();
         $p->add($data);
+        return null;
     }
   
-    public function fetch()
+    public function fetch(): void
     {
         // Recherche des services
         $p=new personnel();
@@ -345,12 +342,12 @@ class planningHebdo
 
         // $tab est vide si on accède directement à un planning copié,
         // on remplace donc $this->elements par $tab seulement si $tab n'est pas vide.
-        if (!empty($tab)) {
+        if ($tab !== []) {
             $this->elements=$tab;
         }
     }
 
-    private function merge($from, $to)
+    private function merge(array $from, array $to): array
     {
         foreach ($from['temps'] as $day => $hours ) {
             if (isset($to['temps'][$day])) {
@@ -371,7 +368,7 @@ class planningHebdo
      * - 4 : validation N2
      * @param int $perso_id = ID de l'agent concerné par le planning de présence
      */
-    public function getRecipients($validation, $perso_id)
+    public function getRecipients($validation, $perso_id): void
     {
         $categories=$GLOBALS['config']["PlanningHebdo-notifications{$validation}"];
         $categories=json_decode(html_entity_decode(stripslashes($categories), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
@@ -431,12 +428,10 @@ class planningHebdo
         }
 
         // Responsables directs
-        if (in_array(2, $categories)) {
-            if (is_array($mails_responsables)) {
-                foreach ($mails_responsables as $elem) {
-                    if (!in_array(trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
-                        $recipients[]=trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-                    }
+        if (in_array(2, $categories) && is_array($mails_responsables)) {
+            foreach ($mails_responsables as $elem) {
+                if (!in_array(trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
+                    $recipients[]=trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
                 }
             }
         }
@@ -454,24 +449,22 @@ class planningHebdo
         }
 
         // L'agent
-        if (in_array(4, $categories)) {
-            if (!in_array(trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
-                $recipients[]=trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-            }
+        if (in_array(4, $categories) && !in_array(trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
+            $recipients[]=trim(html_entity_decode($mail, ENT_QUOTES|ENT_IGNORE, "UTF-8"));
         }
 
         $this->recipients=$recipients;
     }
 
 
-    public function update($data)
+    public function update($data): void
     {
         // Modification du format des dates de début et de fin si elles sont en français
-        $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['debut']);
-        $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['fin']);
+        $data['debut']=preg_replace("/(d{2})\\/(d{2})\\/(d{4})/", "$3-$2-$1", $data['debut']);
+        $data['fin']=preg_replace("/(d{2})\\/(d{2})\\/(d{4})/", "$3-$2-$1", $data['fin']);
         $data['breaktime'] = isset($data['breaktime']) ? $data['breaktime'] : null;
 
-        $perso_id = !empty($data['valide']) ? $data['valide'] : $_SESSION['login_id'];
+        $perso_id = empty($data['valide']) ? $_SESSION['login_id'] : $data['valide'];
 
         // Validation : initialisation
         $valide_n1 = 0;
@@ -546,7 +539,7 @@ class planningHebdo
         $this->error=$db->error;
 
         // Remplacement du planning de la fiche agent si validation et date courante entre debut et fin
-        if ($valide_n2 > 0 and $data['debut']<=date("Y-m-d") and $data['fin']>=date("Y-m-d")) {
+        if ($valide_n2 > 0 && $data['debut'] <= date("Y-m-d") && $data['fin'] >= date("Y-m-d")) {
             $db=new db();
             $db->CSRFToken = $CSRFToken;
             $db->update('planning_hebdo', array('actuel'=>0), array('perso_id'=>$data['perso_id']));
@@ -556,7 +549,7 @@ class planningHebdo
         }
 
         // Si validation d'un planning de remplacement, suppression du planning d'origine
-        if ($valide_n2 > 0  and $data['remplace']) {
+        if ($valide_n2 > 0 && $data['remplace']) {
             $db=new db();
             $db->CSRFToken = $CSRFToken;
             $db->delete('planning_hebdo', array('id' =>$data['remplace']));
@@ -604,8 +597,7 @@ class planningHebdo
     {
         $db=new db();
         $db->query("SHOW TABLE STATUS FROM `{$GLOBALS['config']['dbname']}` LIKE '{$GLOBALS['config']['dbprefix']}planning_hebdo';");
-        $result = isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
-        return $result;
+        return isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
     }
   
 }

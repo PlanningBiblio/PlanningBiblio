@@ -14,7 +14,7 @@ require_once(__DIR__ . '/../../public/include/function.php');
 class DetachedAgentsController extends BaseController
 {
     #[Route(path: '/detached', name: 'detached.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $date = $request->get('date');
 
@@ -60,7 +60,7 @@ class DetachedAgentsController extends BaseController
     }
 
     #[Route(path: '/detached/add', name: 'detached.add', methods: ['POST'])]
-    public function add(Request $request)
+    public function add(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');

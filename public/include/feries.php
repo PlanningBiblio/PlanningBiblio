@@ -20,11 +20,11 @@ Code source de Olravet commenté en page de cette page
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 $version = $GLOBALS['version'] ?? null;
 if (!isset($version)) {
-    include_once "accessDenied.php";
+    include_once __DIR__ . "/accessDenied.php";
     exit;
 }
 
-function jour_ferie($date)
+function jour_ferie($date): ?string
 {
     $tmp=explode("-", $date);
     $jour = $tmp[2];
@@ -61,35 +61,35 @@ function jour_ferie($date)
     $pak = easter_date($annee);
     $jp = date("d", $pak);
     $mp = date("m", $pak);
-    if ($jp == $jour && $mp == $mois) {
+    if ($jp === $jour && $mp === $mois) {
         return "Pâques";
     }
 
     $lpk = mktime(date("H", $pak), date("i", $pak), date("s", $pak), date("m", $pak), date("d", $pak) +1, date("Y", $pak));
     $jp = date("d", $lpk);
     $mp = date("m", $lpk);
-    if ($jp == $jour && $mp == $mois) {
+    if ($jp === $jour && $mp === $mois) {
         return "Lundi de Pâques";
     }
 
     $asc = mktime(date("H", $pak), date("i", $pak), date("s", $pak), date("m", $pak), date("d", $pak) + 39, date("Y", $pak));
     $jp = date("d", $asc);
     $mp = date("m", $asc);
-    if ($jp == $jour && $mp == $mois) {
+    if ($jp === $jour && $mp === $mois) {
         return "Jeudi de l'Ascension";
     }
 
     $pe = mktime(date("H", $pak), date("i", $pak), date("s", $pak), date("m", $pak), date("d", $pak) + 49, date("Y", $pak));
     $jp = date("d", $pe);
     $mp = date("m", $pe);
-    if ($jp == $jour && $mp == $mois) {
+    if ($jp === $jour && $mp === $mois) {
         return "Pentecôte";
     }
 
     $lp = mktime(date("H", $asc), date("i", $pak), date("s", $pak), date("m", $pak), date("d", $pak) + 50, date("Y", $pak));
     $jp = date("d", $lp);
     $mp = date("m", $lp);
-    if ($jp == $jour && $mp == $mois) {
+    if ($jp === $jour && $mp === $mois) {
         return "Lundi Pentecôte";
     }
 

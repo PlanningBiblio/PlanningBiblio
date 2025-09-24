@@ -23,17 +23,15 @@ use App\Entity\ConfigParam;
 
 class AgentRepository extends EntityRepository
 {
-    private $module = 'absence';
+    private int $needed_level1 = 200;
 
-    private $needed_level1 = 200;
+    private int $needed_level2 = 500;
 
-    private $needed_level2 = 500;
-
-    private $by_agent_param = 'Absences-notifications-agent-par-agent';
+    private string $by_agent_param = 'Absences-notifications-agent-par-agent';
 
     private $agent_id;
 
-    private $check_by_site = true;
+    private bool $check_by_site = true;
 
     /**
      * @return mixed[]
@@ -46,26 +44,24 @@ class AgentRepository extends EntityRepository
             $activites = $agent->getSkills();
             if (is_array($activites)) {
                 foreach ($activites as $activite) {
-                    array_push($all_skills, $activite);
+                    $all_skills[] = $activite;
                 }
             }
         }
-        $all_skills = array_unique($all_skills);
-        return $all_skills;
+        return array_unique($all_skills);
     }
 
     public function getMaxId() {
         $entityManager = $this->getEntityManager();
-        $id = $entityManager->createQueryBuilder()
+
+        return $entityManager->createQueryBuilder()
             ->select('MAX(a.id)')
             ->from(Agent::class, 'a')
             ->getQuery()
             ->getSingleScalarResult();
-
-        return $id;
     }
 
-    public function purgeAll()
+    public function purgeAll(): int
     {
         $agents = $this->findBy(['supprime' => '2']);
         $entityManager = $this->getEntityManager();
@@ -101,7 +97,7 @@ class AgentRepository extends EntityRepository
                 ->orWhere($planningPositionLockCriteria->expr()->eq('perso2', $perso_id));
 
             $planningPositionLocks = $entityManager->getRepository(PlanningPositionLock::class)->matching($planningPositionLockCriteria);
-            if (count($planningPositionLocks)) { $delete = false; continue; }
+            if (count($planningPositionLocks) > 0) { $delete = false; continue; }
 
             // Managers
             $managerCriteria = new \Doctrine\Common\Collections\Criteria();
@@ -110,25 +106,21 @@ class AgentRepository extends EntityRepository
                 ->orWhere($managerCriteria->expr()->eq('responsable', $agent));
 
             $managers = $entityManager->getRepository(Manager::class)->matching($managerCriteria);
-            if (count($managers)) { $delete = false; continue; }
-
-            if ($delete == true) {
-                $entityManager->remove($agent);
-                $deleted_agents++;
-            }
+            if (count($managers) > 0) { $delete = false; continue; }
+            $entityManager->remove($agent);
+            $deleted_agents++;
             $entityManager->flush();
         }
         return $deleted_agents;
     }
 
-    public function setModule($name = 'absence')
+    public function setModule($name = 'absence'): static
     {
         if (!in_array($name, array('absence', 'holiday', 'workinghour'))) {
             throw new \Exception("AgentRepository::setModule: Unsupported module $name");
         }
 
         $this->agent_id = null;
-        $this->module = $name;
 
         if ($name == 'workinghour') {
             $this->needed_level1 = 1100;
@@ -154,7 +146,7 @@ class AgentRepository extends EntityRepository
         return $this;
     }
 
-    public function forAgent($id)
+    public function forAgent($id): static
     {
         if ($id) {
             $this->agent_id = $id;
@@ -205,8 +197,7 @@ class AgentRepository extends EntityRepository
                 continue;
             }
 
-            if (in_array(($this->needed_level1 + $i), $rights)
-                or in_array(($this->needed_level2 + $i), $rights)) {
+            if (in_array(($this->needed_level1 + $i), $rights) || in_array(($this->needed_level2 + $i), $rights)) {
 
                 $sites_select[] = array('id' => $i, 'name' => $name);
             }
@@ -238,12 +229,12 @@ class AgentRepository extends EntityRepository
                 $managed[] = $loggedin;
             }
 
-            usort($managed, function($a, $b) { return ($a->getLastname() < $b->getLastname()) ? -1 : 1; });
+            usort($managed, function($a, $b): int { return ($a->getLastname() < $b->getLastname()) ? -1 : 1; });
 
             return $managed;
         }
 
-        $rights = $loggedin->getACL();
+        $loggedin->getACL();
         $managed_sites = $loggedin->managedSites($this->needed_level1, $this->needed_level2);
 
         if (!empty($managed_sites)) {
@@ -273,7 +264,7 @@ class AgentRepository extends EntityRepository
         return array($loggedin);
     }
 
-    public function getValidationLevelFor($loggedin_id)
+    public function getValidationLevelFor($loggedin_id): array
     {
 
         $entityManager = $this->getEntityManager();
@@ -305,7 +296,7 @@ class AgentRepository extends EntityRepository
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled and we ask for a specific agent.
-        if ($by_agent_param->getValue() and $this->agent_id) {
+        if ($by_agent_param->getValue() && $this->agent_id) {
             if ($loggedin->isManagerOf(array($this->agent_id), 'level1')) {
                 $l1 = true;
             }
@@ -342,7 +333,7 @@ class AgentRepository extends EntityRepository
 
         // Give rigths for deleted agents
         // Avoid "Access denied" when modifying absences with several agents and some of them are deleted
-        if (isset($agent) and $agent->getDeletion() == 2) {
+        if (isset($agent) && $agent->getDeletion() == 2) {
             return array(true, true);
         }
 
@@ -373,9 +364,7 @@ class AgentRepository extends EntityRepository
                     ->setParameter('deleted', '0');
         }
 
-        $agents = $builder->getQuery()->getResult();
-
-        return $agents;
+        return $builder->getQuery()->getResult();
     }
 
     /* Returns an array of sites for the given agents */
@@ -398,7 +387,6 @@ class AgentRepository extends EntityRepository
             }
         }
         $sites_array = array_unique($sites_array);
-        $sites_array = array_values($sites_array);
-        return $sites_array;
+        return array_values($sites_array);
     }
 }

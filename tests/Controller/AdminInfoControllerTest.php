@@ -35,8 +35,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
     public function testNewForm(): void
     {
-        $entityManager = $this->entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));

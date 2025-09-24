@@ -18,15 +18,14 @@ Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.ph
 
 ini_set('display_errors', 0);
 
-include "../include/config.php";
-include_once "class.personnel.php";
+include __DIR__ . "/../include/config.php";
+include_once __DIR__ . "/class.personnel.php";
 
 $p=new personnel();
 if ($_GET['deleted']=="yes") {
     $p->supprime=array(0,1);
 }
 $p->fetch();
-$p->elements;
 
 $tab=array();
 foreach ($p->elements as $elem) {

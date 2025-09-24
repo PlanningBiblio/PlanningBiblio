@@ -49,7 +49,7 @@ class UnsubscribeControllerTest extends PLBWebTestCase
         $crawler = $client->request('OPTIONS', "/unsubscribe/$token");
         $this->assertEquals($client->getResponse()->getStatusCode(), 200, 'OPTIONS returns 200 logged-in');
 
-        $crawler = $client->request('POST', "/unsubscribe/$token");
+        $client->request('POST', "/unsubscribe/$token");
         $this->assertEquals($client->getResponse()->getStatusCode(), 200, 'POST returns 200 logged-in');
 
     }

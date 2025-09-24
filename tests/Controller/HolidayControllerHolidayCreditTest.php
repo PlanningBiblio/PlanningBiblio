@@ -25,8 +25,6 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
 
     public function testHolidayOnHalfday(): void
     {
-        $entityManager = $this->entityManager;
-
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
@@ -56,7 +54,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         $this->assertEquals($result->rest, 0, 'Morning Holiday rest is 0');
     }
 
-    private function addWorkingHours($agent, $times)
+    private function addWorkingHours($agent, array $times): void
     {
         $workinghours = array(
             0 => array('0' => $times[0], '1' => $times[1], '2' => $times[2], '3' => $times[3]),
@@ -69,7 +67,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
 
         $db = new \db();
         $db->CSRFToken = '00000';
-        $id = $db->insert(
+        $db->insert(
             'planning_hebdo',
             array(
                 'perso_id' => $agent->getId(),
@@ -83,7 +81,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         );
     }
 
-    private function deleteWorkingHours()
+    private function deleteWorkingHours(): void
     {
         $db = new \db();
         $db->CSRFToken = '00000';

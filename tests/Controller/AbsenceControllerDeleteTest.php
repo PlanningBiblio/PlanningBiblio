@@ -8,6 +8,7 @@ use Tests\PLBWebTestCase;
 class AbsenceControllerDeleteTest extends PLBWebTestCase
 {
 
+    public $agents;
     protected function setUp(): void
     {
         parent::setUp();
@@ -404,7 +405,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
 
 
 
-    private function createAndTest($acl, $nbAgents = 1, $validations = [1,1], $result = 'empty', $loggedInAgentId = 0)
+    private function createAndTest(array $acl, int $nbAgents = 1, $validations = [1,1], string $result = 'empty', int $loggedInAgentId = 0): void
     {
         $acl = array_merge($acl, [99,100]);
         $agents = $this->agents;
@@ -419,8 +420,8 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $end->modify('next monday 11:00');
         $group = $nbAgents > 1 ? time() . '-' . rand(111,999) : '';
 
-        $validation_n1 = !empty($validations['level1']) ? new DateTime() : null;
-        $validation = !empty($validations['level2']) ? new DateTime() : null;
+        $validation_n1 = empty($validations['level1']) ? null : new DateTime();
+        $validation = empty($validations['level2']) ? null : new DateTime();
 
         $valide_n1 = $validations[0] ?? 0;
         $valide = $validations[1] ?? 0;
@@ -449,7 +450,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
 
         $test = $this->entityManager->getRepository(Absence::class)->findBy(['id' => $absence->getId()]);
 
-        if ($result == 'empty') {
+        if ($result === 'empty') {
             $this->assertEmpty($test, 'Absence not deleted');
         } else {
             $this->assertNotEmpty($test, 'Absence deleted');

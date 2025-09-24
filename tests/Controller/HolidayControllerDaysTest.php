@@ -248,7 +248,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($adenis->getCompTime(), 10, "comp time didn't change");
     }
 
-    private function deleteWorkingHours()
+    private function deleteWorkingHours(): void
     {
         $db = new \db();
         $db->CSRFToken = '00000';
@@ -258,7 +258,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
     /**
      * @return mixed[]
      */
-    private function getHolidayData($replace = array()): array
+    private function getHolidayData(array $replace = array()): array
     {
         $data = array(
             'CSRFToken' => '00000',
@@ -286,7 +286,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         return $data;
     }
 
-    private function addWorkingHours($agent, $times)
+    private function addWorkingHours($agent, array $times): void
     {
         $workinghours = array(
             0 => array('0' => $times[0], '1' => $times[1], '2' => $times[2], '3' => $times[3]),
@@ -299,7 +299,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
 
         $db = new \db();
         $db->CSRFToken = '00000';
-        $id = $db->insert(
+        $db->insert(
             'planning_hebdo',
             array(
                 'perso_id' => $agent->getId(),

@@ -16,7 +16,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         $GLOBALS['config']['Absences-validation'] = 1;
     }
 
-    private function createAbsenceFor($agent, $status = 0)
+    private function createAbsenceFor($agent, int $status = 0)
     {
         $date = new DateTime('now + 3 day');
 

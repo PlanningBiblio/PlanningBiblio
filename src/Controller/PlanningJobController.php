@@ -28,7 +28,7 @@ class PlanningJobController extends BaseController
     use \App\Traits\PlanningJobTrait;
 
     #[Route(path: '/planningjob/contextmenu', name: 'planningjob.contextmenu', methods: ['GET'])]
-    public function contextmenu(Request $request)
+    public function contextmenu(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();
 
@@ -47,7 +47,7 @@ class PlanningJobController extends BaseController
     }
 
     #[Route(path: '/ajax/planningjob/checkcopy', name: 'ajax.planningjobcheckcopy', methods: ['GET'])]
-    public function checkCopy(Request $request)
+    public function checkCopy(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         // Initilisation des variables
         $date = $request->get('date');
@@ -70,7 +70,7 @@ class PlanningJobController extends BaseController
                     $available = false;
                 }
 
-                if ($available and $agent->isOnVacationOn("$date $start", "$date $end")) {
+                if ($available && $agent->isOnVacationOn("$date $start", "$date $end")) {
                     $available = false;
                 }
 
@@ -84,7 +84,7 @@ class PlanningJobController extends BaseController
                     }
                 }
 
-                if ($available and $agent->isBlockedOn($date, $start, $end)) {
+                if ($available && $agent->isBlockedOn($date, $start, $end)) {
                     $available = false;
                 }
 
@@ -98,7 +98,7 @@ class PlanningJobController extends BaseController
             }
         }
 
-        $unavailables_string = !empty($unavailables) ? "\n - " . implode("\n - ", $unavailables) : null;
+        $unavailables_string = $unavailables === [] ? null : "\n - " . implode("\n - ", $unavailables);
 
         $result = array(
             'availables' => $availables,
@@ -110,7 +110,7 @@ class PlanningJobController extends BaseController
     }
 
     #[Route(path: '/ajax/planningjob/undo', name: 'planningjob.undo', methods: ['POST'])]
-    public function undo(Request $request)
+    public function undo(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -158,7 +158,7 @@ class PlanningJobController extends BaseController
         // Means that after this undo,
         // there will be nothing more to undo,
         // because there is nothing left in history or because the last action is not made by the logged in agent
-        if (empty($history) or $history[0]['updated_by'] != $session->get('loginId')) {
+        if ($history === [] || $history[0]['updated_by'] != $session->get('loginId')) {
             $response['remaining_undo'] = 0;
         }
 
@@ -184,7 +184,7 @@ class PlanningJobController extends BaseController
     }
 
     #[Route(path: '/ajax/planningjob/redo', name: 'planningjob.redo', methods: ['POST'])]
-    public function redo(Request $request)
+    public function redo(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -194,7 +194,7 @@ class PlanningJobController extends BaseController
 
         $date = $request->get('date');
         $site = $request->get('site');
-        $CSRFToken = $request->get('CSRFToken');
+        $request->get('CSRFToken');
 
         if (!$this->canManagePlanning($session, $site)) {
             return $this->json('forbiden');
@@ -237,7 +237,7 @@ class PlanningJobController extends BaseController
 
         // Means that after this undo,
         // there will be nothing more to undo.
-        if (empty($history)) {
+        if ($history === []) {
             $response['remaining_redo'] = 0;
         }
 
@@ -260,7 +260,7 @@ class PlanningJobController extends BaseController
         return $this->json($response);
     }
 
-    private function convertActionDates($action)
+    private function convertActionDates(array $action): array
     {
         //$date = new \DateTime($action['date']);
         $action['date'] = $action['date']->format('Y-m-d');

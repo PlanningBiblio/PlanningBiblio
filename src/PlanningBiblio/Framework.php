@@ -15,7 +15,7 @@ class Framework
     public $numbers;
     public $supprime;
 
-    public function deleteGroup()
+    public function deleteGroup(): void
     {
         if ($this->id) {
             $db = new \db();
@@ -24,7 +24,7 @@ class Framework
         }
     }
 
-    public function deleteLine()
+    public function deleteLine(): void
     {
         if ($this->id) {
             $db = new \db();
@@ -33,7 +33,7 @@ class Framework
         }
     }
 
-    public function deleteTab()
+    public function deleteTab(): void
     {
         if ($this->number) {
             $id=$this->number;
@@ -55,7 +55,7 @@ class Framework
      * @param boolean $this->supprime : si true : affiche les tableaux supprimés lors de la dernière année, sinon, affiche les tableaux non-supprimés, default = false
      * @return Array $this->elements
      */
-    public function fetchAll()
+    public function fetchAll(): void
     {
         $db = new \db();
         if ($this->supprime) {
@@ -71,7 +71,7 @@ class Framework
         $this->elements=$tab;
     }
 
-    public function fetchAllGroups()
+    public function fetchAllGroups(): void
     {
         $db = new \db();
         $db->select2("pl_poste_tab_grp", null, array("supprime"=>null));
@@ -82,7 +82,7 @@ class Framework
         $this->elements=$tab;
     }
 
-    public function fetchGroup($id)
+    public function fetchGroup($id): void
     {
         $db = new \db();
         $db->select2("pl_poste_tab_grp", "*", "`id`='$id'");
@@ -90,7 +90,7 @@ class Framework
     }
 
     // Recherche tous les éléments d'un tableau pour l'afficher
-    public function get()
+    public function get(): void
     {
         $tableauNumero=$this->id;
 
@@ -143,10 +143,10 @@ class Framework
             // Titres et lignes des sous-tableaux
             foreach ($lignes as $ligne) {
                 // Titres
-                if ($ligne['tableau']==$elem and $ligne['type']=="titre") {
+                if ($ligne['tableau'] == $elem && $ligne['type'] == "titre") {
                     $tabs[$elem]['titre']=$ligne['poste'];
                 // Classes
-                } elseif ($ligne['tableau']==$elem and $ligne['type']=="classe") {
+                } elseif ($ligne['tableau'] == $elem && $ligne['type'] == "classe") {
                     $tabs[$elem]['classe']=$ligne['poste'];
                 // Postes
                 } elseif ($ligne['tableau']==$elem) {
@@ -171,7 +171,7 @@ class Framework
         $this->elements=$tabs;
     }
 
-    public function getNumbers()
+    public function getNumbers(): void
     {
         $db = new \db();
         $db->select2("pl_poste_horaires", "tableau", array("numero"=>$this->id), "group by tableau");
@@ -192,7 +192,7 @@ class Framework
         $this->numbers=$numbers;
     }
 
-    public function setNumbers($number)
+    public function setNumbers($number): void
     {
         $this->getNumbers();
         $length=$this->length;
@@ -228,7 +228,7 @@ class Framework
         }
     }
 
-    public function update($post)
+    public function update(array $post): void
     {
         //		Update
         $post['nom']=trim($post['nom']);

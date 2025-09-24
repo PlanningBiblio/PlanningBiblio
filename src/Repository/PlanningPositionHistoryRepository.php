@@ -56,7 +56,7 @@ class PlanningPositionHistoryRepository extends EntityRepository
             ->getArrayResult();
 
         // If the last change is not made by the logged in agent, undo is not allowed
-        if (empty($history) or $history[0]['updated_by'] != $_SESSION['login_id']) {
+        if (empty($history) || $history[0]['updated_by'] != $_SESSION['login_id']) {
             return array();
         }
 
@@ -87,7 +87,7 @@ class PlanningPositionHistoryRepository extends EntityRepository
             ->getArrayResult();
 
         // If the last undo is not made by the logged in agent, redo is not allowed
-        if (empty($history) or $history[0]['updated_by'] != $_SESSION['login_id']) {
+        if (empty($history) || $history[0]['updated_by'] != $_SESSION['login_id']) {
             return array();
         }
 

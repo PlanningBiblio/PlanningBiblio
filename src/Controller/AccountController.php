@@ -18,7 +18,7 @@ require_once (__DIR__."/../../public/planningHebdo/class.planningHebdo.php");
 class AccountController extends BaseController
 {
     #[Route(path: '/myaccount', name: 'account.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         // Initialisation des variables
         $CSRFSession = $GLOBALS['CSRFSession'];
@@ -29,7 +29,6 @@ class AccountController extends BaseController
         $p = new \personnel();
         $p->CSRFToken = $CSRFSession;
         $p->fetchById($perso_id);
-        $sites = $p->elements[0]['sites'];
 
         // URL ICS
         $ics = null;
@@ -94,8 +93,7 @@ class AccountController extends BaseController
         $login = array('name' => $_SESSION['login_prenom'], 'surname' => $_SESSION['login_nom'], 'id' => $perso_id);
 
         $canChangePassword = true;
-        if ($_SESSION['oups']['Auth-Mode'] == 'CAS'
-            or ($this->config('Auth-Mode') == 'LDAP' and $perso_id != 1))
+        if ($_SESSION['oups']['Auth-Mode'] == 'CAS' || $this->config('Auth-Mode') == 'LDAP' && $perso_id != 1)
         {
             $canChangePassword = false;
         }

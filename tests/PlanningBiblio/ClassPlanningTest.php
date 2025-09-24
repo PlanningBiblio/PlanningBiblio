@@ -138,8 +138,6 @@ class ClassPlanningTest extends TestCase
         $p->fin = '2021-03-08';
         $p->valide = true;
         $p->fetch();
-
-        $hours = $p->elements[0]['temps'];
         $id = $p->elements[0]['id'];
 
         $p = new \planningHebdo();

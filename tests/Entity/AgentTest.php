@@ -53,7 +53,7 @@ class AgentTest extends TestCase
 
 
         $builder->delete(Holiday::class);
-        $holiday = $builder->build(Holiday::class, array('debut' => $start, 'fin' => $end, 'perso_id' => $agent->getId(), 'valide_n1' => 1, 'valide' =>1, 'supprime' => 0, 'information' => 0));
+        $builder->build(Holiday::class, array('debut' => $start, 'fin' => $end, 'perso_id' => $agent->getId(), 'valide_n1' => 1, 'valide' =>1, 'supprime' => 0, 'information' => 0));
 
         $this->assertFalse($agent->isOnVacationOn('2022-12-10', '2022-12-15'));
         $this->assertTrue($agent->isOnVacationOn($start->format('Y-m-d'), $end->format('Y-m-d')));
@@ -170,11 +170,10 @@ class AgentTest extends TestCase
         $agent2 = $builder->build(Agent::class, array('login' => 'jmarg', 'depart' => $depart));
 
         $GLOBALS['config']['PlanningHebdo'] = 1;
-        $config=$GLOBALS['config']['PlanningHebdo'];
 
         $builder->delete(WorkingHour::class);
 
-        $pl_post = $builder->build
+        $builder->build
         (
             WorkingHour::class,
             array(
@@ -200,7 +199,7 @@ class AgentTest extends TestCase
         $this->assertNotEquals($agent2->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][2], '12:30:00','check Working Hours of the agent with planningHebdo');
 
         $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'depart' => $depart));
-        $pl_post2 = $builder->build
+        $builder->build
         (
             WorkingHour::class,
             array(
@@ -232,9 +231,9 @@ class AgentTest extends TestCase
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
-        $date = \DateTime::createFromFormat("d/m/Y", date('d/m/Y'));
-        $start = \DateTime::createFromFormat("H:i:s", '00:01:00');
-        $end = \DateTime::createFromFormat("H:i:s", '23:59:00');
+        \DateTime::createFromFormat("d/m/Y", date('d/m/Y'));
+        \DateTime::createFromFormat("H:i:s", '00:01:00');
+        \DateTime::createFromFormat("H:i:s", '23:59:00');
 
         $skill1 = $builder->build(Skill::class, array('nom' => 'basket'));
         $id1 = $skill1->getId();
@@ -253,9 +252,9 @@ class AgentTest extends TestCase
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
-        $start = \DateTime::createFromFormat("H:i:s", '08:00:00');
-        $end = \DateTime::createFromFormat("H:i:s", '17:00:00');
-        $date = \DateTime::createFromFormat("d/m/Y", '09/10/2022');
+        \DateTime::createFromFormat("H:i:s", '08:00:00');
+        \DateTime::createFromFormat("H:i:s", '17:00:00');
+        \DateTime::createFromFormat("d/m/Y", '09/10/2022');
 
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'mail' => 'j.devoe@mail.com'));
 
@@ -295,7 +294,7 @@ class AgentTest extends TestCase
             ]
         );
 
-        $agent4 = $builder->build(Agent::class, array('login' => 'ldavy', 'sites' => json_encode(["1","3"])));
+        $builder->build(Agent::class, array('login' => 'ldavy', 'sites' => json_encode(["1","3"])));
         $this->assertEquals($agent3->get_planning_unit_mails(),[0 => 'jmarc@mail.fr', 1 => 'jcharles@mail.fr', 2 => 'jdevoe@mail.com']);
 
     }
@@ -310,7 +309,7 @@ class AgentTest extends TestCase
         $end = \DateTime::createFromFormat("d/m/Y", '17/12/2022');
 
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
-        $off = $builder->build(
+        $builder->build(
             Absence::class,
             array(
                 'debut' => $start,

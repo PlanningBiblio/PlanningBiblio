@@ -21,7 +21,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
     }
 
 
-    public function createWeekPlanningFor($agent)
+    public function createWeekPlanningFor($agent): void
     {
 
         $start = \DateTime::createFromFormat("d/m/Y", "01/10/2021");
@@ -38,9 +38,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $GLOBALS['config']['PlanningHebdo-Pause2'] = 0;
 
-        $wh = new WorkingHours($workingHours);
+        new WorkingHours($workingHours);
 
-        $planning = $this->builder->build(WorkingHour::class, array(
+        $this->builder->build(WorkingHour::class, array(
             'perso_id' => $agent->getId(),
             'debut' => $start,
             'fin' => $end,
@@ -119,7 +119,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $start = \DateTime::createFromFormat("d/m/Y", "31/10/2022");
         $end = \DateTime::createFromFormat("d/m/Y", "02/11/2022");
 
-        $jdupont_off = $this->builder->build(Absence::class, array(
+        $this->builder->build(Absence::class, array(
             'debut' => $start,
             'fin' => $end,
             'perso_id' => $jdupont->getId(),
@@ -129,7 +129,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'groupe' => 1
         ));
 
-        $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
+        $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
         $response = $this->client->getResponse();
 
@@ -229,7 +229,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $start = \DateTime::createFromFormat("d/m/Y", "18/10/2022");
         $end = \DateTime::createFromFormat("d/m/Y", "04/11/2022");
 
-        $holiday = $builder->build(Holiday::class, array(
+        $builder->build(Holiday::class, array(
             'debut' => $start,
             'fin' => $end,
             'perso_id' => $agentHoliday->getId(),
@@ -247,7 +247,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $this->createWeekPlanningFor($abreton);
         $this->createWeekPlanningFor($kboivin);
 
-        $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
+        $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
         $response = $this->client->getResponse();
 
@@ -345,7 +345,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $this->createWeekPlanningFor($abreton);
         $this->createWeekPlanningFor($kboivin);
 
-        $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
+        $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
         $response = $this->client->getResponse();
 
@@ -454,7 +454,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             5 => array('0' => '08:00:00', '1' => '', '2' => '', '3' => '19:30:00', '2'),
         );
 
-        $planning = $this->builder->build(WorkingHour::class, array(
+        $this->builder->build(WorkingHour::class, array(
             'perso_id' => $jdevoe->getId(),
             'debut' => $start,
             'fin' => $end,
@@ -464,7 +464,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'nb_semaine' => 1
         ));
 
-        $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
+        $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
         $response = $this->client->getResponse();
 

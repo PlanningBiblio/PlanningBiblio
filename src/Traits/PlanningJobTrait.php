@@ -18,12 +18,12 @@ trait PlanningJobTrait
         }
 
         $droits = $GLOBALS['droits'];
-        return !(!in_array((300 + $site), $droits) and !in_array((1000 + $site), $droits));
+        return !(!in_array((300 + $site), $droits) && !in_array((1000 + $site), $droits));
     }
 
-    public function getContextMenuInfos($site, $date, $debut, $fin, $perso_id, $perso_nom, $poste, $CSRFToken, $session) {
+    public function getContextMenuInfos($site, $date, $debut, $fin, $perso_id, $perso_nom, $poste, $CSRFToken, $session): string|array {
 
-        $login_id = $session->get('loginId');
+        $session->get('loginId');
         $this->droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
         $tab_exclus = array(0);
@@ -40,10 +40,6 @@ trait PlanningJobTrait
         $motifExclusion = array();
 
         $d = new \datePl($date);
-        $j1 = $d->dates[0];
-        $j7 = $d->dates[6];
-        $semaine = $d->semaine;
-        $semaine3 = $d->semaine3;
 
         $break_countdown = (
             $this->config('PlanningHebdo')
@@ -194,7 +190,7 @@ trait PlanningJobTrait
                     }
                 }
 
-                if (!empty($autres_postes)) {
+                if ($autres_postes !== []) {
                     $req = "SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` "
                         . "FROM `{$dbprefix}pl_poste` "
                         . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
@@ -231,7 +227,7 @@ trait PlanningJobTrait
 
         // Count day hours for all agent.
         $day_hours = array();
-        if ($break_countdown) {
+        if ($break_countdown !== 0) {
             $db = new \db();
             $dateSQL = $db->escapeString($date);
 
@@ -271,14 +267,14 @@ trait PlanningJobTrait
             foreach ($teleworking_reasons as $key => $value) {
                 $teleworking_reasons[$key] = $db->escapeString($value);
             }
-            $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
+            $teleworking_exception = (!empty($teleworking_reasons) && is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
         }
 
         $db->select('absences', 'perso_id,valide', "`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL' AND `valide` != -1 $teleworking_exception");
 
         if ($db->result) {
             foreach ($db->result as $elem) {
-                if ($elem['valide'] > 0 or $this->config('Absences-validation') == '0') {
+                if ($elem['valide'] > 0 || $this->config('Absences-validation') == '0') {
 
                     switch ($this->config('Absences-Exclusion')) {
                         case 1:
@@ -337,7 +333,7 @@ trait PlanningJobTrait
         $verif = true;
         // Don't check working hours for Saturday and Sunday
         // if ctrlHresAgents is disabled
-        if (!$this->config('ctrlHresAgents') and ($d->position == 6 or $d->position == 0)) {
+        if (!$this->config('ctrlHresAgents') && ($d->position == 6 || $d->position == 0)) {
             $verif = false;
         }
 
@@ -361,7 +357,7 @@ trait PlanningJobTrait
             }
         }
 
-        if ($db->result and $verif) {
+        if ($db->result && $verif) {
             foreach ($db->result as $elem) {
                 $temps = array();
                 $week_number = 0;
@@ -395,7 +391,7 @@ trait PlanningJobTrait
                     $exclusion[$elem['id']][]="horaires";
                 }
 
-                if ($break_countdown) {
+                if ($break_countdown !== 0) {
                     $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
 
                     $is_a_break = $positions->find($poste)->isLunch();
@@ -426,17 +422,17 @@ trait PlanningJobTrait
                     // index 4 is the site on which
                     // agent is working on.
 
-                    $site_agent = !empty($temps[$jour][4]) ? $temps[$jour][4] : null;
+                    $site_agent = empty($temps[$jour][4]) ? null : $temps[$jour][4];
                     // If agent has not site and
                     // he is not excluded for other
                     // reason, so exclude it.
-                    if (empty($site_agent) and !in_array('horaires', $exclusion[$elem['id']])) {
+                    if (empty($site_agent) && !in_array('horaires', $exclusion[$elem['id']])) {
                         $exclusion[$elem['id']][]="sites";
                     }
 
                     // If agent has a site but it is
                     // not the requested site, so exclude.
-                    if (!empty($site_agent) and $site_agent != -1 and $site_agent != $site) {
+                    if (!empty($site_agent) && $site_agent != -1 && $site_agent != $site) {
                         $exclusion[$elem['id']][]="autre_site";
                     }
                 }
@@ -512,21 +508,19 @@ trait PlanningJobTrait
                 }
 
                 // Remove agents that are not in requested category.
-                if (!empty($statuts)) {
-                    if (!in_array($elem['statut'], $statuts)) {
-                        $exclusion[$elem['id']][] = 'categories';
-                    }
+                if (!($statuts === []) && !in_array($elem['statut'], $statuts)) {
+                    $exclusion[$elem['id']][] = 'categories';
                 }
 
                 // Remove agent working on other site.
                 if ($this->config('Multisites-nombre') > 1) {
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                    if (!is_array($sites) or !in_array($site, $sites)) {
+                    if (!is_array($sites) || !in_array($site, $sites)) {
                         $exclusion[$elem['id']][] = 'sites';
                     }
                 }
 
-                if ($this->config('Planning-agents-volants') and in_array($elem['id'], $agents_volants)) {
+                if ($this->config('Planning-agents-volants') && in_array($elem['id'], $agents_volants)) {
                     $elem['statut'] = 'volants';
                 }
 
@@ -554,11 +548,7 @@ trait PlanningJobTrait
                         $motifExclusion[$elem['id']][]="skills";
                     }
                     if (in_array('categories', $exclusion[$elem['id']])) {
-                        if ($categories_nb > 1) {
-                            $motifExclusion[$elem['id']][]="no_cat";
-                        } else {
-                            $motifExclusion[$elem['id']][]="wrong_cat";
-                        }
+                        $motifExclusion[$elem['id']][] = $categories_nb > 1 ? "no_cat" : "wrong_cat";
                     }
                     if (in_array('absence', $exclusion[$elem['id']])) {
                         $motifExclusion[$elem['id']][] = 'absence';
@@ -597,12 +587,12 @@ trait PlanningJobTrait
                 // Same check than above, but definitly remove them.
                 if ($this->config('Multisites-nombre') > 1) {
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                    if (!is_array($sites) or !in_array($site, $sites)) {
+                    if (!is_array($sites) || !in_array($site, $sites)) {
                         continue;
                     }
                 }
 
-                if ($this->config('Planning-agents-volants') and in_array($elem['id'], $agents_volants)) {
+                if ($this->config('Planning-agents-volants') && in_array($elem['id'], $agents_volants)) {
                     $elem['statut'] = 'volants';
                 }
 
@@ -616,7 +606,7 @@ trait PlanningJobTrait
         $newtab = array();
         foreach ($agents_dispo as $elem) {
             if ($elem['id']!=2) {
-                if (!trim($elem['service'])) {
+                if (trim($elem['service']) === '' || trim($elem['service']) === '0') {
                     $newtab["Sans service"][]=$elem['id'];
                 } else {
                     $newtab[$elem['service']][]=$elem['id'];
@@ -642,11 +632,7 @@ trait PlanningJobTrait
             }
         }
 
-        if (array_key_exists("Autres", $newtab)) {
-            $listparservices[] = implode(',', $newtab['Autres']);
-        } else {
-            $listparservices[] = null;
-        }
+        $listparservices[] = array_key_exists("Autres", $newtab) ? implode(',', $newtab['Autres']) : null;
         $tab_agent = implode(';', $listparservices);
 
         $tableaux = array(
@@ -666,11 +652,11 @@ trait PlanningJobTrait
         );
 
         // Prepare displaying of services.
-        if ($services and $this->config('ClasseParService')) {
+        if ($services && $this->config('ClasseParService')) {
             $tableaux['services'] = array();
             $i=0;
             foreach ($services as $elem) {
-                if (array_key_exists($elem['service'], $newtab) and !$cellule_grise) {
+                if (array_key_exists($elem['service'], $newtab) && !$cellule_grise) {
                     $elem['class'] = "service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));
                     $elem['tab_agent'] = $tab_agent;
                     $elem['id'] = $i;
@@ -682,7 +668,7 @@ trait PlanningJobTrait
 
         // Show agents list in case
         // ClasseParService is disabled.
-        if (!$this->config('ClasseParService') and !$cellule_grise) {
+        if (!$this->config('ClasseParService') && !$cellule_grise) {
             $hide=false;
             $p = new \planning();
             $p->site = $site;
@@ -691,12 +677,12 @@ trait PlanningJobTrait
             $tableaux['menu1'] = $p->menudiv;
         }
 
-        if (array_key_exists("Autres", $newtab) and $this->config('agentsIndispo') and !$cellule_grise) {
+        if (array_key_exists("Autres", $newtab) && $this->config('agentsIndispo') && !$cellule_grise) {
             $tableaux['unavailables_agents'] = array('id' => count($services));
         }
 
         // Link "call for help"
-        if ($this->config('Planning-AppelDispo') and !$cellule_grise) {
+        if ($this->config('Planning-AppelDispo') && !$cellule_grise) {
             // Check if an email has already been sent.
             $db = new \db();
             $db->select2('appel_dispo', null, array('site' => $site, 'poste' => $poste, 'date' => $date, 'debut' => $debut, 'fin' => $fin), "ORDER BY `timestamp` desc");
@@ -727,7 +713,7 @@ trait PlanningJobTrait
 
         // List of agents if ClasseParService is enabled.
         $tableaux['menu2'] = array();
-        if ($agents_tous and $this->config('ClasseParService')) {
+        if ($agents_tous && $this->config('ClasseParService')) {
             $hide = true;
             $p = new \planning();
             $p->site = $site;
@@ -737,7 +723,7 @@ trait PlanningJobTrait
         }
 
         // list of unavailables agents if ClasseParService is disabled.
-        if ($autres_agents and !$this->config('ClasseParService') and $this->config('agentsIndispo')) {
+        if ($autres_agents && !$this->config('ClasseParService') && $this->config('agentsIndispo')) {
             $hide = true;
             $p = new \planning();
             $p->site = $site;

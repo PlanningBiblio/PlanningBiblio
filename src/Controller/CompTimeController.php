@@ -16,7 +16,7 @@ include_once(__DIR__ . '/../../public/conges/class.conges.php');
 class CompTimeController extends BaseController
 {
     #[Route(path: '/comptime/add', name: 'comptime.add', methods: ['GET'])]
-    public function add(Request $request)
+    public function add(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $session = $request->getSession();
 
@@ -33,7 +33,7 @@ class CompTimeController extends BaseController
             ->forAgent($perso_id)
             ->getValidationLevelFor($session->get('loginId'));
 
-        if (!$admin and !$adminN2) {
+        if (!$admin && !$adminN2) {
             $perso_id = $session->get('loginId');
         }
 
@@ -42,16 +42,14 @@ class CompTimeController extends BaseController
 
         $p = new \personnel();
         $p->fetchById($perso_id);
-        $nom = $p->elements[0]['nom'];
-        $prenom = $p->elements[0]['prenom'];
         $credit = number_format($p->elements[0]['conges_credit'], 2, '.', ' ');
         $reliquat = number_format($p->elements[0]['conges_reliquat'], 2, '.', ' ');
         $anticipation = number_format($p->elements[0]['conges_anticipation'], 2, '.', ' ');
-        $credit2 = heure4($credit);
-        $reliquat2 = heure4($reliquat);
-        $anticipation2 = heure4($anticipation);
+        heure4($credit);
+        heure4($reliquat);
+        heure4($anticipation);
         $recuperation = number_format((float) $balance[1], 2, '.', ' ');
-        $recuperation2=heure4($recuperation);
+        heure4($recuperation);
 
         $balance_before_days = null;
         $balance2_before_days = null;
@@ -106,7 +104,7 @@ class CompTimeController extends BaseController
     }
 
     #[Route(path: '/comptime', name: 'comptime.save', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $session = $request->getSession();
 
@@ -182,7 +180,7 @@ class CompTimeController extends BaseController
         if ($hre_fin != '23:59:59') {
             $message .= ' ' . heure3($hre_fin);
         }
-        if ($commentaires) {
+        if ($commentaires !== '' && $commentaires !== '0') {
             $message .= "<br/><br/>Commentaire :<br/>$commentaires<br/>";
         }
 
