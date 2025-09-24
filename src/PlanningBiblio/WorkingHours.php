@@ -15,7 +15,10 @@ class WorkingHours
         $this->free_break_already_removed = $free_break_already_removed;
     }
 
-    public function hoursOf($day)
+    /**
+     * @return array{mixed, mixed}[]
+     */
+    public function hoursOf($day): array
     {
 
         /**

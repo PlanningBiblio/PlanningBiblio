@@ -367,7 +367,10 @@ class AutoFiller extends Command
         return "$var =\n[| " . implode("\n | ", $array) . "\n |];\n\n";
     } 
 
-    private function phpArray(String $input)
+    /**
+     * @return mixed[]
+     */
+    private function phpArray(String $input): array
     {
         $output = explode("\n", $input);
 

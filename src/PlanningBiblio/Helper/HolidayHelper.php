@@ -65,7 +65,10 @@ class HolidayHelper extends BaseHelper
         return "$days jour";
     }
 
-    public function getCountedHours()
+    /**
+     * @return mixed[]
+     */
+    public function getCountedHours(): array
     {
         $debut = $this->data['start'];
         $hre_debut = $this->data['hour_start'];

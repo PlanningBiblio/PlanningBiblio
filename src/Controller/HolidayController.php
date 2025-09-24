@@ -1096,7 +1096,10 @@ class HolidayController extends BaseController
         );
     }
 
-    private function update($request)
+    /**
+     * @return mixed[]
+     */
+    private function update($request): array
     {
         $post = $request->request->all();
 

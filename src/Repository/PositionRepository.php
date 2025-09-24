@@ -9,7 +9,10 @@ use App\Entity\PlanningPositionLines;
 
 class PositionRepository extends EntityRepository
 {
-    public function getAllSkills() {
+    /**
+     * @return mixed[]
+     */
+    public function getAllSkills(): array {
         $entityManager = $this->getEntityManager();
         $positions = $entityManager->getRepository(Position::class)->findAll();
         $all_skills = array();

@@ -2786,8 +2786,9 @@ class StatisticController extends BaseController
 
     /**
      * Give Hours Table
+     * @return mixed[]
      */
-    private function getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours)
+    private function getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours): array
     {
         if (!$statisticsHours) {
             return array($heures_tab, $heures_tab_global);
@@ -2816,8 +2817,9 @@ class StatisticController extends BaseController
 
     /**
      * Give used positions
+     * @return list
      */
-    private function getPositions($supportOnly = false)
+    private function getPositions($supportOnly = false): array
     {
 
         $filter = array('statistiques' => 1);

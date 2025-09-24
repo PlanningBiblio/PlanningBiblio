@@ -31,11 +31,11 @@ class personnel
     // Tableau, valeur 0=pas supprimé, 1=1ère suppression (corbeille), 2=suppression définitive
     public $supprime=array(0);
   
-    public $CSRFToken = null;
+    public $CSRFToken;
 
     public $offset = 0;
 
-    public $responsablesParAgent = null;
+    public $responsablesParAgent;
 
     public function __construct()
     {

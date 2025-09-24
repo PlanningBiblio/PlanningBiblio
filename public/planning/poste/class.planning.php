@@ -27,15 +27,15 @@ if (!isset($version)) {
 
 class planning
 {
-    public $CSRFToken = null;
-    public $date=null;
+    public $CSRFToken;
+    public $date;
     public $site=1;
     public $categorieA=false;
     public $elements=array();
-    public $menudiv=null;
-    public $notes=null;
-    public $notesTextarea=null;
-    public $validation=null;
+    public $menudiv;
+    public $notes;
+    public $notesTextarea;
+    public $validation;
 
 
     public function fetch()

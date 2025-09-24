@@ -23,7 +23,7 @@ require_once __DIR__.'/../../personnel/class.personnel.php';
 
 class volants
 {
-    public $error = null;
+    public $error;
     public $selected = array();
     public $tous = array();
 

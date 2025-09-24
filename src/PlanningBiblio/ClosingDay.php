@@ -6,14 +6,14 @@ require_once(__DIR__ . "/../../public/include/feries.php");
 
 class ClosingDay
 {
-    public $annee=null;
-    public $debut=null;
-    public $fin=null;
-    public $auto=null;
+    public $annee;
+    public $debut;
+    public $fin;
+    public $auto;
     public $elements=array();
     public $error=false;
-    public $index=null;
-    public $CSRFToken = null;
+    public $index;
+    public $CSRFToken;
 
     public function __construct()
     {

@@ -1437,7 +1437,10 @@ class AbsenceController extends BaseController
         return $this->redirectToRoute('absence.index');
     }
 
-    private function filterAgents($request)
+    /**
+     * @return mixed[]
+     */
+    private function filterAgents($request): array
     {
         $session = $request->getSession();
 
@@ -1530,7 +1533,10 @@ class AbsenceController extends BaseController
         }
     }
 
-    private function availablesReasons()
+    /**
+     * @return list<mixed>
+     */
+    private function availablesReasons(): array
     {
         $db_reasons=new \db();
         $db_reasons->select("select_abs", null, null, "order by rang");
@@ -1560,7 +1566,7 @@ class AbsenceController extends BaseController
         return $reasons;
     }
 
-    private function reasonTypes()
+    private function reasonTypes(): array
     {
         $reason_types = array(
             array(
@@ -1580,7 +1586,10 @@ class AbsenceController extends BaseController
         return $reason_types;
     }
 
-    private function absenceInfos()
+    /**
+     * @return list
+     */
+    private function absenceInfos(): array
     {
         $date = date("Y-m-d");
         $db = new \db();

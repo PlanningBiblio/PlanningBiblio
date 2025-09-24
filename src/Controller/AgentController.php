@@ -1572,7 +1572,10 @@ class AgentController extends BaseController
     }
 
 
-    private function ldif_search($searchTerms) {
+    /**
+     * @return never[]|non-empty-array[]
+     */
+    private function ldif_search($searchTerms): array {
 
         // Return an empty list if $searchTerms is empty (as for an LDAP search)
         if (empty($searchTerms)) {
@@ -1832,7 +1835,10 @@ class AgentController extends BaseController
     }
 
     // Ajout des noms dans les tableaux postes attribués et dispo
-    private function postesNoms($postes, $tab_noms)
+    /**
+     * @return list<array{mixed, mixed}>
+     */
+    private function postesNoms($postes, $tab_noms): array
     {
         $tmp = array();
         if (is_array($postes)) {

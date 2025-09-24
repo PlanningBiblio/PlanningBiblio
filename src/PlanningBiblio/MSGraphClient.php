@@ -71,7 +71,7 @@ class MSGraphClient
         $this->log("End absences import from MS Graph Calendars");
     }
 
-    private function getDateRange() {
+    private function getDateRange(): array {
         $range = array();
         $today = date("Y-m-d");
         $range['from'] = date("Y-m-d", strtotime($today . '- 15 days'));

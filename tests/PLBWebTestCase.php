@@ -119,7 +119,10 @@ class PLBWebTestCase extends PantherTestCase
         return $select;
     }
 
-    protected function getSelectValues($id = null)
+    /**
+     * @return list
+     */
+    protected function getSelectValues($id = null): array
     {
         $select = $this->getSelect($id);
         $options = array();
@@ -131,7 +134,10 @@ class PLBWebTestCase extends PantherTestCase
         return $options;
     }
 
-    protected function getElementsText($selector = null)
+    /**
+     * @return list
+     */
+    protected function getElementsText($selector = null): array
     {
         $driver = $this->client->getWebDriver();
 

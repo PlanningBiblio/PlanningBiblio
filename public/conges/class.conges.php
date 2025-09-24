@@ -32,32 +32,32 @@ use App\Entity\Agent;
 
 class conges
 {
-    public $agent=null;
+    public $agent;
     public $agents = array();
     public $agents_supprimes=array(0);
     public $admin=false;
-    public $annee=null;
-    public $bornesExclues=null;
-    public $CSRFToken=null;
+    public $annee;
+    public $bornesExclues;
+    public $CSRFToken;
     public $data=array();
-    public $debit=null;
-    public $debut=null;
+    public $debit;
+    public $debut;
     public $elements=array();
     public $error=false;
-    public $fin=null;
-    public $heures=null;
-    public $heures2=null;
-    public $id=null;
+    public $fin;
+    public $heures;
+    public $heures2;
+    public $id;
     public $information = true;
-    public $message=null;
-    public $minutes=null;
-    public $perso_id=null;
-    public $recupId=null;
+    public $message;
+    public $minutes;
+    public $perso_id;
+    public $recupId;
     public $responsables = array();
     public $samedis=array();
     public $sites=array();
     public $supprime = true;
-    public $valide=null;
+    public $valide;
 
     public function __construct()
     {
@@ -1285,7 +1285,10 @@ class conges
         }
     }
 
-    public function all($from, $to, $rejected = 0, $sites = [])
+    /**
+     * @return list
+     */
+    public function all($from, $to, $rejected = 0, $sites = []): array
     {
         $this->debut = $from;
         $this->fin = $to;

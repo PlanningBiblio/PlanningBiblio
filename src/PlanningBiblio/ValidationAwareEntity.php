@@ -8,9 +8,9 @@ require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class ValidationAwareEntity
 {
-    private $type = null;
+    private $type;
 
-    private $entity = null;
+    private $entity;
 
     private $status_desc = array(
         'feminine' => array(
@@ -29,7 +29,7 @@ class ValidationAwareEntity
         ),
     );
 
-    private $config = null;
+    private $config;
 
     public function __construct($entity_type, $entity_id)
     {

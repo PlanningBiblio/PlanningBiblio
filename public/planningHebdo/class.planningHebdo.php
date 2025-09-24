@@ -21,21 +21,21 @@ require_once __DIR__."/../absences/class.absences.php";
 
 class planningHebdo
 {
-    public $agent=null;
+    public $agent;
     public $config=array();
-    public $CSRFToken=null;
+    public $CSRFToken;
     public $dates=array();
-    public $debut=null;
+    public $debut;
     public $elements=array();
-    public $error=null;
-    public $fin=null;
-    public $id=null;
-    public $ignoreActuels=null;
-    public $periodes=null;
-    public $perso_id=null;
-    public $perso_ids=null;
-    public $tri=null;
-    public $valide=null;
+    public $error;
+    public $fin;
+    public $id;
+    public $ignoreActuels;
+    public $periodes;
+    public $perso_id;
+    public $perso_ids;
+    public $tri;
+    public $valide;
     public $merge_exception = true;
     public Array $recipients;
 

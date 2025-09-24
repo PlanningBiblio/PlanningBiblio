@@ -507,7 +507,10 @@ class Agent
         return false;
     }
 
-    public function get_planning_unit_mails() {
+    /**
+     * @return mixed[]
+     */
+    public function get_planning_unit_mails(): array {
         $config = $GLOBALS['config'];
 
         // Get mails defined in Mail-Planning config element.
@@ -626,7 +629,10 @@ class Agent
         return is_array($skills) ? $skills : [];
     }
 
-    public function managedSites($needed_l1, $needed_l2)
+    /**
+     * @return list<int<1, max>>
+     */
+    public function managedSites($needed_l1, $needed_l2): array
     {
         $sites_number = $GLOBALS['config']['Multisites-nombre'];
 

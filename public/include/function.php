@@ -34,16 +34,16 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class datePl
 {
-    public $dates = null;
-    public $date = null;
-    public $jour = null;
-    public $jour_complet = null;
-    public $sam = null;
-    public $sem = null;
-    public $semaine = null;
-    public $semaine3 = null;
-    public $position = null;
-    public $nb_semaine = null;
+    public $dates;
+    public $date;
+    public $jour;
+    public $jour_complet;
+    public $sam;
+    public $sem;
+    public $semaine;
+    public $semaine3;
+    public $position;
+    public $nb_semaine;
   
     public function __construct($date, $nb_semaine = null)
     {
@@ -170,12 +170,12 @@ class datePl
 
 class CJMail implements NotificationTransporterInterface
 {
-    public $message=null;
-    public $to=null;
-    public $subject=null;
+    public $message;
+    public $to;
+    public $subject;
     public $error="";
-    public $error_CJInfo=null;
-    public $error_encoded=null;
+    public $error_CJInfo;
+    public $error_encoded;
     public $failedAddresses=array();
     public $notReally = false;
     public $successAddresses=array();

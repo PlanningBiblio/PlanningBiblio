@@ -209,7 +209,10 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
         $db->delete('planning_hebdo');
     }
 
-    private function getHolidayData($replace = array())
+    /**
+     * @return mixed[]
+     */
+    private function getHolidayData($replace = array()): array
     {
         $data = array(
             'CSRFToken' => '00000',

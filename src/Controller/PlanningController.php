@@ -38,11 +38,11 @@ class PlanningController extends BaseController
     private $absences = [];
     private $cellId = 0;
     private $cells = [];
-    private $date = null;
+    private $date;
     private $dates = [];
     private $locked = 0;
-    private $lockDate = null;
-    private $lockPerson = null;
+    private $lockDate;
+    private $lockPerson;
     private $holidays = [];
     private $positions = [];
     private $schedules = [];
@@ -1224,7 +1224,10 @@ class PlanningController extends BaseController
         return $absences;
     }
 
-    private function getCategories()
+    /**
+     * @return mixed[]
+     */
+    private function getCategories(): array
     {
         $categories = array();
 

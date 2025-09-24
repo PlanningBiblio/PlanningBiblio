@@ -25,10 +25,10 @@ if (!isset($version)) {
 
 class postes
 {
-    public $CSRFToken = null;
-    public $id=null;
+    public $CSRFToken;
+    public $id;
     public $elements = array();
-    public $site=null;
+    public $site;
 
     public function __construct()
     {

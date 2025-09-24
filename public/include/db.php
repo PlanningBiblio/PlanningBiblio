@@ -28,19 +28,19 @@ require_once "sanitize.php";
 
 class db
 {
-    public $host = null;
-    public $dbname = null;
-    public $dbprefix = null;
-    public $user = null;
-    public $password = null;
-    public $conn = null;
-    public $result = null;
-    public $nb = null;
-    public $error = null;
-    public $msg = null;
+    public $host;
+    public $dbname;
+    public $dbprefix;
+    public $user;
+    public $password;
+    public $conn;
+    public $result;
+    public $nb;
+    public $error;
+    public $msg;
     public $CSRFToken = false;
     public $sanitize_string = false;
-    public $inserted_id = null;
+    public $inserted_id;
   
     public function __construct()
     {
@@ -562,17 +562,17 @@ class db
 class dbh
 {
     public $CSRFToken = false;
-    public $dbhost = null;
-    public $dbname = null;
-    public $dbuser = null;
-    public $dbpass = null;
-    public $dbprefix = null;
-    public $error = null;
-    public $msg = null;
-    public $nb = null;
-    public $pdo = null;
-    public $stmt = null;
-    public $result = null;
+    public $dbhost;
+    public $dbname;
+    public $dbuser;
+    public $dbpass;
+    public $dbprefix;
+    public $error;
+    public $msg;
+    public $nb;
+    public $pdo;
+    public $stmt;
+    public $result;
 
 
     public function __construct()

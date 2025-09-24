@@ -24,10 +24,10 @@ if (!isset($version) and php_sapi_name() != 'cli') {
 
 class activites
 {
-    public $id=null;
+    public $id;
     public $elements=array();
-    public $deleted=null;
-    public $CSRFToken = null;
+    public $deleted;
+    public $CSRFToken;
 
     public function __construct()
     {

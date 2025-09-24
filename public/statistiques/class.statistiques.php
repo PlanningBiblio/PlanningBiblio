@@ -25,8 +25,10 @@ if (!isset($version)) {
 
 // AJouter les html_entity_decode latin1
 // AJouter les variables $nom, (agents,service,statut)
-
-function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours, $debut, $fin)
+/**
+ * @return mixed[]
+ */
+function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours, $debut, $fin): array
 {
     $titre="Statistiques par $nom du $debutAlpha au $finAlpha";
 
@@ -277,7 +279,10 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
     return $lignes;
 }
 
-function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours)
+/**
+ * @return mixed[]
+ */
+function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours): array
 {
     $titre="Statistiques sur les samedis travaillés du $debut au $fin";
     $lignes=array($titre,null);
@@ -347,9 +352,9 @@ function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours)
 
 class statistiques
 {
-    public $debut=null;
-    public $fin=null;
-    public $selectedSites=null;
+    public $debut;
+    public $fin;
+    public $selectedSites;
 
     public function ouverture()
     {
