@@ -549,7 +549,7 @@ class PlanningController extends BaseController
 
                         $db2 = new \db();
                         $db2->select('absences', '*', "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
-                        $absent = $db2->result ? true : false;
+                        $absent = (bool) $db2->result;
 
                         // Look for hollidays
                         $db2 = new \db();
@@ -722,7 +722,7 @@ class PlanningController extends BaseController
         return $this->redirectToRoute('home');
     }
 
-    private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
+    private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site): string
     {
         $resultats=array();
         $classe=array();

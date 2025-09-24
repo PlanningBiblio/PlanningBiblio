@@ -125,7 +125,7 @@ class FixtureBuilder
         return $value;
     }
 
-    private function random_text($length)
+    private function random_text($length): string
     {
         $length ??= 20;
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

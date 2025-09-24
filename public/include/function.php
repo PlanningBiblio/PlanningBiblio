@@ -765,7 +765,7 @@ function cmp_prenom_nom($a, $b)
     return (strtolower($a['prenom']) > strtolower($b['prenom'])) ? 1 : -1;
 }
 
-function createURL($page=null)
+function createURL($page=null): string
 {
     // Construction d'une URL
 
@@ -874,7 +874,7 @@ function dateAlpha($date, $day=true, $year=true)
     return $return;
 }
 
-function dateAlpha2($date)
+function dateAlpha2($date): string
 {
     $tmp=explode("-", $date);
     $dayOfMonth=($tmp[2]=="01")?"1er":intval($tmp[2]);
@@ -984,7 +984,7 @@ function encrypt($string)
     return $crypted_string;
 }
 
-function gen_trivial_password($len = 6)
+function gen_trivial_password($len = 6): string
 {
     $r = '';
     for ($i=0; $i<$len; $i++) {
@@ -1029,7 +1029,7 @@ function heure2($heure)
     return $heure;
 }
 
-function heure3($heure)
+function heure3($heure): string
 {
     $heure=str_replace(":", "h", $heure);
     $heure=substr($heure, 0, 5);
@@ -1253,7 +1253,7 @@ function removeAccents($string)
     return htmlentities($string, ENT_QUOTES|ENT_IGNORE, "UTF-8");
 }
 
-function recurrenceRRuleText($rrule)
+function recurrenceRRuleText($rrule): string
 {
     $freq       = preg_replace('/.*FREQ=(\w*).*/', "$1", $rrule);
     $interval   = strpos($rrule, 'INTERVAL')      ? preg_replace('/.*INTERVAL=(\d*).*/', "$1", $rrule)      : 1;

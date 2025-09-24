@@ -287,7 +287,7 @@ class MSGraphClient
         $this->logger->log($message, "MSGraphClient");
     }
 
-    private function formatDate($graphdate, $format = "Y-m-d H:i:s") {
+    private function formatDate($graphdate, $format = "Y-m-d H:i:s"): string {
         $time = strtotime($graphdate->dateTime . $graphdate->timeZone);
         return date($format, $time);
     }

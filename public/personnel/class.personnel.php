@@ -286,7 +286,7 @@ class personnel
      * @param int $id : id de l'agent
      * @return string $url
      */
-    public function getICSURL($id)
+    public function getICSURL($id): string
     {
         $url = "/ical?id=$id";
         if ($GLOBALS['config']['ICS-Code']) {

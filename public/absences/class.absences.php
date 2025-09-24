@@ -1370,7 +1370,7 @@ class absences
         unlink($file);
     }
 
-    public function build_ics_content()
+    public function build_ics_content(): string
     {
         $perso_id = $this->perso_id;
         $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '$3$2$1', $this->debut).'T';

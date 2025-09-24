@@ -57,7 +57,7 @@ class AppExtension extends AbstractExtension
         return dateFr($date, true);
     }
 
-    public function digit($number, $digits)
+    public function digit($number, $digits): string
     {
         return sprintf('%0' . $digits . 'd', $number);
     }
@@ -98,7 +98,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function hoursToDays($hours, $perso_id)
+    public function hoursToDays($hours, $perso_id): string
     {
         $holiday_helper = new HolidayHelper();
         if ($hours && $perso_id) {

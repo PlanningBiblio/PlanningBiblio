@@ -196,7 +196,7 @@ class AgentController extends BaseController
 
         $actif = null;
         $droits = $GLOBALS['droits'];
-        $admin = in_array(21, $droits) ? true : false;
+        $admin = in_array(21, $droits);
 
         $db_groupes = new \db();
         $db_groupes->select2("acces", array("groupe_id", "groupe", "categorie", "ordre"), "groupe_id not in (99,100)", "group by groupe");
@@ -611,7 +611,7 @@ class AgentController extends BaseController
             }
 
             if ( is_array($acces) ) {
-                $elem['checked'] = in_array($elem['groupe_id'], $acces) ? true : false;
+                $elem['checked'] = in_array($elem['groupe_id'], $acces);
             }
 
             $rights[ $elem['categorie'] ]['rights'][] = $elem;
@@ -651,7 +651,7 @@ class AgentController extends BaseController
 
                     $checked = false;
                     if (is_array($acces)) {
-                        $checked = in_array($groupe_id, $acces) ? true : false;
+                        $checked = in_array($groupe_id, $acces);
                     }
 
                     $elem['sites'][] = array(
@@ -1770,7 +1770,7 @@ class AgentController extends BaseController
         return $credits;
     }
 
-    private function login($firstname = '', $lastname = '', $mail = '')
+    private function login($firstname = '', $lastname = '', $mail = ''): string
     {
 
         $firstname = trim($firstname);

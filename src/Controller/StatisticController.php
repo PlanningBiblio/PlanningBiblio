@@ -1073,7 +1073,7 @@ class StatisticController extends BaseController
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
         $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
 
-        $afficheHeures = $this->config('PlanningHebdo') ? true : false;
+        $afficheHeures = (bool) $this->config('PlanningHebdo');
 
         if ($debut) {
             $fin = $fin ? $fin : $debut;

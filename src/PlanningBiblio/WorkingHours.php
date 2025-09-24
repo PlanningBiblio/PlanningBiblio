@@ -102,7 +102,7 @@ class WorkingHours
         return $tab;
     }
 
-    private function substractBreak($hour, $interval)
+    private function substractBreak($hour, $interval): string
     {
          $minutes = $interval * 60;
          $new_hour = date('H:i:s', strtotime("- $minutes minutes $hour"));

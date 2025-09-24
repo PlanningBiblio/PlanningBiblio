@@ -32,7 +32,7 @@ class HolidayHelper extends BaseHelper
           $hours = 0;
         }
 
-        $negative = $hours < 0 ? true : false;
+        $negative = $hours < 0;
         if ($negative) {
             $hours = abs($hours);
         }

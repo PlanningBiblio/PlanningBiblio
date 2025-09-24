@@ -53,7 +53,7 @@ class HourHelper extends BaseHelper
         return $result;
     }
 
-    public static function hoursMinutesToDecimal(string $hours, int $minutes)
+    public static function hoursMinutesToDecimal(string $hours, int $minutes): string
     {
 
         if (!is_int($minutes) || $minutes < 0 || $minutes > 59) {

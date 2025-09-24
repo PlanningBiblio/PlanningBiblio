@@ -362,7 +362,7 @@ class AutoFiller extends Command
      * @param Array $array : PHP array
      * @return String : MiniZinc array
      */
-    private function mZArray(String $var, Array $array)
+    private function mZArray(String $var, Array $array): string
     {
         return "$var =\n[| " . implode("\n | ", $array) . "\n |];\n\n";
     } 

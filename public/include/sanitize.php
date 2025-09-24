@@ -24,7 +24,7 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
-function sanitize_html($input) {
+function sanitize_html($input): string {
     $htmlSanitizer = new HtmlSanitizer(
         (new HtmlSanitizerConfig())->allowSafeElements()
     );

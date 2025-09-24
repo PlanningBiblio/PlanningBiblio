@@ -21,7 +21,7 @@ if (!isset($version)) {
     include_once "../include/accessDenied.php";
 }
 
-function authCAS($logger)
+function authCAS($logger): string
 {
     $config = $GLOBALS['config'];
 
@@ -146,7 +146,7 @@ if (!function_exists('ldap_escape')) {
      *                   set(s) of characters to escape.
      * @return string
      */
-    function ldap_escape($subject, $ignore = '', $flags = 0)
+    function ldap_escape($subject, $ignore = '', $flags = 0): string
     {
         static $charMaps = array(
             LDAP_ESCAPE_FILTER => array('\\', '*', '(', ')', "\x00"),
