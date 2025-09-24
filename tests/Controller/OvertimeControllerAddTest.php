@@ -13,7 +13,7 @@ class OvertimeControllerAddTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $this->setUpPantherClient();
 

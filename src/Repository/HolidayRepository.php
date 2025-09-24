@@ -28,8 +28,6 @@ class HolidayRepository extends EntityRepository
             $builder->andWhere('h.valide = 0');
         }
 
-        $results = $builder->getQuery()->getResult();
-
-        return $results;
+        return $builder->getQuery()->getResult();
     }
 }

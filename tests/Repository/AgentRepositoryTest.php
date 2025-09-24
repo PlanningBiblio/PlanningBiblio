@@ -18,7 +18,7 @@ class AgentRepositoryTest extends TestCase
         $this->entityManager = $entityManager;
     }
 
-    public function testGetSitesForAgents(){
+    public function testGetSitesForAgents(): void{
         global $entityManager;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);

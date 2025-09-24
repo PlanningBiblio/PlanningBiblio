@@ -7,7 +7,7 @@ use Tests\FixtureBuilder;
 
 class WorkingHourControllerTest extends PLBWebTestCase
 {
-    public function testAccessWorkingHoursList() {
+    public function testAccessWorkingHoursList(): void {
         $builder = $this->builder;
         $builder->delete(Agent::class);
 
@@ -29,7 +29,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
         );
     }
 
-    public function testWorkingHoursValidationRights() {
+    public function testWorkingHoursValidationRights(): void {
         $builder = $this->builder;
         $greg = $builder->build(Agent::class, array('login' => 'greg'));
         $greg_workinghours = array(
@@ -97,7 +97,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
         $this->assertEquals('Refusé', $statuses[4], 'User with 1201 right can choose status rejected level 2');
     }
 
-    public function testCreateOwnWorkingHours() {
+    public function testCreateOwnWorkingHours(): void {
         $builder = $this->builder;
         $builder->delete(Agent::class);
 
@@ -115,7 +115,7 @@ class WorkingHourControllerTest extends PLBWebTestCase
         );
     }
 
-    public function testEditOtherAgentsWorkingHours() {
+    public function testEditOtherAgentsWorkingHours(): void {
         $builder = $this->builder;
         $builder->delete(Agent::class);
 

@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class LoggerTest extends TestCase
 {
-    public function testLog(){
+    public function testLog(): void{
         global $entityManager;
         global $stdout;
 

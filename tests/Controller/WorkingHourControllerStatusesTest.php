@@ -15,7 +15,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->setParam('PlanningHebdo-Agents', 1);
     }
 
-    public function testNewWorkinghoursWithoutRight()
+    public function testNewWorkinghoursWithoutRight(): void
     {
         $this->setParam('PlanningHebdo-Validation-N2', 0);
 
@@ -40,7 +40,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->assertEquals('Demandé', $statuses_element->html(), 'NewWorkinghoursWithoutRight show asked');
     }
 
-    public function testNewWorkinghourqRightN1()
+    public function testNewWorkinghourqRightN1(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -69,7 +69,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testNewWorkinghourRightN1AndN2()
+    public function testNewWorkinghourRightN1AndN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -100,7 +100,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testNewWorkinghourRightN2()
+    public function testNewWorkinghourRightN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -131,7 +131,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testNewWorkinghoursRightN2WithAbsencesValidationN2()
+    public function testNewWorkinghoursRightN2WithAbsencesValidationN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 1);
@@ -156,7 +156,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->assertEquals('Demandé', $statuses_element->html());
     }
 
-    public function testEditAskedWorkinghourWithoutRight()
+    public function testEditAskedWorkinghourWithoutRight(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -181,7 +181,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->assertEquals('Demandé', $statuses_element->html());
     }
 
-    public function testEditAskedWorkinghourRightN1()
+    public function testEditAskedWorkinghourRightN1(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -212,7 +212,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditAskedWorkinghourRightN1AndN2()
+    public function testEditAskedWorkinghourRightN1AndN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -245,7 +245,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditAskedWorkinghourRightN2()
+    public function testEditAskedWorkinghourRightN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -278,7 +278,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditAskedWorkinghourRightN2WithPlanningHebdoValidationN2()
+    public function testEditAskedWorkinghourRightN2WithPlanningHebdoValidationN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 1);
@@ -306,7 +306,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1WorkinghoursWithoutRight()
+    public function testEditN1WorkinghoursWithoutRight(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -330,7 +330,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->assertEquals('Accepté (En attente de validation hiérarchique)', $statuses_element->html());
     }
 
-    public function testEditN1WorkinghoursRightN1()
+    public function testEditN1WorkinghoursRightN1(): void
     {
         $this->setParam('PlanningHebdo-Validation-N2', 0);
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
@@ -361,7 +361,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1WorkinghoursRightN1AndN2()
+    public function testEditN1WorkinghoursRightN1AndN2(): void
     {        $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
 
@@ -393,7 +393,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1WorkinghourRightN2()
+    public function testEditN1WorkinghourRightN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -427,7 +427,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1WorkinghourRightN2WithAbsencesValidationN2()
+    public function testEditN1WorkinghourRightN2WithAbsencesValidationN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 1);
@@ -460,7 +460,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2WorkinghourWithoutRight()
+    public function testEditN2WorkinghourWithoutRight(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -484,7 +484,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->assertEquals('Accepté', $statuses_element->html());
     }
 
-    public function testEditN2WorkinghourRightN1()
+    public function testEditN2WorkinghourRightN1(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -512,7 +512,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2WorkingRightN1AndN2()
+    public function testEditN2WorkingRightN1AndN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -545,7 +545,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2WorkinghourRightN2()
+    public function testEditN2WorkinghourRightN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 0);
@@ -578,7 +578,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2WorkinghoursRightN2WithAbsencesValidationN2()
+    public function testEditN2WorkinghoursRightN2WithAbsencesValidationN2(): void
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->setParam('PlanningHebdo-Validation-N2', 1);
@@ -646,8 +646,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         $db = new \db();
         $db->CSRFToken = $this->CSRFToken;
-        $id = $db->insert('planning_hebdo', $data);
 
-        return $id;
+        return $db->insert('planning_hebdo', $data);
     }
 }

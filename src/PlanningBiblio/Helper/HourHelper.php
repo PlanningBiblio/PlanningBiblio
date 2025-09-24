@@ -10,7 +10,7 @@ class HourHelper extends BaseHelper
 
     private static $end_default = '23:59:59';
 
-    public static function decimalToHoursMinutes($decimal_duration)
+    public static function decimalToHoursMinutes($decimal_duration): array
     {
         $result = array();
 
@@ -21,11 +21,11 @@ class HourHelper extends BaseHelper
         }
         $result['hours'] = (int) floor($decimal_duration);
         if ($negative) {
-            $result['hours'] = 0 - $result['hours'];
+            $result['hours'] = -$result['hours'];
         }
 
         # Considering minutes only from now:
-        $decimal_duration = $decimal_duration - floor($decimal_duration);
+        $decimal_duration -= floor($decimal_duration);
 
         $result['minutes'] = round($decimal_duration * 60);
 
@@ -38,11 +38,7 @@ class HourHelper extends BaseHelper
             $result['minutes'] = 0;
         }
 
-        if ($result['hours'] == 0 && $negative) {
-            $result['hours'] = '-0';
-        } else {
-            $result['hours'] = (string) $result['hours'];
-        }
+        $result['hours'] = $result['hours'] == 0 && $negative ? '-0' : (string) $result['hours'];
 
         if ($result['hours'] == 0 && $result['minutes'] == 0) {
             $result['as_string'] = '';
@@ -53,7 +49,7 @@ class HourHelper extends BaseHelper
         return $result;
     }
 
-    public static function hoursMinutesToDecimal(string $hours, int $minutes)
+    public static function hoursMinutesToDecimal(string $hours, int $minutes): string
     {
 
         if (!is_int($minutes) || $minutes < 0 || $minutes > 59) {
@@ -76,7 +72,7 @@ class HourHelper extends BaseHelper
         return sprintf("%.9f", $result);
     }
 
-    public static function StartEndFromRequest($request)
+    public static function StartEndFromRequest($request): array
     {
         $start = $request->get('hre_debut');
         $end = $request->get('hre_fin');

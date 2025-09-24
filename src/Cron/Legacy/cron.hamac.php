@@ -191,7 +191,7 @@ $dbd->prepare("DELETE FROM `{$dbprefix}absences` WHERE `id` = :id;");
 $absences_file = array();
 $absences_db = array();
 
-if (is_integer($days_before)) {
+if (is_int($days_before)) {
     $end = date('Y-m-d 00:00:00', strtotime("- $days_before days"));
     $dbx = new db();
     $dbx->CSRFToken = $CSRFToken;

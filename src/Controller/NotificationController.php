@@ -99,7 +99,7 @@ class NotificationController extends BaseController {
     }
 
     #[Route(path: '/notification', name: 'notification.save', methods: ['POST'])]
-    public function save(Request $request){
+    public function save(Request $request): \Symfony\Component\HttpFoundation\JsonResponse{
         $agents = $request->get('agents');
         $responsables = $request->get('responsables');
         $notifications = $request->get('notifications');

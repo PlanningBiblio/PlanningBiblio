@@ -8,7 +8,7 @@ use Tests\FixtureBuilder;
 
 class HolidayHelperWeeklyRotation extends TestCase
 {
-    public function testgetCountedHoursWithTwoWeekRotation()
+    public function testgetCountedHoursWithTwoWeekRotation(): void
     {
         $GLOBALS['config']['PlanningHebdo'] = 1;
         $GLOBALS['config']['nb_semaine'] = 2;

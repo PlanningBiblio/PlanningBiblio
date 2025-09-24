@@ -13,7 +13,7 @@ class AgentControllerTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testAddPost()
+    public function testAddPost(): void
     {
         global $entityManager;
 
@@ -87,7 +87,7 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEquals($end, $info->getDeparture()->format("d/m/Y"), 'depart');
     }
 
-    public function testAddFormElement() {
+    public function testAddFormElement(): void {
         $GLOBALS['config']['Multisites-nombre'] = 1;
         $GLOBALS['config']['Granularite'] = 30;
         $GLOBALS['config']['LDAP-Host'] = '';
@@ -171,7 +171,7 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEquals('1h15', $result->eq(3)->text('Node does not exist', false));
     }
 
-    public function testEditFormElement() {
+    public function testEditFormElement(): void {
 
         $GLOBALS['config']['Multisites-nombre'] = 2;
         $GLOBALS['config']['Granularite'] = 30;

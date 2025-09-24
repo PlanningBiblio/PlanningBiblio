@@ -66,7 +66,7 @@ class AbsenceDocument
         return $this;
     }
 
-    public function deleteFile() {
+    public function deleteFile(): void {
         if (!$this->absence_id || !$this->filename || !$this->id) return;
 
         unlink($this->upload_dir() . $this->absence_id . '/' . $this->id . '/' . $this->filename);

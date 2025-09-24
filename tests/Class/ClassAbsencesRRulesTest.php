@@ -12,7 +12,7 @@ require_once(__DIR__ . '/../../public/absences/class.absences.php');
 
 class ClassAbsencesRRulesTest extends TestCase
 {
-    public function testEveryTwoWeeks()
+    public function testEveryTwoWeeks(): void
     {
         global $entityManager;
 
@@ -95,7 +95,7 @@ class ClassAbsencesRRulesTest extends TestCase
             'Fifth absence ends at 2022-12-05');
     }
 
-    public function testFourDaysAbsenceEveryThreeWeeks()
+    public function testFourDaysAbsenceEveryThreeWeeks(): void
     {
         global $entityManager;
 
@@ -162,7 +162,7 @@ class ClassAbsencesRRulesTest extends TestCase
             'Third absence ends at 2022-01-29');
     }
 
-    public function testEveryFourDays()
+    public function testEveryFourDays(): void
     {
         global $entityManager;
 
@@ -230,7 +230,7 @@ class ClassAbsencesRRulesTest extends TestCase
     }
 
 
-    public function testThreeDaysAbsenceEverySixDays()
+    public function testThreeDaysAbsenceEverySixDays(): void
     {
         global $entityManager;
 
@@ -290,7 +290,7 @@ class ClassAbsencesRRulesTest extends TestCase
             'First absence ends at 2022-10-19');
     }
 
-    public function testEveryTwoMonthFirstMonday()
+    public function testEveryTwoMonthFirstMonday(): void
     {
         global $entityManager;
 
@@ -350,7 +350,7 @@ class ClassAbsencesRRulesTest extends TestCase
             'First absence ends at 2022-11-07');
     }
 
-    public function testEveryTwoMonthTen()
+    public function testEveryTwoMonthTen(): void
     {
         global $entityManager;
 

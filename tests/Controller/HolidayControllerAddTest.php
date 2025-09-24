@@ -13,7 +13,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testAddWithoutMultiSite()
+    public function testAddWithoutMultiSite(): void
     {
         $this->setParam('Multisites-nombre', 1);
         $this->setParam('Absences-notifications-agent-par-agent', 0);
@@ -192,7 +192,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertStringContainsString('Refusée', $result->text('Node does not exist', true), 'test statut');
     }
 
-    public function testAddMultisite()
+    public function testAddMultisite(): void
     {
         $this->setParam('Multisites-nombre', 1);
         $this->setParam('Absences-notifications-agent-par-agent', 0);

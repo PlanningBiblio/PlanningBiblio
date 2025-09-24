@@ -6,7 +6,7 @@ require_once(__DIR__ . '/../../public/include/sanitize.php');
 
 class IncludeSanitizeTest extends TestCase
 {
-    public function testSanitizeHtml()
+    public function testSanitizeHtml(): void
     {
         $sanitized = sanitize_html("Pre Text <script>alert('payload');</script> Post Text");
         $this->assertEquals('Pre Text  Post Text', $sanitized, 'Remove javascript');

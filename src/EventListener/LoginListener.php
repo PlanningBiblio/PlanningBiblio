@@ -18,7 +18,7 @@ class LoginListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $route = $event->getRequest()->getPathInfo();
         $route = ltrim($route, '/');
@@ -29,7 +29,7 @@ class LoginListener
         $url = $config->findOneBy(array('nom' => 'URL'))->getValue();
 
         // Prevent user accessing to login page if he is already authenticated
-        if (!empty($session->get('loginId')) and $route == 'login') {
+        if (!empty($session->get('loginId')) and $route === 'login') {
             $event->setResponse(new RedirectResponse($url));
         }
 
@@ -39,7 +39,7 @@ class LoginListener
             return;
         }
 
-        if (substr($route, 0, 11) == 'unsubscribe') {
+        if (substr($route, 0, 11) === 'unsubscribe') {
             return;
         }
 

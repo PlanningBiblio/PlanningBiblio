@@ -49,11 +49,11 @@ class Skill
         return $this;
     }
 
-    public function disable() {
+    public function disable(): void {
         $this->supprime = new \DateTime();
     }
 
-    public function enable() {
+    public function enable(): void {
         $this->supprime = null;
     }
 }

@@ -16,7 +16,7 @@ class AgentControllerPasswordTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testPasswordChangeWithCSRFOk()
+    public function testPasswordChangeWithCSRFOk(): void
     {
         global $entityManager;
         $_SESSION['oups']['CSRFToken'] = '00000';
@@ -55,7 +55,7 @@ class AgentControllerPasswordTest extends PLBWebTestCase
     }
 
 
-    public function testPasswordChangeWithFakeCSRF()
+    public function testPasswordChangeWithFakeCSRF(): void
     {
         global $entityManager;
         $_SESSION['oups']['CSRFToken'] = '00000';

@@ -72,7 +72,7 @@ class UpdateDbCommand extends Command
         }
     }
 
-    private function logToFile($content)
+    private function logToFile($content): void
     {
         $file = $this->folder . '/updateDB-' . $this->time . '.txt';
 

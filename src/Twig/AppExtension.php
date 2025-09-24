@@ -52,12 +52,12 @@ class AppExtension extends AbstractExtension
         return dateAlpha($date);
     }
 
-    public function dateFr($date)
+    public function dateFr($date): ?string
     {
         return dateFr($date, true);
     }
 
-    public function digit($number, $digits)
+    public function digit($number, $digits): string
     {
         return sprintf('%0' . $digits . 'd', $number);
     }
@@ -71,7 +71,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function hourFromHis($hours)
+    public function hourFromHis($hours): string
     {
         if ($hours) {
             return heure3($hours);
@@ -80,7 +80,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function userCan($right, $site = 0)
+    public function userCan($right, $site = 0): bool
     {
         $droits = $GLOBALS['droits'];
 
@@ -98,7 +98,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function hoursToDays($hours, $perso_id)
+    public function hoursToDays($hours, $perso_id): string
     {
         $holiday_helper = new HolidayHelper();
         if ($hours && $perso_id) {
@@ -137,7 +137,7 @@ class AppExtension extends AbstractExtension
         return $config[$key];
     }
 
-    public function menuIsActive($menu, $requested_url)
+    public function menuIsActive($menu, $requested_url): bool
     {
         $config = $GLOBALS['config'];
 
@@ -145,19 +145,14 @@ class AppExtension extends AbstractExtension
         if (empty($menu)) {
             $uri = substr($requested_url, strlen($config['URL']));
 
-            if ($uri == '/') {
+            if ($uri === '/') {
                 return true;
             }
 
             if (preg_match('/^\/(\/d{4}-\d{2}-\d{2})/', $uri)) {
                 return true;
             }
-
-            if (preg_match('/^\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri)) {
-                return true;
-            }
-
-            return false;
+            return (bool) preg_match('/^\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri);
         }
 
         if(strpos($requested_url, "{$config['URL']}/$menu") !== false){
@@ -189,14 +184,7 @@ class AppExtension extends AbstractExtension
                 return true;
             }
         }
-
-        if ($menu == 'index') {
-            if (strpos($requested_url, 'week') !== false) {
-                return true;
-            }
-        }
-
-        return false;
+        return $menu == 'index' && strpos($requested_url, 'week') !== false;
     }
 
     public function htmlFilter($html)

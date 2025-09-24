@@ -11,7 +11,7 @@ use App\Entity\Skill;
 
 class SkillRepository extends EntityRepository
 {
-    public function purge($id)
+    public function purge($id): int
     {
         $entityManager = $this->getEntityManager();
         $all_skills = $entityManager->getRepository(Position::class)->getAllSkills();
@@ -32,7 +32,7 @@ class SkillRepository extends EntityRepository
         return 1;
     }
 
-    public function purgeAll($limit_date) {
+    public function purgeAll($limit_date): int {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')
@@ -44,7 +44,7 @@ class SkillRepository extends EntityRepository
         $deleted_skill = 0;
         foreach ($results as $result) {
             $deleted = $this->purge($result->getId());
-            if ($deleted) $deleted_skill++;
+            if ($deleted !== 0) $deleted_skill++;
         }
         return $deleted_skill;
     }

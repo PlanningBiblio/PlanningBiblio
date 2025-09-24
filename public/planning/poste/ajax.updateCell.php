@@ -170,7 +170,7 @@ else {
         $db=new db();
         $db->CSRFToken = $CSRFToken;
         $db->update("pl_poste", $set, $where);
-    
+
         // On ajoute le nouveau
         if ($logaction) {
             $history = new PlanningPositionHistoryHelper();
@@ -333,12 +333,8 @@ for ($i=0;$i<count($tab);$i++) {
     }
 
     // Ajout des Sans Repas (SR)
-    if ($sansRepas === true or in_array($tab[$i]['perso_id'], $sansRepas)) {
-        $tab[$i]["sr"] = 1;
-    } else {
-        $tab[$i]["sr"] = 0;
-    }
-  
+    $tab[$i]["sr"] = ($sansRepas === true or in_array($tab[$i]['perso_id'], $sansRepas)) ? 1 : 0;
+
     // Marquage des absences de la table absences
     foreach ($absences as $absence) {
         if ($absence["perso_id"] == $tab[$i]['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut) {

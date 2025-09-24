@@ -39,7 +39,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         return $absence->id;
     }
 
-    public function testAbsenceList()
+    public function testAbsenceList(): void
     {
         $this->setParam('Absences-notifications-agent-par-agent', 1);
         $this->setParam('Multisites-nombre', 1);

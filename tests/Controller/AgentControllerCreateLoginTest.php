@@ -13,7 +13,7 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testCreateLogin()
+    public function testCreateLogin(): void
     {
         $this->setUpPantherClient();
 

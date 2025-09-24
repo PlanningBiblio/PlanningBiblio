@@ -65,7 +65,7 @@ foreach ($agents as $agent) {
         $agent->setActive($actif);
     }
 
-    if ($contrat != '-1') {
+    if ($contrat !== '-1') {
         $agent->setCategory($contrat);
     }
 
@@ -77,11 +77,11 @@ foreach ($agents as $agent) {
         $agent->setWeeklyWorkingHours($heures_travail);
     }
 
-    if ($service != '-1') {
+    if ($service !== '-1') {
         $agent->setService($service);
     }
 
-    if ($statut != '-1') {
+    if ($statut !== '-1') {
         $agent->setStatus($statut);
     }
 

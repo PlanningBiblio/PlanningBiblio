@@ -9,7 +9,7 @@ use Tests\FixtureBuilder;
 
 class HolidayHelperFreeBreakTest extends TestCase
 {
-    public function testGetCountedHoursWithFreeBreak() {
+    public function testGetCountedHoursWithFreeBreak(): void {
 
         $GLOBALS['config']['Conges-Mode'] = 'heures';
         $GLOBALS['config']['PlanningHebdo-PauseLibre'] = 1;

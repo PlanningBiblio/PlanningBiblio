@@ -14,7 +14,7 @@ class UnsubscribeControllerTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testUnsubscribe()
+    public function testUnsubscribe(): void
     {
         global $entityManager;
         $client = static::createClient();

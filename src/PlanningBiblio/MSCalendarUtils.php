@@ -11,7 +11,7 @@ use Unirest\Request;
 class MSCalendarUtils
 {
     // Returns an RRule ICS string based on an MS Graph event recurrence object
-    public function recurrenceToRRule($recurrence) {
+    public function recurrenceToRRule($recurrence): string {
         // See, for reference:
         // https://docs.microsoft.com/fr-fr/graph/api/resources/recurrencepattern?view=graph-rest-1.0
         // https://www.kanzaki.com/docs/ical/rrule.html
@@ -58,12 +58,11 @@ class MSCalendarUtils
                 $rrule .= ';BYMONTH=' . $recurrence->pattern->month;
                 break;
         }
-        $rrule .= $this->returnEnd($recurrence);
         //echo $rrule . "\n";
-        return $rrule;
+        return $rrule . $this->returnEnd($recurrence);
     }
 
-    private function returnStart($recurrence) {
+    private function returnStart($recurrence): string {
         $start = '';
         if ($recurrence->range->startDate) {
             $start = 'DTSTART;TZID=' . $this->convertTimeZone($recurrence->range->recurrenceTimeZone) . ':' . $this->convertStartDate($recurrence->range->startDate);
@@ -71,7 +70,7 @@ class MSCalendarUtils
         return $start;
     }
 
-    private function returnEnd($recurrence) {
+    private function returnEnd($recurrence): string {
         $rrule = '';
         if ($recurrence->range->type == "endDate") {
             $rrule = ";UNTIL=" . $this->convertUntilDate($recurrence->range->endDate);
@@ -83,7 +82,7 @@ class MSCalendarUtils
     }
 
     // Returns MO for monday and so on.
-    private function convertWeekDay($weekday) {
+    private function convertWeekDay($weekday): string {
         return (substr(strtoupper($weekday), 0, 2));
     }
 

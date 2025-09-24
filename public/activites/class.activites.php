@@ -24,23 +24,23 @@ if (!isset($version) and php_sapi_name() != 'cli') {
 
 class activites
 {
-    public $id=null;
+    public $id;
     public $elements=array();
-    public $deleted=null;
-    public $CSRFToken = null;
+    public $deleted;
+    public $CSRFToken;
 
     public function __construct()
     {
     }
 
-    public function delete()
+    public function delete(): void
     {
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
         $db->update("activites", array("supprime"=>"SYSDATE"), array("id"=>$this->id));
     }
 
-    public function fetch()
+    public function fetch(): void
     {
         $activites=array();
         $db=new db();
