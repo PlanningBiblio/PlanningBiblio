@@ -66,7 +66,7 @@ class PositionController extends BaseController
 
         $positions = array();
 
-        foreach ($postes as $id => $value) {
+        foreach ($postes as $value) {
             // Affichage des 3 premières activités dans le tableau, toutes les activités dans l'infobulle
 
             $activites = array();

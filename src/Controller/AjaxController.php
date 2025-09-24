@@ -175,7 +175,7 @@ class AjaxController extends BaseController
       $perso_ids = json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
       // Get comma separated sites for agent
-      $sites = join(',', $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids));
+      $sites = implode(',', $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids));
 
       $fin = $fin ?? str_replace('00:00:00', '23:59:59', $debut);
       $result = array();
@@ -279,7 +279,7 @@ class AjaxController extends BaseController
 
                   $db->select2("pl_poste_verrou", "*", array("date"=>$date, "verrou2"=>"1", "site" => "IN $sites"));
                   // S'ils ne sont pas tous validés, vérifie si certains d'entre eux sont commencés
-                  if ($db->nb < sizeof($result)) {
+                  if ($db->nb < count($result)) {
                       // TODO : ceci peut être amélioré en cherchant en particulier si les sites non validés sont commencés, car les sites non validés et non commencés ne nous interressent pas.
                       // for($i=1;$i<=$this->config('Multisites-nombre');$i++){} // Attention, faire une première requête si $db->nb=0 pour éviter les erreurs foreach not array
                       // Le nom des sites pourrait également être retourné

@@ -107,13 +107,13 @@ class ICalendarControllerTest extends PLBWebTestCase
         // With interval in URL
         $this->client->request('GET', "/ical", array("id" => $agent->getId(), "absences" => 1, "interval" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
+        $this->assertEquals(count($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
 
         // With interval in config
         $GLOBALS['config']['ICS-Interval'] = 1;
         $this->client->request('GET', "/ical", array("id" => $agent->getId(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals(sizeof($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
+        $this->assertEquals(count($content), 23, 'Older than 1 day is not exported due to ICS-Interval config');
         $GLOBALS['config']['ICS-Interval'] = 0;
 
         // With code
@@ -131,7 +131,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $this->createAbsenceFor($deletedagent);
         $this->client->request('GET', "/ical", array("id" => $deletedagent->getId(), "absences" => 1));
         $content = explode("\n", $this->client->getResponse()->getContent());
-        $this->assertEquals(sizeof($content), 23, 'No exports for deleted agents');
+        $this->assertEquals(count($content), 23, 'No exports for deleted agents');
     }
 
     private function createPlanningPositionFor($agent)

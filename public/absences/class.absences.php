@@ -495,7 +495,7 @@ class absences
 
                     $h=$a->heures;
                     if (is_numeric($h)) {
-                        $h=$h+$h1;
+                        $h += $h1;
                     } else {
                         $h=0;
                     }
@@ -620,7 +620,7 @@ class absences
                 $jour=$d->position?$d->position:7;
                 $jour=$jour+(($semaine-1)*7)-1;
             }
-      
+
 
             $wh = new WorkingHours($edt['temps'], $edt['breaktime']);
             $temps = $wh->hoursOf($jour);
@@ -628,7 +628,7 @@ class absences
             foreach ($temps as $t) {
                 $t0 = strtotime($t[0]);
                 $t1 = strtotime($t[1]);
-        
+
                 $debutAbsence1 = $debutAbsence > $t0 ? $debutAbsence : $t0;
                 $finAbsence1 = $finAbsence < $t1 ? $finAbsence : $t1;
                 if ($finAbsence1 > $debutAbsence1) {
@@ -691,7 +691,7 @@ class absences
         if ($debut) {
             $fin=$fin?$fin:$date;
             if (strlen($fin)==10) {
-                $fin=$fin." 23:59:59";
+                $fin .= " 23:59:59";
             }
             $dates="`debut`<='$fin' AND `fin`>='$debut'";
         } else {

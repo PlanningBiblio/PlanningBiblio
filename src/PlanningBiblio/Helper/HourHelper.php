@@ -25,7 +25,7 @@ class HourHelper extends BaseHelper
         }
 
         # Considering minutes only from now:
-        $decimal_duration = $decimal_duration - floor($decimal_duration);
+        $decimal_duration -= floor($decimal_duration);
 
         $result['minutes'] = round($decimal_duration * 60);
 

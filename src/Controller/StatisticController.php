@@ -989,7 +989,7 @@ class StatisticController extends BaseController
         $endTime = strtotime(dateSQL($params['to']));
 
         $by_date = array();
-        for ( $i = $startTime; $i <= $endTime; $i = $i + 86400 ) {
+        for ( $i = $startTime; $i <= $endTime; $i += 86400 ) {
             $date = date('Y-m-d', $i);
 
             $conges = array();

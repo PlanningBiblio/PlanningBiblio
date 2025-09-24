@@ -254,7 +254,7 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
                         // $count2 permet de n'afficher qu'une ligne par date et de compter les occurences correspondantes
                         $count2 = array();
                         foreach ($v as $e) {
-                            $count2[$e] = empty($count2[$e]) ? 1 : $count2[$e] = $count2[$e] +1;
+                            $count2[$e] = empty($count2[$e]) ? 1 : ($count2[$e] += 1);
                         }
             
                         $keys = array_keys($count2);

@@ -337,7 +337,7 @@ class AgentTest extends TestCase
 
         // MT39529: No managers should return an empty array, not an array with an empty value.
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'mails_responsables' => ''));
-        $this->assertEquals(sizeof($agent->get_manager_emails()), 0);
+        $this->assertEquals(count($agent->get_manager_emails()), 0);
 
         $builder->delete(Agent::class);
 

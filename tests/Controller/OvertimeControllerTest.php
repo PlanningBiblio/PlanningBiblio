@@ -110,7 +110,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $entityManager->flush();
 
         if (date('m') < 9) {
-            $y = $y -1;
+            $y -= 1;
         }
 
         $crawler = $this->client->request('GET', '/overtime', array(

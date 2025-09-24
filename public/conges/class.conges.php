@@ -155,21 +155,21 @@ class conges
             $finConges=$current==$fin?$hre_fin:"23:59:59";
             $debutConges=strtotime($debutConges);
             $finConges=strtotime($finConges);
-      
+
             $wh = new WorkingHours($p->elements[0]['temps']);
             $temps = $wh->hoursOf($jour);
-      
+
             foreach ($temps as $t) {
                 $t0 = strtotime($t[0]);
                 $t1 = strtotime($t[1]);
-        
+
                 $debutConges1 = $debutConges > $t0 ? $debutConges : $t0;
                 $finConges1 = $finConges < $t1 ? $finConges : $t1;
                 if ($finConges1 > $debutConges1) {
                     $difference += $finConges1 - $debutConges1;
                 }
             }
-        
+
             $current=date("Y-m-d", strtotime("+1 day", strtotime($current)));
         }
         $this->minutes=$difference/60;                                      // nombre de minutes (ex 2h30 => 150)
@@ -1137,7 +1137,7 @@ class conges
         if ($data['conges-recup'] == 0) {
             // Calcul du reliquat après décompte
             $reste=0;
-            $reliquat=$reliquat-$heures;
+            $reliquat -= $heures;
             if ($reliquat<0) {
                 $reste=-$reliquat;
                 $reliquat=0;
@@ -1145,7 +1145,7 @@ class conges
             $reste2=0;
             // Calcul du crédit de récupération
             if ($data["debit"]=="recuperation") {
-                $recuperation=$recuperation-$reste;
+                $recuperation -= $reste;
                 if ($recuperation<0) {
                     $reste2=-$recuperation;
                     $recuperation=0;
@@ -1153,7 +1153,7 @@ class conges
             }
             // Calcul du crédit de congés
             elseif ($data["debit"]=="credit") {
-                $credit=$credit-$reste;
+                $credit -= $reste;
                 if ($credit<0) {
                     $reste2=-$credit;
                     $credit=0;
@@ -1163,13 +1163,13 @@ class conges
             $reste3=0;
             if ($reste2) {
                 if ($data["debit"]=="recuperation") {
-                    $credit=$credit-$reste2;
+                    $credit -= $reste2;
                     if ($credit<0) {
                         $reste3=-$credit;
                         $credit=0;
                     }
                 } elseif ($data["debit"]=="credit") {
-                    $recuperation=$recuperation-$reste2;
+                    $recuperation -= $reste2;
                     if ($recuperation<0) {
                         $reste3=-$recuperation;
                         $recuperation=0;
@@ -1187,13 +1187,13 @@ class conges
             if ($data["debit"]=="credit") {
                 // Calcul du reliquat après décompte
                 $reste=0;
-                $reliquat=$reliquat-$heures;
+                $reliquat -= $heures;
                 if ($reliquat<0) {
                     $reste=-$reliquat;
                     $reliquat=0;
                 }
                 // Calcul du crédit de congés
-                $credit=$credit-$reste;
+                $credit -= $reste;
                 if ($credit<0) {
                     $reste=-$credit;
                     $credit=0;
@@ -1207,7 +1207,7 @@ class conges
 
             // Calcul du crédit de récupération
             else {
-                $recuperation = $recuperation - $heures;
+                $recuperation -= $heures;
             }
         }
 

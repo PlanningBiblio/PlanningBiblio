@@ -851,7 +851,7 @@ class HolidayController extends BaseController
             }
         }
         if (!empty($agents)) {
-            $message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour les agents suivants: " . join(', ', $agents);
+            $message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour les agents suivants: " . implode(', ', $agents);
             if ($unknownHours > $maxAgentsDisplay) {
                 $agentsLeft = $unknownHours - $maxAgentsDisplay;
                 $message .= " et " . $agentsLeft . ($agentsLeft == 1 ? " autre." : " autres.");

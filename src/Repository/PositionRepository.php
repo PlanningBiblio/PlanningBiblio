@@ -43,7 +43,7 @@ class PositionRepository extends EntityRepository
                     ->andWhere('a.poste = :id')
                     ->setParameter('id', $result->getId());
             $lines = $builder->getQuery()->getResult();
-            if (sizeof($lines) == 0) {
+            if (count($lines) == 0) {
                 $entityManager->remove($result);
                 $deleted_position++;
             }

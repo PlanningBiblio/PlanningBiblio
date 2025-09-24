@@ -82,12 +82,12 @@ Exemple à ajouter en crontab :
             // Si le jour courant est un samedi, nous recherchons 2 jours supplémentaires pour avoir le bon nombre de jours ouvrés.
             // Nous controlons également le samedi et le dimanche
             if ($jour_semaine == 6) {
-                $jours = $jours + 2;
+                $jours += 2;
             }
         }
 
         $debut = $dates[0];
-        $fin = $dates[sizeof($dates) -1];
+        $fin = $dates[count($dates) -1];
 
         /**
          * Dates de contrôle         $debut                  $fin

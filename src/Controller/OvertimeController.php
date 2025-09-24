@@ -168,7 +168,7 @@ class OvertimeController extends BaseController
         ));
 
         $categories = array();
-        foreach ($managed as $index => $m) {
+        foreach ($managed as $m) {
             $categories[$m->getId()] = $m->getCategory();
         }
 

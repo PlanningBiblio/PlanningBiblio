@@ -250,7 +250,7 @@ class planning
                             }
               
                             $heuresHebdoTitle="Quota hebdomadaire = ".heure4($heuresHebdo, true)." - ".heure4($heuresAbsences, true)." (Absences{$pourcent})";
-                            $heuresHebdo=$heuresHebdo-$heuresAbsences;
+                            $heuresHebdo -= $heuresAbsences;
                             if ($heuresHebdo<0) {
                                 $heuresHebdo=0;
                             }

@@ -71,7 +71,7 @@ for ($i=0;$i<=$jours;$i++) {
     // Si le jour courant est un samedi, nous recherchons 2 jours supplémentaires pour avoir le bon nombre de jours ouvrés.
     // Nous controlons également le samedi et le dimanche
     if ($jour_semaine==6) {
-        $jours=$jours+2;
+        $jours += 2;
     }
 }
 

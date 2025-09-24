@@ -140,7 +140,7 @@ class datePl
 
         $interval=$dateNow->diff($dateFrom);
         $interval=$interval->format("%a");
-        $interval=$interval/7;
+        $interval /= 7;
         return $interval;
     }
 
@@ -420,7 +420,7 @@ function calculHeuresSP($date, $CSRFToken)
         // Vérifie si la table planning_hebdo a été mise à jour depuis le dernier calcul
         $p=new planningHebdo();
         $pHUpdate=strtotime($p->update_time());
-    
+
         // Vérifie si la table personnel a été mise à jour depuis le dernier calcul
         $p=new personnel();
         $pUpdate=strtotime($p->update_time());
@@ -431,12 +431,12 @@ function calculHeuresSP($date, $CSRFToken)
 
         if ($pHUpdate>=$heuresSPUpdate or $pUpdate>=$heuresSPUpdate or $pHUpdate == null or $pUpdate == null) {
             $heuresSP=array();
-    
+
             // Recherche de tous les agents pouvant faire du service public
             $p=new personnel();
             $p->supprime=array(0,1,2);
             $p->fetch("nom", "Actif");
-      
+
             // Recherche de tous les plannings de présence
             $ph=new planningHebdo();
             $ph->debut=$j1;
@@ -510,7 +510,7 @@ function calculHeuresSP($date, $CSRFToken)
                 // Utilisateur "Tout le monde"
                 $heuresSP[2]=0;
             }
-      
+
             // Enregistrement des horaires dans la base de données
             $db=new db();
             $db->CSRFToken = $CSRFToken;

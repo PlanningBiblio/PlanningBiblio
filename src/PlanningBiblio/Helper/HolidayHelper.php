@@ -204,7 +204,7 @@ class HolidayHelper extends BaseHelper
                 // 3600 = 1h, 12600 = 3,5h, 25200 = 7h
                 // the default time for switching from half-day to full-day is 4 hours (14400 seconds)
                 $switching_time = (float) ($this->config['Conges-fullday-switching-time'] ?? 4);
-                $switching_time = $switching_time * 3600;
+                $switching_time *= 3600;
 
                 if (is_numeric($this->config('Conges-fullday-reference-time'))) {
                     $reference_time = $this->config('Conges-fullday-reference-time') * 3600;
