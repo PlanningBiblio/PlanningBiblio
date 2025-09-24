@@ -17,7 +17,7 @@ class BaseEvent extends Event
         $this->params = $params;
     }
 
-    public function hasResponse()
+    public function hasResponse(): bool
     {
         if ( $this->has_response == 1 ) {
             return true;

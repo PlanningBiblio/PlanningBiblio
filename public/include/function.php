@@ -300,7 +300,7 @@ class CJMail implements NotificationTransporterInterface
         return $mail;
     }
 
-    public function send()
+    public function send(): bool
     {
         if ($this->prepare() === false) {
             return false;
@@ -604,7 +604,7 @@ function calculHeuresSP($date, $CSRFToken)
  *  @param int $jour : jour de la semaine de 0 à 6 puis de 7 à 13 en semaines paires/impaires, etc.
  *  La fonction retourne true si l'agent est disponible pendant toute, false s'il la plage est en dehors de ses horaires de travail ou s'il est en pause
  */
-function calculSiPresent($debut, $fin, $temps, $jour)
+function calculSiPresent($debut, $fin, $temps, $jour): bool
 {
     $config = $GLOBALS['config'];
 
@@ -1231,7 +1231,7 @@ function nom($id, $format="nom p", $agents=array())
     return $nom;
 }
 
-function pl_stristr($haystack, $needle)
+function pl_stristr($haystack, $needle): bool
 {
     if (stristr(removeAccents($haystack), removeAccents(trim($needle)))) {
         return true;

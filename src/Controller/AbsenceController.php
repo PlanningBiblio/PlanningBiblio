@@ -1597,7 +1597,7 @@ class AbsenceController extends BaseController
         return $absences_infos;
     }
 
-    private function canEdit($session, $perso_ids)
+    private function canEdit($session, $perso_ids): bool
     {
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             if (in_array((200+$i), $this->droits) or in_array((500+$i), $this->droits)) {

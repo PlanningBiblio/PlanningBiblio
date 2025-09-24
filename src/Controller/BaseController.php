@@ -95,7 +95,7 @@ class BaseController extends AbstractController
         return $this->config[$key];
     }
 
-    protected function csrf_protection(Request $request)
+    protected function csrf_protection(Request $request): bool
     {
         $submittedToken = $request->request->get('_token');
 

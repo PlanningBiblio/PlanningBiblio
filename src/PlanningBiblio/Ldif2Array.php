@@ -79,7 +79,7 @@ class Ldif2Array {
     * Sanity check before building the array, returns false if error
     * @return bool
     */
-    function makeArray() {
+    function makeArray(): bool {
        if($this->file == '') {
          if($this->rawdata == '') {
            echo "No filename specified, aborting";

@@ -137,7 +137,7 @@ class AppExtension extends AbstractExtension
         return $config[$key];
     }
 
-    public function menuIsActive($menu, $requested_url)
+    public function menuIsActive($menu, $requested_url): bool
     {
         $config = $GLOBALS['config'];
 

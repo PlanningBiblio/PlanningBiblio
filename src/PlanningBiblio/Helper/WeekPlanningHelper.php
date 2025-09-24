@@ -32,7 +32,7 @@ class WeekPlanningHelper extends BaseHelper
         return $workings_days;
     }
 
-    public function isWorkingDay(\DateTime $date) {
+    public function isWorkingDay(\DateTime $date): bool {
         $day_index = $date->format('N') - 1;
 
         if (!isset($this->week_planning[$day_index])) {

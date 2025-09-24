@@ -6,7 +6,7 @@ class Menu
 {
     public $elements = array();
 
-    public function checkCondition($allConditions) {
+    public function checkCondition($allConditions): bool {
 
         if ($allConditions != null && $allConditions != '') {
 

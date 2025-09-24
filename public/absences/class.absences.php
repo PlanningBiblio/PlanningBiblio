@@ -655,7 +655,7 @@ class absences
     * Retourne true si absent, false sinon
     * Si $valide==false, les absences non validées seront également prises en compte
     */
-    public function check($perso_id, $debut, $fin, $valide=true)
+    public function check($perso_id, $debut, $fin, $valide=true): bool
     {
         if (strlen($debut)==10) {
             $debut.=" 00:00:00";

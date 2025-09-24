@@ -245,7 +245,7 @@ class Framework
         }
     }
 
-    public function is_used()
+    public function is_used(): bool
     {
         $db = new \db();
         $db->select('pl_poste_tab_affect', null, "tableau = $this->id");

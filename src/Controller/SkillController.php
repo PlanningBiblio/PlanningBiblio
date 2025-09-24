@@ -61,13 +61,11 @@ class SkillController extends BaseController
             }
         }
 
-        if(!empty($tab)){
-            foreach($tab as $elem){
-                if(is_array ($elem)){
-                    foreach ($elem as $act){
-                        if (!in_array ($act, $activites_utilisees)){
-                            $activites_utilisees[] = $act;
-                        }
+        foreach($tab as $elem){
+            if(is_array ($elem)){
+                foreach ($elem as $act){
+                    if (!in_array ($act, $activites_utilisees)){
+                        $activites_utilisees[] = $act;
                     }
                 }
             }

@@ -632,7 +632,7 @@ class WorkingHourController extends BaseController
         return ($hm[0] + ($hm[1] / 60));
     }
 
-    private function can_edit()
+    private function can_edit(): bool
     {
         // Working hours imported from external
         // sources cannot be edited.

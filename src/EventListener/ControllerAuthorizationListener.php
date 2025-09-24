@@ -82,7 +82,7 @@ class ControllerAuthorizationListener
         }
     }
 
-    private function canAccess($route)
+    private function canAccess($route): bool
     {
         if (!isset($this->permissions[$route])) {
             return true;

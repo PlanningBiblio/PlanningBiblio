@@ -1586,7 +1586,7 @@ class PlanningController extends BaseController
     }
 
     // Check if the line is empty or not
-    private function isAnEmptyLine($position)
+    private function isAnEmptyLine($position): bool
     {
         if (!$position) {
             return false;
@@ -1601,7 +1601,7 @@ class PlanningController extends BaseController
         return true;
     }
 
-    private function noWeekDataFor($dates, $site)
+    private function noWeekDataFor($dates, $site): bool
     {
         $dates = implode(",", $dates);
         $db = new \db();
@@ -1614,7 +1614,7 @@ class PlanningController extends BaseController
         return true;
     }
 
-    private function positionExists($agent, $positions, $horaires)
+    private function positionExists($agent, $positions, $horaires): bool
     {
         if (!in_array($agent['poste'], $positions)) {
             return false;

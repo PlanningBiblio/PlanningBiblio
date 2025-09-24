@@ -142,7 +142,7 @@ class HolidayInfoController extends BaseController
         return $this->redirectToRoute('holiday_info.index');
     }
 
-    private function isAdmin()
+    private function isAdmin(): bool
     {
         $droits = $GLOBALS['droits'];
 

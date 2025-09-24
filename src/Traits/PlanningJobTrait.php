@@ -11,7 +11,7 @@ trait PlanningJobTrait
 
     private Array $droits;
 
-    public function canManagePlanning($session, $site)
+    public function canManagePlanning($session, $site): bool
     {
         if (!$session->get('loginId')) {
             return false;
@@ -619,23 +619,19 @@ trait PlanningJobTrait
 
         // Groupe agents by service.
         $newtab = array();
-        if ($agents_dispo) {
-            foreach ($agents_dispo as $elem) {
-                if ($elem['id']!=2) {
-                    if (!trim($elem['service'])) {
-                        $newtab["Sans service"][]=$elem['id'];
-                    } else {
-                        $newtab[$elem['service']][]=$elem['id'];
-                    }
+        foreach ($agents_dispo as $elem) {
+            if ($elem['id']!=2) {
+                if (!trim($elem['service'])) {
+                    $newtab["Sans service"][]=$elem['id'];
+                } else {
+                    $newtab[$elem['service']][]=$elem['id'];
                 }
             }
         }
 
-        if ($autres_agents) {
-            foreach ($autres_agents as $elem) {
-                if ($elem['id']!=2) {
-                    $newtab["Autres"][]=$elem['id'];
-                }
+        foreach ($autres_agents as $elem) {
+            if ($elem['id']!=2) {
+                $newtab["Autres"][]=$elem['id'];
             }
         }
 

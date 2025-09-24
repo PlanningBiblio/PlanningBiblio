@@ -455,7 +455,7 @@ class HolidayHelper extends BaseHelper
          return array('times' => $times, 'breaktimes' => $breaktimes, 'nb_semaine' => $nb_semaine);
     }
 
-    private function isClosingDay($date)
+    private function isClosingDay($date): bool
     {
         $j = new ClosingDay();
         $j->fetchByDate($date);

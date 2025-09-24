@@ -1128,7 +1128,7 @@ class AgentController extends BaseController
     }
 
     // Returns true if the password is complex enough, and false otherwise
-    private function check_password_complexity($password)
+    private function check_password_complexity($password): bool
     {
         $minimum_password_length = $this->config('Auth-PasswordLength') ?? 8;
         if (strlen($password) < $minimum_password_length) {

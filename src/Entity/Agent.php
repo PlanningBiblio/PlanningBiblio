@@ -449,7 +449,7 @@ class Agent
         $managed->setManager($this);
     }
 
-    public function isManagerOf($agent_ids = array(), $requested_level = null)
+    public function isManagerOf($agent_ids = array(), $requested_level = null): bool
     {
         $managed_ids = array();
         $managed = $this->getManaged();
@@ -472,7 +472,7 @@ class Agent
         return true;
     }
 
-    public function can_access(array $accesses) {
+    public function can_access(array $accesses): bool {
         if (empty($accesses)) {
             return false;
         }
@@ -545,7 +545,7 @@ class Agent
         return explode(';', $emails_string);
     }
 
-    public function isAbsentOn($from, $to)
+    public function isAbsentOn($from, $to): bool
     {
         $a = new \absences();
         if ($a->check($this->id, $from, $to, true)) {
@@ -555,7 +555,7 @@ class Agent
         return false;
     }
 
-    public function isOnVacationOn($from, $to)
+    public function isOnVacationOn($from, $to): bool
     {
         $c = new \conges();
         if ($c->check($this->id, $from, $to, true)) {
@@ -587,7 +587,7 @@ class Agent
         return $working_hours->elements[0];
     }
 
-    public function isBlockedOn($date, $start, $end)
+    public function isBlockedOn($date, $start, $end): bool
     {
         $id = $this->id;
 
@@ -648,7 +648,7 @@ class Agent
         return $managed_sites;
     }
 
-    public function inOneOfSites($sites)
+    public function inOneOfSites($sites): bool
     {
         $agent_sites = json_decode($this->sites, true);
 

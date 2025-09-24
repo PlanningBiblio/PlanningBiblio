@@ -892,52 +892,49 @@ class StatisticController extends BaseController
             }
         }
         // 		--------------------------		Affichage du tableau de résultat		--------------------
-        if ($tab) {
-           
-            foreach ($tab as &$elem) {
-                // Calcul des moyennes
-                $heures = 0;
-                foreach ($elem[3] as &$samedi) {
-                    $heures += $samedi[1];
-                }
-                sort($elem[3]);				//	tri les samedis par dates croissantes
+        foreach ($tab as &$elem) {
+            // Calcul des moyennes
+            $heures = 0;
+            foreach ($elem[3] as &$samedi) {
+                $heures += $samedi[1];
+            }
+            sort($elem[3]);				//	tri les samedis par dates croissantes
 
-                $elem["heures"] = heure4($heures);
-                
-                foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
-                    $samedi[0] = dateFr($samedi[0]);			//	date
-                    $samedi[1] = heure4($samedi[1]);	// heures
+            $elem["heures"] = heure4($heures);
+            
+            foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
+                $samedi[0] = dateFr($samedi[0]);			//	date
+                $samedi[1] = heure4($samedi[1]);	// heures
+            }
+            
+            // Jours feriés
+            if ($exists_JF) {
+                sort($elem[8]);				//	tri les dimanches par dates croissantes
+                foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des dimanches
+                    $ferie[0] = dateFr($ferie[0]);			//	date
+                    $ferie[1] = heure4($ferie[1]);	//	heures
                 }
-                
-                // Jours feriés
-                if ($exists_JF) {
-                    sort($elem[8]);				//	tri les dimanches par dates croissantes
-                    foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des dimanches
-                        $ferie[0] = dateFr($ferie[0]);			//	date
-                        $ferie[1] = heure4($ferie[1]);	//	heures
-                    }
-                }
+            }
 
-                // Absences
-                if ($exists_absences) {
-                    if ($elem[5]) {				//	Affichage du total d'heures d'absences
-                        $elem[5] = heure4($elem[5]);
-                    }
-                    sort($elem[4]);				//	tri les absences par dates croissantes
-                    foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
-                        $absences[0] = dateFr($absences[0]);			//	date
-                        $absences[1] = heure4($absences[1]);
-                    }
+            // Absences
+            if ($exists_absences) {
+                if ($elem[5]) {				//	Affichage du total d'heures d'absences
+                    $elem[5] = heure4($elem[5]);
                 }
+                sort($elem[4]);				//	tri les absences par dates croissantes
+                foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
+                    $absences[0] = dateFr($absences[0]);			//	date
+                    $absences[1] = heure4($absences[1]);
+                }
+            }
 
-                // Statistiques-Heures
-                foreach ($heures_tab_global as $v) {
-                    $tmp = $v[0].'-'.$v[1];
-                    if (!empty($elem[7][$tmp])) {
-                        sort($elem[7][$tmp]);
-                        foreach ($elem[7][$tmp] as &$h) {
-                            $h = dateFr($h);
-                        }
+            // Statistiques-Heures
+            foreach ($heures_tab_global as $v) {
+                $tmp = $v[0].'-'.$v[1];
+                if (!empty($elem[7][$tmp])) {
+                    sort($elem[7][$tmp]);
+                    foreach ($elem[7][$tmp] as &$h) {
+                        $h = dateFr($h);
                     }
                 }
             }
