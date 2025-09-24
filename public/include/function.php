@@ -1130,7 +1130,7 @@ function html_entity_decode_latin1($n)
  * @param int config IPBlocker-TimeChecked : période en minutes pendant laquelle on recherche les échecs
  * @param int config IPBlocker-Attempts : nombre d'échecs autorisés
  */
-function loginFailed($login, $CSRFToken)
+function loginFailed($login, $CSRFToken): void
 {
     // Recherche le nombre de login failed lors des $seconds dernières secondes
     $seconds=$GLOBALS['config']['IPBlocker-TimeChecked']*60;
@@ -1174,7 +1174,7 @@ function loginFailedWait()
  * Log le login et l'adresse IP du client dans la table ip_blocker pour informations
  * @param string $login : login saisi par l'utilisateur
  */
-function loginSuccess($login, $CSRFToken)
+function loginSuccess($login, $CSRFToken): void
 {
     $insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
     $db=new db();
@@ -1182,7 +1182,7 @@ function loginSuccess($login, $CSRFToken)
     $db->insert("ip_blocker", $insert);
 }
 
-function logs($msg, $program=null, $CSRFToken=null)
+function logs($msg, $program=null, $CSRFToken=null): void
 {
     $db=new db();
     $db->CSRFToken = $CSRFToken;

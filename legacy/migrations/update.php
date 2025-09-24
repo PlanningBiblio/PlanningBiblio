@@ -3874,7 +3874,7 @@ if (!$cli) {
  * @param string $id : nom du champ ID (clé)
  * @param array $where : condition sql where : ex: array('type'=>'checkboxes')
  */
-function serializeToJson($table, $field, $id='id', $where=null, $CSRFToken)
+function serializeToJson($table, $field, $id='id', $where=null, $CSRFToken): void
 {
     // Transformation serialized  -> json
     $dbh = new dbh();
