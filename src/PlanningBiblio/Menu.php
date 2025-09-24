@@ -65,7 +65,7 @@ class Menu
         $this->elements=$menu;
     }
 
-    public function get()
+    public function get(): array
     {
         $this->fetch();
         $elements = $this->elements;

@@ -549,7 +549,7 @@ class PlanningController extends BaseController
 
                         $db2 = new \db();
                         $db2->select('absences', '*', "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
-                        $absent = $db2->result ? true : false;
+                        $absent = (bool) $db2->result;
 
                         // Look for hollidays
                         $db2 = new \db();
@@ -722,7 +722,7 @@ class PlanningController extends BaseController
         return $this->redirectToRoute('home');
     }
 
-    private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
+    private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site): string
     {
         $resultats=array();
         $classe=array();
@@ -1312,7 +1312,7 @@ class PlanningController extends BaseController
         return $t->elements;
     }
 
-    private function getFrameworkStructure($tab)
+    private function getFrameworkStructure($tab): array
     {
         $t = new Framework();
         $t->id = $tab;
@@ -1352,7 +1352,7 @@ class PlanningController extends BaseController
         return $hiddenTables;
     }
 
-    private function getHolidays($date, $site = null)
+    private function getHolidays($date, $site = null): array
     {
         if ($this->config('Conges-Enable')) {
             $c = new \conges();
@@ -1415,7 +1415,7 @@ class PlanningController extends BaseController
         }
     }
 
-    private function getPermissionsFor($site)
+    private function getPermissionsFor($site): array
     {
         $autorisationN1 = (in_array((300 + $site), $this->permissions)
             or in_array((1000 + $site), $this->permissions));
@@ -1526,7 +1526,7 @@ class PlanningController extends BaseController
         return $affSem;
     }
 
-    private function initPlanning($request, $view)
+    private function initPlanning($request, $view): array
     {
         $weekView = $view == 'week';
         $_SESSION['week'] = $weekView;
@@ -1609,12 +1609,7 @@ class PlanningController extends BaseController
         $dates = implode(",", $dates);
         $db = new \db();
         $db->select2('pl_poste', '*', array('date' => "IN$dates", 'site' => $site));
-
-        if ($db->result) {
-            return false;
-        }
-
-        return true;
+        return !$db->result;
     }
 
     private function positionExists($agent, $positions, $horaires): bool

@@ -65,7 +65,7 @@ class AgentRepository extends EntityRepository
         return $id;
     }
 
-    public function purgeAll()
+    public function purgeAll(): int
     {
         $agents = $this->findBy(['supprime' => '2']);
         $entityManager = $this->getEntityManager();
@@ -273,7 +273,7 @@ class AgentRepository extends EntityRepository
         return array($loggedin);
     }
 
-    public function getValidationLevelFor($loggedin_id)
+    public function getValidationLevelFor($loggedin_id): array
     {
 
         $entityManager = $this->getEntityManager();

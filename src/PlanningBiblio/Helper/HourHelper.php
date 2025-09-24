@@ -53,7 +53,7 @@ class HourHelper extends BaseHelper
         return $result;
     }
 
-    public static function hoursMinutesToDecimal(string $hours, int $minutes)
+    public static function hoursMinutesToDecimal(string $hours, int $minutes): string
     {
 
         if (!is_int($minutes) || $minutes < 0 || $minutes > 59) {
@@ -76,7 +76,7 @@ class HourHelper extends BaseHelper
         return sprintf("%.9f", $result);
     }
 
-    public static function StartEndFromRequest($request)
+    public static function StartEndFromRequest($request): array
     {
         $start = $request->get('hre_debut');
         $end = $request->get('hre_fin');

@@ -125,7 +125,7 @@ class FixtureBuilder
         return $value;
     }
 
-    private function random_text($length)
+    private function random_text($length): string
     {
         $length ??= 20;
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -143,7 +143,7 @@ class FixtureBuilder
         return new \DateTime(date('Y-m-d'));
     }
 
-    private function random_json_array()
+    private function random_json_array(): array
     {
         return array();
     }
@@ -158,7 +158,7 @@ class FixtureBuilder
         return rand(0, 55) / 10;
     }
 
-    private function random_integer()
+    private function random_integer(): int
     {
         return rand(0, 9);
     }

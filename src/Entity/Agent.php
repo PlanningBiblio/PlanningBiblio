@@ -551,21 +551,13 @@ class Agent
     public function isAbsentOn($from, $to): bool
     {
         $a = new \absences();
-        if ($a->check($this->id, $from, $to, true)) {
-            return true;
-        }
-
-        return false;
+        return $a->check($this->id, $from, $to, true);
     }
 
     public function isOnVacationOn($from, $to): bool
     {
         $c = new \conges();
-        if ($c->check($this->id, $from, $to, true)) {
-            return true;
-        }
-
-        return false;
+        return $c->check($this->id, $from, $to, true);
     }
 
     public function getWorkingHoursOn($date)
@@ -623,7 +615,7 @@ class Agent
         return false;
     }
 
-    public function skills()
+    public function skills(): array
     {
         $skills = json_decode($this->postes);
         return is_array($skills) ? $skills : [];

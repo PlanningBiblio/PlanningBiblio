@@ -32,8 +32,8 @@ trait EntityValidationStatuses
                 ->forAgent($id)
                 ->getValidationLevelFor($_SESSION['login_id']);
 
-            $adminN1 = $N1 ? $adminN1 : false;
-            $adminN2 = $N2 ? $adminN2 : false;
+            $adminN1 = $N1 && $adminN1;
+            $adminN2 = $N2 && $adminN2;
         }
 
         $show_select = $adminN1 || $adminN2;

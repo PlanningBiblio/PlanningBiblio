@@ -52,7 +52,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
             'poste' => $position,
         ]);
 
-        $deleteBefore = $before ? true : false;
+        $deleteBefore = (bool) $before;
 
         if ($deleteBefore) {
             $this->delete($date, $start, $end, $site, $position, $login_id, $perso_id_origin);

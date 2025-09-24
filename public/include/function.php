@@ -114,7 +114,7 @@ class datePl
         return $this->getCycleNumber($interval, $nb_semaine);
     }
 
-    public function getCycleNumber($weeknumber, $cycles) {
+    public function getCycleNumber($weeknumber, $cycles): int {
         $weekcycle = 0;
 
         for ($i = 1; $i <= $weeknumber; $i++) {
@@ -634,49 +634,49 @@ function calculSiPresent($debut, $fin, $temps, $jour): bool
 /** @fonctions de comparaison
  */
 
-function cmp_01($a, $b)
+function cmp_01($a, $b): int
 {
     return ($a[0][1] > $b[0][1]) ? 1 : -1;
 }
 
-function cmp_02($a, $b)
+function cmp_02($a, $b): int
 {
     return ($a[0][2] > $b[0][2]) ? 1 : -1;
 }
 
-function cmp_03($a, $b)
+function cmp_03($a, $b): int
 {
     return ($a[0][3] > $b[0][3]) ? 1 : -1;
 }
 
-function cmp_03desc($a, $b)
+function cmp_03desc($a, $b): int
 {
     return ($a[0][3] < $b[0][3]) ? 1 : -1;
 }
 
-function cmp_1($a, $b)
+function cmp_1($a, $b): int
 {
     $a[1]=html_entity_decode($a[1], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b[1]=html_entity_decode($b[1], ENT_QUOTES|ENT_IGNORE, "utf-8");
     return (strtolower($a[1]) > strtolower($b[1])) ? 1 : -1;
 }
 
-function cmp_2($a, $b)
+function cmp_2($a, $b): int
 {
     return ($a[2] > $b[2]) ? 1 : -1;
 }
 
-function cmp_2desc($a, $b)
+function cmp_2desc($a, $b): int
 {
     return ($a[2] < $b[2]) ? 1 : -1;
 }
 
-function cmp_jour($a, $b)
+function cmp_jour($a, $b): int
 {
     return ($a['jour'] > $b['jour']) ? 1 : -1;
 }
 
-function cmp_debut_fin($a, $b)
+function cmp_debut_fin($a, $b): int
 {
     if ($a['debut'] == $b['debut']) {
         return ($a['fin'] > $b['fin']) ? 1 : -1;
@@ -684,7 +684,7 @@ function cmp_debut_fin($a, $b)
     return ($a['debut'] > $b['debut']) ? 1 : -1;
 }
 
-function cmp_debut_fin_nom($a, $b)
+function cmp_debut_fin_nom($a, $b): int
 {
     if ($a['debut'] == $b['debut']) {
         if ($a['fin'] == $b['fin']) {
@@ -695,7 +695,7 @@ function cmp_debut_fin_nom($a, $b)
     return ($a['debut'] > $b['debut']) ? 1 : -1;
 }
 
-function cmp_nom($a, $b)
+function cmp_nom($a, $b): int
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
@@ -707,7 +707,7 @@ function cmp_nom($a, $b)
     return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
-function cmp_nom_prenom($a, $b)
+function cmp_nom_prenom($a, $b): int
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
@@ -719,7 +719,7 @@ function cmp_nom_prenom($a, $b)
     return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
-function cmp_nom_prenom_debut_fin($a, $b)
+function cmp_nom_prenom_debut_fin($a, $b): int
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
@@ -737,12 +737,12 @@ function cmp_nom_prenom_debut_fin($a, $b)
     return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
-function cmp_ordre($a, $b)
+function cmp_ordre($a, $b): int
 {
     return ($a['ordre'] > $b['ordre']) ? 1 : -1;
 }
 
-function cmp_perso_debut_fin($a, $b)
+function cmp_perso_debut_fin($a, $b): int
 {
     if ($a['perso_id'] == $b['perso_id']) {
         if ($a['debut'] == $b['debut']) {
@@ -753,7 +753,7 @@ function cmp_perso_debut_fin($a, $b)
     return ($a['perso_id'] > $b['perso_id']) ? 1 : -1;
 }
 
-function cmp_prenom_nom($a, $b)
+function cmp_prenom_nom($a, $b): int
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
@@ -765,7 +765,7 @@ function cmp_prenom_nom($a, $b)
     return (strtolower($a['prenom']) > strtolower($b['prenom'])) ? 1 : -1;
 }
 
-function createURL($page=null)
+function createURL($page=null): string
 {
     // Construction d'une URL
 
@@ -874,7 +874,7 @@ function dateAlpha($date, $day=true, $year=true)
     return $return;
 }
 
-function dateAlpha2($date)
+function dateAlpha2($date): string
 {
     $tmp=explode("-", $date);
     $dayOfMonth=($tmp[2]=="01")?"1er":intval($tmp[2]);
@@ -984,7 +984,7 @@ function encrypt($string)
     return $crypted_string;
 }
 
-function gen_trivial_password($len = 6)
+function gen_trivial_password($len = 6): string
 {
     $r = '';
     for ($i=0; $i<$len; $i++) {
@@ -1029,7 +1029,7 @@ function heure2($heure)
     return $heure;
 }
 
-function heure3($heure)
+function heure3($heure): string
 {
     $heure=str_replace(":", "h", $heure);
     $heure=substr($heure, 0, 5);
@@ -1153,7 +1153,7 @@ function loginFailed($login, $CSRFToken): void
  * Retourne le nombre de secondes restantes avant que l'IP bloquée soit de nouveau autorisée à se connecter
  * @param int config IPBlocker-Wait : temps de blocages des IP en minutes
  */
-function loginFailedWait()
+function loginFailedWait(): int
 {
     $seconds=$GLOBALS['config']['IPBlocker-Wait']*60;
     $wait=0;
@@ -1233,10 +1233,7 @@ function nom($id, $format="nom p", $agents=array())
 
 function pl_stristr($haystack, $needle): bool
 {
-    if (stristr(removeAccents($haystack), removeAccents(trim($needle)))) {
-        return true;
-    }
-    return false;
+    return (bool) stristr(removeAccents($haystack), removeAccents(trim($needle)));
 }
 
 function removeAccents($string)
@@ -1256,7 +1253,7 @@ function removeAccents($string)
     return htmlentities($string, ENT_QUOTES|ENT_IGNORE, "UTF-8");
 }
 
-function recurrenceRRuleText($rrule)
+function recurrenceRRuleText($rrule): string
 {
     $freq       = preg_replace('/.*FREQ=(\w*).*/', "$1", $rrule);
     $interval   = strpos($rrule, 'INTERVAL')      ? preg_replace('/.*INTERVAL=(\d*).*/', "$1", $rrule)      : 1;

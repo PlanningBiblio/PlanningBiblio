@@ -742,7 +742,7 @@ class planning
                     'notes' => $notes,
                     'textarea' => $notesTextarea,
                     'validation' => $validation,
-                    'display' => trim(strval($notes)) ? true : false,
+                    'display' => (bool) trim(strval($notes)),
                     'deleted' => ($validation and !trim(strval($notes))) ? 'Suppression du commentaire : ' : null,
                );
             }

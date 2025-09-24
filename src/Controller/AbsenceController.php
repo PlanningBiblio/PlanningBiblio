@@ -257,7 +257,7 @@ class AbsenceController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        $result = $this->save_new($request, $this->admin);
+        $result = $this->save_new($request);
 
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
@@ -360,22 +360,22 @@ class AbsenceController extends BaseController
         }
 
         $absence['status'] = 'ASKED';
-        $absence['status_editable'] = ($adminN1 or $adminN2) ? true : false;
+        $absence['status_editable'] = $adminN1 or $adminN2;
         if ($valide == 0 && $valideN1 > 0) {
             $absence['status'] = 'ACCEPTED_N1';
         }
         if ($valide > 0) {
             $absence['status'] = 'ACCEPTED_N2';
-            $absence['status_editable'] = $adminN2 ? true : false;
-            $absence['editable'] = $adminN2 ? true : false;
+            $absence['status_editable'] = $adminN2;
+            $absence['editable'] = $adminN2;
         }
         if ($valide == 0 && $valideN1 < 0) {
             $absence['status'] = 'REJECTED_N1';
         }
         if ($valide < 0) {
             $absence['status'] = 'REJECTED_N2';
-            $absence['status_editable'] = $adminN2 ? true : false;
-            $absence['editable'] = $adminN2 ? true : false;
+            $absence['status_editable'] = $adminN2;
+            $absence['editable'] = $adminN2;
         }
 
         // Sécurité
@@ -1617,11 +1617,6 @@ class AbsenceController extends BaseController
         if ($this->edit_own_absences and count($perso_ids) == 1 and in_array($session->get('loginId'), $perso_ids)) {
             return true;
         }
-
-        if ($this->agents_multiples and $this->edit_own_absences and in_array($session->get('loginId'), $perso_ids)) {
-            return true;
-        }
-
-        return false;
+        return $this->agents_multiples and $this->edit_own_absences and in_array($session->get('loginId'), $perso_ids);
     }
 }

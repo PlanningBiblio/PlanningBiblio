@@ -359,7 +359,7 @@ class HolidayController extends BaseController
         }
 
         $this->templateParams(array('CSRFToken' => $GLOBALS['CSRFSession']));
-        $valide=$data['valide']>0?true:false;
+        $valide=$data['valide']>0;
         $displayRefus = ($data['valide_n1'] < 0 and ($adminN1 or $adminN2)) ? null : "display:none;";
         $displayRefus = $data['valide'] > 0 ? "display:none;" : $displayRefus;
         $debut=dateFr(substr($data['debut'], 0, 10));
@@ -929,7 +929,7 @@ class HolidayController extends BaseController
         return $this->json($holiday_account);
     }
 
-    private function save($request)
+    private function save($request): array
     {
         $session = $request->getSession();
 
@@ -1224,7 +1224,7 @@ class HolidayController extends BaseController
     /**
      * Make mail message
      */
-    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id, $recover = 0) {
+    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id, $recover = 0): string {
         $message  = "<b><u>$subject :</u></b><br/>";
         $message .= "<ul><li>Agent : <strong>$name</strong></li>";
         $message .= "<li>Début : <strong>$begin";

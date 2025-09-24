@@ -673,10 +673,7 @@ class absences
     
         $db=new db();
         $db->select2("absences", null, $filter);
-        if ($db->result) {
-            return true;
-        }
-        return false;
+        return (bool) $db->result;
     }
 
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
@@ -1373,7 +1370,7 @@ class absences
         unlink($file);
     }
 
-    public function build_ics_content()
+    public function build_ics_content(): string
     {
         $perso_id = $this->perso_id;
         $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '$3$2$1', $this->debut).'T';

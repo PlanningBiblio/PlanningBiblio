@@ -32,7 +32,7 @@ class SkillRepository extends EntityRepository
         return 1;
     }
 
-    public function purgeAll($limit_date) {
+    public function purgeAll($limit_date): int {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')

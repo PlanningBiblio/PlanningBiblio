@@ -114,7 +114,7 @@ class db
                             $result[$key] = filter_var($value, FILTER_UNSAFE_RAW);
                         }   
                     }
-                    $isCryptedPassword=($key=="type" and $value=="password")?true:false;
+                    $isCryptedPassword=$key=="type" and $value=="password";
                 }
                 $this->result[]=$result;
             }

@@ -184,7 +184,7 @@ class conges
     * Calcule les crédits de récupération disponible pour l'agent $perso_id à la date $date
     * Les crédits obtenus à des dates supérieures sont déduits
     */
-    public function calculCreditRecup($perso_id, $date = null, $id = null)
+    public function calculCreditRecup($perso_id, $date = null, $id = null): array
     {
         if (!$date) {
             $date = date('Y-m-d');
@@ -331,10 +331,7 @@ class conges
     
         $db=new db();
         $db->select2("conges", null, $filter);
-        if ($db->result) {
-            return true;
-        }
-        return false;
+        return (bool) $db->result;
     }
 
     public function delete()
@@ -1223,7 +1220,7 @@ class conges
             'end' => $data['fin'],
             'hour_end' => $data['hre_fin'],
             'perso_id' => $data['perso_id'],
-            'is_recover' => $data['debit'] == 'recuperation' ? true : false
+            'is_recover' => $data['debit'] == 'recuperation'
         ));
         $result = $holidayHlper->getCountedHours();
         $regul = isset($result['rest']) ? $result['rest'] : 0;

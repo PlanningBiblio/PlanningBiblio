@@ -95,10 +95,6 @@ class Model
 
     public function isWeek(): bool
     {
-        if ($this->jour != 9) {
-            return true;
-        }
-
-        return false;
+        return $this->jour != 9;
     }
 }

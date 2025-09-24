@@ -19,7 +19,7 @@ class AbsenceRepository extends EntityRepository
         $entityManager->flush();
     }
 
-    public function purgeAll($limit_date) {
+    public function purgeAll($limit_date): int {
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->select('a')
                 ->from(Absence::class, 'a')

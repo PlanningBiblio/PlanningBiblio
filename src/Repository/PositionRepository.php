@@ -28,7 +28,7 @@ class PositionRepository extends EntityRepository
         return $all_skills;
     }
 
-    public function purgeAll($limit_date) {
+    public function purgeAll($limit_date): int {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')

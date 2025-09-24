@@ -80,7 +80,7 @@ class WorkingHourController extends BaseController
             $p->fetch();
             $this->workinghours = $p->elements[0];
             $cle = $p->elements[0]['cle'];
-            $this->imported = $cle ? true : false;
+            $this->imported = (bool) $cle;
             $perso_id = $p->elements[0]['perso_id'];
             $temps = $p->elements[0]['temps'];
             $breaktime = $p->elements[0]['breaktime'] ?? array();
@@ -435,7 +435,7 @@ class WorkingHourController extends BaseController
 
         $remplace = $p->elements[0]['remplace'];
         $cle = $p->elements[0]['cle'];
-        $this->imported = $cle ? true : false;
+        $this->imported = (bool) $cle;
         // Informations sur l'agents
         $p = new \personnel();
         $p->fetchById($perso_id);
@@ -472,10 +472,10 @@ class WorkingHourController extends BaseController
 
         if (!$cle) {
             if ($modifAutorisee) {
-                $selected1 = isset($valide_n1) && $valide_n1 > 0 ? true : false;
-                $selected2 = isset($valide_n1) && $valide_n1 < 0 ? true : false;
-                $selected3 = isset($valide_n2) && $valide_n2 > 0 ? true : false;
-                $selected4 = isset($valide_n2) && $valide_n2 < 0 ? true : false;
+                $selected1 = isset($valide_n1) && $valide_n1 > 0;
+                $selected2 = isset($valide_n1) && $valide_n1 < 0;
+                $selected3 = isset($valide_n2) && $valide_n2 > 0;
+                $selected4 = isset($valide_n2) && $valide_n2 < 0;
                 // Si pas admin, affiche le niveau en validation en texte simple
             } else {
                 $selected1 = false;
@@ -646,10 +646,6 @@ class WorkingHourController extends BaseController
         }
 
         $valide_n2 = $this->workinghours['valide'] ?? 0;
-        if ($valide_n2 && !$this->adminN2) {
-            return false;
-        }
-
-        return true;
+        return !($valide_n2 && !$this->adminN2);
     }
 }

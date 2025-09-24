@@ -32,7 +32,7 @@ class HolidayHelper extends BaseHelper
           $hours = 0;
         }
 
-        $negative = $hours < 0 ? true : false;
+        $negative = $hours < 0;
         if ($negative) {
             $hours = abs($hours);
         }
@@ -306,7 +306,7 @@ class HolidayHelper extends BaseHelper
         return $this->config('conges-hours-per-day');
     }
 
-    public function halfDayStartEndHours()
+    public function halfDayStartEndHours(): array
     {
         $agent = $this->data['agent'];
         $start = $this->data['start'];

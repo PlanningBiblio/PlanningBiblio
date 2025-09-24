@@ -424,7 +424,7 @@ class statistiques
     /**
      * Count average hours
      */
-    public static function average($numberOfHours, $start, $end = null, $type = 'weekly')
+    public static function average($numberOfHours, $start, $end = null, $type = 'weekly'): float
     {
         $end = $end ?? $start;
         $numberOfHours = floatval($numberOfHours);

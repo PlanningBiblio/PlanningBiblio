@@ -19,11 +19,7 @@ class BaseEvent extends Event
 
     public function hasResponse(): bool
     {
-        if ( $this->has_response == 1 ) {
-            return true;
-        }
-
-        return false;
+        return $this->has_response == 1;
     }
 
     public function setResponse( $response )

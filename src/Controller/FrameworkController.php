@@ -88,8 +88,8 @@ class FrameworkController extends BaseController
             foreach ($lignes as &$elem) {
                 $db2 = new \db();
                 $db2->select("pl_poste_lignes", "*", "poste='{$elem['id']}' AND type='ligne'");
-                $delete = $db2->result ? false : true;
-                $elem['delete'] = $delete == true ? true : false;
+                $delete = !(bool) $db2->result;
+                $elem['delete'] = $delete == true;
             }
         }
 
@@ -145,7 +145,7 @@ class FrameworkController extends BaseController
             $t->id = $id;
             $t->CSRFToken = $CSRFToken;
 
-            $not_used = $t->is_used() ? false : true;
+            $not_used = !$t->is_used();
             if ($not_used) {
                 $t->setNumbers($nombre);
             }
