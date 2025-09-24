@@ -460,7 +460,7 @@ class db
     }
 
 
-    public function makeSearch($key, $value)
+    public function makeSearch($key, $value): string
     {
         // Trim des valeurs et opérateurs
         if ($value!==null) {

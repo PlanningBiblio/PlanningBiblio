@@ -204,7 +204,7 @@ class AuthorizationsController extends BaseController
         return new Response($content, 403);
     }
 
-    private function redirectCAS(Request $request, $logger)
+    private function redirectCAS(Request $request, $logger): string
     {
         $session = $request->getSession();
 
