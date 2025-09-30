@@ -1,19 +1,12 @@
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-
-@file public/absences/js/modif.js
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
-Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification des agents (modif.php)
+Fichier regroupant les fonctions JavaScript utiles à l'affichage, à l'ajout et à la modification des absences
 */
 
 $(function() {
-  
+
   $(document).ready(function(){
-    
+
     // Affichage de la liste des agents sélectionnés lors du chargement de la page modif.php
     if($('.perso_ul').length){
       affiche_perso_ul();
@@ -45,7 +38,7 @@ $(function() {
 	$("#motifs-sortable li:hidden").each(function(){
 	  $(this).remove();
 	});
-	
+
 	// Enregistre les éléments du formulaire dans un tableau
 	tab=new Array();
 	$("#motifs-sortable li").each(function(){
@@ -70,7 +63,7 @@ $(function() {
             var current_val = $('#motif').val();
             $('#motif').empty();
             $('#motif').append("<option value=''>&nbsp;</option>");
-            
+
             $("#motifs-sortable li").each(function(){
               var id=$(this).attr("id").replace("li_","");
               var val = $("#valeur_"+id).text();
@@ -81,7 +74,7 @@ $(function() {
               var selected = (val == current_val) ? "selected='selected'" : "";
 
               var option = "<option value=\""+val+"\" "+selected+" "+disabled+">"+padding+""+val+"</option>";
-              
+
               $('#motif').append(option);
             });
             $("#add-motif-form").dialog( "close" );
@@ -146,7 +139,7 @@ $(function() {
       $("#add-motif-text").val();
       return;
     }
-    
+
     var number = 1;
     while($('#li_'+number).length){
       number++;
@@ -167,7 +160,7 @@ $(function() {
     // Reset du champ texte une fois l'ajout effectué
     $("#add-motif-text").val(null);
   });
-  
+
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
   $("select[name=motif]").change(function(){
     if($(this).val().toLowerCase()=="autre" || $(this).val().toLowerCase()=="other"){
@@ -177,8 +170,8 @@ $(function() {
       $("input[name=motif_autre]").val("");
     }
   });
-  
-  
+
+
   /**
    * Agents multiples
    * Permet d'ajouter plusieurs agents sur une même absence (réunion, formation)
@@ -187,7 +180,7 @@ $(function() {
   $("#perso_ids").change(function(){
     // Variables
     var id=$(this).val();
-    
+
     // Si sélection de "tous" dans le menu déroulant des agents, ajoute tous les id non-sélectionnés
     if(id == 'tous'){
       $("#perso_ids > option").each(function(){
@@ -196,7 +189,7 @@ $(function() {
           change_select_perso_ids(id);
         }
       });
-      
+
     } else {
       // Ajoute l'agent choisi dans la liste
       change_select_perso_ids(id);
@@ -204,13 +197,13 @@ $(function() {
 
     // Réinitialise le menu déroulant
     $("#perso_ids").val(0);
-    
+
   });
 
   $("#motif").change(function(){
     update_validation_statuses();
   });
-  
+
   $("#absence-bouton-supprimer").click(function(){
 
     // Suppression d'une absence récurrente
@@ -218,7 +211,7 @@ $(function() {
       $("#recurrence-alert-suppression").dialog('open');
       return false;
     }
-    
+
     if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
       var CSRFToken = $('#CSRFSession').val();
       var id=$("#absence-bouton-supprimer").attr("data-id");
@@ -481,7 +474,7 @@ $(function() {
       $('#recurrence-until').val(null);
     }
   });
-  
+
   $('#recurrence-count').click(function(){
     $('#recurrence-end2').click();
   });
@@ -539,7 +532,7 @@ $(function() {
     },
 
   });
-  
+
   // Récurrences : alerte lors de la suppression d'une absence récurrente
   $("#recurrence-alert-suppression").dialog({
     autoOpen: false,
@@ -583,6 +576,43 @@ $(function() {
 
   });
 
+  $(".absences-pj input[type=checkbox]").click(function(){
+    var tmp=$(this).attr("id").split("-");
+    var pj=tmp[0];
+    var id=tmp[1];
+    var checked=$(this).prop("checked")?1:0;
+    var CSRFToken=$('#CSRFSession').val();
+
+    $.ajax({
+      url: url('absences/ajax.piecesJustif.php'),
+            data: "id="+id+"&pj="+pj+"&checked="+checked+"&CSRFToken="+CSRFToken,
+            success: function(){
+              information("Modification enregistr&eacute;e","highlight");
+            },
+            error: function(){
+              information("Attention, la modification n&apos;a pas pu &ecirc;tre enregistr&eacute;e","error");
+            }
+    });
+  });
+
+  $("#absencesListForm").submit(function( event ) {
+    var start = $("#debut").datepicker("getDate");
+    var end = $("#fin").datepicker("getDate");
+    if (start || end) {
+      if (!start) {
+        start = new Date();
+      }
+      if (!end) {
+        end = new Date();
+      }
+      var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
+      if (number_of_days > 367 || start > end) {
+        end.setTime(start.getTime() +  (365 * 24 * 60 * 60 * 1000));
+        $('#fin').val(end.toLocaleDateString());
+      }
+    }
+  });
+
 });
 
 
@@ -596,7 +626,7 @@ function change_select_perso_ids(id){
   $('#perso_ids').before("<input type='hidden' name='perso_ids[]' value='"+id+"' id='hidden"+id+"' class='perso_ids_hidden'/>\n");
 
   $("#option"+id).hide();
-  
+
   // Affichage des agents sélectionnés avec tri alphabétique
   affiche_perso_ul();
 
@@ -623,15 +653,15 @@ function affiche_perso_ul(){
   tab.sort(function (a, b) {
     return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
   });
-  
+
   $(".perso_ids_li").remove();
-  
+
   // Réparti l'affichage des agents sélectionnés sur 5 colonnes de 10 (ou plus)
   var nb = Math.ceil(tab.length / 5);
   if(nb<10){
     nb=10;
   }
-  
+
   for(i in tab){
     var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
@@ -640,7 +670,7 @@ function affiche_perso_ul(){
     }
 
     li+="</li>\n";
-    
+
     if(i < nb){
       $("#perso_ul1").append(li);
     } else if(i < (2*nb)){
@@ -656,6 +686,9 @@ function affiche_perso_ul(){
 }
 
 function update_validation_statuses() {
+  if (!$("#validation-statuses").length) {
+    return;
+  }
 
   perso_ids = [];
   $('.perso_ids_li').each(function() {
@@ -930,12 +963,12 @@ function recurrenceRRuleText2(rrule){
 
 // Vérification des formulaires (ajouter et modifier)
 function verif_absences(ctrl_form){
-  
+
   // Ceci évite d'avoir 2 fois les popup de vérification lors de la modification d'absences récurrentes. Le popup n'est affiché qu'une seule fois, avant le choix des occurrences à modifier
   if($('#recurrence-modif').val()){
     return true;
   }
-  
+
   if(!verif_form(ctrl_form))
     return false;
 
@@ -943,14 +976,14 @@ function verif_absences(ctrl_form){
     CJInfo("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.","error");
     return false;
   }
-  
+
   if($("select[name=motif]").val().toLowerCase()=="autre" || $("select[name=motif]").val().toLowerCase()=="other"){
     if($("input[name=motif_autre]").val()==""){
       CJInfo("Veuillez choisir un motif.","error");
       return false;
     }
   }
- 
+
   // ID des agents
   perso_ids=[];
   $(".perso_ids_hidden").each(function(){
@@ -1090,7 +1123,7 @@ function verif_absences(ctrl_form){
       retour=false;
     }
   });
-  
+
   // Modification d'une absence récurrente
   if($('#rrule').val() && !$('#recurrence-modif').val() && retour){
     $("#recurrence-alert").dialog('open');
@@ -1113,4 +1146,10 @@ function supprimeAgent(id){
 
   // Mise à jour des status disponible.
   update_validation_statuses();
+}
+
+function absences_reinit(){
+  // TODO : réinitialiser le filtre du tableau
+  //   $('#tableAbsencesVoir_filter > label > input[type="search"]').val(null);
+  location.href = url('absence?reset=1');
 }

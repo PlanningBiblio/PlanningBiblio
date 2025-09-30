@@ -256,6 +256,5 @@
 
 {% block specificjs %}
     <script type='text/JavaScript'> var complet = JSON.parse('{{ positionsCompleteNames | e('js') }}'); </script>
-    <script type='text/JavaScript' src='{{ asset("personnel/js/modif.js") }}'></script>
-    <script type='text/JavaScript' src='{{ asset("personnel/js/index.js") }}'></script>
+    <script type="text/JavaScript" src="{{ asset('js/agent.js') }}"></script>
 {% endblock %}

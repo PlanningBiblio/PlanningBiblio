@@ -11,7 +11,7 @@ Création : 2 octobre 2013
 
 Description :
 Recherche les plannings enregistrés afin d'éviter les conflits lors de l'enregistrement d'un nouveau planning.
-Fichier appelé en arrière plan par la fonction JS plHebdoVerifForm (js/script.planningHebdo.js)
+Fichier appelé en arrière plan par la fonction JS plHebdoVerifForm (public/js/workingHour.js)
 */
 
 session_start();

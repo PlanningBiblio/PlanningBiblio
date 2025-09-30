@@ -1,9 +1,4 @@
 /**
-Planning Biblio
-
-@file public/js/plb/position.js
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 @desc Javascript functions used by position's pages
 */
 

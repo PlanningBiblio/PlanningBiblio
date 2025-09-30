@@ -12,7 +12,7 @@ Dernière modification : 21 décembre 2015
 
 Description :
 Récupère le message par défaut pour l'appel à disponibilité
-Script appelé depuis la function JS appelDispo (planning/poste/js/planning.js)
+Script appelé depuis la function JS appelDispo (public/js/planning.js)
 lors du clic sur le lien "Appel à disponibilité" dans le menu permettant de placer les agents
 */
 

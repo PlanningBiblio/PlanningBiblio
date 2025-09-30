@@ -13,7 +13,7 @@ Dernière modification : 4 avril 2018
 Description :
 Envoi par mail à l'agent sélectionné les URL de ses agendas Planno
 Lors de la validation du formulaire "Envoi de l'URL de l'agenda Planning Biblio" accessible depuis l'onglet Agenda des fiches "agent"
-Script appelé par $( "#ics-url-form" ).dialog({ Envoyer ]), personnel/js/modif.js
+Script appelé par $( "#ics-url-form" ).dialog({ Envoyer ]), public/js/agent.js
 */
 
 ini_set("display_errors", 0);

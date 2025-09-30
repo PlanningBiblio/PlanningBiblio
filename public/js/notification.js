@@ -1,11 +1,4 @@
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-
-@file public/js/plb/notifications.js
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
 Fichier regroupant les fonctions JavaScript utiles à la gestion des notifications
 */

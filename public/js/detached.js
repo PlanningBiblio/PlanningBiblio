@@ -1,17 +1,6 @@
 /**
-Planning Biblio, Version 2.8
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
-
-Fichier : planning/poste/js/planning.js
-Création : 7 avril 2018
-Dernière modification : 7 avril 2018
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
 Fichier regroupant les scripts JS nécessaires à la page planning/volants/index.php (Gestion des agents volants)
-Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 */
 
 

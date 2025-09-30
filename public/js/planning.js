@@ -1,16 +1,6 @@
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
-
-Fichier : planning/poste/js/planning.js
-Création : 2 juin 2014
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
 Fichier regroupant les scripts JS nécessaires à la page /index (affichage et modification des plannings)
-Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 */
 
 /* Variables globales :

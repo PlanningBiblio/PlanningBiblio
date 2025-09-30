@@ -1,9 +1,4 @@
 /**
-Planning Biblio
-
-@file public/js/calendar.js
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 @desc Javascript functions use to display calendars
 */
 

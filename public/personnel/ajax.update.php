@@ -11,7 +11,7 @@ Fichier : public/personnel/ajax.update.php
 Description :
 Met à jour les fiches des agents sélectionnés à partir de la liste des agents (fichier personnel/index.php).
 
-Ce script est appelé par la fonction JS personnel/js/index.js : agent_list
+Ce script est appelé par la fonction JS public/js/agent.js : agent_list
 */
 
 use App\Entity\Agent;

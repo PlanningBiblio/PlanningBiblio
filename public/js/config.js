@@ -1,12 +1,4 @@
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2019 Jérôme Combes
-
-@file public/js/config.js
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
 Fichier JS de la page administration / Configuration
 */

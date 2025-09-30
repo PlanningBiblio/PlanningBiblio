@@ -993,29 +993,6 @@ function gen_trivial_password($len = 6)
     return $r;
 }
 
-// getJSFiles : permet de rechercher les scripts liés à la page courante (fichiers .js dans sous dossier js)
-function getJSFiles($page, $version)
-{
-    if (!$page) {
-        return false;
-    }
-
-    $pos=strpos(strrev($page), "/");
-    $folder=substr($page, 0, -$pos);
-    if ($folder and is_dir("{$folder}js")) {
-        foreach (scandir("{$folder}js") as $elem) {
-            if (substr($elem, -3)==".js") {
-                echo "<script type='text/JavaScript' src='{$folder}js/{$elem}?version=$version'></script>\n";
-            }
-        }
-    }
-
-    if ($page == 'conges/recup_pose.php') {
-        echo "<script type='text/JavaScript' src='{$folder}../js/dateUtils.js?version=$version'></script>\n";
-        echo "<script type='text/JavaScript' src='{$folder}../js/holiday.js?version=$version'></script>\n";
-    }
-}
-
 function heure2($heure)
 {
     $heure=explode(":", $heure);

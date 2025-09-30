@@ -1,16 +1,4 @@
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
-
-Fichier : js/script.js
-Création : mai 2011
-@author Jérôme Combes <jerome@planningbiblio.fr>
-@author Farid Goara <farid.goara@u-pem.fr>
-@author Etienne Cavalié
-
-
 Description :
 Fichier contenant les principales fonctions JavaScript
 

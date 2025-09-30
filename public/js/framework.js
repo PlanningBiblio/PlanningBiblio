@@ -1,13 +1,4 @@
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
-
-Fichier : js/plb/framework.js
-Création : 4 février 2015
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
 Fichier regroupant les scripts JS nécessaires aux pages /framework* (affichage et modification des tableaux)
 */

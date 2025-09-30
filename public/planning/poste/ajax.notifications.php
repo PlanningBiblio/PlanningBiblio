@@ -14,7 +14,7 @@ Description :
 Envoie les notifications aux agents lorsque des plannings les concernant sont validés ou modifiés
 
 Page appelée en ajax lors du click sur les cadenas de la page /index
-(événement $("#icon-lock").click, page planning/poste/js/planning.js)
+(événement $("#icon-lock").click, page public/js/planning.js)
 */
 
 require_once(__DIR__ . '/../../../init/init_ajax.php');

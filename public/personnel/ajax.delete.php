@@ -12,7 +12,7 @@ Description :
 Supprime les agents sélectionnés à partir de la liste des agents (fichier personnel/index.php).
 Les agents ne sont pas supprimés définitivement, ils sont marqués comme supprimés dans la table personnel (champ supprime=1)
 
-Ce script est appelé par la fonction JS personnel/js/index.js : agent_list
+Ce script est appelé par la fonction JS public/js/agent.js : agent_list
 */
 
 require_once(__DIR__ . '/../../init/init_ajax.php');

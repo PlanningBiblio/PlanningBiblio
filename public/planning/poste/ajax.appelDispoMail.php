@@ -13,7 +13,7 @@ Dernière modification : 3 août 2017
 Description :
 Envoi un mail aux agents disponibles pour l'occupation d'un poste vacant.
 Lors de la validation du formulaire "Appel à disponibilité"
-Script appelé par $( "#pl-appelDispo-form" ).dialog({ Envoyer ]), planning/poste/js/planning.js
+Script appelé par $( "#pl-appelDispo-form" ).dialog({ Envoyer ]), public/js/planning.js
 */
 
 ini_set("display_errors", 0);

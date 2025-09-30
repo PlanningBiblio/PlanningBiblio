@@ -3,7 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type='text/JavaScript' src='{{ asset("js/plb/position.js") }}?version={{ version }}'></script>
+  <script type="text/JavaScript" src="{{ asset('js/position.js') }}?version={{ version }}"></script>
 {% endblock %}
 {% block page %}
   <div id="content-form">
