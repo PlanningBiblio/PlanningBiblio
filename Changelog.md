@@ -1,5 +1,13 @@
 # Changelog Planno
 
+## Version 25.05.09 (2025-10-01)
+
+### Enhancement
+- MT49914: Simplified absence validation schema for meetings#1165
+
+### Dependencies
+- Composer update
+
 ## Version 25.05.08 (2025-09-19)
 
 ### Fixes
