@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
+require_once(__DIR__ . '/../../legacy/Class/class.planningFunctions.php');
 require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 
 class FrameworkController extends BaseController
