@@ -3,7 +3,7 @@
 namespace App\PlanningBiblio;
 
 use App\Entity\Agent;
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use App\PlanningBiblio\OAuth;
 use App\PlanningBiblio\Logger;
 use App\PlanningBiblio\MSCalendarUtils;
@@ -38,7 +38,7 @@ class MSGraphClient
              'scope' => 'https://graph.microsoft.com/.default'
         ];
 
-        $config = $entityManager->getRepository(ConfigParam::class)->findBy(
+        $config = $entityManager->getRepository(Config::class)->findBy(
             array('categorie' => 'Microsoft Graph API'),
         );
 

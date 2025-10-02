@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use App\Repository\ConfigRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ConfigRepository::class)]
 #[ORM\Table(name: 'config')]
-class ConfigParam
+class Config
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

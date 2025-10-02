@@ -6,7 +6,7 @@ use App\Controller\BaseController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 
 class ConfigController extends BaseController
 {
@@ -16,13 +16,13 @@ class ConfigController extends BaseController
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
-        $url = $this->entityManager->getRepository(ConfigParam::class)
+        $url = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'URL'])
             ->getValue();
 
         $technical = $request->get('options') == 'technical' ? 1 : 0;
 
-        $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
+        $configParams = $this->entityManager->getRepository(Config::class)->findBy(
             array('technical' => $technical),
             array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
         );
@@ -111,7 +111,7 @@ class ConfigController extends BaseController
 
             $technical = $request->get('technical');
 
-            $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
+            $configParams = $this->entityManager->getRepository(Config::class)->findBy(
                 array('technical' => $technical),
                 array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
             );

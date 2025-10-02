@@ -5,6 +5,8 @@ namespace App\Command;
 use App\Entity\Agent;
 use App\Entity\Holiday;
 use App\Entity\Manager;
+use App\Entity\Config;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,12 +17,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:holiday:reminder',
-    description: 'Send reminders for leave to be validated',
+    description: 'Send reminders for holidays to be validated',
 )]
 class HolidayReminderCommand extends Command
 {
-    public function __construct()
+    protected $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
         parent::__construct();
     }
 
@@ -45,15 +50,9 @@ Exemple à ajouter en crontab :
     {
         $io = new SymfonyStyle($input, $output);
 
-        $version = 'Symfony Command';
-
-        require_once __DIR__ . '/../../public/include/config.php';
-        require_once __DIR__ . '/../../init/init_entitymanager.php';
         require_once __DIR__ . '/../../public/include/function.php';
 
-        // $xxxx = $GLOBALS['xxxx']; is required for unit tests
-        $config = $GLOBALS['config'];
-        $entityManager = $GLOBALS['entityManager'];
+        $config = $this->entityManager->getRepository(Config::class)->getAll();
         $CSRFToken = CSRFToken();
 
         if (!$config['Conges-Rappels']) {
@@ -105,7 +104,7 @@ Exemple à ajouter en crontab :
         $data = [];
 
         // Recherches des informations sur les agents
-        $agentRepository = $entityManager->getRepository(Agent::class)
+        $agentRepository = $this->entityManager->getRepository(Agent::class)
             ->findBy(['supprime' => 0], ['nom' => 'ASC']);
 
         $agents = [];
@@ -117,7 +116,7 @@ Exemple à ajouter en crontab :
 
         // Look for managers when the validation scheme is enabled (config: Absences-notifications-agent-par-agent
         if ($config['Absences-notifications-agent-par-agent']) {
-            $manager = $entityManager->getRepository(Manager::class)
+            $manager = $this->entityManager->getRepository(Manager::class)
                 ->findAll();
 
             foreach ($agents as &$a) {
@@ -135,7 +134,7 @@ Exemple à ajouter en crontab :
         }
 
         // Recherche des congés non-validés
-        $holidays = $entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59", false);
+        $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59", false);
 
         // Assemble les informations des congés et des agents
         foreach ($holidays as $elem) {
@@ -213,7 +212,7 @@ Exemple à ajouter en crontab :
             // Affichage de tous les congés non validé le concernant
             $msg .= "<ul>\n";
             foreach ($dest as $conge) {
-                $link = $config['URL'] . "/holiday/edit/{$conge->getId()}";
+                $link = $config['URL'] . '/holiday/edit/' . $conge->getId();
 
                 $msg .= "<li style='margin-bottom:15px;'>\n";
                 $msg .= "<strong>{$conge->lastname} {$conge->firstname}</strong><br/>\n";

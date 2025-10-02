@@ -2,7 +2,7 @@
 
 namespace App\PlanningBiblio;
 
-require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
+require_once(__DIR__ . '/../../legacy/Class/class.planningFunctions.php');
 
 class Framework
 {

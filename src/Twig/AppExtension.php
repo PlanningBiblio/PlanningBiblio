@@ -10,7 +10,7 @@ use App\PlanningBiblio\Helper\HolidayHelper;
 
 include_once(__DIR__ . '/../../public/include/function.php');
 include_once(__DIR__ . '/../../public/include/feries.php');
-include_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
+include_once(__DIR__ . '/../../legacy/Class/class.planningFunctions.php');
 
 class AppExtension extends AbstractExtension
 {

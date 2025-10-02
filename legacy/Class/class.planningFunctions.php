@@ -1,21 +1,8 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-
-@file public/planning/poste/fonctions.php
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
-Fonctions utilisées par les pages des dossiers planning/poste et planning/postes_cgf
+Fonctions utilisées pour la gestion des plannings et des tableaux.
 */
-
-// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
-if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
-    include_once "../../include/accessDenied.php";
-    exit;
-}
 
 function deja_place($date, $poste)
 {
