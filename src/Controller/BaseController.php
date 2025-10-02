@@ -2,9 +2,10 @@
 
 namespace App\Controller;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use App\PlanningBiblio\Notifier;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ class BaseController extends AbstractController
 
     protected $dispatcher;
 
-    private $config = array();
+    protected $config = array();
 
     protected $logger;
 
@@ -29,7 +30,7 @@ class BaseController extends AbstractController
 
     protected $permissions;
 
-    public function __construct(RequestStack $requestStack, LoggerInterface $logger)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, RequestStack $requestStack)
     {
         if (!empty($_ENV['MEMORY_LIMIT'])) {
             ini_set('memory_limit', $_ENV['MEMORY_LIMIT']);
@@ -37,7 +38,7 @@ class BaseController extends AbstractController
 
         $request = $requestStack->getCurrentRequest();
 
-        $this->entityManager = $GLOBALS['entityManager'];
+        $this->entityManager = $entityManager;
 
         $this->templateParams = $GLOBALS['templates_params'];
 
@@ -47,12 +48,11 @@ class BaseController extends AbstractController
 
         $this->permissions = $GLOBALS['droits'];
 
-        $url = $this->entityManager->getRepository(ConfigParam::class)
+        $url = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'URL'])
             ->getValue();
 
-        $GLOBALS['config']['URL'] = $url;
-        $this->config = $GLOBALS['config'];
+        $this->config = $entityManager->getRepository(Config::class)->getAll();
     }
 
     public function setNotifier(Notifier $notifier) {

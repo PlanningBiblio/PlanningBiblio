@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use App\PlanningBiblio\MSGraphClient;
 
 #[AsCommand(
@@ -45,7 +45,7 @@ class ImportMsGraphCalendarCommand extends Command
         $container = $kernel->getContainer();
         $em = $container->get('doctrine')->getManager();
 
-        $config = $em->getRepository(ConfigParam::class)->findBy(
+        $config = $em->getRepository(Config::class)->findBy(
             array('categorie' => 'Microsoft Graph API'),
         );
 
