@@ -19,7 +19,7 @@ use App\Entity\PlanningPositionModel;
 use App\Entity\RecurringAbsence;
 use App\Entity\SaturdayWorkingHours;
 use App\Entity\WorkingHour;
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 
 class AgentRepository extends EntityRepository
 {
@@ -164,10 +164,10 @@ class AgentRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $entityManager->getRepository(ConfigParam::class)
+        $by_agent_param = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = $entityManager->getRepository(ConfigParam::class)
+        $sites_number = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
 
         // Param Absences-notifications-agent-par-agent
@@ -189,7 +189,7 @@ class AgentRepository extends EntityRepository
 
         $sites_select = array();
         for ($i = 1; $i <= $sites_number; $i++) {
-            $name = $entityManager->getRepository(ConfigParam::class)
+            $name = $entityManager->getRepository(Config::class)
                 ->findOneBy(['nom' => "Multisites-site$i"])->getValue();
 
             if ($by_agent_param->getValue()) {
@@ -213,10 +213,10 @@ class AgentRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $entityManager->getRepository(ConfigParam::class)
+        $by_agent_param = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = $entityManager->getRepository(ConfigParam::class)
+        $sites_number = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
 
         // Param Absences-notifications-agent-par-agent
@@ -272,10 +272,10 @@ class AgentRepository extends EntityRepository
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $entityManager->getRepository(ConfigParam::class)
+        $by_agent_param = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = $entityManager->getRepository(ConfigParam::class)
+        $sites_number = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
 
         $sites = array(1);
