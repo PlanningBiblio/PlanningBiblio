@@ -15,6 +15,7 @@
  */
 
 use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\EntityManager;
 use App\Entity\Extensions\TablePrefix;
 
