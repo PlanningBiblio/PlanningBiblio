@@ -21,14 +21,9 @@ require_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 )]
 class AbsenceDeleteDocumentsCommand extends Command
 {
-    // private EntityManagerInterface $entityManager;
-    // private array $config;
-
     public function __construct()
     {
         parent::__construct();
-        // $this->entityManager = $entityManager;
-        // $this->config = include __DIR__ . '/../../include/config.php';
     }
 
     protected function configure(): void
@@ -39,10 +34,8 @@ class AbsenceDeleteDocumentsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        require_once __DIR__ . '/../../public/include/config.php';
         require_once __DIR__ . '/../../init/init_entitymanager.php';
 
-        $config = $GLOBALS['config'];
         $entityManager = $GLOBALS['entityManager'];
 
         $CSRFToken = CSRFToken();
@@ -54,7 +47,7 @@ class AbsenceDeleteDocumentsCommand extends Command
 
 
         $limitdate = new \Datetime();
-        $limitdate->sub(new DateInterval('P' . $config['Absences-DelaiSuppressionDocuments'] . 'D'));
+        $limitdate->sub(new \DateInterval('P' . $config['Absences-DelaiSuppressionDocuments'] . 'D'));
 
         $qb = $entityManager->createQueryBuilder();
         $qb->select('a')

@@ -18,6 +18,9 @@ use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use App\Entity\Extensions\TablePrefix;
 
+require_once __DIR__ . '/../public/include/config.php';
+$config = $GLOBALS['config'];
+
 // Instanciating entity manager.
 $entitiesPath = array(__DIR__.'/../src/Entity');
 $emConfig = Setup::createAttributeMetadataConfiguration($entitiesPath, true);
