@@ -41,7 +41,9 @@ class AbsenceDeleteDocumentsCommand extends Command
         $CSRFToken = CSRFToken();
 
         if (!$config['Absences-DelaiSuppressionDocuments'] || $config['Absences-DelaiSuppressionDocuments'] == 0) {
-            logs("Suppression des anciens documents d'absences d&eacute;sactiv&eacute;e", "Absences-DelaiSuppressionDocuments", $CSRFToken);
+            $message = 'Suppression des anciens documents d\'absences désactivée';
+            \logs($message, 'Absences-DelaiSuppressionDocuments', $CSRFToken);
+            $io->warning($message);
             return Command::SUCCESS;
         }
 
@@ -62,7 +64,7 @@ class AbsenceDeleteDocumentsCommand extends Command
         }
         $entityManager->flush();
 
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $io->success('Absences documents have been deleted');
 
         return Command::SUCCESS;
     }
