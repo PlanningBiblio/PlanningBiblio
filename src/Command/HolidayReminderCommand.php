@@ -45,9 +45,6 @@ Exemple à ajouter en crontab :
     {
         $io = new SymfonyStyle($input, $output);
 
-        $version = 'Symfony Command';
-
-        require_once __DIR__ . '/../../public/include/config.php';
         require_once __DIR__ . '/../../init/init_entitymanager.php';
         require_once __DIR__ . '/../../public/include/function.php';
 
