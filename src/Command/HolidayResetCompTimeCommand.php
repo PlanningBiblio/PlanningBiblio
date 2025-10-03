@@ -40,53 +40,29 @@ class HolidayResetCompTimeCommand extends Command
 
         $CSRFToken = CSRFToken();
 
-        // Ajout d'une ligne d'information dans le tableau des congés
-        $agentRepository = $entityManager->getRepository(Agent::class)
-        ->findBy(['supprime' => 0], ['nom' => 'ASC']);
-        $manager = $entityManager->getRepository(Manager::class)
-        ->findAll();
+        $p=new \personnel();
+        $p->supprime=array(0,1);
+        $p->fetch();
+        if ($p->elements) {
+            foreach ($p->elements as $elem) {
+                $credits=array();
+                $credits['comp_time'] = 0;
+                $credits['conges_credit'] = $elem['conges_credit'];
+                $credits['conges_anticipation'] = $elem['conges_anticipation'];
+                $credits['conges_reliquat'] = $elem['conges_reliquat'];
 
-        $agentRepository = $entityManager->getRepository(Agent::class)
-        ->findAll();
-        foreach ($agentRepository as $p) {
-            $p->supprime=array(0,1);
-            $credits=array();
-            $credits['comp_time'] = 0;
-            $credits['conges_credit'] = $p['conges_credit'];
-            $credits['conges_anticipation'] = $p['conges_anticipation'];
-            $credits['conges_reliquat'] = $p['conges_reliquat'];
-
-            $holidayRepository = $entityManager->getRepository(Holiday::class)
-            ->findAll();
-            foreach ($holidayRepository as $c) {
-                $c->perso_id=$p['id'];
+                $c=new \conges();
+                $c->perso_id=$elem['id'];
                 $c->CSRFToken = $CSRFToken;
                 $c->maj($credits, "modif", true);
             }
         }
-        //$p=new \personnel();
-        // $p->supprime=array(0,1);
-        // $p->fetch();
-        // if ($p->elements) {
-        //     foreach ($p->elements as $elem) {
-        //         $credits=array();
-        //         $credits['comp_time'] = 0;
-        //         $credits['conges_credit'] = $elem['conges_credit'];
-        //         $credits['conges_anticipation'] = $elem['conges_anticipation'];
-        //         $credits['conges_reliquat'] = $elem['conges_reliquat'];
-        //
-        //         $c=new \conges();
-        //         $c->perso_id=$elem['id'];
-        //         $c->CSRFToken = $CSRFToken;
-        //         $c->maj($credits, "modif", true);
-        //     }
-        // }
 
         // Modifie les crédits
         $db=new \db();
         $db->CSRFToken = $CSRFToken;
         $db->update("personnel", "comp_time='0.00'");
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $io->success('Reset the compensatory time for holiday successfully!');
 
         return Command::SUCCESS;
     }

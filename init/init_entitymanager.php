@@ -24,7 +24,7 @@ $config = $GLOBALS['config'];
 
 // Instanciating entity manager.
 $entitiesPath = array(__DIR__.'/../src/Entity');
-$emConfig = Setup::createAttributeMetadataConfiguration($entitiesPath, true);
+$emConfig = ORMSetup::createAttributeMetadataConfiguration($entitiesPath, true);
 
 // Handle table prefix.
 $evm = new \Doctrine\Common\EventManager;
