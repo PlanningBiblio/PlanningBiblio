@@ -2,7 +2,9 @@
 
 namespace App\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\AbsenceDocument;
+use App\Entity\ConfigParam;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -21,8 +23,11 @@ require_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 )]
 class AbsenceDeleteDocumentsCommand extends Command
 {
-    public function __construct()
+    protected $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
         parent::__construct();
     }
 
@@ -34,24 +39,23 @@ class AbsenceDeleteDocumentsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        require_once __DIR__ . '/../../init/init_entitymanager.php';
-
-        $entityManager = $GLOBALS['entityManager'];
+        $delay = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Absences-DelaiSuppressionDocuments'])
+            ->getValue();
 
         $CSRFToken = CSRFToken();
 
-        if (!$config['Absences-DelaiSuppressionDocuments'] || $config['Absences-DelaiSuppressionDocuments'] == 0) {
+        if (empty($delay)) {
             $message = 'Suppression des anciens documents d\'absences désactivée';
             \logs($message, 'Absences-DelaiSuppressionDocuments', $CSRFToken);
             $io->warning($message);
             return Command::SUCCESS;
         }
 
-
         $limitdate = new \Datetime();
-        $limitdate->sub(new \DateInterval('P' . $config['Absences-DelaiSuppressionDocuments'] . 'D'));
+        $limitdate->sub(new \DateInterval('P' . $delay . 'D'));
 
-        $qb = $entityManager->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('a')
         ->from(AbsenceDocument::class, 'a')
         ->where('a.date < :limitdate')
@@ -60,9 +64,9 @@ class AbsenceDeleteDocumentsCommand extends Command
         $absdocs = $qb->getQuery()->getResult();
         foreach ($absdocs as $ad) {
             $ad->deleteFile();
-            $entityManager->remove($ad);
+            $this->entityManager->remove($ad);
         }
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $io->success('Absences documents have been deleted');
 
