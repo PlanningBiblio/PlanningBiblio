@@ -720,6 +720,23 @@ class AbsenceController extends BaseController
         return $this->output('/common/validation-statuses.html.twig');
     }
 
+    #[Route(path: '/absences/pieces-justif',name: 'absences.pieces.justif',methods: ['POST'])]
+    public function piecesJustif(Request $request)
+    {
+        $id = $request->get('id');
+        $pj = $request->get('pj');
+        $checked = $request->get('checked');
+        $CSRFToken = $request->get('CSRFToken');
+
+        $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+
+        $a = new \absences();
+        $a->CSRFToken = $CSRFToken;
+        $a->piecesJustif($id, $pj, $checked);
+
+        return $this->json(['ok' => true]);
+    }
+
     private function getDocuments($absence) {
         $groupe = $absence->elements['groupe'];
         $absdocs = array();
