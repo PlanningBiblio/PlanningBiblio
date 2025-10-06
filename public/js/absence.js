@@ -584,14 +584,15 @@ $(function() {
     var CSRFToken=$('#CSRFSession').val();
 
     $.ajax({
-      url: url('absences/ajax.piecesJustif.php'),
-            data: "id="+id+"&pj="+pj+"&checked="+checked+"&CSRFToken="+CSRFToken,
-            success: function(){
-              information("Modification enregistr&eacute;e","highlight");
-            },
-            error: function(){
-              information("Attention, la modification n&apos;a pas pu &ecirc;tre enregistr&eacute;e","error");
-            }
+      url: url('absence/supporting-doc'),
+      method: 'POST',
+      data: 'id=' + id + '&pj=' + pj + '&checked=' + checked + '&CSRFToken=' + CSRFToken,
+      success: function(){
+        information('Modification enregistrée', 'highlight');
+      },
+      error: function(){
+        information('Attention, la modification n\'a pas pu être enregistrée', 'error');
+      }
     });
   });
 

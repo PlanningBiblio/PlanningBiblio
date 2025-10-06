@@ -23,6 +23,8 @@
     - 301
 "absence.block.update":
     - 301
+"absence.supporting_doc":
+    - 701
 "absences.document.index":
     - 100
 "absences.document.delete":
