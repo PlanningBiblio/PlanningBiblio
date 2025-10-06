@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Entity\ConfigParam;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -10,18 +12,20 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-require_once(__DIR__ . '/../../public/include/config.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
 #[AsCommand(
     name: 'app:planning:export-hebdo',
-    description: 'Add a short description for your command',
+    description: 'Exports agents’ weekly working hours from the planning table to a CSV file',
 )]
 class PlanningExportHebdoCommand extends Command
 {
-    public function __construct()
+    protected $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
         parent::__construct();
     }
 
@@ -32,12 +36,26 @@ class PlanningExportHebdoCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $CSVFile = $config['PlanningHebdo-ExportFile'] ?? '/tmp/export-planno-edt.csv';
-        $days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;
-        $days_after = $config['PlanningHebdo-ExportDaysAfter'] ?? 60;
-        $agentIdentifier = $config['PlanningHebdo-ExportAgentId'] ?? 'matricule';
 
-        $config = $GLOBALS['config'];
+        $CSVFile = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'PlanningHebdo-ExportFile'])
+            ?->getValue() ?? '/tmp/export-planno-edt.csv';
+        $days_before = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'PlanningHebdo-ExportDaysBefore'])
+            ?->getValue() ?? 15;
+        $days_after = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'PlanningHebdo-ExportDaysAfter'])
+            ?->getValue() ?? 60;
+        $agentIdentifier = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'PlanningHebdo-ExportAgentId'])
+            ?->getValue() ?? 'matricule';
+        $workingHourSaturday = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'EDTSamedi'])
+            ->getValue();
+        $workingHour = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'PlanningHebdo'])
+            ->getValue();
+
         $CSRFToken = CSRFToken();
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
@@ -96,7 +114,7 @@ class PlanningExportHebdoCommand extends Command
 
             // Si utilisation de 2 plannings hebdo (semaine paire et semaine impaire)
             // Si semaine paire, position +=7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
-            if (!$config['EDTSamedi'] or $config['PlanningHebdo']) {
+            if (empty($workingHourSaturday) or !empty($workingHour)) {
                 $jour += ($d->semaine3 - 1) * 7;
             }
 
@@ -184,7 +202,7 @@ class PlanningExportHebdoCommand extends Command
         // Unlock
         unlink($lockFile);
         logs("Exportation terminée (fichier $CSVFile)", "PlanningHebdo", $CSRFToken);
-        $io->success('CSV export completed successfully.');
+        if ($output->isVerbose()) $io->success('CSV export completed successfully.');
 
         return Command::SUCCESS;
     }

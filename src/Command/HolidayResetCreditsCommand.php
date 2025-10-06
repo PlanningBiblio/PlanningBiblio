@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Entity\ConfigParam;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,12 +18,15 @@ require_once(__DIR__ . '/../../public/include/db.php');
 
 #[AsCommand(
     name: 'app:holiday:reset-credits',
-    description: 'Add a short description for your command',
+    description: 'Reset the credits for holiday',
 )]
 class HolidayResetCreditsCommand extends Command
 {
-    public function __construct()
+    protected $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
         parent::__construct();
     }
 
@@ -34,7 +39,10 @@ class HolidayResetCreditsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $GLOBALS['config'];
+        $transferCompTime = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Conges-transfer-comp-time'])
+            ?->getValue();
+
         $CSRFToken = CSRFToken();
 
         $p=new \personnel();
@@ -46,7 +54,7 @@ class HolidayResetCreditsCommand extends Command
                 $credits['conges_credit'] = floatval($elem['conges_annuel']) - floatval($elem['conges_anticipation']);
                 $credits['conges_anticipation'] = 0;
 
-                if ($config['Conges-transfer-comp-time']) {
+                if (!empty($transferCompTime)) {
                     $credits['conges_reliquat'] = floatval($elem['conges_credit']) + floatval($elem['comp_time']);
                     $credits['comp_time'] = 0;
                 } else {
@@ -64,12 +72,12 @@ class HolidayResetCreditsCommand extends Command
         // Modifie les crédits
         $db=new \db();
         $db->CSRFToken = $CSRFToken;
-        if ($config['Conges-transfer-comp-time']) {
+        if (!empty($transferCompTime)) {
             $db->update("personnel", "conges_reliquat=(conges_credit+comp_time)");
         } else {
             $db->update("personnel", "conges_reliquat=conges_credit");
         }
-        if ($config['Conges-transfer-comp-time']) {
+        if (!empty($transferCompTime)) {
             $db=new \db();
             $db->CSRFToken = $CSRFToken;
             $db->update("personnel", "comp_time='0.00'");
@@ -82,7 +90,7 @@ class HolidayResetCreditsCommand extends Command
         $db->update("personnel", "conges_anticipation=0.00");
 
 
-        $io->success('Reset the credits for holiday successfully!');
+        if ($output->isVerbose()) $io->success('Reset the credits for holiday successfully!');
 
         return Command::SUCCESS;
     }

@@ -63,7 +63,7 @@ class UpdateDbCommand extends Command
         }
 
         if ($migrationsReturnCode == 0) {
-            $io->success('Database updated');
+            if ($output->isVerbose()) $io->success('Database updated');
             return Command::SUCCESS;
         } else {
             $this->logToFile('[ERROR] One or more migration failed !');

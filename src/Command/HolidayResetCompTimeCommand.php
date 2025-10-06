@@ -13,14 +13,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 require_once(__DIR__ . '/../../public/include/db.php');
-require_once __DIR__ . '/../../public/include/function.php';
 
 #[AsCommand(
     name: 'app:holiday:reset-comp-time',
-    description: 'Add a short description for your command',
+    description: 'Reset the compensatory time for holiday',
 )]
 class HolidayResetCompTimeCommand extends Command
 {
+
     public function __construct()
     {
         parent::__construct();
@@ -28,15 +28,11 @@ class HolidayResetCompTimeCommand extends Command
 
     protected function configure(): void
     {
-
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-
-        require_once __DIR__ . '/../../init/init_entitymanager.php';
-        $entityManager = $GLOBALS['entityManager'];
 
         $CSRFToken = CSRFToken();
 
@@ -62,7 +58,7 @@ class HolidayResetCompTimeCommand extends Command
         $db=new \db();
         $db->CSRFToken = $CSRFToken;
         $db->update("personnel", "comp_time='0.00'");
-        $io->success('Reset the compensatory time for holiday successfully!');
+        if ($output->isVerbose()) $io->success('Reset the compensatory time for holiday successfully!');
 
         return Command::SUCCESS;
     }

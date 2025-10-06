@@ -5,6 +5,8 @@ namespace App\Command;
 use App\Entity\Agent;
 use App\Entity\Holiday;
 use App\Entity\Manager;
+use App\Entity\ConfigParam;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,8 +21,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class HolidayReminderCommand extends Command
 {
-    public function __construct()
+    protected $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
         parent::__construct();
     }
 
@@ -45,15 +50,33 @@ Exemple à ajouter en crontab :
     {
         $io = new SymfonyStyle($input, $output);
 
-        require_once __DIR__ . '/../../init/init_entitymanager.php';
-        require_once __DIR__ . '/../../public/include/function.php';
+        //require_once __DIR__ . '/../../public/include/function.php';
 
-        // $xxxx = $GLOBALS['xxxx']; is required for unit tests
-        $config = $GLOBALS['config'];
-        $entityManager = $GLOBALS['entityManager'];
+        $holidaysReminder = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Conges-Rappels'])
+            ->getValue();
+        $holidaysReminderDays = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Conges-Rappels-Jours'])
+            ->getValue();
+        $sunday=$this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Dimanche'])
+            ->getValue();
+        $absenceNotificationsPerAgent=$this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Absences-notifications-agent-par-agent'])
+            ->getValue();
+        $holidaysReminderN1 = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Conges-Rappels-N1'])
+            ->getValue();
+        $holidaysReminderN2 = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Conges-Rappels-N2'])
+            ->getValue();
+        $url = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'URL'])
+            ->getValue();
+
         $CSRFToken = CSRFToken();
 
-        if (!$config['Conges-Rappels']) {
+        if (empty($holidaysReminder)) {
             $message = 'Rappels congés désactivés';
             logs($message, 'Rappels-conges', $CSRFToken);
 
@@ -63,23 +86,21 @@ Exemple à ajouter en crontab :
 
         // Gestion des sites
         // Dates à controler
-        $jours = $config['Conges-Rappels-Jours'];
-
-        // Recherche la date du jour et les $jours suivants
+        // Recherche la date du jour et les $holidaysReminderDays suivants
         $dates = [];
-        for ($i=0; $i <= $jours; $i++) {
+        for ($i=0; $i <= $holidaysReminderDays; $i++) {
             $time = strtotime("+ $i days");
             $jour_semaine = date("w", $time);
 
             // Si le jour courant est un dimanche et que l'établissement n'ouvre pas les dimanches, on ne l'ajoute pas
-            if ($jour_semaine != 0 or $config['Dimanche']) {
+            if ($jour_semaine != 0 or !empty($sunday)) {
                 $dates[] = date('Y-m-d', $time);
             }
 
             // Si le jour courant est un samedi, nous recherchons 2 jours supplémentaires pour avoir le bon nombre de jours ouvrés.
             // Nous controlons également le samedi et le dimanche
             if ($jour_semaine == 6) {
-                $jours = $jours + 2;
+                $holidaysReminderDays = $holidaysReminderDays + 2;
             }
         }
 
@@ -102,7 +123,7 @@ Exemple à ajouter en crontab :
         $data = [];
 
         // Recherches des informations sur les agents
-        $agentRepository = $entityManager->getRepository(Agent::class)
+        $agentRepository = $this->entityManager->getRepository(Agent::class)
             ->findBy(['supprime' => 0], ['nom' => 'ASC']);
 
         $agents = [];
@@ -113,8 +134,8 @@ Exemple à ajouter en crontab :
         }
 
         // Look for managers when the validation scheme is enabled (config: Absences-notifications-agent-par-agent
-        if ($config['Absences-notifications-agent-par-agent']) {
-            $manager = $entityManager->getRepository(Manager::class)
+        if (!empty($absenceNotificationsPerAgent)) {
+            $manager = $this->entityManager->getRepository(Manager::class)
                 ->findAll();
 
             foreach ($agents as &$a) {
@@ -132,7 +153,7 @@ Exemple à ajouter en crontab :
         }
 
         // Recherche des congés non-validés
-        $holidays = $entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59", false);
+        $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59", false);
 
         // Assemble les informations des congés et des agents
         foreach ($holidays as $elem) {
@@ -144,7 +165,7 @@ Exemple à ajouter en crontab :
             $tmp->recipients = [];
 
             // Consider the validation scheme (config Absences-notifications-agent-par-agent)
-            if ($config['Absences-notifications-agent-par-agent']) {
+            if (!empty($absenceNotificationsPerAgent)) {
                 if ($elem->getValidLevel1() == 0) {
                     $tmp->recipients = $agent->notification_level1;
                 } else { 
@@ -153,9 +174,9 @@ Exemple à ajouter en crontab :
 
             } else {
                 // TODO : Use Absences-notifications-A1, Absences-notifications-B1 instead of Conges-Rappels-N1, then remove param Conges-Rappels-N1
-                // Ajoute les destinataires pour les congés n'étant pas validés en N1 en fonction du paramètre $config['Conges-Rappels-N1']
+                // Ajoute les destinataires pour les congés n'étant pas validés en N1 en fonction du paramètre $holidaysReminderN1
                 if ($elem->getValidLevel1() == 0) {
-                    $destN1 = json_decode(html_entity_decode($config['Conges-Rappels-N1'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+                    $destN1 = json_decode(html_entity_decode($holidaysReminderN1, ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
 
                     if (is_array($destN1)) {
                         if (in_array('Mail-Planning', $destN1)) {
@@ -168,9 +189,9 @@ Exemple à ajouter en crontab :
                 }
 
                 // TODO : Use Absences-notifications-A3, Absences-notifications-B3 instead of Conges-Rappels-N2, then remove param Conges-Rappels-N2
-                // Ajoute les destinataires pour les congés n'étant pas validés en N2 en fonction du paramètre $config['Conges-Rappels-N2']
+                // Ajoute les destinataires pour les congés n'étant pas validés en N2 en fonction du paramètre $holidaysReminderN2
                 if ($elem->getValidLevel1() != 0) {
-                    $destN2 = json_decode(html_entity_decode($config['Conges-Rappels-N2'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+                    $destN2 = json_decode(html_entity_decode($holidaysReminderN2, ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
                     if (is_array($destN2)) {
                         if (in_array('Mail-Planning', $destN2)) {
                             $tmp->recipients = array_merge($tmp->recipients, $agent->get_planning_unit_mails());
@@ -210,7 +231,7 @@ Exemple à ajouter en crontab :
             // Affichage de tous les congés non validé le concernant
             $msg .= "<ul>\n";
             foreach ($dest as $conge) {
-                $link = $config['URL'] . "/holiday/edit/{$conge->getId()}";
+                $link = $url . "/holiday/edit/{$conge->getId()}";
 
                 $msg .= "<li style='margin-bottom:15px;'>\n";
                 $msg .= "<strong>{$conge->lastname} {$conge->firstname}</strong><br/>\n";

@@ -66,7 +66,7 @@ class ImportMsGraphCalendarCommand extends Command
         $this->release();
 
         if ($output->isVerbose()) {
-            $io->success('Import completed.');
+            if ($output->isVerbose()) $io->success('Import completed.');
         }
 
         return Command::SUCCESS;

@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Entity\ConfigParam;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,21 +16,23 @@ require_once(__DIR__ . '/../../vendor/autoload.php');
 
 use App\PlanningBiblio\Framework;
 
-require_once(__DIR__ . '/../../public/include/config.php');
-require_once(__DIR__ . '/../../public/include/function.php');
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 
 #[AsCommand(
     name: 'app:planning:control',
-    description: 'Add a short description for your command',
+    description: 'Scans upcoming site schedules, flags unvalidated or unfilled shifts, and emails a summary report',
 )]
 class PlanningControlCommand extends Command
 {
-    public function __construct()
+    protected $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
         parent::__construct();
     }
+
 
     protected function configure(): void
     {
@@ -37,10 +41,29 @@ class PlanningControlCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $config = $GLOBALS['config'];
+
+        $remindersEnabled = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Rappels-Actifs'])
+            ->getValue();
+        $reminderDays = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Rappels-Jours'])
+            ->getValue();
+        $sunday = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Dimanche'])
+            ->getValue();
+        $reinforcementReminders = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Rappels-Renfort'])
+            ->getValue();
+        $holidayEnabled = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Conges-Enable'])
+            ->getValue();
+        $planningMail = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Mail-Planning'])
+            ->getValue();
+
         $CSRFToken = CSRFToken();
 
-        if (!$config['Rappels-Actifs']) {
+        if (empty($remindersEnabled)) {
             $message = 'Rappels désactivés';
             logs($message, 'Rappels', $CSRFToken);
             $io->warning($message);
@@ -49,28 +72,31 @@ class PlanningControlCommand extends Command
 
         // Gestion des sites
         $sites=array();
-        for ($i=1;$i<=$config['Multisites-nombre'];$i++) {
-            $sites[]=array($i,$config["Multisites-site".$i]);
+        $multiSiteCount = $this->entityManager->getRepository(ConfigParam::class)
+            ->findOneBy(['nom' => 'Multisites-nombre'])
+            ->getValue();
+        for ($i=1;$i<=$multiSiteCount;$i++) {
+            $multiSiteName = $this->entityManager->getRepository(ConfigParam::class)
+                ->findOneBy(['nom' => 'Multisites-site'.$i])
+                ->getValue();
+            $sites[]=array($i,$multiSiteName);
         }
 
-        // Dates à controler
-        $jours=$config['Rappels-Jours'];
-
-        // Recherche la date du jour et les $jours suivants
+        // Recherche la date du jour et les $reminderDays suivants
         $dates=array();
-        for ($i=0;$i<=$jours;$i++) {
+        for ($i=0;$i<=$reminderDays;$i++) {
             $time=strtotime("+ $i days");
             $jour_semaine=date("w", $time);
 
             // Si le jour courant est un dimanche et que la bibliothèque n'ouvre pas les dimanches, on ne l'ajoute pas
-            if ($jour_semaine!=0 or $config['Dimanche']) {
+            if ($jour_semaine!=0 or !empty($sunday)) {
                 $dates[]=date("Y-m-d", $time);
             }
 
             // Si le jour courant est un samedi, nous recherchons 2 jours supplémentaires pour avoir le bon nombre de jours ouvrés.
             // Nous controlons également le samedi et le dimanche
             if ($jour_semaine==6) {
-                $jours=$jours+2;
+                $reminderDays=$reminderDays+2;
             }
         }
 
@@ -145,7 +171,7 @@ class PlanningControlCommand extends Command
                                     continue;
                                 }
                                 // Si on ne veut pas des postes de renfort et si le poste n'est pas obligatoire, on l'exclus
-                                if (!$config['Rappels-Renfort'] and $postes[$l['poste']]['obligatoire']!="Obligatoire") {
+                                if (empty($reinforcementReminders) and $postes[$l['poste']]['obligatoire']!="Obligatoire") {
                                     continue;
                                 }
 
@@ -171,7 +197,7 @@ class PlanningControlCommand extends Command
 
                                         // Contrôle des congés
                                         $conges=false;
-                                        if ($config['Conges-Enable']) {
+                                        if (empty($holidayEnabled)) {
                                             require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
                                             $c=new \conges();
                                             if ($c->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
@@ -233,7 +259,7 @@ class PlanningControlCommand extends Command
         $msg.="</ul>\n";
 
         $subject="Plannings du ".dateFr($dates[0])." au ".dateFr($dates[count($dates)-1]);
-        $to=explode(";", $config['Mail-Planning']);
+        $to=explode(";", $planningMail);
 
         $m=new CJMail();
         $m->to=$to;
@@ -243,7 +269,7 @@ class PlanningControlCommand extends Command
         if ($m->error) {
             logs($m->error, "Rappels", $CSRFToken);
         }
-        $io->success('Planning check completed successfully; notification email sent.');
+        if ($output->isVerbose()) $io->success('Planning check completed successfully; notification email sent.');
 
         return Command::SUCCESS;
     }
