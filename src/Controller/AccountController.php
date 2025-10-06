@@ -20,6 +20,7 @@ class AccountController extends BaseController
         // Initialisation des variables
         $CSRFSession = $GLOBALS['CSRFSession'];
         $credits = array();
+        $perso_id = $session->get('loginId');
 
         // Informations sur l'agent
         $p = new \personnel();
