@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use App\Entity\AbsenceDocument;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -41,7 +41,7 @@ class AbsenceDeleteDocumentsCommand extends Command
 
         require_once __DIR__ . '/../../init/init_entitymanager.php';
 
-        $delay = $this->entityManager->getRepository(ConfigParam::class)
+        $delay = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Absences-DelaiSuppressionDocuments'])
             ->getValue();
 

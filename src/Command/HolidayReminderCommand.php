@@ -5,7 +5,7 @@ namespace App\Command;
 use App\Entity\Agent;
 use App\Entity\Holiday;
 use App\Entity\Manager;
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -52,25 +52,25 @@ Exemple à ajouter en crontab :
 
         require_once __DIR__ . '/../../public/include/function.php';
 
-        $holidaysReminder = $this->entityManager->getRepository(ConfigParam::class)
+        $holidaysReminder = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Conges-Rappels'])
             ->getValue();
-        $holidaysReminderDays = $this->entityManager->getRepository(ConfigParam::class)
+        $holidaysReminderDays = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Conges-Rappels-Jours'])
             ->getValue();
-        $sunday=$this->entityManager->getRepository(ConfigParam::class)
+        $sunday=$this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Dimanche'])
             ->getValue();
-        $absenceNotificationsPerAgent=$this->entityManager->getRepository(ConfigParam::class)
+        $absenceNotificationsPerAgent=$this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Absences-notifications-agent-par-agent'])
             ->getValue();
-        $holidaysReminderN1 = $this->entityManager->getRepository(ConfigParam::class)
+        $holidaysReminderN1 = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Conges-Rappels-N1'])
             ->getValue();
-        $holidaysReminderN2 = $this->entityManager->getRepository(ConfigParam::class)
+        $holidaysReminderN2 = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Conges-Rappels-N2'])
             ->getValue();
-        $url = $this->entityManager->getRepository(ConfigParam::class)
+        $url = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'URL'])
             ->getValue();
 

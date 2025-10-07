@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -38,22 +38,22 @@ class PlanningExportHebdoCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $CSVFile = $this->entityManager->getRepository(ConfigParam::class)
+        $CSVFile = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'PlanningHebdo-ExportFile'])
             ?->getValue() ?? '/tmp/export-planno-edt.csv';
-        $days_before = $this->entityManager->getRepository(ConfigParam::class)
+        $days_before = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'PlanningHebdo-ExportDaysBefore'])
             ?->getValue() ?? 15;
-        $days_after = $this->entityManager->getRepository(ConfigParam::class)
+        $days_after = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'PlanningHebdo-ExportDaysAfter'])
             ?->getValue() ?? 60;
-        $agentIdentifier = $this->entityManager->getRepository(ConfigParam::class)
+        $agentIdentifier = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'PlanningHebdo-ExportAgentId'])
             ?->getValue() ?? 'matricule';
-        $workingHourSaturday = $this->entityManager->getRepository(ConfigParam::class)
+        $workingHourSaturday = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'EDTSamedi'])
             ->getValue();
-        $workingHour = $this->entityManager->getRepository(ConfigParam::class)
+        $workingHour = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'PlanningHebdo'])
             ->getValue();
 
