@@ -17,7 +17,7 @@ class PlanningPositionTabRepository extends EntityRepository
     public function purge($id)
     {
         $planningPositionTab = $this->find($id);
-        $tableau = $planningPositionTab->tableau();
+        $tableau = $planningPositionTab->getTable();
         $entityManager = $this->getEntityManager();
 
         $objects = $entityManager->getRepository(PlanningPositionTabAffectation::class)->findBy(['tableau' => $tableau]); 
