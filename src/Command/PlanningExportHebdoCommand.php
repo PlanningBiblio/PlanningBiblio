@@ -38,24 +38,11 @@ class PlanningExportHebdoCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $CSVFile = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'PlanningHebdo-ExportFile'])
-            ?->getValue() ?? '/tmp/export-planno-edt.csv';
-        $days_before = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'PlanningHebdo-ExportDaysBefore'])
-            ?->getValue() ?? 15;
-        $days_after = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'PlanningHebdo-ExportDaysAfter'])
-            ?->getValue() ?? 60;
-        $agentIdentifier = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'PlanningHebdo-ExportAgentId'])
-            ?->getValue() ?? 'matricule';
-        $workingHourSaturday = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'EDTSamedi'])
-            ->getValue();
-        $workingHour = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'PlanningHebdo'])
-            ->getValue();
+        $config = $this->entityManager->getRepository(Config::class)->getAll();
+        $CSVFile = $config['PlanningHebdo-ExportFile'] ?? '/tmp/export-planno-edt.csv';
+        $days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;
+        $days_after = $config['PlanningHebdo-ExportDaysAfter'] ?? 60;
+        $agentIdentifier = $config['PlanningHebdo-ExportAgentId'] ?? 'matricule';
 
         $CSRFToken = CSRFToken();
 
@@ -115,7 +102,7 @@ class PlanningExportHebdoCommand extends Command
 
             // Si utilisation de 2 plannings hebdo (semaine paire et semaine impaire)
             // Si semaine paire, position +=7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
-            if (empty($workingHourSaturday) or !empty($workingHour)) {
+            if (!$config['EDTSamedi'] or $config['PlanningHebdo']) {
                 $jour += ($d->semaine3 - 1) * 7;
             }
 

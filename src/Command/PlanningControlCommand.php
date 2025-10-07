@@ -43,25 +43,7 @@ class PlanningControlCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $remindersEnabled = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Rappels-Actifs'])
-            ->getValue();
-        $reminderDays = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Rappels-Jours'])
-            ->getValue();
-        $sunday = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Dimanche'])
-            ->getValue();
-        $reinforcementReminders = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Rappels-Renfort'])
-            ->getValue();
-        $holidayEnabled = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Conges-Enable'])
-            ->getValue();
-        $planningMail = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Mail-Planning'])
-            ->getValue();
-
+        $config = $this->entityManager->getRepository(Config::class)->getAll();
         $CSRFToken = CSRFToken();
 
         if (empty($remindersEnabled)) {
@@ -73,13 +55,9 @@ class PlanningControlCommand extends Command
 
         // Gestion des sites
         $sites=array();
-        $multiSiteCount = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])
-            ->getValue();
+        $multiSiteCount = $config['Multisites-nombre'];
         for ($i=1;$i<=$multiSiteCount;$i++) {
-            $multiSiteName = $this->entityManager->getRepository(Config::class)
-                ->findOneBy(['nom' => 'Multisites-site'.$i])
-                ->getValue();
+            $multiSiteName = $config['Multisites-site'.$i];
             $sites[]=array($i,$multiSiteName);
         }
 

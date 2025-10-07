@@ -39,9 +39,8 @@ class HolidayResetCreditsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $transferCompTime = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Conges-transfer-comp-time'])
-            ?->getValue();
+        $config = $this->entityManager->getRepository(Config::class)->getAll();
+        $transferCompTime = $config['Conges-transfer-comp-time'];
 
         $CSRFToken = CSRFToken();
 
