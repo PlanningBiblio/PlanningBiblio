@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use App\PlanningBiblio\Notifier;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,7 +48,7 @@ class BaseController extends AbstractController
 
         $this->permissions = $GLOBALS['droits'];
 
-        $url = $this->entityManager->getRepository(ConfigParam::class)
+        $url = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'URL'])
             ->getValue();
 

@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -39,7 +39,7 @@ class HolidayResetCreditsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $transferCompTime = $this->entityManager->getRepository(ConfigParam::class)
+        $transferCompTime = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Conges-transfer-comp-time'])
             ?->getValue();
 

@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -42,22 +42,22 @@ class PlanningControlCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $remindersEnabled = $this->entityManager->getRepository(ConfigParam::class)
+        $remindersEnabled = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Rappels-Actifs'])
             ->getValue();
-        $reminderDays = $this->entityManager->getRepository(ConfigParam::class)
+        $reminderDays = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Rappels-Jours'])
             ->getValue();
-        $sunday = $this->entityManager->getRepository(ConfigParam::class)
+        $sunday = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Dimanche'])
             ->getValue();
-        $reinforcementReminders = $this->entityManager->getRepository(ConfigParam::class)
+        $reinforcementReminders = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Rappels-Renfort'])
             ->getValue();
-        $holidayEnabled = $this->entityManager->getRepository(ConfigParam::class)
+        $holidayEnabled = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Conges-Enable'])
             ->getValue();
-        $planningMail = $this->entityManager->getRepository(ConfigParam::class)
+        $planningMail = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Mail-Planning'])
             ->getValue();
 
@@ -72,11 +72,11 @@ class PlanningControlCommand extends Command
 
         // Gestion des sites
         $sites=array();
-        $multiSiteCount = $this->entityManager->getRepository(ConfigParam::class)
+        $multiSiteCount = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Multisites-nombre'])
             ->getValue();
         for ($i=1;$i<=$multiSiteCount;$i++) {
-            $multiSiteName = $this->entityManager->getRepository(ConfigParam::class)
+            $multiSiteName = $this->entityManager->getRepository(Config::class)
                 ->findOneBy(['nom' => 'Multisites-site'.$i])
                 ->getValue();
             $sites[]=array($i,$multiSiteName);
