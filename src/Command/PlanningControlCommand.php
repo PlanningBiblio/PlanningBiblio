@@ -16,6 +16,7 @@ require_once(__DIR__ . '/../../vendor/autoload.php');
 
 use App\PlanningBiblio\Framework;
 
+require_once __DIR__ . '/../../public/include/function.php';
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 
@@ -269,7 +270,10 @@ class PlanningControlCommand extends Command
         if ($m->error) {
             logs($m->error, "Rappels", $CSRFToken);
         }
-        if ($output->isVerbose()) $io->success('Planning check completed successfully; notification email sent.');
+        if ($output->isVerbose())
+        {
+            $io->success('Planning check completed successfully; notification email sent.');
+        }
 
         return Command::SUCCESS;
     }

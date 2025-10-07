@@ -70,7 +70,9 @@ class AbsenceDeleteDocumentsCommand extends Command
         }
         $this->entityManager->flush();
 
-        if ($output->isVerbose()) $io->success('Absences documents have been deleted');
+        if ($output->isVerbose()){
+            $io->success('Absences documents have been deleted');
+        }
 
         return Command::SUCCESS;
     }

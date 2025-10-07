@@ -14,6 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
+require_once __DIR__ . '/../../public/include/function.php';
 
 #[AsCommand(
     name: 'app:planning:export-hebdo',
@@ -202,7 +203,11 @@ class PlanningExportHebdoCommand extends Command
         // Unlock
         unlink($lockFile);
         logs("Exportation terminée (fichier $CSVFile)", "PlanningHebdo", $CSRFToken);
-        if ($output->isVerbose()) $io->success('CSV export completed successfully.');
+        if ($output->isVerbose())
+        {
+            $io->success('CSV export completed successfully.')
+
+        };
 
         return Command::SUCCESS;
     }

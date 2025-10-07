@@ -58,7 +58,10 @@ class HolidayResetCompTimeCommand extends Command
         $db=new \db();
         $db->CSRFToken = $CSRFToken;
         $db->update("personnel", "comp_time='0.00'");
-        if ($output->isVerbose()) $io->success('Reset the compensatory time for holiday successfully!');
+        if ($output->isVerbose())
+        {
+            $io->success('Reset the compensatory time for holiday successfully!');
+        }
 
         return Command::SUCCESS;
     }

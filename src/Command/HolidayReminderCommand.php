@@ -50,7 +50,7 @@ Exemple à ajouter en crontab :
     {
         $io = new SymfonyStyle($input, $output);
 
-        //require_once __DIR__ . '/../../public/include/function.php';
+        require_once __DIR__ . '/../../public/include/function.php';
 
         $holidaysReminder = $this->entityManager->getRepository(ConfigParam::class)
             ->findOneBy(['nom' => 'Conges-Rappels'])

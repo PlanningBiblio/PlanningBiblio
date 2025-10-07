@@ -90,7 +90,10 @@ class HolidayResetCreditsCommand extends Command
         $db->update("personnel", "conges_anticipation=0.00");
 
 
-        if ($output->isVerbose()) $io->success('Reset the credits for holiday successfully!');
+        if ($output->isVerbose())
+        {
+            $io->success('Reset the credits for holiday successfully!');
+        }
 
         return Command::SUCCESS;
     }
