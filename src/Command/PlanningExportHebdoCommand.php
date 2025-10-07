@@ -205,9 +205,9 @@ class PlanningExportHebdoCommand extends Command
         logs("Exportation terminée (fichier $CSVFile)", "PlanningHebdo", $CSRFToken);
         if ($output->isVerbose())
         {
-            $io->success('CSV export completed successfully.')
+            $io->success('CSV export completed successfully.');
 
-        };
+        }
 
         return Command::SUCCESS;
     }
