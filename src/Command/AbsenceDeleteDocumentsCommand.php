@@ -37,13 +37,13 @@ class AbsenceDeleteDocumentsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+
         $io = new SymfonyStyle($input, $output);
 
         require_once __DIR__ . '/../../init/init_entitymanager.php';
 
-        $delay = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Absences-DelaiSuppressionDocuments'])
-            ->getValue();
+        $config = $this->entityManager->getRepository(Config::class)->getAll();
+        $delay = $config['Absences-DelaiSuppressionDocuments'];
 
         $CSRFToken = CSRFToken();
 
