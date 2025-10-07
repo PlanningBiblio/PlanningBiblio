@@ -730,9 +730,10 @@ class AbsenceController extends BaseController
 
         $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 
-        $a=new \absences();
+        $a = new \absences();
         $a->CSRFToken = $CSRFToken;
         $a->piecesJustif($id, $pj, $checked);
+
         return $this->json(['ok' => true]);
     }
 
