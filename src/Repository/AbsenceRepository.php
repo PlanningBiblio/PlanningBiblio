@@ -10,13 +10,17 @@ use App\Model\AbsenceDocument;
 
 class AbsenceRepository extends EntityRepository
 {
-    public function purge($id)
+    private function purge($id)
     {
         $entityManager = $this->getEntityManager();
-        $this->deleteAllDocuments($id);
+        $this->deleteAllDocuments($id, false);
         $absence = $entityManager->getRepository(Absence::class)->find($id);
         $entityManager->remove($absence);
-        $entityManager->flush();
+        /* If this function was to be made public, we probably would want to add a
+           parameter to flush here (like for deleteAllDocuments)
+           ie: called from purgeAll: don't flush (flush is done in purgeAll)
+               called from the outside: flush
+        */
     }
 
     public function purgeAll($limit_date) {
@@ -33,16 +37,19 @@ class AbsenceRepository extends EntityRepository
             $deleted_absences++;
         }
         return $deleted_absences;
+        $entityManager->flush();
     }
 
-    public function deleteAllDocuments($id) {
+    public function deleteAllDocuments($id, bool $flush = true) {
         $entityManager = $this->getEntityManager();
         $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
         foreach ($absdocs as $absdoc) {
             $absdoc->deleteFile();
             $entityManager->remove($absdoc);
         }
-        $entityManager->flush();
+        if ($flush == true) {
+            $entityManager->flush();
+        }
 
         $absenceDocument = new AbsenceDocument();
         if (is_dir($absenceDocument->upload_dir() . $id)) {
