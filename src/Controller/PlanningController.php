@@ -722,6 +722,26 @@ class PlanningController extends BaseController
         return $this->redirectToRoute('home');
     }
 
+    #[Route('/api/planning/ics/reset', name: 'ics.reset', methods: ['POST'])]
+    public function resetPlanningICS(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $id = $request->get('id');
+        $CSRFToken = $request->get('CSRFToken');
+
+        $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+
+        $db = new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->update("personnel", array("code_ics"=>null), array("id"=>$id));
+
+        $p = new personnel();
+        $p->CSRFToken = $CSRFToken;
+        $url = $p->getICSURL($id);
+        $url = html_entity_decode($url, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+
+        return new Response(json_encode(array("url" => $config['URL'] . $url));
+    }
+
     private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
     {
         $resultats=array();
