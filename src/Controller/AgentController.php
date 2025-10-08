@@ -1703,6 +1703,193 @@ class AgentController extends BaseController
         }
     }
 
+    #[Route('/api/personnel/delete', name: 'personnel.delete', methods: ['POST'])]
+    public function delete(Request $request)
+    {
+        $list = $request->get('list');
+        $CSRFToken = $request->get('CSRFToken');
+
+        $list = html_entity_decode($list, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+
+        // prohibits removal of admin and "tout le monde"
+        $tab = array();
+        $tmp = json_decode($list);
+        foreach ($tmp as $elem) {
+            if ($elem > 2) {
+                $tab[] = $elem;
+            }
+        }
+
+        $list = implode(',', $tab);
+
+        if ($_SESSION['perso_actif']=="Supprimé") {
+            $p=new personnel();
+            $p->CSRFToken = $CSRFToken;
+            $p->delete($list);
+        } else {
+            // TODO : demander la date de suppression en popup
+            // Date de suppression
+            $date = date('Y-m-d');
+
+            // Mise à jour de la table personnel
+            $db=new db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update("personnel", array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date), array("id"=>"IN$list"));
+
+            // Mise à jour de la table pl_poste
+            $db=new db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "IN$list", 'date' =>">$date"));
+
+            // Mise à jour de la table responsables
+            $db=new db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("responsables", array('responsable' => "IN$list"));
+            $db=new db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("responsables", array('perso_id' => "IN$list"));
+        }
+
+        $return = ["ok"];
+        return new Response(json_encode($return));
+    }
+
+    #[Route('/api/personnel/ics/send-url', name: 'personnel.ics.send.url', methods: ['POST'])]
+    public function sendIcsUrl(Request $request)
+    {
+        $CSRFToken = $request->get('CSRFToken');
+        $message = $request->get('message');
+        $recipient = $request->get('recipient');
+        $subject = $request->get('subject');
+
+        $message = trim($message);
+        $message = preg_replace("/(http:\/\/.*[^ \n])/", "<a href='$1' target='_blank'>$1</a>", $message);
+        $message = str_replace(array("\n","\r"), "<br/>", $message);
+
+        $recipient = filter_var($recipient, FILTER_SANITIZE_EMAIL);
+
+        // Envoi du mail
+        $m = new CJMail();
+        $m->subject = $subject;
+        $m->message = $message;
+        $m->to = $recipient;
+        $isSent = $m->send();
+
+        // retour vers la fonction JS
+        if ($m->error) {
+            $return = array("error"=>$m->error);
+        } elseif (!$isSent) {
+            $return = array("error"=>"Une erreur est survenue lors de l&apos;envoi du mail");
+        } else {
+            $return = ["ok"];
+        }
+
+        return new Response(json_encode($return));
+    }
+
+    #[Route('/api/personnel/update-bulk', name: 'personnel.update.bulk', methods: ['POST'])]
+    public function updateBulk(Request $request)
+    {
+        if (!in_array(21, $_SESSION['droits'])) {
+            $return = ["Accès refusé"];
+            return new Response(json_encode($return));
+        }
+
+        // CSFR Protection
+        $CSRFToken = $request->get('CSRFToken');
+        if ( !isset($_SESSION['oups']['CSRFToken']) or $CSRFToken != $_SESSION['oups']['CSRFToken']) {
+            error_log("CSRF Token Exception {$_SERVER['SCRIPT_NAME']}");
+            $return = ["CSRF Token Exception {$_SERVER['SCRIPT_NAME']}"];
+            return new Response(json_encode($return));
+        }
+
+        // Selected agents
+        $list = $request->get('list');
+        $list = html_entity_decode($list, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $list = json_decode($list);
+
+        // Main tab
+        $actif = $request->get('actif');
+        $contrat = $request->get('contrat');
+        $heures_hebdo = $request->get('heures_hebdo');
+        $heures_travail = $request->get('heures_travail');
+        $service = $request->get('service');
+        $statut = $request->get('statut');
+
+        $contrat = htmlentities($contrat, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $service = htmlentities($service, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $statut = htmlentities($statut, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+
+        // Skills tab
+        $postes = $request->get('postes');
+
+        if ($postes != '-1') {
+            $postes = explode(',', $postes);
+            $postes = json_encode($postes);
+        }
+
+        // Update DB
+        $agents = $entityManager->getRepository(Agent::class)->findById($list);
+
+        foreach ($agents as $agent) {
+            // Main Tab
+            if ($actif != '-1') {
+                $agent->setActive($actif);
+            }
+
+            if ($contrat != '-1') {
+                $agent->setCategory($contrat);
+            }
+
+            if ($heures_hebdo != '-1') {
+                $agent->setWeeklyServiceHours($heures_hebdo);
+            }
+
+            if ($heures_travail != '-1') {
+                $agent->setWeeklyWorkingHours($heures_travail);
+            }
+
+            if ($service != '-1') {
+                $agent->setService($service);
+            }
+
+            if ($statut != '-1') {
+                $agent->setStatus($statut);
+            }
+
+            // Skills tab
+            if ($postes != '-1') {
+                $agent->setSkills($postes);
+            }
+
+            $entityManager->persist($agent);
+
+        }
+        $entityManager->flush();
+
+        $return = ["ok"];
+        return new Response(json_encode($return));
+    }
+
+    #[Route('/api/personnel/update-agents-list', name: 'personnel.update.agents.list', methods: ['POST'])]
+    public function updateAgentsList(Request $request)
+    {
+        $p=new personnel();
+        if ($_GET['deleted']=="yes") {
+            $p->supprime=array(0,1);
+        }
+        $p->fetch();
+        $p->elements;
+
+        $tab=array();
+        foreach ($p->elements as $elem) {
+            $tab[]=array("id"=>$elem['id'],"nom"=>$elem['nom'],"prenom"=>$elem['prenom']);
+        }
+
+        $return = [$tab];
+        return new Response(json_encode($return));
+    }
+
     private function save_holidays($params)
     {
         if (!$this->config('Conges-Enable')) {

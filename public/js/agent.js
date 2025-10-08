@@ -22,7 +22,7 @@ $(function() {
         list = JSON.stringify(list);
 
         $.ajax({
-          url: url('personnel/ajax.update.php'),
+          url: window.PERSONNEL_UPDATE_BULK,
                type: "post",
                dataType: "json",
                data: {
@@ -92,7 +92,7 @@ function agent_list() {
       list = JSON.stringify(list);
 
       $.ajax({
-        url: url('personnel/ajax.delete.php'),
+        url: window.PERSONNEL_DELETE_URL,
              type: "post",
              dataType: "json",
              data: {list: list, CSRFToken: $('#CSRFSession').val()},

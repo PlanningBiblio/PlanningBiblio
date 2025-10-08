@@ -723,7 +723,7 @@ class PlanningController extends BaseController
     }
 
     #[Route('/api/planning/ics/reset', name: 'ics.reset', methods: ['POST'])]
-    public function resetPlanningICS(Request $request, EntityManagerInterface $em): JsonResponse
+    public function resetPlanningICS(Request $request)
     {
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');

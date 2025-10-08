@@ -13,7 +13,10 @@
     <script type="text/JavaScript" src="{{ asset('vendor/jquery-ui-1.11.2/jquery-ui.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('vendor/carhartl-jquery-cookie-3caf209/jquery.cookie.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('vendor/DataTables/datatables.min.js') }}"></script>
-    <script> window.ICS_RESET_URL = "{{ path('ics.reset') }}"; </script>
+    <script>
+      window.ICS_RESET_URL = "{{ path('ics.reset') }}";
+      window.PERSONNEL_UPDATE_AGENTS_LIST = "{{ path('personnel.update.agents.list') }}";
+    </script>
     <script type="text/JavaScript" src="{{ asset('js/CJScript.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('js/datePickerFr.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('js/dataTables.sort.js') }}"></script>
