@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 
 use App\Entity\Agent;
 use App\Entity\Holiday;
+use App\Entity\OverTime;
 
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;
@@ -930,8 +931,8 @@ class HolidayController extends BaseController
         return $this->json($holiday_account);
     }
 
-    #[Route('/api/conges/recuperations', name: 'conges.recup.create', methods: ['POST'])]
-    public function enregistreRecup(Request $request, EntityManagerInterface $entityManager)
+    #[Route('/conges/recuperations', name: 'conges.recup.create', methods: ['POST'])]
+    public function enregistreRecup(Request $request)
     {
         // Initialisation des variables
         $commentaires = $request->request->get('commentaires');
@@ -969,20 +970,20 @@ class HolidayController extends BaseController
 
         $return = ["Demande-OK"];
 
-        $agent = $entityManager->find(Agent::class, $perso_id);
+        $agent = $this->entityManager->find(Agent::class, $perso_id);
         $nom = $agent->getLastname();
         $prenom = $agent->getFirstname();
 
-        if ($config['Absences-notifications-agent-par-agent']) {
-            $a = new absences();
+        if ($this->config('Absences-notifications-agent-par-agent')) {
+            $a = new \absences();
             $a->getRecipients2(null, $perso_id, 1);
             $destinataires = $a->recipients;
         } else {
-            $c = new conges();
+            $c = new \conges();
             $c->getResponsables($date, $date, $perso_id);
             $responsables = $c->responsables;
 
-            $a = new absences();
+            $a = new \absences();
             $a->getRecipients(1, $responsables, $agent, 'Recup');
             $destinataires = $a->recipients;
         }
@@ -995,10 +996,10 @@ class HolidayController extends BaseController
             }
 
             // ajout d'un lien permettant de rebondir sur la demande
-            $overtime = $entityManager->getRepository(OverTime::class)->findOneBy(
+            $overtime = $this->entityManager->getRepository(OverTime::class)->findOneBy(
                 array(
                     'perso_id' => $perso_id,
-                    'date' => DateTime::createFromFormat('Y-m-d', $date),
+                    'date' => \DateTime::createFromFormat('Y-m-d', $date),
                     'saisie_par' => $_SESSION['login_id'],
                 ),
                 array(
@@ -1006,10 +1007,10 @@ class HolidayController extends BaseController
                 ),
             );
 
-            $url = $config['URL'] . '/overtime/' . $overtime->getId();
+            $url = $this->config('URL') . '/overtime/' . $overtime->getId();
             $message.="<p>Lien vers la demande d'heures supplémentaires :<br/><a href='$url'>$url</a></p>";
 
-            $m = new CJMail();
+            $m = new \CJMail();
             $m->subject = $sujet;
             $m->message = $message;
             $m->to = $destinataires;
@@ -1024,7 +1025,7 @@ class HolidayController extends BaseController
     #[Route('/ajax/getReliquat', name: 'ajax.getReliquat', methods: ['GET'])]
     public function getReliquat(Request $request)
     {
-        $c=new conges();
+        $c=new \conges();
         $c->perso_id=$_GET['perso_id'];
         $c->fetchCredit();
         $reliquatHeures=array_key_exists("reliquat", $c->elements)?$c->elements['reliquat']:0;
@@ -1036,7 +1037,7 @@ class HolidayController extends BaseController
         return new Response(json_encode($return));
     }
 
-    #[Route('/ajax/updateCell', name: 'aja.updateCell', methods: ['POST'])]
+    #[Route('/ajax/updateCell', name: 'ajax.updateCell', methods: ['POST'])]
     public function updateCell(Request $request)
     {
         $perso_ids=array();
@@ -1045,7 +1046,7 @@ class HolidayController extends BaseController
         }
         $perso_ids=implode(",", $perso_ids);
 
-        $c=new conges();
+        $c=new \conges();
         $c->debut="$date $debut";
         $c->fin="$date $fin";
         $c->information = false;
@@ -1078,7 +1079,7 @@ class HolidayController extends BaseController
         $date=dateFr($_GET['date']);
         $perso_id=is_numeric($_GET['perso_id'])?$_GET['perso_id']:$_SESSION['login_id'];
 
-        $db=new db();
+        $db=new \db();
         $db->select("recuperations", null, "`perso_id`='$perso_id' AND (`date`='$date' OR `date2`='$date')");
         if ($db->result) {
             $output = "Demande";

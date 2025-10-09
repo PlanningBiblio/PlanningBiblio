@@ -290,3 +290,7 @@
     - 1201
 "absences.pieces.justif":
     - 100
+"ajax.checkRecuperation":
+    - 100
+"conges.recup.create":
+    - 100

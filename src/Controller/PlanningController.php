@@ -739,7 +739,7 @@ class PlanningController extends BaseController
         $url = $p->getICSURL($id);
         $url = html_entity_decode($url, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
-        return new Response(json_encode(array("url" => $config['URL'] . $url));
+        return new Response(json_encode(array("url" => $config['URL'] . $url)));
     }
 
     private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
