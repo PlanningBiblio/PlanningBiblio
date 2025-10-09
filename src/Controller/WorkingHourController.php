@@ -30,7 +30,6 @@ class WorkingHourController extends BaseController
         $nbSemaine = $request->get('weeks');
         $perso_id = $request->get('perso_id');
         $ph_id = $request->get('ph_id');
-
         if (!$nbSemaine || !$perso_id) {
             $response = new Response();
             $response->setContent('Wrong parameters');
