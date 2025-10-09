@@ -1723,7 +1723,7 @@ class AgentController extends BaseController
         $list = implode(',', $tab);
 
         if ($_SESSION['perso_actif']=="Supprimé") {
-            $p=new personnel();
+            $p=new \personnel();
             $p->CSRFToken = $CSRFToken;
             $p->delete($list);
         } else {
@@ -1732,20 +1732,20 @@ class AgentController extends BaseController
             $date = date('Y-m-d');
 
             // Mise à jour de la table personnel
-            $db=new db();
+            $db=new \db();
             $db->CSRFToken = $CSRFToken;
             $db->update("personnel", array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date), array("id"=>"IN$list"));
 
             // Mise à jour de la table pl_poste
-            $db=new db();
+            $db=new \db();
             $db->CSRFToken = $CSRFToken;
             $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "IN$list", 'date' =>">$date"));
 
             // Mise à jour de la table responsables
-            $db=new db();
+            $db=new \db();
             $db->CSRFToken = $CSRFToken;
             $db->delete("responsables", array('responsable' => "IN$list"));
-            $db=new db();
+            $db=new \db();
             $db->CSRFToken = $CSRFToken;
             $db->delete("responsables", array('perso_id' => "IN$list"));
         }
@@ -1769,7 +1769,7 @@ class AgentController extends BaseController
         $recipient = filter_var($recipient, FILTER_SANITIZE_EMAIL);
 
         // Envoi du mail
-        $m = new CJMail();
+        $m = new \CJMail();
         $m->subject = $subject;
         $m->message = $message;
         $m->to = $recipient;
@@ -1829,7 +1829,7 @@ class AgentController extends BaseController
         }
 
         // Update DB
-        $agents = $entityManager->getRepository(Agent::class)->findById($list);
+        $agents = $this->entityManager->getRepository(Agent::class)->findById($list);
 
         foreach ($agents as $agent) {
             // Main Tab
@@ -1862,19 +1862,19 @@ class AgentController extends BaseController
                 $agent->setSkills($postes);
             }
 
-            $entityManager->persist($agent);
+            $this->entityManager->persist($agent);
 
         }
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         $return = ["ok"];
         return new Response(json_encode($return));
     }
 
-    #[Route('/api/personnel/update-agents-list', name: 'personnel.update.agents.list', methods: ['POST'])]
+    #[Route('/personnel/update-agents-list', name: 'personnel.update.agents.list', methods: ['GET'])]
     public function updateAgentsList(Request $request)
     {
-        $p=new personnel();
+        $p=new \personnel();
         if ($_GET['deleted']=="yes") {
             $p->supprime=array(0,1);
         }
@@ -1886,8 +1886,7 @@ class AgentController extends BaseController
             $tab[]=array("id"=>$elem['id'],"nom"=>$elem['nom'],"prenom"=>$elem['prenom']);
         }
 
-        $return = [$tab];
-        return new Response(json_encode($return));
+        return new Response(json_encode($tab));
     }
 
     private function save_holidays($params)

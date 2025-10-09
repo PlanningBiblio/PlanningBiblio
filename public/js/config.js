@@ -31,7 +31,7 @@ function ldaptest(){
     url: window.ADMIN_LDAP_TEST_URL,
     type: 'post',
     dataType: 'json',
-    data: {filter: filter, host: host, idAttribute: idAttribute, password : password, port: port, protocol: protocol, rdn: rdn, suffix: suffix},
+    data: {filter: filter, host: host, idAttribute: idAttribute, password : password, port: port, protocol: protocol, rdn: rdn, suffix: suffix, CSRFToken: CSRFToken},
     success: function(result){
       if(result == 'ok'){
         CJInfo('Les paramètres LDAP sont corrects','success',top1);

@@ -645,7 +645,7 @@ $(function() {
 
         $.ajax({
           dataType: "json",
-          url: url('personnel/ajax.sendICSURL.php'),
+          url: window.PERSONNEL_ICS_SEND_URL,
           type: "post",
           data: {CSRFToken: CSRFToken, recipient: recipient, subject: subject, message: message},
           success: function(result){

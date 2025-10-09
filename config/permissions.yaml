@@ -294,3 +294,11 @@
     - 100
 "conges.recup.create":
     - 100
+"personnel.delete":
+    - 100
+"personnel.ics.send.url":
+    - 100
+"personnel.update.bulk":
+    - 100
+"personnel.update.agents.list":
+    - 100
