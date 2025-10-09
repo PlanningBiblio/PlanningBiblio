@@ -13,6 +13,10 @@ class AbsenceControllerAddTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
+    public function testAddBis()
+       $this->testAdd();
+    }
+
     public function testAdd()
     {
         $this->setParam('Absences-notifications-agent-par-agent', 0);
