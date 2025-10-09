@@ -256,7 +256,7 @@ function plHebdoVerifForm(){
 
   var retour=false;
   $.ajax({
-    url: url('planningHebdo/ajax.verifPlannings.php'),
+    url: window.WORKINGHOUR_CHECK_PLANNING,
     dataType: "json",
     data: data,
     type: "get",
