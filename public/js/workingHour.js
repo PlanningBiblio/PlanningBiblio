@@ -312,6 +312,7 @@ function plHebdoVerifForm(){
 function updateTables(selected_weeks) {
 
   var weeks;
+  var perso_id;
   if (selected_weeks) {
     weeks = selected_weeks;
   } else if ($("#this_number_of_weeks").val()) {
@@ -319,11 +320,18 @@ function updateTables(selected_weeks) {
   }  else {
     weeks = $("#number_of_weeks").val();
   }
+  if (!weeks) {
+    weeks = 1;
+  }
+  perso_id = $("#perso_id").val();
+  if (!perso_id) {
+    perso_id = 1;
+  }
   $('#select_number_of_weeks').val(weeks);
 
   $.ajax({
     url: url('ajax/workinghour-tables'),
-         data: {weeks: weeks, perso_id: $("#perso_id").val(), ph_id: $("#id").val()},
+         data: {weeks: weeks, perso_id:perso_id, ph_id: $("#id").val()},
          dataType: "html",
          type: "get",
          async: false,
