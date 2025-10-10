@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Cron;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -13,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:cron:tab',
-    description: 'Add a short description for your command',
+    description: 'Executes all enabled scheduled cron jobs defined in the database and updates their last run time.',
 )]
 class CronTabCommand extends Command
 {
@@ -75,8 +76,20 @@ class CronTabCommand extends Command
             $crons = $this->crons();
 
             foreach ($crons as $cron) {
-                include($this->crons_dir . $cron->getCommand());
-                bin/console $cron->getCommand()
+                $cmd = sprintf('php %s/bin/console %s', \dirname(__DIR__, 2), $cron->getCommand());
+                echo "Running: $cmd\n";
+
+                $process = Process::fromShellCommandline($cmd);
+                $process->run();
+
+                echo $process->getOutput();
+
+                if (!$process->isSuccessful()) {
+                    echo "Error running {$cron->getCommand()}:\n";
+                    echo $process->getErrorOutput();
+                    continue;
+                }
+
                 $this->update_cron($cron);
             }
 
@@ -89,7 +102,7 @@ class CronTabCommand extends Command
             $a->ics_update_table();
         }
 
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $io->success('All scheduled cron jobs have been executed successfully.');
 
         return Command::SUCCESS;
     }
