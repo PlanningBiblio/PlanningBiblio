@@ -1,5 +1,7 @@
 {# workinghour/tables.html.twig #}
-
+<script>
+  const WH_TABLES_URL = "{{ path('ajax.workinghourtables') }}"; // => "/ajax/workinghour-tables"
+</script>
 {% for j in 0..nbSemaine-1 %}
   <h3>{{ cellule[j] }}</h3>
   {% if j > 0 %}

@@ -769,8 +769,8 @@ function verifRecup(o){
   var perso_id=$("#agent").val();
   var retour=false;
   $.ajax({
-    url: url('conges/ajax.verifRecup.php'),
-    data: "date="+o.val()+"&perso_id="+perso_id,
+    url: window.CHECK_RECUPERATION,
+    data: "date="+o.val()+"&perso_id="+perso_id+ "&CSRFToken="+$("#CSRFSession").val(),
     type: "get",
     async: false,
     success: function(result){

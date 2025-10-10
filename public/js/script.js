@@ -508,7 +508,7 @@ function resetICSURL(id, CSRFToken, nom){
   
   if(res){
     $.ajax({
-      url: url('ics/ajax.resetURL.php'),
+      url: window.ICS_RESET_URL,
       type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
@@ -562,7 +562,7 @@ function updateAgentsList(me,select_id){
   var in_array=false;
 
   $.ajax({
-    url: url('personnel/ajax.updateAgentsList.php'),
+    url: window.PERSONNEL_UPDATE_AGENTS_LIST,
     type: "get",
     data: "deleted="+deleted,
     success: function(result){
