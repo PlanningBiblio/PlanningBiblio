@@ -22,7 +22,7 @@ class BaseController extends AbstractController
 
     protected $dispatcher;
 
-    private $config = array();
+    protected $config = array();
 
     protected $logger;
 
@@ -52,8 +52,7 @@ class BaseController extends AbstractController
             ->findOneBy(['nom' => 'URL'])
             ->getValue();
 
-        $GLOBALS['config']['URL'] = $url;
-        $this->config = $GLOBALS['config'];
+        $this->config = $entityManager->getRepository(Config::class)->getAll();
     }
 
     public function setNotifier(Notifier $notifier) {

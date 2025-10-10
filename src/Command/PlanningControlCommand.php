@@ -91,7 +91,7 @@ class PlanningControlCommand extends Command
         // On utilide PDO pour de meilleurs performances car la même requête sera executée de nombreuses fois avec des valeurs différentes
         $dbh=new \dbh();
         $dbh->CSRFToken = $CSRFToken;
-        $dbh->prepare("SELECT `id`,`perso_id`,`absent` FROM `{$dbprefix}pl_poste`
+        $dbh->prepare("SELECT `id`,`perso_id`,`absent` FROM `{$config['dbprefix']}pl_poste`
         WHERE `date`=:date AND `site`=:site AND `poste`=:poste AND `debut`=:debut AND `fin`=:fin AND `absent`='0' AND `supprime`='0';");
 
 

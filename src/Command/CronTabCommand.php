@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:cron:tab',
+    name: 'app:crontab',
     description: 'Executes all enabled scheduled cron jobs defined in the database and updates their last run time.',
 )]
 class CronTabCommand extends Command
@@ -102,7 +102,9 @@ class CronTabCommand extends Command
             $a->ics_update_table();
         }
 
-        $io->success('All scheduled cron jobs have been executed successfully.');
+        if ($output->isVerbose()){
+            $io->success('All scheduled cron jobs have been executed successfully.');
+        }
 
         return Command::SUCCESS;
     }
@@ -113,7 +115,7 @@ class CronTabCommand extends Command
 
         $cron->setLast($last);
 
-        $entityManager = $GLOBALS['entityManager'];
+        $entityManager = $this->entityManager;
         $entityManager->persist($cron);
         $entityManager->flush();
     }

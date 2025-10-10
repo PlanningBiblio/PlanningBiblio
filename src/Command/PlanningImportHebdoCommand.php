@@ -252,7 +252,7 @@ class PlanningImportHebdoCommand extends Command
         if ($nb > 0) {
             $db=new \dbh();
             $db->CSRFToken = $CSRFToken;
-            $db->prepare("INSERT INTO `{$dbprefix}planning_hebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `cle`, `nb_semaine`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :cle, 1);");
+            $db->prepare("INSERT INTO `{$config['dbprefix']}planning_hebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `cle`, `nb_semaine`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :cle, 1);");
             foreach ($insert as $elem) {
                 $db->execute($elem);
             }
@@ -280,7 +280,7 @@ class PlanningImportHebdoCommand extends Command
         if ($nb >0) {
             $db=new \dbh();
             $db->CSRFToken = $CSRFToken;
-            $db->prepare("DELETE FROM `{$dbprefix}planning_hebdo` WHERE `cle`=:cle;");
+            $db->prepare("DELETE FROM `{$config['dbprefix']}planning_hebdo` WHERE `cle`=:cle;");
             foreach ($delete as $elem) {
                 $db->execute($elem);
             }

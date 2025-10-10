@@ -17,7 +17,7 @@ require_once __DIR__ . '/../../init/init_entitymanager.php';
 
 #[AsCommand(
     name: 'app:absence:import-csv',
-    description: 'Imports employee absences from Hamac CSV based on configured statuses, inserting/updating records and pruning deleted entries (with locking).',
+    description: 'Imports employee absences from a CSV file based on configured statuses, inserting/updating records and pruning deleted entries (with locking).',
 )]
 class AbsenceImportCSVCommand extends Command
 {
@@ -186,18 +186,18 @@ class AbsenceImportCSVCommand extends Command
         // $dbi : DB Insert
         $dbi = new \dbh();
         $dbi->CSRFToken = $CSRFToken;
-        $dbi->prepare("INSERT INTO `{$dbprefix}absences` (`perso_id`, `debut`, `fin`, `motif`, `commentaires`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `cal_name`, `ical_key`, `uid`)
+        $dbi->prepare("INSERT INTO `{$config['dbprefix']}absences` (`perso_id`, `debut`, `fin`, `motif`, `commentaires`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `cal_name`, `ical_key`, `uid`)
         VALUES (:perso_id, :debut, :fin, :motif, :commentaires, :demande, :valide, :validation, :valide_n1, :validation_n1, :cal_name, :ical_key, :uid);");
 
         // $dbu : DB Update
         $dbu = new \dbh();
         $dbu->CSRFToken = $CSRFToken;
-        $dbu->prepare("UPDATE `{$dbprefix}absences` SET `perso_id` = :perso_id, `debut` = :debut, `fin` = :fin, `commentaires` = :commentaires, `valide` = :valide, `validation` = :validation, `valide_n1` = :valide_n1, `validation_n1` = :validation_n1 WHERE `id` = :id;");
+        $dbu->prepare("UPDATE `{$config['dbprefix']}absences` SET `perso_id` = :perso_id, `debut` = :debut, `fin` = :fin, `commentaires` = :commentaires, `valide` = :valide, `validation` = :validation, `valide_n1` = :valide_n1, `validation_n1` = :validation_n1 WHERE `id` = :id;");
 
         // $dbd : DB Delete
         $dbd = new \dbh();
         $dbd->CSRFToken = $CSRFToken;
-        $dbd->prepare("DELETE FROM `{$dbprefix}absences` WHERE `id` = :id;");
+        $dbd->prepare("DELETE FROM `{$config['dbprefix']}absences` WHERE `id` = :id;");
 
 
         // Absences DB / file : used to remove entries deleted from source file
@@ -365,7 +365,7 @@ class AbsenceImportCSVCommand extends Command
         if (!empty($absences_db)) {
             $dbd = new \dbh();
             $dbd->CSRFToken = $CSRFToken;
-            $dbd->prepare("DELETE FROM `{$dbprefix}absences` WHERE `cal_name` = 'hamac' AND `ical_key` = :ical_key;");
+            $dbd->prepare("DELETE FROM `{$config['dbprefix']}absences` WHERE `cal_name` = 'hamac' AND `ical_key` = :ical_key;");
 
             foreach ($absences_db as $elem) {
                 if (!in_array($elem, $absences_file)) {
