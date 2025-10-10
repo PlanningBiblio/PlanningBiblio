@@ -40,8 +40,6 @@ class AbsenceDeleteDocumentsCommand extends Command
 
         $io = new SymfonyStyle($input, $output);
 
-        require_once __DIR__ . '/../../init/init_entitymanager.php';
-
         $config = $this->entityManager->getRepository(Config::class)->getAll();
         $delay = $config['Absences-DelaiSuppressionDocuments'];
 
