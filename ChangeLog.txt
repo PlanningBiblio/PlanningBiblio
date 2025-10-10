@@ -1,3 +1,7 @@
+*** Version 24.10.18   (2025-10-10)    ***
+- Fixes
+MT50321: Fix "My Account" access on 24.10.xx #1182
+
 *** Version 24.10.17   (2025-09-19)    ***
 - Fixes
 MT48763: CSS: Fix print.css #1162
