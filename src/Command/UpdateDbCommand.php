@@ -63,8 +63,7 @@ class UpdateDbCommand extends Command
         }
 
         if ($migrationsReturnCode == 0) {
-            if ($output->isVerbose())
-            {
+            if ($output->isVerbose()){
                 $io->success('Database updated');
             }
             return Command::SUCCESS;

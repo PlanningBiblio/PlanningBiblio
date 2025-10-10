@@ -17,10 +17,10 @@ require_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 require_once __DIR__ . '/../../init/init_entitymanager.php';
 
 #[AsCommand(
-    name: 'app:ics:import-absences',
+    name: 'app:absence:import-ics',
     description: 'Imports employees’ absences from ICS calendar sources (config and per-agent URLs), updating the database and purging disabled calendars.',
 )]
-class IcsImportAbsencesCommand extends Command
+class AbsenceImportICSCommand extends Command
 {
     protected $entityManager;
 

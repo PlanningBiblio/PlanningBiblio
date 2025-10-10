@@ -248,8 +248,8 @@ class PlanningControlCommand extends Command
         if ($m->error) {
             logs($m->error, "Rappels", $CSRFToken);
         }
-        if ($output->isVerbose())
-        {
+
+        if ($output->isVerbose()){
             $io->success('Planning check completed successfully; notification email sent.');
         }
 

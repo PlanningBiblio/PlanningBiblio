@@ -16,10 +16,10 @@ require_once( __DIR__ . '/../../legacy/Class/class.personnel.php');
 require_once __DIR__ . '/../../init/init_entitymanager.php';
 
 #[AsCommand(
-    name: 'app:hamac:import-absences',
+    name: 'app:absence:import-csv',
     description: 'Imports employee absences from Hamac CSV based on configured statuses, inserting/updating records and pruning deleted entries (with locking).',
 )]
-class HamacImportAbsencesCommand extends Command
+class AbsenceImportCSVCommand extends Command
 {
     protected $entityManager;
 

@@ -190,8 +190,8 @@ class PlanningExportHebdoCommand extends Command
         // Unlock
         unlink($lockFile);
         logs("Exportation terminée (fichier $CSVFile)", "PlanningHebdo", $CSRFToken);
-        if ($output->isVerbose())
-        {
+
+        if ($output->isVerbose()){
             $io->success('CSV export completed successfully.');
 
         }

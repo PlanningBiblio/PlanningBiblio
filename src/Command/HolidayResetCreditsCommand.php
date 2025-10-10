@@ -88,9 +88,7 @@ class HolidayResetCreditsCommand extends Command
         $db->CSRFToken = $CSRFToken;
         $db->update("personnel", "conges_anticipation=0.00");
 
-
-        if ($output->isVerbose())
-        {
+        if ($output->isVerbose()){
             $io->success('Reset the credits for holiday successfully!');
         }
 
