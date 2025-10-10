@@ -193,7 +193,6 @@ class PlanningExportHebdoCommand extends Command
 
         if ($output->isVerbose()){
             $io->success('CSV export completed successfully.');
-
         }
 
         return Command::SUCCESS;

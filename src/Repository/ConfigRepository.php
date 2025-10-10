@@ -28,6 +28,9 @@ class ConfigRepository extends ServiceEntityRepository
             $config[$elem->getName()] = $elem->getValue();
         }
 
+        $config['dbprefix'] = $_ENV['DATABASE_PREFIX'];
+        $config['secret'] = $_ENV['APP_SECRET'];
+
         return $config;
     }
 }

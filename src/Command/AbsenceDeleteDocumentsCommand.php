@@ -37,7 +37,6 @@ class AbsenceDeleteDocumentsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
