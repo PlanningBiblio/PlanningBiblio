@@ -262,8 +262,9 @@ function plHebdoVerifForm(){
     type: "get",
     async: false,
     success: function(result){
+      console.log('result');
       if(result["retour"]=="OK"){
-        retour="true";
+        retour=true;
       }
       else {
         if(result["autre_agent"]) {
@@ -277,22 +278,23 @@ function plHebdoVerifForm(){
           message += "\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
         } else if (result['out_of_range']) {
           message = "Les dates de l'exception sont en dehors de la période du planning d'origine";
-          retour = 'false';
+          retour = false;
         } else {
           message="Vous avez déjà enregistré un planning pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"]);
-          +"\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
+          message += "\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
         }
         alert(message);
-        retour="false";
+        retour=false;
       }
     },
     error: function(result){
       information(result.responseText,"error");
       retour="false";
+
     }
   });
 
-  if(retour == "false"){
+  if(retour == false){
     return false;
   } else if (is_exception) {
     if (id) {
