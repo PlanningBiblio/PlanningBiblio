@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Migrations;
 
-use App\Entity\Cron;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Migrations\AbstractMigration;
 
 

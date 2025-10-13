@@ -33,10 +33,7 @@ class CronTabCommand extends Command
 
         $crons = $entityManager->getRepository(Cron::class)->findBy(['disabled' => 0]);
 
-
-
         foreach ($crons as $cron) {
-
             $date_cron = $cron->getLast()->format('Y-m-d H:m:s');
 
             // Daily crons.
@@ -83,7 +80,7 @@ class CronTabCommand extends Command
         $CSRFToken = CSRFToken();
 
         $app = new Application($this->kernel);
-        $app->setAutoExit(false); // 防止中途 exit
+        $app->setAutoExit(false);
 
         if (php_sapi_name() != 'cli') {
 
