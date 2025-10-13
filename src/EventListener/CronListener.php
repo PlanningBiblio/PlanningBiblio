@@ -2,11 +2,14 @@
 
 namespace App\EventListener;
 
-use App\Cron\Crontab;
+use App\Command\CronTabCommand;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 
 class CronListener
 {
+    public function __construct(private CronTabCommand $cronCommand) {}
 
     public function onKernelRequest(RequestEvent $event)
     {
@@ -14,8 +17,9 @@ class CronListener
         $session = $event->getRequest()->getSession();
 
         if (!empty($session->get('loginId'))) {
-            $cron = new Crontab();
-            $cron->execute();
+            $input = new ArrayInput([]);
+            $output = new NullOutput();
+            $this->cronCommand->run($input, $output);
         }
     }
 }

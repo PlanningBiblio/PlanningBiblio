@@ -4,6 +4,8 @@ namespace App\Command;
 
 use App\Entity\Cron;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -11,6 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 #[AsCommand(
     name: 'app:crontab',
@@ -19,15 +22,18 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CronTabCommand extends Command
 {
     protected $entityManager;
+    private array $executable_crons = [];
+    private $kernel;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, KernelInterface $kernel)
     {
         $this->entityManager = $entityManager;
-        parent::__construct();
-
+        $this->kernel = $kernel;
         $today = date('Y-m-d');
 
         $crons = $entityManager->getRepository(Cron::class)->findBy(['disabled' => 0]);
+
+
 
         foreach ($crons as $cron) {
 
@@ -55,7 +61,10 @@ class CronTabCommand extends Command
                 }
             }
         }
+
+        parent::__construct();
     }
+
 
     protected function configure(): void
     {
@@ -71,24 +80,29 @@ class CronTabCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        $CSRFToken = CSRFToken();
+
+        $app = new Application($this->kernel);
+        $app->setAutoExit(false); // 防止中途 exit
+
         if (php_sapi_name() != 'cli') {
 
             $crons = $this->crons();
 
             foreach ($crons as $cron) {
+
                 $cmd = sprintf('php %s/bin/console %s', \dirname(__DIR__, 2), $cron->getCommand());
-                echo "Running: $cmd\n";
 
-                $process = Process::fromShellCommandline($cmd);
-                $process->run();
+                $io->text("Running: $cmd");
 
-                echo $process->getOutput();
+                $cronInput = new ArrayInput([
+                    'command' => $cmd
+                ]);
 
-                if (!$process->isSuccessful()) {
-                    echo "Error running {$cron->getCommand()}:\n";
-                    echo $process->getErrorOutput();
-                    continue;
-                }
+                // disable interactive behavior for the greet command
+                $cronInput->setInteractive(false);
+
+                $returnCode = $app->doRun($cronInput, $output);
 
                 $this->update_cron($cron);
             }
@@ -98,7 +112,7 @@ class CronTabCommand extends Command
             require_once __DIR__ . '/../../legacy/Class/class.absences.php';
 
             $a = new \absences();
-            $a->CSRFToken = $GLOBALS['CSRFSession'];
+            $a->CSRFToken = $CSRFToken;
             $a->ics_update_table();
         }
 
