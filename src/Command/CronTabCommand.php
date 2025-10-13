@@ -91,7 +91,7 @@ class CronTabCommand extends Command
 
             foreach ($crons as $cron) {
 
-                $cmd = sprintf('php %s/bin/console %s', \dirname(__DIR__, 2), $cron->getCommand());
+                $cmd = sprintf($cron->getCommand());
 
                 $io->text("Running: $cmd");
 
@@ -123,14 +123,13 @@ class CronTabCommand extends Command
         return Command::SUCCESS;
     }
 
-    public static function update_cron($cron)
+    public function update_cron($cron)
     {
         $last = date_create();
 
         $cron->setLast($last);
 
-        $entityManager = $this->entityManager;
-        $entityManager->persist($cron);
-        $entityManager->flush();
+        $this->entityManager->persist($cron);
+        $this->entityManager->flush();
     }
 }
