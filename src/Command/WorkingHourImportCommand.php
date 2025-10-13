@@ -16,10 +16,10 @@ require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 require_once __DIR__ . '/../../init/init_entitymanager.php';
 
 #[AsCommand(
-    name: 'app:planning:import_hebdo',
+    name: 'app:workinghour:import',
     description: 'Imports weekly planning data from a CSV file, inserting/updating current schedules and purging removed ones.',
 )]
-class PlanningImportHebdoCommand extends Command
+class WorkingHourImportCommand extends Command
 {
     protected $entityManager;
 

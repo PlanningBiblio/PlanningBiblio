@@ -36,10 +36,7 @@ class UpdateDbCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         if ($content) {
-            if ($output->isVerbose()) {
-                $io->writeln($content);
-            }
-
+            $io->writeln($content);
             $this->logToFile($content);
         }
 
@@ -58,14 +55,10 @@ class UpdateDbCommand extends Command
 
         $this->logToFile($migrationsContent);
 
-        if ($output->isVerbose()) {
-            $io->writeln($migrationsContent);
-        }
+        $io->writeln($migrationsContent);
 
         if ($migrationsReturnCode == 0) {
-            if ($output->isVerbose()){
-                $io->success('Database updated');
-            }
+            $io->success('Database updated');
             return Command::SUCCESS;
         } else {
             $this->logToFile('[ERROR] One or more migration failed !');

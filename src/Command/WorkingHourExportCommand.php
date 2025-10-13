@@ -17,10 +17,10 @@ require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 require_once __DIR__ . '/../../public/include/function.php';
 
 #[AsCommand(
-    name: 'app:planning:export-hebdo',
+    name: 'app:workinghour:export',
     description: 'Exports agents’ weekly working hours from the planning table to a CSV file',
 )]
-class PlanningExportHebdoCommand extends Command
+class WorkingHourExportCommand extends Command
 {
     protected $entityManager;
 

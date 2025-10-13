@@ -15,10 +15,10 @@ require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 require_once(__DIR__ . '/../../public/include/db.php');
 
 #[AsCommand(
-    name: 'app:planning:hebdo_daily',
+    name: 'app:workinghour:daily',
     description: 'Updates weekly planning records daily by marking the current schedule as active for each employee.',
 )]
-class PlanningHebdoDailyCommand extends Command
+class WorkingHourDailyCommand extends Command
 {
     public function __construct()
     {
