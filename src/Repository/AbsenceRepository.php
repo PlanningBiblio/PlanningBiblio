@@ -24,7 +24,8 @@ class AbsenceRepository extends EntityRepository
     }
 
     public function purgeAll($limit_date) {
-        $builder = $this->getEntityManager()->createQueryBuilder();
+        $entityManager = $this->getEntityManager();
+        $builder = $entityManager->createQueryBuilder();
         $builder->select('a')
                 ->from(Absence::class, 'a')
                 ->andWhere('a.fin < :limit_date')
@@ -36,8 +37,8 @@ class AbsenceRepository extends EntityRepository
             $this->purge($result->id());
             $deleted_absences++;
         }
-        return $deleted_absences;
         $entityManager->flush();
+        return $deleted_absences;
     }
 
     public function deleteAllDocuments($id, bool $flush = true) {
