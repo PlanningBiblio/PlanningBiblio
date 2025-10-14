@@ -17,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:holiday:reminder',
-    description: 'Send reminders for leave to be validated',
+    description: 'Send reminders for holidays to be validated',
 )]
 class HolidayReminderCommand extends Command
 {

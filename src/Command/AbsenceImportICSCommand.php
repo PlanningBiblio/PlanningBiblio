@@ -45,6 +45,13 @@ class AbsenceImportICSCommand extends Command
 
         logs("Début d'importation des fichiers ICS", "ICS", $CSRFToken);
 
+        if (empty(trim($config['ICS-Server1'])) &&
+            empty(trim($config['ICS-Server2'])) &&
+            !$config['ICS-Server3']) {
+            $io->warning("Aucune source ICS n’est configurée. Aucun fichier ne sera importé.");
+        return Command::SUCCESS;
+            }
+
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
         $tmp_dir=sys_get_temp_dir();
         $lockFile=$tmp_dir."/planningBiblioIcs.lock";
@@ -94,7 +101,6 @@ class AbsenceImportICSCommand extends Command
                 }
             }
         }
-
 
         // On recherche tout le personnel actif
         $p= new \personnel();

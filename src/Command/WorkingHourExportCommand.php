@@ -39,6 +39,9 @@ class WorkingHourExportCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
+
+        include __DIR__ . '/../../custom_options.php';
+
         $CSVFile = $config['PlanningHebdo-ExportFile'] ?? '/tmp/export-planno-edt.csv';
         $days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;
         $days_after = $config['PlanningHebdo-ExportDaysAfter'] ?? 60;
