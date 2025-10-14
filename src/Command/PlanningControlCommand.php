@@ -44,9 +44,10 @@ class PlanningControlCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
+
         $CSRFToken = CSRFToken();
 
-        if (empty($remindersEnabled)) {
+        if (!$config['Rappels-Actifs']) {
             $message = 'Rappels désactivés';
             logs($message, 'Rappels', $CSRFToken);
             $io->warning($message);
@@ -61,21 +62,24 @@ class PlanningControlCommand extends Command
             $sites[]=array($i,$multiSiteName);
         }
 
+        // Dates à controler
+        $jours=$config['Rappels-Jours'];
+
         // Recherche la date du jour et les $reminderDays suivants
         $dates=array();
-        for ($i=0;$i<=$reminderDays;$i++) {
+        for ($i=0;$i<=$jours;$i++) {
             $time=strtotime("+ $i days");
             $jour_semaine=date("w", $time);
 
             // Si le jour courant est un dimanche et que la bibliothèque n'ouvre pas les dimanches, on ne l'ajoute pas
-            if ($jour_semaine!=0 or !empty($sunday)) {
+            if ($jour_semaine!=0 or $config['Dimanche']) {
                 $dates[]=date("Y-m-d", $time);
             }
 
             // Si le jour courant est un samedi, nous recherchons 2 jours supplémentaires pour avoir le bon nombre de jours ouvrés.
             // Nous controlons également le samedi et le dimanche
             if ($jour_semaine==6) {
-                $reminderDays=$reminderDays+2;
+                $jours=$jours+2;
             }
         }
 
@@ -103,7 +107,7 @@ class PlanningControlCommand extends Command
                 $data[$date][$site[0]]=array("date"=>dateFr($date), "site"=>$site[1]);
 
                 // On recherche les plannings qui ne sont pas créés (aucune structure affectée)
-                $db=new db();
+                $db=new \db();
                 $db->select2("pl_poste_tab_affect", null, array("date"=>$date, "site"=>$site[0]));
                 if (!$db->result) {
                     $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas cr&eacute;&eacute;</span></strong>\n";
@@ -114,7 +118,7 @@ class PlanningControlCommand extends Command
                     $tableauId=$db->result[0]['tableau'];
 
                     // On recherche les plannings qui ne sont pas validés
-                    $db=new db();
+                    $db=new \db();
                     $db->select2("pl_poste_verrou", null, array("date"=>$date, "site"=>$site[0], "verrou2"=>1));
                     if ($db->result) {
                         $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)."</strong> est valid&eacute;\n";
@@ -150,7 +154,7 @@ class PlanningControlCommand extends Command
                                     continue;
                                 }
                                 // Si on ne veut pas des postes de renfort et si le poste n'est pas obligatoire, on l'exclus
-                                if (empty($reinforcementReminders) and $postes[$l['poste']]['obligatoire']!="Obligatoire") {
+                                if (!$config['Rappels-Renfort'] and $postes[$l['poste']]['obligatoire']!="Obligatoire") {
                                     continue;
                                 }
 
@@ -169,14 +173,14 @@ class PlanningControlCommand extends Command
                                     foreach ($result as $res) {
                                         // Contrôle des absences
                                         $absent=false;
-                                        $a=new absences();
+                                        $a=new \absences();
                                         if ($a->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
                                             $absent=true;
                                         }
 
                                         // Contrôle des congés
                                         $conges=false;
-                                        if (empty($holidayEnabled)) {
+                                        if ($config['Conges-Enable']) {
                                             require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
                                             $c=new \conges();
                                             if ($c->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
@@ -238,18 +242,19 @@ class PlanningControlCommand extends Command
         $msg.="</ul>\n";
 
         $subject="Plannings du ".dateFr($dates[0])." au ".dateFr($dates[count($dates)-1]);
-        $to=explode(";", $planningMail);
+        $to=explode(";", $config['Mail-Planning']);
 
-        $m=new CJMail();
+        $m=new \CJMail();
         $m->to=$to;
         $m->subject=$subject;
         $m->message=$msg;
         $m->send();
+
         if ($m->error) {
             logs($m->error, "Rappels", $CSRFToken);
         }
 
-        if ($output->isVerbose()){
+        if ($output->isVerbose()) {
             $io->success('Planning check completed successfully; notification email sent.');
         }
 
