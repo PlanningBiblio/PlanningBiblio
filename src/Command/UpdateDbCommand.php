@@ -36,7 +36,9 @@ class UpdateDbCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         if ($content) {
-            $io->writeln($content);
+            if ($output->isVerbose()) {
+                $io->writeln($content);
+            }
             $this->logToFile($content);
         }
 
@@ -55,7 +57,9 @@ class UpdateDbCommand extends Command
 
         $this->logToFile($migrationsContent);
 
-        $io->writeln($migrationsContent);
+        if ($output->isVerbose()) {
+            $io->writeln($migrationsContent);
+        }
 
         if ($migrationsReturnCode == 0) {
             $io->success('Database updated');

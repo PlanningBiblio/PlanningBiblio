@@ -15,13 +15,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+require_once __DIR__ . '/../../public/include/function.php';
+
 #[AsCommand(
     name: 'app:crontab',
     description: 'Executes all enabled scheduled cron jobs defined in the database and updates their last run time.',
 )]
 class CronTabCommand extends Command
 {
-    protected $entityManager;
+    private $entityManager;
     private array $executable_crons = [];
     private $kernel;
 
@@ -29,12 +31,13 @@ class CronTabCommand extends Command
     {
         $this->entityManager = $entityManager;
         $this->kernel = $kernel;
-        $today = date('Y-m-d');
+        $today = date('Y-m-d 00:00:00');
 
         $crons = $entityManager->getRepository(Cron::class)->findBy(['disabled' => 0]);
 
         foreach ($crons as $cron) {
-            $date_cron = $cron->getLast()->format('Y-m-d H:m:s');
+            $lastRun = $cron->getLast();
+            $date_cron = $lastRun ? $lastRun->format('Y-m-d H:i:s') : '1970-01-01 00:00:00';
 
             // Daily crons.
             if ($cron->getDom() == '*' and $cron->getMon() == '*' and $cron->getDow() == '*') {
@@ -90,7 +93,9 @@ class CronTabCommand extends Command
 
                 $cmd = sprintf($cron->getCommand());
 
-                $io->text("Running: $cmd");
+                if ($output->isVerbose()) {
+                    $io->text("Running: $cmd");
+                }
 
                 $cronInput = new ArrayInput([
                     'command' => $cmd
@@ -113,7 +118,7 @@ class CronTabCommand extends Command
             $a->ics_update_table();
         }
 
-        if ($output->isVerbose()){
+        if ($output->isVerbose()) {
             $io->success('All scheduled cron jobs have been executed successfully.');
         }
 
