@@ -9,7 +9,10 @@ use Symfony\Component\Console\Output\NullOutput;
 
 class CronListener
 {
-    public function __construct(private CronTabCommand $cronCommand) {}
+    private $cronCommand;
+    public function __construct(CronTabCommand $cronCommand) {
+        $this->cronCommand = $cronCommand;
+    }
 
     public function onKernelRequest(RequestEvent $event)
     {
