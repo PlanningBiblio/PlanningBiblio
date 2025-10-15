@@ -535,7 +535,7 @@ class AgentController extends BaseController
             $this->templateParams(array( 'sites_select' => $sites_select ));
         }
 
-        include(__DIR__ . "/../../public/personnel/hours_tables.php");
+        include(__DIR__ . '/../../legacy/Agent/hours_tables.php');
         $this->templateParams(array( 'hours_tab' => $hours_tab ));
 
         if ($this->config('Hamac-csv')) {
