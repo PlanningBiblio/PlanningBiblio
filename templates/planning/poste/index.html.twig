@@ -3,6 +3,13 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
+  <script>
+    window.SEND_AVAILABILITY_MAIL = "{{ path('planning.send.availability.mail') }}";
+    window.GET_AVAILABILITY_MESSAGE = "{{ path('planning.get.availability.message') }}";
+    window.VALIDATION_CATEGORY_A = "{{ path('planning.validation.category.a') }}";
+    window.GET_HIDDEN_TABLES = "{{ path('planning.get.hidden.tables') }}";
+    window.HIDDEN_TABLES = "{{ path('planning.hidden.tables') }}";
+  </script>
   <script type="text/JavaScript" src="{{ asset('js/planning.js') }}"></script>
   <script type='text/JavaScript'>
     $(document).ready(function(){

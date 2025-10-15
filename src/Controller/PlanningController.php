@@ -722,6 +722,138 @@ class PlanningController extends BaseController
         return $this->redirectToRoute('home');
     }
 
+    #[Route(path: '/send-availability-mail', name: 'planning.send.availability.mail', methods: ['POST'])]
+    public function sendAvailabilityMail(Request $request)
+    {
+        $CSRFToken = $request->get('CSRFToken');
+        $site = $request->get('site');
+        $poste = $request->get('poste');
+        $date = $request->get('date');
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
+        $agents = $request->get('agents');
+        $sujet = $request->get('sujet');
+        $message = $request->get('message');
+
+        $agents=html_entity_decode($agents, ENT_QUOTES|ENT_IGNORE, "UTF-8");
+        $agents=json_decode($agents, true);
+
+        $message=str_replace(array("\n","\r"), "<br/>", $message);
+
+        if (!is_array($agents)) {
+            $return = ["Aucun agent trouvé."];
+            return new Response(json_encode($return));
+        }
+
+        // Récupération des destinataires
+        $destinataires=array();
+        foreach ($agents as $elem) {
+            $destinataires[]=$elem['mail'];
+        }
+
+        // Envoi du mail
+        $m=new \CJMail();
+        $m->subject=$sujet;
+        $m->message=$message;
+        $m->to=$destinataires;
+        $isSent=$m->send();
+
+        // Enregistrement dans la base de données pour signaler que l'envoi a eu lieu
+        if ($isSent) {
+            $successAddresses=implode(";", $m->successAddresses);
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert("appel_dispo", array( "site"=>$site, "poste"=>$poste, "date"=>$date, "debut"=>$debut, "fin"=>$fin,
+                                              "destinataires"=>$successAddresses, "sujet"=>$sujet, "message"=>$message));
+        }
+
+        // retour vers la fonction JS
+        if ($m->error) {
+            $return = array("error"=>$m->error);
+            return new Response(json_encode($return));
+        } elseif (!$isSent) {
+            $return = array("error"=>"Une erreur est survenue lors de l&apos;envoi du mail");
+            return new Response(json_encode($return));
+        } else {
+            $return = ["ok"];
+            return new Response(json_encode($return));
+        }
+    }
+
+    #[Route(path: '/get-availability-message', name: 'planning.get.availability.message', methods: ['GET'])]
+    public function getDefaultAvailabilityMessage()
+    {
+        $tab=array(null,null);
+
+        $db=new \db();
+        $db->select2("config", "valeur", array("nom"=>"Planning-AppelDispoSujet"));
+        if ($db->result) {
+            $tab[0]=html_entity_decode($db->result[0]["valeur"], ENT_QUOTES|ENT_IGNORE, "utf-8");
+        }
+        $db=new \db();
+        $db->select2("config", "valeur", array("nom"=>"Planning-AppelDispoMessage"));
+        if ($db->result) {
+            $tab[1]=html_entity_decode($db->result[0]["valeur"], ENT_QUOTES|ENT_IGNORE, "utf-8");
+        }
+
+        return new Response(json_encode($tab));
+    }
+
+    #[Route(path: '/validation-category-a', name: 'planning.validation.category.a', methods: ['GET'])]
+    public function validateCategoryAEndOfService()
+    {
+        $p=new \planning();
+        $p->date=$_POST['date'];
+        $p->site=$_POST['site'];
+        $p->finDeService();
+
+        if ($p->categorieA) {
+            $return = ["true"];
+        } else {
+            $return = ["false"];
+        }
+
+        return new Response(json_encode($return));
+    }
+
+    #[Route(path: '/get-hidden-tables', name: 'planning.get.hidden.tables', methods: ['GET'])]
+    public function getHiddenTables()
+    {
+        $perso_id=$_SESSION['login_id'];
+        $tableId=filter_input(INPUT_POST, "tableId", FILTER_SANITIZE_NUMBER_INT);
+
+        $db=new \db();
+        $db->select2("hidden_tables", "*", array("perso_id"=>$perso_id,"tableau"=>$tableId));
+        if ($db->result) {
+            $return = html_entity_decode($db->result[0]["hidden_tables"], ENT_QUOTES|ENT_IGNORE, "utf-8");
+        } else {
+            $return = [""];
+        }
+
+        return new Response(json_encode($return));
+    }
+
+    #[Route(path: '/hidden-tables', name: 'planning.hidden.tables', methods: ['POST'])]
+    public function hiddenTables(Request $request)
+    {
+        $perso_id = $_SESSION['login_id'];
+        $CSRFToken = $request->get('CSRFToken');
+        $hiddenTables = $request->get('hiddenTables');
+        $tableId = $request->get('tableId');
+
+        $tableId = filter_var($tableId, FILTER_SANITIZE_NUMBER_INT);
+
+        $db=new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete("hidden_tables", array("perso_id"=>$perso_id,"tableau"=>$tableId));
+
+        $db=new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert("hidden_tables", array("perso_id"=>$perso_id,"tableau"=>$tableId,"hidden_tables"=>$hiddenTables));
+        $return = [""];
+        return new Response(json_encode($return));
+    }
+
     private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
     {
         $resultats=array();
