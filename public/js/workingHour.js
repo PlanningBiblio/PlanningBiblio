@@ -254,52 +254,52 @@ function plHebdoVerifForm(){
     data['id'] = id;
   }
 
-  var retour=false;
+  var retour = false;
+
   $.ajax({
-    url: url('planningHebdo/ajax.verifPlannings.php'),
-    dataType: "json",
+    url: url('workinghour/check'),
+    dataType: 'json',
     data: data,
-    type: "get",
+    type: 'get',
     async: false,
     success: function(result){
-      if(result["retour"]=="OK"){
-        retour="true";
-      }
-      else {
-        if(result["autre_agent"]) {
+      if(result['retour'] == 'OK'){
+        retour = true;
+      } else {
+        if(result['autre_agent']) {
           if (is_exception && is_copy) {
-            message = "La copie de l'exception n'est pas possible sur la période du " + dateFr(result["debut"]) + " au " + dateFr(result["fin"]) + " pour l'agent " + result["autre_agent"];
+            message = "La copie de l'exception n'est pas possible sur la période du " + dateFr(result['debut']) + " au " + dateFr(result['fin']) + " pour l'agent " + result['autre_agent'];
           } else if (is_exception) {
-            message="Une exception est enregistrés pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"]);
+            message = "Une exception est enregistrés pour l'agent " + result['autre_agent'] + " pour la période du " + dateFr(result['debut']) + " au " + dateFr(result['fin']);
           } else {
-            message="Un planning est enregistré pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"]);
+            message = "Un planning est enregistré pour l'agent " + result['autre_agent'] + " pour la période du " + dateFr(result['debut']) + " au " + dateFr(result['fin']);
           }
           message += "\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
         } else if (result['out_of_range']) {
           message = "Les dates de l'exception sont en dehors de la période du planning d'origine";
-          retour = 'false';
+          retour = false;
         } else {
-          message="Vous avez déjà enregistré un planning pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"]);
-          +"\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
+          message = "Vous avez déjà enregistré un planning pour la période du " + dateFr(result['debut']) + " au " + dateFr(result['fin']);
+          message += "\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
         }
         alert(message);
-        retour="false";
+        retour = false;
       }
     },
     error: function(result){
-      information(result.responseText,"error");
-      retour="false";
+      information(result.responseText, 'error');
+      retour = false;
     }
   });
 
-  if(retour == "false"){
+  if (retour == false) {
     return false;
   } else if (is_exception) {
     if (id) {
       return true;
     }
 
-    if (confirm("Vous êtes sur le point d'enregistrer une exception, voulez-vous continuer ?")){
+    if (confirm("Vous êtes sur le point d'enregistrer une exception, voulez-vous continuer ?")) {
       return true;
     } else {
       return false;
@@ -312,27 +312,34 @@ function plHebdoVerifForm(){
 function updateTables(selected_weeks) {
 
   var weeks;
+
   if (selected_weeks) {
     weeks = selected_weeks;
-  } else if ($("#this_number_of_weeks").val()) {
-    weeks = $("#this_number_of_weeks").val();
+  } else if ($('#this_number_of_weeks').val()) {
+    weeks = $('#this_number_of_weeks').val();
   }  else {
-    weeks = $("#number_of_weeks").val();
+    weeks = $('#number_of_weeks').val();
   }
+
   $('#select_number_of_weeks').val(weeks);
 
   $.ajax({
     url: url('ajax/workinghour-tables'),
-         data: {weeks: weeks, perso_id: $("#perso_id").val(), ph_id: $("#id").val()},
-         dataType: "html",
-         type: "get",
-         async: false,
-         success: function(result) {
-           $("#workinghour_tables").html(result);
-         },
-         error: function(result) {
-         }
+      data: {
+        weeks: weeks,
+        perso_id: $('#perso_id').val(),
+        ph_id: $('#id').val()
+      },
+      dataType: 'html',
+      type: 'get',
+      async: false,
+      success: function(result) {
+        $('#workinghour_tables').html(result);
+      },
+      error: function(result) {
+      }
   });
+
   plHebdoCalculHeures2();
   plHebdoMemePlanning();
 }
@@ -366,8 +373,10 @@ $(function(){
     }
   });
 
-  $("document").ready(function(){
-    updateTables();
+  $(document).ready(function() {
+    if ($('#working_hours').length) {
+      updateTables();
+    }
   });
 
   $("#perso_id").change(function() {
