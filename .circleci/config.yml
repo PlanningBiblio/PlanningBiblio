@@ -30,28 +30,11 @@ jobs:
     steps:
       - checkout
 
-      # For google chrome.
-      - run: sudo sh -c 'echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
-      - run: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-
-      - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
+      - run: sudo apt update
       - run: sudo -E install-php-extensions zip mysqli pdo_mysql
-      - run: sudo apt install -y google-chrome-stable
-      # MT41778: Install and remove to get dependencies
-      - run: sudo apt remove -y google-chrome-stable
-      - run: sudo apt install -y mariadb-client
+      - run: sudo apt install -y mariadb-client firefox
       - run: sudo pecl install xdebug
-
-      # MT41778 : Download Google Chrome from an archive to be sure to have version v114
       - run: sudo apt install -y libu2f-udev
-      - run: wget -O /tmp/googlechrome.zip https://github.com/PlanningBiblio/googlechrome/archive/refs/heads/v114.zip
-      - run: unzip -o /tmp/googlechrome.zip
-      - run: sudo dpkg -i googlechrome-114/google-chrome-stable_current_amd64.deb
-      - run: rm -rf googlechrome-114
-
-      # Chrome driver.
-      - run: wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
-      - run: sudo unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
 
       # Download and cache dependencies
       - restore_cache:
