@@ -28,7 +28,7 @@ function ldaptest(){
   $(".CJInfo").remove();
 
   $.ajax({
-    url: url('ldap/ajax.ldaptest.php'),
+    url: url('config/ldap-test'),
     type: 'post',
     dataType: 'json',
     data: {filter: filter, host: host, idAttribute: idAttribute, password : password, port: port, protocol: protocol, rdn: rdn, suffix: suffix},

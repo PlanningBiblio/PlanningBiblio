@@ -111,6 +111,8 @@
     - 100
 "config.index":
     - 20
+"config.ldap_test":
+    - 20
 "config.technical":
     - 20
 "config.update":
