@@ -40,7 +40,9 @@ class WorkingHourExportCommand extends Command
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
 
-        include __DIR__ . '/../../custom_options.php';
+        if(file_exists(__DIR__ . '/../../custom_options.php') {
+            include __DIR__ . '/../../custom_options.php';
+        }
 
         $CSVFile = $config['PlanningHebdo-ExportFile'] ?? '/tmp/export-planno-edt.csv';
         $days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;
