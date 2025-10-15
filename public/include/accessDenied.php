@@ -52,6 +52,7 @@ $link="<a href='{$path}'>Retour à l'application</a>";
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/print.css' type='text/css' media='print'/>
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/<?php echo "$theme/$theme"; ?>.css' type='text/css' media='all'/>
 <script type='text/JavaScript' src='<?php echo $path; ?>js/jquery-1.11.1.min.js'></script>
+<script> window.ICS_RESET = "{{ path('ics.reset') }}"; </script>
 <script type='text/JavaScript' src='<?php echo $path; ?>js/script.js'></script>
 </head>
 
