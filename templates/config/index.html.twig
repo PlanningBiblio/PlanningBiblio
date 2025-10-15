@@ -3,6 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
+  <script> window.LDAP_TEST = "{{ path('ldap.test') }}";</script>
   <script type="text/JavaScript" src="{{ asset('js/config.js') }}"></script>
   <script type="text/JavaScript">
     $( document ).ready(function() {
