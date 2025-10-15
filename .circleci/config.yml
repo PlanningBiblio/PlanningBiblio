@@ -31,6 +31,9 @@ jobs:
     steps:
       - checkout
 
+      - run: sudo apt update
+      - run: sudo apt install -y firefox-esr
+
       - run: firefox --version
       - run: google-chrome --version
 
