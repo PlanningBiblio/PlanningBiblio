@@ -1,6 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
+<script>
+  window.CHECK_RECUPERATION = "{{ path('ajax.checkRecuperation') }}";
+  window.UPDATE_CELL = "{{ path('ajax.updateCell') }}";
+  window.RECUO_CREATE = "{{ path('conges.recup.create') }}";
+</script>
 <script type="text/JavaScript" src="{{ asset('js/holiday.js') }}"></script>
   <script type='text/JavaScript'>
     var limitDefaut = {{ recup_delaidefaut }};
@@ -101,7 +106,7 @@
         if ( bValid ) {
           // Enregistre la demande
           $.ajax({
-            url: url('conges/ajax.enregistreRecup.php'),
+            url: '{{ path("conges.recup.create") }}',
             dataType: "json",
             data: {date: date.val(), date2: date2.val(), heures: heures.val(), commentaires: commentaires.val(), perso_id: perso_id, CSRFToken: $('#CSRFSession').val()},
             type: "post",

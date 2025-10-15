@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 
 use App\Entity\Agent;
 use App\Entity\Holiday;
+use App\Entity\OverTime;
 
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;
@@ -414,6 +415,7 @@ class HolidayController extends BaseController
         $reliquat_jours = null;
 
         $hoursPerDay = null;
+        $hoursPerDayInHoursMinutes = null;
         if ($holiday_helper->showHoursToDays()) {
 
             $hoursPerDay               = $holiday_helper->hoursPerDay($perso_id);
@@ -927,6 +929,149 @@ class HolidayController extends BaseController
         );
 
         return $this->json($holiday_account);
+    }
+
+    #[Route('/conges/recuperations', name: 'conges.recup.create', methods: ['POST'])]
+    public function enregistreRecup(Request $request)
+    {
+        // Initialisation des variables
+        $commentaires = $request->request->get('commentaires');
+        $CSRFToken = $request->request->get('CSRFToken');
+        $heures = $request->request->get('heures');
+        $date = $request->request->get('date');
+        $date2 = $request->request->get('date2');
+        $perso_id = $request->request->get('perso_id');
+
+        $date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
+        $date2 = filter_var($date2, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
+        $perso_id = filter_var($perso_id, FILTER_SANITIZE_NUMBER_INT);
+
+        list($hours, $minutes) = explode(':', $heures);
+        $heures = intVal($hours) + intVal($minutes) / 60;
+
+        // Les dates sont au format DD/MM/YYYY et converti en YYYY-MM-DD
+        $date=dateSQL($date);
+        $date2=dateSQL($date2);
+
+        if ($perso_id === null) {
+            $perso_id = $_SESSION['login_id'] ?? null;
+        }
+
+        $insert=array("perso_id"=>$perso_id,"date"=>$date,"date2"=>$date2,"heures"=>$heures,"commentaires"=>$commentaires,
+                      "saisie_par"=>$_SESSION['login_id']);
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert('recuperations', $insert);
+        if ($db->error) {
+            $return = ["Demande-Erreur"];
+            return new Response(json_encode($return));
+        }
+
+        $return = ["Demande-OK"];
+
+        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $nom = $agent->getLastname();
+        $prenom = $agent->getFirstname();
+
+        if ($this->config('Absences-notifications-agent-par-agent')) {
+            $a = new \absences();
+            $a->getRecipients2(null, $perso_id, 1);
+            $destinataires = $a->recipients;
+        } else {
+            $c = new \conges();
+            $c->getResponsables($date, $date, $perso_id);
+            $responsables = $c->responsables;
+
+            $a = new \absences();
+            $a->getRecipients(1, $responsables, $agent, 'Recup');
+            $destinataires = $a->recipients;
+        }
+
+        if (!empty($destinataires)) {
+            $sujet="Nouvelle demande d'heures supplémentaires";
+            $message="Demande d'heures supplémentaires du ".dateFr($date)." enregistrée pour $prenom $nom<br/><br/>";
+            if ($commentaires) {
+                $message.="Commentaires : ".str_replace("\n", "<br/>", $commentaires);
+            }
+
+            // ajout d'un lien permettant de rebondir sur la demande
+            $overtime = $this->entityManager->getRepository(OverTime::class)->findOneBy(
+                array(
+                    'perso_id' => $perso_id,
+                    'date' => \DateTime::createFromFormat('Y-m-d', $date),
+                    'saisie_par' => $_SESSION['login_id'],
+                ),
+                array(
+                    'id' => 'desc'
+                ),
+            );
+
+            $url = $this->config('URL') . '/overtime/' . $overtime->getId();
+            $message.="<p>Lien vers la demande d'heures supplémentaires :<br/><a href='$url'>$url</a></p>";
+
+            $m = new \CJMail();
+            $m->subject = $sujet;
+            $m->message = $message;
+            $m->to = $destinataires;
+            $m->send();
+
+            $return[] = $m->error_CJInfo;
+        }
+
+        return new Response(json_encode($return));
+    }
+
+    #[Route('/ajax/updateCell', name: 'ajax.updateCell', methods: ['POST'])]
+    public function updateCell()
+    {
+        $perso_ids=array();
+        foreach ($tab as $elem) {
+            $perso_ids[]=$elem['perso_id'];
+        }
+        $perso_ids=implode(",", $perso_ids);
+
+        $c=new \conges();
+        $c->debut="$date $debut";
+        $c->fin="$date $fin";
+        $c->information = false;
+        $c->supprime = false;
+        $c->valide=false;
+        $c->bornesExclues=true;
+        $c->fetch();
+
+        if (!empty($c->elements)) {
+            for ($i=0;$i<count($tab);$i++) {
+                $tab[$i]['conges']=0;
+                foreach ($c->elements as $elem) {
+                    if ($tab[$i]['perso_id']==$elem['perso_id']) {
+                        if ($elem['valide']>0) {
+                            $tab[$i]['conges']=1;
+                            continue;  // Garder le continue à cet endroit pour que les absences validées prennent le dessus sur les non-validées
+                        } else {
+                            $tab[$i]['conges']=2;
+                        }
+                    }
+                }
+            }
+        }
+        return new Response(json_encode($tab));
+    }
+
+    #[Route('/ajax/checkRecuperation', name: 'ajax.checkRecuperation', methods: ['GET'])]
+    public function checkRecuperation()
+    {
+        $date=dateFr($_GET['date']);
+        $perso_id=is_numeric($_GET['perso_id'])?$_GET['perso_id']:$_SESSION['login_id'];
+
+        $db=new \db();
+        $db->select("recuperations", null, "`perso_id`='$perso_id' AND (`date`='$date' OR `date2`='$date')");
+        if ($db->result) {
+            $output = "Demande";
+        }else{
+            $output = "";
+        }
+        return new Response($output);
     }
 
     private function save($request)

@@ -288,3 +288,7 @@
 "workinghour.delete":
     - 1101
     - 1201
+"ajax.checkRecuperation":
+    - 100
+"conges.recup.create":
+    - 100
