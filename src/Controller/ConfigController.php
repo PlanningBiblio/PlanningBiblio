@@ -1,12 +1,13 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\BaseController;
-
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use App\Entity\Config;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigController extends BaseController
 {
@@ -93,8 +94,7 @@ class ConfigController extends BaseController
         return $this->output('config/index.html.twig');
     }
 
-
-    #[Route(path: '/config', name: 'config.update')] // , methods={"POST"})
+    #[Route(path: '/config', name: 'config.update', methods: ['POST'])]
     public function update(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
@@ -169,5 +169,44 @@ class ConfigController extends BaseController
         $options = $technical ? ['options' => 'technical'] : [];
 
         return $this->redirectToRoute('config.index', $options);
+    }
+
+    #[Route('/config/ldap-test', name: 'config.ldap_test', methods: ['POST'])]
+    public function ldapTest(Request $request)
+    {
+        $filter = $request->get('filter');
+        $host = $request->get('host');
+        $idAttribute = $request->get('idAttribute');
+        $protocol = $request->get('protocol');
+        $rdn = $request->get('rdn');
+        $suffix = $request->get('suffix');
+        $password = $request->get('password');
+        $port = $request->get('port');
+
+        $port = filter_var($port, FILTER_SANITIZE_NUMBER_INT);
+
+        // Connexion au serveur LDAP
+        $url = $protocol . '://' . $host . ':' . $port;
+
+        $return = ['error'];
+
+        if ($fp = @fsockopen($host, $port, $errno, $errstr, 5)) {
+            if ($ldapconn = ldap_connect($url)) {
+                ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+                ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+
+                if ($bind = @ldap_bind($ldapconn, $rdn, $password)) {
+                    if ($search = @ldap_search($ldapconn, $suffix, $filter, array($idAttribute))) {
+                        $return = ['ok'];
+                    } else {
+                        $return = ['search'];
+                    }
+                } else {
+                    $return = ['bind'];
+                }
+            }
+        }
+
+        return new Response(json_encode($return));
     }
 }
