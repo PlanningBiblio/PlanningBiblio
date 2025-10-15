@@ -3,6 +3,9 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
+  <script>
+    window.ABSENCES_PIECES_JUSTIF = "{{ path('absences.pieces.justif') }}";
+  </script>
   <script type="text/JavaScript" src="{{ asset('js/absence.js') }}"></script>
 {% endblock %}
 
