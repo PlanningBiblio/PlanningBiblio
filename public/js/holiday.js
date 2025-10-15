@@ -5,7 +5,10 @@ Fichier regroupant les fonctions JavaScript utiles à la gestion des congés
 
 $(function(){
   $('select[name="perso_id"]').on('change', function() {
-    if (window.location.href.includes(url('comptime/add'))) {
+
+    // Only for holiday/new
+    if (window.location.href.includes(url('comptime/add'))
+      || window.location.href.includes(url('overtime'))) {
       return false;
     }
 
@@ -768,9 +771,10 @@ function verifConges(){
 function verifRecup(o){
   var perso_id=$("#agent").val();
   var retour=false;
+
   $.ajax({
-    url: url('conges/ajax.verifRecup.php'),
-    data: "date="+o.val()+"&perso_id="+perso_id,
+    url: url('overtime/check'),
+    data: 'date=' + o.val() + '&perso_id=' + perso_id,
     type: "get",
     async: false,
     success: function(result){

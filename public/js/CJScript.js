@@ -85,7 +85,7 @@ function CJInfo(message,type,top,time,myClass){
     myClass=null;
   }
 
-  if(typeof(timeoutJSInfo)!== "undefined" && time != 'permanent'){
+  if(typeof(timeoutCJInfo)!== 'undefined' && time != 'permanent'){
     window.clearTimeout(timeoutCJInfo);
   }
 
