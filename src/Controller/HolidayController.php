@@ -931,7 +931,7 @@ class HolidayController extends BaseController
         return $this->json($holiday_account);
     }
 
-    #[Route('/conges/recuperations', name: 'conges.recup.create', methods: ['POST'])]
+    #[Route('/holiday/recuperations', name: 'holiday.recup.create', methods: ['POST'])]
     public function enregistreRecup(Request $request)
     {
         // Initialisation des variables
@@ -1022,7 +1022,9 @@ class HolidayController extends BaseController
         return new Response(json_encode($return));
     }
 
-    #[Route('/ajax/updateCell', name: 'ajax.updateCell', methods: ['POST'])]
+    // This function originally comes from ajax.planning.updateCell.php,
+    // which was included by public/planning/poste/ajax.updateCell.php.
+    #[Route('/holiday/updateCell', name: 'holiday.updateCell', methods: ['POST'])]
     public function updateCell()
     {
         $perso_ids=array();
@@ -1058,7 +1060,7 @@ class HolidayController extends BaseController
         return new Response(json_encode($tab));
     }
 
-    #[Route('/ajax/checkRecuperation', name: 'ajax.checkRecuperation', methods: ['GET'])]
+    #[Route('/holiday/checkRecuperation', name: 'holiday.checkRecuperation', methods: ['GET'])]
     public function checkRecuperation()
     {
         $date=dateFr($_GET['date']);

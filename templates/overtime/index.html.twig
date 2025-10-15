@@ -2,9 +2,7 @@
 
 {% block specificjs %}
 <script>
-  window.CHECK_RECUPERATION = "{{ path('ajax.checkRecuperation') }}";
-  window.UPDATE_CELL = "{{ path('ajax.updateCell') }}";
-  window.RECUO_CREATE = "{{ path('conges.recup.create') }}";
+  window.CHECK_RECUPERATION = "{{ path('holiday.checkRecuperation') }}";
 </script>
 <script type="text/JavaScript" src="{{ asset('js/holiday.js') }}"></script>
   <script type='text/JavaScript'>
@@ -106,7 +104,7 @@
         if ( bValid ) {
           // Enregistre la demande
           $.ajax({
-            url: '{{ path("conges.recup.create") }}',
+            url: '{{ path("holiday.recup.create") }}',
             dataType: "json",
             data: {date: date.val(), date2: date2.val(), heures: heures.val(), commentaires: commentaires.val(), perso_id: perso_id, CSRFToken: $('#CSRFSession').val()},
             type: "post",

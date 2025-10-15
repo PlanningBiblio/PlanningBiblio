@@ -4,9 +4,7 @@
 
 {% block specificjs %}
   <script>
-    window.CHECK_RECUPERATION = "{{ path('ajax.checkRecuperation') }}";
-    window.UPDATE_CELL = "{{ path('ajax.updateCell') }}";
-    window.RECUO_CREATE = "{{ path('conges.recup.create') }}";
+    window.CHECK_RECUPERATION = "{{ path('holiday.checkRecuperation') }}";
   </script>
   <script type="text/JavaScript" src="{{ asset('js/holiday.js') }}"></script>
 {% endblock %}

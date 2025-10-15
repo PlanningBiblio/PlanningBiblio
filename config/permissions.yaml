@@ -288,7 +288,7 @@
 "workinghour.delete":
     - 1101
     - 1201
-"ajax.checkRecuperation":
+"holiday.checkRecuperation":
     - 100
-"conges.recup.create":
+"holiday.recup.create":
     - 100
