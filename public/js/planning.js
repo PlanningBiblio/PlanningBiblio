@@ -223,26 +223,26 @@ $(document).ready(function(){
   });
   
   // Masque les tableaux selon l'information garder en session
-  var tableId=$("#tableau").attr("data-tableId");
-  if(tableId){
+  var tableId=$('#tableau').attr('data-tableId');
+  if(tableId) {
     $.ajax({
-      url: url('planning/poste/ajax.getHiddenTables.php'),
-      type: "post",
-      dataType: "json",
+      url: url('planning/hidden-tables'),
+      type: 'get',
+      dataType: 'json',
       data: {tableId: tableId},
-      success: function(result){
-	if(!result){
-	  return;
-	}
+      success: function(result) {
+        if(!result){
+          return;
+        }
 
-	result=JSON.parse(result);
-	for(i in result){
-	  $(".tableau"+result[i]).hide();
-	}
-	afficheTableauxDiv();
+        result = JSON.parse(result);
+        for(i in result){
+          $('.tableau' + result[i]).hide();
+        }
+        afficheTableauxDiv();
       },
       error: function(result){
-	CJInfo(result.responseText,"error");
+	      CJInfo(result.responseText, 'error');
       }
     });
   }
@@ -518,12 +518,13 @@ $(function() {
 	  appelDispoData.sujet=sujet;
 	  appelDispoData.message=message;
 	  appelDispoData.CSRFToken = $('#CSRFSession').val();
+    appelDispoData._token = $('input[name=_token]').val();
 
 	  $( "#pl-appelDispo-form" ).dialog( "close" );
 	  
 	  $.ajax({
 	    dataType: "json",
-	    url: url('planning/poste/ajax.appelDispoMail.php'),
+	    url: url('planning/call-for-help/send-mail'),
 	    type: "post",
 	    data: appelDispoData,
 	    success: function(result){
@@ -1213,18 +1214,19 @@ function afficheTableauxDiv(){
   // Enregistre la liste des tableaux cachés dans la base de données
   var tableId=$("#tableau").attr("data-tableId");
   hiddenTables=JSON.stringify(hiddenTables);
+  var _token = $('input[name=_token]').val();
+
   $.ajax({
-    url: url('planning/poste/ajax.hiddenTables.php'),
+    url: url('planning/hidden-tables'),
     type: "post",
     dataType: "json",
-    data: {tableId: tableId, hiddenTables: hiddenTables, CSRFToken: $('#CSRFSession').val()},
+    data: {_token: _token, tableId: tableId, hiddenTables: hiddenTables, CSRFToken: $('#CSRFSession').val()},
     success: function(result){
     },
     error: function(result){
     }
   });
 }
-
 
 /**
  * appelDispo : Ouvre une fenêtre permettant d'envoyer un mail aux agents disponibles pour un poste et créneau horaire choisis
@@ -1238,21 +1240,21 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
 
   // Variable globale à utiliser lors de l'envoi du mail
   appelDispoData={site:site, poste:poste, date:date, debut:debut, fin:fin, agents:agents};
-  
+
   // Récupération du message par défaut depuis la config.
   $.ajax({
-    url: url('planning/poste/ajax.appelDispoMsg.php'),
-    type: "post",
+    url: url('planning/call-for-help/get-message'),
+    type: 'get',
     dataType: "json",
-    data: {},
+    data: appelDispoData,
     success: function(result){
       // Récupération des infos de la base de données, table config
       var sujet=result[0];
       var message=result[1];
       
       // Remplacement des valeurs [poste] [date] [debut] [fin]
-      if(siteNom){
-	posteNom+=" ("+siteNom+")";
+      if(siteNom) {
+        posteNom+=" ("+siteNom+")";
       }
 
       sujet=sujet.replace("[poste]",posteNom);
@@ -1685,27 +1687,26 @@ function refresh_poste(){
 function verif_categorieA(){
   // Si div pl-verif-categorie-A n'existe pas (pas les droits admin ou pas demanandé dans la config)
   // OU si pas de tableau affiché (.tabsemaine1) = pas de vérification, 
-  if($("#pl-verif-categorie-A").length<1 || $(".tabsemaine1").length<1){
+  if($('#pl-verif-categorie-A').length < 1 || $('.tabsemaine1').length < 1) {
     return;
   }
 
-  var date=$("#date").val();
-  var site=$("#site").val();
+  var date=$('#date').val();
+  var site=$('#site').val();
 
   $.ajax({
-    url: url('planning/poste/ajax.categorieA.php'),
-    datatype: "json",
-    type: "post",
-    data: {"date": date, "site": site},
+    url: url('planning/end-of-service/check'),
+    type: 'get',
+    datatype: 'json',
+    data: {date: date, site: site},
     success: function(result) {
-      result = JSON.parse(result);
-      if(result == "false") {
-        if (!$(".missingCategoryA")[0]) {
-            CJInfo("Attention, pas d'agent de catégorie A en fin de service.", 'error', 82, 999999, 'missingCategoryA');
+      if(result == 'false') {
+        if (!$('.missingCategoryA')[0]) {
+          CJInfo('Attention, pas d\'agent de catégorie A en fin de service.', 'error', 82, 999999, 'missingCategoryA');
         }
       } else {
-        if ($(".missingCategoryA")[0]) {
-            $(".missingCategoryA")[0].remove();
+        if ($('.missingCategoryA')[0]) {
+          $('.missingCategoryA')[0].remove();
         }
       }
     }

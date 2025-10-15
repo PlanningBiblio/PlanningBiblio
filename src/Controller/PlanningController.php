@@ -15,6 +15,7 @@ use App\PlanningBiblio\PresentSet;
 use App\PlanningBiblio\Framework;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -720,6 +721,167 @@ class PlanningController extends BaseController
         }
 
         return $this->redirectToRoute('home');
+    }
+
+    /*
+     * Envoi un mail aux agents disponibles pour l'occupation d'un poste vacant.
+     * Lors de la validation du formulaire "Appel à disponibilité"
+     * Script appelé par $( "#pl-appelDispo-form" ).dialog({ Envoyer ]), public/js/planning.js
+     */
+    #[Route(path: '/planning/call-for-help/send-mail', name: 'planning.call_for_help.send_mail', methods: ['POST'])]
+    public function callForHelpSendMail(Request $request)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $CSRFToken = $request->get('CSRFToken');
+        $site = $request->get('site');
+        $poste = $request->get('poste');
+        $date = $request->get('date');
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
+        $agents = $request->get('agents');
+        $sujet = $request->get('sujet');
+        $message = $request->get('message');
+
+        $agents = html_entity_decode($agents, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $agents = json_decode($agents, true);
+
+        $message = str_replace(array("\n","\r"), '<br/>', $message);
+
+        if (!is_array($agents)) {
+            $return = ['Aucun agent trouvé.'];
+            return new Response(json_encode($return));
+        }
+
+        // Récupération des destinataires
+        $destinataires = [];
+        foreach ($agents as $elem) {
+            $destinataires[] = $elem['mail'];
+        }
+
+        // Envoi du mail
+        $m=new \CJMail();
+        $m->subject = $sujet;
+        $m->message = $message;
+        $m->to = $destinataires;
+        $isSent = $m->send();
+
+        // Enregistrement dans la base de données pour signaler que l'envoi a eu lieu
+        if ($isSent) {
+            $successAddresses = implode(';', $m->successAddresses);
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert('appel_dispo', [
+                'site' => $site,
+                'poste' => $poste,
+                'date' => $date,
+                'debut' => $debut,
+                'fin' => $fin,
+                'destinataires' => $successAddresses,
+                'sujet' => $sujet,
+                'message' => $message,
+            ]);
+        }
+
+        // retour vers la fonction JS
+        if ($m->error) {
+            $return = ['error' => $m->error];
+            return new Response(json_encode($return));
+        } elseif (!$isSent) {
+            $return = ['error' => 'Une erreur est survenue lors de l\'envoi du mail'];
+            return new Response(json_encode($return));
+        } else {
+            $return = ['ok'];
+            return new Response(json_encode($return));
+        }
+    }
+
+    /*
+     * Récupère le message par défaut pour l'appel à disponibilité
+     * Script appelé depuis la function JS appelDispo (public/js/planning.js)
+     * lors du clic sur le lien "Appel à disponibilité" dans le menu permettant de placer les agents
+     */
+    #[Route(path: '/planning/call-for-help/get-message', name: 'planning.call_for_help.get_message', methods: ['GET'])]
+    public function callForHelpGetMessage(Request $request)
+    {
+        $mail = [
+            $this->config['Planning-AppelDispoSujet'],
+            $this->config['Planning-AppelDispoMessage'],
+        ];
+
+        return new Response(json_encode($mail));
+    }
+
+    /*
+     * Contrôle en arrière plan si un agent de catégorie A est placé en fin de service.
+     * Permet d'afficher ou de masquer l'alerte "pas d'agent de catégorie A en fin de service" en haut du planning
+     * Page appellée par la fonction JavaScript verif_categorieA lors du chargement de la page /index et lors de la modification
+     * d'une cellule (fonction JS bataille_navale)
+     * Affiche "true" ou "false"
+     */
+    #[Route(path: '/planning/end-of-service/check', name: 'planning.end_of_service.check', methods: ['GET'])]
+    public function EndOfServiceCheck(Request $request)
+    {
+        $p = new \planning();
+        $p->date = $request->get('date');
+        $p->site = $request->get('site');
+        $p->finDeService();
+
+        $return = $p->categorieA ? true : false;
+
+        return new Response(json_encode($return));
+    }
+
+    /*
+     * Permet de récupérer les préférences sur les tableaux cachés
+     */
+    #[Route(path: '/planning/hidden-tables', name: 'planning.hidden_tables.get', methods: ['GET'])]
+    public function ajaxGetHiddenTables(Request $request, Session $session)
+    {
+        $perso_id = $session->get('loginId');
+        $tableId = $request->get('tableId');
+        $tableId = filter_var($tableId, FILTER_SANITIZE_NUMBER_INT);
+
+        $return = [];
+    
+        $db = new \db();
+        $db->select2('hidden_tables', '*', ['perso_id' => $perso_id, 'tableau' => $tableId]);
+        if ($db->result) {
+            $return = html_entity_decode($db->result[0]['hidden_tables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        }
+
+        return new Response(json_encode($return));
+    }
+
+    /*
+     * Permet l'enregistrement des préférences sur les tableaux cachés
+     */
+    #[Route(path: '/planning/hidden-tables', name: 'planning.hidden_tables.set', methods: ['POST'])]
+    public function setHiddenTables(Request $request, Session $session)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $perso_id = $session->get('loginId');
+        $CSRFToken = $request->get('CSRFToken');
+        $hiddenTables = $request->get('hiddenTables');
+        $tableId = $request->get('tableId');
+
+        $tableId = filter_var($tableId, FILTER_SANITIZE_NUMBER_INT);
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete('hidden_tables', ['perso_id' => $perso_id, 'tableau' => $tableId]);
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert('hidden_tables', ['perso_id' => $perso_id, 'tableau' => $tableId, 'hidden_tables' => $hiddenTables]);
+        $return = [];
+
+        return new Response(json_encode($return));
     }
 
     private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
