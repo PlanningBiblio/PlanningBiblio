@@ -634,6 +634,99 @@ class WorkingHourController extends BaseController
         return $this->json('ok');
     }
 
+    /*
+    * Recherche les plannings enregistrés afin d'éviter les conflits lors de l'enregistrement d'un nouveau planning.
+    * Fichier appelé en arrière plan par la fonction JS plHebdoVerifForm (public/js/workingHour.js)
+    */
+    #[Route(path: '/workinghour/check', name: 'workinghour.check', methods: ['GET'])]
+    public function check(Request $request, Session $session)
+    {
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
+        $id = $request->get('id');
+        $perso_id = $request->get('perso_id');
+        $exception = $request->get('exception');
+
+        $debut = filter_var($debut, FILTER_CALLBACK, ['options' => 'sanitize_dateSQL']);
+        $fin = filter_var($fin, FILTER_CALLBACK, ['options' => 'sanitize_dateSQL']);
+        $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+        $perso_id = filter_var($perso_id, FILTER_SANITIZE_NUMBER_INT);
+        $exception = filter_var($exception, FILTER_SANITIZE_NUMBER_INT);
+        
+        // Filtre permettant de ne rechercher que les plannings de l'agent sélectionné
+        $perso_id = $perso_id ?? $session->get('loginId');
+
+        // Personalisation du message de retour
+        $autre_agent = ($perso_id != $session->get('loginId')) ? nom($perso_id) : false;
+
+        // Filtre permettant de ne pas regarder l'actuel planning et les plannings remplacant celui-ci
+        $ignore_id = $id?" AND `id`<>'$id' AND `remplace`<>'$id' " : null;
+
+        // Filtre permettant de ne pas regarder le planning remplacé par le planning sélectionné
+        $remplace=null;
+        if ($id) {
+            $db=new \db();
+            $db->select("planning_hebdo", "remplace", "`id`='$id'");
+            if ($db->result[0]['remplace']) {
+                $remplace=" AND `id`<>'{$db->result[0]['remplace']}' AND `remplace`<>'{$db->result[0]['remplace']}' ";
+            }
+        }
+
+        $filter = "perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut'";
+
+        // If $id means that it is an update, not a copy
+        $copy = false;
+        if ($id) {
+            if ($exception) {
+                $filter .= " AND id <> $exception";
+            } else {
+                $filter .= " AND exception <> $id";
+            }
+        } else {
+            $copy = true;
+        }
+
+        $db=new \db();
+        $db->select("planning_hebdo", "*", "$filter $ignore_id $remplace ");
+
+        $result=array();
+        if (!$db->result) {
+            $result=array("retour"=>"OK");
+        } elseif ($exception and $copy) {
+            if ($db->nb > 1
+                or $db->result[0]['exception'] != 0
+                or $db->result[0]['debut'] > $debut
+                or $db->result[0]['fin'] < $fin
+            ) {
+                $result = array('retour' => 'NO', 'debut' => $db->result[0]['debut'], 'fin' => $db->result[0]['fin'], 'autre_agent' => $autre_agent);
+            } else {
+                $result = array('retour' => 'OK');
+            }
+        } else {
+            $result=array("retour"=>"NO","debut"=>$db->result[0]['debut'],"fin"=>$db->result[0]['fin'], "autre_agent"=>$autre_agent);
+        }
+
+        // Its an exception.
+        // Check that exception dates are
+        // not out of the parent range.
+        if ($exception) {
+            $db = new \db();
+            $db->select('planning_hebdo', 'debut, fin', "id = $exception");
+
+            $parent_start = $db->result[0]['debut'];
+            $parent_end = $db->result[0]['fin'];
+
+            if ($debut < $parent_start or $fin > $parent_end) {
+                $result=array(
+                    'retour' => 'NO',
+                    'out_of_range' => 1
+                );
+            }
+        }
+
+        return new Response(json_encode($result));
+    }
+
     // FIXME put this in a helper or
     // a service container.
     private function time_to_decimal($time)
