@@ -1720,7 +1720,7 @@ class AgentController extends BaseController
         $url = $p->getICSURL($id);
         $url = html_entity_decode($url, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
-        return new Response(json_encode(array("url" => $config['URL'] . $url));
+        return new Response(json_encode(array("url" => $this->config('URL') . $url)));
     }
 
     private function save_holidays($params)
