@@ -5,6 +5,8 @@ use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Dotenv\Dotenv;
 
+exec(__DIR__ . '/../vendor/bin/bdi detect drivers');
+
 $_SERVER['APP_ENV'] = 'test';
 $_SERVER['KERNEL_CLASS'] = 'App\Kernel';
 
