@@ -535,7 +535,7 @@ class AgentController extends BaseController
             $this->templateParams(array( 'sites_select' => $sites_select ));
         }
 
-        include(__DIR__ . "/../../public/personnel/hours_tables.php");
+        include(__DIR__ . '/../../legacy/Agent/hours_tables.php');
         $this->templateParams(array( 'hours_tab' => $hours_tab ));
 
         if ($this->config('Hamac-csv')) {
@@ -1703,6 +1703,189 @@ class AgentController extends BaseController
         }
     }
 
+    /*
+     * Supprime les agents sélectionnés à partir de la liste des agents.
+     * Les agents ne sont pas supprimés définitivement, ils sont marqués comme supprimés dans la table personnel (champ supprime=1)
+     * Appelé par la fonction JS public/js/agent.js : agent_list
+    */
+    #[Route(path: '/agent/bulk/delete', name: 'agent.bulk.delete', methods: ['DELETE'])]
+    public function bulkDelete(Request $request, Session $session)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $list = $request->get('list');
+        $CSRFToken = $request->get('CSRFToken');
+
+        $list = html_entity_decode($list, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+
+        // prohibits removal of admin and "tout le monde"
+        $tab = array();
+        $tmp = json_decode($list);
+        foreach ($tmp as $elem) {
+            if ($elem > 2) {
+                $tab[] = $elem;
+            }
+        }
+
+        $list = implode(',', $tab);
+
+        if ($session->get('perso_actif')=="Supprimé") {
+            $p=new \personnel();
+            $p->CSRFToken = $CSRFToken;
+            $p->delete($list);
+        } else {
+            // TODO : demander la date de suppression en popup
+            // Date de suppression
+            $date = date('Y-m-d');
+
+            // Mise à jour de la table personnel
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update("personnel", array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date), array("id"=>"IN$list"));
+
+            // Mise à jour de la table pl_poste
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "IN$list", 'date' =>">$date"));
+
+            // Mise à jour de la table responsables
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("responsables", array('responsable' => "IN$list"));
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("responsables", array('perso_id' => "IN$list"));
+        }
+
+        $return = ["ok"];
+        return new Response(json_encode($return));
+    }
+
+    /*
+     * Met à jour les fiches des agents sélectionnés à partir de la liste des agents.
+     * Appelé par la fonction JS public/js/agent.js : agent_list
+     */
+    #[Route(path: '/agent/bulk/update', name: 'agent.bulk.update', methods: ['POST'])]
+    public function bulkUpdate(Request $request, Session $session)
+    {
+        // CSFR Protection
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        if (!in_array(21, $_SESSION['droits'])) {
+            $return = ['Accès refusé'];
+            return new Response(json_encode($return));
+        }
+
+        // Selected agents
+        $list = $request->get('list');
+        $list = html_entity_decode($list, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $list = json_decode($list);
+
+        // Main tab
+        $actif = $request->get('actif');
+        $contrat = $request->get('contrat');
+        $heures_hebdo = $request->get('heures_hebdo');
+        $heures_travail = $request->get('heures_travail');
+        $service = $request->get('service');
+        $statut = $request->get('statut');
+
+        // Skills tab
+        $postes = $request->get('postes');
+
+        if ($postes != '-1') {
+            $postes = explode(',', $postes);
+            $postes = json_encode($postes);
+        }
+
+        // Update DB
+        $agents = $this->entityManager->getRepository(Agent::class)->findById($list);
+
+        foreach ($agents as $agent) {
+            // Main Tab
+            if ($actif != '-1') {
+                $agent->setActive($actif);
+            }
+
+            if ($contrat != '-1') {
+                $agent->setCategory($contrat);
+            }
+
+            if ($heures_hebdo != '-1') {
+                $agent->setWeeklyServiceHours($heures_hebdo);
+            }
+
+            if ($heures_travail != '-1') {
+                $agent->setWeeklyWorkingHours($heures_travail);
+            }
+
+            if ($service != '-1') {
+                $agent->setService($service);
+            }
+
+            if ($statut != '-1') {
+                $agent->setStatus($statut);
+            }
+
+            // Skills tab
+            if ($postes != '-1') {
+                $agent->setSkills($postes);
+            }
+
+            $this->entityManager->persist($agent);
+
+        }
+        $this->entityManager->flush();
+
+        $return = ['ok'];
+
+        return new Response(json_encode($return));
+    }
+
+    /*
+     * Envoi par mail à l'agent sélectionné les URL de ses agendas Planno
+     * Lors de la validation du formulaire "Envoi de l'URL de l'agenda Planning Biblio" accessible depuis l'onglet Agenda des fiches "agent"
+     * Appelé par $( "#ics-url-form" ).dialog({ Envoyer ]), public/js/agent.js
+     */
+    #[Route(path: '/agent/ics/send-url', name: 'agent.ics.send_url', methods: ['POST'])]
+    public function sendIcsUrl(Request $request)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $message = $request->get('message');
+        $recipient = $request->get('recipient');
+        $subject = $request->get('subject');
+
+        $message = trim($message);
+        $message = preg_replace("/(http:\/\/.*[^ \n])/", "<a href='$1' target='_blank'>$1</a>", $message);
+        $message = str_replace(array("\n","\r"), "<br/>", $message);
+
+        $recipient = filter_var($recipient, FILTER_SANITIZE_EMAIL);
+
+        // Envoi du mail
+        $m = new \CJMail();
+        $m->subject = $subject;
+        $m->message = $message;
+        $m->to = $recipient;
+        $isSent = $m->send();
+
+        // retour vers la fonction JS
+        if ($m->error) {
+            $return = array('error' => $m->error);
+        } elseif (!$isSent) {
+            $return = array('error' => 'Une erreur est survenue lors de l\'envoi du mail');
+        } else {
+            $return = ['ok'];
+        }
+
+        return new Response(json_encode($return));
+    }
+
     #[Route('/agent/ics/reset-url', name: 'agent.ics.reset_url', methods: ['POST'])]
     public function resetIcsUrl(Request $request)
     {
@@ -1721,6 +1904,29 @@ class AgentController extends BaseController
         $url = html_entity_decode($url, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
         return new Response(json_encode(array('url' => $this->config('URL') . $url)));
+    }
+
+    /*
+     * Met à jour la liste des agents dans les select des pages /absence et conges/voir.php
+     * Affiche dans cette liste les agents supprimés ou non en fonction de la variable $_GET['deleted']
+     * Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.php
+     */
+    #[Route(path: '/agent/update-list', name: 'agent.update_list', methods: ['GET'])]
+    public function updateAgentList(Request $request)
+    {
+        $p=new \personnel();
+        if ($request->get('deleted')=="yes") {
+            $p->supprime=array(0,1);
+        }
+        $p->fetch();
+        $p->elements;
+
+        $tab=array();
+        foreach ($p->elements as $elem) {
+            $tab[]=array("id"=>$elem['id'],"nom"=>$elem['nom'],"prenom"=>$elem['prenom']);
+        }
+
+        return new Response(json_encode($tab));
     }
 
     private function save_holidays($params)

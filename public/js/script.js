@@ -562,7 +562,7 @@ function updateAgentsList(me,select_id){
   var in_array=false;
 
   $.ajax({
-    url: url('personnel/ajax.updateAgentsList.php'),
+    url: url('agent/update-list'),
     type: "get",
     data: "deleted="+deleted,
     success: function(result){

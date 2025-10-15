@@ -59,12 +59,18 @@
     - 100
 "agent.add":
     - 21
+"agent.bulk.delete":
+    - 21
+"agent.bulk.update":
+    - 21
 "agent.delete":
     - 21
 "agent.edit":
     - 4
 "agent.ics.reset_url":
     - 100
+"agent.ics.send_url":
+- 100
 "agent.index":
     - 4
 "agent.ldap":
@@ -79,6 +85,8 @@
     - 100
 "agent.save":
     - 4
+"agent.update_list":
+    - 100
 "ajax.agentsbysites":
     - 100
 "ajax.checkplanning":
@@ -287,14 +295,14 @@
     - 17
 "statistics.time":
     - 17
-"workinghour.index":
-    - 100
 "workinghour.add":
-    - 100
-"workinghour.edit":
-    - 100
-"workinghour.save":
     - 100
 "workinghour.delete":
     - 1101
     - 1201
+"workinghour.edit":
+    - 100
+"workinghour.index":
+    - 100
+"workinghour.save":
+    - 100

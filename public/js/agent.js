@@ -22,35 +22,35 @@ $(function() {
         list = JSON.stringify(list);
 
         $.ajax({
-          url: url('personnel/ajax.update.php'),
-               type: "post",
-               dataType: "json",
-               data: {
-                 CSRFToken: $('#CSRFSession').val(),
+          url: url('agent/bulk/update'),
+            type: 'post',
+            dataType: 'json',
+            data: {
+              _token: $('input[name=_token]').val(),
                // Main tab
-               actif: $('#actif').val(),
-               contrat: $('#contrat').val(),
-               heures_hebdo: $('#heures_hebdo').val(),
-               heures_travail: $('#heures_travail').val(),
-               service: $('#service').val(),
-               statut: $('#statut').val(),
-               // Skills tab
-               postes: $('#postes').val(),
-               list: list,
-               },
-               success: function(result){
-                 if (result=='ok') {
-                   var msg = 'Les agents ont été modifés avec succès';
-                   var msgType = 'success';
-                 } else {
-                   var msg = result;
-                   var msgType = 'error';
-                 }
-                 location.href = url('agent?msg=' + msg + '&msgType=' + msgType);
-               },
-               error: function(){
-                 location.href = url('agent?msg=Une erreur est survenue lors de la modification des agents&msgType=error');
-               }
+              actif: $('#actif').val(),
+              contrat: $('#contrat').val(),
+              heures_hebdo: $('#heures_hebdo').val(),
+              heures_travail: $('#heures_travail').val(),
+              service: $('#service').val(),
+              statut: $('#statut').val(),
+              // Skills tab
+              postes: $('#postes').val(),
+              list: list,
+            },
+            success: function(result){
+              if (result=='ok') {
+                var msg = 'Les agents ont été modifés avec succès';
+                var msgType = 'success';
+              } else {
+                var msg = result;
+                var msgType = 'error';
+              }
+              location.href = url('agent?msg=' + msg + '&msgType=' + msgType);
+            },
+            error: function(){
+              location.href = url('agent?msg=Une erreur est survenue lors de la modification des agents&msgType=error');
+            }
         });
       },
 
@@ -92,16 +92,20 @@ function agent_list() {
       list = JSON.stringify(list);
 
       $.ajax({
-        url: url('personnel/ajax.delete.php'),
-             type: "post",
-             dataType: "json",
-             data: {list: list, CSRFToken: $('#CSRFSession').val()},
-             success: function(){
-               location.href = url('agent?msg=Les agents ont été supprimés avec succès&msgType=success');
-             },
-             error: function(){
-               location.href = url('agent?msg=Une erreur est survenue lors de la suppresion des agents&msgType=error');
-             }
+        url: url('agent/bulk/delete'),
+          type: 'delete',
+          dataType: 'json',
+          data: {
+            _token: $('input[name=_token]').val(),
+            CSRFToken: $('#CSRFSession').val(),
+            list: list
+          },
+          success: function() {
+            location.href = url('agent?msg=Les agents ont été supprimés avec succès&msgType=success');
+          },
+            error: function() {
+              location.href = url('agent?msg=Une erreur est survenue lors de la suppresion des agents&msgType=error');
+          }
       });
 
       break;
@@ -629,49 +633,51 @@ $(function() {
   });
   
   
-  $( "#ics-url-form" ).dialog({
+  $('#ics-url-form').dialog({
     autoOpen: false,
     height: 525,
     width: 650,
     modal: true,
     buttons: {
-      "Envoyer": function() {
+      'Envoyer': function() {
 
         // Envoi le mail
-        var CSRFToken = $( "#CSRFSession" ).val();
-        var recipient = $( "#ics-url-recipient" ).text();
-        var subject = $( "#ics-url-subject" ).val();
-        var message = $( "#ics-url-text" ).val();
+        var recipient = $('#ics-url-recipient').text();
+        var subject = $('#ics-url-subject').val();
+        var message = $('#ics-url-text').val();
+        var _token = $('input[name=_token]').val();
 
         $.ajax({
-          dataType: "json",
-          url: url('personnel/ajax.sendICSURL.php'),
-          type: "post",
-          data: {CSRFToken: CSRFToken, recipient: recipient, subject: subject, message: message},
+          dataType: 'json',
+          url: url('agent/ics/send-url'),
+          type: 'post',
+          data: {
+            _token: _token,
+            message: message,
+            recipient: recipient,
+            subject: subject,
+          },
           success: function(result){
-
-            if(result.error){
-              updateTips(result.error, "error");
+            if(result.error) {
+              updateTips(result.error, 'error');
+            } else {
+              CJInfo('L\'e-mail a bien été envoyé', 'success');
+              $('#ics-url-form').dialog('close');
             }
-            else{
-              CJInfo("L'e-mail a bien été envoyé","success");
-              $( "#ics-url-form" ).dialog( "close" );
-            }
-
           },
           error: function(){
-            updateTips("Une erreur est survenue lors de l'envoi de l'e-mail", "error");
+            updateTips('Une erreur est survenue lors de l\'envoi de l\'e-mail', 'error');
           }
         });
       },
 
       Annuler: function() {
-	$( this ).dialog( "close" );
+        $( this ).dialog('close');
       }
     },
 
     close: function() {
-      $(".validateTips").text("Envoyez à l'agent les URL de ses agendas Planno.");
+      $('.validateTips').text('Envoyez à l\'agent les URL de ses agendas Planno.');
     }
   });
   
