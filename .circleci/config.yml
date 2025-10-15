@@ -50,7 +50,7 @@ jobs:
       - run: rm -rf vendor
       - run: composer install -n --prefer-dist
       - run: bin/console doctrine:migrations:migrate --env=test -n -vv
-      - run: vendor/bin/bdi detect drivers
+      #- run: vendor/bin/bdi detect drivers
 
       - save_cache:
           key: v1-dependencies-{{ checksum "composer.json" }}

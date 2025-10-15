@@ -34,7 +34,6 @@ public/themes/*
 ###< symfony/web-server-bundle ###
 
 ###> phpunit/phpunit ###
-/drivers/
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
