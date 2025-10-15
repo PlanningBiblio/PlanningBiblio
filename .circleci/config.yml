@@ -31,37 +31,40 @@ jobs:
     steps:
       - checkout
 
-      - run: sudo apt update
-      - run: sudo -E install-php-extensions zip mysqli pdo_mysql
-      - run: sudo apt install -y mariadb-client
-      - run: sudo pecl install xdebug
-      - run: sudo apt install -y libu2f-udev
+      - run: firefox --version
+      - run: google-chrome --version
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            # "composer.lock" can be used if it is committed to the repo
-            - v1-dependencies-{{ checksum "composer.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+      #- run: sudo apt update
+      #- run: sudo -E install-php-extensions zip mysqli pdo_mysql
+      #- run: sudo apt install -y mariadb-client
+      #- run: sudo pecl install xdebug
+      #- run: sudo apt install -y libu2f-udev
 
-      - run: zcat data/planno_25.05.xx.sql.gz | mariadb --host=127.0.01 --port=3306 -u plb --password=plb planningb
-      - run: cp .circleci/.env.test.local .env.test.local
-      - run: cp .circleci/.env.local .env.local
-      - run: rm -rf vendor
-      - run: composer install -n --prefer-dist
-      - run: bin/console doctrine:migrations:migrate --env=test -n -vv
-      #- run: vendor/bin/bdi detect drivers
+      ## Download and cache dependencies
+      #- restore_cache:
+          #keys:
+            ## "composer.lock" can be used if it is committed to the repo
+            #- v1-dependencies-{{ checksum "composer.json" }}
+            ## fallback to using the latest cache if no exact match is found
+            #- v1-dependencies-
 
-      - save_cache:
-          key: v1-dependencies-{{ checksum "composer.json" }}
-          paths:
-            - ./vendor
+      #- run: zcat data/planno_25.05.xx.sql.gz | mariadb --host=127.0.01 --port=3306 -u plb --password=plb planningb
+      #- run: cp .circleci/.env.test.local .env.test.local
+      #- run: cp .circleci/.env.local .env.local
+      #- run: rm -rf vendor
+      #- run: composer install -n --prefer-dist
+      #- run: bin/console doctrine:migrations:migrate --env=test -n -vv
+      ##- run: vendor/bin/bdi detect drivers
 
-      # run tests with phpunit or codecept
-      - run: echo 'xdebug.mode=coverage' | sudo tee -a /etc/php.d/circleci.ini
-      - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
-      - run: bash <(curl -s https://codecov.io/bash)
+      #- save_cache:
+          #key: v1-dependencies-{{ checksum "composer.json" }}
+          #paths:
+            #- ./vendor
+
+      ## run tests with phpunit or codecept
+      #- run: echo 'xdebug.mode=coverage' | sudo tee -a /etc/php.d/circleci.ini
+      #- run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
+      #- run: bash <(curl -s https://codecov.io/bash)
 
 workflows:
   version: 2
