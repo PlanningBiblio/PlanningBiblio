@@ -40,7 +40,9 @@ class AbsenceImportCSVCommand extends Command
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
 
-        include __DIR__ . '/../../custom_options.php';
+        if(file_exists(__DIR__ . '/../../custom_options.php') {
+            include __DIR__ . '/../../custom_options.php';
+        }
 
         $status_extra = $config['hamac_status_extra'] ?? array();
         $status_waiting = $config['hamac_status_waiting'] ?? array(3);
