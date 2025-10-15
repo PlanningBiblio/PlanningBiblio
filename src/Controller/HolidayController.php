@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Controller\BaseController;
 
 use App\Entity\Agent;
-use App\Entity\Holiday;
 
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;

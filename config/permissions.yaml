@@ -119,6 +119,10 @@
     - 25
 "closingday.save":
     - 25
+"overtime.add":
+    - 100
+"overtime.check":
+    - 100
 "overtime.edit":
     - 100
 "overtime.index":
