@@ -63,6 +63,8 @@
     - 21
 "agent.edit":
     - 4
+"agent.ics.reset_url":
+    - 100
 "agent.index":
     - 4
 "agent.ldap":

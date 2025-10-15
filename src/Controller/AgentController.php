@@ -1703,6 +1703,26 @@ class AgentController extends BaseController
         }
     }
 
+    #[Route('/agent/ics/reset-url', name: 'agent.ics.reset_url', methods: ['POST'])]
+    public function resetIcsUrl(Request $request)
+    {
+        $id = $request->get('id');
+        $CSRFToken = $request->get('CSRFToken');
+
+        $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->update('personnel', array('code_ics' => null), array('id' => $id));
+
+        $p = new \personnel();
+        $p->CSRFToken = $CSRFToken;
+        $url = $p->getICSURL($id);
+        $url = html_entity_decode($url, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+
+        return new Response(json_encode(array('url' => $this->config('URL') . $url)));
+    }
+
     private function save_holidays($params)
     {
         if (!$this->config('Conges-Enable')) {
