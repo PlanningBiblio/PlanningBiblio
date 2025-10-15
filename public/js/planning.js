@@ -4,7 +4,7 @@ Fichier regroupant les scripts JS nécessaires à la page /index (affichage et m
 */
 
 /* Variables globales :
-- perso_id_origine transmise à ajax.updateCell.php pour maj de la base de données pour remplacer, barrer ou supprimer l'agent cliqué
+- perso_id_origine transmise à planning/update-cell pour maj de la base de données pour remplacer, barrer ou supprimer l'agent cliqué
 - perso_nom_origine transmise à ajax.menudiv.php pour affichage du nom cliqué pour supprimer M. xxx, Barrer M. xxx
 */
 perso_id_origine=0;
@@ -328,66 +328,83 @@ $(document).ready(function(){
 
 // Evénements JQuery
 $(function() {
-  
+
   // Déverrouillage du planning
-  $("#icon-lock").click(function(){
+  $('#icon-lock').click(function() {
+    var _token = $('input[name=_token]').val();
+    var CSRFToken = $('#CSRFSession').val();
     var date=$('#date').val();
     var site=$('#site').val();
-    var CSRFToken = $('#CSRFSession').val();
 
     $.ajax({
-      url: url('planning/poste/ajax.validation.php'),
-      dataType: "json",
-      data: {date: date, site: site, verrou: 0, CSRFToken: CSRFToken },
-      type: "get",
-      success: function(result){
-        if(result[1]=="highlight"){
-          $("#icon-lock").hide();
-          $(".pl-validation").hide();
+      url: url('planning/validation'),
+      dataType: 'json',
+      data: {
+        _token: _token,
+        CSRFToken: CSRFToken,
+        date: date,
+        site: site,
+        verrou: 0,
+      },
+      type: 'post',
+
+      success: function(result) {
+        if(result[1] == 'highlight') {
+          $('#icon-lock').hide();
+          $('.pl-validation').hide();
           $('#planning-drop').show();
           $('#planning-import').show();
-          $("#icon-unlock").show();
+          $('#icon-unlock').show();
           // data-verrou : pour activer le menudiv
-          $("#planning-data").attr("data-verrou",0);
-          $("#undo-redo").show();
+          $('#planning-data').attr('data-verrou', 0);
+          $('#undo-redo').show();
         }
 
         // Affichage des lignes vides
-        $(".pl-line").show();
+        $('.pl-line').show();
         CJInfo(result[0],result[1]);
       },
+
       error: function(result){
-        CJInfo("Erreur lors du dev&eacute;rrouillage du planning","error");
+        CJInfo('Erreur lors du dévérrouillage du planning', 'error');
       }
     });
   });
 
   // Validation du planning
-  $("#icon-unlock").click(function(){
+  $('#icon-unlock').click(function() {
+    var _token = $('input[name=_token]').val();
+    var CSRFToken = $('#CSRFSession').val();
     var date=$('#date').val();
     var site=$('#site').val();
-    var CSRFToken = $('#CSRFSession').val();
 
     $.ajax({
-      url: url('planning/poste/ajax.validation.php'),
-      dataType: "json",
-      data: {date: date, site: site, verrou: 1, CSRFToken: CSRFToken },
-      type: "get",
-      success: function(result){
-        if(result[1]=="highlight"){
-          $("#icon-unlock").hide();
-          $("#icon-lock").show();
-          $(".pl-validation").html(result[2]);
-          $(".pl-validation").show();
+      url: url('planning/validation'),
+      dataType: 'json',
+      data: {
+        _token: _token,
+        CSRFToken: CSRFToken,
+        date: date,
+        site: site,
+        verrou: 1,
+      },
+      type: 'post',
+
+      success: function(result) {
+        if(result[1] == 'highlight') {
+          $('#icon-unlock').hide();
+          $('#icon-lock').show();
+          $('.pl-validation').html(result[2]);
+          $('.pl-validation').show();
           $('#planning-drop').hide();
           $('#planning-import').hide();
           // data-verrou : pour désactiver le menudiv
-          $("#planning-data").attr("data-verrou",1);
+          $('#planning-data').attr('data-verrou', 1);
           // data-validation : actualise la date de validation pour éviter un refresh_poste inutile
-          $("#planning-data").attr("data-validation",result[3]);
+          $('#planning-data').attr('data-validation', result[3]);
           // refresh_poste : contrôle toute les 30 sec si le planning est validé depuis un autre poste
-          setTimeout("refresh_poste()",30000);
-          $("#undo-redo").hide();
+          setTimeout('refresh_poste()', 30000);
+          $('#undo-redo').hide();
         }
 
         // Envoi des notifications
@@ -396,10 +413,11 @@ $(function() {
         // Masque les lignes vides
         hideEmptyLines();
 
-        CJInfo(result[0],result[1]);
+        CJInfo(result[0], result[1]);
       },
-      error: function(result){
-        CJInfo("Erreur lors de la validation du planning","error");
+
+      error: function(result) {
+        CJInfo('Erreur lors de la validation du planning', 'error');
       }
     });
   });
@@ -426,51 +444,60 @@ $(function() {
   });
 
   // Formulaire Notes
-  $( "#pl-notes-form" ).dialog({
+  $('#pl-notes-form').dialog({
     autoOpen: false,
     height: 480,
     width: 650,
     modal: true,
     buttons: {
-      "Enregistrer": {
-	click: function() {
-          allFields.removeClass( "ui-state-error");
+      'Enregistrer': {
+	      click: function() {
+          allFields.removeClass('ui-state-error');
           var bValid = true;
 
           if ( bValid ) {
             // Enregistre le commentaire
             text.val(text.val().trim());
-            var text2=text.val().replace(/\n/g,"#br#");
-            var text3=text.val().replace(/\n/g,"<br/>");
+            var text2=text.val().replace(/\n/g,'#br#');
+            var text3=text.val().replace(/\n/g,'<br/>');
+            var _token = $('input[name=_token]').val();
+
             $.ajax({
-              dataType: "json",
-              url: url('planning/poste/ajax.notes.php'),
-              type: "post",
-              data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2), CSRFToken: $('#CSRFSession').val()},
-              success: function(result){
-                if(result.error){
-                  CJInfo(result.error,"error");
-                }
-                else{
-                  if(result.notes){
-                    $("#pl-notes-button").val("Modifier le commentaire");
-                    $("#pl-notes-div1").show();
-                    var suppression="";
-                  }else{
-                    $("#pl-notes-button").val("Ajouter un commentaire");
-                    $("#pl-notes-div1").hide();
-                    var suppression="Suppression du commentaire : ";
-                  }	
+              dataType: 'json',
+              url: url('planning/notes'),
+              type: 'post',
+              data: {
+                _token: _token,
+                CSRFToken: $('#CSRFSession').val(),
+                date: $('#date').val(),
+                site: $('#site').val(),
+                text: encodeURIComponent(text2),
+              },
+
+              success: function(result) {
+                if(result.error) {
+                  CJInfo(result.error, 'error');
+                } else {
+                  if(result.notes) {
+                    $('#pl-notes-button').val('Modifier le commentaire');
+                    $('#pl-notes-div1').show();
+                    var suppression = '';
+                  } else {
+                    $('#pl-notes-button').val('Ajouter un commentaire');
+                    $('#pl-notes-div1').hide();
+                    var suppression = 'Suppression du commentaire : ';
+                  }
                   // Met à jour le texte affiché en bas du planning
-                  $("#pl-notes-div1").html(result.notes);
-                  $("#pl-notes-div1-validation").html(suppression+result.validation);
-                  CJInfo("Le commentaire a été modifié avec succès","success");
+                  $('#pl-notes-div1').html(result.notes);
+                  $('#pl-notes-div1-validation').html(suppression + result.validation);
+                  CJInfo('Le commentaire a été modifié avec succès', 'success');
                   // Ferme le dialog
                 }
-                $("#pl-notes-form").dialog( "close" );
+                $('#pl-notes-form').dialog('close');
               },
-              error: function(){
-                updateTips("Une erreur est survenue lors de l'enregistrement du commentaire", "error");
+
+              error: function() {
+                updateTips('Une erreur est survenue lors de l\'enregistrement du commentaire', 'error');
               }
             });
           }
@@ -480,19 +507,18 @@ $(function() {
 
       Annuler: {
         click: function() {
-          $( this ).dialog( "close" );
-              },
-        text: "Annuler",
-        class: "ui-button-type2"
-            },
+          $( this ).dialog('close');
+        },
+        text: 'Annuler',
+        class: 'ui-button-type2',
+      },
     },
 
     close: function() {
-      allFields.removeClass( "ui-state-error" );
+      allFields.removeClass('ui-state-error');
     }
   });
-  
-  
+
   // Formulaire Appel à disponibilité
   $( "#pl-appelDispo-form" ).dialog({
     autoOpen: false,
@@ -1232,7 +1258,7 @@ function afficheTableauxDiv(){
  * appelDispo : Ouvre une fenêtre permettant d'envoyer un mail aux agents disponibles pour un poste et créneau horaire choisis
  * Appelée depuis le menu permettant de placer les agents dans le plannings (ajax.menudiv.php)
  */
-function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
+function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents) {
 
   var weekday = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
   var d = new Date(date);
@@ -1275,8 +1301,9 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
       $( '#pl-appelDispo-tips' ).text("Envoyez un e-mail aux agents disponibles pour leur demander s'ils sont volontaires pour occuper le poste choisi.");
       $( "#pl-appelDispo-form" ).dialog( "open" );
     },
-    error: function(result){
-      CJInfo(result.responseText,"error");
+
+    error: function(result) {
+      CJInfo(result.responseText, 'error');
     }
   });
 }
@@ -1285,40 +1312,57 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
  * bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
  * Récupére en Ajax les id, noms, prénom, service, statut dans agents placés
  * Met à jour la base de données en arrière plan
- * Refait ensuite l'affichage complet de la cellule. Efface est remplit la cellule avec les infos récupérées du fichier ajax.updateCell.php
+ * Refait ensuite l'affichage complet de la cellule. Efface est remplit la cellule avec les infos récupérées du planning/update-cell
  * Les cellules sont identifiables, supprimables et modifiables indépendament des autres
  * Les infos service et statut sont utilisées pour la mise en forme des cellules : utilisation des classes service_ et statut_
  * 
  * @param int perso_id : Si 0 = griser la cellule, si 2 = Tout le monde
  */
-function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,griser,cellid,logaction = 1){
+function bataille_navale(poste, date, debut, fin, perso_id, barrer, ajouter, site, tout, griser, cellid, logaction = 1) {
   disableRedo();
-  if(griser==undefined){
-    griser=0;
+  if(griser == undefined){
+    griser = 0;
   }
 
-  if(site==undefined || site==""){
-    site=1;
+  if(site == undefined || site == '') {
+    site = 1;
   }
 
-  if(tout==undefined){
-    tout=0;
+  if(tout == undefined) {
+    tout = 0;
   }
 
   if (typeof cellid != 'undefined') {
     cellule = cellid;
   }
 
-  var sr_config_debut=$("#planning-data").attr("data-sr-debut");
-  var sr_config_fin=$("#planning-data").attr("data-sr-fin");
+  var _token = $('input[name=_token]').val();
   var CSRFToken = $('#CSRFSession').val();
+  var sr_config_debut = $('#planning-data').attr('data-sr-debut');
+  var sr_config_fin = $('#planning-data').attr('data-sr-fin');
 
   $.ajax({
-    url: url('planning/poste/ajax.updateCell.php'),
-    type: "post",
-    dataType: "json",
-    data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout, griser: griser, logaction: logaction},
-    success: function(response){
+    url: url('planning/update-cell'),
+    type: 'post',
+    dataType: 'json',
+    data: {
+      _token: _token,
+      CSRFToken: CSRFToken,
+      ajouter: ajouter,
+      barrer: barrer,
+      date: date,
+      debut: debut,
+      fin: fin,
+      griser: griser,
+      logaction: logaction,
+      perso_id: perso_id,
+      perso_id_origine: perso_id_origine,
+      poste: poste,
+      site: site,
+      tout: tout,
+    },
+
+    success: function(response) {
       if (response.undoable == 1) {
         enableUndo();
       }
@@ -1327,21 +1371,21 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
       }
       result = response.tab;
       $("#td"+cellule).html("");
-      
+
       // Suppression du sans repas sur les cellules ainsi marquée
-      if(fin > sr_config_debut && debut < sr_config_fin){
-        $(".agent_"+perso_id_origine).each(function(){
-          var sr_debut=$(this).closest("td").data("start");
-          var sr_fin=$(this).closest("td").data("end");
-          if(sr_fin > sr_config_debut && sr_debut < sr_config_fin){
-            $(this).find(".sansRepas").remove();
+      if(fin > sr_config_debut && debut < sr_config_fin) {
+        $('.agent_' + perso_id_origine).each(function() {
+          var sr_debut = $(this).closest('td').data('start');
+          var sr_fin = $(this).closest('td').data('end');
+          if(sr_fin > sr_config_debut && sr_debut < sr_config_fin) {
+            $(this).find('.sansRepas').remove();
           }
         });
       }
-      
+
       // Si pas de résultat (rien n'est affiché dans la cellule modifiée), 
       // on réinitialise perso_id_origine pour ne pas avoir de rémanence pour la gestion de SR et suppression
-      if(!result){
+      if(!result) {
         majPersoOrigine(0);
       }
 
@@ -1349,20 +1393,20 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
       verif_categorieA();
 
       // Cellule grisée depuis le menudiv
-      if(result != 'grise'){
-        $("#td"+cellule).removeClass('cellule_grise');
+      if(result != 'grise') {
+        $('#td' + cellule).removeClass('cellule_grise');
       }
 
-      if(result == 'grise'){
-        $("#td"+cellule).addClass('cellule_grise');
+      if(result == 'grise') {
+        $('#td' + cellule).addClass('cellule_grise');
         result = new Array();
       }
       
-      for(i in result){
+      for(i in result) {
         // Exemple de cellule
         // <div id='cellule11_0' class='cellule statut_bibas service_permanent' >Christophe C.</div>
 
-        var title = result[i]["nom"] + ' ' + result[i]["prenom"];
+        var title = result[i]['nom'] + ' ' + result[i]['prenom'];
         
         var perso_id = result[i]['perso_id'];
 
@@ -1373,57 +1417,57 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         }
 
         // classes : A définir en fonction du statut, du service et des absences
-        var classes="cellDiv pl-highlight pl-cellule-perso-"+perso_id;
+        var classes = 'cellDiv pl-highlight pl-cellule-perso-' + perso_id;
         // Absences, suppression
         // absent == 1 : Absence validée ou absence sans gestion des validations
         var absence_valide = false;
-        if(result[i]["absent"]=="1" || result[i]["supprime"]=="1"){
-          classes+=" red striped";
+        if(result[i]['absent'] == '1' || result[i]['supprime'] == '1') {
+          classes += ' red striped';
           absence_valide = true;
         // absent == 2 : Absence non validée
-        }else if(result[i]['absent'] == '2'){
-          classes+=" red";
+        }else if(result[i]['absent'] == '2') {
+          classes += ' red';
           title = agent + ' : Absence non validée';
         }
 
         // congés == 1 : Congé validé
-        if(result[i]["conges"] == '1'){
-          classes+=" orange striped";
+        if(result[i]['conges'] == '1') {
+          classes += ' orange striped';
           absence_valide = true;
         // congés == 2 : Congé non validé. Mais on ne le marque pas si une absence validée est déjà marquée
-        }else if(result[i]['conges'] == '2' && absence_valide==false){
-          classes+=" orange";
+        }else if(result[i]['conges'] == '2' && absence_valide == false) {
+          classes += ' orange';
           title = agent + ' : Congé non validé';
         }
 
         // Si une absence ou un congé est validé, on efface title pour ne pas afficher XXX non validé(e)
-        if(absence_valide){
+        if(absence_valide) {
           title = '';
         }
 
         // Service et Statut
-        classes+=" service_"+result[i]["service"].toLowerCase().replace(/ /g,"_");
-        classes+=" statut_"+result[i]["statut"].toLowerCase().replace(/ /g,"_");
+        classes += ' service_' + result[i]['service'].toLowerCase().replace(/ /g,'_');
+        classes += ' statut_' + result[i]['statut'].toLowerCase().replace(/ /g,'_');
         
         // Qualifications (activités) de l'agent
-        classes+=' '+result[i]['activites'];
+        classes += ' ' + result[i]['activites'];
 
         if (result[i]['is_current_user']) {
           classes += ' current-user-cell';
         }
 
         // Sans Repas
-        if(result[i]["sr"]){
+        if(result[i]['sr']) {
           // Ajout du sans repas sur la cellule modifiée
-          agent+="<font class='sansRepas'> (SR)</font>";
+          agent += '<font class="sansRepas"> (SR)</font>';
 
           // Ajout du sans repas sur les autres cellules concernées
-          $(".agent_"+perso_id).each(function(){
-            var sr_debut=$(this).closest("td").data("start");
-            var sr_fin=$(this).closest("td").data("end");
-            if(sr_fin > sr_config_debut && sr_debut < sr_config_fin){
-              if($(this).text().indexOf("(SR)")==-1){
-                $(this).append("<font class='sansRepas'> (SR)</font>");
+          $('.agent_' + perso_id).each(function() {
+            var sr_debut=$(this).closest('td').data('start');
+            var sr_fin=$(this).closest('td').data('end');
+            if(sr_fin > sr_config_debut && sr_debut < sr_config_fin) {
+              if($(this).text().indexOf('(SR)') == -1) {
+                $(this).append('<font class="sansRepas"> (SR)</font>');
               }
             }
           });
@@ -1432,55 +1476,56 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         // Color the logged in agent.
         var color = result[i]['color'];
         if (color) {
-            color = "style='background-color:"+color+";'";
+          color = 'style="background-color:' + color + ';"';
         }
 
         // Création d'une balise span avec les classes cellSpan et agent_ de façon à les repérer et agir dessus 
-        debut=debut.replace(":","");
-        fin=fin.replace(":","");
-        var span="<span class='cellSpan pl-highlight agent_"+perso_id+"' title='"+title+"'>"+agent+"</span>";
-        var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' "+color+" data-perso-id='"+perso_id+"' oncontextmenu='majPersoOrigine("+perso_id+");'>"+span+"</div>"
-        // oncontextmenu='majPersoOrigine("+perso_id+");' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
-        $("#td"+cellule).append(div);
+        debut = debut.replace(':', '');
+        fin = fin.replace(':', '');
+        var span = '<span class="cellSpan pl-highlight agent_' + perso_id + '" title="' + title + '">' + agent + '</span>';
+        var div = '<div id="cellule' + cellule + '_' + i + '" class="' + classes + '" ' + color + ' data-perso-id="' + perso_id + '" oncontextmenu="majPersoOrigine(' + perso_id + ');">' + span + '</div>';
+        // oncontextmenu="majPersoOrigine(' + perso_id + ');" : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
+        $('#td' + cellule).append(div);
 
         // Complète le tableau cellules initialisé au chargement de la page et contenant toutes les cellules ajoutées par la fonction bataille_navale
-        cellules.push($('#cellule'+cellule+'_'+i));
+        cellules.push($('#cellule' + cellule + '_' + i));
       }
 
       // Ajout du widget pour copier les agents dans
       // la cellule immédiatement à droite.
-      $("#td"+cellule).append('<a class="pl-icon arrow-right" role="button"></a>');
+      $('#td' + cellule).append('<a class="pl-icon arrow-right" role="button"></a>');
 
       // Suppresion de la surbrillance sur toutes les cellules une fois l'agent posté ou supprimé
       $('.pl-highlight').removeClass('pl-highlight', {duration:2500});
 
       // Mise en forme de toute la ligne
       // Pour chaque TD
-      $("#td"+cellule).closest("tr").find("td").each (function(i, index) {
+      $('#td' + cellule).closest('tr').find('td').each (function(i, index) {
 
         // Occuper toute la hauteur
-        var nbDiv=$(index).find("div").length;
-        if(nbDiv>0){
-          var divHeight=$(index).height()/nbDiv;
-          $(index).find("div").css("height",divHeight);
+        var nbDiv = $(index).find('div').length;
+        if (nbDiv > 0) {
+          var divHeight = $(index).height()/nbDiv;
+          $(index).find('div').css('height', divHeight);
         }
+
         // Centrer verticalement les textes
-        $(index).find("span").each(function(j,jtem){
-          var top=(($(jtem).closest("div").height()-$(jtem).height())/2)-4;
-          $(jtem).css("position","relative");
-          $(jtem).css("top",top);
+        $(index).find('span').each(function(j,jtem) {
+          var top = (($(jtem).closest('div').height()-$(jtem).height()) / 2) - 4;
+          $(jtem).css('position', 'relative');
+          $(jtem).css('top', top);
         });
       });
 
       // cacher le menudiv
       emptyContextMenu();
-      },
-      error: function(result){
-        CJInfo("Une erreur est survenue lors de l'enregistrement du planning.","error");
-      }
-    });
+    },
 
-  
+    error: function(result) {
+      CJInfo('Une erreur est survenue lors de l\'enregistrement du planning.', 'error');
+    }
+  });
+
   /*
   Exemple de valeur pour la variable result :
 
@@ -1645,41 +1690,52 @@ function plMouseOver(id){
  *  @param srting date
  *  Envoie les notifications aux agents concernés par des plannings validés ou modifiés
  */
-function planningNotifications(date, site, CSRFToken){
+function planningNotifications(date, site, CSRFToken) {
   $.ajax({
-    url: url('planning/poste/ajax.notifications.php'),
-    dataType: "json",
-    data: {date: date, site: site, CSRFToken: CSRFToken},
-    type: "get",
-    success: function(result){
+    url: url('planning/notifications'),
+    dataType: 'json',
+    data: {
+      _token: $('input[name=_token]').val(),
+      CSRFToken: CSRFToken,
+      date: date,
+      site: site,
     },
-    error: function(result){
-      CJInfo(result.responseText,"error");
+    type: 'post',
+    success: function(result) {
+    },
+    error: function(result) {
+      CJInfo(result.responseText, 'error');
     }
   });
 }
 
 // refresh_poste : Actualise le planning en cas de modification
-function refresh_poste(){
-  if($("#planning-data").attr("data-verrou")==0){
+function refresh_poste() {
+  if($('#planning-data').attr('data-verrou') == 0) {
     return false;
   }
-  var validation=$("#planning-data").attr("data-validation");
+
+  var validation = $('#planning-data').attr('data-validation');
     $.ajax({
-    url: url('planning/poste/ajax.refresh.php'),
-    type: "post",
-    dataType: "json",
-    data: {"date": $("#date").val(), "site": $("#site").val()},
-    success: function(result){
-      if (validation && result != validation) {
-	window.location.reload(false);
-      } else {
-	setTimeout("refresh_poste()",30000);
-      }
-    },
-    error: function(result){
-      CJInfo(result.responseText,"error");
-      setTimeout("refresh_poste()",30000);
+      url: url('planning/refresh'),
+      type: 'get',
+      dataType: 'json',
+      data: {
+        date: $('#date').val(),
+        site: $('#site').val()
+      },
+  
+      success: function(result) {
+        if (validation && result != validation) {
+          window.location.reload(false);
+        } else {
+          setTimeout('refresh_poste()', 30000);
+        }
+      },
+
+      error: function(result) {
+        CJInfo(result.responseText, 'error');
+        setTimeout('refresh_poste()', 30000);
     }
   });
 }
