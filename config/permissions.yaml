@@ -70,7 +70,7 @@
 "agent.ics.reset_url":
     - 100
 "agent.ics.send_url":
-- 100
+    - 100
 "agent.index":
     - 4
 "agent.ldap":
@@ -253,12 +253,22 @@
     - 100
 "planning.hidden_tables.set":
     - 100
+"planning.notes":
+    - 100
+"planning.notifications":
+    - 100
 "planning.setFramework":
     - 301
 "planning.setFrameworkGroup":
     - 301
 "planning.week":
     - 99
+"planning.refresh":
+    - 100
+"planning.validation":
+    - 301
+"planning.update.cell":
+    - 301
 "planningjob.contextmenu":
     - 100
 "planningjob.undo":

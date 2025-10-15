@@ -8,12 +8,12 @@ use App\Entity\Agent;
 use App\Entity\Model;
 use App\Entity\PlanningPositionHistory;
 use App\Entity\PlanningPositionLock;
+use App\Entity\Position;
 use App\Entity\SelectFloor;
 use App\Entity\SeparationLine;
 use App\PlanningBiblio\Helper\PlanningPositionHistoryHelper;
-use App\PlanningBiblio\PresentSet;
 use App\PlanningBiblio\Framework;
-
+use App\PlanningBiblio\PresentSet;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -882,6 +882,616 @@ class PlanningController extends BaseController
         $return = [];
 
         return new Response(json_encode($return));
+    }
+
+    /*
+     * Enregistre dans la base de donées les notes en bas des plannings
+     */
+    #[Route(path: '/planning/notes', name: 'planning.notes', methods: ['POST'])]
+    public function updateNotes(Request $request)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $CSRFToken = $request->get('CSRFToken');
+        $date = $request->get('date');
+        $site = $request->get('site');
+        $text = $request->get('text');
+
+        $date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateSQL'));
+        $site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
+        $text = urldecode($text);
+        $text = sanitize_html($text);
+
+        // Sécurité : droits d'accès à la page
+        $required1 = 300 + $site; // Droits de modifier les plannings du sites N° $site
+        $required2 = 800 + $site; // Droits de modifier les commentaures
+        $required3 = 1000 + $site; // Droits de modifier les plannings
+
+        $droits = $_SESSION['droits'];
+
+        if (!in_array($required1, $droits) and !in_array($required2, $droits) and !in_array($required3, $droits)) {
+            return new Response(json_encode(['error' => 'Vous n\'avez pas le droit de modifier les commentaires']));
+        }
+
+        $p=new \planning();
+        $p->date = $date;
+        $p->site = $site;
+        $p->notes = $text;
+        $p->CSRFToken = $CSRFToken;
+        $p->updateNotes();
+
+        $p->getNotes();
+        $notes = $p->notes;
+        $validation = $p->validation;
+
+        return new Response(json_encode(['notes' => $notes, 'validation' => $validation]));
+    }
+
+    /*
+     * Envoie les notifications aux agents lorsque des plannings les concernant sont validés ou modifiés
+     * Page appelée en ajax lors du click sur les cadenas de la page planning
+     * (événement $("#icon-lock").click, page public/js/planning.js)
+     */
+    #[Route(path: '/planning/notifications', name: 'planning.notifications', methods: ['POST'])]
+    public function planningNotifications(Request $request)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $CSRFToken = $request->get('CSRFToken');
+        $date = $request->get('date');
+        $site = $request->get('site');
+
+        $date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateSQL'));
+        $site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
+
+        // Envoi des notifications
+        if ($this->config('Planning-InitialNotification') != '-2' or $this->config('Planning-ChangeNotification') != '-2' ) {
+            $p = new \planning();
+            $p->date=$date;
+            $p->site=$site;
+            $p->CSRFToken = $CSRFToken;
+            $p->notifications();
+        }
+
+        return new Response(json_encode('ok'));
+    }
+
+    /*
+     * Contrôle en arrière plan la date et l'heure de validation du planning actuellement affiché 
+     * afin de rafraichir la page si une modification a eu lieu à l'aide de la fonction JavaScript refresh_poste
+     * Cette page est appelée par la fonction JavaScript refresh_poste
+     */
+    #[Route(path: '/planning/refresh', name: 'planning.refresh', methods: ['get'])]
+    public function refreshPlanning(Request $request)
+    {
+        $date = $request->get('date');
+        $site = $request->get('site');
+
+        $db = new \db();
+        $db->select('pl_poste_verrou', 'validation2', "`date`='$date' AND `site`='$site'");
+
+        return new Response(json_encode($db->result[0]['validation2']));
+    }
+
+    /*
+     * Permet la mise à jour en arrière plan de la base de données (table pl_poste)
+     * lors de l'utilisation du menu contextuel de la page planning pour placer les agents
+     * Cette page est appelée par la function JavaScript "bataille_navale" utilisé par le fichier planning/poste/menudiv.php
+     */
+    #[Route(path: '/planning/update-cell', name: 'planning.update.cell', methods: ['POST'])]
+    public function updateCell(Request $request)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $ajouter = $request->get('ajouter');
+        $barrer = $request->get('barrer');
+        $CSRFToken = $request->get('CSRFToken');
+        $date = $request->get('date');
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
+        $griser = $request->get('griser');
+        $perso_id = $request->get('perso_id');
+        $perso_id_origine = $request->get('perso_id_origine');
+        $poste = $request->get('poste');
+        $site = $request->get('site');
+        $tout = $request->get('tout');
+        $logaction = $request->get('logaction');
+
+        $ajouter = filter_var($ajouter, FILTER_CALLBACK, array('options' => 'sanitize_on'));
+        $barrer = filter_var($barrer, FILTER_SANITIZE_NUMBER_INT);
+        $date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateSQL'));
+        $debut = filter_var($debut, FILTER_CALLBACK, array('options' => 'sanitize_time'));
+        $fin = filter_var($fin, FILTER_CALLBACK, array('options' => 'sanitize_time'));
+        $griser = filter_var($griser, FILTER_SANITIZE_NUMBER_INT);
+        $perso_id_origine = filter_var($perso_id_origine, FILTER_SANITIZE_NUMBER_INT);
+        $poste = filter_var($poste, FILTER_SANITIZE_NUMBER_INT);
+        $site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
+        $tout = filter_var($tout, FILTER_CALLBACK, array('options' => 'sanitize_on'));
+        $logaction = filter_var($logaction, FILTER_CALLBACK, array('options' => 'sanitize_on'));
+
+        $login_id = $_SESSION['login_id'];
+        $now = date("Y-m-d H:i:s");
+
+        $barrer = intval($barrer);
+
+        // Pärtie 1 : Enregistrement des nouveaux éléments
+
+        // Suppression ou marquage absent
+        if (is_numeric($perso_id) and $perso_id == 0) {
+            // Tout barrer
+            if ($barrer == 1 and $tout) {
+
+                // History
+                if ($logaction) {
+                    $history = new PlanningPositionHistoryHelper();
+                    $history->cross($date, $debut, $fin, $site, $poste, $login_id);
+                }
+
+                $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
+                $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->update("pl_poste", $set, $where);
+
+                // Barrer l'agent sélectionné
+            } elseif ($barrer == 1) {
+
+                // History
+                if ($logaction) {
+                    $history = new PlanningPositionHistoryHelper();
+                    $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
+                }
+
+                $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
+                $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->update("pl_poste", $set, $where);
+            } elseif ($barrer == -1) {
+                $set=array("absent"=>"0", "chgt_login"=>$login_id, "chgt_time"=>$now);
+                $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->update("pl_poste", $set, $where);
+            }
+            // Tout supprimer
+            elseif ($tout) {
+
+                // History
+                if ($logaction) {
+                    $history = new PlanningPositionHistoryHelper();
+                    $history->delete($date, $debut, $fin, $site, $poste, $login_id);
+                }
+
+                $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->delete("pl_poste", $where);
+                // Supprimer l'agent sélectionné
+                // FIXME à vérifier. Pas de suppression si on dégrise.
+            } elseif ($griser != -1) {
+
+                // History
+                if ($logaction) {
+                    $history = new PlanningPositionHistoryHelper();
+                    $history->delete($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
+                }
+
+                $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->delete("pl_poste", $where);
+            }
+        }
+        // Remplacement
+        else {
+            // si ni barrer, ni ajouter : on remplace
+            if ($barrer == 0 and !$ajouter) {
+
+                // History
+                if ($logaction) {
+                    $history = new PlanningPositionHistoryHelper();
+                    $history->put($date, $debut, $fin, $site, $poste, $login_id, $perso_id, $perso_id_origine);
+                }
+
+                // Suppression des anciens éléments
+                $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=> $perso_id_origine);
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->delete("pl_poste", $where);
+
+                if (is_numeric($perso_id)) {
+                    // Insertion des nouveaux éléments
+                    $p = new \planning();
+                    $p->update_cell_add_agents($date, $debut, $fin, $poste, $site, $perso_id, $login_id, $CSRFToken);
+                } else {
+                    $tab = json_decode($perso_id);
+                    if (is_array($tab) and !empty($tab)) {
+                        foreach ($tab as $elem) {
+                            // Insertion des nouveaux éléments
+                            $p = new \planning();
+                            $p->update_cell_add_agents($date, $debut, $fin, $poste, $site, $elem, $login_id, $CSRFToken);
+                        }
+                    }
+                }
+            }
+            // Si barrer : on barre l'ancien et ajoute le nouveau
+            elseif ($barrer == 1) {
+                // On barre l'ancien
+                if ($logaction) {
+                    $history = new PlanningPositionHistoryHelper();
+                    $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
+                }
+                $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
+                $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->update("pl_poste", $set, $where);
+
+                // On ajoute le nouveau
+                if ($logaction) {
+                    $history = new PlanningPositionHistoryHelper();
+                    $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id, true);
+                }
+                $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
+                              "chgt_login"=>$login_id, "chgt_time"=>$now);
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->insert("pl_poste", $insert);
+            }
+            // Si Ajouter, on garde l'ancien et ajoute le nouveau
+            elseif ($ajouter) {
+                if ($logaction) {
+                    $history = new PlanningPositionHistoryHelper();
+                    $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id);
+                }
+
+                $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
+                              "chgt_login"=>$login_id, "chgt_time"=>$now);
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->insert("pl_poste", $insert);
+            }
+        }
+
+        // Griser les cellule
+        if ($griser == 1) {
+
+            // History
+            if ($logaction) {
+                $history = new PlanningPositionHistoryHelper();
+                $history->disable($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
+            }
+
+            $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1', "chgt_login"=>$login_id, "chgt_time"=>$now);
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert("pl_poste", $insert);
+        } elseif ($griser == -1) {
+            $delete=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1');
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("pl_poste", $delete);
+        }
+
+
+        // Disable redo actions
+        if ($logaction) {
+            $this->entityManager->getRepository(PlanningPositionHistory::class)
+            ->archive($date, $site, true);
+        }
+
+        // Partie 2 : Récupération de l'ensemble des éléments
+        // Et transmission à la fonction JS bataille_navale pour mise à jour de l'affichage de la cellule
+
+        $db->selectLeftJoin(
+            array("pl_poste","perso_id"),
+                            array("personnel","id"),
+                            array("absent","supprime","grise"),
+                            array("nom","prenom","statut","service","postes",array("name"=>"id","as"=>"perso_id")),
+                            array("date"=>$date, "debut"=>$debut, "fin"=> $fin, "poste"=>$poste, "site"=>$site),
+                            array(),
+                            "ORDER BY nom,prenom"
+        );
+
+        $response = array(
+            'tab' => null,
+            'undoable' => 1,
+            'redoable' => 1
+        );
+
+        $undoables = $this->entityManager
+        ->getRepository(PlanningPositionHistory::class)
+        ->undoable($date, $site);
+        $redoables = $this->entityManager
+        ->getRepository(PlanningPositionHistory::class)
+        ->redoable($date, $site);
+
+        if (empty($undoables)) {
+            $response['undoable'] = 0;
+        }
+
+        if (empty($redoables)) {
+            $response['redoable'] = 0;
+        }
+
+        if (!$db->result) {
+            return new Response(json_encode($response));
+        }
+
+        if ($db->result[0]['grise'] == 1) {
+            $response['tab'] = 'grise';
+            return new Response(json_encode($response));
+        }
+
+        $tab=$db->result;
+        usort($tab, "cmp_nom_prenom");
+
+        // Ajoute les qualifications de chaque agent (activités) dans le tableaux $cellules pour personnaliser l'affichage des cellules en fonction des qualifications
+        $a=new \activites();
+        $a->deleted=true;
+        $a->fetch();
+        $activites=$a->elements;
+
+        foreach ($tab as $k => $v) {
+            if ($v['postes']) {
+                $p = json_decode(html_entity_decode($v['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $tab[$k]['activites'] = array();
+                foreach ($activites as $elem) {
+                    if (in_array($elem['id'], $p)) {
+                        $tab[$k]['activites'][] = 'activite_'.strtolower(removeAccents(str_replace(array('/',' ',), '_', $elem['nom'])));
+                    }
+                }
+                $tab[$k]['activites'] = implode(' ', $tab[$k]['activites']);
+            }
+        }
+
+
+        // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
+        $p = new \planning();
+        $sansRepas = $p->sansRepas($date, $debut, $fin, $poste);
+
+        // Recherche des absences
+
+        $p = $this->entityManager->getRepository(Position::class)->find($poste);
+
+        $a=new \absences();
+        $a->valide=false;
+        $a->rejected = false;
+        $a->teleworking = !$p->isTeleworking();
+        $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date.' '.$debut, $date.' '.$fin);
+
+        $absences=$a->elements;
+
+        // Recherche des agents volants
+        if ($this->config('Planning-agents-volants')) {
+            $v = new \volants($date);
+            $v->fetch($date);
+            $agents_volants = $v->selected;
+        }
+
+        for ($i=0;$i<count($tab);$i++) {
+
+            // Distinction des agents volants
+            if ($this->config('Planning-agents-volants') and in_array($tab[$i]['perso_id'], $agents_volants)) {
+                $tab[$i]["statut"] = 'volants';
+            }
+
+            // Mise en forme des statut et service pour affectation des classes css
+            $tab[$i]["statut"]=removeAccents($tab[$i]["statut"]);
+            $tab[$i]["service"]=removeAccents($tab[$i]["service"]);
+
+            // Color the logged in agent.
+            $tab[$i]['is_current_user'] = false;
+            if (!empty($this->config('Affichage-Agent')) and $tab[$i]['perso_id'] == $_SESSION['login_id']) {
+                $tab[$i]['is_current_user'] = true;
+            }
+
+            // Ajout des Sans Repas (SR)
+            if ($sansRepas === true or in_array($tab[$i]['perso_id'], $sansRepas)) {
+                $tab[$i]["sr"] = 1;
+            } else {
+                $tab[$i]["sr"] = 0;
+            }
+
+            // Marquage des absences de la table absences
+            foreach ($absences as $absence) {
+                if ($absence["perso_id"] == $tab[$i]['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut) {
+
+                    if (($this->config('Absences-Exclusion') == 1 and $absence['valide'] == 99999)
+                        or $this->config('Absences-Exclusion') == 2) {
+                        // Nothing changes. If absent = 1 because manually crossed out, absent must remain equal to 1.
+                        } elseif ($absence['valide'] > 0 or $this->config('Absences-validation') == 0) {
+                            $tab[$i]['absent'] = 1;
+                            break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
+                        } elseif ($this->config('Absences-non-validees') and $tab[$i]['absent'] != 1) {
+                            $tab[$i]['absent'] = 2;
+                        }
+                }
+            }
+        }
+
+        // Marquage des congés
+        if ($this->config['Conges-Enable']) {
+            $tab = $this->updateCellHoliday($tab, $date, $debut, $fin);
+        }
+
+        $response['tab'] = $tab;
+
+        return new Response(json_encode($response));
+
+        /*
+         * Résultat :
+         *  [0] => Array (
+         *    [nom] => Nom
+         *    [prenom] => Prénom
+         *    [statut] => Statut
+         *    [service] => Service
+         *    [color] => Color
+         *    [activites] => activite_activite1 activite_activite2 (activités de l'agents précédées de activite_ et séparées par des espaces, pour appliquer les classes .activite_xxx)
+         *    [perso_id] => 86
+         *    [absent] => 0/1/2 ( 0 = pas d'absence ; 1 = absence validée ; 2 = absence non validée )
+         *    [supprime] => 0/1
+         *    [sr] =>0/1
+         *    )
+         *  [1] => Array (
+         *    ...
+         */
+
+    }
+
+    /*
+     * private function updateCellHoliday
+     *
+     * Lorsque le module congés est activé, vérifie si les agents de la cellule modifiée (par la fonction updateCell)
+     * sont en congés et les marques si c'est le cas
+     *
+     * Variables en entrée
+     * $site,	$ajouter,	$perso_id,	$perso_id_origine,	$date
+     * $debut,	$fin,		$absent,	$poste,			$barrer
+     * $tab :
+     *   [0] => Array (
+     *   [nom] => Nom
+     *   [prenom] => Prénom
+     *   [statut] => Statut
+     *   [service] => Service
+     *   [perso_id] => 86
+     *   [absent] => 0
+     *   [supprime] => 0
+     *   )
+     * [1] => Array (
+     *   ...
+     *
+     * Variable modifiée
+     * $tab :
+     *   [0] => Array (
+     *   [nom] => Nom
+     *   [prenom] => Prénom
+     *   [statut] => Statut
+     *   [service] => Service
+     *   [perso_id] => 86
+     *   [absent] => 0
+     *   [supprime] => 0
+     *   [conges] => 0/1/2 ( 0 = pas d'absence ; 1 = absence validée ; 2 = absence non validée )
+     *   )
+     * [1] => Array (
+     *   ...
+     */
+    private function updateCellHoliday($tab, $date, $debut, $fin)
+    {
+        $perso_ids = [];
+        foreach ($tab as $elem) {
+            $perso_ids[] = $elem['perso_id'];
+        }
+        $perso_ids = implode(',', $perso_ids);
+
+        $c = new \conges();
+        $c->debut = "$date $debut";
+        $c->fin = "$date $fin";
+        $c->information = false;
+        $c->supprime = false;
+        $c->valide = false;
+        $c->bornesExclues = true;
+        $c->fetch();
+
+        if (!empty($c->elements)) {
+            for ($i = 0; $i < count($tab); $i++) {
+                $tab[$i]['conges'] = 0;
+                foreach ($c->elements as $elem) {
+                    if ($tab[$i]['perso_id']==$elem['perso_id']) {
+                        if ($elem['valide'] > 0) {
+                            $tab[$i]['conges'] = 1;
+                            continue;  // Garder le continue à cet endroit pour que les absences validées prennent le dessus sur les non-validées
+                        } else {
+                            $tab[$i]['conges'] = 2;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $tab;
+    }
+
+    /*
+     * Permet de verrouiller (et de déverrouiller) le planning du jour courant pour en interdire la modification 
+     * et le rendre visible aux agents n'ayant pas le droit de modifier les plannings
+     * Page appelée en ajax lors du click sur les cadenas de la page planning
+     * (événements $("#icon-lock").click et $("#icon-unlock").click, page public/js/planning.js)
+     */
+    #[Route(path: '/planning/validation', name: 'planning.validation', methods: ['POST'])]
+    public function validation(Request $request, Session $session)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $CSRFToken = $request->get('CSRFToken');
+        $date = $request->get('date');
+        $site = $request->get('site');
+        $verrou = $request->get('verrou');
+
+        $site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
+        $verrou = filter_var($verrou, FILTER_SANITIZE_NUMBER_INT);
+
+        $d = new \datePl($date);
+        $d1 = $d->dates[0];
+        $perso_id = $session->get('loginId');
+
+        // Sécurité
+        // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
+        $droit = ($this->config['Multisites-nombre'] > 1) ? (300 + $site) : 12;
+        $droits_agent = $_SESSION['droits'];
+
+        if (!in_array((300 + $site), $droits_agent) and !in_array((1000 + $site), $droits_agent)) {
+            return new Response(json_encode(['Accès refusé', 'error']));
+        }
+
+        // Date de validation
+        $validation = date('Y-m-d H:i:s');
+
+        $db = new \db();
+        $db->select2('pl_poste_verrou', '*', ['date' => $date, 'site' => $site]);
+        if ($db->result) {
+            if ($verrou == 1) {
+                $set = ['verrou2' => '1', 'validation2' => $validation, 'perso2' => $perso_id];
+                $where = ['date' => $date, 'site' => $site];
+                $db = new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->update('pl_poste_verrou', $set, $where);
+            } else {
+                $set = ['verrou2' => '0', 'perso2' => $perso_id];
+                $where = ['date' => $date, 'site' => $site];
+                $db = new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->update('pl_poste_verrou', $set, $where);
+            }
+        } else {
+            $insert = ['date' => $date, 'verrou2' => $verrou, 'validation2' => $validation, 'perso2' => $perso_id, 'site' => $site];
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert('pl_poste_verrou', $insert);
+        }
+
+        if (!$db->error and $verrou == 1) {
+            // Affichage du message "..validé avec succès"
+            $result = ['Le planning a été validé avec succès', 'highlight'];
+            // Affichage du Div "Validation : ..."
+            $result[] = '<u>Validation</u><br/>' . nom($perso_id) . ' ' . date('d/m/Y H:i');
+            // Mise à jour de #planning-data data-validation pour éviter un refresh_poste inutile
+            $result[] = $validation;
+            return new Response(json_encode($result));
+            exit;
+        } elseif (!$db->error and $verrou == 0) {
+            return new Response(json_encode(['Le planning a été déverrouillé avec succès', 'highlight']));
+            exit;
+        }
     }
 
     private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
