@@ -23,6 +23,7 @@ public/themes/*
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
 ###> symfony/phpunit-bridge ###
 .phpunit
 /phpunit.xml
@@ -33,6 +34,7 @@ public/themes/*
 ###< symfony/web-server-bundle ###
 
 ###> phpunit/phpunit ###
+/drivers/
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
