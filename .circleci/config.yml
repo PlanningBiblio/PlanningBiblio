@@ -13,14 +13,15 @@ executors:
         type: string
         default: '10.6'
     docker:
-      - image: cimg/php:<< parameters.php >>
+      - image: cimg/php:<< parameters.php >>-browsers
       - image: cimg/mariadb:<< parameters.mariadb >>
         environment:
           MYSQL_ROOT_PASSWORD: rootplb
           MYSQL_DATABASE: planningb
           MYSQL_USER: plb
           MYSQL_PASSWORD: plb
-
+orbs:
+  browser-tools: circleci/browser-tools@1.1
 jobs:
   install-and-test:
     parameters:
