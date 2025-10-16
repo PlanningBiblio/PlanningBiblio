@@ -508,7 +508,7 @@ function resetICSURL(id, CSRFToken, nom){
   
   if(res){
     $.ajax({
-      url: window.ICS_RESET,
+      url: url('ics/reset'),
       type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
