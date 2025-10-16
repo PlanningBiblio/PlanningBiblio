@@ -226,7 +226,7 @@ $(document).ready(function(){
   var tableId=$("#tableau").attr("data-tableId");
   if(tableId){
     $.ajax({
-      url: window.GET_HIDDEN_TABLES,
+      url: url('get-hidden-tables'),
       type: "post",
       dataType: "json",
       data: {tableId: tableId},
@@ -523,7 +523,7 @@ $(function() {
 	  
 	  $.ajax({
 	    dataType: "json",
-	    url: window.SEND_AVAILABILITY_MAIL,
+	    url: url('send-availability-mail'),
 	    type: "post",
 	    data: appelDispoData,
 	    success: function(result){
@@ -1214,7 +1214,7 @@ function afficheTableauxDiv(){
   var tableId=$("#tableau").attr("data-tableId");
   hiddenTables=JSON.stringify(hiddenTables);
   $.ajax({
-    url: window.HIDDEN_TABLES,
+    url: url('hidden-tables'),
     type: "post",
     dataType: "json",
     data: {tableId: tableId, hiddenTables: hiddenTables, CSRFToken: $('#CSRFSession').val()},
@@ -1241,7 +1241,7 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
   
   // Récupération du message par défaut depuis la config.
   $.ajax({
-    url: window.GET_AVAILABILITY_MESSAGE,
+    url: url('get-availability-message'),
     type: "post",
     dataType: "json",
     data: {},
@@ -1693,7 +1693,7 @@ function verif_categorieA(){
   var site=$("#site").val();
 
   $.ajax({
-    url: window.VALIDATION_CATEGORY_A,
+    url: url('validation-category-a'),
     datatype: "json",
     type: "post",
     data: {"date": date, "site": site},
