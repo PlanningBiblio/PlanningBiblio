@@ -15,6 +15,7 @@ use App\PlanningBiblio\PresentSet;
 use App\PlanningBiblio\Framework;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -780,7 +781,7 @@ class PlanningController extends BaseController
         }
     }
 
-    #[Route(path: '/get-availability-message', name: 'planning.get.availability.message', methods: ['GET'])]
+    #[Route(path: '/get-availability-message', name: 'planning.get.availability.message', methods: ['POST'])]
     public function getDefaultAvailabilityMessage()
     {
         $tab=array(null,null);
@@ -799,7 +800,7 @@ class PlanningController extends BaseController
         return new Response(json_encode($tab));
     }
 
-    #[Route(path: '/validation-category-a', name: 'planning.validation.category.a', methods: ['GET'])]
+    #[Route(path: '/validation-category-a', name: 'planning.validation.category.a', methods: ['POST'])]
     public function validateCategoryAEndOfService()
     {
         $p=new \planning();
@@ -816,8 +817,8 @@ class PlanningController extends BaseController
         return new Response(json_encode($return));
     }
 
-    #[Route(path: '/get-hidden-tables', name: 'planning.get.hidden.tables', methods: ['GET'])]
-    public function getHiddenTables()
+    #[Route(path: '/get-hidden-tables', name: 'planning.get.hidden.tables', methods: ['POST'])]
+    public function ajaxGetHiddenTables()
     {
         $perso_id=$_SESSION['login_id'];
         $tableId=filter_input(INPUT_POST, "tableId", FILTER_SANITIZE_NUMBER_INT);
