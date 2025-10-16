@@ -361,11 +361,6 @@
       $("document").ready(function(){calculHeures($(this),"","form","heures{{ i }}",{{ i }});});
     {% endfor %}
   </script>
-  <script>
-    window.AGENT_DELETE_BULK = "{{ path('agent.delete.bulk') }}";
-    window.AGENT_SEND_ICS_URL = "{{ path('agent.send.ics.url') }}";
-    window.AGENT_UPDATE_BULK = "{{ path('agent.update.bulk') }}";
-  </script>
   <script type="text/JavaScript" src="{{ asset('js/agent.js') }}"></script>
 
 <!-- CONTINUER ICI -->

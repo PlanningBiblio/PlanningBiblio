@@ -289,10 +289,10 @@
     - 1101
     - 1201
 "agent.delete.bulk":
-    - 100
+    - 21
 "agent.send.ics.url":
     - 100
 "agent.update.bulk":
-    - 100
+    - 21
 "agent.update.agents.list":
     - 100

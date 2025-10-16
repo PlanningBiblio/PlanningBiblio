@@ -562,7 +562,7 @@ function updateAgentsList(me,select_id){
   var in_array=false;
 
   $.ajax({
-    url: window.AGENT_UPDATE_AGENTS_LIST,
+    url: url('agent/update-agents-list'),
     type: "get",
     data: "deleted="+deleted,
     success: function(result){
