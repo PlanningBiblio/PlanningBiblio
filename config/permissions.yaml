@@ -288,3 +288,13 @@
 "workinghour.delete":
     - 1101
     - 1201
+"planning.update.notes":
+    -100
+"planning.get.notifications":
+    -100
+"planning.refresh":
+    -100
+"planning.update.cell":
+    -100
+"planning.validation":
+    -100

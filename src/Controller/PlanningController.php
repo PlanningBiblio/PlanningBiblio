@@ -722,8 +722,8 @@ class PlanningController extends BaseController
         return $this->redirectToRoute('home');
     }
 
-    #[Route(path: '', name: '', methods: [''])]
-    public function ajax.notes.php(Request $request)
+    #[Route(path: '/planning/update-notes', name: 'planning.update.notes', methods: ['POST'])]
+    public function updateNotes(Request $request)
     {
         $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');
@@ -743,10 +743,9 @@ class PlanningController extends BaseController
         $droits = $_SESSION['droits'];
 
         if (!in_array($required1, $droits) and !in_array($required2, $droits) and !in_array($required3, $droits)) {
-            echo json_encode(array("error"=>"Vous n'avez pas le droit de modifier les commentaires"));
-            exit;
+            return new Response(json_encode(array("error"=>"Vous n'avez pas le droit de modifier les commentaires")));
         }
-        $p=new planning();
+        $p=new \planning();
         $p->date=$date;
         $p->site=$site;
         $p->notes=$text;
@@ -757,11 +756,11 @@ class PlanningController extends BaseController
         $notes=$p->notes;
         $validation=$p->validation;
 
-        echo json_encode(array("notes"=>$notes, "validation"=>$validation));
+        return new Response(json_encode(array("notes"=>$notes, "validation"=>$validation)));
     }
 
-    #[Route(path: '', name: '', methods: [''])]
-    public function ajax.notifications.php(Request $request)
+    #[Route(path: '/planning/get-notifications', name: 'planning.get.notifications', methods: ['GET'])]
+    public function getPlanningNotifications(Request $request)
     {
         $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');
@@ -771,28 +770,28 @@ class PlanningController extends BaseController
         $site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
 
         // Envoi des notification
-        if ($config['Planning-InitialNotification'] != '-2' or $config['Planning-ChangeNotification'] != '-2' ) {
-            $p=new planning();
+        if ($this->config('Planning-InitialNotification') != '-2' or $this->config('Planning-ChangeNotification') != '-2' ) {
+            $p=new \planning();
             $p->date=$date;
             $p->site=$site;
             $p->CSRFToken = $CSRFToken;
             $p->notifications();
         }
-        echo json_encode("ok");
+        return new Response(json_encode("ok"));
     }
 
-    #[Route(path: '', name: '', methods: [''])]
-    public function ajax.refresh.php(Request $request)
+    #[Route(path: '/planning/refresh', name: 'planning.refresh', methods: ['post'])]
+    public function refreshPlanning(Request $request)
     {
         $date=$_POST['date'];
         $site=$_POST['site'];
-        $db=new db();
+        $db=new \db();
         $db->select("pl_poste_verrou", "validation2", "`date`='$date' AND `site`='$site'");
-        echo json_encode($db->result[0]['validation2']);
+        return new Response(json_encode($db->result[0]['validation2']));
     }
 
-    #[Route(path: '', name: '', methods: [''])]
-    public function ajax.updateCell.php(Request $request)
+    #[Route(path: '/planning/update-cell', name: 'planning.update.cell', methods: ['POST'])]
+    public function updateCell(Request $request)
     {
         $ajouter = $request->get('ajouter');
         $barrer = $request->get('barrer');
@@ -834,13 +833,13 @@ class PlanningController extends BaseController
 
                 // History
                 if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
+                    $history = new \PlanningPositionHistoryHelper();
                     $history->cross($date, $debut, $fin, $site, $poste, $login_id);
                 }
 
                 $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
                 $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->update("pl_poste", $set, $where);
 
@@ -849,19 +848,19 @@ class PlanningController extends BaseController
 
                 // History
                 if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
+                    $history = new \PlanningPositionHistoryHelper();
                     $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
                 }
 
                 $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
                 $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->update("pl_poste", $set, $where);
             } elseif ($barrer == -1) {
                 $set=array("absent"=>"0", "chgt_login"=>$login_id, "chgt_time"=>$now);
                 $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->update("pl_poste", $set, $where);
             }
@@ -870,12 +869,12 @@ class PlanningController extends BaseController
 
                 // History
                 if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
+                    $history = new \PlanningPositionHistoryHelper();
                     $history->delete($date, $debut, $fin, $site, $poste, $login_id);
                 }
 
                 $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->delete("pl_poste", $where);
                 // Supprimer l'agent sélectionné
@@ -884,12 +883,12 @@ class PlanningController extends BaseController
 
                 // History
                 if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
+                    $history = new \PlanningPositionHistoryHelper();
                     $history->delete($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
                 }
 
                 $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->delete("pl_poste", $where);
             }
@@ -901,26 +900,26 @@ class PlanningController extends BaseController
 
                 // History
                 if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
+                    $history = new \PlanningPositionHistoryHelper();
                     $history->put($date, $debut, $fin, $site, $poste, $login_id, $perso_id, $perso_id_origine);
                 }
 
                 // Suppression des anciens éléments
                 $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=> $perso_id_origine);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->delete("pl_poste", $where);
 
                 if (is_numeric($perso_id)) {
                     // Insertion des nouveaux éléments
-                    $p = new planning();
+                    $p = new \planning();
                     $p->update_cell_add_agents($date, $debut, $fin, $poste, $site, $perso_id, $login_id, $CSRFToken);
                 } else {
                     $tab = json_decode($perso_id);
                     if (is_array($tab) and !empty($tab)) {
                         foreach ($tab as $elem) {
                             // Insertion des nouveaux éléments
-                            $p = new planning();
+                            $p = new \planning();
                             $p->update_cell_add_agents($date, $debut, $fin, $poste, $site, $elem, $login_id, $CSRFToken);
                         }
                     }
@@ -930,36 +929,36 @@ class PlanningController extends BaseController
             elseif ($barrer == 1) {
                 // On barre l'ancien
                 if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
+                    $history = new \PlanningPositionHistoryHelper();
                     $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
                 }
                 $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
                 $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->update("pl_poste", $set, $where);
 
                 // On ajoute le nouveau
                 if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
+                    $history = new \PlanningPositionHistoryHelper();
                     $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id, true);
                 }
                 $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
                               "chgt_login"=>$login_id, "chgt_time"=>$now);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->insert("pl_poste", $insert);
             }
             // Si Ajouter, on garde l'ancien et ajoute le nouveau
             elseif ($ajouter) {
                 if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
+                    $history = new \PlanningPositionHistoryHelper();
                     $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id);
                 }
 
                 $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
                               "chgt_login"=>$login_id, "chgt_time"=>$now);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->insert("pl_poste", $insert);
             }
@@ -970,17 +969,17 @@ class PlanningController extends BaseController
 
             // History
             if ($logaction) {
-                $history = new PlanningPositionHistoryHelper();
+                $history = new \PlanningPositionHistoryHelper();
                 $history->disable($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
             }
 
             $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1', "chgt_login"=>$login_id, "chgt_time"=>$now);
-            $db=new db();
+            $db=new \db();
             $db->CSRFToken = $CSRFToken;
             $db->insert("pl_poste", $insert);
         } elseif ($griser == -1) {
             $delete=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1');
-            $db=new db();
+            $db=new \db();
             $db->CSRFToken = $CSRFToken;
             $db->delete("pl_poste", $delete);
         }
@@ -988,7 +987,7 @@ class PlanningController extends BaseController
 
         // Disable redo actions
         if ($logaction) {
-            $entityManager->getRepository(PlanningPositionHistory::class)
+            $this->entityManager->getRepository(PlanningPositionHistory::class)
             ->archive($date, $site, true);
         }
 
@@ -1011,10 +1010,10 @@ class PlanningController extends BaseController
             'redoable' => 1
         );
 
-        $undoables = $entityManager
+        $undoables = $this->entityManager
         ->getRepository(PlanningPositionHistory::class)
         ->undoable($date, $site);
-        $redoables = $entityManager
+        $redoables = $this->entityManager
         ->getRepository(PlanningPositionHistory::class)
         ->redoable($date, $site);
 
@@ -1027,21 +1026,19 @@ class PlanningController extends BaseController
         }
 
         if (!$db->result) {
-            echo json_encode($response);
-            return;
+            return new Response(json_encode($response));
         }
 
         if ($db->result[0]['grise'] == 1) {
             $response['tab'] = 'grise';
-            echo json_encode($response);
-            return;
+            return new Response(json_encode($response));
         }
 
         $tab=$db->result;
         usort($tab, "cmp_nom_prenom");
 
         // Ajoute les qualifications de chaque agent (activités) dans le tableaux $cellules pour personnaliser l'affichage des cellules en fonction des qualifications
-        $a=new activites();
+        $a=new \activites();
         $a->deleted=true;
         $a->fetch();
         $activites=$a->elements;
@@ -1061,14 +1058,14 @@ class PlanningController extends BaseController
 
 
         // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
-        $p = new planning();
+        $p = new \planning();
         $sansRepas = $p->sansRepas($date, $debut, $fin, $poste);
 
         // Recherche des absences
 
-        $p = $entityManager->getRepository(Position::class)->find($poste);
+        $p = $this->entityManager->getRepository(Position::class)->find($poste);
 
-        $a=new absences();
+        $a=new \absences();
         $a->valide=false;
         $a->rejected = false;
         $a->teleworking = !$p->isTeleworking();
@@ -1077,8 +1074,8 @@ class PlanningController extends BaseController
         $absences=$a->elements;
 
         // Recherche des agents volants
-        if ($config['Planning-agents-volants']) {
-            $v = new volants($date);
+        if ($this->config('Planning-agents-volants')) {
+            $v = new \volants($date);
             $v->fetch($date);
             $agents_volants = $v->selected;
         }
@@ -1086,7 +1083,7 @@ class PlanningController extends BaseController
         for ($i=0;$i<count($tab);$i++) {
 
             // Distinction des agents volants
-            if ($config['Planning-agents-volants'] and in_array($tab[$i]['perso_id'], $agents_volants)) {
+            if ($this->config('Planning-agents-volants') and in_array($tab[$i]['perso_id'], $agents_volants)) {
                 $tab[$i]["statut"] = 'volants';
             }
 
@@ -1096,7 +1093,7 @@ class PlanningController extends BaseController
 
             // Color the logged in agent.
             $tab[$i]['is_current_user'] = false;
-            if (!empty($config['Affichage-Agent']) and $tab[$i]['perso_id'] == $_SESSION['login_id']) {
+            if (!empty($this->config('Affichage-Agent')) and $tab[$i]['perso_id'] == $_SESSION['login_id']) {
                 $tab[$i]['is_current_user'] = true;
             }
 
@@ -1111,13 +1108,13 @@ class PlanningController extends BaseController
             foreach ($absences as $absence) {
                 if ($absence["perso_id"] == $tab[$i]['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut) {
 
-                    if (($config['Absences-Exclusion'] == 1 and $absence['valide'] == 99999)
-                        or $config['Absences-Exclusion'] == 2) {
+                    if (($this->config('Absences-Exclusion') == 1 and $absence['valide'] == 99999)
+                        or $this->config('Absences-Exclusion') == 2) {
                         // Nothing changes. If absent = 1 because manually crossed out, absent must remain equal to 1.
-                        } elseif ($absence['valide'] > 0 or $config['Absences-validation'] == 0) {
+                        } elseif ($absence['valide'] > 0 or $this->config('Absences-validation') == 0) {
                             $tab[$i]['absent'] = 1;
                             break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
-                        } elseif ($config['Absences-non-validees'] and $tab[$i]['absent'] != 1) {
+                        } elseif ($this->config('Absences-non-validees') and $tab[$i]['absent'] != 1) {
                             $tab[$i]['absent'] = 2;
                         }
                 }
@@ -1125,13 +1122,43 @@ class PlanningController extends BaseController
         }
 
         // Marquage des congés
-        if ($config['Conges-Enable']) {
-            include "../../conges/ajax.planning.updateCell.php";//!!!!!!TODO TEST here needs to be careful
+        if ($this->config('Conges-Enable')) {
+            //include "../../conges/ajax.planning.updateCell.php";
+            $perso_ids=array();
+            foreach ($tab as $elem) {
+                $perso_ids[]=$elem['perso_id'];
+            }
+            $perso_ids=implode(",", $perso_ids);
+
+            $c=new \conges();
+            $c->debut="$date $debut";
+            $c->fin="$date $fin";
+            $c->information = false;
+            $c->supprime = false;
+            $c->valide=false;
+            $c->bornesExclues=true;
+            $c->fetch();
+
+            if (!empty($c->elements)) {
+                for ($i=0;$i<count($tab);$i++) {
+                    $tab[$i]['conges']=0;
+                    foreach ($c->elements as $elem) {
+                        if ($tab[$i]['perso_id']==$elem['perso_id']) {
+                            if ($elem['valide']>0) {
+                                $tab[$i]['conges']=1;
+                                continue;  // Garder le continue à cet endroit pour que les absences validées prennent le dessus sur les non-validées
+                            } else {
+                                $tab[$i]['conges']=2;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         $response['tab'] = $tab;
 
-        echo json_encode($response);
+        return new Response(json_encode($response));
 
         /*
          * Résultat :
@@ -1153,8 +1180,8 @@ class PlanningController extends BaseController
 
     }
 
-    #[Route(path: '', name: '', methods: [''])]
-    public function ajax.validation.php(Request $request)
+    #[Route(path: '/planning/validation', name: 'planning.validation', methods: ['GET'])]
+    public function validation(Request $request)
     {
         $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');
@@ -1164,43 +1191,42 @@ class PlanningController extends BaseController
         $site = filter_var($site, FILTER_SANITIZE_NUMBER_INT);
         $verrou = filter_var($verrou, FILTER_SANITIZE_NUMBER_INT);
 
-        $d=new datePl($date);
+        $d=new \datePl($date);
         $d1=$d->dates[0];
         $perso_id=$_SESSION['login_id'];
 
         // Sécurité
         // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
-        $droit=($config['Multisites-nombre']>1)?(300+$site):12;
-        $db=new db();
+        $droit=($this->config('Multisites-nombre')>1)?(300+$site):12;
+        $db=new \db();
         $db->select2("personnel", "droits", array("id"=>$perso_id));
         $droits_agent=json_decode(html_entity_decode($db->result[0]['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
         if (!in_array((300+$site), $droits_agent) and !in_array((1000+$site), $droits_agent)) {
-            echo json_encode(array("Accès refusé","error"));
-            exit;
+            return new Response(json_encode(array("Accès refusé","error")));
         }
 
         // Date de validation
         $validation=date("Y-m-d H:i:s");
 
-        $db=new db();
+        $db=new \db();
         $db->select2("pl_poste_verrou", "*", array("date"=>$date, "site"=>$site));
         if ($db->result) {
             if ($verrou==1) {
                 $set=array("verrou2"=>"1", "validation2"=>$validation, "perso2"=>$perso_id);
                 $where=array("date"=>$date, "site"=>$site);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->update("pl_poste_verrou", $set, $where);
             } else {
                 $set=array("verrou2"=>"0", "perso2"=>$perso_id);
                 $where=array("date"=>$date, "site"=>$site);
-                $db=new db();
+                $db=new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->update("pl_poste_verrou", $set, $where);
             }
         } else {
             $insert=array("date"=>$date, "verrou2"=>$verrou, "validation2"=>$validation, "perso2"=>$perso_id, "site"=>$site);
-            $db=new db();
+            $db=new \db();
             $db->CSRFToken = $CSRFToken;
             $db->insert("pl_poste_verrou", $insert);
         }
@@ -1212,10 +1238,10 @@ class PlanningController extends BaseController
             $result[]="<u>Validation</u><br/>".nom($perso_id)." ".date("d/m/Y H:i");
             // Mise à jour de #planning-data data-validation pour éviter un refresh_poste inutile
             $result[]=$validation;
-            echo json_encode($result);
+            return new Response(json_encode($result));
             exit;
         } elseif (!$db->error and $verrou==0) {
-            echo json_encode(array("Le planning a &eacute;t&eacute; d&eacute;verrouill&eacute; avec succ&egrave;s","highlight"));
+            return new Response(json_encode(array("Le planning a &eacute;t&eacute; d&eacute;verrouill&eacute; avec succ&egrave;s","highlight")));
             exit;
         }
     }
