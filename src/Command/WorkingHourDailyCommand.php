@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-
 require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 require_once(__DIR__ . '/../../public/include/db.php');
 
@@ -51,7 +50,7 @@ class WorkingHourDailyCommand extends Command
             $db->update('planning_hebdo', array('actuel'=>1), array('id'=>$id));
         }
 
-        if ($output->isVerbose()){
+        if ($output->isVerbose()) {
             $io->success('Weekly planning records have been successfully updated for all employees.');
         }
 

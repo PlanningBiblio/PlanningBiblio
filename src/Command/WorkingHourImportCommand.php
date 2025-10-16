@@ -13,7 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
-require_once __DIR__ . '/../../init/init_entitymanager.php';
 
 #[AsCommand(
     name: 'app:workinghour:import',
@@ -21,7 +20,7 @@ require_once __DIR__ . '/../../init/init_entitymanager.php';
 )]
 class WorkingHourImportCommand extends Command
 {
-    protected $entityManager;
+    private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -31,7 +30,6 @@ class WorkingHourImportCommand extends Command
 
     protected function configure(): void
     {
-
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -56,7 +54,7 @@ class WorkingHourImportCommand extends Command
                 // Si le fichier existe et date de moins de 10 minutes, on quitte
             } else {
                 $message = 'Le fichier existe et date de moins de 10 minutes';
-                \logs($message, 'TODO', $CSRFToken);
+                logs($message, 'WorkingHourImport', $CSRFToken);
                 $io->warning($message);
                 return Command::SUCCESS;
             }
@@ -78,11 +76,11 @@ class WorkingHourImportCommand extends Command
 
         // On ouvre le fichier CSV
         $CSVFile = trim($config['PlanningHebdo-CSV']);
-        logs("Importation du fichier $CSVFile", "PlanningHebdo", $CSRFToken);
+        logs("Importation du fichier $CSVFile", 'WorkingHourImport', $CSRFToken);
 
         if (!$CSVFile or !file_exists($CSVFile)) {
-            $message = 'Fichier $CSVFile non trouvé';
-            \logs($message, 'PlanningHebdo', $CSRFToken);
+            $message = "Fichier $CSVFile non trouvé";
+            logs($message, 'WorkingHourImport', $CSRFToken);
             $io->warning($message);
             return Command::SUCCESS;
         }
@@ -258,12 +256,12 @@ class WorkingHourImportCommand extends Command
             }
 
             if (!$db->error) {
-                logs("$nb éléments importés", "PlanningHebdo", $CSRFToken);
+                logs("$nb éléments importés", 'WorkingHourImport', $CSRFToken);
             } else {
-                logs("Une erreur est survenue pendant l'importation", "PlanningHebdo", $CSRFToken);
+                logs('Une erreur est survenue pendant l\'importation', 'WorkingHourImport', $CSRFToken);
             }
         } else {
-            logs("Rien à importer", "PlanningHebdo", $CSRFToken);
+            logs('There is nothing to import.', 'WorkingHourImport', $CSRFToken);
         }
 
         // Suppression des valeurs supprimées ou modifiées
@@ -286,18 +284,18 @@ class WorkingHourImportCommand extends Command
             }
 
             if (!$db->error) {
-                logs("$nb éléments supprimés", "PlanningHebdo", $CSRFToken);
+                logs("$nb éléments supprimés", 'WorkingHourImport', $CSRFToken);
             } else {
-                logs("Une erreur est survenue lors de la suppression d'éléments", "PlanningHebdo", $CSRFToken);
+                logs('Une erreur est survenue lors de la suppression d\'éléments', 'WorkingHourImport', $CSRFToken);
             }
         } else {
-            logs("Aucun élément à supprimer", "PlanningHebdo", $CSRFToken);
+            logs('There are no items to delete', 'WorkingHourImport', $CSRFToken);
         }
 
         // Unlock
         unlink($lockFile);
 
-        if ($output->isVerbose()){
+        if ($output->isVerbose()) {
             $io->success('CSV weekly planning import completed: new/updated schedules inserted and obsolete ones purged.');
         }
 
