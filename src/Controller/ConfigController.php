@@ -6,7 +6,11 @@ use App\Controller\BaseController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Response;
 use App\Entity\ConfigParam;
+
+require_once(__DIR__ . '/../../init/init_ajax.php');
+include_once(__DIR__ . '/../../legacy/Class/class.ldap.php');
 
 class ConfigController extends BaseController
 {
@@ -195,8 +199,8 @@ class ConfigController extends BaseController
                 ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
                 ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
 
-                if (ldap_bind($ldapconn, $rdn, $password)) {
-                    if (ldap_search($ldapconn, $suffix, $filter, array($idAttribute))) {
+                if ($bind = @ldap_bind($ldapconn, $rdn, $password)) {
+                    if ($search = @ldap_search($ldapconn, $suffix, $filter, array($idAttribute))) {
                         $return = ["ok"];
                     } else {
                         $return = ["search"];
