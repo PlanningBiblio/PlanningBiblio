@@ -584,7 +584,7 @@ $(function() {
     var CSRFToken=$('#CSRFSession').val();
 
     $.ajax({
-      url: window.ABSENCES_PIECES_JUSTIF,
+      url: url('absences/pieces-justif'),
       method: "POST",
       data: "id="+id+"&pj="+pj+"&checked="+checked+"&CSRFToken="+CSRFToken,
       success: function(){
