@@ -288,3 +288,7 @@
 "workinghour.delete":
     - 1101
     - 1201
+"holiday.checkRecuperation":
+    - 100
+"holiday.recup.create":
+    - 100
