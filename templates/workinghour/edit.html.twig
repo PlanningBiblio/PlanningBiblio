@@ -3,9 +3,6 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script>
-    window.WORKINGHOUR_CHECK_PLANNING = "{{ path('workinghour.check.planning') }}";
-  </script>
   <script type="text/JavaScript" src="{{ asset('js/workingHour.js') }}"></script>
 {% endblock %}
 
