@@ -23,7 +23,7 @@ require_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 )]
 class AbsenceDeleteDocumentsCommand extends Command
 {
-    protected $entityManager;
+    private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -47,27 +47,32 @@ class AbsenceDeleteDocumentsCommand extends Command
         if (empty($delay)) {
             $message = 'Suppression des anciens documents d\'absences désactivée';
             \logs($message, 'Absences-DelaiSuppressionDocuments', $CSRFToken);
-            $io->warning($message);
+
+            if ($output->isVerbose()) {
+                $io->warning($message);
+            }
+
             return Command::SUCCESS;
         }
 
-        $limitdate = new \Datetime();
-        $limitdate->sub(new \DateInterval('P' . $delay . 'D'));
+        $limitDate = new \Datetime();
+        $limitDate->sub(new \DateInterval('P' . $delay . 'D'));
 
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('a')
-        ->from(AbsenceDocument::class, 'a')
-        ->where('a.date < :limitdate')
-        ->setParameter('limitdate', $limitdate);
+            ->from(AbsenceDocument::class, 'a')
+            ->where('a.date < :limitdate')
+            ->setParameter('limitdate', $limitDate);
 
-        $absdocs = $qb->getQuery()->getResult();
-        foreach ($absdocs as $ad) {
+        $absDocs = $qb->getQuery()->getResult();
+
+        foreach ($absDocs as $ad) {
             $ad->deleteFile();
             $this->entityManager->remove($ad);
         }
         $this->entityManager->flush();
 
-        if ($output->isVerbose()){
+        if ($output->isVerbose()) {
             $io->success('Absences documents have been deleted');
         }
 

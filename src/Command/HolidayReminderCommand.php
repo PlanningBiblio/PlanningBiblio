@@ -21,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class HolidayReminderCommand extends Command
 {
-    protected $entityManager;
+    private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {

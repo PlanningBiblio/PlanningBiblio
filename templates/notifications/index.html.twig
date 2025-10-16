@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block page %}
-  <form name='form2' action="{{ path('notification.index') }}" method='get'>
+  <form name='form2' action="{{ asset('notification') }}" method='get'>
     <table style='margin-bottom:10px;'>
       <tr style='vertical-align:center;'>
         <td style='width:370px;'>
@@ -25,7 +25,7 @@
       </tr>
     </table>
   </form>
-  <form name="form" method="post" action="{{ path('notification.save') }}" onsubmit="return confirm('Etes vous sûr de vouloir supprimer les agents sélectionnés ?');">
+  <form name="form" method="post" action="{{ asset('notification') }}" onsubmit="return confirm('Etes vous sûr de vouloir supprimer les agents sélectionnés ?');">
     <table id='tableAgents' class='CJDataTable' data-sort='[[1, "asc"],[2, "asc"]]'>
       <thead>
         <tr>

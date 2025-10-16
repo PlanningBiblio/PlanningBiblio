@@ -14,7 +14,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 require_once __DIR__ . '/../../legacy/Class/class.ics.php';
 require_once __DIR__ . '/../../legacy/Class/class.personnel.php';
-require_once __DIR__ . '/../../init/init_entitymanager.php';
 
 #[AsCommand(
     name: 'app:absence:import-ics',
@@ -22,7 +21,7 @@ require_once __DIR__ . '/../../init/init_entitymanager.php';
 )]
 class AbsenceImportICSCommand extends Command
 {
-    protected $entityManager;
+    private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -32,7 +31,6 @@ class AbsenceImportICSCommand extends Command
 
     protected function configure(): void
     {
-
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -49,12 +47,13 @@ class AbsenceImportICSCommand extends Command
             empty(trim($config['ICS-Server2'])) &&
             !$config['ICS-Server3']) {
             $io->warning("Aucune source ICS n’est configurée. Aucun fichier ne sera importé.");
-        return Command::SUCCESS;
-            }
+
+            return Command::SUCCESS;
+        }
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
         $tmp_dir=sys_get_temp_dir();
-        $lockFile=$tmp_dir."/planningBiblioIcs.lock";
+        $lockFile = $tmp_dir . '/plannoAbsenceImportICS.lock';
 
         if (file_exists($lockFile)) {
             $fileTime = filemtime($lockFile);
@@ -215,7 +214,7 @@ class AbsenceImportICSCommand extends Command
         // Unlock
         unlink($lockFile);
 
-        if ($output->isVerbose()){
+        if ($output->isVerbose()) {
             $io->success('ICS import completed: absences updated and entries from disabled calendars purged.');
         }
 

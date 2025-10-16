@@ -39,6 +39,7 @@ class UpdateDbCommand extends Command
             if ($output->isVerbose()) {
                 $io->writeln($content);
             }
+
             $this->logToFile($content);
         }
 

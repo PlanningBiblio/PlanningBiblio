@@ -13,7 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 require_once( __DIR__ . '/../../legacy/Class/class.personnel.php');
-require_once __DIR__ . '/../../init/init_entitymanager.php';
 
 #[AsCommand(
     name: 'app:absence:import-csv',
@@ -21,7 +20,7 @@ require_once __DIR__ . '/../../init/init_entitymanager.php';
 )]
 class AbsenceImportCSVCommand extends Command
 {
-    protected $entityManager;
+    private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -31,7 +30,6 @@ class AbsenceImportCSVCommand extends Command
 
     protected function configure(): void
     {
-
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -40,7 +38,7 @@ class AbsenceImportCSVCommand extends Command
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
 
-        if(file_exists(__DIR__ . '/../../custom_options.php') {
+        if (file_exists(__DIR__ . '/../../custom_options.php')) {
             include __DIR__ . '/../../custom_options.php';
         }
 
@@ -58,48 +56,48 @@ class AbsenceImportCSVCommand extends Command
         logs("Start Hamac import", "Hamac", $CSRFToken);
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
-        $tmp_dir=sys_get_temp_dir();
-        $lockFile=$tmp_dir."/planningBiblioHamac.lock";
+        $tmp_dir = sys_get_temp_dir();
+        $lockFile = $tmp_dir . '/plannoAbsenceImportCSV.lock';
 
         if (file_exists($lockFile)) {
             if ($debug) {
-                logs("Lock file " . $lockFile . " exists", "Hamac", $CSRFToken);
+                logs('Lock file ' . $lockFile . ' exists', 'Hamac', $CSRFToken);
             }
             $fileTime = filemtime($lockFile);
             $time = time();
             // Si le fichier existe et date de plus de 10 minutes, on le supprime et on continue.
             if ($time - $fileTime > 600) {
                 if ($debug) {
-                    logs("Lock file" . $lockFile . " is more than 10 minutes old. I delete it.", "Hamac", $CSRFToken);
+                    logs('Lock file' . $lockFile . ' is more than 10 minutes old. I delete it.', 'Hamac', $CSRFToken);
                 }
                 unlink($lockFile);
                 // Si le fichier existe et date de moins de 10 minutes, on quitte
             } else {
-                logs("Lock file is less than 10 minutes old. Exit !", "Hamac", $CSRFToken);
                 $message = 'Lock file is less than 10 minutes old. Exit !';
-                \logs($message, 'Hamac', $CSRFToken);
+                logs($message, 'Hamac', $CSRFToken);
                 $io->warning($message);
+
                 return Command::SUCCESS;
             }
         } else {
             if ($debug) {
-                logs("Lock file " . $lockFile . " does not exist.", "Hamac", $CSRFToken);
+                logs('Lock file ' . $lockFile . ' does not exist.', 'Hamac', $CSRFToken);
             }
         }
         // On créé le fichier .lock
-        $inF=fopen($lockFile, "w");
+        $inF = fopen($lockFile, 'w');
         fclose($inF);
 
         if ($debug) {
-            logs("Lock file " . $lockFile . " created", "Hamac", $CSRFToken);
+            logs('Lock file ' . $lockFile . ' created', 'Hamac', $CSRFToken);
         }
 
         // On recherche tout le personnel actif
         if ($debug) {
-            logs("On recherche tout le personnel actif", "Hamac", $CSRFToken);
+            logs('On recherche tout le personnel actif', 'Hamac', $CSRFToken);
         }
 
-        $p= new \personnel();
+        $p = new \personnel();
         $p->supprime = array(0);
         $p->fetch();
         $agents = $p->elements;
@@ -109,7 +107,7 @@ class AbsenceImportCSVCommand extends Command
         $perso_ids = array();
         $key = $config['Hamac-id'];
         if ($debug) {
-            logs("\$key = \$config['Hamac-id'] = " . $config['Hamac-id'], "Hamac", $CSRFToken);
+            logs("\$key = \$config['Hamac-id'] = " . $config['Hamac-id'], 'Hamac', $CSRFToken);
         }
 
         foreach ($agents as $elem) {
@@ -172,8 +170,9 @@ class AbsenceImportCSVCommand extends Command
             unlink($lockFile);
 
             $message = 'Le fichier n\'existe pas.';
-            \logs($message, 'Hamac', $CSRFToken);
+            logs($message, 'Hamac', $CSRFToken);
             $io->warning($message);
+
             return Command::SUCCESS;
         }
 
@@ -385,7 +384,7 @@ class AbsenceImportCSVCommand extends Command
 
         logs("Hamac import completed", "Hamac", $CSRFToken);
 
-        if ($output->isVerbose()){
+        if ($output->isVerbose()) {
             $io->success('Hamac import completed: absences inserted/updated and obsolete entries pruned.');
         }
 

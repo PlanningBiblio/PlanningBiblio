@@ -48,10 +48,6 @@ class BaseController extends AbstractController
 
         $this->permissions = $GLOBALS['droits'];
 
-        $url = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'URL'])
-            ->getValue();
-
         $this->config = $entityManager->getRepository(Config::class)->getAll();
     }
 

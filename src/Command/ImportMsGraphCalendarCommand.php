@@ -45,15 +45,11 @@ class ImportMsGraphCalendarCommand extends Command
         $container = $kernel->getContainer();
         $em = $container->get('doctrine')->getManager();
 
-        $config = $em->getRepository(Config::class)->findBy(
-            array('categorie' => 'Microsoft Graph API'),
-        );
+        $config = $em->getRepository(Config::class)->getAll();
 
-        $config = new ArrayCollection($config);
-
-        $tenantid = $config->filter(function($element) {return $element->getName() == 'MSGraph-TenantID';})->first()->getValue();
-        $clientid = $config->filter(function($element) {return $element->getName() == 'MSGraph-ClientID';})->first()->getValue();
-        $clientsecret = $config->filter(function($element) {return $element->getName() == 'MSGraph-ClientSecret';})->first()->getValue();
+        $tenantid = $config['MSGraph-TenantID'];
+        $clientid = $config['MSGraph-ClientID'];
+        $clientsecret = $config['MSGraph-ClientSecret'];
 
         if (!$tenantid || !$clientid || !$clientsecret) {
             $io->error('At least one of the following is not defined: MSGraph-TenantID, MSGraph-ClientID, MSGraph-ClientSecret. Please check your configuration.');

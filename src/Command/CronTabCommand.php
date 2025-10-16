@@ -24,13 +24,15 @@ require_once __DIR__ . '/../../public/include/function.php';
 class CronTabCommand extends Command
 {
     private $entityManager;
-    private array $executable_crons = [];
+    private $executable_crons;
     private $kernel;
 
     public function __construct(EntityManagerInterface $entityManager, KernelInterface $kernel)
     {
         $this->entityManager = $entityManager;
+        $this->executable_crons = [];
         $this->kernel = $kernel;
+
         $today = date('Y-m-d 00:00:00');
 
         $crons = $entityManager->getRepository(Cron::class)->findBy(['disabled' => 0]);
@@ -68,7 +70,6 @@ class CronTabCommand extends Command
 
     protected function configure(): void
     {
-
     }
 
     public function crons()
@@ -91,7 +92,7 @@ class CronTabCommand extends Command
 
             foreach ($crons as $cron) {
 
-                $cmd = sprintf($cron->getCommand());
+                $cmd = $cron->getCommand();
 
                 if ($output->isVerbose()) {
                     $io->text("Running: $cmd");
@@ -125,7 +126,7 @@ class CronTabCommand extends Command
         return Command::SUCCESS;
     }
 
-    public function update_cron($cron)
+    private function update_cron($cron)
     {
         $last = date_create();
 

@@ -12,8 +12,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-require_once(__DIR__ . '/../../vendor/autoload.php');
-
 use App\PlanningBiblio\Framework;
 
 require_once __DIR__ . '/../../public/include/function.php';
@@ -26,14 +24,13 @@ require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 )]
 class PlanningControlCommand extends Command
 {
-    protected $entityManager;
+    private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
         parent::__construct();
     }
-
 
     protected function configure(): void
     {
@@ -51,21 +48,21 @@ class PlanningControlCommand extends Command
             $message = 'Rappels désactivés';
             logs($message, 'Rappels', $CSRFToken);
             $io->warning($message);
+
             return Command::SUCCESS;
         }
 
         // Gestion des sites
         $sites=array();
-        $multiSiteCount = $config['Multisites-nombre'];
-        for ($i=1;$i<=$multiSiteCount;$i++) {
-            $multiSiteName = $config['Multisites-site'.$i];
-            $sites[]=array($i,$multiSiteName);
+
+        for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
+            $sites[] = array($i, $config['Multisites-site' . $i]);
         }
 
         // Dates à controler
         $jours=$config['Rappels-Jours'];
 
-        // Recherche la date du jour et les $reminderDays suivants
+        // Recherche la date du jour et les $jours suivants
         $dates=array();
         for ($i=0;$i<=$jours;$i++) {
             $time=strtotime("+ $i days");

@@ -22,7 +22,7 @@ require_once __DIR__ . '/../../public/include/function.php';
 )]
 class WorkingHourExportCommand extends Command
 {
-    protected $entityManager;
+    private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -40,7 +40,7 @@ class WorkingHourExportCommand extends Command
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
 
-        if(file_exists(__DIR__ . '/../../custom_options.php') {
+        if (file_exists(__DIR__ . '/../../custom_options.php')) {
             include __DIR__ . '/../../custom_options.php';
         }
 
@@ -53,8 +53,7 @@ class WorkingHourExportCommand extends Command
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
         $tmp_dir=sys_get_temp_dir();
-        $lockFile=$tmp_dir."/plannoExportCSV.lock";
-        //unlink($lockFile);//TODO TEST
+        $lockFile = $tmp_dir . '/plannoWorkingHourExport.lock';
 
         if (file_exists($lockFile)) {
             $fileTime = filemtime($lockFile);
@@ -64,9 +63,10 @@ class WorkingHourExportCommand extends Command
                 unlink($lockFile);
                 // Si le fichier existe et date de moins de 10 minutes, on quitte
             } else {
-                $message = 'TODO1';
-                \logs($message, 'TODO', $CSRFToken);
+                $message = 'The last execution took place less than 10 minutes ago';
+                logs($message, 'WorkingHourExport', $CSRFToken);
                 $io->warning($message);
+
                 return Command::SUCCESS;
             }
         }
@@ -79,9 +79,10 @@ class WorkingHourExportCommand extends Command
         $p->fetch();
 
         if (empty($p->elements)) {
-            $message = 'TODO2';
-            \logs($message, 'TODO', $CSRFToken);
+            $message = 'No agent was found';
+            logs($message, 'WorkingHourExport', $CSRFToken);
             $io->warning($message);
+
             return Command::SUCCESS;
         }
 
@@ -115,7 +116,7 @@ class WorkingHourExportCommand extends Command
             $p=new \planningHebdo();
             $p->debut=$current;
             $p->fin=$current;
-            //$p->valide=true;
+            $p->valide=true;
             $p->fetch();
 
             if (!empty($p->elements)) {
@@ -131,12 +132,12 @@ class WorkingHourExportCommand extends Command
 
                     // Mise en forme du tableau temps
                     /** Le tableau $elem["temps"][$jour] est constitué comme suit :
-                     0 => début période 1,                                           *
-                     1 => fin période 1,
-                     2 => début période 2,
-                     5 => fin période 2 si pause2 activée, sinon null,
-                     6 => début période 3 si pause 2, sinon null,
-                     3 => fin de journée (peut être fin de période 1, 2 ou 3)
+                     * 0 => début période 1,                                           *
+                     * 1 => fin période 1,
+                     * 2 => début période 2,
+                     * 5 => fin période 2 si pause2 activée, sinon null,
+                     * 6 => début période 3 si pause 2, sinon null,
+                     * 3 => fin de journée (peut être fin de période 1, 2 ou 3)
                      */
                     $temps = array();
 
@@ -182,7 +183,7 @@ class WorkingHourExportCommand extends Command
         }
 
         // On ouvre le fichier CSV
-        logs("Exportation des données vers le fichier $CSVFile", "PlanningHebdo", $CSRFToken);
+        logs("Exportation des données vers le fichier $CSVFile", 'WorkingHourExport', $CSRFToken);
 
         $fp = fopen($CSVFile, 'w');
 
@@ -194,9 +195,9 @@ class WorkingHourExportCommand extends Command
 
         // Unlock
         unlink($lockFile);
-        logs("Exportation terminée (fichier $CSVFile)", "PlanningHebdo", $CSRFToken);
+        logs("Exportation terminée (fichier $CSVFile)", 'WorkingHourExport', $CSRFToken);
 
-        if ($output->isVerbose()){
+        if ($output->isVerbose()) {
             $io->success('CSV export completed successfully.');
         }
 
