@@ -1,9 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-<script>
-  window.CHECK_RECUPERATION = "{{ path('holiday.checkRecuperation') }}";
-</script>
 <script type="text/JavaScript" src="{{ asset('js/holiday.js') }}"></script>
   <script type='text/JavaScript'>
     var limitDefaut = {{ recup_delaidefaut }};
@@ -104,7 +101,7 @@
         if ( bValid ) {
           // Enregistre la demande
           $.ajax({
-            url: '{{ path("holiday.recup.create") }}',
+            url: "{{ path('holiday.recup.create') }}",
             dataType: "json",
             data: {date: date.val(), date2: date2.val(), heures: heures.val(), commentaires: commentaires.val(), perso_id: perso_id, CSRFToken: $('#CSRFSession').val()},
             type: "post",

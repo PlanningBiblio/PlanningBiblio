@@ -3,9 +3,6 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script>
-    window.CHECK_RECUPERATION = "{{ path('holiday.checkRecuperation') }}";
-  </script>
   <script type="text/JavaScript" src="{{ asset('js/holiday.js') }}"></script>
 {% endblock %}
 
