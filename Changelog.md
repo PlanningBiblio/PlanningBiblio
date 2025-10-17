@@ -1,9 +1,27 @@
 # Changelog Planno
 
+## Version 25.11.01 (2025-10-17)
+
+### Enhancement
+
+- MT50216: Check hour format in working hours (client side) #1181
+- MT50093: Improve purge command speed #1184
+- MT50683: Use Firefox to run unit tests
+
+### Fixes
+
+- MT50247: fix undefined variable $demande at class.absence.php #1188
+
+### Plumbing
+
+- MT50258: Move PHP classes from /public to /legacy #1180
+- MT50258: Move JavaScript files to /public/js
+- MT46629: Move JS & CSS libraries to public/vendor
+
 ## Version 25.11.00 (2025-10-01)
 
 ### Enhancement
-- MT49914: Simplified absence validation schema for meetings#1165
+- MT49914: Simplified absence validation schema for meetings #1165
 
 ### Dependencies
 - Composer update
