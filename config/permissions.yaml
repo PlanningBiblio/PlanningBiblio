@@ -288,3 +288,5 @@
 "workinghour.delete":
     - 1101
     - 1201
+"ajax.update.select.options":
+    - 100

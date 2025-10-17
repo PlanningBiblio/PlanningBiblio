@@ -433,7 +433,7 @@ $(function() {
 
 	// Transmet le tableau à la page de validation ajax
 	$.ajax({
-          url: url('include/ajax.menus.php'),
+          url: url('ajax/update-select-options'),
 	  type: "post",
           dataType: "json",
 	  data: {tab: tab, menu: "statuts" , option: "categorie", CSRFToken: $('#CSRFSession').val()},
@@ -543,7 +543,7 @@ $(function() {
 
 	// Transmet le tableau à la page de validation ajax
 	$.ajax({
-	  url: url('include/ajax.menus.php'),
+	  url: url('ajax/update-select-options'),
 	  type: "post",
           dataType: "json",
 	  data: {tab: tab, menu: "services", CSRFToken: $('#CSRFSession').val()},
