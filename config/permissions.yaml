@@ -288,3 +288,13 @@
 "workinghour.delete":
     - 1101
     - 1201
+"planning.send.availability.mail":
+    - 100
+"planning.get.availability.message":
+    - 100
+"planning.validation.category.a":
+    - 100
+"planning.get.hidden.tables":
+    - 100
+"planning.hidden.tables":
+    - 100
