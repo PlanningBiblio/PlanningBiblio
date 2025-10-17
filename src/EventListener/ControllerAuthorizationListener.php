@@ -89,6 +89,11 @@ class ControllerAuthorizationListener
         }
 
         $accesses = $this->permissions[$route];
+        if ($accesses === null) {
+            $accesses = [];
+        } elseif (!is_array($accesses)) {
+            $accesses = [$accesses];
+        }
 
         $multisites = $GLOBALS['config']['Multisites-nombre'];
 
