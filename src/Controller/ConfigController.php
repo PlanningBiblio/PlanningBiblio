@@ -6,7 +6,11 @@ use App\Controller\BaseController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Response;
 use App\Entity\ConfigParam;
+
+require_once(__DIR__ . '/../../init/init_ajax.php');
+include_once(__DIR__ . '/../../legacy/Class/class.ldap.php');
 
 class ConfigController extends BaseController
 {
@@ -170,4 +174,45 @@ class ConfigController extends BaseController
 
         return $this->redirectToRoute('config.index', $options);
     }
+
+    #[Route('/ldap/test', name: 'ldap.test', methods: ['POST'])]
+    public function ldapTest(Request $request)
+    {
+        $filter = $request->get('filter');
+        $host = $request->get('host');
+        $idAttribute = $request->get('idAttribute');
+        $protocol = $request->get('protocol');
+        $rdn = $request->get('rdn');
+        $suffix = $request->get('suffix');
+        $password = $request->get('password');
+        $port = $request->get('port');
+
+        $port = filter_var($port, FILTER_SANITIZE_NUMBER_INT);
+
+        // Connexion au serveur LDAP
+        $url = $protocol.'://'.$host.':'.$port;
+
+        $return = ["error"];
+
+        if ($fp=@fsockopen($host, $port, $errno, $errstr, 5)) {
+            if ($ldapconn = ldap_connect($url)) {
+                ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+                ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+
+                if ($bind = @ldap_bind($ldapconn, $rdn, $password)) {
+                    if ($search = @ldap_search($ldapconn, $suffix, $filter, array($idAttribute))) {
+                        $return = ["ok"];
+                    } else {
+                        $return = ["search"];
+                    }
+                } else {
+                    $return = ["bind"];
+                }
+            }
+        }
+
+        return new Response(json_encode($return));
+
+    }
+
 }
