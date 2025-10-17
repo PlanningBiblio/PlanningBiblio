@@ -15,7 +15,7 @@ require_once(__DIR__ . '/../../public/include/db.php');
 
 #[AsCommand(
     name: 'app:workinghour:daily',
-    description: 'Updates weekly planning records daily by marking the current schedule as active for each employee.',
+    description: 'Execute daily tasks to update working hours',
 )]
 class WorkingHourDailyCommand extends Command
 {

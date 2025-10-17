@@ -16,7 +16,7 @@ require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 
 #[AsCommand(
     name: 'app:workinghour:import',
-    description: 'Imports weekly planning data from a CSV file, inserting/updating current schedules and purging removed ones.',
+    description: 'Import working hours from a CSV file',
 )]
 class WorkingHourImportCommand extends Command
 {

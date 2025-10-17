@@ -16,7 +16,7 @@ require_once(__DIR__ . '/../../public/include/db.php');
 
 #[AsCommand(
     name: 'app:holiday:reset:remainder',
-    description: 'Reset the remainders',
+    description: 'Reset the remainder credits',
 )]
 class HolidayResetRemainderCommand extends Command
 {

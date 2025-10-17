@@ -17,7 +17,7 @@ require_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 
 #[AsCommand(
     name: 'app:absence:import-ics',
-    description: 'Imports employees’ absences from ICS calendar sources (config and per-agent URLs), updating the database and purging disabled calendars.',
+    description: 'Import absences from ICS calendars',
 )]
 class AbsenceImportICSCommand extends Command
 {
@@ -157,6 +157,11 @@ class AbsenceImportICSCommand extends Command
                 if (!$agent["ics_$i"]) {
                     logs("Agent #{$agent['id']} : Check ICS $i is disabled", "ICS", $CSRFToken);
 
+                    if (!$url) {
+                        logs("Agent #{$agent['id']} : Impossible de constituer une URL valide. Purge abandonnée", 'ICS', $CSRFToken);
+                        continue;
+                    }
+
                     $ics=new CJICS();
                     $ics->src = $url;
                     $ics->number = $i;
@@ -196,6 +201,10 @@ class AbsenceImportICSCommand extends Command
                 }
 
                 logs("Agent #{$agent['id']} : Importation du fichier $url", "ICS", $CSRFToken);
+
+                if (!$url) {
+                    continue;
+                }
 
                 $ics=new CJICS();
                 $ics->src=$url;

@@ -10,6 +10,7 @@
  * - Still used to create the database for unit tests
  */
 
+$dbprefix = $config['dbprefix'];
 
 $sql[]="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';";
 

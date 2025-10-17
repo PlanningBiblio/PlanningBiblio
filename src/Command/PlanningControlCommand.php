@@ -3,6 +3,8 @@
 namespace App\Command;
 
 use App\Entity\Config;
+use App\PlanningBiblio\Framework;
+use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -12,15 +14,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\PlanningBiblio\Framework;
-
-require_once __DIR__ . '/../../public/include/function.php';
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 
 #[AsCommand(
     name: 'app:planning:control',
-    description: 'Scans upcoming site schedules, flags unvalidated or unfilled shifts, and emails a summary report',
+    description: 'Check upcoming schedules and sends a report to the planning team',
 )]
 class PlanningControlCommand extends Command
 {
@@ -41,12 +41,13 @@ class PlanningControlCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
+        $logger = new Logger($this->entityManager);
 
         $CSRFToken = CSRFToken();
 
         if (!$config['Rappels-Actifs']) {
             $message = 'Rappels désactivés';
-            logs($message, 'Rappels', $CSRFToken);
+            $logger->log($message, 'PlanningControl');
             $io->warning($message);
 
             return Command::SUCCESS;
@@ -126,7 +127,7 @@ class PlanningControlCommand extends Command
 
                 // On recherche les plannings qui ne sont pas complets (cellules vides)
                 // Recherche des tableaux (structures)
-                $t = new \Framework();
+                $t = new Framework();
                 $t->id=$tableauId;
                 $t->get();
                 $tableau=$t->elements;
@@ -178,7 +179,6 @@ class PlanningControlCommand extends Command
                                         // Contrôle des congés
                                         $conges=false;
                                         if ($config['Conges-Enable']) {
-                                            require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
                                             $c=new \conges();
                                             if ($c->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
                                                 $conges=true;
@@ -214,7 +214,7 @@ class PlanningControlCommand extends Command
         }
 
         // Création du message
-        $msg="Voici l&apos;&eacute;tat des plannings du ".dateFr($dates[0])." au ".dateFr($dates[count($dates)-1]);
+        $msg="Voici l'état des plannings du ".dateFr($dates[0])." au ".dateFr($dates[count($dates)-1]);
         $msg.="<ul>\n";
         foreach ($data as $date) {
             foreach ($date as $site) {
@@ -248,7 +248,8 @@ class PlanningControlCommand extends Command
         $m->send();
 
         if ($m->error) {
-            logs($m->error, "Rappels", $CSRFToken);
+            $logger->log($m->error, 'PlanningControl');
+
         }
 
         if ($output->isVerbose()) {

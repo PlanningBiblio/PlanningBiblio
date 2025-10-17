@@ -15,11 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-require_once __DIR__ . '/../../public/include/function.php';
-
 #[AsCommand(
     name: 'app:crontab',
-    description: 'Executes all enabled scheduled cron jobs defined in the database and updates their last run time.',
+    description: 'Execute enabled scheduled cron jobs defined in the database and updates their last run time',
 )]
 class CronTabCommand extends Command
 {
@@ -67,7 +65,6 @@ class CronTabCommand extends Command
         parent::__construct();
     }
 
-
     protected function configure(): void
     {
     }
@@ -86,39 +83,35 @@ class CronTabCommand extends Command
         $app = new Application($this->kernel);
         $app->setAutoExit(false);
 
-        if (php_sapi_name() != 'cli') {
+        $crons = $this->crons();
 
-            $crons = $this->crons();
+        foreach ($crons as $cron) {
+            $cmd = $cron->getCommand();
 
-            foreach ($crons as $cron) {
-
-                $cmd = $cron->getCommand();
-
-                if ($output->isVerbose()) {
-                    $io->text("Running: $cmd");
-                }
-
-                $cronInput = new ArrayInput([
-                    'command' => $cmd
-                ]);
-
-                // disable interactive behavior for the greet command
-                $cronInput->setInteractive(false);
-
-                $returnCode = $app->doRun($cronInput, $output);
-
-                $this->update_cron($cron);
+            if ($output->isVerbose()) {
+                $io->text("Running: $cmd");
             }
 
-            // Absences : Met à jour la table absences avec les événements récurrents sans date de fin (J + 2ans)
-            // 1 fois par jour
-            require_once __DIR__ . '/../../legacy/Class/class.absences.php';
+            $cronInput = new ArrayInput([
+                'command' => $cmd
+            ]);
 
-            $a = new \absences();
-            $a->CSRFToken = $CSRFToken;
-            $a->ics_update_table();
+            // disable interactive behavior for the greet command
+            $cronInput->setInteractive(false);
+
+            $returnCode = $app->doRun($cronInput, $output);
+
+            $this->update_cron($cron);
         }
 
+        // Absences : Met à jour la table absences avec les événements récurrents sans date de fin (J + 2ans)
+        // 1 fois par jour
+        require_once __DIR__ . '/../../legacy/Class/class.absences.php';
+
+        $a = new \absences();
+        $a->CSRFToken = $CSRFToken;
+        $a->ics_update_table();
+  
         if ($output->isVerbose()) {
             $io->success('All scheduled cron jobs have been executed successfully.');
         }
