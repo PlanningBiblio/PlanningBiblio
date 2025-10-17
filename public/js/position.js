@@ -5,7 +5,7 @@
 $(function() {
 
   // Paramétrage de la boite de dialogue permettant la modification des étages
-  $("#add-etage-form").dialog({
+  $('#add-etage-form').dialog({
     autoOpen: false,
     height: 480,
     width: 560,
@@ -14,57 +14,69 @@ $(function() {
     draggable: false,
     buttons: {
       Enregistrer: function() {
-    // Supprime les lignes cachées lors du clic sur la corbeille
-    $("#etages-sortable li:hidden").each(function(){
-      $(this).remove();
-    });
-
-    // Enregistre les éléments du formulaire dans un tableau
-    tab=new Array();
-    $("#etages-sortable li").each(function(){
-      var id=$(this).attr("id").replace("li_","");
-        tab.push({
-          id: id,
-          value: $("#valeur_"+id).text(),
-          place: $(this).index()
+        // Supprime les lignes cachées lors du clic sur la corbeille
+        $('#etages-sortable li:hidden').each(function() {
+          $(this).remove();
         });
-    });
 
-    tab = JSON.stringify(tab);
+        // Enregistre les éléments du formulaire dans un tableau
+        tab = new Array();
+        $('#etages-sortable li').each(function() {
+          var id = $(this).attr('id').replace('li_', '');
+          tab.push({
+            id: id,
+            value: $("#valeur_"+id).text(),
+            place: $(this).index()
+          });
+        });
 
-    // Transmet le tableau à la page de validation ajax
-    $.ajax({
-      url: url('include/ajax.menus.php'),
-      type: "post",
-      dataType: "json",
-      data: {tab: tab, menu: "etages", CSRFToken: $('#CSRFSession').val()},
-      success: function(){
+        tab = JSON.stringify(tab);
+
+        // Transmet le tableau à la page de validation ajax
+        var _token = $('input[name=_token]').val();
+
+        $.ajax({
+          url: url('ajax/update-select-options'),
+          type: 'post',
+          dataType: 'json',
+          data: {
+            _token: _token,
+            CSRFToken: $('#CSRFSession').val(),
+            menu: 'etages',
+            tab: tab,
+          },
+
+          success: function() {
             var current_val = $('#etage').val();
             $('#etage').empty();
-            $('#etage').append("<option value=''>&nbsp;</option>");
+            $('#etage').append('<option value=""></option>');
 
-            $("#etages-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $("#valeur_"+id).text();
-              var selected = (id == current_val) ? "selected='selected'" : "";
-              var option = "<option value='"+id+"' "+selected+">"+val+"</option>";
+            $('#etages-sortable li').each(function() {
+              var id = $(this).attr('id').replace('li_', '');
+              var val = $('#valeur_' + id).text();
+              var selected = (id == current_val) ? 'selected="selected"' : '';
+              var option = '<option value="' + id + '" ' + selected + '>' + val + '</option>';
               $('#etage').append(option);
             });
-            $("#add-etage-form").dialog( "close" );
-            $('#etage').effect("highlight",null,2000);
+
+            $('#add-etage-form').dialog('close');
+            $('#etage').effect('highlight', null, 2000);
+          },
+
+          error: function(){
+            alert('Erreur lors de l\'enregistrement des modifications');
+          }
+        });
       },
-      error: function(){
-        alert("Erreur lors de l'enregistrement des modifications");
-      }
-    });
-      },
+
       Annuler: function() {
-    $(this).dialog( "close" );
+        $(this).dialog('close');
       },
     },
+
     close: function() {
-      $("#etages-sortable li:hidden").each(function(){
-    $(this).show();
+      $('#etages-sortable li:hidden').each(function() {
+        $(this).show();
       });
     }
   });
@@ -116,9 +128,8 @@ $(function() {
     $("#add-etage-text").val(null);
   });
   
-
   // Paramétrage de la boite de dialogue permettant la modification des groupes
-  $("#add-group-form").dialog({
+  $('#add-group-form').dialog({
     autoOpen: false,
     height: 480,
     width: 560,
@@ -127,58 +138,68 @@ $(function() {
     draggable: false,
     buttons: {
       Enregistrer: function() {
-    // Supprime les lignes cachées lors du clic sur la corbeille
-    $("#groups-sortable li:hidden").each(function(){
-      $(this).remove();
-    });
-    
-    // Enregistre les éléments du formulaire dans un tableau
-    tab=new Array();
-    $("#groups-sortable li").each(function(){
-      var id=$(this).attr("id").replace("li_","");
-        tab.push({
-          id: id,
-          value: $("#valeur_"+id).text(),
-          place: $(this).index()
+        // Supprime les lignes cachées lors du clic sur la corbeille
+        $('#groups-sortable li:hidden').each(function() {
+          $(this).remove();
         });
-    });
+    
+        // Enregistre les éléments du formulaire dans un tableau
+        tab = new Array();
+        $('#groups-sortable li').each(function() {
+          var id = $(this).attr('id').replace('li_', '');
+            tab.push({
+              id: id,
+              value: $("#valeur_"+id).text(),
+              place: $(this).index()
+            });
+        });
 
-    tab = JSON.stringify(tab);
+        tab = JSON.stringify(tab);
 
-    // Transmet le tableau à la page de validation ajax
-    $.ajax({
-      url: url('include/ajax.menus.php'),
-      type: "post",
-          dataType: "json",
-      data: {tab: tab, menu: "groupes", CSRFToken: $('#CSRFSession').val()},
-      success: function(){
+        // Transmet le tableau à la page de validation ajax
+        var _token = $('input[name=_token]').val();
+
+        $.ajax({
+          url: url('ajax/update-select-options'),
+          type: 'post',
+          dataType: 'json',
+          data: {
+            _token: _token,
+            CSRFToken: $('#CSRFSession').val(),
+            menu: 'groupes',
+            tab: tab,
+          },
+
+          success: function() {
             var current_val = $('#groupe').val();
             $('#groupe').empty();
-            $('#groupe').append("<option value=''>&nbsp;</option>");
-
-            $("#groups-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $("#valeur_"+id).text();
-              var selected = (id == current_val) ? "selected='selected'" : "";
-              var option = "<option value='"+id+"' "+selected+">"+val+"</option>";
+            $('#groupe').append('<option value=""></option>');
+            
+            $('#groups-sortable li').each(function() {
+              var id=$(this).attr('id').replace('li_', '');
+              var val = $('#valeur_' + id).text();
+              var selected = (id == current_val) ? 'selected="selected"' : '';
+              var option = '<option value="' + id + '" ' + selected + '>' + val + '</option>';
               $('#groupe').append(option);
             });
-            $("#add-group-form").dialog( "close" );
-            $('#groupe').effect("highlight",null,2000);
+            $('#add-group-form').dialog('close');
+            $('#groupe').effect('highlight', null, 2000);
+          },
 
+          error: function(){
+            alert('Erreur lors de l\'enregistrement des modifications');
+          }
+        });
       },
-      error: function(){
-        alert("Erreur lors de l'enregistrement des modifications");
-      }
-    });
-      },
+
       Annuler: function() {
-    $(this).dialog( "close" );
+        $(this).dialog( "close" );
       },
     },
+
     close: function() {
-      $("#groups-sortable li:hidden").each(function(){
-    $(this).show();
+      $('#groups-sortable li:hidden').each(function() {
+        $(this).show();
       });
     }
   });

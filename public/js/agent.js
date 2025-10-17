@@ -410,7 +410,7 @@ function control_credits_hours(o) {
 
 $(function() {
   // Paramétrage de la boite de dialogue permettant la modification des statuts
-  $("#add-statut-form").dialog({
+  $('#add-statut-form').dialog({
     autoOpen: false,
     height: 480,
     width: 560,
@@ -419,54 +419,70 @@ $(function() {
     draggable: false,
     buttons: {
       Enregistrer: function() {
-	// Supprime les lignes cachées lors du clic sur la corbeille
-	$("#statuts-sortable li:hidden").each(function(){
-	  $(this).remove();
-	});
-	
-	// Enregistre les éléments du formulaire dans un tableau
-	tab=new Array();
-	$("#statuts-sortable li").each(function(){
-	  var id=$(this).attr("id").replace("li_","");
-	  tab.push(new Array($(this).find("#valeur_"+id).text(), $(this).index(), $(this).find("#categorie_"+id+" option:selected").val()));
-	});
+        // Supprime les lignes cachées lors du clic sur la corbeille
+        $('#statuts-sortable li:hidden').each(function() {
+          $(this).remove();
+        });
+        
+        // Enregistre les éléments du formulaire dans un tableau
+        tab = new Array();
+        $('#statuts-sortable li').each(function() {
+          var id = $(this).attr('id').replace('li_', '');
+          tab.push(new Array(
+            $(this).find('#valeur_' + id).text(),
+            $(this).index(),
+            $(this).find('#categorie_' + id + ' option:selected').val()
+          ));
+        });
 
-	// Transmet le tableau à la page de validation ajax
-	$.ajax({
-          url: url('include/ajax.menus.php'),
-	  type: "post",
-          dataType: "json",
-	  data: {tab: tab, menu: "statuts" , option: "categorie", CSRFToken: $('#CSRFSession').val()},
-	  success: function(){
+        // Transmet le tableau à la page de validation ajax
+        var _token = $('input[name=_token]').val();
+
+        $.ajax({
+          url: url('ajax/update-select-options'),
+          type: 'post',
+          dataType: 'json',
+          data: {
+            _token: _token,
+            CSRFToken: $('#CSRFSession').val(),
+            menu: 'statuts',
+            option: 'categorie',
+            tab: tab,
+          },
+
+          success: function() {
             var current_val = $('#statut').val();
             $('#statut').empty();
-            $('#statut').append("<option value=''>Aucun</option>");
+            $('#statut').append('<option value="">Aucun</option>');
 
-            $("#statuts-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $(this).find("#valeur_"+id).text();
-              if( val == current_val){
-                var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
+            $('#statuts-sortable li').each(function() {
+              var id = $(this).attr('id').replace('li_','');
+              var val = $(this).find('#valeur_' + id).text();
+              if( val == current_val) {
+                var option = '<option value="' + val + '" selected="selected">' + val + '</option>';
               } else {
-                var option = "<option value='"+val+"'>"+val+"</option>";
+                var option = '<option value="' + val + '">' + val + '</option>';
               }
               $('#statut').append(option);
             });
-            $("#add-statut-form").dialog( "close" );
-            $('#statut').effect("highlight",null,2000);
-	  },
-	  error: function(){
-	    alert("Erreur lors de l'enregistrement des modifications");
-	  }
-	});
+            $('#add-statut-form').dialog('close');
+            $('#statut').effect('highlight', null, 2000);
+          },
+
+          error: function(){
+            alert('Erreur lors de l\'enregistrement des modifications');
+          }
+        });
       },
+
       Annuler: function() {
-	$(this).dialog( "close" );
+        $(this).dialog('close');
       },
     },
+
     close: function() {
-      $("#statuts-sortable li:hidden").each(function(){
-	$(this).show();
+      $('#statuts-sortable li:hidden').each(function() {
+	      $(this).show();
       });
     }
   });
@@ -520,7 +536,7 @@ $(function() {
   });
   
   // Paramétrage de la boite de dialogue permettant la modification des services
-  $("#add-service-form").dialog({
+  $('#add-service-form').dialog({
     autoOpen: false,
     height: 480,
     width: 560,
@@ -529,54 +545,68 @@ $(function() {
     draggable: false,
     buttons: {
       Enregistrer: function() {
-	// Supprime les lignes cachées lors du clic sur la corbeille
-	$("#services-sortable li:hidden").each(function(){
-	  $(this).remove();
-	});
-	
-	// Enregistre les éléments du formulaire dans un tableau
-	tab=new Array();
-	$("#services-sortable li").each(function(){
-	  var id=$(this).attr("id").replace("li_","");
- 	  tab.push(new Array($(this).find("#valeur_"+id).text(), $(this).index()));
-	});
+        // Supprime les lignes cachées lors du clic sur la corbeille
+        $('#services-sortable li:hidden').each(function() {
+          $(this).remove();
+        });
 
-	// Transmet le tableau à la page de validation ajax
-	$.ajax({
-	  url: url('include/ajax.menus.php'),
-	  type: "post",
-          dataType: "json",
-	  data: {tab: tab, menu: "services", CSRFToken: $('#CSRFSession').val()},
-	  success: function(){
+        // Enregistre les éléments du formulaire dans un tableau
+        tab = new Array();
+        $('#services-sortable li').each(function() {
+          var id = $(this).attr('id').replace('li_','');
+          tab.push(new Array(
+            $(this).find('#valeur_' + id).text(),
+            $(this).index()
+          ));
+        });
+
+        // Transmet le tableau à la page de validation ajax
+        var _token = $('input[name=_token]').val();
+
+        $.ajax({
+          url: url('ajax/update-select-options'),
+          type: 'post',
+          dataType: 'json',
+          data: {
+            _token: _token,
+            CSRFToken: $('#CSRFSession').val(),
+            menu: 'services',
+            tab: tab,
+          },
+
+          success: function(){
             var current_val = $('#service').val();
             $('#service').empty();
-            $('#service').append("<option value=''>Aucun</option>");
+            $('#service').append('<option value="">Aucun</option>');
 
-            $("#services-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $(this).find("#valeur_"+id).text();
-              if( val == current_val){
-                var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
+            $('#services-sortable li').each(function() {
+              var id = $(this).attr('id').replace('li_', '');
+              var val = $(this).find('#valeur_' + id).text();
+              if( val == current_val) {
+                var option = '<option value="' + val + '" selected="selected">' + val + '</option>';
               } else {
-                var option = "<option value='"+val+"'>"+val+"</option>";
+                var option = '<option value="' + val + '">' + val + '</option>';
               }
               $('#service').append(option);
             });
-            $("#add-service-form").dialog( "close" );
-            $('#service').effect("highlight",null,2000);
-	  },
-	  error: function(){
-	    alert("Erreur lors de l'enregistrement des modifications");
-	  }
-	});
+            $('#add-service-form').dialog('close');
+            $('#service').effect('highlight', null, 2000);
+          },
+
+          error: function(){
+            alert('Erreur lors de l\'enregistrement des modifications');
+          }
+        });
       },
+
       Annuler: function() {
-	$(this).dialog( "close" );
+        $(this).dialog('close');
       },
     },
+
     close: function() {
-      $("#services-sortable li:hidden").each(function(){
-	$(this).show();
+      $('#services-sortable li:hidden').each(function() {
+        $(this).show();
       });
     }
   });

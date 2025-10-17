@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
+// require_once(__DIR__ . '/../../init/init_ajax.php');
 require_once(__DIR__ . '/../../public/include/function.php');
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
@@ -321,4 +322,80 @@ class AjaxController extends BaseController
       return $response;
     }
 
+    /* Enregistre la liste des groupes de postes et des étages dans la base de données
+     * Appelé lors du clic sur le bouton "Enregistrer" de la dialog box "Liste des groupes" ou "Lsite des étages" à partir de la fiche poste
+     * TODO: Les étages peuvent être supprimés s'ils sont attachés à des postes supprimés. TODO : permettre la restauration des étages lors de la restauration des postes (via restauration des tableaux).
+     * TODO: Les groupes peuvent être supprimés s'ils sont attachés à des postes supprimés. TODO : permettre la restauration des groupes lors de la restauration des postes (via restauration des tableaux).
+     * TODO: Faire en sorte de conserver les ID dans la base de données et façon à les utiliser comme clé.
+     */
+    #[Route(path: '/ajax/update-select-options', name: 'ajax.update.select.options', methods: ['POST'])]
+    public function updateSelectOptions(Request $request)
+    {
+        if (!$this->csrf_protection($request)) {
+           return $this->redirectToRoute('access-denied');
+        }
+
+        $CSRFToken = $request->get('CSRFToken');
+        $menu = $request->get('menu');
+        $option = $request->get('option');
+
+        $tab = $_POST['tab'];
+
+        // New method to use for updating menus
+        if (in_array($menu, array('etages', 'groupes'))) {
+            $tab = json_decode($tab);
+
+            // Deleting items put in trash
+            $ids = array();
+            foreach ($tab as $elem) {
+                $ids[] = $elem->id;
+            }
+            $ids = implode(',', $ids);
+
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("select_$menu", ['id' => "NOT IN$ids"]);
+
+            // Adding new items
+            $db_ids = array();
+            $db=new \db();
+            $db->select("select_$menu");
+            if(!empty($db->result)){
+                foreach ($db->result as $elem) {
+                    $db_ids[] = $elem['id'];
+                }
+            }
+
+            foreach ($tab as $elem) {
+                if (!in_array($elem->id, $db_ids)) {
+                    $db = new \db();
+                    $db->CSRFToken = $CSRFToken;
+                    $db->insert("select_$menu", ["valeur" => $elem->value, "rang" => $elem->place]);
+                } else {
+                    $db = new \db();
+                    $db->CSRFToken = $CSRFToken;
+                    $db->update("select_$menu", ["rang" => $elem->place], ["id" => $elem->id]);
+                }
+            }
+            return new Response(json_encode('ok'));
+        }
+
+        $db=new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete("select_$menu");
+        foreach ($tab as $elem) {
+            $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
+            if ($option == 'type') {
+                $elements['type'] = $elem[2];
+            }
+            if ($option == 'categorie') {
+                $elements['categorie'] = $elem[2];
+            }
+
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert("select_$menu", $elements);
+        }
+        return new Response(json_encode('ok'));
+    }
 }
