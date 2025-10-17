@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Position;
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
@@ -15,6 +16,7 @@ use App\PlanningBiblio\PresentSet;
 use App\PlanningBiblio\Framework;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -833,7 +835,7 @@ class PlanningController extends BaseController
 
                 // History
                 if ($logaction) {
-                    $history = new \PlanningPositionHistoryHelper();
+                    $history = new PlanningPositionHistoryHelper();
                     $history->cross($date, $debut, $fin, $site, $poste, $login_id);
                 }
 
@@ -848,7 +850,7 @@ class PlanningController extends BaseController
 
                 // History
                 if ($logaction) {
-                    $history = new \PlanningPositionHistoryHelper();
+                    $history = new PlanningPositionHistoryHelper();
                     $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
                 }
 
@@ -869,7 +871,7 @@ class PlanningController extends BaseController
 
                 // History
                 if ($logaction) {
-                    $history = new \PlanningPositionHistoryHelper();
+                    $history = new PlanningPositionHistoryHelper();
                     $history->delete($date, $debut, $fin, $site, $poste, $login_id);
                 }
 
@@ -883,7 +885,7 @@ class PlanningController extends BaseController
 
                 // History
                 if ($logaction) {
-                    $history = new \PlanningPositionHistoryHelper();
+                    $history = new PlanningPositionHistoryHelper();
                     $history->delete($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
                 }
 
@@ -900,7 +902,7 @@ class PlanningController extends BaseController
 
                 // History
                 if ($logaction) {
-                    $history = new \PlanningPositionHistoryHelper();
+                    $history = new PlanningPositionHistoryHelper();
                     $history->put($date, $debut, $fin, $site, $poste, $login_id, $perso_id, $perso_id_origine);
                 }
 
@@ -929,7 +931,7 @@ class PlanningController extends BaseController
             elseif ($barrer == 1) {
                 // On barre l'ancien
                 if ($logaction) {
-                    $history = new \PlanningPositionHistoryHelper();
+                    $history = new PlanningPositionHistoryHelper();
                     $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
                 }
                 $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
@@ -940,7 +942,7 @@ class PlanningController extends BaseController
 
                 // On ajoute le nouveau
                 if ($logaction) {
-                    $history = new \PlanningPositionHistoryHelper();
+                    $history = new PlanningPositionHistoryHelper();
                     $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id, true);
                 }
                 $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
@@ -952,7 +954,7 @@ class PlanningController extends BaseController
             // Si Ajouter, on garde l'ancien et ajoute le nouveau
             elseif ($ajouter) {
                 if ($logaction) {
-                    $history = new \PlanningPositionHistoryHelper();
+                    $history = new PlanningPositionHistoryHelper();
                     $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id);
                 }
 
@@ -969,7 +971,7 @@ class PlanningController extends BaseController
 
             // History
             if ($logaction) {
-                $history = new \PlanningPositionHistoryHelper();
+                $history = new PlanningPositionHistoryHelper();
                 $history->disable($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
             }
 
