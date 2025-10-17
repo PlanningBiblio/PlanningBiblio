@@ -6,8 +6,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'log')]
-class Logs
+class Log
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,5 +25,29 @@ class Logs
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->msg;
+    }
+
+    public function setMessage(?string $message): static
+    {
+        $this->msg = $message;
+
+        return $this;
+    }
+
+    public function getProgram(): ?string
+    {
+        return $this->program;
+    }
+
+    public function setProgram(?string $program): static
+    {
+        $this->program = $program;
+
+        return $this;
     }
 }

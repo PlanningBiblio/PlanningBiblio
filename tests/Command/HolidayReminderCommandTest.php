@@ -4,7 +4,7 @@
 // namespace App\Tests\Command;
 // 
 // use App\Entity\Agent;
-// use App\Entity\ConfigParam;
+// use App\Entity\Config;
 // use App\Entity\Holiday;
 // use App\Entity\Manager;
 // use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -285,7 +285,7 @@
 //         $entityManager = $GLOBALS['entityManager'];
 // 
 //         foreach ($config as $k => $v) {
-//             $param = $entityManager->getRepository(ConfigParam::class)->findOneBy(['nom' => $k]);
+//             $param = $entityManager->getRepository(Config::class)->findOneBy(['nom' => $k]);
 //             $param->setValue($v);
 //             $entityManager->persist($param);
 //             $entityManager->flush();

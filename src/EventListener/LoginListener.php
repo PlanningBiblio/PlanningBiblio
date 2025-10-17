@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +25,7 @@ class LoginListener
 
         $session = $event->getRequest()->getSession();
 
-        $config = $this->entityManager->getRepository(ConfigParam::class);
+        $config = $this->entityManager->getRepository(Config::class);
         $url = $config->findOneBy(array('nom' => 'URL'))->getValue();
 
         // Prevent user accessing to login page if he is already authenticated

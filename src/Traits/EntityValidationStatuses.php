@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use App\PlanningBiblio\ValidationAwareEntity;
 use App\Entity\Agent;
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 
 trait EntityValidationStatuses
 {
@@ -42,7 +42,7 @@ trait EntityValidationStatuses
 
         // Simplified absence validation schema for workflow B
         $configByAgent = $this->entityManager
-            ->getRepository(ConfigParam::class)
+            ->getRepository(Config::class)
             ->findOneBy(['nom' => 'Absences-notifications-agent-par-agent'])
             ->getValue();
 

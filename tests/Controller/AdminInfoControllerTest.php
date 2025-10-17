@@ -10,8 +10,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
 {
     public function testAdd()
     {
-        $entityManager = $this->entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
@@ -25,7 +23,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $this->client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'salut', '_token' => $token));
 
-        $info = $entityManager->getRepository(AdminInfo::class)->findOneBy(array('debut' => '20211005', 'fin' => '20211010'));
+        $info = $this->entityManager->getRepository(AdminInfo::class)->findOneBy(array('debut' => '20211005', 'fin' => '20211010'));
 
         $this->assertEquals('salut', $info->getComment(), 'info texte is salut');
 
@@ -35,8 +33,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
     public function testNewForm()
     {
-        $entityManager = $this->entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
@@ -79,8 +75,6 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
     public function testFormEdit()
     {
-        $entityManager = $this->entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
@@ -93,8 +87,8 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $info->setEnd('20221010');
         $info->setComment('salut');
 
-        $entityManager->persist($info);
-        $entityManager->flush();
+        $this->entityManager->persist($info);
+        $this->entityManager->flush();
 
         $id = $info->getId();
 

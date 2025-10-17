@@ -2,24 +2,29 @@
 
 namespace App\PlanningBiblio;
 
+use App\Entity\Log;
+
 class Logger
 {
     private $entityManager;
-    private $dbprefix;
     private $stdout;
 
     public function __construct($entityManager, $stdout = false)
     {
         $this->entityManager = $entityManager;
-        $this->dbprefix = $_ENV['DATABASE_PREFIX'];
         $this->stdout = $stdout;
     }
 
-    public function log($message, $application) {
+    public function log($message, $program) {
         if ($this->stdout) {
             echo $message . "\n";
 	    }
-        $query = "INSERT INTO " . $this->dbprefix . "log (msg, program) VALUES (?,?)";
-        $this->entityManager->getConnection()->prepare($query)->execute([$message, $application]);
+
+        $log = new Log();
+        $log->setMessage($message);
+        $log->setProgram($program);
+
+        $this->entityManager->persist($log);
+        $this->entityManager->flush();
     }
 }

@@ -120,7 +120,7 @@
                 <select name='responsable-{{i}}' id='responsable-{{i}}' class='responsablesl1' data-id='{{i}}'>
                   <option value=''>&nbsp;</option>
                   {% for agent in manager_level1 %}
-                      echo "<option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                      <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
                   {% endfor %}
                 </select>
               </td>
@@ -132,7 +132,7 @@
                 <select name='responsablel2-{{i}}' id='responsablel2-{{i}}' class='responsablesl2' data-id='{{i}}'>
                   <option value=''>&nbsp;</option>
                   {% for agent in manager_level2 %}
-                      echo "<option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                      <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
                   {% endfor %}
                 </select>
               </td>

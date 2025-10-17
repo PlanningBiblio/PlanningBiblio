@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use App\PlanningBiblio\MSGraphClient;
 
 #[AsCommand(
@@ -45,15 +45,11 @@ class ImportMsGraphCalendarCommand extends Command
         $container = $kernel->getContainer();
         $em = $container->get('doctrine')->getManager();
 
-        $config = $em->getRepository(ConfigParam::class)->findBy(
-            array('categorie' => 'Microsoft Graph API'),
-        );
+        $config = $em->getRepository(Config::class)->getAll();
 
-        $config = new ArrayCollection($config);
-
-        $tenantid = $config->filter(function($element) {return $element->getName() == 'MSGraph-TenantID';})->first()->getValue();
-        $clientid = $config->filter(function($element) {return $element->getName() == 'MSGraph-ClientID';})->first()->getValue();
-        $clientsecret = $config->filter(function($element) {return $element->getName() == 'MSGraph-ClientSecret';})->first()->getValue();
+        $tenantid = $config['MSGraph-TenantID'];
+        $clientid = $config['MSGraph-ClientID'];
+        $clientsecret = $config['MSGraph-ClientSecret'];
 
         if (!$tenantid || !$clientid || !$clientsecret) {
             $io->error('At least one of the following is not defined: MSGraph-TenantID, MSGraph-ClientID, MSGraph-ClientSecret. Please check your configuration.');

@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 use App\Entity\Agent;
 use App\Entity\AbsenceReason;
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use App\Entity\Manager;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
@@ -203,7 +203,7 @@ class ClassAbsencesTest extends PLBWebTestCase
         $absence = new absences();
         $GLOBALS['config'][$name] = $value;
         $param = $entityManager
-            ->getRepository(ConfigParam::class)
+            ->getRepository(Config::class)
             ->findOneBy(['nom' => $name]);
 
         $param->setValue($value);

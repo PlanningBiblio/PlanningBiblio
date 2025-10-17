@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +21,7 @@ class UrlListener
     public function onKernelRequest(RequestEvent $event)
     {
         $config = $this->entityManager
-            ->getRepository(ConfigParam::class)
+            ->getRepository(Config::class)
             ->findOneBy(array('nom' => 'URL'));
 
         $request = $event->getRequest();

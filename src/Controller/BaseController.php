@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\ConfigParam;
+use App\Entity\Config;
 use App\PlanningBiblio\Notifier;
-
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +21,7 @@ class BaseController extends AbstractController
 
     protected $dispatcher;
 
-    private $config = array();
+    protected $config = array();
 
     protected $logger;
 
@@ -29,7 +29,7 @@ class BaseController extends AbstractController
 
     protected $permissions;
 
-    public function __construct(RequestStack $requestStack, LoggerInterface $logger)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, RequestStack $requestStack)
     {
         if (!empty($_ENV['MEMORY_LIMIT'])) {
             ini_set('memory_limit', $_ENV['MEMORY_LIMIT']);
@@ -37,6 +37,25 @@ class BaseController extends AbstractController
 
         $request = $requestStack->getCurrentRequest();
 
+        /*
+         * TODO FIXME
+         * In some unit tests, we do not get the same result depending on whether we use $this->entityManager = $GLOBALS['entityManager']; or $this->entityManager = $entityManager;
+         * E.g.: in tests/Controller/AdminInfoControllerTest.php:30
+         * AdminInfoControllerTest::testAdd is successful with $GLOBALS['entityManager'], but fails with $entityManager.
+         * With $GLOBALS['entityManager'], dates are returned with the format YYYYMMDD, with $entityMananger, the dates are returned with the format YYYY-MM-DD
+         *
+         * 1) AdminInfoControllerTest::testAdd is successful with $GLOBALS['entityManager'], but fails with $entityManager.
+         * debut is 20211005
+         * Failed asserting that two strings are equal.
+         * --- Expected
+         * +++ Actual
+         * @@ @@
+         * -'20211005'
+         * +'2021-10-05'
+         *
+         * NB: It is possible that the tests are poorly written.
+         */
+        // $this->entityManager = $entityManager;
         $this->entityManager = $GLOBALS['entityManager'];
 
         $this->templateParams = $GLOBALS['templates_params'];
@@ -47,7 +66,13 @@ class BaseController extends AbstractController
 
         $this->permissions = $GLOBALS['droits'];
 
-        $url = $this->entityManager->getRepository(ConfigParam::class)
+        /*
+         * TODO FIXME
+         * Some unit tests fail if we do not use  $url and $GLOBLAS['config']
+         * The result return by Config::getAll may be incomplete
+         */
+        // $this->config = $entityManager->getRepository(Config::class)->getAll();
+        $url = $this->entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'URL'])
             ->getValue();
 

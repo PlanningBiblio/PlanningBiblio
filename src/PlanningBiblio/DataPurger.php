@@ -13,7 +13,7 @@ use App\Entity\Holiday;
 use App\Entity\HolidayInfo;
 use App\Entity\HoursAbsence;
 use App\Entity\IPBlocker;
-use App\Entity\Logs;
+use App\Entity\Log;
 use App\Entity\PlanningNote;
 use App\Entity\PlanningNotification;
 use App\Entity\PlanningPosition;
@@ -75,7 +75,7 @@ class DataPurger
         $this->simplePurge(HolidayInfo::class,                    'fin',       '<', $limit_date);
         $this->simplePurge(HoursAbsence::class,                   'semaine',   '<', $end_of_week_limit_date);
         $this->simplePurge(IPBlocker::class,                      'timestamp', '<', $limit_date);
-        $this->simplePurge(Logs::class,                           'timestamp', '<', $limit_date);
+        $this->simplePurge(Log::class,                            'timestamp', '<', $limit_date);
         $this->simplePurge(PlanningNote::class,                   'date',      '<', $limit_date);
         $this->simplePurge(PlanningNotification::class,           'date',      '<', $limit_date);
         $this->simplePurge(PlanningPosition::class,               'date',      '<', $limit_date);

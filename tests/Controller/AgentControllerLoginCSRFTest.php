@@ -18,12 +18,10 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
 
     public function testLoginChangeWithFakeCSRF()
     {
-        global $entityManager;
         $_SESSION['oups']['CSRFToken'] = '00000';
         $builder = new FixtureBuilder();
 
         $builder->delete(Agent::class);
-
 
         $agent = $this->builder->build(Agent::class, array(
             'login' => 'login_1', 'supprime' => 0,
@@ -36,20 +34,17 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
             'login' => 'login_2',
         ));
 
-        $agent = $entityManager->find(Agent::class, $agent->getId());
+        $agent = $this->entityManager->find(Agent::class, $agent->getId());
         $this->assertNotEquals('login_2', $agent->getLogin());
         $this->assertEquals('login_1', $agent->getLogin());
-
     }
 
     public function testLoginChangeWithOkCSRF()
     {
-        global $entityManager;
         $_SESSION['oups']['CSRFToken'] = '00000';
         $builder = new FixtureBuilder();
 
         $builder->delete(Agent::class);
-
 
         $agent = $this->builder->build(Agent::class, array(
             'login' => 'login_1', 'supprime' => 0,
@@ -67,8 +62,7 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
             '_token' => $token,
         ));
 
-        $agent = $entityManager->find(Agent::class, $agent->getId());
+        $agent = $this->entityManager->find(Agent::class, $agent->getId());
         $this->assertEquals('login_2', $agent->getLogin());
-
     }
 }
