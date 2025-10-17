@@ -117,6 +117,8 @@
     - 21
 "ajax.sanitizehtml":
     - 100
+"ajax.update.select.options":
+    - 100
 "calendar.index":
     - 100
 "config.index":
