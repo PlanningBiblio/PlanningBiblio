@@ -1,3 +1,11 @@
+*** Version 24.10.19   (2025-10-17)    ***
+- Enhancement
+MT50216: Check hour format in working hours (client side) #1181
+MT50093: Improve purge command speed #1184
+
+- Fixes
+MT50247: fix undefined variable $demande at class.absence.php #1188 
+
 *** Version 24.10.18   (2025-10-10)    ***
 - Fixes
 MT50321: Fix "My Account" access on 24.10.xx #1182
@@ -9,7 +17,6 @@ MT38108: CSS: Add a padding into the "change login" dialog boxe #1163
 MT50211: PlanningHebdo::fetch returns an empty array instead of null #1164
 MT50212: Check the integrity of working hours #1168
 MT50234: The copy to the right function checks if working hours are available #1171
-
 
 *** Version 24.10.16   (2025-08-22)    ***
 - Fixes
