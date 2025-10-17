@@ -12,6 +12,7 @@
 
 
 $CSRFToken = CSRFToken();
+$dbprefix = $config['dbprefix'];
 
 $cli = php_sapi_name() === 'cli';
 

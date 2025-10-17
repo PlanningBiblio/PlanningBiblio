@@ -10,6 +10,7 @@
  * - Still used to create the database for unit tests
  */
 
+$dbprefix = $config['dbprefix'];
 
 // Insertion des droits d'accés
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Personnel - Password', 100, '', 'personnel/password.php');";

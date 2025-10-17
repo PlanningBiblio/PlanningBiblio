@@ -3,19 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Config;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityRepository;
 
 /**
- * @extends ServiceEntityRepository<Config>
+ * @extends EntityRepository<Config>
  */
-class ConfigRepository extends ServiceEntityRepository
+class ConfigRepository extends EntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Config::class);
-    }
-
     /**
      * @return Config[] Returns an array of Config objects
      */

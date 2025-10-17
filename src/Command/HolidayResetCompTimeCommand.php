@@ -16,7 +16,7 @@ require_once(__DIR__ . '/../../public/include/db.php');
 
 #[AsCommand(
     name: 'app:holiday:reset:comp-time',
-    description: 'Reset the compensatory time for holiday',
+    description: 'Reset the compensatory time credits',
 )]
 class HolidayResetCompTimeCommand extends Command
 {

@@ -17,7 +17,7 @@ use App\PlanningBiblio\MSGraphClient;
 
 #[AsCommand(
     name: 'app:import:ms-graph-calendar',
-    description: 'Import a calendar from Microsoft Graph API',
+    description: 'Import calendars from Microsoft Graph API',
 )]
 class ImportMsGraphCalendarCommand extends Command
 {

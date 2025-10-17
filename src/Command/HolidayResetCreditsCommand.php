@@ -18,7 +18,7 @@ require_once(__DIR__ . '/../../public/include/db.php');
 
 #[AsCommand(
     name: 'app:holiday:reset:credits',
-    description: 'Reset the credits for holiday',
+    description: 'Reset the holiday credits',
 )]
 class HolidayResetCreditsCommand extends Command
 {

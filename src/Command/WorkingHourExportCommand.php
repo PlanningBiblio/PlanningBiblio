@@ -18,7 +18,7 @@ require_once __DIR__ . '/../../public/include/function.php';
 
 #[AsCommand(
     name: 'app:workinghour:export',
-    description: 'Exports agents’ weekly working hours from the planning table to a CSV file',
+    description: 'Export working hours to a CSV file',
 )]
 class WorkingHourExportCommand extends Command
 {

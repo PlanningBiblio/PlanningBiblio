@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Config;
 use App\PlanningBiblio\Notifier;
-
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,7 +37,26 @@ class BaseController extends AbstractController
 
         $request = $requestStack->getCurrentRequest();
 
-        $this->entityManager = $entityManager;
+        /*
+         * TODO FIXME
+         * In some unit tests, we do not get the same result depending on whether we use $this->entityManager = $GLOBALS['entityManager']; or $this->entityManager = $entityManager;
+         * E.g.: in tests/Controller/AdminInfoControllerTest.php:30
+         * AdminInfoControllerTest::testAdd is successful with $GLOBALS['entityManager'], but fails with $entityManager.
+         * With $GLOBALS['entityManager'], dates are returned with the format YYYYMMDD, with $entityMananger, the dates are returned with the format YYYY-MM-DD
+         *
+         * 1) AdminInfoControllerTest::testAdd is successful with $GLOBALS['entityManager'], but fails with $entityManager.
+         * debut is 20211005
+         * Failed asserting that two strings are equal.
+         * --- Expected
+         * +++ Actual
+         * @@ @@
+         * -'20211005'
+         * +'2021-10-05'
+         *
+         * NB: It is possible that the tests are poorly written.
+         */
+        // $this->entityManager = $entityManager;
+        $this->entityManager = $GLOBALS['entityManager'];
 
         $this->templateParams = $GLOBALS['templates_params'];
 
@@ -48,7 +66,18 @@ class BaseController extends AbstractController
 
         $this->permissions = $GLOBALS['droits'];
 
-        $this->config = $entityManager->getRepository(Config::class)->getAll();
+        /*
+         * TODO FIXME
+         * Some unit tests fail if we do not use  $url and $GLOBLAS['config']
+         * The result return by Config::getAll may be incomplete
+         */
+        // $this->config = $entityManager->getRepository(Config::class)->getAll();
+        $url = $this->entityManager->getRepository(Config::class)
+            ->findOneBy(['nom' => 'URL'])
+            ->getValue();
+
+        $GLOBALS['config']['URL'] = $url;
+        $this->config = $GLOBALS['config'];
     }
 
     public function setNotifier(Notifier $notifier) {
