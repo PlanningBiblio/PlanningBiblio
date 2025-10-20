@@ -43,8 +43,6 @@ class AbsenceDeleteDocumentsCommand extends Command
         $config = $this->entityManager->getRepository(Config::class)->getAll();
         $delay = $config['Absences-DelaiSuppressionDocuments'];
 
-        $CSRFToken = CSRFToken();
-
         if (empty($delay)) {
             $message = 'Suppression des anciens documents d\'absences désactivée.';
             $logger = new Logger($this->entityManager);
