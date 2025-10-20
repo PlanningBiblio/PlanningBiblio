@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Config;
+use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -13,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
+require_once __DIR__ . '/../../public/include/function.php';
 
 #[AsCommand(
     name: 'app:workinghour:import',
@@ -41,6 +43,8 @@ class WorkingHourImportCommand extends Command
 
         $CSRFToken = CSRFToken();
 
+        $logger = new Logger($this->entityManager);
+
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
         $tmp_dir=sys_get_temp_dir();
         $lockFile=$tmp_dir."/plannoCSV.lock";
@@ -54,7 +58,7 @@ class WorkingHourImportCommand extends Command
                 // Si le fichier existe et date de moins de 10 minutes, on quitte
             } else {
                 $message = 'Le fichier existe et date de moins de 10 minutes';
-                logs($message, 'WorkingHourImport', $CSRFToken);
+                $logger->log($message, 'WorkingHourImport');
                 $io->warning($message);
                 return Command::SUCCESS;
             }
@@ -76,11 +80,11 @@ class WorkingHourImportCommand extends Command
 
         // On ouvre le fichier CSV
         $CSVFile = trim($config['PlanningHebdo-CSV']);
-        logs("Importation du fichier $CSVFile", 'WorkingHourImport', $CSRFToken);
+        $logger->log("Importation du fichier $CSVFile", 'WorkingHourImport');
 
         if (!$CSVFile or !file_exists($CSVFile)) {
             $message = "Fichier $CSVFile non trouvé";
-            logs($message, 'WorkingHourImport', $CSRFToken);
+            $logger->log($message, 'WorkingHourImport');
             $io->warning($message);
             return Command::SUCCESS;
         }
@@ -106,7 +110,7 @@ class WorkingHourImportCommand extends Command
                 if ($i>1) {
                     if (isset($cells[$i]) and $cells[$i]) {
                         // supprime les h et les : de façon à traiter tous les formats de de la même façon (formats acceptés : 0000, 00h00, 00:00, 000, 0h00, 0:00)
-                        $cells[$i] = str_replace(array("h",":"), null, $cells[$i]);
+                        $cells[$i] = str_replace(array("h",":"), '', $cells[$i]);
                         $min = substr($cells[$i], -2);
                         $hre = sprintf("%02s", substr($cells[$i], 0, -2));
                         $cells[$i] = $hre.":$min:00";
@@ -256,12 +260,12 @@ class WorkingHourImportCommand extends Command
             }
 
             if (!$db->error) {
-                logs("$nb éléments importés", 'WorkingHourImport', $CSRFToken);
+                $logger->log("$nb éléments importés", 'WorkingHourImport');
             } else {
-                logs('Une erreur est survenue pendant l\'importation', 'WorkingHourImport', $CSRFToken);
+                $logger->log('Une erreur est survenue pendant l\'importation', 'WorkingHourImport');
             }
         } else {
-            logs('There is nothing to import.', 'WorkingHourImport', $CSRFToken);
+            $logger->log('There is nothing to import', 'WorkingHourImport');
         }
 
         // Suppression des valeurs supprimées ou modifiées
@@ -284,12 +288,12 @@ class WorkingHourImportCommand extends Command
             }
 
             if (!$db->error) {
-                logs("$nb éléments supprimés", 'WorkingHourImport', $CSRFToken);
+                $logger->log("$nb éléments supprimés", 'WorkingHourImport');
             } else {
-                logs('Une erreur est survenue lors de la suppression d\'éléments', 'WorkingHourImport', $CSRFToken);
+                $logger->log('Une erreur est survenue lors de la suppression d\'éléments', 'WorkingHourImport');
             }
         } else {
-            logs('There are no items to delete', 'WorkingHourImport', $CSRFToken);
+            $logger->log('There are no items to delete', 'WorkingHourImport');
         }
 
         // Unlock

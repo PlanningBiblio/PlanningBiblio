@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Config;
+use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -12,6 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+require_once __DIR__ . '/../../public/include/function.php';
 require_once __DIR__ . '/../../legacy/Class/class.ics.php';
 require_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 
@@ -41,7 +43,8 @@ class AbsenceImportICSCommand extends Command
 
         $CSRFToken = CSRFToken();
 
-        logs("Début d'importation des fichiers ICS", "ICS", $CSRFToken);
+        $logger = new Logger($this->entityManager);
+        $logger->log('Début d\'importation des fichiers ICS', 'AbsenceImportICS');
 
         if (empty(trim($config['ICS-Server1'])) &&
             empty(trim($config['ICS-Server2'])) &&
@@ -64,7 +67,7 @@ class AbsenceImportICSCommand extends Command
                 // Si le fichier existe et date de moins de 10 minutes, on quitte
             } else {
                 $message = 'Le fichier existe et date de moins de 10 minutes';
-                \logs($message, 'ICS', $CSRFToken);
+                $logger->log($message, 'AbsenceImportICS');
                 $io->warning($message);
                 return Command::SUCCESS;
             }
@@ -155,14 +158,13 @@ class AbsenceImportICSCommand extends Command
 
                 // If the current calendar checkbox is not checked, we do not import it and we purge the relative events already imported.
                 if (!$agent["ics_$i"]) {
-                    logs("Agent #{$agent['id']} : Check ICS $i is disabled", "ICS", $CSRFToken);
-
+                    $logger->log("Agent #{$agent['id']} : Check ICS $i is disabled", 'AbsenceImportICS');
                     if (!$url) {
-                        logs("Agent #{$agent['id']} : Impossible de constituer une URL valide. Purge abandonnée", 'ICS', $CSRFToken);
+                        $logger->log("Agent #{$agent['id']} : Impossible de constituer une URL valide. Purge abandonnée", 'AbsenceImportICS');
                         continue;
                     }
 
-                    $ics=new CJICS();
+                    $ics=new \CJICS();
                     $ics->src = $url;
                     $ics->number = $i;
                     $ics->perso_id = $agent["id"];
@@ -175,13 +177,13 @@ class AbsenceImportICSCommand extends Command
                 }
 
                 if (!$url) {
-                    logs("Agent #{$agent['id']} : Impossible de constituer une URL valide", "ICS", $CSRFToken);
+                    $logger->log("Agent #{$agent['id']} : Impossible de constituer une URL valide", 'AbsenceImportICS');
                     continue;
                 }
 
                 // Test si le fichier existe
                 if (substr($url, 0, 1) == '/' and !file_exists($url)) {
-                    logs("Agent #{$agent['id']} : Le fichier $url n'existe pas", "ICS", $CSRFToken);
+                    $logger->log("Agent #{$agent['id']} : Le fichier $url n'existe pas", 'AbsenceImportICS');
                     continue;
                 }
 
@@ -190,23 +192,23 @@ class AbsenceImportICSCommand extends Command
                     $test = @get_headers($url, 1);
 
                     if (empty($test)) {
-                        logs("Agent #{$agent['id']} : $url is not a valid URL", "ICS", $CSRFToken);
+                        $logger->log("Agent #{$agent['id']} : $url is not a valid URL", 'AbsenceImportICS');
                         continue;
                     }
 
                     if (!strstr($test[0], '200')) {
-                        logs("Agent #{$agent['id']} : $url {$test[0]}", "ICS", $CSRFToken);
+                        $logger->log("Agent #{$agent['id']} : $url {$test[0]}", 'AbsenceImportICS');
                         continue;
                     }
                 }
 
-                logs("Agent #{$agent['id']} : Importation du fichier $url", "ICS", $CSRFToken);
+                $logger->log("Agent #{$agent['id']} : Importation du fichier $url", 'AbsenceImportICS');
 
                 if (!$url) {
                     continue;
                 }
 
-                $ics=new CJICS();
+                $ics=new \CJICS();
                 $ics->src=$url;
                 $ics->perso_id=$agent["id"];
                 $ics->pattern = $config["ICS-Pattern$i"];

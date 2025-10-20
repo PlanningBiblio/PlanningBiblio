@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Config;
+use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -14,7 +15,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
-require_once __DIR__ . '/../../public/include/function.php';
 
 #[AsCommand(
     name: 'app:workinghour:export',
@@ -38,6 +38,8 @@ class WorkingHourExportCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        $logger = new Logger($this->entityManager);
+
         $config = $this->entityManager->getRepository(Config::class)->getAll();
 
         if (file_exists(__DIR__ . '/../../custom_options.php')) {
@@ -48,8 +50,6 @@ class WorkingHourExportCommand extends Command
         $days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;
         $days_after = $config['PlanningHebdo-ExportDaysAfter'] ?? 60;
         $agentIdentifier = $config['PlanningHebdo-ExportAgentId'] ?? 'matricule';
-
-        $CSRFToken = CSRFToken();
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
         $tmp_dir=sys_get_temp_dir();
@@ -64,7 +64,7 @@ class WorkingHourExportCommand extends Command
                 // Si le fichier existe et date de moins de 10 minutes, on quitte
             } else {
                 $message = 'The last execution took place less than 10 minutes ago';
-                logs($message, 'WorkingHourExport', $CSRFToken);
+                $logger->log($message, 'WorkingHourExport');
                 $io->warning($message);
 
                 return Command::SUCCESS;
@@ -80,7 +80,7 @@ class WorkingHourExportCommand extends Command
 
         if (empty($p->elements)) {
             $message = 'No agent was found';
-            logs($message, 'WorkingHourExport', $CSRFToken);
+            $logger->log($message, 'WorkingHourExport');
             $io->warning($message);
 
             return Command::SUCCESS;
@@ -183,7 +183,7 @@ class WorkingHourExportCommand extends Command
         }
 
         // On ouvre le fichier CSV
-        logs("Exportation des données vers le fichier $CSVFile", 'WorkingHourExport', $CSRFToken);
+        $logger->log("Exportation des données vers le fichier $CSVFile", 'WorkingHourExport');
 
         $fp = fopen($CSVFile, 'w');
 
@@ -195,7 +195,7 @@ class WorkingHourExportCommand extends Command
 
         // Unlock
         unlink($lockFile);
-        logs("Exportation terminée (fichier $CSVFile)", 'WorkingHourExport', $CSRFToken);
+        $logger->log("Exportation terminée (fichier $CSVFile)", 'WorkingHourExport');
 
         if ($output->isVerbose()) {
             $io->success('CSV export completed successfully.');
