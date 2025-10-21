@@ -769,8 +769,8 @@ function verifRecup(o){
   var perso_id=$("#agent").val();
   var retour=false;
   $.ajax({
-    url: url('holiday/checkRecuperation'),
-    data: "date="+o.val()+"&perso_id="+perso_id,
+    url: url('comptime/check'),
+    data: "date=" + o.val() + "&perso_id=" + perso_id,
     type: "get",
     async: false,
     success: function(result){

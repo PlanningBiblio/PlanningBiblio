@@ -5,9 +5,9 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;
-
 use App\Entity\Agent;
-
+use App\Entity\OverTime;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -406,6 +406,99 @@ class OvertimeController extends BaseController
         $session->getFlashBag()->add($result['type'], $result['message']);
 
         return $this->redirectToRoute('overtime.index');
+    }
+
+     #[Route('/overtime/add', name: 'overtime.add', methods: ['POST'])]
+    public function add(Request $request, Session $session)
+    {
+        // Initialisation des variables
+        $commentaires = $request->request->get('commentaires');
+        $CSRFToken = $request->request->get('CSRFToken');
+        $heures = $request->request->get('heures');
+        $date = $request->request->get('date');
+        $date2 = $request->request->get('date2');
+        $perso_id = $request->request->get('perso_id');
+
+        $date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
+        $date2 = filter_var($date2, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
+        $perso_id = filter_var($perso_id, FILTER_SANITIZE_NUMBER_INT);
+
+        list($hours, $minutes) = explode(':', $heures);
+        $heures = intVal($hours) + intVal($minutes) / 60;
+
+        // Les dates sont au format DD/MM/YYYY et converti en YYYY-MM-DD
+        $date=dateSQL($date);
+        $date2=dateSQL($date2);
+
+        $loginId = $session->get('loginId');
+
+        if ($perso_id === null) {
+            $perso_id = $loginId;
+        }
+
+        $insert=array("perso_id"=>$perso_id,"date"=>$date,"date2"=>$date2,"heures"=>$heures,"commentaires"=>$commentaires,
+                      "saisie_par"=>$loginId);
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert('recuperations', $insert);
+        if ($db->error) {
+            $return = ["Demande-Erreur"];
+            return new Response(json_encode($return));
+        }
+
+        $return = ["Demande-OK"];
+
+        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $nom = $agent->getLastname();
+        $prenom = $agent->getFirstname();
+
+        if ($this->config('Absences-notifications-agent-par-agent')) {
+            $a = new \absences();
+            $a->getRecipients2(null, $perso_id, 1);
+            $destinataires = $a->recipients;
+        } else {
+            $c = new \conges();
+            $c->getResponsables($date, $date, $perso_id);
+            $responsables = $c->responsables;
+
+            $a = new \absences();
+            $a->getRecipients(1, $responsables, $agent, 'Recup');
+            $destinataires = $a->recipients;
+        }
+
+        if (!empty($destinataires)) {
+            $sujet="Nouvelle demande d'heures supplémentaires";
+            $message="Demande d'heures supplémentaires du ".dateFr($date)." enregistrée pour $prenom $nom<br/><br/>";
+            if ($commentaires) {
+                $message.="Commentaires : ".str_replace("\n", "<br/>", $commentaires);
+            }
+
+            // ajout d'un lien permettant de rebondir sur la demande
+            $overtime = $this->entityManager->getRepository(OverTime::class)->findOneBy(
+                array(
+                    'perso_id' => $perso_id,
+                    'date' => \DateTime::createFromFormat('Y-m-d', $date),
+                    'saisie_par' => $loginId,
+                ),
+                array(
+                    'id' => 'desc'
+                ),
+            );
+
+            $url = $this->config('URL') . '/overtime/' . $overtime->getId();
+            $message.="<p>Lien vers la demande d'heures supplémentaires :<br/><a href='$url'>$url</a></p>";
+
+            $m = new \CJMail();
+            $m->subject = $sujet;
+            $m->message = $message;
+            $m->to = $destinataires;
+            $m->send();
+
+            $return[] = $m->error_CJInfo;
+        }
+
+        return new Response(json_encode($return));
     }
 
 }

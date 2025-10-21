@@ -117,6 +117,8 @@
     - 25
 "closingday.save":
     - 25
+"overtime.add":
+    - 100
 "overtime.edit":
     - 100
 "overtime.index":
@@ -126,6 +128,8 @@
 "ajax.workinghourtables":
     - 100
 "comptime.add":
+    - 100
+"comptime.check":
     - 100
 "comptime.save":
     - 100
@@ -288,7 +292,5 @@
 "workinghour.delete":
     - 1101
     - 1201
-"holiday.checkRecuperation":
-    - 100
-"holiday.recup.create":
-    - 100
+
+

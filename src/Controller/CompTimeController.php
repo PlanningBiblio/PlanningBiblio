@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\Entity\Agent;
-
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -204,5 +204,24 @@ class CompTimeController extends BaseController
         $session->getFlashBag()->add('notice', 'La demande de récupération a été enregistrée');
 
         return $this->redirectToRoute('holiday.index', array('recup' => 1));
+    }
+
+    #[Route('/comptime/check', name: 'comptime.check', methods: ['GET'])]
+    public function check(Session $session, Request $request)
+    {
+        $date = $request->get('date');
+        $perso_id = $request->get('perso_id');
+
+        $date = dateFr($date);
+        $perso_id = is_numeric($perso_id) ? $perso_id : $session->get('loginId');
+
+        $db=new \db();
+        $db->select("recuperations", null, "`perso_id`='$perso_id' AND (`date`='$date' OR `date2`='$date')");
+        if ($db->result) {
+            $output = "Demande";
+        }else{
+            $output = "";
+        }
+        return new Response($output);
     }
 }
