@@ -720,7 +720,7 @@ class AbsenceController extends BaseController
         return $this->output('/common/validation-statuses.html.twig');
     }
 
-    #[Route(path: '/absences/pieces-justif',name: 'absences.pieces.justif',methods: ['POST'])]
+    #[Route(path: '/absences/pieces-justif', name: 'absences.pieces.justif', methods: ['POST'])]
     public function piecesJustif(Request $request)
     {
         $id = $request->get('id');
