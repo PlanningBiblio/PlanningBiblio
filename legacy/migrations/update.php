@@ -1095,7 +1095,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
   // Responsables et notifications
     $sql[]="ALTER TABLE `{$dbprefix}config` CHANGE `nom` `nom` VARCHAR(50);";
-    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    $sql[]="INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('Absences-notifications-agent-par-agent','boolean', '0', 'Absences', 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres Absences-notifications1, 2, 3 et 4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications / Validations','67');";
     $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES 
     ('50','77','Validations / Notifications','notifications/index.php','config=Absences-notifications-agent-par-agent');";
@@ -1259,8 +1259,6 @@ if (version_compare($config['Version'], $v) === -1) {
         if ($conges_version < "2.6.4") {
             $sql[]="ALTER TABLE `{$dbprefix}conges` CHANGE `valideN1` `valide_n1` INT(11) NOT NULL DEFAULT '0', CHANGE `validationN1` `validation_n1` TIMESTAMP;";
             $sql[]="ALTER TABLE `{$dbprefix}conges` CHANGE `supprDate` `suppr_date` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';";
-            $sql[]="ALTER TABLE `{$dbprefix}conges_CET` CHANGE `valideN1` `valide_n1` INT(11) NOT NULL DEFAULT '0', CHANGE `validationN1` `validation_n1` TIMESTAMP;";
-            $sql[]="ALTER TABLE `{$dbprefix}conges_CET` CHANGE `valideN2` `valide_n2` INT(11) NOT NULL DEFAULT '0', CHANGE `validationN2` `validation_n2` TIMESTAMP;";
         }
 
         if ($conges_version < "2.7") {
@@ -1330,8 +1328,6 @@ if (version_compare($config['Version'], $v) === -1) {
             // Suppression des majuscules dans les noms des tables et des champs
             $sql[] = "ALTER TABLE `{$dbprefix}conges` CHANGE `infoDate` `info_date` TIMESTAMP NULL DEFAULT NULL;";
             $sql[] = "UPDATE `{$dbprefix}conges` SET `info_date` = NULL WHERE `info_date` = '0000-00-00 00:00:00';";
-
-            $sql[] = "RENAME TABLE `{$dbprefix}conges_CET` TO `{$dbprefix}conges_cet`;";
 
             $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `congesCredit` `conges_credit` FLOAT(10) DEFAULT 0, CHANGE `congesReliquat` `conges_reliquat` FLOAT(10) DEFAULT 0, CHANGE `congesAnticipation` `conges_anticipation` FLOAT(10) DEFAULT 0, CHANGE `recupSamedi` `recup_samedi` FLOAT(10) DEFAULT 0, CHANGE `congesAnnuel` `conges_annuel` FLOAT(10) DEFAULT 0;";
 
@@ -1514,25 +1510,6 @@ if (version_compare($config['Version'], $v) === -1) {
         // Insertion du module congés: ajout des taches planifiées
         $sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,1,'*','conges/cron.jan1.php','Cron Congés 1er Janvier');";
         $sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,9,'*','conges/cron.sept1.php','Cron Congés 1er Septembre');";
-
-        // Insertion du module congés: création de la table conges_CET
-        $sql[]="CREATE TABLE `{$dbprefix}conges_cet` (
-        `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        `perso_id` INT(11) NOT NULL,
-        `jours` INT(11) NOT NULL DEFAULT '0',
-        `commentaires` TEXT,
-        `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        `saisie_par` INT NOT NULL,
-        `modif` INT(11) NOT NULL DEFAULT '0',
-        `modification` TIMESTAMP,
-        `valide_n1` INT(11) NOT NULL DEFAULT '0',
-        `validation_n1` TIMESTAMP,
-        `valide_n2` INT(11) NOT NULL DEFAULT '0',
-        `validation_n2` TIMESTAMP,
-        `refus` TEXT,
-        `solde_prec` FLOAT(10),
-        `solde_actuel` FLOAT(10),
-        `annee` VARCHAR(10));";
     }
 
     // Supprime l'entrée "conges" de la table plugins
@@ -1808,7 +1785,6 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "ALTER TABLE `{$dbprefix}appel_dispo` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}config` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}conges` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
-    $sql[] = "ALTER TABLE `{$dbprefix}conges_cet` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}conges_infos` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}cron` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}edt_samedi` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
@@ -2884,6 +2860,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
     // remove holiday cet
     $sql[] = "DROP TABLE IF EXISTS `{$dbprefix}conges_cet`;";
+    $sql[] = "DROP TABLE IF EXISTS `{$dbprefix}conges_CET`;";
     $sql[] = "DELETE FROM {$dbprefix}acces WHERE page = 'conges/cet.php';";
 
     $sql[] = "DELETE s1 FROM `{$dbprefix}select_services` s1 INNER JOIN `{$dbprefix}select_services` s2 WHERE s1.id < s2.id AND s1.valeur = s2.valeur";
