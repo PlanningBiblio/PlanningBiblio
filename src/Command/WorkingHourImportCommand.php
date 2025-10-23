@@ -3,13 +3,10 @@
 namespace App\Command;
 
 use App\Entity\Config;
-use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -22,6 +19,7 @@ require_once __DIR__ . '/../../public/include/function.php';
 )]
 class WorkingHourImportCommand extends Command
 {
+    use \App\Traits\LoggerTrait;
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -43,8 +41,6 @@ class WorkingHourImportCommand extends Command
 
         $CSRFToken = CSRFToken();
 
-        $logger = new Logger($this->entityManager);
-
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
         $tmp_dir=sys_get_temp_dir();
         $lockFile=$tmp_dir."/plannoCSV.lock";
@@ -58,7 +54,7 @@ class WorkingHourImportCommand extends Command
                 // Si le fichier existe et date de moins de 10 minutes, on quitte
             } else {
                 $message = 'Le fichier existe et date de moins de 10 minutes';
-                $logger->log($message, 'WorkingHourImport');
+                $this->log($message, 'WorkingHourImport');
                 $io->warning($message);
                 return Command::SUCCESS;
             }
@@ -80,11 +76,11 @@ class WorkingHourImportCommand extends Command
 
         // On ouvre le fichier CSV
         $CSVFile = trim($config['PlanningHebdo-CSV']);
-        $logger->log("Importation du fichier $CSVFile", 'WorkingHourImport');
+        $this->log("Importation du fichier $CSVFile", 'WorkingHourImport');
 
         if (!$CSVFile or !file_exists($CSVFile)) {
             $message = "Fichier $CSVFile non trouvé";
-            $logger->log($message, 'WorkingHourImport');
+            $this->log($message, 'WorkingHourImport');
             $io->warning($message);
             return Command::SUCCESS;
         }
@@ -260,12 +256,12 @@ class WorkingHourImportCommand extends Command
             }
 
             if (!$db->error) {
-                $logger->log("$nb éléments importés", 'WorkingHourImport');
+                $this->log("$nb éléments importés", 'WorkingHourImport');
             } else {
-                $logger->log('Une erreur est survenue pendant l\'importation', 'WorkingHourImport');
+                $this->log('Une erreur est survenue pendant l\'importation', 'WorkingHourImport');
             }
         } else {
-            $logger->log('There is nothing to import', 'WorkingHourImport');
+            $this->log('There is nothing to import', 'WorkingHourImport');
         }
 
         // Suppression des valeurs supprimées ou modifiées
@@ -288,12 +284,12 @@ class WorkingHourImportCommand extends Command
             }
 
             if (!$db->error) {
-                $logger->log("$nb éléments supprimés", 'WorkingHourImport');
+                $this->log("$nb éléments supprimés", 'WorkingHourImport');
             } else {
-                $logger->log('Une erreur est survenue lors de la suppression d\'éléments', 'WorkingHourImport');
+                $this->log('Une erreur est survenue lors de la suppression d\'éléments', 'WorkingHourImport');
             }
         } else {
-            $logger->log('There are no items to delete', 'WorkingHourImport');
+            $this->log('There are no items to delete', 'WorkingHourImport');
         }
 
         // Unlock

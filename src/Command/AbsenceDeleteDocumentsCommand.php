@@ -4,13 +4,10 @@ namespace App\Command;
 
 use App\Entity\Config;
 use App\Entity\AbsenceDocument;
-use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -24,6 +21,7 @@ require_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 )]
 class AbsenceDeleteDocumentsCommand extends Command
 {
+    use \App\Traits\LoggerTrait;
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -45,8 +43,7 @@ class AbsenceDeleteDocumentsCommand extends Command
 
         if (empty($delay)) {
             $message = 'Suppression des anciens documents d\'absences désactivée.';
-            $logger = new Logger($this->entityManager);
-            $logger->log($message, 'AbsenceDeleteDocuments');
+            $this->log($message, 'AbsenceDeleteDocuments');
 
             if ($output->isVerbose()) {
                 $io->warning($message);

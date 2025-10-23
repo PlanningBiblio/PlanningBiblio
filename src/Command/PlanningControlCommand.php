@@ -4,13 +4,10 @@ namespace App\Command;
 
 use App\Entity\Config;
 use App\PlanningBiblio\Framework;
-use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -25,6 +22,8 @@ require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 )]
 class PlanningControlCommand extends Command
 {
+    use \App\Traits\LoggerTrait;
+
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -42,13 +41,12 @@ class PlanningControlCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
-        $logger = new Logger($this->entityManager);
 
         $CSRFToken = CSRFToken();
 
         if (!$config['Rappels-Actifs']) {
             $message = 'Rappels désactivés';
-            $logger->log($message, 'PlanningControl');
+            $this->log($message, 'PlanningControl');
             $io->warning($message);
 
             return Command::SUCCESS;
@@ -249,7 +247,7 @@ class PlanningControlCommand extends Command
         $m->send();
 
         if ($m->error) {
-            $logger->log($m->error, 'PlanningControl');
+            $this->log($m->error, 'PlanningControl');
 
         }
 

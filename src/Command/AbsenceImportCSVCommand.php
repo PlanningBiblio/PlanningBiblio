@@ -3,13 +3,10 @@
 namespace App\Command;
 
 use App\Entity\Config;
-use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -22,6 +19,8 @@ require_once( __DIR__ . '/../../legacy/Class/class.personnel.php');
 )]
 class AbsenceImportCSVCommand extends Command
 {
+    use \App\Traits\LoggerTrait;
+
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -56,8 +55,7 @@ class AbsenceImportCSVCommand extends Command
 
         $CSRFToken = CSRFToken();
 
-        $logger = new Logger($entityManager);
-        $logger->log('Start CSV import', 'AbsenceImportCSV');
+        $this->log('Start CSV import', 'AbsenceImportCSV');
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
         $tmp_dir = sys_get_temp_dir();
@@ -65,27 +63,27 @@ class AbsenceImportCSVCommand extends Command
 
         if (file_exists($lockFile)) {
             if ($debug) {
-                $logger->log('Lock file ' . $lockFile . ' exists', 'AbsenceImportCSV');
+                $this->log('Lock file ' . $lockFile . ' exists', 'AbsenceImportCSV');
             }
             $fileTime = filemtime($lockFile);
             $time = time();
             // Si le fichier existe et date de plus de 10 minutes, on le supprime et on continue.
             if ($time - $fileTime > 600) {
                 if ($debug) {
-                    $logger->log('Lock file' . $lockFile . ' is more than 10 minutes old. I delete it.', 'AbsenceImportCSV');
+                    $this->log('Lock file' . $lockFile . ' is more than 10 minutes old. I delete it.', 'AbsenceImportCSV');
                 }
                 unlink($lockFile);
                 // Si le fichier existe et date de moins de 10 minutes, on quitte
             } else {
                 $message = 'Lock file is less than 10 minutes old. Exit !';
-                $logger->log($message, 'AbsenceImportCSV');
+                $this->log($message, 'AbsenceImportCSV');
                 $io->error($message);
 
                 return Command::FAILURE;
             }
         } else {
             if ($debug) {
-                $logger->log('Lock file ' . $lockFile . ' does not exist.', 'AbsenceImportCSV');
+                $this->log('Lock file ' . $lockFile . ' does not exist.', 'AbsenceImportCSV');
             }
         }
         // On créé le fichier .lock
@@ -93,12 +91,12 @@ class AbsenceImportCSVCommand extends Command
         fclose($inF);
 
         if ($debug) {
-            $logger->log('Lock file ' . $lockFile . ' created', 'AbsenceImportCSV');
+            $this->log('Lock file ' . $lockFile . ' created', 'AbsenceImportCSV');
         }
 
         // On recherche tout le personnel actif
         if ($debug) {
-            $logger->log('On recherche tout le personnel actif', 'AbsenceImportCSV');
+            $this->log('On recherche tout le personnel actif', 'AbsenceImportCSV');
         }
 
         $p = new \personnel();
@@ -111,25 +109,25 @@ class AbsenceImportCSVCommand extends Command
         $perso_ids = array();
         $key = $config['Hamac-id'];
         if ($debug) {
-            $logger->log("\$key = \$config['Hamac-id'] = " . $config['Hamac-id'], 'AbsenceImportCSV');
+            $this->log("\$key = \$config['Hamac-id'] = " . $config['Hamac-id'], 'AbsenceImportCSV');
         }
 
         foreach ($agents as $elem) {
             if ($debug) {
-                $logger->log("mail = " . $elem['mail'] . " - login = " . $elem[$key], 'AbsenceImportCSV');
+                $this->log("mail = " . $elem['mail'] . " - login = " . $elem[$key], 'AbsenceImportCSV');
             }
             if ($elem['check_hamac']) {
                 if ($debug) {
-                    $logger->log("\$elem['check_hamac'] = true", 'AbsenceImportCSV');
+                    $this->log("\$elem['check_hamac'] = true", 'AbsenceImportCSV');
                 }
                 $logins[] = $elem[$key];
                 $perso_ids[$elem[$key]] = $elem['id'];
                 if ($debug) {
-                    $logger->log("\$elem['id'] = " . $elem['id'] . " - \$perso_ids[\$elem[\$key]] = " . $perso_ids[$elem[$key]], 'AbsenceImportCSV');
+                    $this->log("\$elem['id'] = " . $elem['id'] . " - \$perso_ids[\$elem[\$key]] = " . $perso_ids[$elem[$key]], 'AbsenceImportCSV');
                 }
             } else {
                 if ($debug) {
-                    $logger->log("\$elem['check_hamac'] = false", 'AbsenceImportCSV');
+                    $this->log("\$elem['check_hamac'] = false", 'AbsenceImportCSV');
                 }
             }
         }
@@ -137,12 +135,12 @@ class AbsenceImportCSVCommand extends Command
         $ids_list = implode(',', $perso_ids);
 
         if ($debug) {
-            $logger->log("\$ids_list = " . $ids_list, 'AbsenceImportCSV');
+            $this->log("\$ids_list = " . $ids_list, 'AbsenceImportCSV');
         }
 
         // Recherche de toutes les absences déjà importées depuis Hamac
         if ($debug) {
-            $logger->log("Recherche de toutes les absences déjà importées depuis Hamac", 'AbsenceImportCSV');
+            $this->log("Recherche de toutes les absences déjà importées depuis Hamac", 'AbsenceImportCSV');
         }
 
         $absences = array();
@@ -153,7 +151,7 @@ class AbsenceImportCSVCommand extends Command
                 // On indexe le tableau avec le champ UID qui n'est autre que l'id Hamac
                 $absences[$elem['uid']] = $elem;
                 if ($debug) {
-                    $logger->log("\$elem['uid'] = " . $elem['uid'] . " - \$absences[\$elem['uid']] = " . json_encode($absences[$elem['uid']]), 'AbsenceImportCSV');
+                    $this->log("\$elem['uid'] = " . $elem['uid'] . " - \$absences[\$elem['uid']] = " . json_encode($absences[$elem['uid']]), 'AbsenceImportCSV');
                 }
             }
         }
@@ -168,13 +166,13 @@ class AbsenceImportCSVCommand extends Command
         // Si le fichier n'existe pas, on quitte
         if (!file_exists($filename)) {
             if ($debug) {
-                $logger->log("Le fichier $filename n'existe pas, on quitte, arret du traitement", 'AbsenceImportCSV');
+                $this->log("Le fichier $filename n'existe pas, on quitte, arret du traitement", 'AbsenceImportCSV');
             }
             // Unlock
             unlink($lockFile);
 
             $message = 'Le fichier n\'existe pas.';
-            $logger->log($message, 'AbsenceImportCSV');
+            $this->log($message, 'AbsenceImportCSV');
             $io->error($message);
 
             return Command::FAILURE;
@@ -185,7 +183,7 @@ class AbsenceImportCSVCommand extends Command
         $status = array_merge($status, $status_extra);
 
         if ($debug) {
-            $logger->log("Status à importer : \$config['Hamac-status'] " . $config['Hamac-status'], 'AbsenceImportCSV');
+            $this->log("Status à importer : \$config['Hamac-status'] " . $config['Hamac-status'], 'AbsenceImportCSV');
         }
 
 
@@ -228,7 +226,7 @@ class AbsenceImportCSVCommand extends Command
         $inF = fopen($filename, 'r');
 
         if ($debug) {
-            $logger->log("On lit le fichier CSV " . $filename, 'AbsenceImportCSV');
+            $this->log("On lit le fichier CSV " . $filename, 'AbsenceImportCSV');
         }
 
         while ($tab = fgetcsv($inF, 1024, ';')) {
@@ -236,11 +234,11 @@ class AbsenceImportCSVCommand extends Command
             $absences_file[] = $uid;
 
             if ($debug) {
-                $logger->log("uid = " . $uid, 'AbsenceImportCSV');
+                $this->log("uid = " . $uid, 'AbsenceImportCSV');
             }
 
             if (!isset($tab[4]) and $debug) {
-                    $logger->log("\$tab[4] is not defined", 'AbsenceImportCSV');
+                    $this->log("\$tab[4] is not defined", 'AbsenceImportCSV');
                     continue;
             }
 
@@ -248,7 +246,7 @@ class AbsenceImportCSVCommand extends Command
             // Le tableau $logins ne contient que les agents actifs qui acceptent la synchronisation Hamac
             if (!in_array($tab[4], $logins)) {
                 if ($debug) {
-                    $logger->log("\$tab[4] = " . $tab[4] . " ne fait pas partie des logins des agents actifs qui acceptent la synchronisation Hamac, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
+                    $this->log("\$tab[4] = " . $tab[4] . " ne fait pas partie des logins des agents actifs qui acceptent la synchronisation Hamac, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
                 }
 
                 continue;
@@ -258,7 +256,7 @@ class AbsenceImportCSVCommand extends Command
             // Important : Faire la suppression avant le contrôle des status car le status 9 sera ignoré à la prochaine étape
             if ($tab[6] == 9 and in_array($uid, $uids)) {
                 if ($debug) {
-                    $logger->log("Status = 9, absence supprimée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
+                    $this->log("Status = 9, absence supprimée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
                 }
 
                 $delete = array(':id' => $absences[$uid]['id']);
@@ -271,7 +269,7 @@ class AbsenceImportCSVCommand extends Command
             // Si le status de l'absence Hamac n'est pas dans la liste des status à importer, on passe.
             if (!in_array($tab[6], $status)) {
                 if ($debug) {
-                    $logger->log("\$status = " . $tab[6] . " n'est pas dans la liste des status à importer (" . $config['Hamac-status'] . "), on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
+                    $this->log("\$status = " . $tab[6] . " n'est pas dans la liste des status à importer (" . $config['Hamac-status'] . "), on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
                 }
 
                 continue;
@@ -279,7 +277,7 @@ class AbsenceImportCSVCommand extends Command
 
             // Préparation des données
             if ($debug) {
-                $logger->log("Préparation des données", 'AbsenceImportCSV');
+                $this->log("Préparation des données", 'AbsenceImportCSV');
             }
 
             $perso_id = $perso_ids[$tab[4]];
@@ -298,7 +296,7 @@ class AbsenceImportCSVCommand extends Command
             // Si le status de l'absence Hamac est 2, l'absence est validée
             if ( in_array($tab[6], $status_validated)) {
                 if ($debug) {
-                    $logger->log("Si le status de l'absence Hamac est 2, l'absence est validée au niveau 2", 'AbsenceImportCSV');
+                    $this->log("Si le status de l'absence Hamac est 2, l'absence est validée au niveau 2", 'AbsenceImportCSV');
                 }
                 $valide_n1 = 99999;
                 $validation_n1 = date('Y-m-d H:i:s');
@@ -306,7 +304,7 @@ class AbsenceImportCSVCommand extends Command
                 $validation_n2 = date('Y-m-d H:i:s');
             } elseif ( in_array($tab[6], $status_waiting)) {
                 if ($debug) {
-                    $logger->log("Si le status de l'absence Hamac est 1, l'absence est validée au niveau 1", 'AbsenceImportCSV');
+                    $this->log("Si le status de l'absence Hamac est 1, l'absence est validée au niveau 1", 'AbsenceImportCSV');
                 }
                 $valide_n1 = 99999;
                 $validation_n1 = date('Y-m-d H:i:s');
@@ -314,7 +312,7 @@ class AbsenceImportCSVCommand extends Command
                 $validation_n2 = '0000-00-00 00:00:00';
             } else {
                 if ($debug) {
-                    $logger->log("L'absence n'est pas validée", 'AbsenceImportCSV');
+                    $this->log("L'absence n'est pas validée", 'AbsenceImportCSV');
                 }
                 $valide_n1 = 0;
                 $validation_n1 = '0000-00-00 00:00:00';
@@ -326,7 +324,7 @@ class AbsenceImportCSVCommand extends Command
             // Si l'absence n'est pas dans la base de données, on l'importe.
             if (!in_array($uid, $uids)) {
                 if ($debug) {
-                    $logger->log("Si l'absence n'est pas dans la base de données, on l'importe", 'AbsenceImportCSV');
+                    $this->log("Si l'absence n'est pas dans la base de données, on l'importe", 'AbsenceImportCSV');
                 }
 
                 $insert = array(':perso_id' => $perso_id, ':debut' => $debut, ':fin' => $fin, ':motif' => $motif, ':commentaires' => $commentaires, ':demande' => $demande, ':valide' => $valide_n2, ':validation' => $validation_n2, ':valide_n1' => $valide_n1, ':validation_n1' => $validation_n1, ':cal_name' => 'hamac', ':ical_key' => $uid, ':uid' => $uid);
@@ -334,17 +332,17 @@ class AbsenceImportCSVCommand extends Command
                 $dbi->execute($insert);
 
                 if ($debug) {
-                    $logger->log("Absence importée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
+                    $this->log("Absence importée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
                 }
 
-                $logger->log("Absence inserted : $uid / $log_info", 'AbsenceImportCSV');
+                $this->log("Absence inserted : $uid / $log_info", 'AbsenceImportCSV');
 
                 continue;
             }
 
             // Si l'absence existe, on vérifie si elle a changé.
             if ($debug) {
-                $logger->log("Si l'absence existe, on vérifie si elle a changé", 'AbsenceImportCSV');
+                $this->log("Si l'absence existe, on vérifie si elle a changé", 'AbsenceImportCSV');
             }
             $absence = $absences[$uid];
 
@@ -356,17 +354,17 @@ class AbsenceImportCSVCommand extends Command
                 or $absence['valide'] != $valide_n2) {
                 // Si l'absence a changé, on met à jour la base de données
                 if ($debug) {
-                    $logger->log("Si l'absence a changé, on met à jour la base de données", 'AbsenceImportCSV');
+                    $this->log("Si l'absence a changé, on met à jour la base de données", 'AbsenceImportCSV');
                 }
                 $update = array(':perso_id' => $perso_id, ':debut' => $debut, ':fin' => $fin, ':commentaires' => $commentaires, ':valide' => $valide_n2, ':validation' => $validation_n2, ':valide_n1' => $valide_n1, ':validation_n1' => $validation_n1, ':id' => $absence['id']);
 
             $dbu->execute($update);
 
             if ($debug) {
-                $logger->log("Absence changée dans la base de donnée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
+                $this->log("Absence changée dans la base de donnée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
             }
 
-            $logger->log("Absence updated : $uid / {$absence['id']} / $log_info", 'AbsenceImportCSV');
+            $this->log("Absence updated : $uid / {$absence['id']} / $log_info", 'AbsenceImportCSV');
 
             continue;
                 }
@@ -384,7 +382,7 @@ class AbsenceImportCSVCommand extends Command
                 if (!in_array($elem, $absences_file)) {
                     $delete = array(':ical_key' => $elem);
                     $dbd->execute($delete);
-                    $logger->log("Absence deleted from source file : $elem", 'AbsenceImportCSV');
+                    $this->log("Absence deleted from source file : $elem", 'AbsenceImportCSV');
                 }
             }
         }
@@ -392,7 +390,7 @@ class AbsenceImportCSVCommand extends Command
         // Unlock
         unlink($lockFile);
 
-        $logger->log("Hamac import completed", 'AbsenceImportCSV');
+        $this->log("Hamac import completed", 'AbsenceImportCSV');
 
         if ($output->isVerbose()) {
             $io->success('Hamac import completed: absences inserted/updated and obsolete entries pruned.');

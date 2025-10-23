@@ -27,13 +27,12 @@ use App\Entity\RecurringAbsence;
 use App\Entity\SaturdayWorkingHours;
 use App\Entity\Skill;
 use App\Entity\WorkingHour;
-use App\PlanningBiblio\Logger;
 
 use App\Entity\HiddenTables;
 
 class DataPurger
 {
-
+    use \App\Traits\LoggerTrait;
     private $dbprefix;
     private $delay;
     private $entityManager;
@@ -44,12 +43,11 @@ class DataPurger
         $this->dbprefix = $_ENV['DATABASE_PREFIX'];
         $this->delay = $delay;
         $this->entityManager = $entityManager;
-        $this->logger = new Logger($entityManager, $stdout);
     }
 
     public function purge() {
         $GLOBALS['entityManager'] = $this->entityManager;
-        $this->log("Start purging $this->delay years old data");
+        $this->logMessage("Start purging $this->delay years old data");
 
         $first_of_january = new \DateTime('first day of January this year');
         $limit_date = clone $first_of_january;
@@ -62,9 +60,9 @@ class DataPurger
         $three_years_limit_date->sub(new \Dateinterval('P3Y'));
         $three_years_limit_date = ($limit_date > $three_years_limit_date) ? $three_years_limit_date : $limit_date;
 
-        $this->log("limit date: " . $limit_date->format('Y-m-d H:i:s'));
-        $this->log("end of week limit date: " . $end_of_week_limit_date->format('Y-m-d H:i:s'));
-        $this->log("three years limit date: " . $three_years_limit_date->format('Y-m-d H:i:s'));
+        $this->logMessage("limit date: " . $limit_date->format('Y-m-d H:i:s'));
+        $this->logMessage("end of week limit date: " . $end_of_week_limit_date->format('Y-m-d H:i:s'));
+        $this->logMessage("three years limit date: " . $three_years_limit_date->format('Y-m-d H:i:s'));
 
         $this->simplePurge(AbsenceInfo::class,                    'fin',       '<', $limit_date);
         $this->simplePurge(AdminInfo::class,                      'fin',       '<', $limit_date);
@@ -86,27 +84,27 @@ class DataPurger
         $this->simplePurge(SaturdayWorkingHours::class,           'semaine',   '<', $end_of_week_limit_date);
         $this->simplePurge(WorkingHour::class,                    'fin',       '<', $limit_date);
 
-        $this->log("Purging special cases:");
+        $this->logMessage("Purging special cases:");
 
         // Absences
         $deleted_absences = $this->entityManager->getRepository(Absence::class)->purgeAll($limit_date);
-        $this->log("Purging $deleted_absences App\Entity\Absence");
+        $this->logMessage("Purging $deleted_absences App\Entity\Absence");
 
         // Agents
         $deleted_agents = $this->entityManager->getRepository(Agent::class)->purgeAll();
-        $this->log("Purging $deleted_agents App\Entity\Agent");
+        $this->logMessage("Purging $deleted_agents App\Entity\Agent");
 
         // Planning Position Tab
         $deleted_planning_position_tab = $this->entityManager->getRepository(PlanningPositionTab::class)->purgeAll($limit_date);
-        $this->log("Purging $deleted_planning_position_tab App\Entity\PlanningPositionTab");
+        $this->logMessage("Purging $deleted_planning_position_tab App\Entity\PlanningPositionTab");
 
         // Position
         $deleted_position = $this->entityManager->getRepository(Position::class)->purgeAll($limit_date);
-        $this->log("Purging $deleted_position App\Entity\Position");
+        $this->logMessage("Purging $deleted_position App\Entity\Position");
 
         // Skills
         $deleted_skill = $this->entityManager->getRepository(Skill::class)->purgeAll($limit_date);
-        $this->log("Purging $deleted_skill App\Entity\Skill");
+        $this->logMessage("Purging $deleted_skill App\Entity\Skill");
 
         // Recurring Absences
         $builder = $this->entityManager->createQueryBuilder();
@@ -117,10 +115,10 @@ class DataPurger
                 ->setParameter('ended', "1")
                 ->setParameter('limit_date', $limit_date);
         $results = $builder->getQuery()->getResult();
-        $this->log("Purging $results App\Entity\RecurringAbsence");
+        $this->logMessage("Purging $results App\Entity\RecurringAbsence");
 
         $this->entityManager->flush();
-        $this->log("End purging old data");
+        $this->logMessage("End purging old data");
     }
 
     private function simplePurge($class, $field, $operator, $value) {
@@ -130,11 +128,11 @@ class DataPurger
                 ->andWhere('a.' . $field . ' ' . $operator . ' :value')
                 ->setParameter('value', $value);
         $results = $builder->getQuery()->getResult();
-        $this->log("Purging $results $class");
+        $this->logMessage("Purging $results $class");
     }
 
-    private function log($message) {
-        $this->logger->log($message, "DataPurger");
+    private function logMessage($message) {
+        $this->log($message, "DataPurger");
     }
 
 }

@@ -2,12 +2,12 @@
 
 namespace App\PlanningBiblio;
 
-use App\PlanningBiblio\Logger;
 use Jumbojett\OpenIDConnectClient;
 use Symfony\Component\HttpFoundation\Request;
 
 class OpenIDConnect
 {
+    use \App\Traits\LoggerTrait;
 
     private $config;
     private $entityManager;
@@ -15,7 +15,7 @@ class OpenIDConnect
     private $ca_cert;
     private $client_id;
     private $client_secret;
-
+    private $login_attribute;
 
     public function __construct()
     {
@@ -23,7 +23,7 @@ class OpenIDConnect
         $this->entityManager = $GLOBALS['entityManager'];
 
         $this->provider = $this->config['OIDC-Provider'];
-        $this->cacert = $this->config['OIDC-CACert'];
+        $this->ca_cert = $this->config['OIDC-CACert'];
         $this->client_id = $this->config['OIDC-ClientID'];
         $this->client_secret = $this->config['OIDC-ClientSecret'];
         $this->login_attribute = !empty($this->config['OIDC-LoginAttribute']) ? $this->config['OIDC-LoginAttribute'] : 'email';
@@ -55,8 +55,7 @@ class OpenIDConnect
 
             if ($this->config['OIDC-Debug']) {
                 $message = json_encode($oidc->requestUserInfo());
-                $logger = new Logger($this->entityManager);
-                $logger->log($message, 'OpenID Connect');
+                $this->log($message, 'OpenID Connect');
             }
 
         } catch (Exception $e) {
