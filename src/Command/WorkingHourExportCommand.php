@@ -3,13 +3,10 @@
 namespace App\Command;
 
 use App\Entity\Config;
-use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -22,6 +19,7 @@ require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 )]
 class WorkingHourExportCommand extends Command
 {
+    use \App\Traits\LoggerTrait;
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -37,8 +35,6 @@ class WorkingHourExportCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-
-        $logger = new Logger($this->entityManager);
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
 
@@ -64,7 +60,7 @@ class WorkingHourExportCommand extends Command
                 // Si le fichier existe et date de moins de 10 minutes, on quitte
             } else {
                 $message = 'The last execution took place less than 10 minutes ago';
-                $logger->log($message, 'WorkingHourExport');
+                $this->log($message, 'WorkingHourExport');
                 $io->warning($message);
 
                 return Command::SUCCESS;
@@ -80,7 +76,7 @@ class WorkingHourExportCommand extends Command
 
         if (empty($p->elements)) {
             $message = 'No agent was found';
-            $logger->log($message, 'WorkingHourExport');
+            $this->log($message, 'WorkingHourExport');
             $io->warning($message);
 
             return Command::SUCCESS;
@@ -183,7 +179,7 @@ class WorkingHourExportCommand extends Command
         }
 
         // On ouvre le fichier CSV
-        $logger->log("Exportation des données vers le fichier $CSVFile", 'WorkingHourExport');
+        $this->log("Exportation des données vers le fichier $CSVFile", 'WorkingHourExport');
 
         $fp = fopen($CSVFile, 'w');
 
@@ -195,7 +191,7 @@ class WorkingHourExportCommand extends Command
 
         // Unlock
         unlink($lockFile);
-        $logger->log("Exportation terminée (fichier $CSVFile)", 'WorkingHourExport');
+        $this->log("Exportation terminée (fichier $CSVFile)", 'WorkingHourExport');
 
         if ($output->isVerbose()) {
             $io->success('CSV export completed successfully.');

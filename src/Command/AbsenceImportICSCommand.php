@@ -3,13 +3,10 @@
 namespace App\Command;
 
 use App\Entity\Config;
-use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -23,6 +20,8 @@ require_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 )]
 class AbsenceImportICSCommand extends Command
 {
+    use \App\Traits\LoggerTrait;
+
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -43,8 +42,7 @@ class AbsenceImportICSCommand extends Command
 
         $CSRFToken = CSRFToken();
 
-        $logger = new Logger($this->entityManager);
-        $logger->log('Début d\'importation des fichiers ICS', 'AbsenceImportICS');
+        $this->log('Début d\'importation des fichiers ICS', 'AbsenceImportICS');
 
         if (empty(trim($config['ICS-Server1'])) &&
             empty(trim($config['ICS-Server2'])) &&
@@ -67,7 +65,7 @@ class AbsenceImportICSCommand extends Command
                 // Si le fichier existe et date de moins de 10 minutes, on quitte
             } else {
                 $message = 'Le fichier existe et date de moins de 10 minutes';
-                $logger->log($message, 'AbsenceImportICS');
+                $this->log($message, 'AbsenceImportICS');
                 $io->warning($message);
                 return Command::SUCCESS;
             }
@@ -158,9 +156,9 @@ class AbsenceImportICSCommand extends Command
 
                 // If the current calendar checkbox is not checked, we do not import it and we purge the relative events already imported.
                 if (!$agent["ics_$i"]) {
-                    $logger->log("Agent #{$agent['id']} : Check ICS $i is disabled", 'AbsenceImportICS');
+                    $this->log("Agent #{$agent['id']} : Check ICS $i is disabled", 'AbsenceImportICS');
                     if (!$url) {
-                        $logger->log("Agent #{$agent['id']} : Impossible de constituer une URL valide. Purge abandonnée", 'AbsenceImportICS');
+                        $this->log("Agent #{$agent['id']} : Impossible de constituer une URL valide. Purge abandonnée", 'AbsenceImportICS');
                         continue;
                     }
 
@@ -177,13 +175,13 @@ class AbsenceImportICSCommand extends Command
                 }
 
                 if (!$url) {
-                    $logger->log("Agent #{$agent['id']} : Impossible de constituer une URL valide", 'AbsenceImportICS');
+                    $this->log("Agent #{$agent['id']} : Impossible de constituer une URL valide", 'AbsenceImportICS');
                     continue;
                 }
 
                 // Test si le fichier existe
                 if (substr($url, 0, 1) == '/' and !file_exists($url)) {
-                    $logger->log("Agent #{$agent['id']} : Le fichier $url n'existe pas", 'AbsenceImportICS');
+                    $this->log("Agent #{$agent['id']} : Le fichier $url n'existe pas", 'AbsenceImportICS');
                     continue;
                 }
 
@@ -192,17 +190,17 @@ class AbsenceImportICSCommand extends Command
                     $test = @get_headers($url, 1);
 
                     if (empty($test)) {
-                        $logger->log("Agent #{$agent['id']} : $url is not a valid URL", 'AbsenceImportICS');
+                        $this->log("Agent #{$agent['id']} : $url is not a valid URL", 'AbsenceImportICS');
                         continue;
                     }
 
                     if (!strstr($test[0], '200')) {
-                        $logger->log("Agent #{$agent['id']} : $url {$test[0]}", 'AbsenceImportICS');
+                        $this->log("Agent #{$agent['id']} : $url {$test[0]}", 'AbsenceImportICS');
                         continue;
                     }
                 }
 
-                $logger->log("Agent #{$agent['id']} : Importation du fichier $url", 'AbsenceImportICS');
+                $this->log("Agent #{$agent['id']} : Importation du fichier $url", 'AbsenceImportICS');
 
                 if (!$url) {
                     continue;

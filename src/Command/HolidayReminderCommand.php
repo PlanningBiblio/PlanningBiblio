@@ -6,13 +6,10 @@ use App\Entity\Agent;
 use App\Entity\Holiday;
 use App\Entity\Manager;
 use App\Entity\Config;
-use App\PlanningBiblio\Logger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -22,6 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class HolidayReminderCommand extends Command
 {
+    use \App\Traits\LoggerTrait;
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -50,11 +48,10 @@ Exemple à ajouter en crontab :
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
-        $logger = new Logger($this->entityManager);
 
         if (!$config['Conges-Rappels']) {
             $message = 'Holiday reminder is disabled.';
-            $logger->log($message, 'HolidayReminder');
+            $this->log($message, 'HolidayReminder');
             $io->warning($message);
 
             return Command::SUCCESS;
@@ -229,7 +226,7 @@ Exemple à ajouter en crontab :
             $m->message = $msg;
             $m->send();
             if ($m->error) {
-                $logger->log($m->error, 'HolidayReminder');
+                $this->log($m->error, 'HolidayReminder');
             }
 
             if ($output->isVerbose()) {
@@ -240,7 +237,7 @@ Exemple à ajouter en crontab :
         }
 
         $message = 'Reminders sent for leave pending validation.';
-        $logger->log($message, 'HolidayReminder');
+        $this->log($message, 'HolidayReminder');
 
         if ($output->isVerbose()) {
             $io->success($message);

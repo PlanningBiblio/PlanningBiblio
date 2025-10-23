@@ -1,7 +1,6 @@
 <?php
 
 use Tests\FixtureBuilder;
-use App\PlanningBiblio\Logger;
 use League\OAuth2\Client\Provider\GenericProvider;
 
 use PHPUnit\Framework\TestCase;
@@ -9,15 +8,18 @@ use PHPUnit\Framework\TestCase;
 
 class LoggerTest extends TestCase
 {
+    use \App\Traits\LoggerTrait;
+
+    private $entityManager;
+
     public function testLog(){
         global $entityManager;
         global $stdout;
 
-        $stdout = "test";
+        $this->entityManager = $entityManager;
+        $stdout = 'test';
 
-        $logger = new Logger($entityManager, $stdout);
-
-        $logger->log("Unable to get token", get_class($this));
+        $this->log('Unable to get token', get_class($this), $stdout);
 
         $this->expectOutputString("Unable to get token\n");
 
