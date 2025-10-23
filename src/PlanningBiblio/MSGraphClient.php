@@ -5,30 +5,31 @@ namespace App\PlanningBiblio;
 use App\Entity\Agent;
 use App\Entity\Config;
 use App\PlanningBiblio\OAuth;
-use App\PlanningBiblio\Logger;
 use App\PlanningBiblio\MSCalendarUtils;
 use Doctrine\Common\Collections\ArrayCollection;
 use Unirest\Request;
 
 class MSGraphClient
 {
+    use \App\Traits\LoggerTrait;
 
     private $base_url = 'https://graph.microsoft.com/v1.0';
     private $cal_name = 'MSGraph-';
     // Start year for full scan
     private $start_year = '2000';
 
-    private $calendarUtils;
+    private $msCalendarUtils;
     private $dbprefix;
     private $entityManager;
     private $full;
     private $graphUsers;
     private $incomingEvents;
     private $localEvents;
-    private $logger;
     private $login_suffix;
     private $oauth;
     private $reason_name;
+    private $ignoredStatuses;
+    private $stdout;
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full, $stdout)
     {
@@ -48,8 +49,7 @@ class MSGraphClient
         $loginSuffix = $config->filter(function($element) {return $element->getName() == 'MSGraph-LoginSuffix';})->first()->getValue();
         $ignoredStatuses = $config->filter(function($element) {return $element->getName() == 'MSGraph-IgnoredStatuses';})->first()->getValue();
 
-        $this->logger = new Logger($entityManager, $stdout);
-        $this->oauth = new OAuth($this->logger, $clientid, $clientsecret, $tokenURL, $authURL, $options);
+        $this->oauth = new OAuth( $clientid, $clientsecret, $tokenURL, $authURL, $options, $stdout);
         $this->msCalendarUtils = new MSCalendarUtils();
         $this->entityManager = $entityManager;
         $this->dbprefix = '';
@@ -57,18 +57,19 @@ class MSGraphClient
         $this->login_suffix = $loginSuffix ?? null;
         $this->ignoredStatuses = !empty($ignoredStatuses) ? explode(';', $ignoredStatuses) : ['free', 'tentative'];
         $this->full = $full;
+        $this->stdout = $stdout;
     }
 
     public function retrieveEvents() {
-        $this->log("Start absences import from MS Graph Calendars");
-        $this->log("full scan: $this->full");
+        $this->logMessage("Start absences import from MS Graph Calendars");
+        $this->logMessage("full scan: $this->full");
         $this->getIncomingEvents();
         if (!empty($this->graphUsers)) {
             $this->getLocalEvents();
             $this->deleteEvents();
             $this->insertOrUpdateEvents();
         }
-        $this->log("End absences import from MS Graph Calendars");
+        $this->logMessage("End absences import from MS Graph Calendars");
     }
 
     private function getDateRange() {
@@ -92,12 +93,12 @@ class MSGraphClient
                     while ($this->start_year + $yearCount <= $currentYear) {
                         $from = ($this->start_year + $yearCount) . "-01-01";
                         $to = ($this->start_year + $yearCount) . "-12-31";
-                        $this->log("Getting events from $from to $to for user ". $user->getLogin());
+                        $this->logMessage("Getting events from $from to $to for user ". $user->getLogin());
                         $response = $this->getCalendarView($user, $from, $to);
                         if ($response && $response->code == 200) {
                             $this->addToIncomingEvents($user, $response, $from, $to);
                         } else {
-                            $this->log("Unable to get events");
+                            $this->logMessage("Unable to get events");
                         }
                         $yearCount++;
                     }
@@ -105,24 +106,24 @@ class MSGraphClient
                     $range = $this->getDateRange();
                     $from = $range['from'];
                     $to = $range['to'];
-                    $this->log("Getting events from $from to $to for user ". $user->getLogin());
+                    $this->logMessage("Getting events from $from to $to for user ". $user->getLogin());
                     $response = $this->getCalendarView($user, $from, $to);
                     if ($response && $response->code == 200) {
                         $this->addToIncomingEvents($user, $response, $from, $to);
                     } else {
-                        $this->log("Unable to get events");
+                        $this->logMessage("Unable to get events");
                     }
                 }
             }
         }
-        $this->log("Amount of incoming events: " . count($this->incomingEvents));
+        $this->logMessage("Amount of incoming events: " . count($this->incomingEvents));
     }
 
     private function addToIncomingEvents($user, $response, $from, $to, $nextLink = null) {
         if ($nextLink) {
             $response = $this->sendGet($nextLink, true);
             if (!$response || $response->code != 200) {
-                $this->log("Unable to get events");
+                $this->logMessage("Unable to get events");
                 return;
             }
         }
@@ -139,7 +140,7 @@ class MSGraphClient
         }
 
         if (property_exists($response->body, '@odata.nextLink')) {
-            $this->log("Paginate " . $response->body->{'@odata.nextLink'});
+            $this->logMessage("Paginate " . $response->body->{'@odata.nextLink'});
             $this->addToIncomingEvents($user, $response, $from, $to, $response->body->{'@odata.nextLink'});
         }
     }
@@ -171,7 +172,7 @@ class MSGraphClient
         foreach ($results->fetchAllAssociative() as $localEvent) {
             $this->localEvents[$localEvent['perso_id'] . $localEvent['ical_key']] = $localEvent;
         }
-        $this->log("Amount of local events: " . count($this->localEvents));
+        $this->logMessage("Amount of local events: " . count($this->localEvents));
     }
 
     private function getCalendarView($user, $from, $to) {
@@ -198,7 +199,7 @@ class MSGraphClient
         $statement = $this->entityManager->getConnection()->prepare($query);
         foreach ($this->localEvents as $ical_key => $localEvent) {
             if (!array_key_exists($ical_key, $this->incomingEvents)) {
-                $this->log("deleting user " . $localEvent['perso_id'] . " event " . $localEvent['ical_key']);
+                $this->logMessage("deleting user " . $localEvent['perso_id'] . " event " . $localEvent['ical_key']);
                 $statement->bindParam(':ical_key', $localEvent['ical_key']);
                 $statement->bindParam(':perso_id', $localEvent['perso_id']);
                 $statement->execute();
@@ -213,7 +214,7 @@ class MSGraphClient
             $rrule = null;
 
             if (!$incomingEvent->iCalUId) {
-                $this->log("Cannot process event: ical_key is null");
+                $this->logMessage("Cannot process event: ical_key is null");
                 continue;
             }
 
@@ -243,7 +244,7 @@ class MSGraphClient
                         'ical_key'          => $incomingEvent->iCalUId,
                         'perso_id'          => $eventArray['plb_id']
                     ));
-                    $this->log("updating event '" . $incomingEvent->subject . "' from " . $this->formatDate($incomingEvent->start) . " to " . $this->formatDate($incomingEvent->end) ." for user " . $eventArray['plb_id'] . " (" . $eventArray['plb_login'] . "), ical_key: " . $incomingEvent->iCalUId);
+                    $this->logMessage("updating event '" . $incomingEvent->subject . "' from " . $this->formatDate($incomingEvent->start) . " to " . $this->formatDate($incomingEvent->end) ." for user " . $eventArray['plb_id'] . " (" . $eventArray['plb_login'] . "), ical_key: " . $incomingEvent->iCalUId);
                 }
             } else {
                 // Event insertion
@@ -266,7 +267,7 @@ class MSGraphClient
                     'last_modified' => $incomingEvent->lastModifiedDateTime,
                     'rrule'         => $rrule
                 ));
-                $this->log("inserting event '" . $incomingEvent->subject . "' from " . $this->formatDate($incomingEvent->start) . " to " . $this->formatDate($incomingEvent->end) ." for user " . $eventArray['plb_id'] . " (" . $eventArray['plb_login'] . "), ical_key: " . $incomingEvent->iCalUId);
+                $this->logMessage("inserting event '" . $incomingEvent->subject . "' from " . $this->formatDate($incomingEvent->start) . " to " . $this->formatDate($incomingEvent->end) ." for user " . $eventArray['plb_id'] . " (" . $eventArray['plb_login'] . "), ical_key: " . $incomingEvent->iCalUId);
             }
         }
     }
@@ -279,18 +280,18 @@ class MSGraphClient
             \Unirest\Request::timeout(10);
             $response = \Unirest\Request::get($absolute ? $request : $this->base_url . $request, $headers);
         } catch (\Exception $e) {
-            $this->log("Error in Unirest::get: " . $e->getMessage());
+            $this->logMessage("Error in Unirest::get: " . $e->getMessage());
             if ($retry < 5) {
                 $retry++;
-                $this->log("Retry #$retry...");
+                $this->logMessage("Retry #$retry...");
                 return $this->sendGet($request, $absolute, $retry);
             }
         }
         return $response;
     }
 
-    private function log($message) {
-        $this->logger->log($message, "MSGraphClient");
+    private function logMessage($message) {
+        $this->log($message, "MSGraphClient", $this->stdout);
     }
 
     private function formatDate($graphdate, $format = "Y-m-d H:i:s") {

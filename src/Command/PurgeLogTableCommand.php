@@ -11,8 +11,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\PlanningBiblio\Logger;
-
 #[AsCommand(
     name: 'app:purge:log-table',
     description: 'Purge Planno log table',
@@ -20,6 +18,7 @@ use App\PlanningBiblio\Logger;
 class PurgeLogTableCommand extends Command
 {
     use LockableTrait;
+    use \App\Traits\LoggerTrait;
 
     protected function configure(): void
     {
@@ -52,8 +51,7 @@ Example: php bin/console app:purge:log-table "12 MONTH"
         $query = "DELETE FROM " . $_ENV['DATABASE_PREFIX'] . "log WHERE timestamp < (NOW() - INTERVAL $delay)";
         $statement = $em->getConnection()->prepare($query);
         $result = $statement->execute();
-        $logger = new Logger($em, $input->getOption('stdout'));
-        $logger->log("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)", "PurgeLogTable");
+        $this->log("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)", "PurgeLogTable");
         $this->release();
 
         if ($output->isVerbose()) {
