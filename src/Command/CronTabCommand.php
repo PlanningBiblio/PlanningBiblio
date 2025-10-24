@@ -33,34 +33,11 @@ class CronTabCommand extends Command
         $this->executable_crons = [];
         $this->kernel = $kernel;
 
-        $today = date('Y-m-d 00:00:00');
-
         $crons = $entityManager->getRepository(Cron::class)->findBy(['disabled' => 0]);
 
         foreach ($crons as $cron) {
-            $lastRun = $cron->getLast();
-            $date_cron = $lastRun ? $lastRun->format('Y-m-d H:i:s') : '1970-01-01 00:00:00';
-
-            // Daily crons.
-            if ($cron->getDom() == '*' and $cron->getMon() == '*' and $cron->getDow() == '*') {
-                if ($date_cron < $today) {
-                    $this->executable_crons[] = $cron;
-                }
-                continue;
-            }
-
-            // Yearly Cron
-            if ($cron->getDom() != '*' and $cron->getMon() != '*') {
-                $command_date = strtotime("{$cron->getMon()}/{$cron->getDom()}");
-                if ($command_date > time()) {
-                    $command_date = strtotime('-1 year', $command_date);
-                }
-
-                $command_date = date('Y-m-d 00:00:00', $command_date);
-
-                if ($date_cron < $command_date) {
-                    $this->executable_crons[] = $cron;
-                }
+            if ($this->isDue($cron)) {
+                $this->executable_crons[] = $cron;
             }
         }
 
@@ -139,4 +116,122 @@ class CronTabCommand extends Command
         $this->entityManager->persist($cron);
         $this->entityManager->flush();
     }
+
+    private function isDue(Cron $cron): bool
+    {
+        $now = new \DateTime();
+
+        // Minutes
+        $minutes = $cron->getM();
+        if ($minutes === '*') {
+            $m = range(0, 59);
+        } elseif (preg_match('/^\*\/(\d+)$/', $minutes, $matches)) {
+            $step = (int)$matches[1];
+            $m = range(0, 59, $step);
+        } elseif (preg_match('/^(\d+)$/', $minutes, $matches)) {
+            $m = [(int)$matches[1]];
+        }
+
+        $minutes = 0;
+        if (isset($m)) {
+            foreach ($m as $elem) {
+                $minutes = $elem;
+                if ($elem >= (int) $now->format('i')) {
+                    break;
+                }
+            }
+        }
+        $minutes = sprintf('%02d', $minutes);
+
+        // Hours
+        $hours = $cron->getH();
+        if ($hours === '*') {
+            $h = range(0, 23);
+        } elseif (preg_match('/^(\d+)-(\d+)$/', $hours, $matches)) {
+            $start = (int)$matches[1];
+            $end = (int)$matches[2];
+            $h = range($start, $end);
+        } elseif (preg_match('/^(\d+)$/', $hours, $matches)) {
+            $h = [(int)$matches[1]];
+        }
+
+        $hours = 0;
+        if (isset($h)) {
+            foreach ($h as $elem) {
+                $hours = $elem;
+                if ($elem >= $now->format('G')) {
+                    break;
+                }
+            }
+        }
+
+        // Day of Month
+        $dayOfMonth = $cron->getDom();
+        if ($dayOfMonth === '*') {
+            $dom = range(1, 31);
+        } elseif (preg_match('/^(\d+)-(\d+)$/', $dayOfMonth, $matches)) {
+            $start = (int)$matches[1];
+            $end = (int)$matches[2];
+            $dom = range($start, $end);
+        } elseif (preg_match('/^(\d+)$/', $dayOfMonth, $matches)) {
+            $dom = [(int)$matches[1]];
+        }
+
+        $dayOfMonth = null;
+        if (isset($dom)) {
+            foreach ($dom as $elem) {
+                $dayOfMonth = $elem;
+                if ($elem >= $now->format('j')) {
+                    break;
+                }
+            }
+        }
+
+        // Month
+        $month = $cron->getMon();
+        if ($month === '*') {
+            $mon = range(1, 12);
+        } elseif (preg_match('/^(\d+)-(\d+)$/', $month, $matches)) {
+            $start = (int)$matches[1];
+            $end = (int)$matches[2];
+            $mon = range($start, $end);
+        } elseif (preg_match('/^(\d+)$/', $month, $matches)) {
+            $mon = [(int)$matches[1]];
+        }
+
+        $month = null;
+        if (isset($mon)) {
+            foreach ($mon as $elem) {
+                $month = $elem;
+                if ($elem >= $now->format('n')) {
+                    break;
+                }
+            }
+        }
+
+        // Due date
+        $dueDate = \DateTime::createFromFormat('m-d G:i', $month . '-' . $dayOfMonth . ' ' . $hours . ':' . $minutes);
+
+        // Day of Week, modify Due Date if needed
+        $week = $now->format('N') + 1;
+        if (is_numeric($cron->getDow()) and $week != $cron->getDow()) {
+            $dow = match((int) $cron->getDow()) {
+                0 => 'Sunday',
+                1 => 'Monday',
+                2 => 'Tuesday',
+                3 => 'Wednesday',
+                4 => 'Thrusday',
+                5 => 'Friday',
+                6 => 'Saturday',
+                7 => 'Sunday',
+            };
+
+            $dueDate->modify('last ' .$dow);
+        }
+
+        $isDue = ($dueDate and $dueDate <= $now and $dueDate > $cron->getLast());
+
+        return $isDue;
+    }
+
 }
