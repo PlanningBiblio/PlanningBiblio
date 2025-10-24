@@ -40,6 +40,18 @@ class CronTabCommand extends Command
         foreach ($crons as $cron) {
             $lastRun = $cron->getLast();
             $date_cron = $lastRun ? $lastRun->format('Y-m-d H:i:s') : '1970-01-01 00:00:00';
+            $now = new \DateTime();
+            $now_time=$now->format('Y-m-d H:i'); 
+            $hour = (int)$now->format('H');
+
+            // min crons.
+            if ($cron->getH() != '0' and $cron->getM() != '0' and !$cron->isDisabled()) {
+                list($start, $end) = explode('-', $cron->getH());
+                if ($now_time - $date_cron >= $cron->getH() and $hour >= (int)$start && $hour <= (int)$end) {
+                    $this->executable_crons[] = $cron;
+                }
+                continue;
+            }
 
             // Daily crons.
             if ($cron->getDom() == '*' and $cron->getMon() == '*' and $cron->getDow() == '*') {
@@ -130,4 +142,5 @@ class CronTabCommand extends Command
         $this->entityManager->persist($cron);
         $this->entityManager->flush();
     }
+
 }
