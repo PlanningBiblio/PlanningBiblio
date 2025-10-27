@@ -54,7 +54,7 @@ class CronTabCommand extends Command
             }
 
             // Daily crons.
-            if ($cron->getDom() == '*' and $cron->getMon() == '*' and $cron->getDow() == '*') {
+            if ($cron->getDom() == '*' and $cron->getMon() == '*' and $cron->getDow() == '*' and !$cron->isDisabled()) {
                 if ($date_cron < $today) {
                     $this->executable_crons[] = $cron;
                 }
@@ -62,7 +62,7 @@ class CronTabCommand extends Command
             }
 
             // Yearly Cron
-            if ($cron->getDom() != '*' and $cron->getMon() != '*') {
+            if ($cron->getDom() != '*' and $cron->getMon() != '*' and !$cron->isDisabled()) {
                 $command_date = strtotime("{$cron->getMon()}/{$cron->getDom()}");
                 if ($command_date > time()) {
                     $command_date = strtotime('-1 year', $command_date);
