@@ -4,7 +4,7 @@ Fichier regroupant les scripts JS nécessaires à la page /index (affichage et m
 */
 
 /* Variables globales :
-- perso_id_origine transmise à ajax.updateCell.php pour maj de la base de données pour remplacer, barrer ou supprimer l'agent cliqué
+- perso_id_origine transmise à planning/update-cell pour maj de la base de données pour remplacer, barrer ou supprimer l'agent cliqué
 - perso_nom_origine transmise à ajax.menudiv.php pour affichage du nom cliqué pour supprimer M. xxx, Barrer M. xxx
 */
 perso_id_origine=0;
@@ -336,7 +336,7 @@ $(function() {
     var CSRFToken = $('#CSRFSession').val();
 
     $.ajax({
-      url: url('planning/poste/ajax.validation.php'),
+      url: url('planning/validation'),
       dataType: "json",
       data: {date: date, site: site, verrou: 0, CSRFToken: CSRFToken },
       type: "get",
@@ -369,7 +369,7 @@ $(function() {
     var CSRFToken = $('#CSRFSession').val();
 
     $.ajax({
-      url: url('planning/poste/ajax.validation.php'),
+      url: url('planning/validation'),
       dataType: "json",
       data: {date: date, site: site, verrou: 1, CSRFToken: CSRFToken },
       type: "get",
@@ -444,7 +444,7 @@ $(function() {
             var text3=text.val().replace(/\n/g,"<br/>");
             $.ajax({
               dataType: "json",
-              url: url('planning/poste/ajax.notes.php'),
+              url: url('planning/update-notes'),
               type: "post",
               data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2), CSRFToken: $('#CSRFSession').val()},
               success: function(result){
@@ -1283,7 +1283,7 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
  * bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
  * Récupére en Ajax les id, noms, prénom, service, statut dans agents placés
  * Met à jour la base de données en arrière plan
- * Refait ensuite l'affichage complet de la cellule. Efface est remplit la cellule avec les infos récupérées du fichier ajax.updateCell.php
+ * Refait ensuite l'affichage complet de la cellule. Efface est remplit la cellule avec les infos récupérées du planning/update-cell
  * Les cellules sont identifiables, supprimables et modifiables indépendament des autres
  * Les infos service et statut sont utilisées pour la mise en forme des cellules : utilisation des classes service_ et statut_
  * 
@@ -1312,7 +1312,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
   var CSRFToken = $('#CSRFSession').val();
 
   $.ajax({
-    url: url('planning/poste/ajax.updateCell.php'),
+    url: url('planning/update-cell'),
     type: "post",
     dataType: "json",
     data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout, griser: griser, logaction: logaction},
@@ -1645,7 +1645,7 @@ function plMouseOver(id){
  */
 function planningNotifications(date, site, CSRFToken){
   $.ajax({
-    url: url('planning/poste/ajax.notifications.php'),
+    url: url('planning/get-notifications'),
     dataType: "json",
     data: {date: date, site: site, CSRFToken: CSRFToken},
     type: "get",
@@ -1664,7 +1664,7 @@ function refresh_poste(){
   }
   var validation=$("#planning-data").attr("data-validation");
     $.ajax({
-    url: url('planning/poste/ajax.refresh.php'),
+    url: url('planning/refresh'),
     type: "post",
     dataType: "json",
     data: {"date": $("#date").val(), "site": $("#site").val()},
