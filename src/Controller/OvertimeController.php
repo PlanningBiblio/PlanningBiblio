@@ -3,18 +3,18 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\PlanningBiblio\Helper\HolidayHelper;
-use App\PlanningBiblio\Helper\HourHelper;
 use App\Entity\Agent;
 use App\Entity\OverTime;
+use App\PlanningBiblio\Helper\HolidayHelper;
+use App\PlanningBiblio\Helper\HourHelper;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 include_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 include_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
+include_once(__DIR__ . '/../../public/include/sanitize.php');
 
 class OvertimeController extends BaseController
 {
@@ -408,16 +408,16 @@ class OvertimeController extends BaseController
         return $this->redirectToRoute('overtime.index');
     }
 
-     #[Route('/overtime/add', name: 'overtime.add', methods: ['POST'])]
+    #[Route('/overtime/add', name: 'overtime.add', methods: ['POST'])]
     public function add(Request $request, Session $session)
     {
         // Initialisation des variables
-        $commentaires = $request->request->get('commentaires');
-        $CSRFToken = $request->request->get('CSRFToken');
-        $heures = $request->request->get('heures');
-        $date = $request->request->get('date');
-        $date2 = $request->request->get('date2');
-        $perso_id = $request->request->get('perso_id');
+        $commentaires = $request->get('commentaires');
+        $CSRFToken = $request->get('CSRFToken');
+        $heures = $request->get('heures');
+        $date = $request->get('date');
+        $date2 = $request->get('date2');
+        $perso_id = $request->get('perso_id');
 
         $date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
         $date2 = filter_var($date2, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
@@ -427,12 +427,12 @@ class OvertimeController extends BaseController
         $heures = intVal($hours) + intVal($minutes) / 60;
 
         // Les dates sont au format DD/MM/YYYY et converti en YYYY-MM-DD
-        $date=dateSQL($date);
-        $date2=dateSQL($date2);
+        $date = dateSQL($date);
+        $date2 = dateSQL($date2);
 
         $loginId = $session->get('loginId');
 
-        if ($perso_id === null) {
+        if (empty($perso_id)) {
             $perso_id = $loginId;
         }
 
@@ -443,17 +443,17 @@ class OvertimeController extends BaseController
         $db->CSRFToken = $CSRFToken;
         $db->insert('recuperations', $insert);
         if ($db->error) {
-            $return = ["Demande-Erreur"];
+            $return = ['Demande-Erreur'];
             return new Response(json_encode($return));
         }
 
-        $return = ["Demande-OK"];
+        $return = ['Demande-OK'];
 
         $agent = $this->entityManager->find(Agent::class, $perso_id);
         $nom = $agent->getLastname();
         $prenom = $agent->getFirstname();
 
-        if ($this->config('Absences-notifications-agent-par-agent')) {
+        if ($this->config['Absences-notifications-agent-par-agent']) {
             $a = new \absences();
             $a->getRecipients2(null, $perso_id, 1);
             $destinataires = $a->recipients;
@@ -468,10 +468,11 @@ class OvertimeController extends BaseController
         }
 
         if (!empty($destinataires)) {
-            $sujet="Nouvelle demande d'heures supplémentaires";
-            $message="Demande d'heures supplémentaires du ".dateFr($date)." enregistrée pour $prenom $nom<br/><br/>";
+            $sujet = 'Nouvelle demande d\'heures supplémentaires';
+            $message = "Demande d'heures supplémentaires du ".dateFr($date)." enregistrée pour $prenom $nom<br/><br/>";
+
             if ($commentaires) {
-                $message.="Commentaires : ".str_replace("\n", "<br/>", $commentaires);
+                $message .= 'Commentaires : ' . str_replace("\n", '<br/>', $commentaires);
             }
 
             // ajout d'un lien permettant de rebondir sur la demande
@@ -487,7 +488,7 @@ class OvertimeController extends BaseController
             );
 
             $url = $this->config('URL') . '/overtime/' . $overtime->getId();
-            $message.="<p>Lien vers la demande d'heures supplémentaires :<br/><a href='$url'>$url</a></p>";
+            $message .= "<p>Lien vers la demande d'heures supplémentaires :<br/><a href='$url'>$url</a></p>";
 
             $m = new \CJMail();
             $m->subject = $sujet;
@@ -500,5 +501,4 @@ class OvertimeController extends BaseController
 
         return new Response(json_encode($return));
     }
-
 }

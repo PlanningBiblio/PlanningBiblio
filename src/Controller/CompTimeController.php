@@ -207,7 +207,7 @@ class CompTimeController extends BaseController
     }
 
     #[Route('/comptime/check', name: 'comptime.check', methods: ['GET'])]
-    public function check(Session $session, Request $request)
+    public function check(Request $request, Session $session)
     {
         $date = $request->get('date');
         $perso_id = $request->get('perso_id');

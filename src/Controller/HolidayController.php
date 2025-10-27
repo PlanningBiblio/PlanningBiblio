@@ -929,7 +929,6 @@ class HolidayController extends BaseController
         return $this->json($holiday_account);
     }
 
-
     private function save($request)
     {
         $session = $request->getSession();
