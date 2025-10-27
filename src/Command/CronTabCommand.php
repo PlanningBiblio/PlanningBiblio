@@ -33,46 +33,11 @@ class CronTabCommand extends Command
         $this->executable_crons = [];
         $this->kernel = $kernel;
 
-        $today = date('Y-m-d 00:00:00');
-
         $crons = $entityManager->getRepository(Cron::class)->findBy(['disabled' => 0]);
 
         foreach ($crons as $cron) {
-            $lastRun = $cron->getLast();
-            $date_cron = $lastRun ? $lastRun->format('Y-m-d H:i:s') : '1970-01-01 00:00:00';
-            $now = new \DateTime();
-            $now_time=$now->format('Y-m-d H:i'); 
-            $hour = (int)$now->format('H');
-
-            // min crons.
-            if ($cron->getH() != '0' and $cron->getM() != '0' and !$cron->isDisabled()) {
-                list($start, $end) = explode('-', $cron->getH());
-                if ($now_time - $date_cron >= $cron->getH() and $hour >= (int)$start && $hour <= (int)$end) {
-                    $this->executable_crons[] = $cron;
-                }
-                continue;
-            }
-
-            // Daily crons.
-            if ($cron->getDom() == '*' and $cron->getMon() == '*' and $cron->getDow() == '*' and !$cron->isDisabled()) {
-                if ($date_cron < $today) {
-                    $this->executable_crons[] = $cron;
-                }
-                continue;
-            }
-
-            // Yearly Cron
-            if ($cron->getDom() != '*' and $cron->getMon() != '*' and !$cron->isDisabled()) {
-                $command_date = strtotime("{$cron->getMon()}/{$cron->getDom()}");
-                if ($command_date > time()) {
-                    $command_date = strtotime('-1 year', $command_date);
-                }
-
-                $command_date = date('Y-m-d 00:00:00', $command_date);
-
-                if ($date_cron < $command_date) {
-                    $this->executable_crons[] = $cron;
-                }
+            if ($this->isDue($cron)) {
+                $this->executable_crons[] = $cron;
             }
         }
 
@@ -142,5 +107,88 @@ class CronTabCommand extends Command
         $this->entityManager->persist($cron);
         $this->entityManager->flush();
     }
+
+    private function isDue(Cron $cron): bool
+    {
+
+        $M = $cron->getM();
+        if (preg_match('/^\*\/(\d+)$/', $M, $matches)) {
+            $step = (int)$matches[1];
+            $m = range(0, 59, $step);
+        } elseif (preg_match('/^(\d+)$/', $M, $matches)) {
+            $m = [(int)$matches[1]];
+        } elseif ($M === '*') {
+            $m = range(0, 59);
+        } else {
+            $m = [];
+        }
+
+        $H = $cron->getH();
+        if (preg_match('/^(\d+)-(\d+)$/', $H, $matches)) {
+            $start = (int)$matches[1];
+            $end   = (int)$matches[2];
+            $h = range($start, $end);
+        } elseif (preg_match('/^(\d+)$/', $H, $matches)) {
+            $h = [(int)$matches[1]];
+        } elseif ($H === '*') {
+            $h = range(0, 23);
+        } else {
+            $h = [];
+        }
+
+        $Dom = $cron->getDom();
+        if (preg_match('/^(\d+)$/', $Dom, $matches)) {
+            $dom = [(int)$matches[1]];
+        } elseif ($Dom === '*') {
+            $dom = range(1, 31);
+        } else {
+            $dom = [];
+        }
+
+        $Mon = $cron->getMon();
+        if (preg_match('/^(\d+)$/', $Mon, $matches)) {
+            $mon = [(int)$matches[1]];
+        } elseif ($Mon === '*') {
+            $mon = range(1, 12);
+        } else {
+            $mon = [];
+        }
+
+        $Dow = $cron->getDow();
+        if (preg_match('/^(\d+)$/', $Dow, $matches)) {
+            $dow = [(int)$matches[1]];
+        } elseif ($Dow === '*') {
+            $dow = range(1, 7);
+        } else {
+            $dow = [];
+        }
+
+        $now = new \DateTime();
+        $hour = (int)$now->format('H');
+        $month = $now->format('m');
+        $day = $now->format('d');
+        $minute = $now->format('i');
+        $week = $now->format('N');
+
+        if (!in_array((int)$month,$mon)) {
+            return false;
+        }
+        if (!in_array((int)$week,$dow)) {
+            return false;
+        }
+        if (!in_array((int)$day,$dom)) {
+            return false;
+        }
+        if (!in_array((int)$hour,$h)) {
+            return false;
+        }
+        if (!in_array((int)$minute,$m)) {
+            return false;
+        }
+
+        return true;
+
+    }
+
 
 }
