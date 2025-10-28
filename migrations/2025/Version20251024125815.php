@@ -11,19 +11,15 @@ final class Version20251024125815 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Inserts default Symfony commands for scheduled tasks.';
     }
 
     public function up(Schema $schema): void
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("UPDATE {$dbprefix}cron SET command='app:workinghour:daily' WHERE command='cron.planning_hebdo_daily.php';");
-        $this->addSql("UPDATE {$dbprefix}cron SET command='app:holiday:reset:remainder' WHERE command='cron.holiday_reset_remainder.php';");
-        $this->addSql("UPDATE {$dbprefix}cron SET command='app:holiday:reset:credits' WHERE command='cron.holiday_reset_credits.php';");
-        $this->addSql("UPDATE {$dbprefix}cron SET command='app:holiday:reset:comp-time' WHERE command='cron.holiday_reset_comp_time.php';");
         $this->addSql("
-            ALTER TABLE cron
+            ALTER TABLE {$dbprefix}cron
             MODIFY m   VARCHAR(32) NOT NULL,
             MODIFY h   VARCHAR(32) NOT NULL;
         ");
@@ -45,11 +41,7 @@ final class Version20251024125815 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
-
-        $this->addSql("UPDATE {$dbprefix}cron SET command='cron.planning_hebdo_daily.php' WHERE command='app:workinghour:daily';");
-        $this->addSql("UPDATE {$dbprefix}cron SET command='cron.holiday_reset_remainder.php' WHERE command='app:holiday:reset:remainder';");
-        $this->addSql("UPDATE {$dbprefix}cron SET command='cron.holiday_reset_credits.php' WHERE command='app:holiday:reset:credits';");
-        $this->addSql("UPDATE {$dbprefix}cron SET command='cron.holiday_reset_comp_time.php' WHERE command='app:holiday:reset:comp-time';");
+        
         $this->addSql("DELETE FROM {$dbprefix}cron WHERE command IN (
             'app:absence:delete-documents',
             'app:absence:import-csv',
@@ -63,7 +55,7 @@ final class Version20251024125815 extends AbstractMigration
             'app:workinghour:export'
         );");
         $this->addSql("
-            ALTER TABLE cron
+            ALTER TABLE {$dbprefix}cron
             MODIFY m   varchar(2) NULL,
             MODIFY h   varchar(2) NULL;
         ");

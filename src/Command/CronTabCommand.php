@@ -34,6 +34,7 @@ class CronTabCommand extends Command
         $this->kernel = $kernel;
 
         $crons = $entityManager->getRepository(Cron::class)->findBy(['disabled' => 0]);
+        //$crons = $entityManager->getRepository(Cron::class)->findAll();//TODO TEST
 
         foreach ($crons as $cron) {
             if ($this->isDue($cron)) {
@@ -70,7 +71,7 @@ class CronTabCommand extends Command
             if ($output->isVerbose()) {
                 $io->text("Running: $cmd");
             }
-
+            
             $cronInput = new ArrayInput([
                 'command' => $cmd
             ]);
@@ -126,7 +127,7 @@ class CronTabCommand extends Command
         $H = $cron->getH();
         if (preg_match('/^(\d+)-(\d+)$/', $H, $matches)) {
             $start = (int)$matches[1];
-            $end   = (int)$matches[2];
+            $end = (int)$matches[2];
             $h = range($start, $end);
         } elseif (preg_match('/^(\d+)$/', $H, $matches)) {
             $h = [(int)$matches[1]];
@@ -137,7 +138,11 @@ class CronTabCommand extends Command
         }
 
         $Dom = $cron->getDom();
-        if (preg_match('/^(\d+)$/', $Dom, $matches)) {
+        if (preg_match('/^(\d+)-(\d+)$/', $Dom, $matches)) {
+            $start = (int)$matches[1];
+            $end = (int)$matches[2];
+            $dom = range($start, $end);
+        } elseif (preg_match('/^(\d+)$/', $Dom, $matches)) {
             $dom = [(int)$matches[1]];
         } elseif ($Dom === '*') {
             $dom = range(1, 31);
@@ -146,7 +151,11 @@ class CronTabCommand extends Command
         }
 
         $Mon = $cron->getMon();
-        if (preg_match('/^(\d+)$/', $Mon, $matches)) {
+        if (preg_match('/^(\d+)-(\d+)$/', $Mon, $matches)) {
+            $start = (int)$matches[1];
+            $end = (int)$matches[2];
+            $mon = range($start, $end);
+        } elseif (preg_match('/^(\d+)$/', $Mon, $matches)) {
             $mon = [(int)$matches[1]];
         } elseif ($Mon === '*') {
             $mon = range(1, 12);
@@ -155,7 +164,11 @@ class CronTabCommand extends Command
         }
 
         $Dow = $cron->getDow();
-        if (preg_match('/^(\d+)$/', $Dow, $matches)) {
+        if (preg_match('/^(\d+)-(\d+)$/', $Dow, $matches)) {
+            $start = (int)$matches[1];
+            $end = (int)$matches[2];
+            $dow = range($start, $end);
+        } elseif (preg_match('/^(\d+)$/', $Dow, $matches)) {
             $dow = [(int)$matches[1]];
         } elseif ($Dow === '*') {
             $dow = range(1, 7);
