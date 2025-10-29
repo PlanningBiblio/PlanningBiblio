@@ -30,6 +30,7 @@ class WorkingHourController extends BaseController
         $nbSemaine = $request->get('weeks');
         $perso_id = $request->get('perso_id');
         $ph_id = $request->get('ph_id');
+
         if (!$nbSemaine || !$perso_id) {
             $response = new Response();
             $response->setContent('Wrong parameters');
@@ -633,20 +634,30 @@ class WorkingHourController extends BaseController
         return $this->json('ok');
     }
 
-    #[Route(path: '/workinghour/check-planning', name: 'workinghour.check.planning', methods: ['GET'])]
-    public function checkPlanning()
+    /*
+    * Recherche les plannings enregistrés afin d'éviter les conflits lors de l'enregistrement d'un nouveau planning.
+    * Fichier appelé en arrière plan par la fonction JS plHebdoVerifForm (public/js/workingHour.js)
+    */
+    #[Route(path: '/workinghour/check', name: 'workinghour.check', methods: ['GET'])]
+    public function check(Request $request, Session $session)
     {
-        $debut=filter_input(INPUT_GET, "debut", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
-        $fin=filter_input(INPUT_GET, "fin", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
-        $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
-        $perso_id=filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
-        $exception = filter_input(INPUT_GET, "exception", FILTER_SANITIZE_NUMBER_INT);
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
+        $id = $request->get('id');
+        $perso_id = $request->get('perso_id');
+        $exception = $request->get('exception');
 
+        $debut = filter_var($debut, FILTER_CALLBACK, ['options' => 'sanitize_dateSQL']);
+        $fin = filter_var($fin, FILTER_CALLBACK, ['options' => 'sanitize_dateSQL']);
+        $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+        $perso_id = filter_var($perso_id, FILTER_SANITIZE_NUMBER_INT);
+        $exception = filter_var($exception, FILTER_SANITIZE_NUMBER_INT);
+        
         // Filtre permettant de ne rechercher que les plannings de l'agent sélectionné
-        $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
+        $perso_id = $perso_id ?? $session->get('loginId');
 
         // Personalisation du message de retour
-        $autre_agent=$perso_id!=$_SESSION['login_id']?nom($perso_id):false;
+        $autre_agent = ($perso_id != $session->get('loginId')) ? nom($perso_id) : false;
 
         // Filtre permettant de ne pas regarder l'actuel planning et les plannings remplacant celui-ci
         $ignore_id = $id?" AND `id`<>'$id' AND `remplace`<>'$id' " : null;

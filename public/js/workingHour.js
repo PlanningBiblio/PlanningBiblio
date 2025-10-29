@@ -256,14 +256,14 @@ function plHebdoVerifForm(){
 
   var retour=false;
   $.ajax({
-    url: url('workinghour/check-planning'),
+    url: url('workinghour/check'),
     dataType: "json",
     data: data,
     type: "get",
     async: false,
     success: function(result){
       if(result["retour"]=="OK"){
-        retour=true;
+        retour = true;
       }
       else {
         if(result["autre_agent"]) {
@@ -283,12 +283,12 @@ function plHebdoVerifForm(){
           message += "\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
         }
         alert(message);
-        retour=false;
+        retour = false;
       }
     },
     error: function(result){
       information(result.responseText,"error");
-      retour="false";
+      retour = false;
 
     }
   });
@@ -324,9 +324,10 @@ function updateTables(selected_weeks) {
   if (!weeks) {
     weeks = 1;
   }
-  perso_id = $("#perso_id").val();
+  perso_id = $('#perso_id').val();
   if (!perso_id) {
-    perso_id = 1;
+    console.warn('perso_id missing; skipping table update');
+    return;
   }
   $('#select_number_of_weeks').val(weeks);
 

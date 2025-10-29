@@ -277,16 +277,16 @@
     - 17
 "statistics.time":
     - 17
-"workinghour.index":
-    - 100
 "workinghour.add":
     - 100
-"workinghour.edit":
-    - 100
-"workinghour.save":
+"workinghour.check":
     - 100
 "workinghour.delete":
     - 1101
     - 1201
-"workinghour.check.planning":
+"workinghour.edit":
+    - 100
+"workinghour.index":
+    - 100
+"workinghour.save":
     - 100
