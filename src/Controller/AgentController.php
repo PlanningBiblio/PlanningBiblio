@@ -1703,9 +1703,18 @@ class AgentController extends BaseController
         }
     }
 
+    /*
+     * Supprime les agents sélectionnés à partir de la liste des agents (fichier personnel/index.php).
+     * Les agents ne sont pas supprimés définitivement, ils sont marqués comme supprimés dans la table personnel (champ supprime=1)
+     * Appelé par la fonction JS public/js/agent.js : agent_list
+    */
     #[Route(path: '/agent/bulk/delete', name: 'agent.bulk.delete', methods: ['POST'])]
-    public function bulkDelete(Request $request)
+    public function bulkDelete(Request $request, Session $session)
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $list = $request->get('list');
         $CSRFToken = $request->get('CSRFToken');
 
@@ -1722,7 +1731,7 @@ class AgentController extends BaseController
 
         $list = implode(',', $tab);
 
-        if ($_SESSION['perso_actif']=="Supprimé") {
+        if ($session->get('perso_actif')=="Supprimé") {
             $p=new \personnel();
             $p->CSRFToken = $CSRFToken;
             $p->delete($list);
@@ -1754,9 +1763,18 @@ class AgentController extends BaseController
         return new Response(json_encode($return));
     }
 
+    /*
+     * Envoi par mail à l'agent sélectionné les URL de ses agendas Planno
+     * Lors de la validation du formulaire "Envoi de l'URL de l'agenda Planning Biblio" accessible depuis l'onglet Agenda des fiches "agent"
+     * Appelé par $( "#ics-url-form" ).dialog({ Envoyer ]), public/js/agent.js
+     */
     #[Route(path: '/agent/ics/send-url', name: 'agent.ics.send_url', methods: ['POST'])]
     public function sendIcsUrl(Request $request)
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $CSRFToken = $request->get('CSRFToken');
         $message = $request->get('message');
         $recipient = $request->get('recipient');
@@ -1787,19 +1805,20 @@ class AgentController extends BaseController
         return new Response(json_encode($return));
     }
 
+    /*
+     * Met à jour les fiches des agents sélectionnés à partir de la liste des agents (fichier personnel/index.php).
+     * Appelé par la fonction JS public/js/agent.js : agent_list
+     */
     #[Route(path: '/agent/bulk/update', name: 'agent.bulk.update', methods: ['POST'])]
-    public function bulkUpdate(Request $request)
+    public function bulkUpdate(Request $request, Session $session)
     {
-        if (!in_array(21, $_SESSION['droits'])) {
-            $return = ["Accès refusé"];
-            return new Response(json_encode($return));
+        // CSFR Protection
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
         }
 
-        // CSFR Protection
-        $CSRFToken = $request->get('CSRFToken');
-        if ( !isset($_SESSION['oups']['CSRFToken']) or $CSRFToken != $_SESSION['oups']['CSRFToken']) {
-            error_log("CSRF Token Exception {$_SERVER['SCRIPT_NAME']}");
-            $return = ["CSRF Token Exception {$_SERVER['SCRIPT_NAME']}"];
+        if (!in_array(21, $_SESSION['droits'])) {
+            $return = ["Accès refusé"];
             return new Response(json_encode($return));
         }
 
@@ -1871,11 +1890,16 @@ class AgentController extends BaseController
         return new Response(json_encode($return));
     }
 
+    /*
+     * Met à jour la liste des agents dans les select des pages /absence et conges/voir.php
+     * Affiche dans cette liste les agents supprimés ou non en fonction de la variable $_GET['deleted']
+     * Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.php
+     */
     #[Route(path: '/agent/update-list', name: 'agent.update_list', methods: ['GET'])]
-    public function updateAgentList()
+    public function updateAgentList(Request $request)
     {
         $p=new \personnel();
-        if ($_GET['deleted']=="yes") {
+        if ($request->get('deleted')=="yes") {
             $p->supprime=array(0,1);
         }
         $p->fetch();
