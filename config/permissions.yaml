@@ -57,10 +57,16 @@
     - 100
 "agent.add":
     - 21
+"agent.bulk.delete":
+    - 21
+"agent.bulk.update":
+    - 21
 "agent.delete":
     - 21
 "agent.edit":
     - 4
+"agent.ics.send_url":
+- 100
 "agent.index":
     - 4
 "agent.ldap":
@@ -75,6 +81,8 @@
     - 100
 "agent.save":
     - 4
+"agent.update_list":
+    - 100
 "ajax.agentsbysites":
     - 100
 "ajax.checkplanning":
@@ -288,11 +296,3 @@
 "workinghour.delete":
     - 1101
     - 1201
-"agent.delete.bulk":
-    - 21
-"agent.send.ics.url":
-    - 100
-"agent.update.bulk":
-    - 21
-"agent.update.agents.list":
-    - 100

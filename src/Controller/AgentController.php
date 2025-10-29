@@ -1703,8 +1703,8 @@ class AgentController extends BaseController
         }
     }
 
-    #[Route(path: '/agent/delete-bulk', name: 'agent.delete.bulk', methods: ['POST'])]
-    public function deleteBulk(Request $request)
+    #[Route(path: '/agent/bulk/delete', name: 'agent.bulk.delete', methods: ['POST'])]
+    public function bulkDelete(Request $request)
     {
         $list = $request->get('list');
         $CSRFToken = $request->get('CSRFToken');
@@ -1754,7 +1754,7 @@ class AgentController extends BaseController
         return new Response(json_encode($return));
     }
 
-    #[Route(path: '/agent/send-ics-url', name: 'agent.send.ics.url', methods: ['POST'])]
+    #[Route(path: '/agent/ics/send-url', name: 'agent.ics.send_url', methods: ['POST'])]
     public function sendIcsUrl(Request $request)
     {
         $CSRFToken = $request->get('CSRFToken');
@@ -1787,8 +1787,8 @@ class AgentController extends BaseController
         return new Response(json_encode($return));
     }
 
-    #[Route(path: '/agent/update-bulk', name: 'agent.update.bulk', methods: ['POST'])]
-    public function updateBulk(Request $request)
+    #[Route(path: '/agent/bulk/update', name: 'agent.bulk.update', methods: ['POST'])]
+    public function bulkUpdate(Request $request)
     {
         if (!in_array(21, $_SESSION['droits'])) {
             $return = ["Accès refusé"];
@@ -1871,8 +1871,8 @@ class AgentController extends BaseController
         return new Response(json_encode($return));
     }
 
-    #[Route(path: '/agent/update-agents-list', name: 'agent.update.agents.list', methods: ['GET'])]
-    public function updateAgentsList()
+    #[Route(path: '/agent/update-list', name: 'agent.update_list', methods: ['GET'])]
+    public function updateAgentList()
     {
         $p=new \personnel();
         if ($_GET['deleted']=="yes") {
