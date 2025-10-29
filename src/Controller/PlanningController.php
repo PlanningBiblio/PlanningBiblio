@@ -723,9 +723,18 @@ class PlanningController extends BaseController
         return $this->redirectToRoute('home');
     }
 
-    #[Route(path: '/send-availability-mail', name: 'planning.send.availability.mail', methods: ['POST'])]
-    public function sendAvailabilityMail(Request $request)
+    /*
+     * Envoi un mail aux agents disponibles pour l'occupation d'un poste vacant.
+     * Lors de la validation du formulaire "Appel à disponibilité"
+     * Script appelé par $( "#pl-appelDispo-form" ).dialog({ Envoyer ]), public/js/planning.js
+     */
+    #[Route(path: 'planning.call-for-help/send-mail', name: 'planning.call_for_help/send_mail', methods: ['POST'])]
+    public function callForHelpSendMail(Request $request)
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $CSRFToken = $request->get('CSRFToken');
         $site = $request->get('site');
         $poste = $request->get('poste');
@@ -781,9 +790,18 @@ class PlanningController extends BaseController
         }
     }
 
-    #[Route(path: '/get-availability-message', name: 'planning.get.availability.message', methods: ['POST'])]
-    public function getDefaultAvailabilityMessage()
+    /*
+     * Récupère le message par défaut pour l'appel à disponibilité
+     * Script appelé depuis la function JS appelDispo (public/js/planning.js)
+     * lors du clic sur le lien "Appel à disponibilité" dans le menu permettant de placer les agents
+     */
+    #[Route(path: 'planning.call-for-help/get-message', name: 'planning.call_for_help/get_message', methods: ['POST'])]
+    public function callForHelpGetMessage(Request $request)
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $tab=array(null,null);
 
         $db=new \db();
@@ -800,12 +818,19 @@ class PlanningController extends BaseController
         return new Response(json_encode($tab));
     }
 
-    #[Route(path: '/validation-category-a', name: 'planning.validation.category.a', methods: ['POST'])]
-    public function validateCategoryAEndOfService()
+    /*
+     * Contrôle en arrière plan si un agent de catégorie A est placé en fin de service.
+     * Permet d'afficher ou de masquer l'alerte "pas d'agent de catégorie A en fin de service" en haut du planning
+     * Page appellée par la fonction JavaScript verif_categorieA lors du chargement de la page /index et lors de la modification
+     * d'une cellule (fonction JS bataille_navale)
+     * Affiche "true" ou "false"
+     */
+    #[Route(path: '/planning/end-of-service/check', name: 'planning.end_of_service.check', methods: ['GET'])]
+    public function EndOfServiceCheck(Request $request)
     {
         $p=new \planning();
-        $p->date=$_POST['date'];
-        $p->site=$_POST['site'];
+        $p->date = $request->get('date');
+        $p->site = $request->get('site');
         $p->finDeService();
 
         if ($p->categorieA) {
@@ -817,11 +842,15 @@ class PlanningController extends BaseController
         return new Response(json_encode($return));
     }
 
-    #[Route(path: '/get-hidden-tables', name: 'planning.get.hidden.tables', methods: ['POST'])]
-    public function ajaxGetHiddenTables()
+    /*
+     * Permet de récupérer les préférences sur les tableaux cachés
+     */
+    #[Route(path: '/planning/hidden-tables', name: 'planning.hidden_tables.get', methods: ['GET'])]
+    public function ajaxGetHiddenTables(Request $request, Session $session)//There is a private function with the same name as getHiddenTables
     {
-        $perso_id=$_SESSION['login_id'];
-        $tableId=filter_input(INPUT_POST, "tableId", FILTER_SANITIZE_NUMBER_INT);
+        $perso_id = $session->get('loginId');
+        $tableId = $request->get('tableId');
+        $tableId = filter_var($tableId, FILTER_SANITIZE_NUMBER_INT);
 
         $db=new \db();
         $db->select2("hidden_tables", "*", array("perso_id"=>$perso_id,"tableau"=>$tableId));
@@ -834,10 +863,17 @@ class PlanningController extends BaseController
         return new Response(json_encode($return));
     }
 
-    #[Route(path: '/hidden-tables', name: 'planning.hidden.tables', methods: ['POST'])]
-    public function hiddenTables(Request $request)
+    /*
+     * Permet l'enregistrement des préférences sur les tableaux cachés
+     */
+    #[Route(path: '/planning/hidden-tables', name: 'planning.hidden_tables.set', methods: ['POST'])]
+    public function setHiddenTables(Request $request, Session $session)
     {
-        $perso_id = $_SESSION['login_id'];
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $perso_id = $session->get('loginId');
         $CSRFToken = $request->get('CSRFToken');
         $hiddenTables = $request->get('hiddenTables');
         $tableId = $request->get('tableId');

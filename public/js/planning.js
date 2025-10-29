@@ -226,8 +226,8 @@ $(document).ready(function(){
   var tableId=$("#tableau").attr("data-tableId");
   if(tableId){
     $.ajax({
-      url: url('get-hidden-tables'),
-      type: "post",
+      url: url('planning/hidden-tables'),
+      type: 'get',
       dataType: "json",
       data: {tableId: tableId},
       success: function(result){
@@ -518,12 +518,13 @@ $(function() {
 	  appelDispoData.sujet=sujet;
 	  appelDispoData.message=message;
 	  appelDispoData.CSRFToken = $('#CSRFSession').val();
+    appelDispoData._token = $('input[name=_token]').val();
 
 	  $( "#pl-appelDispo-form" ).dialog( "close" );
 	  
 	  $.ajax({
 	    dataType: "json",
-	    url: url('send-availability-mail'),
+	    url: url('planning/call-for-help/send-mail'),
 	    type: "post",
 	    data: appelDispoData,
 	    success: function(result){
@@ -1213,18 +1214,19 @@ function afficheTableauxDiv(){
   // Enregistre la liste des tableaux cachés dans la base de données
   var tableId=$("#tableau").attr("data-tableId");
   hiddenTables=JSON.stringify(hiddenTables);
+  var _token = $('input[name=_token]').val();
+
   $.ajax({
-    url: url('hidden-tables'),
+    url: url('planning/hidden-tables'),
     type: "post",
     dataType: "json",
-    data: {tableId: tableId, hiddenTables: hiddenTables, CSRFToken: $('#CSRFSession').val()},
+    data: {_token: _token, tableId: tableId, hiddenTables: hiddenTables, CSRFToken: $('#CSRFSession').val()},
     success: function(result){
     },
     error: function(result){
     }
   });
 }
-
 
 /**
  * appelDispo : Ouvre une fenêtre permettant d'envoyer un mail aux agents disponibles pour un poste et créneau horaire choisis
@@ -1238,13 +1240,15 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
 
   // Variable globale à utiliser lors de l'envoi du mail
   appelDispoData={site:site, poste:poste, date:date, debut:debut, fin:fin, agents:agents};
-  
+  appelDispoData.CSRFToken = $('#CSRFSession').val();
+  appelDispoData._token = $('input[name=_token]').val();
+
   // Récupération du message par défaut depuis la config.
   $.ajax({
-    url: url('get-availability-message'),
+    url: url('planning.call-for-help/get-message'),
     type: "post",
     dataType: "json",
-    data: {},
+    data: appelDispoData,//TO BE TESTED
     success: function(result){
       // Récupération des infos de la base de données, table config
       var sujet=result[0];
@@ -1693,9 +1697,9 @@ function verif_categorieA(){
   var site=$("#site").val();
 
   $.ajax({
-    url: url('validation-category-a'),
-    datatype: "json",
-    type: "post",
+    url: url('planning/end-of-service/check'),
+    type: 'get',
+    datatype: 'json',
     data: {"date": date, "site": site},
     success: function(result) {
       result = JSON.parse(result);

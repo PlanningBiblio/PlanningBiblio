@@ -288,13 +288,13 @@
 "workinghour.delete":
     - 1101
     - 1201
-"planning.send.availability.mail":
+"planning.call_for_help.get_message":
+    - 301
+"planning.call_for_help.send_mail":
+    - 301
+"planning.end_of_service.check":
     - 100
-"planning.get.availability.message":
+"planning.hidden_tables.get":
     - 100
-"planning.validation.category.a":
-    - 100
-"planning.get.hidden.tables":
-    - 100
-"planning.hidden.tables":
+"planning.hidden_tables.set":
     - 100
