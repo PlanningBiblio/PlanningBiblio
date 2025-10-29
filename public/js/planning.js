@@ -524,7 +524,7 @@ $(function() {
 	  
 	  $.ajax({
 	    dataType: "json",
-	    url: url('planning/call-for-help/send-mail'),
+	    url: url('planning.call-for-help/send-mail'),
 	    type: "post",
 	    data: appelDispoData,
 	    success: function(result){
@@ -1240,15 +1240,13 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
 
   // Variable globale à utiliser lors de l'envoi du mail
   appelDispoData={site:site, poste:poste, date:date, debut:debut, fin:fin, agents:agents};
-  appelDispoData.CSRFToken = $('#CSRFSession').val();
-  appelDispoData._token = $('input[name=_token]').val();
 
   // Récupération du message par défaut depuis la config.
   $.ajax({
     url: url('planning.call-for-help/get-message'),
-    type: "post",
+    type: 'get',
     dataType: "json",
-    data: appelDispoData,//TO BE TESTED
+    data: appelDispoData,
     success: function(result){
       // Récupération des infos de la base de données, table config
       var sujet=result[0];

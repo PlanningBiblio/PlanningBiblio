@@ -728,7 +728,7 @@ class PlanningController extends BaseController
      * Lors de la validation du formulaire "Appel à disponibilité"
      * Script appelé par $( "#pl-appelDispo-form" ).dialog({ Envoyer ]), public/js/planning.js
      */
-    #[Route(path: 'planning.call-for-help/send-mail', name: 'planning.call_for_help/send_mail', methods: ['POST'])]
+    #[Route(path: '/planning.call-for-help/send-mail', name: 'planning.call_for_help.send_mail', methods: ['POST'])]
     public function callForHelpSendMail(Request $request)
     {
         if (!$this->csrf_protection($request)) {
@@ -795,13 +795,9 @@ class PlanningController extends BaseController
      * Script appelé depuis la function JS appelDispo (public/js/planning.js)
      * lors du clic sur le lien "Appel à disponibilité" dans le menu permettant de placer les agents
      */
-    #[Route(path: 'planning.call-for-help/get-message', name: 'planning.call_for_help/get_message', methods: ['POST'])]
+    #[Route(path: '/planning.call-for-help/get-message', name: 'planning.call_for_help.get_message', methods: ['GET'])]
     public function callForHelpGetMessage(Request $request)
     {
-        if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
-        }
-
         $tab=array(null,null);
 
         $db=new \db();
