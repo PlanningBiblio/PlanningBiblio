@@ -22,11 +22,12 @@ $(function() {
         list = JSON.stringify(list);
 
         $.ajax({
-          url: url('personnel/ajax.update.php'),
+          url: url('agent/bulk/update'),
                type: "post",
                dataType: "json",
                data: {
                  CSRFToken: $('#CSRFSession').val(),
+                 _token: $('input[name=_token]').val(),
                // Main tab
                actif: $('#actif').val(),
                contrat: $('#contrat').val(),
@@ -92,10 +93,10 @@ function agent_list() {
       list = JSON.stringify(list);
 
       $.ajax({
-        url: url('personnel/ajax.delete.php'),
+        url: url('agent/bulk/delete'),
              type: "post",
              dataType: "json",
-             data: {list: list, CSRFToken: $('#CSRFSession').val()},
+             data: {_token: $('input[name=_token]').val(), list: list, CSRFToken: $('#CSRFSession').val()},
              success: function(){
                location.href = url('agent?msg=Les agents ont été supprimés avec succès&msgType=success');
              },
@@ -642,12 +643,13 @@ $(function() {
         var recipient = $( "#ics-url-recipient" ).text();
         var subject = $( "#ics-url-subject" ).val();
         var message = $( "#ics-url-text" ).val();
+        var _token = $('input[name=_token]').val();
 
         $.ajax({
           dataType: "json",
-          url: url('personnel/ajax.sendICSURL.php'),
+          url: url('agent/ics/send-url'),
           type: "post",
-          data: {CSRFToken: CSRFToken, recipient: recipient, subject: subject, message: message},
+          data: {_token: _token, CSRFToken: CSRFToken, recipient: recipient, subject: subject, message: message},
           success: function(result){
 
             if(result.error){
