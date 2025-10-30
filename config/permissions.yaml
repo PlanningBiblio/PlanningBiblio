@@ -290,3 +290,5 @@
 "workinghour.delete":
     - 1101
     - 1201
+"crontab.index":
+    - 100
