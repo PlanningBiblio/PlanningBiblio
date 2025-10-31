@@ -855,24 +855,26 @@ div#tabsemaine1{
 .tr_separation {
   color: #FFD700;
 }
-.sticky {
+
+.sticky, .sticky-line, .sticky-col {
+  background: inherit;
   position: -webkit-sticky;
   position: sticky;
+}
+
+.sticky {
   top: 0px;
   left: 0;
   z-index: 3;
 }
+
 .sticky-line {
-  background: inherit;
-  position: -webkit-sticky;
-  position: sticky;
   top: 0px;
   z-index: 1;
   border: #29495C;
 }
+
 .sticky-col {
-  position: -webkit-sticky;
-  position: sticky;
   left: 0;
   z-index: 1;
 }
