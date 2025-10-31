@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.10.02 (2025-10-31)
+
+### Fixes
+
+- MT50758: Fix migration script for old releases #1201
+
 ## Version 25.10.01 (2025-10-17)
 
 ### Enhancement
