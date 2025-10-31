@@ -1,5 +1,23 @@
 # Changelog Planno
 
+## Version 25.11.02 (2025-10-31)
+
+### Enhancement
+
+- MT50732: Ask for confirmation before deleting credits #1205
+> Holiday credits can not be deleted via the command line interface
+
+### Fixes
+
+- MT50758: Fix migration script for old releases #1201
+
+### Plumbing
+
+- MT50735: Create and use LoggerTrait #1203
+- MT50258: Move Ajax from public/conges to Controllers #1204
+- MT50258: Move Ajax resetICSURL to AgentController #1206
+- MT50258: Move Ajax LDAP test to ConfigController #1207
+
 ## Version 25.11.01 (2025-10-17)
 
 ### Enhancement
