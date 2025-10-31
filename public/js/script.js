@@ -397,6 +397,10 @@ function deleteAdminInfo(id) {
     deleteAjax(id, 'admin/info', 'Êtes vous sûr(e) de vouloir supprimer cette information ?');
 }
 
+function deleteCommand(id) {
+    deleteAjax(id, 'crontab', 'Êtes vous sûr(e) de vouloir supprimer cet command ?');
+}
+
 function deleteAjax(id, route, message) {
     if (confirm(message)) {
         $.ajax({

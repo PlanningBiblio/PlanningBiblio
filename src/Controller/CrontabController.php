@@ -27,16 +27,18 @@ final class CrontabController extends BaseController
                 continue;
             }
             $elem = array(
+                'id'             => $cron->getId(),
                 'minute'         => $cron->getM(),
                 'hour'           => $cron->getH(),
                 'day_of_month'   => $cron->getDom(),
                 'month'          => $cron->getMon(),
                 'day_of_week'    => $cron->getDow(),
-                'command_name'   => $cron->getCommand(),
+                'command'        => $cron->getCommand(),
                 'comment'        => $cron->getComment(),
-                'disabled'       => $cron->isDisabled(),
+                'disabled'       => (int)$cron->isDisabled(),
                 'last'           => $cron->getLast()
             );
+            $elements[] = $elem;
         }
 
         $this->templateParams(array(
@@ -49,7 +51,7 @@ final class CrontabController extends BaseController
         return $this->output('crontab/index.html.twig');
     }
 
-        #[Route(path: '/crontab', name: 'crontab.update')] // , methods={"POST"})
+    #[Route(path: '/crontab', name: 'crontab.update', methods: ["POST"])]
     public function update(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
@@ -57,57 +59,24 @@ final class CrontabController extends BaseController
         }
 
         $params = $request->request->all();
-        // Demo mode
-        if ($params && !empty($this->config('demo'))) {
-            $error = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
-            $error .= "#BR#Merci de votre compréhension";
+
+        if (empty($params)) {
+            $error = "La modification de la Ordonnanceur est vide.";
         }
-        elseif ($params) {
+        else {
 
-            $technical = $request->get('technical');
+            $crons = $this->entityManager->getRepository(Cron::class)->findAll();
 
-            $configParams = $this->entityManager->getRepository(Config::class)->findBy(
-                array('technical' => $technical),
-                array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
-            );
-
-            foreach ($configParams as $cp) {
-                if (in_array($cp->getType(), ['hidden', 'info'])) {
-                    continue;
-                }
-                // boolean and checkboxes elements.
-                if (!isset($params[$cp->getName()])) {
-                    if ($cp->getType() == 'boolean') {
-                        $params[$cp->getName()] = '0';
-                    } else {
-                        $params[$cp->getName()] = array();
-                    }
-                }
-                $value = $params[$cp->getName()];
-
-                if (is_string($value)) {
-                    $value = trim($value);
-                }
-
-                // Passwords
-                if (substr($cp->getName(), -9) == '-Password') {
-                    $value = encrypt($value);
-                }
-                // Checkboxes
-                if (is_array($value)) {
-                    $value = json_encode($value);
-                }
-
-                if ($cp->getType() == 'color') {
-                    $value = filter_var($value, FILTER_CALLBACK, ['options' => 'sanitize_color']);
-                }
+            foreach ($crons as $cron) {
+                $cmd = $cron->getCommand();
+                $isEnabled = array_key_exists($cmd, $params);
 
                 try {
-                    $cp->setValue($value);
-                    $this->entityManager->persist($cp);
+                    $cron->setDisabled($isEnabled ? 0 : 1);
+                    //$this->entityManager->persist($cron);
                 }
                 catch (Exception $e) {
-                    $error = 'Une erreur est survenue pendant la modification de la configuration !';
+                    $error = 'Une erreur est survenue pendant la modification de la crontab !';
                 }
             }
             $this->entityManager->flush();
@@ -117,12 +86,105 @@ final class CrontabController extends BaseController
         if (isset($error)) {
             $session->getFlashBag()->add('error', $error);
         } else {
-            $flash = 'La configuration a été modifiée avec succès';
+            $flash = 'La crontab a été modifiée avec succès';
             $session->getFlashBag()->add('notice', $flash);
         }
 
-        $options = $technical ? ['options' => 'technical'] : [];
+        return $this->redirectToRoute('crontab.index');
+    }
 
-        return $this->redirectToRoute('config.index', $options);
+    #[Route(path: '/crontab/add', name: 'crontab.add', methods: ['GET'])]
+    public function add(Request $request)
+    {
+        $crons = $this->entityManager->getRepository(Cron::class)
+            ->findAll();
+        $crons_enabled = $this->entityManager->getRepository(Cron::class)
+            ->findBy(['disabled' => 0]);
+
+        foreach( $crons_enabled AS $c) {
+            $command_id[] = $c->getId();
+        }
+        $this->templateParams(array(
+            'id'    => null,
+            'm'    => null,
+            'h' => null,
+            'command'=> null,
+            'dom'   => null,
+            'mon'  => null,
+            'dow'  => null,
+            'CSRFToken'             => $GLOBALS['CSRFSession'],
+            'all_commands' => $crons,
+            'command_ids'=> $command_id
+        ));
+
+        return $this->output('crontab/edit.html.twig');
+    }
+
+    #[Route(path: '/crontab/{id}', name: 'crontab.edit', methods: ['GET'])]
+    public function edit(Request $request)
+    {
+        $crons = $this->entityManager->getRepository(Cron::class)
+        ->findAll();
+        $id = $request->get('id');
+        
+        $cron = $this->entityManager->getRepository(Cron::class)->findOneById($id);
+
+        $command_id = [];
+        $crons_enabled = $this->entityManager->getRepository(Cron::class)
+            ->findBy(['disabled' => 0]);
+
+        foreach( $crons_enabled AS $c) {
+            $command_id[] = $c->getId();
+        }
+
+        $this->templateParams(array(
+            'id'    => $id,
+            'command'=> $cron->getCommand(),
+            'comment'=> $cron->getComment(),
+            'm'     => $cron->getM(),
+            'h'     => $cron->getH(),
+            'dom'   => $cron->getDom(),
+            'mon'   => $cron->getMon(),
+            'dow'   => $cron->getDow(),
+            'CSRFToken'             => $GLOBALS['CSRFSession'],
+            'all_commands' => $crons,
+            'command_ids'=> $command_id
+        ));
+
+        return $this->output('crontab/edit.html.twig');
+    }
+
+    
+
+    #[Route(path: '/crontab', name: 'crontab.delete', methods: ['DELETE'])]
+    public function delete(Request $request, Session $session)
+    {
+        if (!$this->csrf_protection($request)) {
+            $response = new Response();
+            $response->setStatusCode(403);
+            $response->setContent(json_encode('CSRF error'));
+
+            return $response;
+        }
+
+        $id = $request->get('id');
+
+        $info = $this->entityManager->getRepository(Cron::class)->find($id);
+        $this->entityManager->remove($info);
+        $this->entityManager->flush();
+
+        $flash = "Le command a bien été supprimée.";
+        $session->getFlashBag()->add('notice', $flash);
+
+        $response = new Response();
+        $response->setStatusCode(200);
+        $response->setContent(json_encode('OK'));
+
+        return $response;
+    }
+
+    private function frequence()
+    {
+        return;
     }
 }

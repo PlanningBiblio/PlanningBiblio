@@ -1,0 +1,106 @@
+{# crontab/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+    <div id="content-admin">
+        <h3>Cron Command</h3>
+
+        <div class="admin-div">
+            {% if id %}
+                <h4>Modifications des Commands</h4>
+            {% else %}
+                <h4>Ajout d'un Command</h4>
+            {% endif %}
+
+          <form id='form' method='POST' action='{{ asset('crontab') }}' name='form' onsubmit='return verif_form("start=date1;end=date2;text");'>{# TEST TODO #}
+            <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+            <input type='hidden' name="_token" value="{{ csrf_token('') }}"/>
+            <input type='hidden' name='id' value='{{ id }}' />
+
+              <table class='tableauFiches'>
+                <tr>
+                <td>&nbsp;</td>
+                <tr>
+                  <td><label>Command</label> </td>
+                  <td>
+                  {% if id %}
+                    <label>{{ command }}</label>
+                  {% else %} 
+                    <select name='command_id' id='command_id' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
+                      <option value='0' selected='selected'>-- Ajoutez un Command --</option>
+                
+                    {% for cron in all_commands %}
+                      {% if cron.id in command_ids %}
+                        <option value='{{ cron.id }}' id='option{{ cron.id }}' style="display:none;">{{ cron.command }}</option>
+                      {% else %}
+                        <option value='{{ cron.id }}' id='option{{ cron.id }}'>{{ cron.command }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                  </select>
+                    </td>
+                </tr>
+
+                {%if id %}
+                <tr>
+                    <td><label>Description</label> </td>
+                    <td>
+                    <label>{{ comment }}</label>
+                    </td>
+                </tr>
+                {% endif %}
+
+                <tr>
+                    <td><label>minute</label> </td>
+                    <td>
+                    <input type='text' id='input_text_number' name='start' value='{{ m }}' style='width:100%;'/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><label>hour</label></td>
+                    <td>
+                    <input type='text' id='input_text_number' name='end' value='{{ h }}' style='width:100%;'/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><label>day of month</label></td>
+                    <td>
+                    <input type='text' id='input_text_number' name='end' value='{{ dom }}' style='width:100%;'/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><label>month</label></td>
+                    <td>
+                    <input type='text' id='input_text_number' name='end' value='{{ mon }}' style='width:100%;'/>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td><label>day of week</label></td>
+                    <td>
+                    <input type='text' id='input_text_number' name='end' value='{{ dow }}' style='width:100%;'/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+
+                <tr>
+                    <td colspan='2' style='text-align:center;'>
+                    <a href='{{ asset('crontab') }}' class='ui-button ui-button-type2' style='margin-left:30px;'>Annuler</a>
+                    {% if id %}
+                        <a href='javascript:deleteCommand({{ id }});' class='ui-button ui-button-type3' style='margin-left:30px;' >Supprimer</a>
+                    {% endif %}
+                    <input type='submit' value='Valider' class='ui-button ui-button-type1' style='margin-left:30px;'/>
+                    </td>
+                </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+{% endblock %}

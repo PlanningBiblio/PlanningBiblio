@@ -109,16 +109,26 @@
     - 100
 "calendar.index":
     - 100
+"closingday.index":
+    - 25
+"closingday.save":
+    - 25
 "config.index":
     - 20
 "config.technical":
     - 20
 "config.update":
     - 20
-"closingday.index":
-    - 25
-"closingday.save":
-    - 25
+"crontab.add":
+    - 100
+"crontab.delete":
+    - 100
+"crontab.edit":
+    - 100
+"crontab.index":
+    - 100
+"crontab.update":
+    - 100
 "overtime.edit":
     - 100
 "overtime.index":
@@ -290,5 +300,3 @@
 "workinghour.delete":
     - 1101
     - 1201
-"crontab.index":
-    - 100

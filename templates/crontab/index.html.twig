@@ -4,18 +4,86 @@
 
 {% block page %}
 
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{% if warning %}
+  <script type='text/JavaScript'>
+    CJInfo('{{ warning }}','error');
+  </script>
+{% endif %}
+{% if post %}
+  {% if error %}
+    <script type='text/JavaScript'>
+      CJInfo('Il y a eu des erreurs pendant la modification.<br/>Veuillez vérifier.','error');
+    </script>
+  {% else %}
+    <script type='text/JavaScript'>
+      CJInfo('Les modifications ont été enregistrées.','highlight');
+    </script>
+  {% endif %}
+{% endif %}
 
-<div class="example-wrapper">
-    <h1>Hello! ✅</h1>
+<h3>Ordonnanceur</h3>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/planno/www/planno/src/Controller/CrontabController.php</code></li>
-        <li>Your template at <code>/home/planno/www/planno/templates/crontab/index.html.twig</code></li>
-    </ul>
-</div>
+    <div class='top-button-div'>
+        <a href='{{ asset("crontab/add") }}' class='ui-button ui-button-type1'>Ajouter</a>
+    </div>
+
+    {% if elements %}
+        <table class='CJDataTable' data-sort='[[1],[2]]' id='AbsenceInfoTable'>
+            <thead>
+                <tr>
+                    <th class='dataTableNoSort'></th>
+                    <th>Nom</th>
+                    <th>Commentaires</th>
+                    <th>Fréquence</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for elem in elements %}
+                    <tr>
+                        <td>
+                            <a href='{{ asset('crontab/') }}{{elem.id}}'>
+                                <span class='pl-icon pl-icon-edit' title='Edit'></span>
+                            </a>
+                        </td>
+                        <td>{{ elem.command }}</td>
+                        <td>{{ elem.comment }}</td>
+                        <td>{{ elem.disabled }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        Aucune information enregistrée.
+    {% endif %}
+
+
+{#
+    <form name="form" action="{{ path('crontab.update') }}" method="post">
+      <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
+
+      <div id='crontab_choice'>
+        <table id='tableCrontab' class='CJDataTable' data-sort='[[1],[2]]'>
+          <tr>
+            <td class='ui-widget-header ui-corner-left' style='width:350px;border-right:0px;'>Nom</td>
+            <td style='width:600px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td>
+            <td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td>
+          </tr>
+
+          {% for elem in elements %}
+              <tr id='{{ elem['command'] }}_tr' style='vertical-align:top;'>
+              <td style='width:180px;'>{{ elem.command }}</td>
+              <td>
+                <input type='checkbox' name='{{ elem.command }}' id='{{ elem.command }}' {% if elem.disabled == 0 %} value='1' checked='checked' {% endif %} />
+              </td>
+              <td>{{ elem.comment | raw }}</td>
+              </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div style='text-align:center;margin:20px;'>
+          <input type='submit' value='Enregistrer les modifications' class="ui-button" />
+      </div>
+    </form>
+
+#}
 {% endblock %}
