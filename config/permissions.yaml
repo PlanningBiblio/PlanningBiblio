@@ -290,3 +290,13 @@
 "workinghour.delete":
     - 1101
     - 1201
+"planning.call_for_help.get_message":
+    - 301
+"planning.call_for_help.send_mail":
+    - 301
+"planning.end_of_service.check":
+    - 100
+"planning.hidden_tables.get":
+    - 100
+"planning.hidden_tables.set":
+    - 100
