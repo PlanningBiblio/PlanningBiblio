@@ -5,13 +5,16 @@
 {% block page %}
 
   <h3>Heures de présence</h3>
-  <div id='buttons'>
+  <div id="buttons">
     <form name="form" method="get" action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm();">
-      Début : <input type="text" name="debut" class="datepicker start-search" value="{{ debut }}" />
-      &nbsp;&nbsp;Fin : <input type="text" name="fin" class="datepicker end-search" value="{{ fin }}" />
-      &nbsp;&nbsp;<input type="submit" role="button" value="Rechercher" class="btn btn-secondary" />
-      &nbsp;&nbsp;<input type="button" value="Réinitialiser" onclick="location.href='{{ asset("workinghour") }}?reset=on'" class="btn btn-secondary" />
-     <a class="btn btn-primary" role="button" href="{{ asset('workinghour') }}/add?retour={{ asset('workinghour') }}" style="position:absolute; right:95px;">Entrer de nouveaux horaires</a>
+      Début : <input type="text" name="debut" class="datepicker start-search" value="{{ debut }}" style="margin-right:20px;" />
+      Fin : <input type="text" name="fin" class="datepicker end-search" value="{{ fin }}" style="margin-right:20px;" />
+      <input type="submit" role="button" value="Rechercher" class="btn btn-secondary" style="margin-right:20px;" />
+      <input type="button" value="Réinitialiser" onclick="location.href='{{ asset('workinghour') }}?reset=on'" class="btn btn-secondary" style="margin-right:20px;" />
+      {%if admin and config('PlanningHebdo-resetCycles') and config('nb_semaine') > 2 %}
+        <a role="button" class="btn btn-secondary" href="{{ path('workinghour.settings') }}" >Paramètres</a>
+      {% endif %}
+      <a class="btn btn-primary" role="button" href="{{ asset('workinghour') }}/add?retour={{ asset('workinghour') }}" style="position:absolute; right:95px;">Entrer de nouveaux horaires</a>
     </form>
   </div>
   <br/>
