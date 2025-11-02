@@ -288,3 +288,15 @@
 "workinghour.delete":
     - 1101
     - 1201
+"workinghour.settings":
+    - 1101
+    - 1201
+"workinghour.settings.delete":
+    - 1101
+    - 1201
+"workinghour.settings.edit":
+    - 1101
+    - 1201
+"workinghour.settings.save":
+    - 1101
+    - 1201
