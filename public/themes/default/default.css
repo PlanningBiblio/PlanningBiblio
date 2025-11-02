@@ -2312,6 +2312,10 @@ table.dataTable th{
   padding: 0 0 10px 10px;
 }
 
+#tableWorkingHourCycles_wrapper {
+  margin-top: 30px;
+}
+
 @media only screen and (max-width: 1550px){
   #logo {
     width: 48px;
