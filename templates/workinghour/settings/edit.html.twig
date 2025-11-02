@@ -1,0 +1,64 @@
+{# workinghour/settings/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('js/workingHour.js') }}"></script>
+{% endblock %}
+
+{% block page %}
+  <div id="content-admin">
+    <h3>Cycle de présence</h3>
+
+    <div class="admin-div">
+      {% if cycle.id %}
+        <h4>Modification d'un cycle</h4>
+      {% else %}
+        <h4>Ajout d'un cycle</h4>
+      {% endif %}
+
+      <form id="form" name="form" method="post" action="{{ path('workinghour.settings.save') }}" >
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+        <input type="hidden" name="id" value="{{ cycle.id }}" />
+
+        <table class="tableauFiches">
+          <tr>
+            <td><label for="date">Date de début du cycle</label> </td>
+            <td>
+              <input type="text" id="date" name="date" value="{{ cycle.date | date('d/m/Y')}}" style="width:100%;" class="datepicker" />
+            </td>
+          </tr>
+
+          <tr>
+            <td><label for="week">Numéro de semaine au début du cycle</label></td>
+            <td>
+              <select id="week" name="week">
+                {% for i in 1..config('nb_semaine') %}
+                  <option value="{{ i }}" {% if i == cycle.week %} selected="selected" {% endif %}>{{ i }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+
+          <tr>
+            <td colspan="2" style="text-align:center;">
+              <a href="{{ path('workinghour.settings') }}" class="ui-button ui-button-type2" style="margin-left:30px;">Annuler</a>
+              {% if cycle.id %}
+                <a href="javascript:workingHourSettingDelete({{ cycle.id }});" class="ui-button ui-button-type3" style="margin-left:30px;">Supprimer</a>
+              {% endif %}
+              <input type="submit" value="Valider" class="ui-button ui-button-type1" style="margin-left:30px;" />
+            </td>
+          </tr>
+        </table>
+      </form>
+
+      {% if cycle.id %}
+        <form id="delete-form" name="delete-form" method="post" action="{{ path('workinghour.settings.delete') }}" >
+          <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+          <input type="hidden" id="delete-id" name="id" value="{{ cycle.id }}" />
+        </form>
+      {% endif %}
+
+    </div>
+  </div>
+{% endblock %}
