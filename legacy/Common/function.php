@@ -1,20 +1,21 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-
-@file legacy/Common/function.php
-@author Jérôme Combes <jerome@planningbiblio.fr>
-@author Etienne Cavalié
-
-Description :
-Page contenant les fonctions PHP communes
-Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
-*/
+ * Planno
+ * Licence GNU/GPL (version 2 et au dela)
+ * Voir les fichiers README.md et LICENSE
+ * 
+ * @file public/include/function.php
+ * @author Jérôme Combes <jerome@planningbiblio.fr>
+ * @author Etienne Cavalié
+ * 
+ * Description :
+ * Page contenant les fonctions PHP communes
+ * Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
+ */
 
 use App\Entity\Agent;
 use App\Entity\WorkingHour;
+use App\Entity\WorkingHourCycle;
 use App\Planno\WorkingHours;
 use App\Planno\NotificationTransporter\NotificationTransporterInterface;
 
@@ -128,9 +129,18 @@ class datePl
     }
 
     public function getNumberOfWeeksSinceStartDate($date) {
-        $position=date("w", strtotime(dateSQL($GLOBALS['config']['dateDebutPlHebdo'])))-1;
-        $position=$position==-1?6:$position;
-        $dateFrom=new dateTime(dateSQL($GLOBALS['config']['dateDebutPlHebdo']));
+
+        $em = $GLOBALS['entityManager'];
+        $firstWeekDate = $GLOBALS['config']['dateDebutPlHebdo'];
+
+        $newFirstWeekDate = $em->getRepository(WorkingHourCycle::class)->findFirstWeek($date);
+        if ($newFirstWeekDate) {
+            $firstWeekDate = $newFirstWeekDate;
+        }
+
+        $position = date('w', strtotime(dateSQL($firstWeekDate)))-1;
+        $position = $position == -1 ? 6 : $position;
+        $dateFrom = new dateTime(dateSQL($firstWeekDate));
         $dateFrom->sub(new DateInterval("P{$position}D"));
 
         $position=date("w", strtotime($date))-1;
@@ -141,6 +151,7 @@ class datePl
         $interval=$dateNow->diff($dateFrom);
         $interval=$interval->format("%a");
         $interval /= 7;
+
         return $interval;
     }
 
