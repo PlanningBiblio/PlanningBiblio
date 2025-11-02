@@ -104,7 +104,10 @@ class planningHebdo
         $CSRFToken=$data['CSRFToken'];
         unset($data['CSRFToken']);
 
+        $actuel = ($data['debut'] <= date('Y-m-d') and date('Y-m-d') <= $data['fin']) ? 1 : 0;
+
         $insert = array(
+            'actuel'        => $actuel,
             'perso_id'      => $perso_id,
             'debut'         => $data['debut'],
             'fin'           => $data['fin'],
@@ -518,9 +521,12 @@ class planningHebdo
             }
         }
 
+        $actuel = ($data['debut'] <= date('Y-m-d') and date('Y-m-d') <= $data['fin']) ? 1 : 0;
         $temps = json_encode($data['temps']);
         $breaktime = json_encode($data['breaktime']);
+
         $update = array(
+            'actuel'        => $actuel,
             'debut'         => $data['debut'],
             'fin'           => $data['fin'],
             'temps'         => $temps,
