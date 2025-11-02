@@ -1,20 +1,21 @@
 <?php
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-
-@file legacy/Common/function.php
-@author Jérôme Combes <jerome@planningbiblio.fr>
-@author Etienne Cavalié
-
-Description :
-Page contenant les fonctions PHP communes
-Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
-*/
+ * Planno
+ * Licence GNU/GPL (version 2 et au dela)
+ * Voir les fichiers README.md et LICENSE
+ * 
+ * @file public/include/function.php
+ * @author Jérôme Combes <jerome@planningbiblio.fr>
+ * @author Etienne Cavalié
+ * 
+ * Description :
+ * Page contenant les fonctions PHP communes
+ * Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
+ */
 
 use App\Entity\Agent;
 use App\Entity\WorkingHour;
+use App\Entity\WorkingHourCycle;
 use App\Planno\WorkingHours;
 use App\Planno\NotificationTransporter\NotificationTransporterInterface;
 
@@ -91,25 +92,11 @@ class datePl
             return $this->semaine % 2 ? 1 : 2;
         }
 
-        $interval = $this->getNumberOfWeeksSinceStartDate($this->date);
-        if ($nb_semaine == 3) {
-            $week_id = null;
-            if (!((int) $interval % 3)) {
-                $week_id = 1;
-            }
-            if (!((int) ($interval + 2) % 3)) {
-                $week_id = 2;
-            }
-            if (!((int) ($interval + 1) % 3)) {
-                $week_id = 3;
-            }
-
-            return $week_id;
-        }
-
-        if ($nb_semaine == 4) {
+        if ($nb_semaine == 4 and $GLOBALS['config']['PlanningHebdo-resetCycles'] === '0') {
            return $this->getCycleNumber($this->semaine, 4);
         }
+
+        $interval = $this->getNumberOfWeeksSinceStartDate($this->date) + 1;
 
         return $this->getCycleNumber($interval, $nb_semaine);
     }
@@ -128,9 +115,18 @@ class datePl
     }
 
     public function getNumberOfWeeksSinceStartDate($date) {
-        $position=date("w", strtotime(dateSQL($GLOBALS['config']['dateDebutPlHebdo'])))-1;
-        $position=$position==-1?6:$position;
-        $dateFrom=new dateTime(dateSQL($GLOBALS['config']['dateDebutPlHebdo']));
+
+        $em = $GLOBALS['entityManager'];
+        $firstWeekDate = $GLOBALS['config']['dateDebutPlHebdo'];
+
+        $newFirstWeekDate = $em->getRepository(WorkingHourCycle::class)->findFirstWeek($date);
+        if ($newFirstWeekDate) {
+            $firstWeekDate = $newFirstWeekDate;
+        }
+
+        $position = date('w', strtotime(dateSQL($firstWeekDate)))-1;
+        $position = $position == -1 ? 6 : $position;
+        $dateFrom = new dateTime(dateSQL($firstWeekDate));
         $dateFrom->sub(new DateInterval("P{$position}D"));
 
         $position=date("w", strtotime($date))-1;
@@ -141,6 +137,7 @@ class datePl
         $interval=$dateNow->diff($dateFrom);
         $interval=$interval->format("%a");
         $interval=$interval/7;
+
         return $interval;
     }
 
