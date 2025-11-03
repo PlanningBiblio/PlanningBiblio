@@ -28,13 +28,14 @@
     </div>
 
     {% if elements %}
-        <table class='CJDataTable' data-sort='[[1],[2]]' id='AbsenceInfoTable'>
+        <table class='CJDataTable' data-sort='[[1],[2]]' id='CronInfoTable'>
             <thead>
                 <tr>
                     <th class='dataTableNoSort'></th>
                     <th>Nom</th>
                     <th>Commentaires</th>
-                    <th>Fréquence</th>
+                    <th>Résumé</th>
+                    <th>Disabled</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,7 +48,8 @@
                         </td>
                         <td>{{ elem.command }}</td>
                         <td>{{ elem.comment }}</td>
-                        <td>{{ elem.disabled }}</td>
+                        <td>{{ elem.resume }}</td>
+                        <td><input type='checkbox' class='cron_disabled' id='{{ elem.id }}' {% if elem.disabled == 0 %} value='1' checked='checked' {% endif %} /></td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -55,35 +57,5 @@
     {% else %}
         Aucune information enregistrée.
     {% endif %}
-
-
-{#
-    <form name="form" action="{{ path('crontab.update') }}" method="post">
-      <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
-
-      <div id='crontab_choice'>
-        <table id='tableCrontab' class='CJDataTable' data-sort='[[1],[2]]'>
-          <tr>
-            <td class='ui-widget-header ui-corner-left' style='width:350px;border-right:0px;'>Nom</td>
-            <td style='width:600px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td>
-            <td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td>
-          </tr>
-
-          {% for elem in elements %}
-              <tr id='{{ elem['command'] }}_tr' style='vertical-align:top;'>
-              <td style='width:180px;'>{{ elem.command }}</td>
-              <td>
-                <input type='checkbox' name='{{ elem.command }}' id='{{ elem.command }}' {% if elem.disabled == 0 %} value='1' checked='checked' {% endif %} />
-              </td>
-              <td>{{ elem.comment | raw }}</td>
-              </tr>
-          {% endfor %}
-        </table>
-      </div>
-      <div style='text-align:center;margin:20px;'>
-          <input type='submit' value='Enregistrer les modifications' class="ui-button" />
-      </div>
-    </form>
-
-#}
+  <script type="text/JavaScript" src="{{ asset('js/crontab.js') }}"></script>
 {% endblock %}

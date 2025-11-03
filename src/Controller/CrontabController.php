@@ -23,9 +23,6 @@ final class CrontabController extends BaseController
         $elements = array();
         foreach ($crons as $cron) {
 
-            if ($cron->isDisabled() ) {
-                continue;
-            }
             $elem = array(
                 'id'             => $cron->getId(),
                 'minute'         => $cron->getM(),
@@ -36,7 +33,8 @@ final class CrontabController extends BaseController
                 'command'        => $cron->getCommand(),
                 'comment'        => $cron->getComment(),
                 'disabled'       => (int)$cron->isDisabled(),
-                'last'           => $cron->getLast()
+                'last'           => $cron->getLast(),
+                'resume'         => $this->resume($cron->getId())
             );
             $elements[] = $elem;
         }
@@ -59,26 +57,31 @@ final class CrontabController extends BaseController
         }
 
         $params = $request->request->all();
-
-        if (empty($params)) {
-            $error = "La modification de la Ordonnanceur est vide.";
+        
+        if (
+            !isset($params['min']) || trim($params['min']) === '' ||
+            !isset($params['hour']) || trim($params['hour']) === '' ||
+            !isset($params['dom']) || trim($params['dom']) === '' ||
+            !isset($params['mon']) || trim($params['mon']) === '' ||
+            !isset($params['dow']) || trim($params['dow']) === ''
+        ) {
+            $error = "La modification de l'ordonnanceur est vide.";
         }
+
         else {
-
-            $crons = $this->entityManager->getRepository(Cron::class)->findAll();
-
-            foreach ($crons as $cron) {
-                $cmd = $cron->getCommand();
-                $isEnabled = array_key_exists($cmd, $params);
-
-                try {
-                    $cron->setDisabled($isEnabled ? 0 : 1);
-                    //$this->entityManager->persist($cron);
-                }
-                catch (Exception $e) {
-                    $error = 'Une erreur est survenue pendant la modification de la crontab !';
-                }
+            $cron = $this->entityManager->getRepository(Cron::class)->findOneBy(["id"=> $params['id']]);
+            try {
+                $cron->setM($params['min']);
+                $cron->setH($params['hour']);
+                $cron->setDom($params['dom']);
+                $cron->setMon($params['mon']);
+                $cron->setDow($params['dow']);
+                $cron->setDisabled(0);
             }
+            catch (Exception $e) {
+                $error = 'Une erreur est survenue pendant la modification de la crontab !';
+            }
+
             $this->entityManager->flush();
 
         }
@@ -183,8 +186,98 @@ final class CrontabController extends BaseController
         return $response;
     }
 
-    private function frequence()
+    #[Route(path: '/crontab/info/{id}', name: 'crontab.info', methods: ['GET'])]
+    public function info(int $id): Response
     {
-        return;
+        $cron = $this->entityManager->getRepository(Cron::class)->find($id);
+        if (!$cron) {
+            return new Response(json_encode(['error' => 'Not found']), 404, ['Content-Type' => 'application/json']);
+        }
+
+        $data = [
+            'description' => $cron->getComment(),
+            'm'   => $cron->getM(),
+            'h'   => $cron->getH(),
+            'dom' => $cron->getDom(),
+            'mon' => $cron->getMon(),
+            'dow' => $cron->getDow(),
+        ];
+
+        return new Response(json_encode($data), 200, ['Content-Type' => 'application/json']);
+    }
+
+    #[Route(path: '/crontab/disabled', name: 'crontab.disabled', methods: ['POST'])]
+    public function disabled(Request $request)
+    {
+        $id = $request->get('id');
+        $checked = $request->get('checked');
+
+        $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+
+        $cron = $this->entityManager->getRepository(Cron::class)->find($id);
+        $cron->setDisabled(!$checked);
+        $this->entityManager->flush();
+        return $this->json(['ok' => true]);
+    }
+
+    private function resume(int $id)
+    {   
+        $cron = $this->entityManager->getRepository(Cron::class)->findOneById($id);
+
+        $m = $cron->getM();
+        $h = $cron->getH();
+        $dom = $cron->getDom();
+        $mon = $cron->getMon();
+        $dow = $cron->getDow();
+
+        $desc = [];
+
+        $mois = [
+            1=>"janvier",2=>"février",3=>"mars",4=>"avril",5=>"mai",6=>"juin",
+            7=>"juillet",8=>"août",9=>"septembre",10=>"octobre",11=>"novembre",12=>"décembre"
+        ];
+        $jours = [
+            0 => "dimanche", 1 => "lundi", 2 => "mardi", 3 => "mercredi",
+            4 => "jeudi", 5 => "vendredi", 6 => "samedi", 7 => "dimanche"
+        ];
+
+        if ($dom === "*" && $dow === "*") {
+            $desc[] = "Tous les jours";
+        } elseif ($dow !== "*") {
+            $desc[] = "Chaque semaine le {$jours[(int)$dow]}";
+        } elseif ($dom !== "*" && $mon !== "*") {
+            $desc[] = "Le $dom {$mois[(int)$mon]}";
+        } elseif ($dom !== "*") {
+            $desc[] = "Le $dom de chaque mois";
+        } 
+
+        if (preg_match('/^\*\/(\d+)$/', $m, $matches)) {
+            $step = $matches[1];
+            if ($h === "*") {
+                $desc[] = "toutes les $step minutes";
+            } elseif (preg_match('/^(\d+)-(\d+)$/', $h, $hm)) {
+                $desc[] = "toutes les $step minutes entre {$hm[1]}h et {$hm[2]}h";
+            } else {
+                $desc[] = "toutes les $step minutes à {$h}h";
+            }
+        }
+        elseif ($m === "*" and $h === "*") {
+            $desc[] = "chaque minute chaque heure";
+        }
+        elseif (is_numeric($m) && $h === "*") {
+            $desc[] = "à la minute $m de chaque heure";
+        }
+        elseif ($m === "*" && is_numeric($h)) {
+            $desc[] = "chaque minute à {$h}h";
+        }
+        else {
+            $h_int = is_numeric($h) ? (int)$h : 0;
+            $m_int = is_numeric($m) ? (int)$m : 0;
+            $time = sprintf("%02d:%02d", $h_int, $m_int);
+            $desc[] = "à $time";
+        }
+
+
+        return implode(" ", $desc);
     }
 }
