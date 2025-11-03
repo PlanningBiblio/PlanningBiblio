@@ -11,7 +11,7 @@ final class Version20251103113513 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Update holiday reset commands (add --force option)';
     }
 
     public function up(Schema $schema): void
