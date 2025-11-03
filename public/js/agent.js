@@ -94,7 +94,7 @@ function agent_list() {
 
       $.ajax({
         url: url('agent/bulk/delete'),
-             type: "post",
+             type: "delete",
              dataType: "json",
              data: {_token: $('input[name=_token]').val(), list: list, CSRFToken: $('#CSRFSession').val()},
              success: function(){

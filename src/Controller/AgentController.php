@@ -1708,7 +1708,7 @@ class AgentController extends BaseController
      * Les agents ne sont pas supprimés définitivement, ils sont marqués comme supprimés dans la table personnel (champ supprime=1)
      * Appelé par la fonction JS public/js/agent.js : agent_list
     */
-    #[Route(path: '/agent/bulk/delete', name: 'agent.bulk.delete', methods: ['POST'])]
+    #[Route(path: '/agent/bulk/delete', name: 'agent.bulk.delete', methods: ['DELETE'])]
     public function bulkDelete(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
