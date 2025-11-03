@@ -7,6 +7,7 @@
   <h3>Heures de présence</h3>
   <div id='buttons'>
     <form name='form' method='get' action='{{ asset("workinghour") }}'>
+      <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
       Début : <input type='text' name='debut' class='datepicker' value='{{ debut }}' />
       &nbsp;&nbsp;Fin : <input type='text' name='fin' class='datepicker' value='{{ fin }}' />
       &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />

@@ -325,10 +325,7 @@ function updateTables(selected_weeks) {
     weeks = 1;
   }
   perso_id = $('#perso_id').val();
-  if (!perso_id) {
-    console.warn('perso_id missing; skipping table update');
-    return;
-  }
+
   $('#select_number_of_weeks').val(weeks);
 
   $.ajax({

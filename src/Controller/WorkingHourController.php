@@ -246,8 +246,11 @@ class WorkingHourController extends BaseController
             }
         }
 
+        $perso_id = $request->get('agent_id') ?? $session->get('loginId');
+
         $this->templateParams(
             array(
+                'perso_id' => $perso_id,
                 'admin' => $admin,
                 "debut" => $debut,
                 "fin"   => $fin,
