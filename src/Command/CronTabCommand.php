@@ -88,15 +88,24 @@ class CronTabCommand extends Command
         $crons = $this->crons();
 
         foreach ($crons as $cron) {
-            $cmd = $cron->getCommand();
+            $fullCommand = explode(' ', $cron->getCommand());
+            $command = $fullCommand[0];
+            $option = $fullCommand[1] ?? null;
 
             if ($output->isVerbose()) {
-                $io->text("Running: $cmd");
+                $io->text("Running: $command");
             }
 
-            $cronInput = new ArrayInput([
-                'command' => $cmd
-            ]);
+            if ($option == '--force') {
+                $cronInput = new ArrayInput([
+                    'command' => $command,
+                    '--force' => true,
+                ]);
+            } else {
+                $cronInput = new ArrayInput([
+                    'command' => $command,
+                ]);
+            }
 
             // disable interactive behavior for the greet command
             $cronInput->setInteractive(false);
