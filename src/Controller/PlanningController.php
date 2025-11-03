@@ -842,7 +842,7 @@ class PlanningController extends BaseController
      * Permet de récupérer les préférences sur les tableaux cachés
      */
     #[Route(path: '/planning/hidden-tables', name: 'planning.hidden_tables.get', methods: ['GET'])]
-    public function ajaxGetHiddenTables(Request $request, Session $session)//There is a private function with the same name as getHiddenTables
+    public function ajaxGetHiddenTables(Request $request, Session $session)
     {
         $perso_id = $session->get('loginId');
         $tableId = $request->get('tableId');
