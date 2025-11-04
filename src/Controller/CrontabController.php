@@ -243,13 +243,66 @@ final class CrontabController extends BaseController
 
         if ($dom === "*" && $dow === "*") {
             $desc[] = "Tous les jours";
+        } elseif (preg_match('/^(\d+)-(\d+)$/', $dow, $matches)) {
+            $start = (int)$matches[1];
+            $end = (int)$matches[2];
+            if (isset($jours[$start]) && isset($jours[$end])) {
+                $desc[] = "Chaque semaine du {$jours[$start]} au {$jours[$end]}";
+            } else {
+                $desc[] = "Chaque semaine (jours $start à $end)";
+            }
         } elseif ($dow !== "*") {
             $desc[] = "Chaque semaine le {$jours[(int)$dow]}";
         } elseif ($dom !== "*" && $mon !== "*") {
             $desc[] = "Le $dom {$mois[(int)$mon]}";
         } elseif ($dom !== "*") {
             $desc[] = "Le $dom de chaque mois";
-        } 
+        }
+
+        //It will be complicated to cover all cases, so I ignore the rest.Below is the ignored code.
+        // if ($dom === "*" && $dow === "*") {
+        //     $desc[] = "Tous les jours";
+
+        // } elseif ($dow !== "*" && $dom === "*") {
+        //     if (preg_match('/^(\d+)-(\d+)$/', $dow, $matches)) {
+        //         $start = (int)$matches[1];
+        //         $end = (int)$matches[2];
+        //         $desc[] = "Chaque semaine du {$jours[$start]} au {$jours[$end]}";
+        //     } else {
+        //         $desc[] = "Chaque semaine le {$jours[(int)$dow]}";
+        //     }
+
+        // } elseif ($dom !== "*" && $mon !== "*") {
+        //     if (preg_match('/^(\d+)-(\d+)$/', $dom, $matches_dom)) {
+        //         $start_dom = (int)$matches_dom[1];
+        //         $end_dom = (int)$matches_dom[2];
+
+        //         if (preg_match('/^(\d+)-(\d+)$/', $mon, $matches_mon)) {
+        //             $start_mon = (int)$matches_mon[1];
+        //             $end_mon = (int)$matches_mon[2];
+        //             $desc[] = "Du $start_dom {$mois[$start_mon]} au $end_dom {$mois[$end_mon]}";
+        //         } else {
+        //             $desc[] = "Du $start_dom au $end_dom {$mois[(int)$mon]}";
+        //         }
+        
+        //     } 
+        //     elseif (preg_match('/^(\d+)-(\d+)$/', $mon, $matches_mon)) {
+        //         $start_mon = (int)$matches_mon[1];
+        //         $end_mon = (int)$matches_mon[2];
+        //         $desc[] = "Le $dom de {$mois[$start_mon]} à {$mois[$end_mon]}";
+        //     } 
+        //     else {
+        //         $desc[] = "Le $dom {$mois[(int)$mon]}";
+        //     }
+
+        // } elseif ($dom !== "*") {
+        //     if (preg_match('/^(\d+)-(\d+)$/', $dom, $matches)) {
+        //         $desc[] = "Du {$matches[1]} au {$matches[2]} de chaque mois";
+        //     } else {
+        //         $desc[] = "Le $dom de chaque mois";
+        //     }
+        // }
+
 
         if (preg_match('/^\*\/(\d+)$/', $m, $matches)) {
             $step = $matches[1];
@@ -276,7 +329,6 @@ final class CrontabController extends BaseController
             $time = sprintf("%02d:%02d", $h_int, $m_int);
             $desc[] = "à $time";
         }
-
 
         return implode(" ", $desc);
     }

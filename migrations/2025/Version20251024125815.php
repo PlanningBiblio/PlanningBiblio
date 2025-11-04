@@ -21,7 +21,10 @@ final class Version20251024125815 extends AbstractMigration
         $this->addSql("
             ALTER TABLE {$dbprefix}cron
             MODIFY m   VARCHAR(32) NOT NULL,
-            MODIFY h   VARCHAR(32) NOT NULL;
+            MODIFY h   VARCHAR(32) NOT NULL,
+            MODIFY dom VARCHAR(32) NOT NULL,
+            MODIFY mon VARCHAR(32) NOT NULL,
+            MODIFY dow VARCHAR(32) NOT NULL;
         ");
         $this->addSql("INSERT INTO {$dbprefix}cron (m, h, dom, mon, dow, command, comments, last, disabled) VALUES
             ('0','6','*','*','*','app:absence:delete-documents','Remove old documents depending the configuration',null,1),
@@ -57,7 +60,10 @@ final class Version20251024125815 extends AbstractMigration
         $this->addSql("
             ALTER TABLE {$dbprefix}cron
             MODIFY m   varchar(2) NULL,
-            MODIFY h   varchar(2) NULL;
+            MODIFY h   VARCHAR(2) NULL,
+            MODIFY dom VARCHAR(2) NULL,
+            MODIFY mon VARCHAR(2) NULL,
+            MODIFY dow VARCHAR(2) NULL;
         ");
     }
 }
