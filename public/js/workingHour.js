@@ -313,6 +313,7 @@ function plHebdoVerifForm(){
 function updateTables(selected_weeks) {
 
   var weeks;
+  // TODO supprimer ceci lorsque MT50936 sera intégré
   var perso_id;
   if (selected_weeks) {
     weeks = selected_weeks;
@@ -321,6 +322,7 @@ function updateTables(selected_weeks) {
   }  else {
     weeks = $("#number_of_weeks").val();
   }
+  // TODO supprimer ceci lorsque MT50936 sera intégré
   if (!weeks) {
     weeks = 1;
   }

@@ -245,11 +245,12 @@ class WorkingHourController extends BaseController
                 $elem['surname'] = $agents[$elem['perso_id']]['nom'];
             }
         }
-
+        // TODO supprimer ceci lorsque MT50936 sera intégré
         $perso_id = $request->get('agent_id') ?? $session->get('loginId');
 
         $this->templateParams(
             array(
+                // TODO supprimer ceci lorsque MT50936 sera intégré
                 'perso_id' => $perso_id,
                 'admin' => $admin,
                 "debut" => $debut,
