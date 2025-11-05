@@ -157,35 +157,6 @@ final class CrontabController extends BaseController
         return $this->output('crontab/edit.html.twig');
     }
 
-    
-
-    #[Route(path: '/crontab', name: 'crontab.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session)
-    {
-        if (!$this->csrf_protection($request)) {
-            $response = new Response();
-            $response->setStatusCode(403);
-            $response->setContent(json_encode('CSRF error'));
-
-            return $response;
-        }
-
-        $id = $request->get('id');
-
-        $info = $this->entityManager->getRepository(Cron::class)->find($id);
-        $this->entityManager->remove($info);
-        $this->entityManager->flush();
-
-        $flash = "Le command a bien été supprimée.";
-        $session->getFlashBag()->add('notice', $flash);
-
-        $response = new Response();
-        $response->setStatusCode(200);
-        $response->setContent(json_encode('OK'));
-
-        return $response;
-    }
-
     #[Route(path: '/crontab/info/{id}', name: 'crontab.info', methods: ['GET'])]
     public function info(int $id): Response
     {
@@ -209,6 +180,10 @@ final class CrontabController extends BaseController
     #[Route(path: '/crontab/disabled', name: 'crontab.disabled', methods: ['POST'])]
     public function disabled(Request $request)
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+        
         $id = $request->get('id');
         $checked = $request->get('checked');
 
