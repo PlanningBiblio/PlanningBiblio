@@ -119,17 +119,11 @@
     - 20
 "config.update":
     - 20
-"crontab.add":
-    - 100
-"crontab.delete":
-    - 100
 "crontab.disabled":
     - 100
 "crontab.edit":
     - 100
 "crontab.index":
-    - 100
-"crontab.info":
     - 100
 "crontab.update":
     - 100

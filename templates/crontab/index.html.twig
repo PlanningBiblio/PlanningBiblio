@@ -38,14 +38,14 @@
                 {%for elem in elements %}
                     <tr>
                         <td>
-                            <a href='{{ asset('crontab/') }}{{elem.id}}'>
+                            <a href='{{ asset('crontab/') }}{{elem.cron.id}}'>
                                 <span class='pl-icon pl-icon-edit' title='Edit'></span>
                             </a>
                         </td>
-                        <td>{{ elem.command }}</td>
-                        <td>{{ elem.comment }}</td>
+                        <td>{{ elem.cron.command }}</td>
+                        <td>{{ elem.cron.comment }}</td>
                         <td>{{ elem.resume }}</td>
-                        <td><input type='checkbox' class='cron_disabled' id='{{ elem.id }}' {% if elem.disabled == 0 %} value='1' checked='checked' {% endif %} /></td>
+                        <td><input type='checkbox' class='cron_disabled' id='{{ elem.cron.id }}' {% if elem.cron.disabled == 0 %} value='1' checked='checked' {% endif %} /></td>
                     </tr>
                 {% endfor %}
             </tbody>

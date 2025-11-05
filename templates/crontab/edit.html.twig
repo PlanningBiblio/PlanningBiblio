@@ -7,11 +7,8 @@
         <h3>Cron Command</h3>
 
         <div class="admin-div">
-            {% if id %}
-                <h4>Modifications des Commands</h4>
-            {% else %}
-                <h4>Ajout d'un Command</h4>
-            {% endif %}
+        
+          <h4>Modifications des Commands</h4>
 
           <form id='form' method='POST' action='{{ asset('crontab') }}' name='form' >
             <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
@@ -23,71 +20,48 @@
                 <tr>
                   <td><label>Command</label> </td>
                   <td>
-                    {% if id %}
-                      <input type='hidden' name='id' value='{{ id }}' />
-                      <label>{{ command }}</label>
-                    {% else %}
-                      <select name='id' id='command_id' class='ui-widget-content ui-corner-all' style='margin-bottom:10px;'>
-                        <option value='0' selected='selected'>-- Ajoutez un Command --</option>
-                  
-                      {% for cron in all_commands %}
-                        {% if cron.id in command_ids %}
-                          <option value='{{ cron.id }}' id='option{{ cron.id }}' style="display:none;">{{ cron.command }}</option>
-                        {% else %}
-                          <option value='{{ cron.id }}' id='option{{ cron.id }}'>{{ cron.command }}</option>
-                        {% endif %}
-                      {% endfor %}
-                    
-                      </select>
-                      
-                    {% endif %}
+                    <input type='hidden' name='id' value='{{ cron.id }}' />
+                    <label>{{ cron.command }}</label>
                   </td>
                 </tr>
 
                 <tr>
                     <td><label>Description</label> </td>
-                    <td>
-                    {%if id %}
-                      <label>{{ comment }}</label>
-                    {% else %}
-                      <label id="command_description"></label>
-                    {% endif %}
-                    </td>
+                    <td><label>{{ cron.comment }}</label></td>
                 </tr>
                 
-
                 <tr>
                     <td><label>minute</label> </td>
                     <td>
-                    <input type='text' id='input_text_number' name='min' value='{{ m }}' style='width:100%;'/>
+                    <input type='text' id='input_text_number' name='min' value='{{ cron.m }}' style='width:100%;'/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>hour</label></td>
                     <td>
-                    <input type='text' id='input_text_number' name='hour' value='{{ h }}' style='width:100%;'/>
+                    <input type='text' id='input_text_number' name='hour' value='{{ cron.h }}' style='width:100%;'/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>day of month</label></td>
                     <td>
-                    <input type='text' id='input_text_number' name='dom' value='{{ dom }}' style='width:100%;'/>
+                    <input type='text' id='input_text_number' name='dom' value='{{ cron.dom }}' style='width:100%;'/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>month</label></td>
                     <td>
-                    <input type='text' id='input_text_number' name='mon' value='{{ mon }}' style='width:100%;'/>
+                    <input type='text' id='input_text_number' name='mon' value='{{ cron.mon }}' style='width:100%;'/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>day of week</label></td>
                     <td>
-                    <input type='text' id='input_text_number' name='dow' value='{{ dow }}' style='width:100%;'/>
+                    <input type='text' id='input_text_number' name='dow' value='{{ cron.dow }}' style='width:100%;'/>
                     </td>
                 </tr>
 
