@@ -70,19 +70,25 @@ final class CrontabController extends BaseController
 
         else {
             $cron = $this->entityManager->getRepository(Cron::class)->findOneBy(["id"=> $params['id']]);
-            try {
-                $cron->setM($params['min']);
-                $cron->setH($params['hour']);
-                $cron->setDom($params['dom']);
-                $cron->setMon($params['mon']);
-                $cron->setDow($params['dow']);
-                $cron->setDisabled(0);
-            }
-            catch (Exception $e) {
-                $error = 'Une erreur est survenue pendant la modification de la crontab !';
-            }
 
-            $this->entityManager->flush();
+            if($this->verif($cron->getM(), $params['hour'], $params['dom'], $params['mon'], $params['dow']) === false) {
+                $error = "Les valeurs saisies ne sont pas correctes.";
+            }else{
+
+                try {
+                    $cron->setM($params['min']);
+                    $cron->setH($params['hour']);
+                    $cron->setDom($params['dom']);
+                    $cron->setMon($params['mon']);
+                    $cron->setDow($params['dow']);
+                    $cron->setDisabled(0);
+                }
+                catch (Exception $e) {
+                    $error = 'Une erreur est survenue pendant la modification de la crontab !';
+                }
+
+                $this->entityManager->flush();
+            }
 
         }
 
@@ -183,7 +189,7 @@ final class CrontabController extends BaseController
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
-        
+
         $id = $request->get('id');
         $checked = $request->get('checked');
 
@@ -193,6 +199,57 @@ final class CrontabController extends BaseController
         $cron->setDisabled(!$checked);
         $this->entityManager->flush();
         return $this->json(['ok' => true]);
+    }
+
+    private function verif(string $M, string $H, string $Dom, string $Mon, string $Dow): bool
+    {
+
+        $rules = [
+            'M'   => [0, 59],
+            'H'   => [0, 23],
+            'Dom' => [1, 31],
+            'Mon' => [1, 12],
+            'Dow' => [0, 7],
+        ];
+
+        foreach (['M', 'H', 'Dom', 'Mon', 'Dow'] as $field) {
+            $value = $$field;
+            [$min, $max] = $rules[$field];
+
+            if ($value === '*') {
+                continue;
+            }
+
+            if (preg_match('/^\*\/(\d+)$/', $value, $m)) {
+                $n = (int)$m[1];
+                if ($n < 1 || $n > $max) {
+                    return false;
+                }
+                continue;
+            }
+
+            if (preg_match('/^(\d+)-(\d+)$/', $value, $m)) {
+                [$start, $end] = [(int)$m[1], (int)$m[2]];
+                if ($start < $min || $end > $max || $start > $end) {
+                    return false;
+                }
+                continue;
+            }
+
+            if (preg_match('/^(\d+)$/', $value, $m)) {
+                $num = (int)$m[1];
+                if ($num < $min || $num > $max) {
+                    return false;
+                }
+                continue;
+            }
+
+            return false;
+
+        }
+
+        return true;
+
     }
 
     private function resume(int $id)

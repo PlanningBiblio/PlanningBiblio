@@ -15,7 +15,7 @@
 
           <form id='form' method='POST' action='{{ asset('crontab') }}' name='form' >
             <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
-            <input type='hidden' name="_token" value="{{ csrf_token('') }}"/>
+            <input type='hidden' name='_token' value='{{ csrf_token('') }}' />
 
               <table class='tableauFiches'>
                 <tr>
@@ -44,7 +44,6 @@
                   </td>
                 </tr>
 
-                
                 <tr>
                     <td><label>Description</label> </td>
                     <td>
