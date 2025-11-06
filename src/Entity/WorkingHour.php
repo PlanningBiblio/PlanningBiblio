@@ -101,4 +101,9 @@ class WorkingHour
 
         return $this;
     }
+
+    public function getActuel(?int $actuel): int
+    {
+        return $this->actuel;
+    }
 }
