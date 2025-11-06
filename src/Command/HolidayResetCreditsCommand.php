@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Config;
+use App\Entity\Agent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -14,7 +15,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 require_once __DIR__ . '/../../public/include/function.php';
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
-require_once(__DIR__ . '/../../public/include/db.php');
 
 #[AsCommand(
     name: 'app:holiday:reset:credits',
@@ -81,24 +81,35 @@ class HolidayResetCreditsCommand extends Command
         }
 
         // Modifie les crédits
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
+        $personnel = $this->entityManager->getRepository(Agent::class)->findAll();
+
         if ($transferCompTime) {
-            $db->update('personnel', 'conges_reliquat=(conges_credit+comp_time)');
+            foreach ($personnel as $p) {
+                $congesReliquatNew = $p->getHolidayCredit()+$p->getCompTime();
+                $p->setRemainder($congesReliquatNew);
+                $this->entityManager->persist($p);
+            }
         } else {
-            $db->update('personnel', 'conges_reliquat=conges_credit');
+            foreach ($personnel as $p) {
+                $congesReliquatNew = $p->getHolidayCredit();
+                $p->setRemainder($congesReliquatNew);
+                $this->entityManager->persist($p);
+            }
         }
+
         if ($transferCompTime) {
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update('personnel', 'comp_time="0.00"');
+            foreach ($personnel as $p) {
+                $p->setCompTime(0.00);
+            }
         }
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->update('personnel', 'conges_credit=(conges_annuel-conges_anticipation)');
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->update('personnel', 'conges_anticipation=0.00');
+
+        foreach ($personnel as $p) {
+            $congesCreditNew = $p->getAnnualCredit() - $p->getAnticipation();
+            $p->setHolidayCredit($congesCreditNew);
+            $p->setAnticipation(0.00);
+        }
+
+        $this->entityManager->flush();
 
         if ($output->isVerbose()) {
             $io->success('Reset the credits for holiday successfully!');
