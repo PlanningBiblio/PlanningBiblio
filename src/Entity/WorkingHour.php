@@ -94,4 +94,11 @@ class WorkingHour
 
         return $this;
     }
+
+    public function setActuel(?int $actuel): static
+    {
+        $this->actuel = $actuel;
+
+        return $this;
+    }
 }
