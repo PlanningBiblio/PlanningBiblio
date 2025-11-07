@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Absence;
 use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -132,10 +133,11 @@ class AbsenceImportCSVCommand extends Command
             }
         }
 
-        $ids_list = implode(',', $perso_ids);
+        $ids_list = array_values($perso_ids);
 
         if ($debug) {
-            $this->log("\$ids_list = " . $ids_list, 'AbsenceImportCSV');
+            $this->log("\$ids_list = " . implode(',', $ids_list), 'AbsenceImportCSV');
+
         }
 
         // Recherche de toutes les absences déjà importées depuis Hamac
@@ -144,14 +146,13 @@ class AbsenceImportCSVCommand extends Command
         }
 
         $absences = array();
-        $db = new \db();
-        $db->select2('absences', null, array('cal_name' => 'hamac', 'perso_id' => "IN$ids_list"));
-        if ($db->result) {
-            foreach ($db->result as $elem) {
+        $abs= $this->entityManager->getRepository(Absence::class)->findBy(array('cal_name' => 'hamac', 'perso_id' => $ids_list));
+        if ($abs) {
+            foreach ($abs as $elem) {
                 // On indexe le tableau avec le champ UID qui n'est autre que l'id Hamac
-                $absences[$elem['uid']] = $elem;
+                $absences[$elem->getUid()] = $elem;
                 if ($debug) {
-                    $this->log("\$elem['uid'] = " . $elem['uid'] . " - \$absences[\$elem['uid']] = " . json_encode($absences[$elem['uid']]), 'AbsenceImportCSV');
+                    $this->log("\$elem->getUid() = " . $elem->getUid() . " - \$absences[\$elem->getUid()] = " . json_encode($absences[$elem->getUid()]), 'AbsenceImportCSV');
                 }
             }
         }
@@ -187,22 +188,6 @@ class AbsenceImportCSVCommand extends Command
         }
 
 
-        // Préparation des requêtes d'insertion, de mise à jour et de suppression
-        // $dbi : DB Insert
-        $dbi = new \dbh();
-        $dbi->CSRFToken = $CSRFToken;
-        $dbi->prepare("INSERT INTO `{$config['dbprefix']}absences` (`perso_id`, `debut`, `fin`, `motif`, `commentaires`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `cal_name`, `ical_key`, `uid`)
-        VALUES (:perso_id, :debut, :fin, :motif, :commentaires, :demande, :valide, :validation, :valide_n1, :validation_n1, :cal_name, :ical_key, :uid);");
-
-        // $dbu : DB Update
-        $dbu = new \dbh();
-        $dbu->CSRFToken = $CSRFToken;
-        $dbu->prepare("UPDATE `{$config['dbprefix']}absences` SET `perso_id` = :perso_id, `debut` = :debut, `fin` = :fin, `commentaires` = :commentaires, `valide` = :valide, `validation` = :validation, `valide_n1` = :valide_n1, `validation_n1` = :validation_n1 WHERE `id` = :id;");
-
-        // $dbd : DB Delete
-        $dbd = new \dbh();
-        $dbd->CSRFToken = $CSRFToken;
-        $dbd->prepare("DELETE FROM `{$config['dbprefix']}absences` WHERE `id` = :id;");
 
 
         // Absences DB / file : used to remove entries deleted from source file
@@ -212,11 +197,10 @@ class AbsenceImportCSVCommand extends Command
         if (is_numeric($days_before)) {
             $days_before = (int) $days_before;
             $end = date('Y-m-d 00:00:00', strtotime("- $days_before days"));
-            $dbx = new \db();
-            $dbx->CSRFToken = $CSRFToken;
-            $dbx->select2('absences', array('ical_key'), array('cal_name' =>'hamac', 'fin' => ">$end"));
-            if ($dbx->result) {
-                foreach ($dbx->result as $elem) {
+            $absx= $this->entityManager->getRepository(Absence::class)->findIcalKeysAfterEnd($end, 'hamac');
+            
+            if (!empty($absx)) {
+                foreach ($absx as $elem) {
                     $absences_db[] = $elem['ical_key'];
                 }
             }
@@ -259,9 +243,11 @@ class AbsenceImportCSVCommand extends Command
                     $this->log("Status = 9, absence supprimée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
                 }
 
-                $delete = array(':id' => $absences[$uid]['id']);
+                $absd = $this->entityManager->getRepository(Absence::class)->find($absences[$uid]->getId());
 
-                $dbd->execute($delete);
+                if ($absd) {
+                    $this->entityManager->remove($absd);
+                }
 
                 continue;
             }
@@ -309,15 +295,15 @@ class AbsenceImportCSVCommand extends Command
                 $valide_n1 = 99999;
                 $validation_n1 = date('Y-m-d H:i:s');
                 $valide_n2 = 0;
-                $validation_n2 = '0000-00-00 00:00:00';
+                $validation_n2 = null;
             } else {
                 if ($debug) {
                     $this->log("L'absence n'est pas validée", 'AbsenceImportCSV');
                 }
                 $valide_n1 = 0;
-                $validation_n1 = '0000-00-00 00:00:00';
+                $validation_n1 = null;
                 $valide_n2 = 0;
-                $validation_n2 = '0000-00-00 00:00:00';
+                $validation_n2 = null;
             }
 
 
@@ -327,9 +313,11 @@ class AbsenceImportCSVCommand extends Command
                     $this->log("Si l'absence n'est pas dans la base de données, on l'importe", 'AbsenceImportCSV');
                 }
 
-                $insert = array(':perso_id' => $perso_id, ':debut' => $debut, ':fin' => $fin, ':motif' => $motif, ':commentaires' => $commentaires, ':demande' => $demande, ':valide' => $valide_n2, ':validation' => $validation_n2, ':valide_n1' => $valide_n1, ':validation_n1' => $validation_n1, ':cal_name' => 'hamac', ':ical_key' => $uid, ':uid' => $uid);
+                $insert = array('perso_id' => $perso_id, 'debut' => $debut, 'fin' => $fin, 'motif' => $motif, 'commentaires' => $commentaires, 'demande' => $demande, 'valide' => $valide_n2, 'validation' => $validation_n2, 'valide_n1' => $valide_n1, 'validation_n1' => $validation_n1, 'cal_name' => 'hamac', 'ical_key' => $uid, 'uid' => $uid);
 
-                $dbi->execute($insert);
+                $absi = new Absence();
+                $absi->setAll($insert);
+                $this->entityManager->persist($absi);
 
                 if ($debug) {
                     $this->log("Absence importée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
@@ -346,47 +334,48 @@ class AbsenceImportCSVCommand extends Command
             }
             $absence = $absences[$uid];
 
-            if ($absence['perso_id'] != $perso_id
-                or $absence['debut'] != $debut
-                or $absence['fin'] != $fin
-                or $absence['commentaires'] != $commentaires
-                or $absence['valide_n1'] != $valide_n1
-                or $absence['valide'] != $valide_n2) {
+            if ($absence->getPersoId() != $perso_id
+                or $absence->getStart() != $debut
+                or $absence->getEnd() != $fin
+                or $absence->getComments() != $commentaires
+                or $absence->getValideN1() != $valide_n1
+                or $absence->getValideN2() != $valide_n2) {
                 // Si l'absence a changé, on met à jour la base de données
                 if ($debug) {
                     $this->log("Si l'absence a changé, on met à jour la base de données", 'AbsenceImportCSV');
                 }
-                $update = array(':perso_id' => $perso_id, ':debut' => $debut, ':fin' => $fin, ':commentaires' => $commentaires, ':valide' => $valide_n2, ':validation' => $validation_n2, ':valide_n1' => $valide_n1, ':validation_n1' => $validation_n1, ':id' => $absence['id']);
+                $update = array('perso_id' => $perso_id, 'debut' => $debut, 'fin' => $fin, 'commentaires' => $commentaires, 'valide' => $valide_n2, 'validation' => $validation_n2, 'valide_n1' => $valide_n1, 'validation_n1' => $validation_n1, 'id' => $absence['id']);
 
-            $dbu->execute($update);
+                $absu = $this->entityManager->getRepository(Absence::class)->find($update['id']);
+                $absu->setAll($update);
 
-            if ($debug) {
-                $this->log("Absence changée dans la base de donnée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
-            }
-
-            $this->log("Absence updated : $uid / {$absence['id']} / $log_info", 'AbsenceImportCSV');
-
-            continue;
+                if ($debug) {
+                    $this->log("Absence changée dans la base de donnée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
                 }
+
+                $this->log("Absence updated : $uid / {$absence['id']} / $log_info", 'AbsenceImportCSV');
+
+                continue;
+            }
         }
         fclose($inF);
 
         // Remove entries deleted from source file
-        // $dbd : DB Delete
         if (!empty($absences_db)) {
-            $dbd = new \dbh();
-            $dbd->CSRFToken = $CSRFToken;
-            $dbd->prepare("DELETE FROM `{$config['dbprefix']}absences` WHERE `cal_name` = 'hamac' AND `ical_key` = :ical_key;");
-
             foreach ($absences_db as $elem) {
                 if (!in_array($elem, $absences_file)) {
-                    $delete = array(':ical_key' => $elem);
-                    $dbd->execute($delete);
+                    $absd = $this->entityManager->getRepository(Absence::class)->findBy(['cal_name' => 'hamac', 'ical_key' => $elem]);
+                    if (!empty($absd)) {
+                        foreach ($absd as $a) {
+                            $this->entityManager->remove($a);
+                        }
+                    }
+
                     $this->log("Absence deleted from source file : $elem", 'AbsenceImportCSV');
                 }
             }
         }
-
+        $this->entityManager->flush();  
         // Unlock
         unlink($lockFile);
 

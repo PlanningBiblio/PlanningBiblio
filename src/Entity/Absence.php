@@ -109,4 +109,66 @@ class Absence
 
         return $this;
     }
+
+    public function getUid(): ?string
+    {
+        return $this->uid;
+    }
+
+    public function setUid(?string $uid): static
+    {
+        $this->uid = $uid;
+
+        return $this;
+    }
+
+    public function getPersoId(): ?int
+    {
+        return $this->perso_id;
+    }
+
+    public function getComments(): ?string
+    {
+        return $this->commentaires;
+    }
+
+    public function getValideN1(): ?int
+    {
+        return $this->valide_n1;
+    }
+
+    public function getValideN2(): ?int
+    {
+        return $this->valide;
+    }
+
+    public function setAll(?array $all): static
+    {
+        $debut = new \DateTime($all['debut']);
+        $fin   = new \DateTime($all['fin']);
+        $demande   = new \DateTime($all['demande']);
+        $validation = new \DateTime($all['validation']);
+        $validationN1 = new \DateTime($all['validation_n1']);
+
+        $this->debut = $debut;
+        $this->fin = $fin;
+        $this->demande = $demande;
+        $this->validation = $validation;
+        $this->validation_n1 = $validationN1;
+
+        $this->perso_id = $all['perso_id'] ?? null;
+        $this->valide = $all['valide'] ?? 0;
+        $this->valide_n1 = $all['valide_n1'] ?? 0;
+        $this->motif = $all['motif'] ?? '';
+        $this->commentaires = $all['commentaires'] ?? '';
+        $this->cal_name = 'hamac';
+        $this->ical_key = $all['ical_key'] ?? null;
+        $this->uid = $all['uid'] ?? null;
+
+        $this->motif_autre = $all['motif_autre'] ?? '';
+        $this->etat = $all['etat'] ?? '';
+        $this->id_origin = $all['id_origin'] ?? 0;
+
+        return $this;
+    }
 }
