@@ -93,6 +93,11 @@ class PlanningPosition
         return $this;
     }
     
+    public function getUser(): ?int
+    {
+        return $this->perso_id;
+    }
+
     public function getAbsent(): ?int
     {
         return $this->absent;
