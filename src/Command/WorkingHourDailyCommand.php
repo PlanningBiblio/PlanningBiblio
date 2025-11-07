@@ -46,12 +46,12 @@ class WorkingHourDailyCommand extends Command
             $perso_id=$elem['perso_id'];
             $planningHebdoActuel = $this->entityManager->getRepository(Workinghour::class)->findBy(['perso_id' => $perso_id]);
             foreach($planningHebdoActuel AS $pla) {
-                $pla->setActuel(0);
+                $pla->setCurrent(false);
                 $this->entityManager->persist($pla);
             }
             $planningHebdo=$this->entityManager->getRepository(Workinghour::class)->find($id);
             if($planningHebdo) {
-                $planningHebdo->setActuel(1);
+                $planningHebdo->setCurrent(true);
                 $this->entityManager->persist($planningHebdo);
             }
         }

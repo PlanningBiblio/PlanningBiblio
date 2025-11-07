@@ -52,7 +52,7 @@ class WorkingHour
     private ?\DateTime $validation = null;
 
     #[ORM\Column]
-    private ?int $actuel = null;
+    private ?bool $actuel = false;
 
     #[ORM\Column]
     private ?int $remplace = null;
@@ -95,15 +95,15 @@ class WorkingHour
         return $this;
     }
 
-    public function setActuel(?int $actuel): static
-    {
-        $this->actuel = $actuel;
-
-        return $this;
-    }
-
-    public function getActuel(?int $actuel): int
+    public function isCurrent(): ?bool
     {
         return $this->actuel;
+    }
+
+    public function setCurrent(bool $current): static
+    {
+        $this->actuel = $current;
+
+        return $this;
     }
 }

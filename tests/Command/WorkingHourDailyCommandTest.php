@@ -20,32 +20,28 @@ class WorkingHourDailyCommandTest extends PLBWebTestCase
     public function testSomething(): void
     {
         $this->setUpPantherClient();
-        $WorkingHour1 = $this->builder->build(WorkingHour::class,array(
-            'id' => 100001,
+        $workingHour1 = $this->builder->build(WorkingHour::class,array(
             'perso_id' => 1,
             'actuel' => 0,
             'valide' => 1,
             'debut' => new DateTime("2000-01-01"),
         )); 
 
-        $WorkingHour2 = $this->builder->build(WorkingHour::class,array(
-            'id' => 100002,
+        $workingHour2 = $this->builder->build(WorkingHour::class,array(
             'perso_id' => 1,
             'actuel' => 1,
             'valide' => 1,
             'debut' => new DateTime("2000-01-01"),
         )); 
 
-        $WorkingHour3 = $this->builder->build(WorkingHour::class,array(
-            'id' => 100003,
+        $workingHour3 = $this->builder->build(WorkingHour::class,array(
             'perso_id' => 1,
             'actuel' => 0,
             'valide' => 1,
             'debut' => new DateTime(),
         )); 
 
-        $WorkingHour4 = $this->builder->build(WorkingHour::class,array(
-            'id' => 100004,
+        $workingHour4 = $this->builder->build(WorkingHour::class,array(
             'perso_id' => 1,
             'actuel' => 0,
             'valide' => 1,
@@ -54,41 +50,41 @@ class WorkingHourDailyCommandTest extends PLBWebTestCase
 
         $entityManager = $GLOBALS['entityManager'];
 
-        $entityManager->persist($WorkingHour1);
-        $entityManager->persist($WorkingHour2);
-        $entityManager->persist($WorkingHour3);
-        $entityManager->persist($WorkingHour4);
+        $entityManager->persist($workingHour1);
+        $entityManager->persist($workingHour2);
+        $entityManager->persist($workingHour3);
+        $entityManager->persist($workingHour4);
         $entityManager->flush();
 
-        $id1 = $WorkingHour1->getId();
-        $id2 = $WorkingHour2->getId();
-        $id3 = $WorkingHour3->getId();
-        $id4 = $WorkingHour4->getId();
+        $id1 = $workingHour1->getId();
+        $id2 = $workingHour2->getId();
+        $id3 = $workingHour3->getId();
+        $id4 = $workingHour4->getId();
 
         $repo = $entityManager->getRepository(WorkingHour::class);
-        $wh1 = $repo->find( 100001);
-        $wh2 = $repo->find( 100002);
-        $wh3 = $repo->find( 100003);
-        $wh4 = $repo->find( 100004);
+        $wh1 = $repo->find($id1);
+        $wh2 = $repo->find($id2);
+        $wh3 = $repo->find($id3);
+        $wh4 = $repo->find($id4);
 
-        $this->assertEquals(0, $wh1->getActuel(), '');
-        $this->assertEquals(1, $wh2->getActuel(), '');
-        $this->assertEquals(0, $wh3->getActuel(), '');
-        $this->assertEquals(0, $wh4->getActuel(), '');
+        $this->assertFalse($wh1->isCurrent(), '');
+        $this->assertTrue($wh2->isCurrent(), '');
+        $this->assertFalse($wh3->isCurrent(), '');
+        $this->assertFalse($wh4->isCurrent(), '');
 
         $this->execute();
         $entityManager->clear();
 
         $repo = $entityManager->getRepository(WorkingHour::class);
-        $wh11 = $repo->find( 100001);
-        $wh22 = $repo->find( 100002);
-        $wh33 = $repo->find( 100003);
-        $wh44 = $repo->find( 100004);
+        $wh11 = $repo->find($id1);
+        $wh22 = $repo->find($id2);
+        $wh33 = $repo->find($id3);
+        $wh44 = $repo->find($id4);
 
-        $this->assertEquals(0, $wh11->getActuel(), '');
-        $this->assertEquals(0, $wh22->getActuel(), '');
-        $this->assertEquals(0, $wh33->getActuel(), '');
-        $this->assertEquals(1, $wh44->getActuel(), '');
+        $this->assertFalse($wh11->isCurrent(), '');
+        $this->assertFalse($wh22->isCurrent(), '');
+        $this->assertFalse($wh33->isCurrent(), '');
+        $this->assertTrue($wh44->isCurrent(), '');
     }
 
     private function execute(): void
@@ -98,7 +94,7 @@ class WorkingHourDailyCommandTest extends PLBWebTestCase
          $command = $application->find('app:workinghour:daily');
          $commandTester = new CommandTester($command);
          $commandTester->execute([
-             'command'  => $command->getName()
+             'command'  => $command->getName(),
          ], [
              'verbosity' => OutputInterface::VERBOSITY_VERBOSE
          ]);
@@ -106,7 +102,7 @@ class WorkingHourDailyCommandTest extends PLBWebTestCase
          $commandTester->assertCommandIsSuccessful();
          $output = $commandTester->getDisplay();
 
-        $this->assertStringContainsString('Reset the compensatory time for holiday successfully', $output);
+        $this->assertStringContainsString('[OK] Weekly planning records have been successfully updated for all employees.', $output);
 
     }
 
