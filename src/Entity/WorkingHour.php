@@ -94,4 +94,33 @@ class WorkingHour
 
         return $this;
     }
+
+    public function getKey(): ?string
+    {
+        return $this->cle;
+    }
+
+    public function setKey(?string $key): static
+    {
+        $this->cle = $key;
+
+        return $this;
+    }
+
+    public function setAll(?array $insert): static
+    {
+        $this->perso_id = $insert['perso_id'];
+        $this->debut = $insert['debut'];
+        $this->fin = $insert['fin'];
+        $this->temps = $insert['temps'];
+        $this->saisie = $insert['saisie'];
+        $this->valide = $insert['valide'];
+        $this->validation = $insert['validation'];
+        $this->actuel = $insert['actuel'];          
+        $this->cle = $insert['cle'];
+        $this->nb_semaine = $insert['nb_semaine'];
+
+        return $this;
+    }
+
 }
