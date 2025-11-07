@@ -44,10 +44,6 @@ $heures_travail = $request->get('heures_travail');
 $service = $request->get('service');
 $statut = $request->get('statut');
 
-$contrat = htmlentities($contrat, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
-$service = htmlentities($service, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
-$statut = htmlentities($statut, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
-
 // Skills tab
 $postes = $request->get('postes');
 
