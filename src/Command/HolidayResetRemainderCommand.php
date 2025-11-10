@@ -71,14 +71,7 @@ class HolidayResetRemainderCommand extends Command
             }
         }
 
-        // Modifie les crédits
-        $personnel = $this->entityManager->getRepository(Agent::class)->findAll();
-        foreach ($personnel as $p) {
-            $p->setRemainder(0.00);
-            $this->entityManager->persist($p);
-        }
-        
-        $this->entityManager->flush();
+        $this->entityManager->getRepository(Agent::class)->resetRemainders();
 
         if ($output->isVerbose()) {
             $io->success('Reset the remainders successfully !');
