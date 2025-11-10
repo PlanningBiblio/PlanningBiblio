@@ -1,5 +1,19 @@
 # Changelog Planno
 
+## Version 25.11.03 (2025-11-10)
+
+### Fixes
+
+- MT50833: Fix planning sticky line and columns #1208
+
+### Plumbing
+
+- MT50258: Move Ajax from public/personnel to AgentController #1210
+- MT50258: Move Ajax from public/plannningHedbo to WorkingHourController #1211
+- MT50258: Move Ajax.menus.php from public/include to AjaxController #1213
+- MT50258: Move Ajax from public/planning to PlanningController #1214
+- MT50258: Move Ajax from public/planning to PlanningController part 2 #1215
+
 ## Version 25.11.02 (2025-10-31)
 
 ### Enhancement
