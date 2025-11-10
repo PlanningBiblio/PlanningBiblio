@@ -78,8 +78,8 @@
               <tr>
                 <td>Exporter </td>
                 <td>
-                  <a href='javascript:export_stat("statut","csv");'>CSV</a>&nbsp;&nbsp;
-                  <a href='javascript:export_stat("statut","xls");'>XLS</a>
+                  <a href="{{ path('statistics.export', {name: 'statut', type: 'csv'}) }}">CSV</a>&nbsp;&nbsp;
+                  <a href="{{ path('statistics.export', {name: 'statut', type: 'xls'}) }}">XLS</a>
                 </td>
               </tr>
               <tr>
@@ -223,5 +223,5 @@
 {% endblock %}
 
 {% block specificjs %}
-  <script type="text/JavaScript" src="{{ asset('js/statistics.js') }}"></script>
+  <script type="text/JavaScript" src="{{ asset('js/statistic.js') }}"></script>
 {% endblock %}

@@ -768,30 +768,6 @@ function position(object,top,left){
   }
 }
 //	--------------------------------	FIN Aide		---------------------------------	//
-//	--------------------------------	Statistiques		---------------------------------	//
-function export_stat(nom,type){
-  $.ajax({
-    url: url('statistiques/export.php'),
-    type: "get",
-    data: "nom="+nom+"&type="+type,
-    success: function(result){
-      window.open("/data/"+result);
-    },
-    error: function(){
-      information("Une erreur est survenue lors de l'exportation.","error");
-    }
-  });
-}
-
-function verif_select(nom){
-  if(document.form.elements[nom+'[]'].value=="Tous"){
-    for(i=document.form.elements[nom+'[]'].length-1;i>0;i--){
-      document.form.elements[nom+'[]'][i].selected=true;
-    }
-    document.form.elements[nom+'[]'][0].selected=false;
-  }
-}
-//	--------------------------------	FIN Statistiques	---------------------------------	//
 
 // Initialisations JQuery-UI
 $(function(){
