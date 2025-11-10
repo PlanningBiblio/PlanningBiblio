@@ -771,11 +771,12 @@ function position(object,top,left){
 //	--------------------------------	Statistiques		---------------------------------	//
 function export_stat(nom,type){
   $.ajax({
-    url: url('statistiques/export.php'),
+    url: url('statistics/export'),
     type: "get",
     data: "nom="+nom+"&type="+type,
     success: function(result){
-      window.open("/data/"+result);
+      window.open(url('statistics/export') + '?nom=' + nom + '&type=' + type);
+
     },
     error: function(){
       information("Une erreur est survenue lors de l'exportation.","error");
