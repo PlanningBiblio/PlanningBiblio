@@ -19,4 +19,15 @@ class PlanningPositionRepository extends EntityRepository
 
         return $query->getResult();
     }
+
+    public function countDistinctDatesBetween(\DateTimeInterface $start, \DateTimeInterface $end): int
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('COUNT(DISTINCT p.date)')
+            ->where('p.date BETWEEN :start AND :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
 }
