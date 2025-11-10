@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 25.10.03 (2025-11-10)
+
+### Fixes
+
+- MT50833: Fix planning sticky line and columns #1208
+- MT51036: Do not use HTML entities for agent bulk update #1212
+
 ## Version 25.10.02 (2025-10-31)
 
 ### Fixes
