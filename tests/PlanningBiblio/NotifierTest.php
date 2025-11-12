@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 use Tests\Fake\FakeMailTransporter;
 
-require_once(__DIR__ . '/../../public/include/function.php');
+require_once(__DIR__ . '/../../legacy/Common/function.php');
 
 class NotifierTest extends TestCase
 {

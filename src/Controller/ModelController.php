@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Model;
 use App\Entity\ModelAgent;
 
-require_once(__DIR__ . '/../../public/include/db.php');
+require_once(__DIR__ . '/../../legacy/Common/db.php');
 
 class ModelController extends BaseController
 {

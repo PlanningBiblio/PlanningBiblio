@@ -9,7 +9,7 @@ use App\PlanningBiblio\ClosingDay;
 use App\Entity\Agent;
 
 include_once __DIR__ . '/../../../legacy/Class/class.planningHebdo.php';
-include_once(__DIR__ . '/../../../public/include/function.php');
+include_once(__DIR__ . '/../../../legacy/Common/function.php');
 
 class HolidayHelper extends BaseHelper
 {

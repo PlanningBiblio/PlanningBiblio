@@ -8,8 +8,8 @@ use Twig\TwigFunction;
 
 use App\PlanningBiblio\Helper\HolidayHelper;
 
-include_once(__DIR__ . '/../../public/include/function.php');
-include_once(__DIR__ . '/../../public/include/feries.php');
+include_once(__DIR__ . '/../../legacy/Common/function.php');
+include_once(__DIR__ . '/../../legacy/Common/feries.php');
 include_once(__DIR__ . '/../../legacy/Class/class.planningFunctions.php');
 
 class AppExtension extends AbstractExtension

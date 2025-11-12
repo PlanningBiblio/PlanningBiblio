@@ -2,7 +2,7 @@
 
 namespace App\PlanningBiblio;
 
-require_once(__DIR__ . "/../../public/include/feries.php");
+require_once(__DIR__ . "/../../legacy/Common/feries.php");
 
 class ClosingDay
 {

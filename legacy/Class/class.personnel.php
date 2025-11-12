@@ -7,7 +7,7 @@
  * Page appelée par les autres fichiers du dossier personnel
 */
 
-require_once __DIR__ . '/../../public/include/config.php';
+require_once __DIR__ . '/../Commom/config.php';
 
 class personnel
 {

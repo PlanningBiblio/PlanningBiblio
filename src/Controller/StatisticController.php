@@ -19,9 +19,9 @@ use App\PlanningBiblio\PresentSet;
 $version = 'symfony';
 
 include_once __DIR__ . '/../../legacy/Class/class.conges.php';
-include_once __DIR__ . '/../../public/include/function.php';
-require_once __DIR__ . '/../../public/include/db.php';
-require_once __DIR__ . '/../../public/include/horaires.php';
+include_once __DIR__ . '/../../legacy/Common/function.php';
+require_once __DIR__ . '/../../legacy/Common/db.php';
+require_once __DIR__ . '/../../legacy/Common/horaires.php';
 include_once __DIR__ . '/../../legacy/Class/class.statistiques.php';
 include_once __DIR__ . '/../../legacy/Class/class.absences.php';
 include_once __DIR__ . '/../../legacy/Class/class.planningHebdo.php';

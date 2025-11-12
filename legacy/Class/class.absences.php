@@ -358,7 +358,7 @@ class absences
     {
         $config=$GLOBALS['config'];
         $version=$GLOBALS['version'];
-        require_once __DIR__ . '/../../public/include/horaires.php';
+        require_once __DIR__ . '/../Commom/horaires.php';
         require_once 'class.planningHebdo.php';
 
         $d=new datePl($date);
