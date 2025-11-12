@@ -2,7 +2,7 @@
 
 use App\Entity\Agent;
 use App\Entity\PublicHoliday;
-use App\PlanningBiblio\ClosingDay;
+use App\Planno\ClosingDay;
 use Tests\PLBWebTestCase;
 
 class ClosingDayControllerTest extends PLBWebTestCase

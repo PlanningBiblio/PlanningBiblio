@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 use App\Entity\Config;
-use App\PlanningBiblio\MSGraphClient;
+use App\Planno\MSGraphClient;
 
 #[AsCommand(
     name: 'app:import:ms-graph-calendar',

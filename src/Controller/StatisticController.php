@@ -14,7 +14,7 @@ use App\Entity\PlanningPosition;
 use App\Entity\Position;
 use App\Entity\SelectFloor;
 use App\Entity\SelectGroup;
-use App\PlanningBiblio\PresentSet;
+use App\Planno\PresentSet;
 
 $version = 'symfony';
 

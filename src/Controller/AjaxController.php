@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
-use App\PlanningBiblio\Helper\AbsenceBlockHelper;
+use App\Planno\Helper\AbsenceBlockHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;

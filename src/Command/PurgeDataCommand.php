@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\PlanningBiblio\DataPurger;
+use App\Planno\DataPurger;
 
 #[AsCommand(
     name: 'app:purge:data',

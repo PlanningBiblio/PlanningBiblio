@@ -2530,7 +2530,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
             foreach ($hours as $day => $times) {
                 foreach ($times as $i => $time) {
-                    $hours[$day][$i] =  App\PlanningBiblio\Helper\HourHelper::toHis($time);
+                    $hours[$day][$i] =  App\Planno\Helper\HourHelper::toHis($time);
                 }
             }
             $hours = json_encode($hours);
@@ -2554,7 +2554,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
             foreach ($hours as $day => $times) {
                 foreach ($times as $i => $time) {
-                    $hours[$day][$i] =  App\PlanningBiblio\Helper\HourHelper::toHis($time);
+                    $hours[$day][$i] =  App\Planno\Helper\HourHelper::toHis($time);
                 }
             }
             $hours = json_encode($hours);
@@ -2783,7 +2783,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
             foreach ($hours as $day => $times) {
                 foreach ($times as $i => $time) {
-                    $hours[$day][$i] =  App\PlanningBiblio\Helper\HourHelper::toHis($time);
+                    $hours[$day][$i] =  App\Planno\Helper\HourHelper::toHis($time);
                 }
             }
             $hours = json_encode($hours);
@@ -2978,7 +2978,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
             foreach ($hours as $day => $times) {
                 foreach ($times as $i => $time) {
-                    $hours[$day][$i] =  App\PlanningBiblio\Helper\HourHelper::toHis($time);
+                    $hours[$day][$i] =  App\Planno\Helper\HourHelper::toHis($time);
                 }
             }
             $hours = json_encode($hours);

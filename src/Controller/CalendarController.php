@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
-use App\PlanningBiblio\ClosingDay;
+use App\Planno\ClosingDay;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;

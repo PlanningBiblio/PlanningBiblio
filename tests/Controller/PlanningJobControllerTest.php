@@ -6,7 +6,7 @@ use App\Entity\Holiday;
 use App\Entity\PlanningPosition;
 use App\Entity\Position;
 use App\Entity\WorkingHour;
-use App\PlanningBiblio\WorkingHours;
+use App\Planno\WorkingHours;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;

@@ -1,5 +1,5 @@
 <?php
-use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Planno\Helper\HolidayHelper;
 
 # Very very tricky solution but this is this fatsest
 # way to twigizing this part.

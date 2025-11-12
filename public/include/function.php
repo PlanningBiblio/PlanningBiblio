@@ -15,8 +15,8 @@ Page appelée par les fichiers index.php, setup/index.php et planning/poste/menu
 
 use App\Entity\Agent;
 use App\Entity\WorkingHour;
-use App\PlanningBiblio\WorkingHours;
-use App\PlanningBiblio\NotificationTransporter\NotificationTransporterInterface;
+use App\Planno\WorkingHours;
+use App\Planno\NotificationTransporter\NotificationTransporterInterface;
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {

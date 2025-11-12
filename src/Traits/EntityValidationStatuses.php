@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use App\PlanningBiblio\ValidationAwareEntity;
+use App\Planno\ValidationAwareEntity;
 use App\Entity\Agent;
 use App\Entity\Config;
 

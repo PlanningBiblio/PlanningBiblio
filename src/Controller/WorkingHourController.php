@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\PlanningBiblio\Helper\HourHelper;
+use App\Planno\Helper\HourHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

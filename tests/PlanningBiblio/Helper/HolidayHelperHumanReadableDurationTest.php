@@ -1,6 +1,6 @@
 <?php
 
-use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Planno\Helper\HolidayHelper;
 use PHPUnit\Framework\TestCase;
 
 class HolidayHelperHumanReadableDurationTest extends TestCase

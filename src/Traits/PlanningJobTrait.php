@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use App\Entity\AbsenceReason;
 use App\Entity\Position;
-use App\PlanningBiblio\WorkingHours;
+use App\Planno\WorkingHours;
 
 trait PlanningJobTrait
 {

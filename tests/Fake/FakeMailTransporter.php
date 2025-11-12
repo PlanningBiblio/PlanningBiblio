@@ -2,7 +2,7 @@
 
 namespace Tests\Fake;
 
-use App\PlanningBiblio\NotificationTransporter\NotificationTransporterInterface;
+use App\Planno\NotificationTransporter\NotificationTransporterInterface;
 
 class FakeMailTransporter implements NotificationTransporterInterface
 {

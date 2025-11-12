@@ -3,7 +3,7 @@
 use Symfony\Component\HttpFoundation\Request;
 use PHPUnit\Framework\TestCase;
 
-use App\PlanningBiblio\Helper\HourHelper;
+use App\Planno\Helper\HourHelper;
 
 class HourHelperStartEndFromRequestTest extends TestCase
 {

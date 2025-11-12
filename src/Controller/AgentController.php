@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\PlanningBiblio\Event\OnTransformLeaveDays;
-use App\PlanningBiblio\Event\OnTransformLeaveHours;
-use App\PlanningBiblio\Helper\HolidayHelper;
-use App\PlanningBiblio\Helper\HourHelper;
-use App\PlanningBiblio\Ldif2Array;
+use App\Planno\Event\OnTransformLeaveDays;
+use App\Planno\Event\OnTransformLeaveHours;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
+use App\Planno\Ldif2Array;
 
 use App\Entity\Agent;
 
