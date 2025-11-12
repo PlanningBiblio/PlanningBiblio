@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Entity\AbsenceReason;
 use App\Entity\Holiday;
 use App\Entity\PlanningPosition;
@@ -16,9 +17,6 @@ use App\Entity\Position;
 use App\Entity\SelectFloor;
 use App\Entity\SelectGroup;
 use App\PlanningBiblio\PresentSet;
-
-require_once(__DIR__ . '/../../init/init_ajax.php');
-require_once(__DIR__ . '/../../public/include/sanitize.php');
 
 $version = 'symfony';
 
@@ -2785,15 +2783,12 @@ class StatisticController extends BaseController
         $type = filter_var($type, FILTER_CALLBACK, array('options' => 'sanitize_file_extension'));
 
         // Compter les jours ouvrables (ou ouvrés) entre début et fin
-        $debut = $session->get('stat_debut');
-        $fin = $session->get('stat_fin');
+        $debut = isset($_SESSION['stat_debut']) ? $_SESSION['stat_debut'] : null;
+        $fin = isset($_SESSION['stat_fin']) ? $_SESSION['stat_fin'] : null;
         $debutSQL=dateFr($debut);
         $finSQL=dateFr($fin);
 
-        $start = new \DateTime($debutSQL);
-        $end = new \DateTime($finSQL);
-        $nbJours = $this->entityManager->getRepository(PlanningPosition::class)->countDistinctDatesBetween($start, $end);
-
+        $nbJours = $this->entityManager->getRepository(PlanningPosition::class)->countDistinctDatesBetween($debutSQL, $finSQL);
 
         $filename = "stat_{$nom}_".date("YmdHis");
 
@@ -2805,11 +2800,11 @@ class StatisticController extends BaseController
             $filename.=".xls";
         }
 
-        //echo $Fnm;	// Retour AJAX du nom de fichier
-        $Fnm = "../data/$filename";
-
-        //dd()
-        $tab = $session->get('stat_tab',[]);
+        if (!isset($_SESSION['stat_tab']) || empty($_SESSION['stat_tab'])) {
+            return new Response('Aucune donnée à exporter');
+        } else {
+            $tab=$_SESSION['stat_tab'];
+        }
 
         $debutAlpha = dateAlpha($debutSQL);
         $finAlpha = dateAlpha($finSQL);
@@ -3062,8 +3057,6 @@ class StatisticController extends BaseController
                 break;
         }
 
-        $inF = fopen($Fnm, "w\n");
-
         $lignes=array_map("utf8_decode", $lignes);
         $lignes=array_map("html_entity_decode_latin1", $lignes);
 
@@ -3076,18 +3069,20 @@ class StatisticController extends BaseController
             }
         }
 
-        file_put_contents($this->getParameter('kernel.project_dir') . '/public/data/' . $filename, $content);
+        $filePath = sys_get_temp_dir() . '/' . $filename;
+        file_put_contents($filePath, $content);
 
-        $response = new Response($filename);
-
+        $response = new BinaryFileResponse($filePath);
         $disposition = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             $filename
         );
 
-        $response->headers->set('Content-Disposition', $disposition);
-        $response->headers->set('Content-Type', $type === 'csv' ? 'text/csv; charset=ISO-8859-1' : 'application/vnd.ms-excel; charset=ISO-8859-1');
+        $contentType = ($type === 'csv') ? 'text/csv; charset=ISO-8859-1' : 'application/vnd.ms-excel; charset=ISO-8859-1';
 
+        $response->headers->set('Content-Disposition', $disposition);
+        $response->headers->set('Content-Type', $contentType);
+        
         return $response;
     }
 

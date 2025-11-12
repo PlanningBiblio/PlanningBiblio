@@ -775,7 +775,8 @@ function export_stat(nom,type){
     type: "get",
     data: "nom="+nom+"&type="+type,
     success: function(result){
-      window.open("/data/"+result);
+      window.open(url('statistics/export') + '?nom=' + nom + '&type=' + type);
+
     },
     error: function(){
       information("Une erreur est survenue lors de l'exportation.","error");
