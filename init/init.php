@@ -26,9 +26,9 @@ if (!file_exists(__DIR__.'/../.env.local')) {
 
 require_once(__DIR__.'/../public/include/config.php');
 require_once(__DIR__.'/../public/include/sanitize.php');
-require_once(__DIR__.'/../public/lang/fr_FR.php');
-if (file_exists(__DIR__.'/../public/lang/custom.php')) {
-    require_once(__DIR__.'/../public/lang/custom.php');
+require_once(__DIR__.'/../legacy/Lang/fr_FR.php');
+if (file_exists(__DIR__.'/../legacy/Lang/custom.php')) {
+    require_once(__DIR__.'/../legacy/Lang/custom.php');
 }
 
 require_once(__DIR__.'/init_entitymanager.php');
