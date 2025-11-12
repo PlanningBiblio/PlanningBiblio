@@ -31,10 +31,6 @@ class BaseController extends AbstractController
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, RequestStack $requestStack)
     {
-        if (!empty($_ENV['MEMORY_LIMIT'])) {
-            ini_set('memory_limit', $_ENV['MEMORY_LIMIT']);
-        }
-
         $request = $requestStack->getCurrentRequest();
 
         /*
