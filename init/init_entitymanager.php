@@ -18,7 +18,7 @@ use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\EntityManager;
 use App\Entity\Extensions\TablePrefix;
 
-require_once __DIR__ . '/../public/include/config.php';
+require_once __DIR__ . '/../legacy/Common/config.php';
 $config = $GLOBALS['config'];
 
 // Instanciating entity manager.

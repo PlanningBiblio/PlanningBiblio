@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-require_once __DIR__ . '/../../public/include/function.php';
+require_once __DIR__ . '/../../legacy/Common/function.php';
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.postes.php');

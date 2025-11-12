@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 include_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 include_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
-include_once(__DIR__ . '/../../public/include/sanitize.php');
+include_once(__DIR__ . '/../../legacy/Common/sanitize.php');
 
 class OvertimeController extends BaseController
 {

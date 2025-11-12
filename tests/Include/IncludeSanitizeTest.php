@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once(__DIR__ . '/../../public/include/sanitize.php');
+require_once(__DIR__ . '/../../legacy/Common/sanitize.php');
 
 class IncludeSanitizeTest extends TestCase
 {

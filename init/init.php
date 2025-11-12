@@ -21,11 +21,11 @@ $GLOBALS['version'] = $version;
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists(__DIR__.'/../.env.local')) {
-    include(__DIR__.'/../public/include/noConfig.php');
+    include(__DIR__.'/../legacy/Common/noConfig.php');
 }
 
-require_once(__DIR__.'/../public/include/config.php');
-require_once(__DIR__.'/../public/include/sanitize.php');
+require_once(__DIR__.'/../legacy/Common/config.php');
+require_once(__DIR__.'/../legacy/Common/sanitize.php');
 require_once(__DIR__.'/../legacy/Lang/fr_FR.php');
 if (file_exists(__DIR__.'/../legacy/Lang/custom.php')) {
     require_once(__DIR__.'/../legacy/Lang/custom.php');
