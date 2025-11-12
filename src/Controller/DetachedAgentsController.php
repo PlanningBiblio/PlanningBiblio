@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . '/../../legacy/Class/class.volants.php');
-require_once(__DIR__ . '/../../public/include/function.php');
+require_once(__DIR__ . '/../../legacy/Common/function.php');
 
 class DetachedAgentsController extends BaseController
 {

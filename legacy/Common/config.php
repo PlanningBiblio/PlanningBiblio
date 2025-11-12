@@ -1,7 +1,7 @@
 <?php
 /**
 Planning Biblio
-@file : public/include/config.php
+@file : legacy/Common/config.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 @note :

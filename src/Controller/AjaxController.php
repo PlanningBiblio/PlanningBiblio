@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 // require_once(__DIR__ . '/../../init/init_ajax.php');
-require_once(__DIR__ . '/../../public/include/function.php');
+require_once(__DIR__ . '/../../legacy/Common/function.php');
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
@@ -79,8 +79,8 @@ class AjaxController extends BaseController
     public function mailTest(Request $request)
     {
 
-        include_once(__DIR__ . '/../../public/include/config.php');
-        include_once(__DIR__ . '/../../public/include/function.php');
+        include_once(__DIR__ . '/../../legacy/Common/config.php');
+        include_once(__DIR__ . '/../../legacy/Common/function.php');
 
         $mailSmtp = $request->get('mailSmtp');
         $hostname = $request->get('hostname');

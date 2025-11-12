@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
-require_once(__DIR__ . '/../../public/include/db.php');
+require_once(__DIR__ . '/../../legacy/Common/db.php');
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\Table(name: 'personnel')]

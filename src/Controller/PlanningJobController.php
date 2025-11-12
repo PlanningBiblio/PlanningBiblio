@@ -14,8 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
-require_once(__DIR__ . '/../../public/include/function.php');
-require_once(__DIR__ . '/../../public/include/horaires.php');
+require_once(__DIR__ . '/../../legacy/Common/function.php');
+require_once(__DIR__ . '/../../legacy/Common/horaires.php');
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planningFunctions.php');
