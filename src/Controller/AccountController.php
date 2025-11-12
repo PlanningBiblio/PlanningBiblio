@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
-use App\PlanningBiblio\Helper\HolidayHelper;
-use App\PlanningBiblio\Helper\HourHelper;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;

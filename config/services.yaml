@@ -21,7 +21,7 @@ services:
         exclude: '../src/{DependencyInjection,Migrations,Tests,Kernel.php}'
 
     notifier:
-        class: App\PlanningBiblio\Notifier
+        class: App\Planno\Notifier
         public: true
 
     # controllers are imported separately to make sure services can be injected

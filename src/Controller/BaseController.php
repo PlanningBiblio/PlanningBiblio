@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Config;
-use App\PlanningBiblio\Notifier;
+use App\Planno\Notifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

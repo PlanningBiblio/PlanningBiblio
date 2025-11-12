@@ -1,6 +1,6 @@
 <?php
 
-use App\PlanningBiblio\Notifier;
+use App\Planno\Notifier;
 use PHPUnit\Framework\TestCase;
 
 use Tests\Fake\FakeMailTransporter;

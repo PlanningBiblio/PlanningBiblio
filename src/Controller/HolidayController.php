@@ -6,9 +6,9 @@ use App\Controller\BaseController;
 
 use App\Entity\Agent;
 
-use App\PlanningBiblio\Helper\HolidayHelper;
-use App\PlanningBiblio\Helper\HourHelper;
-use App\PlanningBiblio\Helper\WeekPlanningHelper;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
+use App\Planno\Helper\WeekPlanningHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

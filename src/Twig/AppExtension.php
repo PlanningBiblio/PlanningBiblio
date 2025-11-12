@@ -6,7 +6,7 @@ use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
-use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Planno\Helper\HolidayHelper;
 
 include_once(__DIR__ . '/../../public/include/function.php');
 include_once(__DIR__ . '/../../public/include/feries.php');

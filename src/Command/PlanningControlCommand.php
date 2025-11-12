@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Config;
-use App\PlanningBiblio\Framework;
+use App\Planno\Framework;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

@@ -90,7 +90,7 @@
         "psr-4": {
             "App\\": "src/",
             "Tests\\": "tests",
-            "PlanningBiblio\\": "src/PlanningBiblio",
+            "Planno\\": "src/Planno",
             "Model\\": "src/Entity"
         }
     },

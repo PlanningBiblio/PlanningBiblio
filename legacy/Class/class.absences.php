@@ -17,8 +17,8 @@ require_once 'class.personnel.php';
 use App\Entity\Agent;
 use App\Entity\AbsenceReason;
 use App\Entity\AbsenceDocument;
-use App\PlanningBiblio\WorkingHours;
-use App\PlanningBiblio\ClosingDay;
+use App\Planno\WorkingHours;
+use App\Planno\ClosingDay;
 
 
 class absences

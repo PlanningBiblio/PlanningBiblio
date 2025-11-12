@@ -2,7 +2,7 @@
 
 use App\Entity\Agent;
 
-use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Planno\Helper\HolidayHelper;
 use PHPUnit\Framework\TestCase;
 use Tests\FixtureBuilder;
 

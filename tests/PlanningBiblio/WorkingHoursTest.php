@@ -1,6 +1,6 @@
 <?php
 
-use App\PlanningBiblio\WorkingHours;
+use App\Planno\WorkingHours;
 use PHPUnit\Framework\TestCase;
 
 class WorkingHoursTest extends TestCase

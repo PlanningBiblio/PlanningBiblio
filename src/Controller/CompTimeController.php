@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Planno\Helper\HolidayHelper;
 use App\Entity\Agent;
 
 use Symfony\Component\HttpFoundation\Session\Session;

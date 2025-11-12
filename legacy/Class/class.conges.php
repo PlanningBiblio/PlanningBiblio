@@ -11,10 +11,10 @@ require_once 'class.planningHebdo.php';
 require_once 'class.personnel.php';
 require_once 'class.absences.php';
 
-use App\PlanningBiblio\WorkingHours;
-use App\PlanningBiblio\ClosingDay;
-use App\PlanningBiblio\Helper\HolidayHelper;
-use App\PlanningBiblio\Helper\HourHelper;
+use App\Planno\WorkingHours;
+use App\Planno\ClosingDay;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
 use App\Entity\Agent;
 use App\Entity\Cron;
 

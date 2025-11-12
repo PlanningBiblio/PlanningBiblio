@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use App\PlanningBiblio\Helper\HourHelper;
+use App\Planno\Helper\HourHelper;
 
 class HourHelperTest extends TestCase
 {

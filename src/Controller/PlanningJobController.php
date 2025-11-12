@@ -6,7 +6,7 @@ use App\Controller\BaseController;
 use App\Entity\Agent;
 use App\Entity\PlanningPositionHistory;
 
-use App\PlanningBiblio\WorkingHours;
+use App\Planno\WorkingHours;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;

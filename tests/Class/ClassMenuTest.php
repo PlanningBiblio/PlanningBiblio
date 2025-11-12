@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use App\PlanningBiblio\Menu;
+use App\Planno\Menu;
 
 class ClassMenuTest extends TestCase
 {

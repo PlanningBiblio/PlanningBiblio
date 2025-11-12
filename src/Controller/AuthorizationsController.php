@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\PlanningBiblio\OpenIDConnect;
+use App\Planno\OpenIDConnect;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

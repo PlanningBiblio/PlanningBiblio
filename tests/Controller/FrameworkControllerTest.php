@@ -5,7 +5,7 @@ use App\Entity\Agent;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionTabAffectation;
 use App\Entity\PlanningPositionTab;
-use App\PlanningBiblio\Framework;
+use App\Planno\Framework;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;

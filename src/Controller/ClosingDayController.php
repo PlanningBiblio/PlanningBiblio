@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\PlanningBiblio\ClosingDay;
+use App\Planno\ClosingDay;
 
 class ClosingDayController extends BaseController
 {

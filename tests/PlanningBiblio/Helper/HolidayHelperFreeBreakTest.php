@@ -2,8 +2,8 @@
 
 use App\Entity\Agent;
 
-use App\PlanningBiblio\Helper\HolidayHelper;
-use App\PlanningBiblio\ClosingDay;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\ClosingDay;
 use PHPUnit\Framework\TestCase;
 use Tests\FixtureBuilder;
 
