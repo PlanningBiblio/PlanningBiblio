@@ -211,6 +211,11 @@ if ($debug) {
 }
 
 while ($tab = fgetcsv($inF, 1024, ';')) {
+
+    if ($tab[0] === null) {
+        continue;
+    }
+
     $uid = $tab[0];
     $absences_file[] = $uid;
 
