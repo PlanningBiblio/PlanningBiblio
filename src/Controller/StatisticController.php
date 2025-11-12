@@ -7,7 +7,8 @@ use App\Controller\BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use App\Entity\AbsenceReason;
 use App\Entity\Holiday;
 use App\Entity\PlanningPosition;
@@ -2794,18 +2795,18 @@ class StatisticController extends BaseController
         $nbJours = $this->entityManager->getRepository(PlanningPosition::class)->countDistinctDatesBetween($start, $end);
 
 
-        $Fnm = "stat_{$nom}_".date("YmdHis");
+        $filename = "stat_{$nom}_".date("YmdHis");
 
         if ($type=="csv") {
             $separateur="';'";
-            $Fnm.=".csv";
+            $filename.=".csv";
         } else {
             $separateur="\t";
-            $Fnm.=".xls";
+            $filename.=".xls";
         }
 
         //echo $Fnm;	// Retour AJAX du nom de fichier
-        $Fnm = "../data/$Fnm";
+        $Fnm = "../data/$filename";
 
         //dd()
         $tab = $session->get('stat_tab',[]);
@@ -3066,14 +3067,28 @@ class StatisticController extends BaseController
         $lignes=array_map("utf8_decode", $lignes);
         $lignes=array_map("html_entity_decode_latin1", $lignes);
 
-        foreach ($lignes as $elem) {
-            if ($type=="csv") {
-                fputs($inF, "'$elem'\n");
+        $content = '';
+        foreach ($lignes as $line) {
+            if ($type === 'csv') {
+                $content .= "'$line'\n";
             } else {
-                fputs($inF, $elem."\n");
+                $content .= $line . "\n";
             }
         }
-        fclose($inF);
+
+        file_put_contents($this->getParameter('kernel.project_dir') . '/public/data/' . $filename, $content);
+
+        $response = new Response($filename);
+
+        $disposition = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $filename
+        );
+
+        $response->headers->set('Content-Disposition', $disposition);
+        $response->headers->set('Content-Type', $type === 'csv' ? 'text/csv; charset=ISO-8859-1' : 'application/vnd.ms-excel; charset=ISO-8859-1');
+
+        return $response;
     }
 
     /**
