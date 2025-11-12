@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\PlanningPositionRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -129,5 +128,4 @@ class PlanningPosition
 
         return $this;
     }
-
 }
