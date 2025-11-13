@@ -177,7 +177,7 @@
         </tfoot>
     </table>
     <br/>Exporter
-    <a href="javascript:export_stat('temps','csv');">CSV</a>&nbsp;&nbsp;
-    <a href="javascript:export_stat('temps','xls');">XLS</a>
+    <a href="{{ path('statistics.export', {name: 'temps', type: 'csv'}) }}">CSV</a>&nbsp;&nbsp;
+    <a href="{{ path('statistics.export', {name: 'temps', type: 'xls'}) }}">XLS</a>
   {% endif %}
 {% endblock %}

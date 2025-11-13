@@ -2769,13 +2769,12 @@ class StatisticController extends BaseController
     *  Description :
     *  Permet d'exporter les différentes statistiques. Recherche les informations dans la bases de données voulues ($_GET['nom']),
     *  les place dans les tableaux $cellules et $lignes, puis les écrit dans un fichier (data/stat_$_GET['nom'])
-    *  Page appelée par la fonction JavaScript "export_stat" lors du clique sur les liens "exporter" des pages de statistiques
     */
     #[Route(path: '/statistics/export', name: 'statistics.export', methods: ['GET'])]
     public function export(Request $request, Session $session)
     {
         // Initialisation des variables
-        $nom = $request->get('nom');
+        $nom = $request->get('name');
         $type = $request->get('type');
 
         $nom = filter_var($nom, FILTER_SANITIZE_URL);
@@ -3070,11 +3069,11 @@ class StatisticController extends BaseController
 
         $response = new Response($content);
         $disposition = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            'attachment',
             $filename
         );
 
-        $contentType = ($type === 'csv') ? 'text/csv; charset=ISO-8859-1' : 'application/vnd.ms-excel; charset=ISO-8859-1';
+        $contentType = ($type === 'csv') ? 'text/csv; charset=ISO-8859-1' : 'application/octet-stream; charset=ISO-8859-1';
 
         $response->headers->set('Content-Disposition', $disposition);
         $response->headers->set('Content-Type', $contentType);

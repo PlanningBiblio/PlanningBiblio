@@ -769,21 +769,6 @@ function position(object,top,left){
 }
 //	--------------------------------	FIN Aide		---------------------------------	//
 //	--------------------------------	Statistiques		---------------------------------	//
-function export_stat(nom,type){
-  $.ajax({
-    url: url('statistics/export'),
-    type: "get",
-    data: "nom="+nom+"&type="+type,
-    success: function(result){
-      window.open(url('statistics/export') + '?nom=' + nom + '&type=' + type);
-
-    },
-    error: function(){
-      information("Une erreur est survenue lors de l'exportation.","error");
-    }
-  });
-}
-
 function verif_select(nom){
   if(document.form.elements[nom+'[]'].value=="Tous"){
     for(i=document.form.elements[nom+'[]'].length-1;i>0;i--){
