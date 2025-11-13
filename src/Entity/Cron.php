@@ -29,6 +29,9 @@ class Cron
     #[ORM\Column(length: 2)]
     private ?string $dow = null;
 
+    #[ORM\Column(length: 30)]
+    private string $name = '';
+
     #[ORM\Column(type: Types::TEXT)]
     private ?string $command = null;
 
@@ -102,6 +105,18 @@ class Cron
     public function setDow(?string $dow): static
     {
         $this->dow = $dow;
+
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }
