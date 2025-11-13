@@ -29,6 +29,7 @@ use App\PlanningBiblio\ClosingDay;
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\HourHelper;
 use App\Entity\Agent;
+use App\Entity\Cron;
 
 class conges
 {
@@ -586,14 +587,21 @@ class conges
 
         // Crédits initiaux
         /* Utilise le champ info_date pour rechercher la première mise à jour des crédits de l'année.
-        Cette mise à jour peut être faite :
-          - par le cron au 1er septembre
-          - par un administrateur lors de la création de l'agent en cours d'année
-          - par un administrateur lors de la 1ere modification de crédits suivant la création de l'agent si les crédits étaient initialement à 0
-        */
+         * Cette mise à jour peut être faite :
+         * - par une tâche planifiée (cron, par défaut au 1er septembre)
+         * - par un administrateur lors de la création de l'agent en cours d'année
+         * - par un administrateur lors de la 1ere modification de crédits suivant la création de l'agent si les crédits étaient initialement à 0
+         */
 
-        $debut=date("n")<9?date("Y")-1:date("Y");
-        $debut.="-09-01 00:00:00";
+        $debut = date('n') < 9 ? date('Y') - 1 : date('Y');
+        $debut .= '-09-01 00:00:00';
+
+        $cron = $GLOBALS['entityManager']->getRepository(Cron::class)->findOneBy(['name' => 'holidayResetCredit']);
+
+        if ($cron) {
+            $debut = $cron->getLast()->format('Y-m-d H:i:s');
+        }
+
         $db=new db();
         $db->select("conges", null, "`info_date` >= '$debut'", "ORDER BY `info_date`");
 
