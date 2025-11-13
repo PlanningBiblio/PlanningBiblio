@@ -768,16 +768,6 @@ function position(object,top,left){
   }
 }
 //	--------------------------------	FIN Aide		---------------------------------	//
-//	--------------------------------	Statistiques		---------------------------------	//
-function verif_select(nom){
-  if(document.form.elements[nom+'[]'].value=="Tous"){
-    for(i=document.form.elements[nom+'[]'].length-1;i>0;i--){
-      document.form.elements[nom+'[]'][i].selected=true;
-    }
-    document.form.elements[nom+'[]'][0].selected=false;
-  }
-}
-//	--------------------------------	FIN Statistiques	---------------------------------	//
 
 // Initialisations JQuery-UI
 $(function(){
