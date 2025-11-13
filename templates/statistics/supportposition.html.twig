@@ -70,8 +70,8 @@
               <tr>
                 <td>Exporter </td>
                 <td>
-                  <a href='javascript:export_stat("postes_renfort","csv");'>CSV</a>&nbsp;&nbsp;
-                  <a href='javascript:export_stat("postes_renfort","xsl");'>XLS</a>
+                  <a href='{{ path('statistics.export', {name: "postes_renfort", type: "csv"}) }}'>CSV</a>&nbsp;&nbsp;
+                  <a href='{{ path('statistics.export', {name: "postes_renfort", type: "xsl"}) }}'>XLS</a>
                 </td>
               </tr>
             </table>

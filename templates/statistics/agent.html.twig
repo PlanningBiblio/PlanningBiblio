@@ -80,8 +80,8 @@
               <tr>
                 <td>Exporter </td>
                 <td>
-                  <a href="javascript:export_stat('agent','csv');">CSV</a>&nbsp;&nbsp;
-                  <a href="javascript:export_stat('agent','xsl');">XSL</a>
+                  <a href="{{ path('statistics.export', {name: 'agent', type: 'csv'}) }}">CSV</a>&nbsp;&nbsp;
+                  <a href="{{ path('statistics.export', {name: 'agent', type: 'xsl'}) }}">XSL</a>
                 </td>
               </tr>
               <tr>

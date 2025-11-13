@@ -2776,7 +2776,7 @@ class StatisticController extends BaseController
     public function export(Request $request, Session $session)
     {
         // Initialisation des variables
-        $nom = $request->get('nom');
+        $nom = $request->get('name');
         $type = $request->get('type');
 
         $nom = filter_var($nom, FILTER_SANITIZE_URL);
@@ -3069,10 +3069,7 @@ class StatisticController extends BaseController
             }
         }
 
-        $filePath = sys_get_temp_dir() . '/' . $filename;
-        file_put_contents($filePath, $content);
-
-        $response = new BinaryFileResponse($filePath);
+        $response = new Response($content);
         $disposition = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             $filename
