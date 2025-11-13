@@ -74,12 +74,12 @@ class StatisticController extends BaseController
         $debut = filter_var($debut, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
         $fin = filter_var($fin, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
 
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
 
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
+        if (!$fin) {
+            $fin = $session->get('statisticsEnd');
         }
 
         if (!$debut) {
@@ -90,8 +90,8 @@ class StatisticController extends BaseController
             $fin = date('d/m/Y');
         }
 
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
+        $session->set('statisticsStart', $debut);
+        $session->set('statisticsEnd', $fin);
 
         $debutSQL = dateFr($debut);
         $finSQL = dateFr($fin);
@@ -479,11 +479,11 @@ class StatisticController extends BaseController
                 }
     
                 // passage en session du tableau pour le fichier export.php
-                $_SESSION['stat_tab'] = array_merge($tab, array('neverSelected' => $neverSelected));
+                $session->set('statisticsTab', array_merge($tab, array('neverSelected' => $neverSelected)));
     
             } else {
                 // passage en session du tableau pour le fichier export.php
-                $_SESSION['stat_tab'] = $tab;
+                $session->set('statisticsTab', $tab);
             }
     
             foreach ($tab as $key => $value) {
@@ -649,11 +649,12 @@ class StatisticController extends BaseController
         $statisticsHours = self::getHours($request);
 
         //		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
+
+        if (!$fin) {
+            $fin = $session->get('statisticsEnd');
         }
 
         if (!$debut) {
@@ -663,8 +664,8 @@ class StatisticController extends BaseController
             $fin = date("d/m/Y");
         }
 
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
+        $session->set('statisticsStart', $debut);
+        $session->set('statisticsEnd', $fin);
 
         $debutSQL = dateFr($debut);
         $finSQL = dateFr($fin);
@@ -884,7 +885,7 @@ class StatisticController extends BaseController
         sort($heures_tab_global);
 
         // passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $session->set('statisticsTab', $tab);
         
         $multisites = array();
         if ($nbSites>1) {
@@ -1268,7 +1269,7 @@ class StatisticController extends BaseController
         // Pour les exports
         $_SESSION['oups']['stat_absences_motifs'] = $motifs;
         $_SESSION['oups']['stat_absences_totaux'] = $totaux;
-        $_SESSION['stat_tab']=$tab;
+        $session->set('statisticsTab', $tab);
 
         // Affichage du tableau
         $multisites = array();
@@ -1326,11 +1327,12 @@ class StatisticController extends BaseController
         $post_postes = isset($post['postes'])?$post['postes']:null;
         $post_sites = isset($post['selectedSites'])?$post['selectedSites']:null;
 
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
+
+        if (!$fin) {
+            $fin = $session->get('statisticsEnd');
         }
         if (!$tri and array_key_exists('stat_poste_tri', $_SESSION)) {
             $tri = $_SESSION['stat_poste_tri'];
@@ -1346,8 +1348,8 @@ class StatisticController extends BaseController
             $tri = "cmp_01";
         }
 
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
+        $session->set('statisticsStart', $debut);
+        $session->set('statisticsEnd', $fin);
         $_SESSION['stat_poste_tri'] = $tri;
 
         $debutSQL = dateFr($debut);
@@ -1538,7 +1540,7 @@ class StatisticController extends BaseController
         usort($tab, $tri);
 
         // passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $session->set('statisticsTab', $tab);
         $multisites = array();
         if ($nbSites > 1) {
             for ($i=1;$i<=$nbSites;$i++) {
@@ -2048,7 +2050,7 @@ class StatisticController extends BaseController
         }
 
         // passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $session->set('statisticsTab', $tab);
         $_SESSION['stat_heures'] = $heures;
         $_SESSION['stat_agents'] = $agents;
         $_SESSION['stat_dates'] = $dates;
@@ -2102,11 +2104,12 @@ class StatisticController extends BaseController
         $post_sites = isset($post['selectedSites'])?$post['selectedSites']:null;
 
         //		--------------		Initialisation  des variables 'debut','fin' et 'poste'		-------------------
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
+
+        if (!$fin) {
+            $fin = $session->get('statisticsEnd');
         }
         if (!$tri and array_key_exists('stat_poste_tri', $_SESSION)) {
             $tri = $_SESSION['stat_poste_tri'];
@@ -2122,8 +2125,8 @@ class StatisticController extends BaseController
             $tri = "cmp_01";
         }
 
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
+        $session->set('statisticsStart', $debut);
+        $session->set('statisticsEnd', $fin);
         $_SESSION['stat_poste_tri'] = $tri;
 
         $debutSQL = dateFr($debut);
@@ -2324,7 +2327,7 @@ class StatisticController extends BaseController
         usort($tab, $tri);
 
         //	Passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $session->set('statisticsTab', $tab);
 
         $siteEtage = array();
         $multisites = array();
@@ -2420,12 +2423,12 @@ class StatisticController extends BaseController
             $_SESSION['stat_poste_tri'] = null;
         }
 
-        if (!$debut and array_key_exists("stat_debut", $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
 
-        if (!$fin and array_key_exists("stat_fin", $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
+        if (!$fin) {
+            $fin = $session->get('statisticsEnd');
         }
 
         if (!$tri and array_key_exists("stat_poste_tri", $_SESSION)) {
@@ -2444,8 +2447,8 @@ class StatisticController extends BaseController
             $tri = "cmp_01";
         }
 
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
+        $session->set('statisticsStart', $debut);
+        $session->set('statisticsEnd', $fin);
         $_SESSION['stat_poste_tri'] = $tri;
 
         $debutSQL = dateFr($debut);
@@ -2661,7 +2664,7 @@ class StatisticController extends BaseController
         usort($tab, $tri);
 
         // passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $session->set('statisticsTab', $tab);
 
         if($tab){
             foreach($tab as $key => $elem){
@@ -2781,8 +2784,8 @@ class StatisticController extends BaseController
         $type = filter_var($type, FILTER_CALLBACK, array('options' => 'sanitize_file_extension'));
 
         // Compter les jours ouvrables (ou ouvrés) entre début et fin
-        $debut = isset($_SESSION['stat_debut']) ? $_SESSION['stat_debut'] : null;
-        $fin = isset($_SESSION['stat_fin']) ? $_SESSION['stat_fin'] : null;
+        $debut = $session->get('statisticsStart');
+        $fin = $session->get('statisticsEnd');
         $debutSQL=dateFr($debut);
         $finSQL=dateFr($fin);
 
@@ -2798,10 +2801,10 @@ class StatisticController extends BaseController
             $filename.=".xls";
         }
 
-        if (!isset($_SESSION['stat_tab']) || empty($_SESSION['stat_tab'])) {
+        if (!$session->get('statisticsTab') || empty($session->get('statisticsTab'))) {
             return new Response('Aucune donnée à exporter');
         } else {
-            $tab=$_SESSION['stat_tab'];
+            $tab=$session->get('statisticsTab');
         }
 
         $debutAlpha = dateAlpha($debutSQL);
