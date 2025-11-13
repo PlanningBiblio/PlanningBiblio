@@ -74,8 +74,8 @@ class StatisticController extends BaseController
         $debut = filter_var($debut, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
         $fin = filter_var($fin, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
 
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
 
         if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
@@ -90,7 +90,7 @@ class StatisticController extends BaseController
             $fin = date('d/m/Y');
         }
 
-        $_SESSION['stat_debut'] = $debut;
+        $session->set('statisticsStart', $debut);
         $_SESSION['stat_fin'] = $fin;
 
         $debutSQL = dateFr($debut);
@@ -649,9 +649,10 @@ class StatisticController extends BaseController
         $statisticsHours = self::getHours($request);
 
         //		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
+
         if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
             $fin = $_SESSION['stat_fin'];
         }
@@ -663,7 +664,7 @@ class StatisticController extends BaseController
             $fin = date("d/m/Y");
         }
 
-        $_SESSION['stat_debut'] = $debut;
+        $session->set('statisticsStart', $debut);
         $_SESSION['stat_fin'] = $fin;
 
         $debutSQL = dateFr($debut);
@@ -1326,9 +1327,10 @@ class StatisticController extends BaseController
         $post_postes = isset($post['postes'])?$post['postes']:null;
         $post_sites = isset($post['selectedSites'])?$post['selectedSites']:null;
 
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
+
         if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
             $fin = $_SESSION['stat_fin'];
         }
@@ -1346,7 +1348,7 @@ class StatisticController extends BaseController
             $tri = "cmp_01";
         }
 
-        $_SESSION['stat_debut'] = $debut;
+        $session->set('statisticsStart', $debut);
         $_SESSION['stat_fin'] = $fin;
         $_SESSION['stat_poste_tri'] = $tri;
 
@@ -2102,9 +2104,10 @@ class StatisticController extends BaseController
         $post_sites = isset($post['selectedSites'])?$post['selectedSites']:null;
 
         //		--------------		Initialisation  des variables 'debut','fin' et 'poste'		-------------------
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
+
         if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
             $fin = $_SESSION['stat_fin'];
         }
@@ -2122,7 +2125,7 @@ class StatisticController extends BaseController
             $tri = "cmp_01";
         }
 
-        $_SESSION['stat_debut'] = $debut;
+        $session->set('statisticsStart', $debut);
         $_SESSION['stat_fin'] = $fin;
         $_SESSION['stat_poste_tri'] = $tri;
 
@@ -2420,8 +2423,8 @@ class StatisticController extends BaseController
             $_SESSION['stat_poste_tri'] = null;
         }
 
-        if (!$debut and array_key_exists("stat_debut", $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
 
         if (!$fin and array_key_exists("stat_fin", $_SESSION)) {
@@ -2444,7 +2447,7 @@ class StatisticController extends BaseController
             $tri = "cmp_01";
         }
 
-        $_SESSION['stat_debut'] = $debut;
+        $session->set('statisticsStart', $debut);
         $_SESSION['stat_fin'] = $fin;
         $_SESSION['stat_poste_tri'] = $tri;
 
@@ -2782,7 +2785,7 @@ class StatisticController extends BaseController
         $type = filter_var($type, FILTER_CALLBACK, array('options' => 'sanitize_file_extension'));
 
         // Compter les jours ouvrables (ou ouvrés) entre début et fin
-        $debut = isset($_SESSION['stat_debut']) ? $_SESSION['stat_debut'] : null;
+        $debut = $session->get('statisticsStart');
         $fin = isset($_SESSION['stat_fin']) ? $_SESSION['stat_fin'] : null;
         $debutSQL=dateFr($debut);
         $finSQL=dateFr($fin);
