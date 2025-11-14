@@ -1,3 +1,10 @@
+*** Version 25.04.10   (2025-11-14)    ***
+- Fixes
+MT50647: Absence import csv (Hamac) ignore blank lines#1218
+
+- Security
+Composer update
+
 *** Version 25.04.09   (2025-11-10)    ***
 - Fixes
 MT50833: Fix planning sticky line and columns #1208
