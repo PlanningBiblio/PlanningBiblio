@@ -1,5 +1,16 @@
 # Changelog Planno
 
+## Version 25.10.04 (2025-11-14)
+
+### Fixes
+
+- MT50200: Initialize start date for the holiday credit's page #1227
+- MT50647: Absence import csv (Hamac) ignore blank lines #1218
+
+### Dependencies
+
+- Composer update
+
 ## Version 25.10.03 (2025-11-10)
 
 ### Fixes
