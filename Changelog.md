@@ -1,5 +1,23 @@
 # Changelog Planno
 
+## Version 25.11.04 (2025-11-14)
+
+### Fixes
+
+- MT50647: Absence import csv (Hamac) ignore blank lines #1219
+- MT50200: Initialize start date for the holiday credit's page #1226
+
+### Dependencies
+
+- Composer update
+
+### Plumbing
+
+- MT51052: Renommer le dossier src/PlanningBiblio en src/Planno #1223
+- MT51053: Move public/statistiques/export.php to StatisticController #1225
+- MT51054: Move public/lang to legacy/Lang #1221
+- MT51055: Move public/include to legacy/Common #1224
+
 ## Version 25.11.03 (2025-11-10)
 
 ### Fixes

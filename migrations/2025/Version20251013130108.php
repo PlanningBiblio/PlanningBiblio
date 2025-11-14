@@ -12,7 +12,7 @@ final class Version20251013130108 extends AbstractMigration
 
     public function getDescription(): string
     {
-        return '';
+        return 'Use Symfony commands';
     }
 
     public function up(Schema $schema): void
