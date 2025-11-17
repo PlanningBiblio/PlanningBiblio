@@ -349,6 +349,8 @@ class planningHebdo
             }
         }
 
+        $to['breaktime'] = $from['breaktime'];
+
         return $to;
     }
 
