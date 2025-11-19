@@ -1,3 +1,10 @@
+*** Version 25.04.11   (2025-11-19)    ***
+- Fixes
+Restore PHP 8.1 compatibility
+
+- Security
+Composer update (php 8.1)
+
 *** Version 25.04.10   (2025-11-14)    ***
 - Fixes
 MT50647: Absence import csv (Hamac) ignore blank lines#1218
