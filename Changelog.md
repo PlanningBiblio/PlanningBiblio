@@ -1,5 +1,15 @@
 # Changelog Planno
 
+## Version 25.10.05 (2025-11-19)
+
+### Fixes
+
+- Restore PHP 8.1 compatibility
+
+### Dependencies
+
+- Composer update (PHP 8.1)
+
 ## Version 25.10.04 (2025-11-14)
 
 ### Fixes
