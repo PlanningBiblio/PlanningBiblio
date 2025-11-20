@@ -13,7 +13,7 @@
 
 ### Plumbing
 
-- MT51052: Renommer le dossier src/PlanningBiblio en src/Planno #1223
+- MT51052: Rename src/PlanningBiblio to src/Planno #1223
 - MT51053: Move public/statistiques/export.php to StatisticController #1225
 - MT51054: Move public/lang to legacy/Lang #1221
 - MT51055: Move public/include to legacy/Common #1224
