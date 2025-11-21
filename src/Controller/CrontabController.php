@@ -12,10 +12,10 @@ use App\Entity\Cron;
 final class CrontabController extends BaseController
 {
     #[Route('/crontab', name: 'crontab.index', methods: ['GET'])]
-    public function index(Request $request): Response
+    public function index(Request $request, Session $session): Response
     {
         // Temporary folder
-        $tmp_dir=sys_get_temp_dir();
+        $tmp_dir = sys_get_temp_dir();
 
         $crons = $this->entityManager->getRepository(Cron::class)
             ->findAll();
@@ -30,17 +30,15 @@ final class CrontabController extends BaseController
             $elements[] = $elem;
         }
 
+
         $this->templateParams(array(
             'elements'  => $elements,
-            'error'     => $request->query->get('error'),
-            'post'      => $request->query->get('post'),
-            'warning'   => $request->query->get('warning')
         ));
 
         return $this->output('crontab/index.html.twig');
     }
 
-    #[Route(path: '/crontab', name: 'crontab.update', methods: ["POST"])]
+    #[Route(path: '/crontab', name: 'crontab.update', methods: ['POST'])]
     public function update(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
@@ -50,22 +48,21 @@ final class CrontabController extends BaseController
         $params = $request->request->all();
         
         if (
-            !isset($params['min']) || trim($params['min']) === '' ||
-            !isset($params['hour']) || trim($params['hour']) === '' ||
-            !isset($params['dom']) || trim($params['dom']) === '' ||
-            !isset($params['mon']) || trim($params['mon']) === '' ||
-            !isset($params['dow']) || trim($params['dow']) === ''
+            !isset($params['min']) ||
+            !isset($params['hour']) ||
+            !isset($params['dom']) ||
+            !isset($params['mon']) ||
+            !isset($params['dow'])
         ) {
-            $error = "La modification de l'ordonnanceur est vide.";
+            $error = 'La modification de l\'ordonnanceur est vide.';
         }
 
         else {
-            $cron = $this->entityManager->getRepository(Cron::class)->findOneBy(["id"=> $params['id']]);
+            $cron = $this->entityManager->getRepository(Cron::class)->find($params['id']);
 
             if($this->verif($cron->getM(), $params['hour'], $params['dom'], $params['mon'], $params['dow']) === false) {
-                $error = "Les valeurs saisies ne sont pas correctes.";
-            }else{
-
+                $error = 'Les valeurs saisies ne sont pas correctes.';
+            } else {
                 try {
                     $cron->setM($params['min']);
                     $cron->setH($params['hour']);
@@ -80,7 +77,6 @@ final class CrontabController extends BaseController
 
                 $this->entityManager->flush();
             }
-
         }
 
         if (isset($error)) {
@@ -97,11 +93,10 @@ final class CrontabController extends BaseController
     public function edit(Request $request)
     {
         $id = $request->get('id');
-        $cron = $this->entityManager->getRepository(Cron::class)->findOneById($id);
+        $cron = $this->entityManager->getRepository(Cron::class)->find($id);
 
         $this->templateParams(array(
             'cron'  => $cron,
-            'CSRFToken' => $GLOBALS['CSRFSession']
         ));
 
         return $this->output('crontab/edit.html.twig');
@@ -122,21 +117,22 @@ final class CrontabController extends BaseController
         $cron = $this->entityManager->getRepository(Cron::class)->find($id);
         $cron->setDisabled(!$checked);
         $this->entityManager->flush();
+
         return $this->json(['ok' => true]);
     }
 
-    private function verif(string $M, string $H, string $Dom, string $Mon, string $Dow): bool
+    private function verif(string $minutes, string $hour, string $dayOfMonth, string $month, string $dayOfWeek): bool
     {
 
         $rules = [
-            'M'   => [0, 59],
-            'H'   => [0, 23],
-            'Dom' => [1, 31],
-            'Mon' => [1, 12],
-            'Dow' => [0, 7],
+            'minutes' => [0, 59],
+            'hour' => [0, 23],
+            'dayOfMonth' => [1, 31],
+            'month' => [1, 12],
+            'dayOfWeek' => [0, 7],
         ];
 
-        foreach (['M', 'H', 'Dom', 'Mon', 'Dow'] as $field) {
+        foreach (['minutes', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'] as $field) {
             $value = $$field;
             [$min, $max] = $rules[$field];
 
@@ -178,7 +174,7 @@ final class CrontabController extends BaseController
 
     private function resume(int $id)
     {   
-        $cron = $this->entityManager->getRepository(Cron::class)->findOneById($id);
+        $cron = $this->entityManager->getRepository(Cron::class)->find($id);
 
         $m = $cron->getM();
         $h = $cron->getH();
@@ -189,43 +185,43 @@ final class CrontabController extends BaseController
         $desc = [];
 
         $mois = [
-            1=>"janvier",2=>"février",3=>"mars",4=>"avril",5=>"mai",6=>"juin",
-            7=>"juillet",8=>"août",9=>"septembre",10=>"octobre",11=>"novembre",12=>"décembre"
+            1 => 'janvier', 2 => 'février', 3 => 'mars', 4 => 'avril', 5 => 'mai', 6 => 'juin',
+            7 => 'juillet', 8 => 'août', 9 => 'septembre', 10 => 'octobre', 11 => 'novembre', 12 => 'décembre'
         ];
         $jours = [
-            0 => "dimanche", 1 => "lundi", 2 => "mardi", 3 => "mercredi",
-            4 => "jeudi", 5 => "vendredi", 6 => "samedi", 7 => "dimanche"
+            0 => 'dimanche', 1 => 'lundi', 2 => 'mardi', 3 => 'mercredi',
+            4 => 'jeudi', 5 => 'vendredi', 6 => 'samedi', 7 => 'dimanche'
         ];
 
-        if ($dom === "*" && $dow === "*") {
-            $desc[] = "Tous les jours";
+        if ($dom === '*' && $dow === '*') {
+            $desc[] = 'Tous les jours';
         } 
-                
-        if ($dom !== "*") {
+
+        if ($dom !== '*') {
             if (preg_match('/^(\d+)-(\d+)$/', $dom, $matches)) {
-                $start = (int)$matches[1];
-                $end = (int)$matches[2];
-                $desc[] = "Du {$start} au {$end}";
+                $start = (int) $matches[1];
+                $end = (int) $matches[2];
+                $desc[] = "Du $start au $end";
             } else {
-                $desc[] = "Chaque {$dom}";
+                $desc[] = "Chaque $dom";
             }
         }
         
-        if ($dow !== "*") {
+        if ($dow !== '*') {
             if (preg_match('/^(\d+)-(\d+)$/', $dow, $matches)) {
-                $start = (int)$matches[1];
-                $end = (int)$matches[2];
+                $start = (int) $matches[1];
+                $end = (int) $matches[2];
                 $desc[] = "Chaque semaine du {$jours[$start]} au {$jours[$end]}";
             } else {
                 $desc[] = "Chaque semaine le {$jours[(int)$dow]}";
             }
         } 
         
-        if ($mon !== "*") {
+        if ($mon !== '*') {
              if (preg_match('/^(\d+)-(\d+)$/', $mon, $matches)) {
-                $start = (int)$matches[1];
-                $end = (int)$matches[2];
-                $desc[] = "de {$mois[(int)$start]} à {$mois[(int)$end]}";
+                $start = (int) $matches[1];
+                $end = (int) $matches[2];
+                $desc[] = "de {$mois[$start]} à {$mois[$end]}";
             } else {
                 $desc[] = "chaque {$mois[(int)$mon]}";
             }
@@ -233,23 +229,23 @@ final class CrontabController extends BaseController
 
         if (preg_match('/^\*\/(\d+)$/', $m, $matches)) {
             $step = $matches[1];
-            if ($h === "*") {
-                $desc[] = "toutes les {$step} minutes";
+            if ($h === '*') {
+                $desc[] = "toutes les $step minutes";
             } elseif (preg_match('/^(\d+)-(\d+)$/', $h, $hm)) {
-                $desc[] = "toutes les {$step} minutes entre {$hm[1]}h et {$hm[2]}h";
+                $desc[] = "toutes les $step minutes entre {$hm[1]}h et {$hm[2]}h";
             } else {
-                $desc[] = "toutes les {$step} minutes à {$h}h";
+                $desc[] = "toutes les $step minutes à {$h}h";
             }
-        } elseif ($m === "*" and $h === "*") {
-            $desc[] = "chaque minute chaque heure";
-        } elseif (is_numeric($m) && $h === "*") {
+        } elseif ($m === '*' and $h === '*') {
+            $desc[] = 'chaque minute chaque heure';
+        } elseif (is_numeric($m) && $h === '*') {
             $desc[] = "à la minute $m de chaque heure";
-        } elseif ($m === "*" && is_numeric($h)) {
+        } elseif ($m === '*' && is_numeric($h)) {
             $desc[] = "chaque minute à {$h}h";
         } elseif (is_numeric($m) && is_numeric($h)) {
-            $desc[] = sprintf("à %02dh%02d", $h, $m);
+            $desc[] = sprintf('à %02dh%02d', $h, $m);
         }
 
-        return implode(" ", $desc);
+        return implode(' ', $desc);
     }
 }

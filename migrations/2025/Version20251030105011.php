@@ -19,7 +19,6 @@ final class Version20251030105011 extends AbstractMigration
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
         $this->addSql("INSERT IGNORE INTO {$dbprefix}menu (niveau1, niveau2, titre, url, `condition`) VALUES (50, 91, 'Ordonnanceur', '/crontab', NULL);");
-
     }
 
     public function down(Schema $schema): void
@@ -27,6 +26,5 @@ final class Version20251030105011 extends AbstractMigration
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
         $this->addSql("DELETE FROM {$dbprefix}menu WHERE titre = 'Ordonnanceur';");
-
     }
 }

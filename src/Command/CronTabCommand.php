@@ -34,7 +34,6 @@ class CronTabCommand extends Command
         $this->kernel = $kernel;
 
         $crons = $entityManager->getRepository(Cron::class)->findBy(['disabled' => 0]);
-        //$crons = $entityManager->getRepository(Cron::class)->findAll();//TODO TEST
 
         foreach ($crons as $cron) {
             if ($this->isDue($cron)) {
@@ -71,7 +70,7 @@ class CronTabCommand extends Command
             if ($output->isVerbose()) {
                 $io->text("Running: $cmd");
             }
-            
+
             $cronInput = new ArrayInput([
                 'command' => $cmd
             ]);
@@ -112,65 +111,65 @@ class CronTabCommand extends Command
     private function isDue(Cron $cron): bool
     {
 
-        $M = $cron->getM();
-        if (preg_match('/^\*\/(\d+)$/', $M, $matches)) {
+        $minutes = $cron->getM();
+        if (preg_match('/^\*\/(\d+)$/', $minutes, $matches)) {
             $step = (int)$matches[1];
             $m = range(0, 59, $step);
-        } elseif (preg_match('/^(\d+)$/', $M, $matches)) {
+        } elseif (preg_match('/^(\d+)$/', $minutes, $matches)) {
             $m = [(int)$matches[1]];
-        } elseif ($M === '*') {
+        } elseif ($minutes === '*') {
             $m = range(0, 59);
         } else {
             $m = [];
         }
 
-        $H = $cron->getH();
-        if (preg_match('/^(\d+)-(\d+)$/', $H, $matches)) {
+        $hour = $cron->getH();
+        if (preg_match('/^(\d+)-(\d+)$/', $hour, $matches)) {
             $start = (int)$matches[1];
             $end = (int)$matches[2];
             $h = range($start, $end);
-        } elseif (preg_match('/^(\d+)$/', $H, $matches)) {
+        } elseif (preg_match('/^(\d+)$/', $hour, $matches)) {
             $h = [(int)$matches[1]];
-        } elseif ($H === '*') {
+        } elseif ($hour === '*') {
             $h = range(0, 23);
         } else {
             $h = [];
         }
 
-        $Dom = $cron->getDom();
-        if (preg_match('/^(\d+)-(\d+)$/', $Dom, $matches)) {
+        $dayOfMonth = $cron->getDom();
+        if (preg_match('/^(\d+)-(\d+)$/', $dayOfMonth, $matches)) {
             $start = (int)$matches[1];
             $end = (int)$matches[2];
             $dom = range($start, $end);
-        } elseif (preg_match('/^(\d+)$/', $Dom, $matches)) {
+        } elseif (preg_match('/^(\d+)$/', $dayOfMonth, $matches)) {
             $dom = [(int)$matches[1]];
-        } elseif ($Dom === '*') {
+        } elseif ($dayOfMonth === '*') {
             $dom = range(1, 31);
         } else {
             $dom = [];
         }
 
-        $Mon = $cron->getMon();
-        if (preg_match('/^(\d+)-(\d+)$/', $Mon, $matches)) {
+        $month = $cron->getMon();
+        if (preg_match('/^(\d+)-(\d+)$/', $month, $matches)) {
             $start = (int)$matches[1];
             $end = (int)$matches[2];
             $mon = range($start, $end);
-        } elseif (preg_match('/^(\d+)$/', $Mon, $matches)) {
+        } elseif (preg_match('/^(\d+)$/', $month, $matches)) {
             $mon = [(int)$matches[1]];
-        } elseif ($Mon === '*') {
+        } elseif ($month === '*') {
             $mon = range(1, 12);
         } else {
             $mon = [];
         }
 
-        $Dow = $cron->getDow();
-        if (preg_match('/^(\d+)-(\d+)$/', $Dow, $matches)) {
+        $dayOfWeek = $cron->getDow();
+        if (preg_match('/^(\d+)-(\d+)$/', $dayOfWeek, $matches)) {
             $start = (int)$matches[1];
             $end = (int)$matches[2];
             $dow = range($start, $end);
-        } elseif (preg_match('/^(\d+)$/', $Dow, $matches)) {
+        } elseif (preg_match('/^(\d+)$/', $dayOfWeek, $matches)) {
             $dow = [(int)$matches[1]];
-        } elseif ($Dow === '*') {
+        } elseif ($dayOfWeek === '*') {
             $dow = range(1, 7);
         } else {
             $dow = [];
@@ -183,25 +182,23 @@ class CronTabCommand extends Command
         $minute = $now->format('i');
         $week = $now->format('N');
 
-        if (!in_array((int)$month,$mon)) {
+        if (!in_array((int)$month, $mon)) {
             return false;
         }
-        if (!in_array((int)$week,$dow)) {
+        if (!in_array((int)$week, $dow)) {
             return false;
         }
-        if (!in_array((int)$day,$dom)) {
+        if (!in_array((int)$day, $dom)) {
             return false;
         }
-        if (!in_array((int)$hour,$h)) {
+        if (!in_array((int)$hour, $h)) {
             return false;
         }
-        if (!in_array((int)$minute,$m)) {
+        if (!in_array((int)$minute, $m)) {
             return false;
         }
 
         return true;
-
     }
-
 
 }

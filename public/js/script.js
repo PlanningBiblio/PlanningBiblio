@@ -797,6 +797,23 @@ function verif_select(nom){
 }
 //	--------------------------------	FIN Statistiques	---------------------------------	//
 
+function disableCron(id){
+  var checked = $(this).prop("checked")?1:0;
+  var _token = $('input[name="_token"]').val();
+
+  $.ajax({
+    url: url('crontab/disabled'),
+    method: 'POST',
+    data: 'id=' + id + '&checked=' + checked + '&_token=' + _token,
+    success: function(){
+      information('Modification enregistrée', 'highlight');
+    },
+    error: function(){
+      information('Attention, la modification n\'a pas pu être enregistrée', 'error');
+    }
+  });
+}
+
 // Initialisations JQuery-UI
 $(function(){
   $(document).ready(function() {

@@ -12,7 +12,7 @@ final class Version20251013130108 extends AbstractMigration
 
     public function getDescription(): string
     {
-        return 'Updates old cron.*.php commands to new Symfony app:* commands.';
+        return 'Use Symfony commands';
     }
 
     public function up(Schema $schema): void

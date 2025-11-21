@@ -4,30 +4,13 @@
 
 {% block page %}
 
-{% if warning %}
-  <script type='text/JavaScript'>
-    CJInfo('{{ warning }}','error');
-  </script>
-{% endif %}
-{% if post %}
-  {% if error %}
-    <script type='text/JavaScript'>
-      CJInfo('Il y a eu des erreurs pendant la modification.<br/>Veuillez vérifier.','error');
-    </script>
-  {% else %}
-    <script type='text/JavaScript'>
-      CJInfo('Les modifications ont été enregistrées.','highlight');
-    </script>
-  {% endif %}
-{% endif %}
-
 <h3>Ordonnanceur</h3>
 
     {% if elements %}
-        <table class='CJDataTable' data-sort='[[1],[2]]' id='CronInfoTable'>
+        <table class="CJDataTable" data-sort="[[1],[2]]" id="CronInfoTable">
             <thead>
                 <tr>
-                    <th class='dataTableNoSort'></th>
+                    <th class="dataTableNoSort"></th>
                     <th>Nom</th>
                     <th>Commentaires</th>
                     <th>Résumé</th>
@@ -38,14 +21,14 @@
                 {%for elem in elements %}
                     <tr>
                         <td>
-                            <a href='{{ asset('crontab/') }}{{elem.cron.id}}'>
-                                <span class='pl-icon pl-icon-edit' title='Edit'></span>
+                            <a href="{{ asset('crontab/') }}{{elem.cron.id}}">
+                                <span class="pl-icon pl-icon-edit" title="Edit"></span>
                             </a>
                         </td>
                         <td>{{ elem.cron.command }}</td>
                         <td>{{ elem.cron.comment }}</td>
                         <td>{{ elem.resume }}</td>
-                        <td><input type='checkbox' class='cron_disabled' id='{{ elem.cron.id }}' {% if elem.cron.disabled == 0 %} value='1' checked='checked' {% endif %} /></td>
+                        <td><input type="checkbox" onclick="disableCron('{{ elem.cron.id }}')" value="1" {% if elem.cron.disabled == 0 %}  checked="checked" {% endif %} /></td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -53,5 +36,4 @@
     {% else %}
         Aucune information enregistrée.
     {% endif %}
-  <script type="text/JavaScript" src="{{ asset('js/crontab.js') }}"></script>
 {% endblock %}

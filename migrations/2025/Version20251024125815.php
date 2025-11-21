@@ -26,6 +26,7 @@ final class Version20251024125815 extends AbstractMigration
             MODIFY mon VARCHAR(32) NOT NULL,
             MODIFY dow VARCHAR(32) NOT NULL;
         ");
+
         $this->addSql("INSERT INTO {$dbprefix}cron (m, h, dom, mon, dow, command, comments, last, disabled) VALUES
             ('0','6','*','*','*','app:absence:delete-documents','Remove old documents depending the configuration',null,1),
             ('*/15','6-23','*','*','*','app:absence:import-csv','Import absences from a CSV file',null,1),
@@ -38,7 +39,6 @@ final class Version20251024125815 extends AbstractMigration
             ('30','7','*','*','*','app:update-db','Update database',null,1),
             ('30','8','*','*','*','app:workinghour:export','Export working hours to a CSV file',null,1);
         ");
-        
     }
 
     public function down(Schema $schema): void
@@ -57,6 +57,7 @@ final class Version20251024125815 extends AbstractMigration
             'app:update-db',
             'app:workinghour:export'
         );");
+        
         $this->addSql("
             ALTER TABLE {$dbprefix}cron
             MODIFY m   varchar(2) NULL,

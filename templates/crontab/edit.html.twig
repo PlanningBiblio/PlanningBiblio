@@ -10,17 +10,16 @@
         
           <h4>Modifications des Commands</h4>
 
-          <form id='form' method='POST' action='{{ asset('crontab') }}' name='form' >
-            <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
-            <input type='hidden' name='_token' value='{{ csrf_token('') }}' />
+          <form id="form" method="post" action="{{ asset('crontab') }}" name="form" >
+            <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
 
-              <table class='tableauFiches'>
+              <table class="tableauFiches">
                 <tr>
                 <td>&nbsp;</td>
                 <tr>
                   <td><label>Command</label> </td>
                   <td>
-                    <input type='hidden' name='id' value='{{ cron.id }}' />
+                    <input type="hidden" name="id" value="{{ cron.id }}" />
                     <label>{{ cron.command }}</label>
                   </td>
                 </tr>
@@ -33,35 +32,35 @@
                 <tr>
                     <td><label>minute</label> </td>
                     <td>
-                    <input type='text' id='input_text_number' name='min' value='{{ cron.m }}' style='width:100%;'/>
+                    <input type="text" id="input_text_number" name="min" value="{{ cron.m }}" style="width:100%;"/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>hour</label></td>
                     <td>
-                    <input type='text' id='input_text_number' name='hour' value='{{ cron.h }}' style='width:100%;'/>
+                    <input type="text" id="input_text_number" name="hour" value="{{ cron.h }}" style="width:100%;"/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>day of month</label></td>
                     <td>
-                    <input type='text' id='input_text_number' name='dom' value='{{ cron.dom }}' style='width:100%;'/>
+                    <input type="text" id="input_text_number" name="dom" value="{{ cron.dom }}" style="width:100%;"/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>month</label></td>
                     <td>
-                    <input type='text' id='input_text_number' name='mon' value='{{ cron.mon }}' style='width:100%;'/>
+                    <input type="text" id="input_text_number" name="mon" value="{{ cron.mon }}" style="width:100%;"/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>day of week</label></td>
                     <td>
-                    <input type='text' id='input_text_number' name='dow' value='{{ cron.dow }}' style='width:100%;'/>
+                    <input type="text" id="input_text_number" name="dow" value="{{ cron.dow }}" style="width:100%;"/>
                     </td>
                 </tr>
 
@@ -70,9 +69,9 @@
                 </tr>
 
                 <tr>
-                    <td colspan='2' style='text-align:center;'>
-                    <a href='{{ asset('crontab') }}' class='ui-button ui-button-type2' style='margin-left:30px;'>Annuler</a>
-                    <input type='submit' value='Valider' class='ui-button ui-button-type1' style='margin-left:30px;'/>
+                    <td colspan="2" style="text-align:center;">
+                    <a href="{{ asset('crontab') }}" class="ui-button ui-button-type2" style="margin-left:30px;">Annuler</a>
+                    <input type="submit" value="Valider" class="ui-button ui-button-type1" style="margin-left:30px;"/>
                     </td>
                 </tr>
                 </table>
