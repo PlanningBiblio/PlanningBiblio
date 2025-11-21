@@ -72,6 +72,11 @@ class PlanningPosition
         return $this;
     }
     
+    public function getStart(): ?\DateTime
+    {
+        return $this->debut;
+    }
+
     public function setStart(?\DateTime $start): static
     {
         $this->debut = $start;
@@ -79,11 +84,21 @@ class PlanningPosition
         return $this;
     }
 
+    public function getEnd(): ?\DateTime
+    {
+        return $this->fin;
+    }
+
     public function setEnd(?\DateTime $end): static
     {
         $this->fin = $end;
 
         return $this;
+    }
+
+    public function getUser(): ?int
+    {
+        return $this->perso_id;
     }
 
     public function setUser(?int $user): static

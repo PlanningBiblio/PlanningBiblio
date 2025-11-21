@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Entity\AbsenceReason;
+use App\Entity\PlanningPosition;
 use App\Entity\Position;
 use App\Planno\WorkingHours;
 
@@ -237,28 +238,33 @@ trait PlanningJobTrait
         // Count day hours for all agent.
         $day_hours = array();
         if ($break_countdown) {
-            $db = new \db();
-            $dateSQL = $db->escapeString($date);
 
-            $db->query("SELECT perso_id, poste, debut, fin FROM `{$dbprefix}pl_poste` WHERE date = '$dateSQL' AND supprime = '0';");
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    // If the current position is a lunch, don't add it to duration
-                    // cause this a not worked position
-                    if ($positions->find($elem['poste'])->isLunch()) {
-                        continue;
-                    }
+            $events = $this->entityManager->getRepository(PlanningPosition::class)->findBy([
+                'date' => new \DateTime($dateSQL),
+                'supprime' => 0,
+            ]);
 
-                    // Get day duration as timestamp
-                    // for an easier comparison.
-                    $elem_duration = strtotime($elem['fin']) - strtotime($elem['debut']);
-
-                    if (!isset($day_hours[$elem['perso_id']])) {
-                        $day_hours[$elem['perso_id']] = 0;
-                    }
-
-                    $day_hours[$elem['perso_id']] += $elem_duration;
+            foreach ($events as $event) {
+                // If the current position is a lunch, don't add it to duration
+                // cause this a not worked position
+                if ($positions->find($event->getPosition())->isLunch()) {
+                    continue;
                 }
+
+                // If the current position is a not blocking, don't add it to duration
+                if (!$positions->find($event->getPosition())->isBlocking()) {
+                    continue;
+                }
+
+                // Compute duration
+                $diff = $event->getStart()->diff($event->getEnd());
+                $elem_duration = (int) $diff->format('%H') * 3600 + (int) $diff->format('%i') * 60 + (int) $diff->format('%s');
+
+                if (!isset($day_hours[$event->getUser()])) {
+                    $day_hours[$event->getUser()] = 0;
+                }
+
+                $day_hours[$event->getUser()] += $elem_duration;
             }
         }
 
