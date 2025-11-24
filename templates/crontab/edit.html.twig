@@ -28,7 +28,13 @@
                     <td><label>Description</label> </td>
                     <td><label>{{ cron.comment }}</label></td>
                 </tr>
-                
+                <tr>
+                    <td><label>Disabled</label> </td>
+                    <td>
+                    <input type="hidden" name="disabled" value="0">
+                    <input type="checkbox" name="disabled" value="1" {% if cron.disabled == 1 %}  checked="checked" {% endif %} />
+                    </td>
+                </tr>
                 <tr>
                     <td><label>minute</label> </td>
                     <td>

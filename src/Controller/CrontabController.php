@@ -69,7 +69,7 @@ final class CrontabController extends BaseController
                     $cron->setDom($params['dom']);
                     $cron->setMon($params['mon']);
                     $cron->setDow($params['dow']);
-                    $cron->setDisabled(0);
+                    $cron->setDisabled($params['disabled']);
                 }
                 catch (Exception $e) {
                     $error = 'Une erreur est survenue pendant la modification de la crontab !';

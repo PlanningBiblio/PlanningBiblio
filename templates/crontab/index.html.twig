@@ -28,7 +28,7 @@
                         <td>{{ elem.cron.command }}</td>
                         <td>{{ elem.cron.comment }}</td>
                         <td>{{ elem.resume }}</td>
-                        <td><input type="checkbox" onclick="disableCron('{{ elem.cron.id }}')" value="1" {% if elem.cron.disabled == 0 %}  checked="checked" {% endif %} /></td>
+                        <td><input type="checkbox" onclick="disableCron('{{ elem.cron.id }}')" value="1" {% if elem.cron.disabled == 1 %}  checked="checked" {% endif %} /></td>
                     </tr>
                 {% endfor %}
             </tbody>
