@@ -18,6 +18,11 @@ final class Version20251102165726 extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
+        $configComment = 'Permettre la réinitialisation des cycles de présence.'
+            . '<br/>Fonctionne seulement avec le paramètre \"PlanningHebdo\" et pour un minimum de 3 semaines par cycle.'
+            . '<br/>Attention, si vous utilisez 4 semaines par cycle, en activant ce paramètre, vous devrez définir la première semaine 1'
+            . ' dans le paramètre \"dateDebutPlHebdo\" et le cycle ne sera pas automatiquement réinitialisé en début d\\\'année.';
+
         $this->addSql("CREATE TABLE IF NOT EXISTS {$dbprefix}working_hour_cycles (id int(11) NOT NULL AUTO_INCREMENT, 
             date DATE NOT NULL DEFAULT CURDATE(), 
             week INT(11) NOT NULL DEFAULT 0, 
@@ -26,7 +31,7 @@ final class Version20251102165726 extends AbstractMigration
             COLLATE=utf8mb4_unicode_ci;");
 
         $this->addSql("INSERT INTO {$dbprefix}config (nom, `type`, valeur, commentaires, categorie, valeurs, technical, ordre) VALUES 
-            ('PlanningHebdo-resetCycles', 'boolean', '0', 'Permettre la réinitialisation des cycles de présence (pour un minimum de 3 semaines par cycle)',
+            ('PlanningHebdo-resetCycles', 'boolean', '0', '$configComment',
             'Heures de présence', '', 0, 45);");
     }
 
