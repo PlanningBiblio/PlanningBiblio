@@ -92,25 +92,11 @@ class datePl
             return $this->semaine % 2 ? 1 : 2;
         }
 
-        $interval = $this->getNumberOfWeeksSinceStartDate($this->date);
-        if ($nb_semaine == 3) {
-            $week_id = null;
-            if (!((int) $interval % 3)) {
-                $week_id = 1;
-            }
-            if (!((int) ($interval + 2) % 3)) {
-                $week_id = 2;
-            }
-            if (!((int) ($interval + 1) % 3)) {
-                $week_id = 3;
-            }
-
-            return $week_id;
-        }
-
-        if ($nb_semaine == 4) {
+        if ($nb_semaine == 4 and $GLOBALS['config']['PlanningHebdo-resetCycles'] === '0') {
            return $this->getCycleNumber($this->semaine, 4);
         }
+
+        $interval = $this->getNumberOfWeeksSinceStartDate($this->date) + 1;
 
         return $this->getCycleNumber($interval, $nb_semaine);
     }
