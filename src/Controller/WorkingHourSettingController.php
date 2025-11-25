@@ -67,7 +67,11 @@ class WorkingHourSettingController extends BaseController
         $date = $request->get('date');
         $week = $request->get('week');
 
-        $date = $date ? preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3-$2-$1", $date) : date('Y-m-d');
+        $date = \DateTime::createFromFormat('d/m/Y', $date);
+
+        if ($date->format('w') !== '1') {
+            $date->modify('last monday');
+        }
 
         if ($id) {
             $cycle = $this->entityManager->getRepository(WorkingHourCycle::class)->find($id);
@@ -75,7 +79,7 @@ class WorkingHourSettingController extends BaseController
             $cycle = new WorkingHourCycle();
         }
 
-        $cycle->setDate(new \DateTime($date));
+        $cycle->setDate($date);
         $cycle->setWeek($week);
         $this->entityManager->persist($cycle);
         $this->entityManager->flush();
