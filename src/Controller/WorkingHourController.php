@@ -91,7 +91,10 @@ class WorkingHourController extends BaseController
         // Decimal breaktime to time (H:i).
         foreach ($breaktime as $index => $time) {
             $breaktime[$index] = $breaktime[$index]
-                ? gmdate('H:i', floor($breaktime[$index] * 3600)) : '';
+                ? str_replace('h', ':',
+                    HourHelper::decimalToHoursMinutes($breaktime[$index])['as_string']
+                )
+                : '';
         }
 
         $fin = $this->config('Dimanche') ? array(7,14,21,28,35,42,49,56,63,70) : array(6,13,20,27,34,41,48,55,62,69);
@@ -565,7 +568,10 @@ class WorkingHourController extends BaseController
 
         if ($this->config('PlanningHebdo-PauseLibre')) {
             foreach ($post['breaktime'] as $index => $time) {
-              $post['breaktime'][$index] = $this->time_to_decimal($time);
+                $tmp = explode(':', $time);
+                if (count($tmp) == 2) {
+                    $post['breaktime'][$index] = HourHelper::hoursMinutesToDecimal($tmp[0], $tmp[1]);
+                }
             }
         }
 
@@ -725,18 +731,6 @@ class WorkingHourController extends BaseController
         }
 
         return new Response(json_encode($result));
-    }
-
-    // FIXME put this in a helper or
-    // a service container.
-    private function time_to_decimal($time)
-    {
-        if (!$time) {
-            return 0;
-        }
-
-        $hm = explode(":", $time);
-        return ($hm[0] + ($hm[1] / 60));
     }
 
     private function can_edit()
