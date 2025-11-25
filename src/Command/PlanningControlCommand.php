@@ -3,10 +3,14 @@
 namespace App\Command;
 
 use App\Entity\Config;
+use App\Entity\PlanningPosition;
+use App\Entity\PlanningPositionLock;
+use App\Entity\PlanningPositionTabAffectation;
 use App\Planno\Framework;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -34,6 +38,12 @@ class PlanningControlCommand extends Command
 
     protected function configure(): void
     {
+        $this->addOption(
+            'not-really',
+            null,
+            InputOption::VALUE_NONE,
+            'Do not send email but print it (for testing)'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -88,39 +98,38 @@ class PlanningControlCommand extends Command
         // Création du message qui sera envoyé par e-mail
         $data=array();
 
-        // Prépare la requête permettant de vérifier si les postes sont occupés
-        // On utilide PDO pour de meilleurs performances car la même requête sera executée de nombreuses fois avec des valeurs différentes
-        $dbh=new \dbh();
-        $dbh->CSRFToken = $CSRFToken;
-        $dbh->prepare("SELECT `id`,`perso_id`,`absent` FROM `{$config['dbprefix']}pl_poste`
-        WHERE `date`=:date AND `site`=:site AND `poste`=:poste AND `debut`=:debut AND `fin`=:fin AND `absent`='0' AND `supprime`='0';");
-
-
         // Pour chaque date et pour chaque site
         foreach ($dates as $date) {
+            $dateObj = new \DateTime($date);
             foreach ($sites as $site) {
 
                 // on créé un tableau pour stocker les éléments par dates et sites
                 $data[$date][$site[0]]=array("date"=>dateFr($date), "site"=>$site[1]);
 
                 // On recherche les plannings qui ne sont pas créés (aucune structure affectée)
-                $db=new \db();
-                $db->select2("pl_poste_tab_affect", null, array("date"=>$date, "site"=>$site[0]));
-                if (!$db->result) {
-                    $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas cr&eacute;&eacute;</span></strong>\n";
+                $planningPositionTabAffectation = $this->entityManager->getRepository(PlanningPositionTabAffectation::class)->findBy([
+                    'date'     => $dateObj,
+                    'site'     => $site[0],
+                ]);
+
+                if (!$planningPositionTabAffectation) {
+                    $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas créé</span></strong>\n";
                     continue;
                 } else {
                     // Si le planning est créé, on récupère le numéro du tableau pour ensuite
                     // comparer la structure au planning complété afin de trouver les cellules vides
-                    $tableauId=$db->result[0]['tableau'];
+                    $tableauId = $planningPositionTabAffectation[0]->getTable();
 
                     // On recherche les plannings qui ne sont pas validés
-                    $db=new \db();
-                    $db->select2("pl_poste_verrou", null, array("date"=>$date, "site"=>$site[0], "verrou2"=>1));
-                    if ($db->result) {
-                        $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)."</strong> est valid&eacute;\n";
+                    $planningPositionLock = $this->entityManager->getRepository(PlanningPositionLock::class)->findBy([
+                        'date'     => $dateObj,
+                        'site'     => $site[0],
+                        'verrou2'  => 1, 
+                    ]);
+                    if ($planningPositionLock) {
+                        $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)."</strong> est validé;\n";
                     } else {
-                        $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas valid&eacute;</span></strong>\n";
+                        $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas validé;</span></strong>\n";
                     }
                 }
 
@@ -154,13 +163,17 @@ class PlanningControlCommand extends Command
                                 if (!$config['Rappels-Renfort'] and $postes[$l['poste']]['obligatoire']!="Obligatoire") {
                                     continue;
                                 }
-
                                 // On contrôle si le poste est occupé
                                 // Pour ceci, on execute la requête préparée plus haut avec PDO
-                                $sql=array(":date"=>$date, ":site"=>$site[0], ":poste"=>$l['poste'], ":debut"=>$h['debut'], ":fin"=>$h['fin']);
-                                $dbh->result=array();
-                                $dbh->execute($sql);
-                                $result=$dbh->result;
+                                $result = $this->entityManager->getRepository(PlanningPosition::class)->findBy([
+                                    'date'     => $dateObj,
+                                    'site'     => $site[0],
+                                    'poste'    => $l['poste'],
+                                    'debut'    => new \DateTime('today ' . $h['debut']),
+                                    'fin'      => new \DateTime('today ' . $h['fin']),
+                                    'absent'   => 0,
+                                    'supprime' => 0,
+                                ]);
 
                                 // Contrôle des absences et des congés
                                 // Si la dernière execution de la requête donne un résultat
@@ -169,16 +182,18 @@ class PlanningControlCommand extends Command
                                 foreach ($result as $res) {
                                     // Contrôle des absences
                                     $absent=false;
-                                    $a=new \absences();
-                                    if ($a->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
+                                    $a = new \absences();
+
+                                    if ($a->check($res->getUser(), $date . ' ' .$h['debut'], $date . ' ' .$h['fin'])) {
                                         $absent=true;
                                     }
 
                                     // Contrôle des congés
                                     $conges=false;
                                     if ($config['Conges-Enable']) {
-                                        $c=new \conges();
-                                        if ($c->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
+                                        $c = new \conges();
+
+                                        if ($c->check($res->getUser(), $date . ' ' .$h['debut'], $date . ' ' . $h['fin'])) {
                                             $conges=true;
                                         }
                                     }
@@ -220,11 +235,11 @@ class PlanningControlCommand extends Command
                     $msg.=$site['message'];
                 }
                 if (array_key_exists("tableau", $site)) {
-                    $msg.="<br/>\nLes postes suivants ne sont pas occup&eacute;s :\n<ul>\n";
+                    $msg.="<br/>\nLes postes suivants ne sont pas occupés :\n<ul>\n";
                     foreach ($site['tableau'] as $tableau) {
                         $msg.="<li>Tableau <strong>{$tableau['tableau']}</strong> :\n<ul>\n";
                         foreach ($tableau['data'] as $poste) {
-                            $msg.="<li>{$poste['poste']}, de ".heure2($poste['debut'])." &agrave; ".heure2($poste['fin'])."</li>\n";
+                            $msg.="<li>{$poste['poste']}, de ".heure2($poste['debut'])." à ".heure2($poste['fin'])."</li>\n";
                         }
                         $msg.="</ul>\n";
                     }
@@ -237,20 +252,25 @@ class PlanningControlCommand extends Command
 
         $subject="Plannings du ".dateFr($dates[0])." au ".dateFr($dates[count($dates)-1]);
         $to=explode(";", $config['Mail-Planning']);
+        if (!$input->getOption('not-really')) {
+            $m=new \CJMail();
+            $m->to=$to;
+            $m->subject=$subject;
+            $m->message=$msg;
+            $m->send();
 
-        $m=new \CJMail();
-        $m->to=$to;
-        $m->subject=$subject;
-        $m->message=$msg;
-        $m->send();
+            if ($m->error) {
+                $this->log($m->error, 'PlanningControl');
 
-        if ($m->error) {
-            $this->log($m->error, 'PlanningControl');
+            }
 
-        }
-
-        if ($output->isVerbose()) {
-            $io->success('Planning check completed successfully; notification email sent.');
+            if ($output->isVerbose()) {
+                $io->success('Planning check completed successfully; notification email sent.');
+            }
+        } else {    
+            $io->text("To: " . implode(',', $to));
+            $io->text("Subject: " . $subject);
+            $io->text("Message: " . $msg);
         }
 
         return Command::SUCCESS;
