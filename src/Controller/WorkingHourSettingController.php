@@ -23,9 +23,18 @@ class WorkingHourSettingController extends BaseController
 
         $cycles = $this->entityManager->getRepository(WorkingHourCycle::class)->findBetween($start, $end);
 
+        $sites = [];
+
+        if ($this->config['PlanningHebdo-resetCycles'] > 1) {
+            foreach ($cycles as $cycle) {
+                $sites[$cycle->getId()] = json_encode($cycle->getSites());
+            }
+        }
+
         $this->templateParams([
             'cycles' => $cycles,
             'end' => $end,
+            'sites' => $sites,
             'start' => $start,
         ]);
 
