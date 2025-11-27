@@ -25,6 +25,9 @@
           <th class="dataTableNoSort"></th>
           <th class="dataTableDateFR">Date de début de cycle</th>
           <th>Numéro de semaine au début du cycle</th>
+          {% if sites is not empty %}
+            <th>Sites</th>
+          {% endif %}
         </tr>
       </thead>
       <tbody>
@@ -39,6 +42,9 @@
               </a>
             <td>{{ cycle.date | date('d/m/Y') }}</td>
             <td>{{ cycle.week }}</td>
+            {% if sites is not empty %}
+              <td>{{ sites[cycle.id] }}</td>
+            {% endif %}
           </tr>
         {% endfor %}
       </tbody>
