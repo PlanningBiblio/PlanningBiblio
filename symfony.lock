@@ -23,25 +23,6 @@
     "dbrekelmans/bdi": {
         "version": "1.0"
     },
-    "doctrine/annotations": {
-        "version": "1.14",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "1.10",
-            "ref": "64d8583af5ea57b7afa4aba4b159907f3a148b05"
-        },
-        "files": []
-    },
-    "doctrine/cache": {
-        "version": "2.1.1"
-    },
-    "doctrine/collections": {
-        "version": "1.6.8"
-    },
-    "doctrine/common": {
-        "version": "3.2.2"
-    },
     "doctrine/dbal": {
         "version": "3.3.5"
     },
@@ -86,14 +67,8 @@
     "doctrine/instantiator": {
         "version": "1.4.1"
     },
-    "doctrine/lexer": {
-        "version": "1.2.3"
-    },
     "doctrine/migrations": {
         "version": "3.5.0"
-    },
-    "doctrine/orm": {
-        "version": "2.11.2"
     },
     "doctrine/persistence": {
         "version": "2.4.1"
@@ -480,9 +455,6 @@
         "version": "v1.25.0"
     },
     "symfony/polyfill-mbstring": {
-        "version": "v1.25.0"
-    },
-    "symfony/polyfill-php72": {
         "version": "v1.25.0"
     },
     "symfony/polyfill-php73": {
