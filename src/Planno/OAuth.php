@@ -16,7 +16,7 @@ class OAuth {
     private $token;
     private $stdout;
 
-    function __construct($clientid, $clientsecret, $tokenURL, $authURL, $options = array(), $stdout) {
+    function __construct($clientid, $clientsecret, $tokenURL, $authURL, $options = array(), $stdout = false) {
 
         $this->clientid = $clientid;
         $this->clientsecret = $clientsecret;
