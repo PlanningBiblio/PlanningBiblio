@@ -1,5 +1,18 @@
 # Changelog Planno
 
+## Version 25.11.05 (2025-11-28)
+
+### Enhancement
+
+- MT49322: Replacement of the deprecated marquee tag to display information messages #1232
+
+### Fixes
+
+- MT49414: Considere breaktimes defined on working hours exceptions #1230
+- MT50304: Do not count not blocking position #1231
+- MT51184: Use HourHelper to convert breaktime on working hours #1239
+- MT51254: Fix navigation menu on detached agents page #1241
+
 ## Version 25.11.04 (2025-11-14)
 
 ### Fixes
