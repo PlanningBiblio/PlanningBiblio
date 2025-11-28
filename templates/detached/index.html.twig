@@ -14,12 +14,12 @@
       <div class="row justify-content-between">
         <div id="pl-calendar" class="datepicker"></div>
         <div class="col-xxl titreSemFixe">
-          Sélection des agents volants<br/>
-          Semaine {{ week_number }}, du {{ week }}<br/>
-          <div id="detachedAgentNav">
-            <a href='{{ asset("detached") }}?date={{ previous_week }}' class='menu'> Semaine précédente </a>
-            <a href='{{ asset("detached") }}?date={{ next_week }}' class='menu'> Semaine suivante </a>
-          </div>
+          <div>Sélection des agents volants</div>
+          <div>Semaine {{ week_number }}, du {{ week }}</div>
+          <ul class="days_ul">
+            <li><a href="{{ asset('detached') }}?date={{ previous_week }}"> Semaine précédente </a> / </li>
+            <li><a href="{{ asset('detached') }}?date={{ next_week }}"> Semaine suivante </a></li>
+          </ul>
         </div>
       </div>
     </div>

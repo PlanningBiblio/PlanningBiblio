@@ -583,7 +583,8 @@ a:hover.ejsmenu2 {
   z-index:3;
 }
 
-.days_ul li a.active {
+.days_ul li a.active,
+.days_ul li a:hover {
   color: #FFD700;
 }
 
@@ -733,10 +734,6 @@ select
   margin: 10px auto 0 auto;
   position: absolute;
   right: 5%;
-}
-
-#date_planning, #semaine_planning {
-  margin-top: 5px;
 }
 
 #semaine_planning{
@@ -1153,14 +1150,6 @@ div#tabsemaine1{
 	display:none;
 	}
 
-a:hover.menuRed, a:hover.menu {
-	color:#FFD700;
-	font-size:13.0pt;
-  border-top: #FFD700;
-  border-top-width: 5px;
-  border-top-style: solid;
-}
-
 .text,.text_clic
 	{
 	color:#29495C;
@@ -1191,13 +1180,17 @@ a:hover.menuRed, a:hover.menu {
   padding: 20px 0 10px 50px;
 }
 
+.titreSemFixe div,
+.titreSemFixe ul {
+  padding-top: 5px;
+}
+
 .top-button-div {
     text-align:right;
     margin: 0 10px 30px 0;
 }
 
 #tab_jours{ /* /index */
-  margin : 10px 0px 0px 0px;
   text-align:left;
 }
 
@@ -1571,15 +1564,6 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
 
 #div_agenda .postes{
   margin-top: 10px;
-}
-
-/* Agents volants */
-#detachedAgentNav {
-  margin: 20px 0 0 0;
-}
-
-#detachedAgentNav a {
-  margin: 0 30px 0 0;
 }
 
 #content-planning #content-form {
