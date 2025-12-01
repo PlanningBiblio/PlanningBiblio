@@ -71,9 +71,9 @@ class HolidayControllerDaysTest extends PLBWebTestCase
 
         $entityManager->refresh($jdevoe);
         $this->assertEquals($jdevoe->getHolidayCredit(), 32, 'credit has updated');
-        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->getCompTime(), 0, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 0, "comp time didn't change");
     }
 
     public function testHolidayManyAgentManyDays()
@@ -136,9 +136,9 @@ class HolidayControllerDaysTest extends PLBWebTestCase
 
         $entityManager->refresh($jdevoe);
         $this->assertEquals($jdevoe->getHolidayCredit(), 46, 'credit has updated');
-        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->getCompTime(), 0, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 0, "comp time didn't change");
 
         $start = $adenis_holiday->getStart()->format('Y-m-d H:i:s');
         $end = $adenis_holiday->getEnd()->format('Y-m-d H:i:s');
@@ -157,9 +157,9 @@ class HolidayControllerDaysTest extends PLBWebTestCase
 
         $entityManager->refresh($adenis);
         $this->assertEquals($adenis->getHolidayCredit(), 89, 'credit has updated');
-        $this->assertEquals($adenis->getRemainder(), 0, "reliquat didn't change");
-        $this->assertEquals($adenis->getAnticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($adenis->getCompTime(), 10, "comp time didn't change");
+        $this->assertEquals($adenis->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($adenis->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($adenis->getHolidayCompTime(), 10, "comp time didn't change");
     }
 
     public function testHolidayManyAgentManyDaysWithRemainingHoliday()
@@ -222,9 +222,9 @@ class HolidayControllerDaysTest extends PLBWebTestCase
 
         $entityManager->refresh($jdevoe);
         $this->assertEquals($jdevoe->getHolidayCredit(), 0, 'credit has updated');
-        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->getAnticipation(), 10, "anticipation didn't change");
-        $this->assertEquals($jdevoe->getCompTime(), 0, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 10, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 0, "comp time didn't change");
 
         $start = $adenis_holiday->getStart()->format('Y-m-d H:i:s');
         $end = $adenis_holiday->getEnd()->format('Y-m-d H:i:s');
@@ -243,9 +243,9 @@ class HolidayControllerDaysTest extends PLBWebTestCase
 
         $entityManager->refresh($adenis);
         $this->assertEquals($adenis->getHolidayCredit(), 164, 'credit has updated');
-        $this->assertEquals($adenis->getRemainder(), 0, "reliquat didn't change");
-        $this->assertEquals($adenis->getAnticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($adenis->getCompTime(), 10, "comp time didn't change");
+        $this->assertEquals($adenis->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($adenis->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($adenis->getHolidayCompTime(), 10, "comp time didn't change");
     }
 
     private function deleteWorkingHours()

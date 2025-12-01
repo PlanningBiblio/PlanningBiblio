@@ -103,10 +103,10 @@ class Agent
     private ?string $check_ics = null;
 
     #[ORM\Column]
-    private ?int $check_hamac = null;
+    private ?bool $check_hamac = false;
 
     #[ORM\Column]
-    private ?bool $check_ms_graph = null;
+    private ?bool $check_ms_graph = false;
 
     #[ORM\Column]
     private ?float $conges_credit = null;
@@ -164,14 +164,14 @@ class Agent
         return $this;
     }
 
-    public function getAnticipation(): ?float
+    public function getHolidayAnticipation(): ?float
     {
         return $this->conges_anticipation;
     }
 
-    public function setAnticipation(?float $anticipation): static
+    public function setHolidayAnticipation(?float $holidayAnticipation): static
     {
-        $this->conges_anticipation = $anticipation;
+        $this->conges_anticipation = $holidayAnticipation;
 
         return $this;
     }
@@ -200,14 +200,14 @@ class Agent
         return $this;
     }
 
-    public function getCompTime(): ?float
+    public function getHolidayCompTime(): ?float
     {
         return $this->comp_time;
     }
 
-    public function setCompTime(?float $compTime): static
+    public function setHolidayCompTime(?float $holidayCompTime): static
     {
-        $this->comp_time = $compTime;
+        $this->comp_time = $holidayCompTime;
 
         return $this;
     }
@@ -332,14 +332,14 @@ class Agent
         return $this;
     }
 
-    public function getRemainder(): ?float
+    public function getHolidayRemainder(): ?float
     {
         return $this->conges_reliquat;
     }
 
-    public function setRemainder(?float $remainder): static
+    public function setHolidayRemainder(?float $holidayRemainder): static
     {
-        $this->conges_reliquat = $remainder;
+        $this->conges_reliquat = $holidayRemainder;
 
         return $this;
     }
@@ -424,6 +424,125 @@ class Agent
     public function setWorkingHours(?string $workingHours): static
     {
         $this->temps = $workingHours;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->commentaires;
+    }
+
+    public function setComment(?string $comment): static
+    {
+        $this->commentaires = $comment;
+
+        return $this;
+    }
+    public function getLastLogin(): ?\DateTime
+    {
+        return $this->last_login;
+    }
+
+    public function setLastLogin(?\DateTime $lastLogin): static
+    {
+        $this->last_login = $lastLogin;
+
+        return $this;
+    }
+
+    public function getInformation(): ?string
+    {
+        return $this->informations;
+    }
+
+    public function setInformation(?string $information): static
+    {
+        $this->informations = $information;
+
+        return $this;
+    }
+    
+    public function getRecoveryMenu(): ?string
+    {
+        return $this->recup;
+    }
+
+    public function setRecoveryMenu(?string $recoveryMenu): static
+    {
+        $this->recup = $recoveryMenu;
+
+        return $this;
+    }
+    
+    public function getManagersMails(): ?string
+    {
+        return $this->mails_responsables;
+    }
+
+    public function setManagersMails(?string $managersMails): static
+    {
+        $this->mails_responsables = $managersMails;
+
+        return $this;
+    }
+
+    public function isHamacCheck(): ?bool
+    {
+        return $this->check_hamac;
+    }
+
+    public function setHamacCheck(?bool $hamacCheck): static
+    {
+        $this->check_hamac = $hamacCheck;
+
+        return $this;
+    }
+
+    public function isMsGraphCheck(): ?bool
+    {
+        return $this->check_ms_graph;
+    }
+
+    public function setMsGraphCheck(?bool $msGraphCheck): static
+    {
+        $this->check_ms_graph = $msGraphCheck;
+
+        return $this;
+    }
+
+    public function getEmployeeNumber(): ?string
+    {
+        return $this->matricule;
+    }
+
+    public function setEmployeeNumber(?string $employeeNumber): static
+    {
+        $this->matricule = $employeeNumber;
+
+        return $this;
+    }
+
+    public function getIcsCheck(): ?string
+    {
+        return $this->check_ics;
+    }
+
+    public function setIcsCheck(?string $icsCheck): static
+    {
+        $this->check_ics = $icsCheck;
+
+        return $this;
+    }
+
+    public function getIcsUrl(): ?string
+    {
+        return $this->url_ics;
+    }
+
+    public function setIcsUrl(?string $icsUrl): static
+    {
+        $this->url_ics = $icsUrl;
 
         return $this;
     }
