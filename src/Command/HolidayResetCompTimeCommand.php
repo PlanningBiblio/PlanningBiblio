@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Entity\Agent;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,7 +14,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 require_once __DIR__ . '/../../legacy/Common/function.php';
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
-require_once(__DIR__ . '/../../legacy/Common/db.php');
 
 #[AsCommand(
     name: 'app:holiday:reset:comp-time',
@@ -20,9 +21,11 @@ require_once(__DIR__ . '/../../legacy/Common/db.php');
 )]
 class HolidayResetCompTimeCommand extends Command
 {
+    private $entityManager;
 
-    public function __construct()
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
         parent::__construct();
     }
 
@@ -68,9 +71,9 @@ class HolidayResetCompTimeCommand extends Command
         }
 
         // Modifie les crédits
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->update('personnel', 'comp_time="0.00"');
+        $this->entityManager->getRepository(Agent::class)->holidayResetCompTime();
+        
+        $this->entityManager->flush();
 
         if ($output->isVerbose()) {
             $io->success('Reset the compensatory time for holiday successfully !');
