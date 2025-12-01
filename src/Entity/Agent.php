@@ -103,10 +103,10 @@ class Agent
     private ?string $check_ics = null;
 
     #[ORM\Column]
-    private ?int $check_hamac = null;
+    private ?bool $check_hamac = true;
 
     #[ORM\Column]
-    private ?bool $check_ms_graph = null;
+    private ?bool $check_ms_graph = false;
 
     #[ORM\Column]
     private ?float $conges_credit = null;
@@ -424,6 +424,125 @@ class Agent
     public function setWorkingHours(?string $workingHours): static
     {
         $this->temps = $workingHours;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->commentaires;
+    }
+
+    public function setComment(?string $commentaires): static
+    {
+        $this->commentaires = $commentaires;
+
+        return $this;
+    }
+    public function getLastLogin(): ?\DateTime
+    {
+        return $this->last_login;
+    }
+
+    public function setLastLogin(?\DateTime $lastLogin): static
+    {
+        $this->last_login = $lastLogin;
+
+        return $this;
+    }
+
+    public function getInformations(): ?string
+    {
+        return $this->informations;
+    }
+
+    public function setInformations(?string $informations): static
+    {
+        $this->informations = $informations;
+
+        return $this;
+    }
+    
+    public function getRecovery(): ?string
+    {
+        return $this->recup;
+    }
+
+    public function setRecovery(?string $recup): static
+    {
+        $this->recup = $recup;
+
+        return $this;
+    }
+    
+    public function getMailsResponsables(): ?string
+    {
+        return $this->mails_responsables;
+    }
+
+    public function setMailsResponsables(?string $mailsResponsables): static
+    {
+        $this->mails_responsables = $mailsResponsables;
+
+        return $this;
+    }
+
+    public function isCheckHamac(): ?bool
+    {
+        return $this->check_hamac;
+    }
+
+    public function setCheckHamac(?bool $checkHamac): static
+    {
+        $this->check_hamac = $checkHamac;
+
+        return $this;
+    }
+
+    public function isCheckMsGraph(): ?bool
+    {
+        return $this->check_ms_graph;
+    }
+
+    public function setCheckMsGraph(?bool $checkMsGraph): static
+    {
+        $this->check_ms_graph = $checkMsGraph;
+
+        return $this;
+    }
+
+    public function getMatricule(): ?string
+    {
+        return $this->matricule;
+    }
+
+    public function setMatricule(?string $matricule): static
+    {
+        $this->matricule = $matricule;
+
+        return $this;
+    }
+
+    public function getIcs(): ?string
+    {
+        return $this->check_ics;
+    }
+
+    public function setIcs(?string $check_ics): static
+    {
+        $this->check_ics = $check_ics;
+
+        return $this;
+    }
+
+    public function getUrlIcs(): ?string
+    {
+        return $this->url_ics;
+    }
+
+    public function setUrlIcs(?string $url_ics): static
+    {
+        $this->url_ics = $url_ics;
 
         return $this;
     }
