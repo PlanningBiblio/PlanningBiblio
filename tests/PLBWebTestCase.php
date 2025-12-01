@@ -144,4 +144,9 @@ class PLBWebTestCase extends PantherTestCase
 
         return $values;
     }
+
+    protected function restore()
+    {
+        include __DIR__ . '/bootstrap.php';
+    }
 }
