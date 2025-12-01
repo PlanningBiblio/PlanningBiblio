@@ -25,7 +25,11 @@
 | actualRemainder | relicat_actuel |
 | annualCredit | conges_annuel |
 | arrival | arrivee |
+| attachmentNA | so |
+| attachment1 | pj1 |
+| attachment2 | pj2 |
 | blocking | bloquant |
+| calName | cal_name |
 | categories | categories |
 | category | categorie |
 | change | modification | type int (userId) |
@@ -54,12 +58,14 @@
 | holidayRemainder | conges_reliquat |
 | hours | heures |
 | icsCheck | check_ics |
+| iCalKey | ical_key |
 | iCSCode | code_ics |
 | icsUrl | url_ics |
 | id | id |
 | info | supprime | type int (userId) |
 | information | informations |
 | lastLogin | last_login |
+| lastModified | last_modified |
 | lastname | nom | for Agents |
 | line | ligne |
 | lock{1,2} | verrou{1,2} |
@@ -73,6 +79,8 @@
 | msGraphCheck | check_ms_graph |
 | number | numero |
 | password | password |
+| originId | id_origin |
+| otherReason | motif_autre |
 | position | poste |
 | previousAnticipation | anticipation_prec |
 | previousCompTime | recup_prec |
@@ -84,12 +92,15 @@
 | rank | rang |
 | recoveryMenu | recup |
 | service | service |
+| reason | motif |
+| requestDate | demande |
+| rRule| rrule |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |
 | start | debut |
 | statistics | statistiques |
-| status | statut |
+| status | etat, statut |
 | table | tableau |
 | teleworking | teleworking |
 | user | agent |

@@ -19,19 +19,19 @@ class Config
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $type = null;
+    private ?string $type = 'text';
 
     #[ORM\Column(length: 255)]
     private ?string $valeur = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $commentaires = null;
+    private ?string $commentaires = '';
 
     #[ORM\Column(length: 255)]
-    private ?string $categorie = null;
+    private ?string $categorie = '';
 
     #[ORM\Column(length: 255)]
-    private ?string $valeurs = null;
+    private ?string $valeurs = '';
 
     #[ORM\Column]
     private ?bool $technical = false;
@@ -40,7 +40,7 @@ class Config
     private ?string $extra = null;
 
     #[ORM\Column]
-    private ?int $ordre = null;
+    private ?int $ordre = 0;
 
     public function getId(): ?int
     {

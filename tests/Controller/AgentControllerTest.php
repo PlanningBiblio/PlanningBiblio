@@ -9,7 +9,7 @@ class AgentControllerTest extends PLBWebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
+        $this->setParam('Hamac-csv', '');
         $this->builder->delete(Agent::class);
     }
 

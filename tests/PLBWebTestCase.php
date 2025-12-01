@@ -25,6 +25,7 @@ class PLBWebTestCase extends PantherTestCase
             ->findOneBy(['nom' => $name]);
 
         $param->setValue($value);
+
         $this->entityManager->persist($param);
         $this->entityManager->flush();
     }
@@ -101,7 +102,6 @@ class PLBWebTestCase extends PantherTestCase
     {
         $this->client->request('GET', '/logout');
     }
-
 
     protected function jqueryAjaxFinished(): callable
     {
