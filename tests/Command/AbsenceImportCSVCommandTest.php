@@ -57,31 +57,30 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
     public function testAgent(): void
     {
 
-        $alice = $this->builder->build(Agent::class, [
+        $this->builder->build(Agent::class, [
             'login' => 'alice', 'mail' => 'alice@example.com', 'nom' => 'Doe', 'prenom' => 'Alice',
             'supprime' => 0, 'check_hamac' => 1, 'matricule' => '0000000ff040'
         ]);
-        $jdevoe = $this->builder->build(Agent::class, array(
+        $this->builder->build(Agent::class, [
             'login' => 'jdevoe', 'mail' => 'jdevoe@example.com', 'nom' => 'Devoe', 'prenom' => 'John',
             'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000ee490'
-        ));
-        $abreton = $this->builder->build(Agent::class, array(
+        ]);
+        $this->builder->build(Agent::class, [
             'login' => 'abreton', 'mail' => 'abreton@example.com', 'nom' => 'Breton', 'prenom' => 'Aubert',
             'supprime' => 1,'check_hamac' => 1, 'matricule' => '0000000ee493'
-        ));
-        $kboivin = $this->builder->build(Agent::class, array(
+        ]);
+        $this->builder->build(Agent::class, [
             'login' => 'kboivin', 'mail' => 'kboivin@example.com', 'nom' => 'Boivin', 'prenom' => 'Karel',
             'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000ee856'
-        ));
+        ]);
 
         $countBefore = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM absences");
-        $this->assertSame(0, (int)$countBefore, '0 absence should be founded');
+        $this->assertSame(0,$countBefore, '0 absence should be founded');
 
         $this->execute();
 
         $countAfter = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM absences");
-
-        $this->assertSame(96, (int)$countAfter, '96 absence should be imported');
+        $this->assertSame(96, $countAfter, '96 absence should be imported');
         
         $this->restore();
     }

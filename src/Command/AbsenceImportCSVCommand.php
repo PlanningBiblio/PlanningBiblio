@@ -272,7 +272,6 @@ class AbsenceImportCSVCommand extends Command
             $finDate = preg_replace('/(\d+)\/(\d+)\/(\d+) (\d+:\d+:\d+)/', "$3-$2-$1 $4", $tab[3]);
             $debut = new \DateTime($debutDate);
             $fin = new \DateTime($finDate);
-
             $commentaires = $tab[1];
 
             $log_info = "agent=" . $perso_id;

@@ -24,13 +24,8 @@ class PLBWebTestCase extends PantherTestCase
             ->getRepository(Config::class)
             ->findOneBy(['nom' => $name]);
 
-        if (!$param) {
-            $this->addConfig($name, $value);
-        } else {
-            $param->setValue($value);
-            $this->entityManager->persist($param);
-        }
-
+        $param->setValue($value);
+        $this->entityManager->persist($param);
         $this->entityManager->flush();
     }
 
@@ -107,7 +102,6 @@ class PLBWebTestCase extends PantherTestCase
         $this->client->request('GET', '/logout');
     }
 
-
     protected function jqueryAjaxFinished(): callable
     {
         return static function ($driver): bool {
@@ -153,18 +147,5 @@ class PLBWebTestCase extends PantherTestCase
     protected function restore()
     {
         include __DIR__ . '/bootstrap.php';
-    }
-
-    protected function addConfig($name, $value) {
-        $c = new Config();
-        $c->setName($name);
-        $c->setValue($value);
-        $c->setType('text');
-        $c->setComment('');
-        $c->setCategory('test');
-        $c->setValues('');
-        $c->setTechnical(0);
-        $c->setOrder(0);
-        $this->entityManager->persist($c);
     }
 }
