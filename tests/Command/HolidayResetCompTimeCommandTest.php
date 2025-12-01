@@ -65,7 +65,7 @@ class HolidayResetCompTimeCommandTest extends PLBWebTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
-            '--not-really' => true
+            '--force' => true
         ]);
 
         $commandTester->assertCommandIsSuccessful();
