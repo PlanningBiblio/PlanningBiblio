@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Agent;
 use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -14,7 +15,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 require_once __DIR__ . '/../../legacy/Common/function.php';
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
-require_once(__DIR__ . '/../../legacy/Common/db.php');
 
 #[AsCommand(
     name: 'app:holiday:reset:credits',
@@ -35,13 +35,19 @@ class HolidayResetCreditsCommand extends Command
         $this
             ->addOption('force', null, InputOption::VALUE_NONE, 'Force: Does not require confirmation')
         ;
+        $this->addOption(
+            'not-really',
+            null,
+            InputOption::VALUE_NONE,
+            'for testing'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (!$input->getOption('force')) {
+        if (!$input->getOption('force') && !$input->getOption('not-really')) {
             $message_confirm='Do you really want to delete holidays credits ? All users will be affected !';
             $confirm = $io->confirm($message_confirm, false);
 
@@ -49,7 +55,7 @@ class HolidayResetCreditsCommand extends Command
                 $io->warning('Operation cancelled.');
                 return Command::SUCCESS;
             }
-	}
+	    }
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
         $transferCompTime = (bool) !empty($config['Conges-transfer-comp-time']);
@@ -81,24 +87,21 @@ class HolidayResetCreditsCommand extends Command
         }
 
         // Modifie les crédits
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
+        $agents = $this->entityManager->getRepository(Agent::class);
+
         if ($transferCompTime) {
-            $db->update('personnel', 'conges_reliquat=(conges_credit+comp_time)');
+            $agents->holidayCreditAndCompTimeToRemainder();
         } else {
-            $db->update('personnel', 'conges_reliquat=conges_credit');
+            $agents->holidayCreditToRemainder();
         }
+
         if ($transferCompTime) {
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update('personnel', 'comp_time="0.00"');
+            $agents->holidayResetCompTime();
         }
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->update('personnel', 'conges_credit=(conges_annuel-conges_anticipation)');
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->update('personnel', 'conges_anticipation=0.00');
+
+        $agents->holidayResetCredit();
+
+        $this->entityManager->flush();
 
         if ($output->isVerbose()) {
             $io->success('Reset the credits for holiday successfully!');
