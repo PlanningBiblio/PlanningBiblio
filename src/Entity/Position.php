@@ -211,7 +211,7 @@ class Position
         return $this->supprime;
     }
 
-    public function setDelete(\DateTime $delete): static
+    public function setDelete(?\DateTime $delete): static
     {
         $this->supprime = $delete;
 
