@@ -396,4 +396,15 @@ class AgentRepository extends EntityRepository
         $sites_array = array_values($sites_array);
         return $sites_array;
     }
+
+    public function holidayResetCompTime()
+    {
+        $builder = $this->getEntityManager()->createQueryBuilder();
+
+        $query = $builder->update(Agent::class, 'a')
+            ->set('a.comp_time', 0)
+            ->getQuery();
+
+        $query->execute();
+    }
 }
