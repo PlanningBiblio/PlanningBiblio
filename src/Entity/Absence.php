@@ -175,45 +175,45 @@ class Absence
         return $this->demande;
     }
 
-    public function setRequestDate(?\DateTime $request_date): static
+    public function setRequestDate(?\DateTime $requestDate): static
     {
-        $this->demande = $request_date;
+        $this->demande = $requestDate;
 
         return $this;
     }
 
-    public function getMotivation(): ?string
+    public function getReason(): ?string
     {
         return $this->motif;
     }
 
-    public function setMotivation(?string $motivation): static
+    public function setReason(?string $reason): static
     {
-        $this->motif = $motivation;
+        $this->motif = $reason;
 
         return $this;
     }
 
-    public function getOtherMotivation(): ?string
+    public function getOtherReason(): ?string
     {
         return $this->motif_autre;
     }
 
-    public function setOtherMotivation(?string $otherMotivation): static
+    public function setOtherReason(?string $otherReason): static
     {
-        $this->motif_autre = $otherMotivation;
+        $this->motif_autre = $otherReason;
 
         return $this;
     }
 
-    public function getState(): ?string
+    public function getStatus(): ?string
     {
         return $this->etat;
     }
 
-    public function setState(?string $state): static
+    public function setStatus(?string $status): static
     {
-        $this->etat = $state;
+        $this->etat = $status;
 
         return $this;
     }
@@ -266,14 +266,14 @@ class Absence
         return $this;
     }
 
-    public function getSignatureRequired(): ?int
+    public function getAttachmentNA(): ?int
     {
         return $this->so;
     }
 
-    public function setSignatureRequired(?int $signatureRequired): static
+    public function setAttachmentNA(?int $attachmentNA): static
     {
-        $this->so = $signatureRequired;
+        $this->so = $attachmentNA;
 
         return $this;
     }
@@ -290,26 +290,26 @@ class Absence
         return $this;
     }
 
-    public function getCalendarName(): ?string
+    public function getCalName(): ?string
     {
         return $this->cal_name;
     }
 
-    public function setCalendarName(?string $calendarName): static
+    public function setCalName(?string $calName): static
     {
-        $this->cal_name = $calendarName;
+        $this->cal_name = $calName;
 
         return $this;
     }
 
-    public function getICalendarKey(): ?string
+    public function getICalKey(): ?string
     {
         return $this->ical_key;
     }
 
-    public function setICalendarKey(?string $iCalendarKey): static
+    public function setICalKey(?string $iCalKey): static
     {
-        $this->ical_key = $iCalendarKey;
+        $this->ical_key = $iCalKey;
 
         return $this;
     }
@@ -326,26 +326,26 @@ class Absence
         return $this;
     }
 
-    public function getRecurrenceRule(): ?string
+    public function getRRule(): ?string
     {
         return $this->rrule;
     }
 
-    public function setRecurrenceRule(?string $rrule): static
+    public function setRRule(?string $rRule): static
     {
-        $this->rrule = $rrule;
+        $this->rrule = $rRule;
 
         return $this;
     }
 
-    public function getIdOrigin(): ?int
+    public function getOriginId(): ?int
     {
         return $this->id_origin;
     }
 
-    public function setIdOrigin(?int $id_origin): static
+    public function setOriginId(?int $originId): static
     {
-        $this->id_origin = $id_origin;
+        $this->id_origin = $originId;
 
         return $this;
     }

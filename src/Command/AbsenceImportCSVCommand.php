@@ -326,14 +326,14 @@ class AbsenceImportCSVCommand extends Command
                 $absi->setUser($insert['perso_id']);
                 $absi->setValidLevel2($insert['valide']);
                 $absi->setValidLevel1($insert['valide_n1']);
-                $absi->setMotivation($insert['motif']);
+                $absi->setReason($insert['motif']);
                 $absi->setComment($insert['commentaires']);
-                $absi->setCalendarName($insert['cal_name']);
-                $absi->setICalendarKey($insert['ical_key']);
+                $absi->setCalName($insert['cal_name']);
+                $absi->setICalKey($insert['ical_key']);
                 $absi->setUid($insert['uid']);
-                $absi->setOtherMotivation($insert['motif_autre'] ?? '');
-                $absi->setState($insert['etat'] ?? '');
-                $absi->setIdOrigin($insert['id_origin'] ?? 0);
+                $absi->setOtherReason($insert['motif_autre'] ?? '');
+                $absi->setStatus($insert['etat'] ?? '');
+                $absi->setOriginId($insert['id_origin'] ?? 0);
                 $this->entityManager->persist($absi);
 
                 if ($debug) {
@@ -373,14 +373,14 @@ class AbsenceImportCSVCommand extends Command
                 $absu->setUser($update['perso_id'] ?? null);
                 $absu->setValidLevel2($update['valide'] ?? 0);
                 $absu->setValidLevel1($update['valide_n1'] ?? 0);
-                $absu->setMotivation($update['motif'] ?? '');
+                $absu->setReason($update['motif'] ?? '');
                 $absu->setComment($update['commentaires'] ?? '');
-                $absu->setCalendarName('hamac');
-                $absu->setICalendarKey($update['ical_key'] ?? null);
+                $absu->setCalName('hamac');
+                $absu->setICalKey($update['ical_key'] ?? null);
                 $absu->setUid($update['uid'] ?? null);
-                $absu->setOtherMotivation($update['motif_autre'] ?? '');
-                $absu->setState($update['etat'] ?? '');
-                $absu->setIdOrigin($update['id_origin'] ?? 0);
+                $absu->setOtherReason($update['motif_autre'] ?? '');
+                $absu->setStatus($update['etat'] ?? '');
+                $absu->setOriginId($update['id_origin'] ?? 0);
 
                 if ($debug) {
                     $this->log("Absence changée dans la base de donnée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
