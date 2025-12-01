@@ -23,7 +23,11 @@
 | actualCredit | solde_actuel |
 | actualRemainder | relicat_actuel |
 | annualCredit | conges_annuel |
+| attachmentNA | so |
+| attachment1 | pj1 |
+| attachment2 | pj2 |
 | blocking | bloquant |
+| calName | cal_name |
 | categories | categories |
 | category | categorie |
 | change | modification | type int (userId) |
@@ -44,9 +48,11 @@
 | halfDayEnd | end_halfday |
 | halfDayStart | start_halfday |
 | hours | heures |
+| iCalKey | ical_key |
 | iCSCode | code_ics |
 | id | id |
 | info | supprime | type int (userId) |
+| lastModified | last_modified |
 | lastname | nom | for Agents |
 | line | ligne |
 | lock{1,2} | verrou{1,2} |
@@ -57,6 +63,8 @@
 | mandatory | obligatoire |
 | modelId | model_id |
 | number | numero |
+| originId | id_origin |
+| otherReason | motif_autre |
 | position | poste |
 | previousAnticipation | anticipation_prec |
 | previousCompTime | recup_prec |
@@ -64,11 +72,15 @@
 | previousRemainder | relicat_prec |
 | quotaSP | quota_sp |
 | rank | rang |
+| reason | motif |
+| requestDate | demande |
+| rRule| rrule |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |
 | start | debut |
 | statistics | statistiques |
+| status | etat |
 | table | tableau |
 | teleworking | teleworking |
 | user | agent |
