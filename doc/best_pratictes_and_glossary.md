@@ -29,11 +29,14 @@
 | attachment1 | pj1 |
 | attachment2 | pj2 |
 | blocking | bloquant |
+| breaktime | breaktime |
 | calName | cal_name |
 | categories | categories |
 | category | categorie |
-| change | modification | type int (userId) |
+| change | modification or modif | type int (userId) |
+| changeDate | modification | type DateTime |
 | comment | texte or commentaires |
+| current | actuel |
 | day | jour |
 | debit | debit |
 | delete | supprime | type int (userId) |
@@ -43,6 +46,7 @@
 | end | fin |
 | entry | saisie_par | type int (userId) |
 | entryDate | saisie | type datetime |
+| exception | exception |
 | floor | etage |
 | finished | end | for RecurringAbsence |
 | firstname | prenom |
@@ -64,6 +68,7 @@
 | id | id |
 | info | supprime | type int (userId) |
 | information | informations |
+| key | cle |
 | lastLogin | last_login |
 | lastModified | last_modified |
 | lastname | nom | for Agents |
@@ -78,6 +83,7 @@
 | modelId | model_id |
 | msGraphCheck | check_ms_graph |
 | number | numero |
+| numberOfWeeks | nb_semaine | For WorkingHours |
 | password | password |
 | originId | id_origin |
 | otherReason | motif_autre |
@@ -95,6 +101,7 @@
 | reason | motif |
 | requestDate | demande |
 | rRule| rrule |
+| replace | remplace |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |
