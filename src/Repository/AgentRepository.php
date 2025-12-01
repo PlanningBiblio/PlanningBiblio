@@ -407,4 +407,11 @@ class AgentRepository extends EntityRepository
 
         $query->execute();
     }
+
+    public function holidayResetRemainder()
+    {
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->update(Agent::class, 'a')->set('a.conges_reliquat', 0);
+        $builder->getQuery()->execute();
+    }
 }

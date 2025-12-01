@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Entity\Agent;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,7 +14,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 require_once __DIR__ . '/../../legacy/Common/function.php';
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
-require_once(__DIR__ . '/../../legacy/Common/db.php');
 
 #[AsCommand(
     name: 'app:holiday:reset:remainder',
@@ -20,8 +21,11 @@ require_once(__DIR__ . '/../../legacy/Common/db.php');
 )]
 class HolidayResetRemainderCommand extends Command
 {
-    public function __construct()
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
         parent::__construct();
     }
 
@@ -68,9 +72,9 @@ class HolidayResetRemainderCommand extends Command
         }
 
         // Modifie les crédits
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->update('personnel', array('conges_reliquat' => '0.00'));
+        $this->entityManager->getRepository(Agent::class)->holidayResetRemainder();
+
+        $this->entityManager->flush();
 
         if ($output->isVerbose()) {
             $io->success('Reset the remainders successfully !');

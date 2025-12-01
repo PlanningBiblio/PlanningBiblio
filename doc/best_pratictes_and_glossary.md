@@ -16,6 +16,7 @@
 | name | old name | comment |
 | ---- | -------- | ------- |
 | aCL | droits |
+| active | actif |
 | activities | activites |
 | activity | activite |
 | actualAnticipation | anticipation_actuel |
@@ -23,6 +24,7 @@
 | actualCredit | solde_actuel |
 | actualRemainder | relicat_actuel |
 | annualCredit | conges_annuel |
+| arrival | arrivee |
 | blocking | bloquant |
 | categories | categories |
 | category | categorie |
@@ -32,6 +34,8 @@
 | debit | debit |
 | delete | supprime | type int (userId) |
 | deletion | supprime | for Agents, type int, values 0, 1, 2 |
+| departure | depart |
+| employeeNumber | matricule |
 | end | fin |
 | entry | saisie_par | type int (userId) |
 | entryDate | saisie | type datetime |
@@ -43,10 +47,19 @@
 | halfDay | halfday | type int |
 | halfDayEnd | end_halfday |
 | halfDayStart | start_halfday |
+| hamacCheck | check_hamac |
+| holidayAnticipation | conges_anticipation |
+| holidayCompTime | comp_time |
+| holidayCredit | conges_credit |
+| holidayRemainder | conges_reliquat |
 | hours | heures |
+| icsCheck | check_ics |
 | iCSCode | code_ics |
+| icsUrl | url_ics |
 | id | id |
 | info | supprime | type int (userId) |
+| information | informations |
+| lastLogin | last_login |
 | lastname | nom | for Agents |
 | line | ligne |
 | lock{1,2} | verrou{1,2} |
@@ -54,21 +67,29 @@
 | lunch | lunch |
 | name | nom |
 | manager | responsable |
+| managersMails | mails_responsables |
 | mandatory | obligatoire |
 | modelId | model_id |
+| msGraphCheck | check_ms_graph |
 | number | numero |
+| password | password |
 | position | poste |
 | previousAnticipation | anticipation_prec |
 | previousCompTime | recup_prec |
 | previousCredit | solde_prec |
 | previousRemainder | relicat_prec |
 | quotaSP | quota_sp |
+| weeklyServiceHours | heures_hebdo | For Agent |
+| quotaSP | quota_sp | For Position |
 | rank | rang |
+| recoveryMenu | recup |
+| service | service |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |
 | start | debut |
 | statistics | statistiques |
+| status | statut |
 | table | tableau |
 | teleworking | teleworking |
 | user | agent |
@@ -79,6 +100,7 @@
 | validLevel2Date | validation or validation_n2 |
 | value | valeur |
 | values | valeurs |
+| weeklyWorkingHours | heures_travail | For Agent |
 | workingHours | temps |
 
 ## Migrations
