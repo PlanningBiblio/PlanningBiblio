@@ -11,6 +11,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class HolidayResetCompTimeCommandTest extends PLBWebTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->restore();
+    }
 
     public function testHolidayResetCompTimeCommand(): void
     {
@@ -40,22 +46,22 @@ class HolidayResetCompTimeCommandTest extends PLBWebTestCase
 
         $repo = $this->entityManager->getRepository(Agent::class);
         $aliceBefore = $repo->findOneBy(['login' => 'alice']);
-        $this->assertEquals(14, $aliceBefore->getCompTime(), 'comp_time should be 14');
+        $this->assertEquals(14, $aliceBefore->getHolidayCompTime(), 'comp_time should be 14');
         $alexBefore = $repo->findOneBy(['login' => 'alex']);
-        $this->assertEquals(19.9, $alexBefore->getCompTime(), 'comp_time should be 19');
+        $this->assertEquals(19.9, $alexBefore->getHolidayCompTime(), 'comp_time should be 19');
         $amyBefore = $repo->findOneBy(['login' => 'amy']);
-        $this->assertEquals(24, $amyBefore->getCompTime(), 'comp_time should be 24');
+        $this->assertEquals(24, $amyBefore->getHolidayCompTime(), 'comp_time should be 24');
 
         $this->execute();
         $this->entityManager->clear();
         
         $repo = $this->entityManager->getRepository(Agent::class);
         $aliceAfter = $repo->findOneBy(['login' => 'alice']);
-        $this->assertEquals(0.0, $aliceAfter->getCompTime(), 'After the command comp_time should be 0');
+        $this->assertEquals(0.0, $aliceAfter->getHolidayCompTime(), 'After the command comp_time should be 0');
         $alexAfter = $repo->findOneBy(['login' => 'alex']);
-        $this->assertEquals(0.0, $alexAfter->getCompTime(), 'After the command comp_time should be 0');
+        $this->assertEquals(0.0, $alexAfter->getHolidayCompTime(), 'After the command comp_time should be 0');
         $amyAfter = $repo->findOneBy(['login' => 'amy']);
-        $this->assertEquals(0.0, $amyAfter->getCompTime(), 'After the command comp_time should be 0');
+        $this->assertEquals(0.0, $amyAfter->getHolidayCompTime(), 'After the command comp_time should be 0');
 
         $repo = $this->entityManager->getRepository(Holiday::class);
         $aliceHoliday = $repo->findOneBy(['perso_id' => $alice->getId()]);

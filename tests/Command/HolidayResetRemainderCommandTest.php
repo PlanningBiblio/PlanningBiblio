@@ -11,6 +11,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class HolidayResetRemainderCommandTest extends PLBWebTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->restore();
+    }
+
     public function testResetRemainderCommand(): void
     {
         $alice = $this->builder->build(Agent::class, [
