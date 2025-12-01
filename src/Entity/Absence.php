@@ -109,4 +109,244 @@ class Absence
 
         return $this;
     }
+
+    public function getUid(): ?string
+    {
+        return $this->uid;
+    }
+
+    public function setUid(?string $uid): static
+    {
+        $this->uid = $uid;
+
+        return $this;
+    }
+
+    public function getUser(): ?int
+    {
+        return $this->perso_id;
+    }
+
+    public function setUser(?int $user): static
+    {
+        $this->perso_id = $user;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->commentaires;
+    }
+
+    public function setComment(?string $comment): static
+    {
+        $this->commentaires = $comment;
+
+        return $this;
+    }
+
+    public function getValidLevel1(): ?int
+    {
+        return $this->valide_n1;
+    }
+
+    public function setValidLevel1(?int $validLevel1): static
+    {
+        $this->valide_n1 = $validLevel1;
+
+        return $this;
+    }
+
+    public function getValidLevel2(): ?int
+    {
+        return $this->valide;
+    }
+
+    public function setValidLevel2(?int $validLevel2): ?static
+    {
+        $this->valide = $validLevel2;
+
+        return $this;
+    }
+
+    public function getRequestDate(): ?\DateTime
+    {
+        return $this->demande;
+    }
+
+    public function setRequestDate(?\DateTime $request_date): static
+    {
+        $this->demande = $request_date;
+
+        return $this;
+    }
+
+    public function getMotivation(): ?string
+    {
+        return $this->motif;
+    }
+
+    public function setMotivation(?string $motivation): static
+    {
+        $this->motif = $motivation;
+
+        return $this;
+    }
+
+    public function getOtherMotivation(): ?string
+    {
+        return $this->motif_autre;
+    }
+
+    public function setOtherMotivation(?string $otherMotivation): static
+    {
+        $this->motif_autre = $otherMotivation;
+
+        return $this;
+    }
+
+    public function getState(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setState(?string $state): static
+    {
+        $this->etat = $state;
+
+        return $this;
+    }
+
+    public function getValidLevel2Date(): ?\DateTime
+    {
+        return $this->validation;
+    }
+
+    public function setValidLevel2Date(?\DateTime $validLevel2Date): static
+    {
+        $this->validation = $validLevel2Date;
+
+        return $this;
+    }
+
+    public function getValidLevel1Date(): ?\DateTime
+    {
+        return $this->validation_n1;
+    }
+
+    public function setValidLevel1Date(?\DateTime $validLevel1Date): static
+    {
+        $this->validation_n1 = $validLevel1Date;
+
+        return $this;
+    }
+
+    public function getAttachment1(): ?int
+    {
+        return $this->pj1;
+    }
+
+    public function setAttachment1(?int $attachment1): static
+    {
+        $this->pj1 = $attachment1;
+
+        return $this;
+    }
+
+    public function getAttachment2(): ?int
+    {
+        return $this->pj2;
+    }
+
+    public function setAttachment2(?int $attachment2): static
+    {
+        $this->pj2 = $attachment2;
+
+        return $this;
+    }
+
+    public function getSignatureRequired(): ?int
+    {
+        return $this->so;
+    }
+
+    public function setSignatureRequired(?int $signatureRequired): static
+    {
+        $this->so = $signatureRequired;
+
+        return $this;
+    }
+
+    public function getGroup(): ?string
+    {
+        return $this->groupe;
+    }
+
+    public function setGroup(?string $group): static
+    {
+        $this->groupe = $group;
+
+        return $this;
+    }
+
+    public function getCalendarName(): ?string
+    {
+        return $this->cal_name;
+    }
+
+    public function setCalendarName(?string $calendarName): static
+    {
+        $this->cal_name = $calendarName;
+
+        return $this;
+    }
+
+    public function getICalendarKey(): ?string
+    {
+        return $this->ical_key;
+    }
+
+    public function setICalendarKey(?string $iCalendarKey): static
+    {
+        $this->ical_key = $iCalendarKey;
+
+        return $this;
+    }
+
+    public function getLastModified(): ?string
+    {
+        return $this->last_modified;
+    }
+
+    public function setLastModified(?string $lastModified): static
+    {
+        $this->last_modified = $lastModified;
+
+        return $this;
+    }
+
+    public function getRecurrenceRule(): ?string
+    {
+        return $this->rrule;
+    }
+
+    public function setRecurrenceRule(?string $rrule): static
+    {
+        $this->rrule = $rrule;
+
+        return $this;
+    }
+
+    public function getIdOrigin(): ?int
+    {
+        return $this->id_origin;
+    }
+
+    public function setIdOrigin(?int $id_origin): static
+    {
+        $this->id_origin = $id_origin;
+
+        return $this;
+    }
 }

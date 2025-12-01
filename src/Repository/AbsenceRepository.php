@@ -57,4 +57,17 @@ class AbsenceRepository extends EntityRepository
             rmdir($absenceDocument->upload_dir() . $id);
         }
     }
+
+    public function findIcalKeysAfterEnd(string $end, string $calName): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('a.ical_key')
+            ->where('a.cal_name = :cal_name')
+            ->andWhere('a.fin > :end')
+            ->setParameter('cal_name', $calName)
+            ->setParameter('end', $end);
+
+
+        return $qb->getQuery()->getScalarResult();
+    }
 }
