@@ -8,6 +8,7 @@ use Tests\PLBWebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
+
 class HolidayResetCompTimeCommandTest extends PLBWebTestCase
 {
 
@@ -31,9 +32,9 @@ class HolidayResetCompTimeCommandTest extends PLBWebTestCase
 
         $amy = $this->builder->build(Agent::class, array(
             'login' => 'amy',
-            'conges_credit' => 21.1,
-            'conges_reliquat' => 22.2,
-            'conges_anticipation' => 23,
+            'conges_credit' => 21.11,
+            'conges_reliquat' => 22.22,
+            'conges_anticipation' => 23.33,
             'comp_time' => 24,
         ));
 
@@ -72,10 +73,10 @@ class HolidayResetCompTimeCommandTest extends PLBWebTestCase
 
         $repo = $this->entityManager->getRepository(Holiday::class);
         $amyHoliday = $repo->findOneBy(['perso_id' => $amy->getId()]);
-        $this->assertEquals(21.1, $amyHoliday->getActualCredit(), 'Amy: actualCredit should be 21.1');
+        $this->assertEquals(21.11, $amyHoliday->getActualCredit(), 'Amy: actualCredit should be 21.1');
         $this->assertEquals(0, $amyHoliday->getActualCompTime(), 'Amy: actualCompTime should be 0');
-        $this->assertEquals(22.2, $amyHoliday->getActualRemainder(), 'Amy: actualRemainder should be 22.2');
-        $this->assertEquals(23, $amyHoliday->getActualAnticipation(), 'Amy: actualAnticipation should be 23');
+        $this->assertEquals(22.22, $amyHoliday->getActualRemainder(), 'Amy: actualRemainder should be 22.2');
+        $this->assertEquals(23.33, $amyHoliday->getActualAnticipation(), 'Amy: actualAnticipation should be 23');
 
         $this->restore();
     }
