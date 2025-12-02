@@ -58,24 +58,24 @@ class HolidayResetCompTimeCommandTest extends PLBWebTestCase
 
         $repo = $this->entityManager->getRepository(Holiday::class);
         $aliceHoliday = $repo->findOneBy(['perso_id' => $alice->getId()]);
-        $this->assertEquals(11, $aliceHoliday->getActualCredit(), '');
-        $this->assertEquals(0, $aliceHoliday->getActualCompTime(), '');
-        $this->assertEquals(12, $aliceHoliday->getActualRemainder(), '');
-        $this->assertEquals(13, $aliceHoliday->getActualAnticipation(), '');
+        $this->assertEquals(11, $aliceHoliday->getActualCredit(), 'Alice: actualCredit should be 11');
+        $this->assertEquals(0, $aliceHoliday->getActualCompTime(), 'Alice: actualCompTime should be 0');
+        $this->assertEquals(12, $aliceHoliday->getActualRemainder(), 'Alice: actualRemainder should be 12');
+        $this->assertEquals(13, $aliceHoliday->getActualAnticipation(), 'Alice: actualAnticipation should be 13');
 
         $repo = $this->entityManager->getRepository(Holiday::class);
         $alexHoliday = $repo->findOneBy(['perso_id' => $alex->getId()]);
-        $this->assertEquals(16.6, $alexHoliday->getActualCredit(), '');
-        $this->assertEquals(0, $alexHoliday->getActualCompTime(), '');
-        $this->assertEquals(17.7, $alexHoliday->getActualRemainder(), '');
-        $this->assertEquals(18.8, $alexHoliday->getActualAnticipation(), '');
+        $this->assertEquals(16.6, $alexHoliday->getActualCredit(), 'Alex: actualCredit should be 16.6');
+        $this->assertEquals(0, $alexHoliday->getActualCompTime(), 'Alex: actualCompTime should be 0');
+        $this->assertEquals(17.7, $alexHoliday->getActualRemainder(), 'Alex: actualRemainder should be 17.7');
+        $this->assertEquals(18.8, $alexHoliday->getActualAnticipation(), 'Alex: actualAnticipation should be 18.8');
 
         $repo = $this->entityManager->getRepository(Holiday::class);
         $amyHoliday = $repo->findOneBy(['perso_id' => $amy->getId()]);
-        $this->assertEquals(21.1, $amyHoliday->getActualCredit(), '');
-        $this->assertEquals(0, $amyHoliday->getActualCompTime(), '');
-        $this->assertEquals(22.2, $amyHoliday->getActualRemainder(), '');
-        $this->assertEquals(23, $amyHoliday->getActualAnticipation(), '');
+        $this->assertEquals(21.1, $amyHoliday->getActualCredit(), 'Amy: actualCredit should be 21.1');
+        $this->assertEquals(0, $amyHoliday->getActualCompTime(), 'Amy: actualCompTime should be 0');
+        $this->assertEquals(22.2, $amyHoliday->getActualRemainder(), 'Amy: actualRemainder should be 22.2');
+        $this->assertEquals(23, $amyHoliday->getActualAnticipation(), 'Amy: actualAnticipation should be 23');
 
         $this->restore();
     }

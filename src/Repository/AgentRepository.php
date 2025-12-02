@@ -402,9 +402,9 @@ class AgentRepository extends EntityRepository
         $builder = $this->getEntityManager()->createQueryBuilder();
 
         $query = $builder->update(Agent::class, 'a')
-            ->set('a.comp_time', '0')
+            ->set('a.comp_time', 0)
             ->getQuery();
 
-        $result = $query->execute();
+        $query->execute();
     }
 }
