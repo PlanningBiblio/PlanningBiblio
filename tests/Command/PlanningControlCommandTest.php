@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PlanningControlCommandTest extends PLBWebTestCase
 {
 
-    public function testSomething(): void
+    public function testPlanningControlCommand(): void
     {
         $this->setParam('Rappels-Actifs', 1);
         $this->setParam('Multisites-nombre', 1);
