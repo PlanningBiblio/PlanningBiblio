@@ -44,7 +44,6 @@ function plHebdoCalculHeures(object,num){
     fin3 = 0;
     breaktime = 0;
     
-    
     // Si modification possible (select)
     debut1 = $("input[name*='temps"+num+"["+i+"][0]']").val();
     fin1 = $("input[name*='temps"+num+"["+i+"][1]']").val();
@@ -71,10 +70,15 @@ function plHebdoCalculHeures(object,num){
       diff+=diffMinutes(debut2,fin2);
       diff+=diffMinutes(debut3,fin3);
     }
-    // Journée avec pause le midi (pause 1)
+    // Journée avec pause le midi (pause 1 et fin)
     else if(debut1 && fin1 && debut2 && fin3){
       diff=diffMinutes(debut1,fin1);
       diff+=diffMinutes(debut2,fin3);
+    }
+    // Journée avec pause le midi (pause 1)
+    else if(debut1 && fin1 && debut2 && fin2){
+      diff=diffMinutes(debut1,fin1);
+      diff+=diffMinutes(debut2,fin2);
     }
     // Journée avec pause le midi (pause 2)
     else if(debut1 && fin2 && debut3 && fin3){
