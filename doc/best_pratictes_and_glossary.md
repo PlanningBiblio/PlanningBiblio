@@ -24,10 +24,13 @@
 | actualRemainder | relicat_actuel |
 | annualCredit | conges_annuel |
 | blocking | bloquant |
+| breaktime | breaktime |
 | categories | categories |
 | category | categorie |
-| change | modification | type int (userId) |
+| change | modification or modif | type int (userId) |
+| changeDate | modification | type DateTime |
 | comment | texte or commentaires |
+| current | actuel |
 | day | jour |
 | debit | debit |
 | delete | supprime | type int (userId) |
@@ -35,6 +38,7 @@
 | end | fin |
 | entry | saisie_par | type int (userId) |
 | entryDate | saisie | type datetime |
+| exception | exception |
 | floor | etage |
 | finished | end | for RecurringAbsence |
 | firstname | prenom |
@@ -47,6 +51,7 @@
 | iCSCode | code_ics |
 | id | id |
 | info | supprime | type int (userId) |
+| key | cle |
 | lastname | nom | for Agents |
 | line | ligne |
 | lock{1,2} | verrou{1,2} |
@@ -64,6 +69,7 @@
 | previousRemainder | relicat_prec |
 | quotaSP | quota_sp |
 | rank | rang |
+| replace | remplace |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |
@@ -79,6 +85,7 @@
 | validLevel2Date | validation or validation_n2 |
 | value | valeur |
 | values | valeurs |
+| weekCount | nb_semaine|
 | workingHours | temps |
 
 ## Migrations
