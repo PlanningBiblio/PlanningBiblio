@@ -162,15 +162,14 @@ class PlanningControlCommand extends Command
                                 if (!$config['Rappels-Renfort'] and $postes[$l['poste']]['obligatoire']!="Obligatoire") {
                                     continue;
                                 }
-
                                 // On contrôle si le poste est occupé
                                 // Pour ceci, on execute la requête préparée plus haut avec PDO
                                 $result = $this->entityManager->getRepository(PlanningPosition::class)->findBy([
                                     'date'     => $dateObj,
                                     'site'     => $site[0],
                                     'poste'    => $l['poste'],
-                                    'debut'    => $h['debut'],
-                                    'fin'      => $h['fin'],
+                                    'debut'    => new \DateTime('today ' . $h['debut']),
+                                    'fin'      => new \DateTime('today ' . $h['fin']),
                                     'absent'   => 0,
                                     'supprime' => 0,
                                 ]);
