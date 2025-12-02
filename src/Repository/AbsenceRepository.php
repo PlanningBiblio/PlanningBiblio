@@ -67,6 +67,17 @@ class AbsenceRepository extends EntityRepository
             ->setParameter('cal_name', $calName)
             ->setParameter('end', $end);
 
+        return $qb->getQuery()->getScalarResult();
+    }
+
+    public function getByUserIds(array $userIds, string $calName): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('a')
+            ->where('a.perso_id IN (:userIds)')
+            ->andWhere('a.cal_name = :cal_name')
+            ->setParameter('cal_name', $calName)
+            ->setParameter('userIds', $userIds);
 
         return $qb->getQuery()->getScalarResult();
     }

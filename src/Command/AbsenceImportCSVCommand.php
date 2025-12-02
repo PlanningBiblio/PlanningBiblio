@@ -134,9 +134,10 @@ class AbsenceImportCSVCommand extends Command
         }
 
         $ids_list = array_values($perso_ids);
+        $ids_list_str = implode(',', $ids_list);
 
         if ($debug) {
-            $this->log("\$ids_list = " . implode(',', $ids_list), 'AbsenceImportCSV');
+            $this->log("\$ids_list = " . $ids_list_str, 'AbsenceImportCSV');
 
         }
 
@@ -146,7 +147,7 @@ class AbsenceImportCSVCommand extends Command
         }
 
         $absences = array();
-        $abs= $this->entityManager->getRepository(Absence::class)->findBy(array('cal_name' => 'hamac', 'perso_id' => $ids_list));
+        $abs= $this->entityManager->getRepository(Absence::class)->getByUserIds($ids_list, 'hamac');
         if ($abs) {
             foreach ($abs as $elem) {
                 // On indexe le tableau avec le champ UID qui n'est autre que l'id Hamac
@@ -268,10 +269,8 @@ class AbsenceImportCSVCommand extends Command
 
             $perso_id = $perso_ids[$tab[4]];
             $demande = new \DateTime();
-            $debutDate = preg_replace('/(\d+)\/(\d+)\/(\d+) (\d+:\d+:\d+)/', "$3-$2-$1 $4", $tab[2]);
-            $finDate = preg_replace('/(\d+)\/(\d+)\/(\d+) (\d+:\d+:\d+)/', "$3-$2-$1 $4", $tab[3]);
-            $debut = new \DateTime($debutDate);
-            $fin = new \DateTime($finDate);
+            $debut = \DateTime::createFromFormat('d/m/Y H:i:s', $tab[2]);
+            $fin = \DateTime::createFromFormat('d/m/Y H:i:s', $tab[3]);
             $commentaires = $tab[1];
 
             $log_info = "agent=" . $perso_id;

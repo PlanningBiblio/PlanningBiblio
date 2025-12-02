@@ -1,5 +1,5 @@
 <?php
-//no idea
+
 namespace App\Tests\Command;
 
 use App\Entity\Agent;
