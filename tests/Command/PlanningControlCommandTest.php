@@ -31,9 +31,7 @@ class PlanningControlCommandTest extends PLBWebTestCase
         $this->setParam('Mail-Planning', 'xxx.ss@biblibre.com');
 
         $dt1 = new \DateTime('today 09:00:00');
-        $hms1 = $dt1->format('H:i:s');
         $dt2 = new \DateTime('today 10:00:00');
-        $hms2 = $dt2->format('H:i:s');
 
         $today = new \DateTime('');
         $ppta = $this->builder->build(PlanningPositionTabAffectation::class, [
