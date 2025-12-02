@@ -430,7 +430,7 @@ class PlanningJobController extends BaseController
                         $hours_limit += strtotime($t[1]) - strtotime($t[0]);
                     }
 
-                    $breaktime = isset($breaktimes[$elem['id']][$jour]) ? $breaktimes[$elem['id']][$jour] * 3600 : 0;
+                    $breaktime = isset($breaktimes[$elem['id']][$jour]) ? (float) $breaktimes[$elem['id']][$jour] * 3600 : 0;
                     $hours_limit = $hours_limit - $breaktime;
 
                     if ($day_hour + $requested_hours > $hours_limit) {
