@@ -13,43 +13,28 @@ class HolidayResetRemainderCommandTest extends PLBWebTestCase
 {
     public function testResetRemainderCommand(): void
     {
-        $alice = new Agent();
-        $alice->setLogin('alice');
-        $alice->setLogin('alice');
-        $alice->setMail('alice@example.com');
-        $alice->setFirstname('Doe');
-        $alice->setLastname('Alice');
-        $alice->setStatus('');
-        $alice->setCategory('Titulaire');
-        $alice->setService('');
-        $alice->setArrival(new \DateTime('2021-12-12 00:00:00'));
-        $alice->setDeparture(new \DateTime('2028-12-12 00:00:00'));
-        $alice->setSkills('');
-        $alice->setActive('Actif');
-        $alice->setACL([1,1,1]);
-        $alice->setPassword('password');
-        $alice->setComment('111');
-        $alice->setLastLogin(new \DateTime(''));
-        $alice->setWeeklyServiceHours(0);
-        $alice->setWeeklyWorkingHours(0);
-        $alice->setSites('["3"]' );
-        $alice->setWorkingHours(' [["09:00:00","12:00:00","13:00:00","17:00:00"],["09:00:00","12:00:00","13:00:00","17:00:00"],["09:00:00","12:00:00","13:00:00","17:00:00"],["09:00:00","12:00:00","13:00:00","17:00:00"],["09:00:00","12:00:00","13:00:00","17:00:00"],["","","",""]] ');
-        $alice->setInformations('');
-        $alice->setRecovery('');
-        $alice->setMailsResponsables('');
-        $alice->setCheckHamac(1);
-        $alice->setCheckMsGraph(0);
-        $alice->setDeletion(0);
-        $alice->setHolidayCredit(11);
-        $alice->setCompTime(22);
-        $alice->setAnticipation(33);
-        $this->entityManager->persist($alice);
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-
+        $alice = $this->builder->build(Agent::class, [
+            'login' => 'alice', 'prenom' => 'Alice',
+            'supprime' => 0, 'conges_credit' => 11, 'comp_time' => 22, 'conges_anticipation' =>33 
+        ]);
+        
         $repo = $this->entityManager->getRepository(Agent::class);
-        $this->assertNotNull($repo->findOneBy(['id'=>$alice->getId()]), 'Alice should be persisted in the database.');
-
+        $this->assertEquals(
+            11,
+            $alice->getHolidayCredit(),
+            'Agent HolidayCredit should be 11.'
+        );
+        $this->assertEquals(
+            22,
+            $alice->getHolidayCompTime(),
+            'Agent HolidayCompTime should be 22.'
+        );
+        $this->assertEquals(
+            33,
+            $alice->getHolidayAnticipation(),
+            'Agent HolidayAnticipation should be 33.'
+        );
+        
         $this->execute();
         $this->entityManager->clear();
 
@@ -75,12 +60,13 @@ class HolidayResetRemainderCommandTest extends PLBWebTestCase
             'Holiday actualRemainder should be reset to 0.'
         );
         $repo = $this->entityManager->getRepository(Agent::class);
-        foreach ($repo->findAll() as $agent)
-        $this->assertEquals(
-            0.00,
-            $agent->getRemainder(),
-            'Agent remainder should be reset to 0.'
-        );
+        foreach ($repo->findAll() as $agent){
+            $this->assertEquals(
+                0.00,
+                $agent->getHolidayRemainder(),
+                'Agent remainder should be reset to 0.'
+            );
+        }
         
         $this->restore();
     }
@@ -94,7 +80,7 @@ class HolidayResetRemainderCommandTest extends PLBWebTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
-            '--not-really' => true
+            '--force' => true
         ]);
         $commandTester->assertCommandIsSuccessful();
     }

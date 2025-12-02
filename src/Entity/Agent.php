@@ -164,14 +164,14 @@ class Agent
         return $this;
     }
 
-    public function getAnticipation(): ?float
+    public function getHolidayAnticipation(): ?float
     {
         return $this->conges_anticipation;
     }
 
-    public function setAnticipation(?float $anticipation): static
+    public function setHolidayAnticipation(?float $holidayAnticipation): static
     {
-        $this->conges_anticipation = $anticipation;
+        $this->conges_anticipation = $holidayAnticipation;
 
         return $this;
     }
@@ -200,26 +200,26 @@ class Agent
         return $this;
     }
 
-    public function getCompTime(): ?float
+    public function getHolidayCompTime(): ?float
     {
         return $this->comp_time;
     }
 
-    public function setCompTime(?float $compTime): static
+    public function setHolidayCompTime(?float $holidayCompTime): static
     {
-        $this->comp_time = $compTime;
+        $this->comp_time = $holidayCompTime;
 
         return $this;
     }
 
-    public function getDeletion(): ?int
+    public function getDelete(): ?int
     {
         return $this->supprime;
     }
 
-    public function setDeletion(?int $deletionStatus): static
+    public function setDelete(?int $delete): static
     {
-        $this->supprime = $deletionStatus;
+        $this->supprime = $delete;
 
         return $this;
     }
@@ -332,14 +332,14 @@ class Agent
         return $this;
     }
 
-    public function getRemainder(): ?float
+    public function getHolidayRemainder(): ?float
     {
         return $this->conges_reliquat;
     }
 
-    public function setRemainder(?float $remainder): static
+    public function setHolidayRemainder(?float $holidayRemainder): static
     {
-        $this->conges_reliquat = $remainder;
+        $this->conges_reliquat = $holidayRemainder;
 
         return $this;
     }
@@ -392,26 +392,26 @@ class Agent
         return $this;
     }
 
-    public function getWeeklyServiceHours(): ?string
+    public function getQuotaHours(): ?string
     {
         return $this->heures_hebdo;
     }
 
-    public function setWeeklyServiceHours(?string $weeklyServiceHours): static
+    public function setQuotaHours(?string $quotaHours): static
     {
-        $this->heures_hebdo = $weeklyServiceHours;
+        $this->heures_hebdo = $quotaHours;
 
         return $this;
     }
 
-    public function getWeeklyWorkingHours(): ?float
+    public function getWorkedHours(): ?float
     {
         return $this->heures_travail;
     }
 
-    public function setWeeklyWorkingHours(?float $weeklyWorkingHours): static
+    public function setWorkedHours(?float $workedHours): static
     {
-        $this->heures_travail = $weeklyWorkingHours;
+        $this->heures_travail = $workedHours;
 
         return $this;
     }
@@ -451,98 +451,98 @@ class Agent
         return $this;
     }
 
-    public function getInformations(): ?string
+    public function getInformation(): ?string
     {
         return $this->informations;
     }
 
-    public function setInformations(?string $informations): static
+    public function setInformation(?string $information): static
     {
-        $this->informations = $informations;
+        $this->informations = $information;
 
         return $this;
     }
     
-    public function getRecovery(): ?string
+    public function getRecoveryMenu(): ?string
     {
         return $this->recup;
     }
 
-    public function setRecovery(?string $recup): static
+    public function setRecoveryMenu(?string $recoveryMenu): static
     {
-        $this->recup = $recup;
+        $this->recup = $recoveryMenu;
 
         return $this;
     }
     
-    public function getMailsResponsables(): ?string
+    public function getMailsManagers(): ?string
     {
         return $this->mails_responsables;
     }
 
-    public function setMailsResponsables(?string $mailsResponsables): static
+    public function setMailsManagers(?string $mailsManagers): static
     {
-        $this->mails_responsables = $mailsResponsables;
+        $this->mails_responsables = $mailsManagers;
 
         return $this;
     }
 
-    public function isCheckHamac(): ?bool
+    public function isHamacCheck(): ?bool
     {
         return $this->check_hamac;
     }
 
-    public function setCheckHamac(?bool $checkHamac): static
+    public function setHamacCheck(?bool $hamacCheck): static
     {
-        $this->check_hamac = $checkHamac;
+        $this->check_hamac = $hamacCheck;
 
         return $this;
     }
 
-    public function isCheckMsGraph(): ?bool
+    public function isMsGraphCheck(): ?bool
     {
         return $this->check_ms_graph;
     }
 
-    public function setCheckMsGraph(?bool $checkMsGraph): static
+    public function setMsGraphCheck(?bool $msGraphCheck): static
     {
-        $this->check_ms_graph = $checkMsGraph;
+        $this->check_ms_graph = $msGraphCheck;
 
         return $this;
     }
 
-    public function getMatricule(): ?string
+    public function getEmployeeNumber(): ?string
     {
         return $this->matricule;
     }
 
-    public function setMatricule(?string $matricule): static
+    public function setEmployeeNumber(?string $employeeNumber): static
     {
-        $this->matricule = $matricule;
+        $this->matricule = $employeeNumber;
 
         return $this;
     }
 
-    public function getIcs(): ?string
+    public function getIcsCheck(): ?string
     {
         return $this->check_ics;
     }
 
-    public function setIcs(?string $check_ics): static
+    public function setIcsCheck(?string $icsCheck): static
     {
-        $this->check_ics = $check_ics;
+        $this->check_ics = $icsCheck;
 
         return $this;
     }
 
-    public function getUrlIcs(): ?string
+    public function getIcsUrl(): ?string
     {
         return $this->url_ics;
     }
 
-    public function setUrlIcs(?string $url_ics): static
+    public function setiIcsUrl(?string $icsUrl): static
     {
-        $this->url_ics = $url_ics;
+        $this->url_ics = $icsUrl;
 
         return $this;
     }
