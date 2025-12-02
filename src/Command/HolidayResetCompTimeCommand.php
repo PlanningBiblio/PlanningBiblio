@@ -34,19 +34,13 @@ class HolidayResetCompTimeCommand extends Command
         $this
             ->addOption('force', null, InputOption::VALUE_NONE, 'Force: Does not require confirmation')
         ;
-        $this->addOption(
-            'not-really',
-            null,
-            InputOption::VALUE_NONE,
-            'for testing'
-        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (!$input->getOption('force') && !$input->getOption('not-really')) {
+        if (!$input->getOption('force')) {
             $message_confirm='Do you really want to delete compansatory time credits ? All users will be affected !';
             $confirm = $io->confirm($message_confirm, false);
 
