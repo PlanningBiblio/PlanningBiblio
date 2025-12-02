@@ -402,10 +402,10 @@ class AgentRepository extends EntityRepository
         $builder = $this->getEntityManager()->createQueryBuilder();
 
         $query = $builder->update(Agent::class, 'a')
-            ->set('a.comp_time', '0')
+            ->set('a.comp_time', 0)
             ->getQuery();
 
-        $result = $query->execute();
+        $query->execute();
     }
 
     public function holidayCreditAndCompTimeToRemainder()
@@ -416,7 +416,7 @@ class AgentRepository extends EntityRepository
             ->set('a.conges_reliquat', 'a.conges_credit + a.comp_time')
             ->getQuery();
 
-        $result = $query->execute();
+        $query->execute();
     }
 
     public function holidayCreditToRemainder()
@@ -427,7 +427,7 @@ class AgentRepository extends EntityRepository
             ->set('a.conges_reliquat', 'a.conges_credit')
             ->getQuery();
 
-        $result = $query->execute();
+        $query->execute();
     }
 
     public function holidayResetCredit()
@@ -436,10 +436,10 @@ class AgentRepository extends EntityRepository
 
         $query = $builder->update(Agent::class, 'a')
             ->set('a.conges_credit', 'a.conges_annuel - a.conges_anticipation')
-            ->set('a.conges_anticipation', '0')
+            ->set('a.conges_anticipation', 0)
             ->getQuery();
 
-        $result = $query->execute();
+        $query->execute();
     }
 
     public function holidayResetReminder()
