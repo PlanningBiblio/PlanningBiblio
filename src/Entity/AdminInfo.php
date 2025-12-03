@@ -15,10 +15,10 @@ class AdminInfo
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    protected ?string $debut = null;
+    protected ?\DateTime $debut = null;
 
     #[ORM\Column(length: 255)]
-    protected ?string $fin = null;
+    protected ?\DateTime $fin = null;
 
     #[ORM\Column(type: Types::TEXT)]
     protected ?string $texte = null;
@@ -28,24 +28,24 @@ class AdminInfo
         return $this->id;
     }
 
-    public function getStart(): ?string
+    public function getStart(): ?\DateTime
     {
         return $this->debut;
     }
 
-    public function setStart(?string $start): static
+    public function setStart(?\DateTime $start): static
     {
         $this->debut = $start;
 
         return $this;
     }
 
-    public function getEnd(): ?string
+    public function getEnd(): ?\DateTime
     {
         return $this->fin;
     }
 
-    public function setEnd(?string $end): static
+    public function setEnd(?\DateTime $end): static
     {
         $this->fin = $end;
 
