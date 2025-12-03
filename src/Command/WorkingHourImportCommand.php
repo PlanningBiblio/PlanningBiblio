@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Config;
+use App\Entity\WorkingHour;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -210,36 +211,35 @@ class WorkingHourImportCommand extends Command
                 if (is_array($semaine)) {
                     $cles[] = $semaine['cle'];
                     $temps = json_encode($semaine['temps']);
-                    $tab[] =  array(":perso_id"=>$perso['perso_id'], ":debut"=>$semaine['debut'], ":fin"=>$semaine['fin'], ":temps"=>$temps,":cle"=>$semaine['cle']);
+                    $tab[] = array("perso_id"=>$perso['perso_id'], "debut"=>$semaine['debut'], "fin"=>$semaine['fin'], "temps"=>$temps,"cle"=>$semaine['cle']);
                 }
             }
         }
-
-
         // $cles_db : tableau contenant les clé des éléments de la base de données pour comparaison avec le fichier
         $cles_db = array();
 
         // Recherche des éléments déjà importés
         $tab_db=array();
-        $db = new \db();
-        $db->select2("planning_hebdo", null, array('cle'=>'>0'));
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $tab_db[$elem['cle']] = $elem;
-                $cles_db[] = $elem['cle'];
-            }
-        }
 
+        $workingHours = $this->entityManager->getRepository(Workinghour::class)->findBy(['cle' => 0]);
+        foreach ($workingHours as $wh) {
+            $tab_db[$wh->getKey()] = $wh;
+            $cles_db[] = $wh->getKey();
+        }
 
         // Insertion des nouvelles valeurs ou valeurs modifiées
         $insert = array();
         foreach ($tab as $elem) {
-            if (!in_array($elem[":cle"], $cles_db)) {
-                if ($elem[':debut'] <= date('Y-m-d') and $elem[':fin'] >= date('Y-m-d')) {
-                    $elem[':actuel'] = "1";
+            if (!in_array($elem["cle"], $cles_db)) {
+                if ($elem['debut'] <= date('Y-m-d') and $elem['fin'] >= date('Y-m-d')) {
+                    $elem['actuel'] = '1';
                 } else {
-                    $elem[':actuel'] = "0";
+                    $elem['actuel'] = '0';
                 }
+                $elem['saisie'] = new \DateTime();
+                $elem['valide'] = 99999;
+                $elem['validation'] = new \DateTime();
+                $elem['nb_semaine'] = 1;
                 $insert[]=$elem;
             }
         }
@@ -248,17 +248,24 @@ class WorkingHourImportCommand extends Command
         $nb = count($insert);
 
         if ($nb > 0) {
-            $db=new \dbh();
-            $db->CSRFToken = $CSRFToken;
-            $db->prepare("INSERT INTO `{$config['dbprefix']}planning_hebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `cle`, `nb_semaine`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :cle, 1);");
-            foreach ($insert as $elem) {
-                $db->execute($elem);
-            }
-
-            if (!$db->error) {
+            try {
+                foreach ($insert as $elem) {
+                    $WorkingHour= new WorkingHour();
+                    $WorkingHour->setUser($elem['perso_id']);
+                    $WorkingHour->setStart(new \DateTime($elem['debut']));
+                    $WorkingHour->setEnd(new \DateTime($elem['fin']));
+                    $WorkingHour->setTime($elem['temps']);
+                    $WorkingHour->setEntry($elem['saisie']);
+                    $WorkingHour->setValideLevel2($elem['valide']);
+                    $WorkingHour->setDateValideLevel2($elem['validation']);
+                    $WorkingHour->setCurrent($elem['actuel']);
+                    $WorkingHour->setKey($elem['cle']);
+                    $WorkingHour->setWeekCount($elem['nb_semaine']);
+                    $this->entityManager->persist($WorkingHour);
+                }
                 $this->log("$nb éléments importés", 'WorkingHourImport');
-            } else {
-                $this->log('Une erreur est survenue pendant l\'importation', 'WorkingHourImport');
+            } catch (\Exception $e) {
+                $this->log('Une erreur est survenue pendant l\'importation : '. $e->getMessage(), 'WorkingHourImport');
             }
         } else {
             $this->log('There is nothing to import', 'WorkingHourImport');
@@ -268,7 +275,7 @@ class WorkingHourImportCommand extends Command
         $delete = array();
         foreach ($cles_db as $elem) {
             if (!in_array($elem, $cles)) {
-                $delete[]=array(":cle"=>$elem);
+                $delete[] = ["cle" => $elem];
             }
         }
 
@@ -276,21 +283,22 @@ class WorkingHourImportCommand extends Command
         $nb = count($delete);
 
         if ($nb >0) {
-            $db=new \dbh();
-            $db->CSRFToken = $CSRFToken;
-            $db->prepare("DELETE FROM `{$config['dbprefix']}planning_hebdo` WHERE `cle`=:cle;");
-            foreach ($delete as $elem) {
-                $db->execute($elem);
-            }
-
-            if (!$db->error) {
+            try {
+                foreach ($delete as $elem) {
+                    $WorkingHourDelete = $this->entityManager->getRepository(Workinghour::class)->findBy(['cle' => $elem['cle']]);
+                    foreach ($WorkingHourDelete as $wh) {
+                        $this->entityManager->remove($wh);
+                    }
+                }
                 $this->log("$nb éléments supprimés", 'WorkingHourImport');
-            } else {
-                $this->log('Une erreur est survenue lors de la suppression d\'éléments', 'WorkingHourImport');
+            } catch (\Exception $e) {
+                $this->log('Une erreur est survenue lors de la suppression d\'éléments : '. $e->getMessage(), 'WorkingHourImport');
             }
         } else {
             $this->log('There are no items to delete', 'WorkingHourImport');
         }
+
+        $this->entityManager->flush();
 
         // Unlock
         unlink($lockFile);
