@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Doctrine\ORM\EntityManagerInterface;
 
-require_once __DIR__ . '/../../public/include/function.php';
+require_once __DIR__ . '/../../legacy/Common/function.php';
 require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
 #[AsCommand(
@@ -46,12 +46,12 @@ class WorkingHourDailyCommand extends Command
             $perso_id=$elem['perso_id'];
             $planningHebdoActuel = $this->entityManager->getRepository(Workinghour::class)->findBy(['perso_id' => $perso_id]);
             foreach($planningHebdoActuel AS $pla) {
-                $pla->setActuel(0);
+                $pla->setCurrent(0);
                 $this->entityManager->persist($pla);
             }
             $planningHebdo=$this->entityManager->getRepository(Workinghour::class)->find($id);
             if($planningHebdo) {
-                $planningHebdo->setActuel(1);
+                $planningHebdo->setCurrent(1);
                 $this->entityManager->persist($planningHebdo);
             }
         }

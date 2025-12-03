@@ -85,7 +85,7 @@
 | validLevel2Date | validation or validation_n2 |
 | value | valeur |
 | values | valeurs |
-| weekCount | nb_semaine|
+| weekCount | nb_semaine |
 | workingHours | temps |
 
 ## Migrations
