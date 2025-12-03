@@ -278,13 +278,17 @@ class CJICS
         $events_with_recurrence_id = array();
 
         foreach ($events as $elem) {
+            if (empty($elem['UID'])) {
+                continue; 
+            }
+
             // Add LAST-MODIFIED = Now, if this attribute doesn't exist (missing in Hamac)
             if (empty($elem['LAST-MODIFIED'])) {
                 $elem['LAST-MODIFIED'] = $now;
             }
             // Add STATUS = "CONFIRMED", if this attribute doesn't exist (missing in Hamac)
             if (empty($elem['STATUS'])) {
-                $elem['STATUS'] = "CONFIRMED";
+                $elem['STATUS'] = 'CONFIRMED';
             }
 
             // Isolate events that contain RECURRENCE-ID
@@ -297,11 +301,12 @@ class CJICS
                 $elem['UID'] = $elem['UID'] . '_' . $elem['DTSTART'];
             }
 
-            $key=$elem['UID']."_".$elem['DTSTART']."_".$elem['LAST-MODIFIED'];
-            $tmp[]=array_merge($elem, array("key"=>$key));
+            $key = $elem['UID'] . '_' . $elem['DTSTART'] . '_' . $elem['LAST-MODIFIED'];
+
+            $tmp[] = array_merge($elem, ['key' => $key]);
         }
 
-        $events=array();
+        $events = [];
         foreach ($tmp as $elem) {
 
             // Run custom exclusions

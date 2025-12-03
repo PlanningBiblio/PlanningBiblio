@@ -185,9 +185,17 @@ class AgentController extends BaseController
 
     #[Route(path: '/agent/add', name: 'agent.add', methods: ['GET'])]
     #[Route(path: '/agent/{id<\d+>}', name: 'agent.edit', methods: ['GET'])]
-    public function add(Request $request)
+    public function edit(Request $request)
     {
         $id = $request->get('id');
+
+        if ($id) {
+            $agent = $this->entityManager->getRepository(Agent::class)->find($id);
+        } else {
+            $agent = new Agent();
+        }
+        // TODO : use $agent for edit and add. Default values will be set by App\Entity\Agent, therefore, we won't need to initialize them with "if ($id)" / "else" on line 296+
+
         $CSRFSession = $GLOBALS['CSRFSession'];
         $lang = $GLOBALS['lang'];
         $currentTab = '';
@@ -283,7 +291,6 @@ class AgentController extends BaseController
         $acces = array();
         $postes_attribues = array();
         $recupAgents = array("Prime","Temps");
-
         // récupération des infos de l'agent en cas de modif
         $ics = null;
         if ($id) {
@@ -297,7 +304,7 @@ class AgentController extends BaseController
             $categorie = $db->result[0]['categorie'];
             $check_hamac = $db->result[0]['check_hamac'];
             $mSGraphCheck = $db->result[0]['check_ms_graph'];
-            $check_ics = json_decode($db->result[0]['check_ics'], true);
+            $check_ics = $agent->getIcsCheck();
             $service = $db->result[0]['service'];
             $heuresHebdo = $db->result[0]['heures_hebdo'];
             $heuresTravail = $db->result[0]['heures_travail'];
@@ -361,7 +368,7 @@ class AgentController extends BaseController
             $categorie = null;
             $check_hamac = 0;
             $mSGraphCheck = 0;
-            $check_ics = array(0,0,0);
+            $check_ics = $agent->getIcsCheck();
             $service = null;
             $heuresHebdo = null;
             $heuresTravail = null;

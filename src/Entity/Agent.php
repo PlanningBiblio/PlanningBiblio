@@ -22,22 +22,22 @@ class Agent
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $nom = null;
+    private ?string $nom = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $prenom = null;
+    private ?string $prenom = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $mail = null;
+    private ?string $mail = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $statut = null;
+    private ?string $statut = '';
 
     #[ORM\Column]
-    private ?string $categorie = null;
+    private ?string $categorie = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $service = null;
+    private ?string $service = '';
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $arrivee = null;
@@ -46,61 +46,61 @@ class Agent
     private ?\DateTime $depart = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $postes = null;
+    private ?string $postes = '';
 
     #[ORM\Column]
-    private ?string $actif = null;
+    private ?string $actif = 'Actif';
 
     #[ORM\Column]
-    private ?array $droits = null;
+    private ?array $droits = [];
 
     #[ORM\Column]
-    private ?string $login = null;
+    private ?string $login = '';
 
     #[ORM\Column]
-    private ?string $password = null;
+    private ?string $password = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $commentaires = null;
+    private ?string $commentaires = '';
 
     #[ORM\Column]
     private ?\DateTime $last_login = null;
 
     #[ORM\Column(length: 6)]
-    private ?string $heures_hebdo = null;
+    private ?string $heures_hebdo = '';
 
     #[ORM\Column]
-    private ?float $heures_travail = null;
+    private ?float $heures_travail = 0;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $sites = null;
+    private ?string $sites = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $temps = null;
+    private ?string $temps = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $informations = null;
+    private ?string $informations = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $recup = null;
+    private ?string $recup = '';
 
     #[ORM\Column]
-    private ?int $supprime = null;
+    private ?int $supprime = 0;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $mails_responsables = null;
+    private ?string $mails_responsables = '';
 
     #[ORM\Column]
-    private ?string $matricule = null;
+    private ?string $matricule = '';
 
     #[ORM\Column]
-    private ?string $code_ics = null;
+    private ?string $code_ics = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $url_ics = null;
+    private ?string $url_ics = '';
 
-    #[ORM\Column(length: 10)]
-    private ?string $check_ics = null;
+    #[ORM\Column]
+    private ?array $check_ics = [0,0,0];
 
     #[ORM\Column]
     private ?bool $check_hamac = false;
@@ -523,12 +523,12 @@ class Agent
         return $this;
     }
 
-    public function getIcsCheck(): ?string
+    public function getIcsCheck(): ?array
     {
         return $this->check_ics;
     }
 
-    public function setIcsCheck(?string $icsCheck): static
+    public function setIcsCheck(?array $icsCheck): static
     {
         $this->check_ics = $icsCheck;
 

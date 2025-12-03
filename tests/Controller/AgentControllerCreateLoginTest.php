@@ -10,6 +10,8 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
     {
         parent::setUp();
 
+        $this->setParam('ICS-Server3', 0);
+
         $this->builder->delete(Agent::class);
     }
 
