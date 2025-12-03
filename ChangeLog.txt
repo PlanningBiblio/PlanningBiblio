@@ -1,5 +1,9 @@
 *** Unreleased ***
 
+*** Version 22.04.02       (2025.12.03)   ***
+- Fixes
+MT48794: fix workinghour calcul when using pause1
+
 *** Version 22.04.01       (2024-09-27)   ***
 - Fixes
 MT45688: Prevent drag and drop on statedweek plannings when they are locked
