@@ -2,7 +2,6 @@
 
 namespace App\Tests\Command;
 
-use DateTime;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,21 +17,21 @@ class WorkingHourDailyCommandTest extends PLBWebTestCase
             'perso_id' => 1,
             'actuel' => 0,
             'valide' => 1,
-            'debut' => new DateTime("2000-01-01"),
+            'debut' => new \DateTime("2000-01-01"),
         )); 
 
         $WorkingHour2 = $this->builder->build(WorkingHour::class,array(
             'perso_id' => 1,
             'actuel' => 1,
             'valide' => 1,
-            'debut' => new DateTime("2000-01-01"),
+            'debut' => new \DateTime("2000-01-01"),
         )); 
 
         $WorkingHour3 = $this->builder->build(WorkingHour::class,array(
             'perso_id' => 1,
             'actuel' => 0,
             'valide' => 1,
-            'debut' => new DateTime(),
+            'debut' => new \DateTime(),
         )); 
 
         $this->entityManager->persist($WorkingHour1);
