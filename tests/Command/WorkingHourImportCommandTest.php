@@ -19,10 +19,24 @@ class WorkingHourImportCommandTest extends PLBWebTestCase
     {
         parent::setUp();
 
+        $this->restore();
+
         $this->lockFile = sys_get_temp_dir() . '/plannoCSV.lock';
         if (file_exists($this->lockFile)) {
             @unlink($this->lockFile);
         }
+
+        $this->builder->delete(Agent::class);
+
+        $alex = $this->builder->build(Agent::class, [
+            'login' => 'alex', 'mail' => 'alex@example.com', 'nom' => 'alex', 'prenom' => 'Alice',
+            'supprime' => 0,'matricule' => '0000000ff040'
+        ]);
+
+        $aurelie = $this->builder->build(Agent::class, [
+            'login' => 'aurelie', 'mail' => 'aurelie@example.com', 'nom' => 'aurelie', 'prenom' => 'Alice',
+            'supprime' => 0,'matricule' => '0000000ee490'
+        ]);        
     }
 
     public function testLogin(): void
@@ -31,30 +45,22 @@ class WorkingHourImportCommandTest extends PLBWebTestCase
         $this->setParam('PlanningHebdo-CSV', __DIR__ . '/../data/workingHourImport_login.csv');
         $this->setParam('Multisites-nombre', 1);
 
-        $alex = $this->builder->build(Agent::class, [
-            'login' => 'alex', 'mail' => 'alex@example.com', 'nom' => 'alex', 'prenom' => 'Alice',
-            'supprime' => 0,'matricule' => '0000000ff040'
-        ]);
-        $aurelie = $this->builder->build(Agent::class, [
-            'login' => 'aurelie', 'mail' => 'aurelie@example.com', 'nom' => 'aurelie', 'prenom' => 'Alice',
-            'supprime' => 0,'matricule' => '0000000ee490'
-        ]);
-        
-        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $aurelie->getId()]);
+        $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
+        $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
 
-        $this->assertNull( $whAlex, '');
-        $this->assertNull( $whAurelie, '');
+        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
+
+        $this->assertNull($whAlex, '');
+        $this->assertNull($whAurelie, '');
 
         $this->execute();
 
-        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $aurelie->getId()]);
+        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
 
-        $this->assertNotNull( $whAlex, '');
-        $this->assertNotNull( $whAurelie, '');
-        
-        $this->restore();
+        $this->assertNotNull($whAlex, '');
+        $this->assertNotNull($whAurelie, '');
     }
 
     public function testMail(): void
@@ -63,30 +69,22 @@ class WorkingHourImportCommandTest extends PLBWebTestCase
         $this->setParam('PlanningHebdo-CSV', __DIR__ . '/../data/workingHourImport_mail.csv');
         $this->setParam('Multisites-nombre', 1);
         
-        $alex = $this->builder->build(Agent::class, [
-            'login' => 'alex', 'mail' => 'alex@example.com', 'nom' => 'alex', 'prenom' => 'Alice',
-            'supprime' => 0,'matricule' => '0000000ff040'
-        ]);
-        $aurelie = $this->builder->build(Agent::class, [
-            'login' => 'aurelie', 'mail' => 'aurelie@example.com', 'nom' => 'aurelie', 'prenom' => 'Alice',
-            'supprime' => 0,'matricule' => '0000000ee490'
-        ]);
-        
-        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $aurelie->getId()]);
+        $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
+        $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
 
-        $this->assertNull( $whAlex, '');
-        $this->assertNull( $whAurelie, '');
+        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
+
+        $this->assertNull($whAlex, '');
+        $this->assertNull($whAurelie, '');
 
         $this->execute();
 
-        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $aurelie->getId()]);
+        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
 
-        $this->assertNotNull( $whAlex, '');
-        $this->assertNotNull( $whAurelie, '');
-
-        $this->restore();
+        $this->assertNotNull($whAlex, '');
+        $this->assertNotNull($whAurelie, '');
     }
 
     public function testMatricule(): void
@@ -95,30 +93,22 @@ class WorkingHourImportCommandTest extends PLBWebTestCase
         $this->setParam('PlanningHebdo-CSV', __DIR__ . '/../data/workingHourImport_matricule.csv');
         $this->setParam('Multisites-nombre', 1);
         
-        $alex = $this->builder->build(Agent::class, [
-            'login' => 'alex', 'mail' => 'alex@example.com', 'nom' => 'alex', 'prenom' => 'Alice',
-            'supprime' => 0,'matricule' => '0000000ff040'
-        ]);
-        $aurelie = $this->builder->build(Agent::class, [
-            'login' => 'aurelie', 'mail' => 'aurelie@example.com', 'nom' => 'aurelie', 'prenom' => 'Alice',
-            'supprime' => 0,'matricule' => '0000000ee490'
-        ]);
-        
-        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $aurelie->getId()]);
+        $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
+        $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
 
-        $this->assertNull( $whAlex, '');
-        $this->assertNull( $whAurelie, '');
+        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
+
+        $this->assertNull($whAlex, '');
+        $this->assertNull($whAurelie, '');
 
         $this->execute();
 
-        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(["perso_id"=> $aurelie->getId()]);
+        $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
 
-        $this->assertNotNull( $whAlex, '');
-        $this->assertNotNull( $whAurelie, '');
-
-        $this->restore();
+        $this->assertNotNull($whAlex, '');
+        $this->assertNotNull($whAurelie, '');
     }
 
     private function execute(): void
@@ -134,10 +124,10 @@ class WorkingHourImportCommandTest extends PLBWebTestCase
         ], [
             'verbosity' => OutputInterface::VERBOSITY_VERBOSE
         ]);
+
         $commandTester->assertCommandIsSuccessful();
         $output = $commandTester->getDisplay();
 
         $this->assertStringContainsString('CSV weekly planning import completed: new/updated schedules inserted and obsolete ones purged.', $output);
     }
-
 }
