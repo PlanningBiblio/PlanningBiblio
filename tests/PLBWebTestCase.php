@@ -57,9 +57,13 @@ class PLBWebTestCase extends PantherTestCase
             ->getRepository(Config::class)
             ->findOneBy(['nom' => $name]);
 
-        $param->setValue($value);
+        if (!$param) {
+            $this->addConfig($name, $value);
+        } else {
+            $param->setValue($value);
+            $this->entityManager->persist($param);
+        }
 
-        $this->entityManager->persist($param);
         $this->entityManager->flush();
     }
 
@@ -188,5 +192,18 @@ class PLBWebTestCase extends PantherTestCase
     {
         include __DIR__ . '/bootstrap.php';
         sleep(1);
+    }
+
+    protected function addConfig($name, $value) {
+        $c = new Config();
+        $c->setName($name);
+        $c->setValue($value);
+        $c->setType('text');
+        $c->setComment('');
+        $c->setCategory('test');
+        $c->setValues('');
+        $c->setTechnical(0);
+        $c->setOrder(0);
+        $this->entityManager->persist($c);
     }
 }

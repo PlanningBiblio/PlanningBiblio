@@ -55,19 +55,19 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
-            'sites' => '', 'droits' => array(99,100), 'temps' => json_encode($workinghours)
+            'sites' => '', 'droits' => array(99,100), 'temps' => $workinghours
         ));
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'sites' => '["1","2"]', 'droits' => array(99,100), 'temps' => json_encode($workinghours)
+            'sites' => '["1","2"]', 'droits' => array(99,100), 'temps' => $workinghours
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'sites' => '["1"]', 'droits' => array(99,100), 'temps' => json_encode($workinghours)
+            'sites' => '["1"]', 'droits' => array(99,100), 'temps' => $workinghours
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["2"]', 'droits' => array(202,502,99,100), 'temps' => json_encode($workinghours)
+            'sites' => '["2"]', 'droits' => array(202,502,99,100), 'temps' => $workinghours
         ));
 
         $this->createHolidayFor($jdupont, 2);

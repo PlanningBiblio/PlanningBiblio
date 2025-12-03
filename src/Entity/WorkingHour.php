@@ -13,10 +13,10 @@ class WorkingHour
     #[ORM\Id]
     #[ORM\GeneratedName]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id = 0;
 
     #[ORM\Column]
-    private ?int $perso_id = null;
+    private ?int $perso_id = 0;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $debut = null;
@@ -24,47 +24,47 @@ class WorkingHour
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $fin = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $temps = null;
+    #[ORM\Column]
+    private ?array $temps = [];
 
     #[ORM\Column]
-    private ?array $breaktime = null;
+    private ?array $breaktime = [];
 
     #[ORM\Column]
     private ?\DateTime $saisie = null;
 
     #[ORM\Column]
-    private ?int $modif = null;
+    private ?int $modif = 0;
 
     #[ORM\Column]
     private ?\DateTime $modification = null;
 
     #[ORM\Column]
-    private ?int $valide_n1 = null;
+    private ?int $valide_n1 = 0;
 
     #[ORM\Column]
     private ?\DateTime $validation_n1 = null;
 
     #[ORM\Column]
-    private ?int $valide = null;
+    private ?int $valide = 0;
 
     #[ORM\Column]
     private ?\DateTime $validation = null;
 
     #[ORM\Column]
-    private ?bool $actuel = null;
+    private ?bool $actuel = false;
 
     #[ORM\Column]
-    private ?int $remplace = null;
+    private ?int $remplace = 0;
 
     #[ORM\Column]
-    private ?string $cle = null;
+    private ?string $cle = '';
 
     #[ORM\Column]
-    private ?int $exception = null;
+    private ?int $exception = 0;
 
     #[ORM\Column]
-    private ?int $nb_semaine = null;
+    private ?int $nb_semaine = 1;
 
     public function getId(): ?int
     {
@@ -130,12 +130,12 @@ class WorkingHour
         return $this;
     }
 
-    public function getWorkingHours(): ?string
+    public function getWorkingHours(): ?array
     {
         return $this->temps;
     }
 
-    public function setWorkingHours(?string $workingHours): static
+    public function setWorkingHours(?array $workingHours): static
     {
         $this->temps = $workingHours;
 
@@ -149,7 +149,7 @@ class WorkingHour
 
     public function setEntryDate(?\DateTime $entryDate): static
     {
-        $this->saisie = $entryDate;
+        $this->saisie = $entryDate ?? new \DateTime();
 
         return $this;
     }

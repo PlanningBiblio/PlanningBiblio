@@ -44,7 +44,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'perso_id' => $agent->getId(),
             'debut' => $start,
             'fin' => $end,
-            'temps' => json_encode($workingHours),
+            'temps' => $workingHours,
             'valide_n1' => 0,
             'valide' => 1,
             'nb_semaine' => 1
@@ -458,7 +458,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'perso_id' => $jdevoe->getId(),
             'debut' => $start,
             'fin' => $end,
-            'temps' => json_encode($workingHours),
+            'temps' => $workingHours,
             'valide_n1' => 1,
             'valide' => 1,
             'nb_semaine' => 1
