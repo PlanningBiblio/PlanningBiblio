@@ -75,8 +75,8 @@ class Agent
     #[ORM\Column(type: Types::TEXT)]
     private ?string $sites = '';
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $temps = '';
+    #[ORM\Column]
+    private ?array $temps = [];
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $informations = '';
@@ -416,12 +416,12 @@ class Agent
         return $this;
     }
 
-    public function getWorkingHours(): ?string
+    public function getWorkingHours(): ?array
     {
         return $this->temps;
     }
 
-    public function setWorkingHours(?string $workingHours): static
+    public function setWorkingHours(?array $workingHours): static
     {
         $this->temps = $workingHours;
 
@@ -684,7 +684,7 @@ class Agent
         $config = $GLOBALS['config'];
 
         if (!$config['PlanningHebdo']) {
-            return array('temps' => json_decode($this->temps, true));
+            return array('temps' => $this->temps);
         }
 
         $working_hours = new \planningHebdo();

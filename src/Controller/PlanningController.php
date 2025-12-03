@@ -571,11 +571,7 @@ class PlanningController extends BaseController
                         $week_number = !empty($tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine']) ? $tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine'] : 0 ;
                     } else {
                         $agent = $this->entityManager->find(Agent::class, $elem2['perso_id']);
-                        if (!empty($agent)) {
-                            $temps = json_decode(html_entity_decode($agent->getWorkingHours(), ENT_QUOTES, 'UTF-8'), true);
-                        } else {
-                            $temps = array();
-                        }
+                        $temps = !empty($agent) ? $agent->getWorkingHours() : [];
                     }
 
                     $d = new \datePl($elem);
