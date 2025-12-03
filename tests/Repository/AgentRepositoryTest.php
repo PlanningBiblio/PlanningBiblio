@@ -1,21 +1,42 @@
 <?php
 
-use Tests\FixtureBuilder;
+namespace App\Tests;
 
-use PHPUnit\Framework\TestCase;
 use App\Entity\Agent;
+use PHPUnit\Framework\TestCase;
+use Tests\FixtureBuilder;
 
 class AgentRepositoryTest extends TestCase
 {
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
     private $entityManager;
 
     protected function setUp(): void
     {
         global $entityManager;
         $this->entityManager = $entityManager;
+    }
+
+    public function testGetByDeletion(): void
+    {
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+
+        $agent1 = $builder->build(Agent::class, array('login' => 'Mike', 'supprime' => '0'));
+        $agent2 = $builder->build(Agent::class, array('login' => 'Erik', 'supprime' => '1'));
+        $agent3 = $builder->build(Agent::class, array('login' => 'John', 'supprime' => '2'));
+
+        $repo = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0]);
+        $this->assertEquals(count($repo), 3);
+        $repo = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([1]);
+        $this->assertEquals(count($repo), 1);
+        $repo = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([2]);
+        $this->assertEquals(count($repo), 1);
+        $repo = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1,2]);
+        $this->assertEquals(count($repo), 5);
+        $repo = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);
+        $this->assertEquals(count($repo), 4);
+        $repo = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([1,2]);
+        $this->assertEquals(count($repo), 2);
     }
 
     public function testGetSitesForAgents(){
