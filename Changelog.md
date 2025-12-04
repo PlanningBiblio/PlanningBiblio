@@ -1,5 +1,16 @@
 # Changelog Planno
 
+## Version 25.11.06 (2025-12-04)
+
+### Fixes
+
+- MT51289: Cast breaktime into float in PlanningJobTrait.php #1247
+- MT48794: Fix workinghour calcul when using pause1 #1251
+
+### Dependencies
+
+- Composer update
+
 ## Version 25.11.05 (2025-11-28)
 
 ### Enhancement
