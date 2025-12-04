@@ -41,7 +41,7 @@ class PurgeDataCommandTest extends PLBWebTestCase
 	    for ($i = 0; $i < 11 ; $i ++) {
             $this->builder->build(AbsenceInfo::class,                    ['fin' => $date]);
             $this->builder->build(AdminInfo::class,                      ['fin' => $date]);
-            $this->builder->build(CallForHelp::class,                    ['timestamp' => $date, 'date' => \DateTime::createFromFormat("H:m:s", $date->format('H:m:s')), 'debut' => \DateTime::createFromFormat("H:m:s", $date->format('H:m:s')), 'fin' => \DateTime::createFromFormat("H:m:s",$date->format('H:m:s'))]);
+            $this->builder->build(CallForHelp::class,                    ['timestamp' => $date, 'date' => $date, 'debut' => $date, 'fin' => $date]);
             $this->builder->build(OverTime::class,                       ['date' => $date, 'perso_id'=> 9999]);
             $this->builder->build(Detached::class,                       ['date' => $date, 'perso_id'=> 9999]);
             $this->builder->build(Holiday::class,                        ['fin' => $date, 'perso_id'=> 9999]);
