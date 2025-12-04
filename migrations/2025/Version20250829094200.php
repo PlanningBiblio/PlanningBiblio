@@ -27,4 +27,9 @@ final class Version20250829094200 extends AbstractMigration
     {
         $this->throwIrreversibleMigrationException('Can not rollback DROP TABLE conges_CET / pl_poste_history');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

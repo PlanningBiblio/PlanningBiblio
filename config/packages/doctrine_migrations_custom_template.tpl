@@ -15,7 +15,7 @@ use Doctrine\Migrations\AbstractMigration;
  * - Use appropriate SQL conditions when possible. E.g. CREATE TABLE IF NOT EXISTS, ADD COLUMN IF NOT EXISTS, INSERT IGNORE, etc. You can also use the "skipIf" method.
  * - When you are unable to create the down migration, use $this->throwIrreversibleMigrationException(); in the down function with a comment explaining why.
  * - Some commented lines have been added to help you create your migrations using best practices.
- *   When you are done, please delete all commented lines, including this paragraph and except your own.
+ *   When you are done, please delete all commented lines (except your own), including this paragraph and the method "isTransactional" if not used.
  * 
  * List of available functions:
  * - addSql : add a new query
@@ -28,6 +28,11 @@ use Doctrine\Migrations\AbstractMigration;
  * You can also add preUp, preDown, postUp and postDown methods.
  * 
  * See https://symfony.com/bundles/DoctrineMigrationsBundle/current/index.html
+ *
+ * ATTENTION : 
+ * If your migration ALTER, DROP, or CREATE a table:
+ * - you must use the "public function isTransactional()" with "return false;"
+ * - and create a migration for each modified table
  */
 
 final class <className> extends AbstractMigration
@@ -54,4 +59,9 @@ final class <className> extends AbstractMigration
         // $this->addSql("DELETE FROM {$dbprefix}table_name WHERE ...");
         // $this->addSql("ALTER TABLE {$dbprefix}table_name DROP COLUMN IF EXISTS  ...");
     }
+
+    // public function isTransactional(): bool
+    // {
+    //     return false;
+    // }
 }
