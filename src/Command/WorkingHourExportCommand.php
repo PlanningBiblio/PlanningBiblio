@@ -9,6 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Input\InputOption;
 
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
@@ -30,6 +31,12 @@ class WorkingHourExportCommand extends Command
 
     protected function configure(): void
     {
+        $this->addOption(
+            'not-really',
+            null,
+            InputOption::VALUE_NONE,
+            'for testing'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -37,10 +44,11 @@ class WorkingHourExportCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
-
-        if (file_exists(__DIR__ . '/../../custom_options.php')) {
-            include __DIR__ . '/../../custom_options.php';
-        }
+        if (!$input->getOption('not-really')) {
+            if (file_exists(__DIR__ . '/../../custom_options.php')) {
+                include __DIR__ . '/../../custom_options.php';
+            }
+        } else {}
 
         $CSVFile = $config['PlanningHebdo-ExportFile'] ?? '/tmp/export-planno-edt.csv';
         $days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;
@@ -92,7 +100,7 @@ class WorkingHourExportCommand extends Command
         $end = date('Y-m-d', strtotime("+$days_after days"));
 
         while ($current < $end) {
-
+            
             // Recheche le jour de la semaine (lundi (0) à dimanche (6)) et l'offest (décalage si semaine paire/impaire ou toute autre rotation)
             $d=new \datePl($current);
 
@@ -114,9 +122,10 @@ class WorkingHourExportCommand extends Command
             $p->fin=$current;
             $p->valide=true;
             $p->fetch();
-
+            
             if (!empty($p->elements)) {
                 foreach ($p->elements as $elem) {
+                    
 
                     // Récupération de l'dentifiant de l'agent (ex : login, adresse email ou ID Harpege renseigné dans le champ "matricule")
                     // Si l'identifiant n'est pas renseigné dans Planno (ex : champ matricule vide), nous n'importons pas l'agent (donc continue) (Demande initiale de la société Bodet Software)
