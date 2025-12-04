@@ -21,13 +21,13 @@ class CallForHelp
     private ?int $poste = null;
 
     #[ORM\Column]
-    private ?string $date = null;
+    private ?\DateTime $date = null;
 
     #[ORM\Column]
-    private ?string $debut = null;
+    private ?\DateTime $debut = null;
 
     #[ORM\Column]
-    private ?string $fin = null;
+    private ?\DateTime $fin = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $destinataires = null;
