@@ -31,4 +31,9 @@ final class Version20251114074411 extends AbstractMigration
 
         $this->addSql("ALTER TABLE {$dbprefix}cron DROP COLUMN IF EXISTS `name`;");
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
