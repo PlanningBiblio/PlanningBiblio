@@ -150,7 +150,7 @@ class PurgeDataCommandTest extends PLBWebTestCase
         $this->assertSame(6, $countAfterHolidayInfo                   , '6 should be founded');
         $this->assertSame(6, $countAfterSaturdayWorkingHours          , '6 should be founded');
         $this->assertSame(6, $countAfterIPBlocker                     , '6 should be founded');
-        $this->assertGreaterThanOrEqual(35, $countAfterLog            , 'at least 35 should be founded');//4 plus 29 logs from DataPurger
+        $this->assertSame(35, $countAfterLog                          , '35 should be founded');//4 plus 29 logs from DataPurger
         $this->assertSame(6, $countAfterPlanningNote                  , '6 should be founded');
         $this->assertSame(6, $countAfterPlanningNotification          , '6 should be founded');
         $this->assertSame(6, $countAfterPlanningPosition              , '6 should be founded');
