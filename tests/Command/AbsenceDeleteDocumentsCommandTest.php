@@ -1,12 +1,9 @@
 <?php
-//fini
+
 namespace App\Tests\Command;
 
 use App\Entity\Agent;
-use App\Entity\Absence;
-use App\Entity\ConfigParam;
 use App\Entity\AbsenceDocument;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +13,6 @@ class AbsenceDeleteDocumentsCommandTest extends PLBWebTestCase
 {
     public function testConfigOff_NoDeletion(): void
     {
-
         $this->setParam('Absences-DelaiSuppressionDocuments', 0);
 
         $old = (new AbsenceDocument())
