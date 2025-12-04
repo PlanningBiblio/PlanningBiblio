@@ -1,5 +1,5 @@
 <?php
-//TO BE CONTINUED
+
 namespace App\Tests\Command;
 
 use App\Entity\Absence;
@@ -37,7 +37,7 @@ class AbsenceImportICSCommandTest extends PLBWebTestCase
         $this->assertTrue($exited, 'it should exit if find lock file recent');
     }
 
-    public function testAgent(): void
+    public function testAbsenceImportICSCommand(): void
     {
         $this->setParam('ICS-Server3',1);
 
@@ -47,12 +47,12 @@ class AbsenceImportICSCommandTest extends PLBWebTestCase
         ));
 
         $abs = $this->entityManager->getRepository(Absence::class)->findOneBy(["perso_id"=> $alice->getId()]);
-        $this->assertNull( $abs, '');
+        $this->assertNull( $abs, 'Before command absence of alice should not exist');
 
         $this->execute();
 
         $abs = $this->entityManager->getRepository(Absence::class)->findOneBy(["perso_id"=> $alice->getId()]);
-        $this->assertNotNull( $abs, '');
+        $this->assertNotNull( $abs, 'After command absence of alice should exist');
 
         $alice->setIcsCheck('[0,0,0]');
         $this->entityManager->flush();
@@ -62,7 +62,7 @@ class AbsenceImportICSCommandTest extends PLBWebTestCase
         $this->entityManager->clear();
 
         $abs = $this->entityManager->getRepository(Absence::class)->findOneBy(["perso_id"=> $alice->getId()]);
-        $this->assertNull( $abs, '');
+        $this->assertNull( $abs, 'After changing ics check, absence of alice should not exist');
         
         $this->restore();
     }
