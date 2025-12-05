@@ -218,6 +218,7 @@ class AbsenceImportICSCommand extends Command
                 $ics->CSRFToken = $CSRFToken;
                 $ics->updateTable();
             }
+            sleep($config['ICS-Delay']);
         }
 
         // Unlock
