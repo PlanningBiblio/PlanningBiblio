@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.10.08 (2025-12-05)
+
+### Fixes
+
+- MT51317: Fix migrations errors: trying to commit a transaction#1259
+
 ## Version 25.10.07 (2025-12-04)
 
 ### Fixes
