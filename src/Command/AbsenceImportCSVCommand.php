@@ -147,14 +147,12 @@ class AbsenceImportCSVCommand extends Command
         }
 
         $absences = array();
-        $abs= $this->entityManager->getRepository(Absence::class)->getByUserIds($ids_list, 'hamac');
-        if ($abs) {
-            foreach ($abs as $elem) {
-                // On indexe le tableau avec le champ UID qui n'est autre que l'id Hamac
-                $absences[$elem->getUid()] = $elem;
-                if ($debug) {
-                    $this->log("\$elem->getUid() = " . $elem->getUid() . " - \$absences[\$elem->getUid()] = " . json_encode($absences[$elem->getUid()]), 'AbsenceImportCSV');
-                }
+        $abs = $this->entityManager->getRepository(Absence::class)->getByUserIds($ids_list, 'hamac');
+        foreach ($abs as $elem) {
+            // On indexe le tableau avec le champ UID qui n'est autre que l'id Hamac
+            $absences[$elem->getUid()] = $elem;
+            if ($debug) {
+                $this->log("\$elem->getUid() = " . $elem->getUid() . " - \$absences[\$elem->getUid()] = " . json_encode($absences[$elem->getUid()]), 'AbsenceImportCSV');
             }
         }
 
@@ -198,13 +196,12 @@ class AbsenceImportCSVCommand extends Command
         if (is_numeric($days_before)) {
             $days_before = (int) $days_before;
             $end = date('Y-m-d 00:00:00', strtotime("- $days_before days"));
-            $absx= $this->entityManager->getRepository(Absence::class)->findIcalKeysAfterEnd($end, 'hamac');
+            $absx = $this->entityManager->getRepository(Absence::class)->findIcalKeysAfterEnd($end, 'hamac');
             
-            if (!empty($absx)) {
-                foreach ($absx as $elem) {
-                    $absences_db[] = $elem['ical_key'];
-                }
+            foreach ($absx as $elem) {
+                $absences_db[] = $elem['ical_key'];
             }
+            
         }
 
         // On lit le fichier CSV
@@ -219,7 +216,7 @@ class AbsenceImportCSVCommand extends Command
             if ($tab[0] === null) {
                 continue;
             }
-            
+
             $uid = $tab[0];
             $absences_file[] = $uid;
 
@@ -251,8 +248,8 @@ class AbsenceImportCSVCommand extends Command
 
                 $absd = $this->entityManager->getRepository(Absence::class)->find($absences[$uid]->getId());
 
-                if ($absd) {
-                    $this->entityManager->remove($absd);
+                foreach ($absd as $elem) {
+                    $this->entityManager->remove($elem);
                 }
 
                 continue;
@@ -273,16 +270,16 @@ class AbsenceImportCSVCommand extends Command
             }
 
             $perso_id = $perso_ids[$tab[4]];
-            $demande = new \DateTime();
-            $debut = \DateTime::createFromFormat('d/m/Y H:i:s', $tab[2]);
-            $fin = \DateTime::createFromFormat('d/m/Y H:i:s', $tab[3]);
-            $commentaires = $tab[1];
+            $requestDate = new \DateTime();
+            $start = \DateTime::createFromFormat('d/m/Y H:i:s', $tab[2]);
+            $end = \DateTime::createFromFormat('d/m/Y H:i:s', $tab[3]);
+            $comment = $tab[1];
 
             $log_info = "agent=" . $perso_id;
-            $log_info .= " / request=" . $demande->format('Y-m-d H:i:s');
-            $log_info .= " / start=" . $debut->format('Y-m-d H:i:s');
-            $log_info .= " / end=" . $fin->format('Y-m-d H:i:s');
-            $log_info .= " / comments=" . $commentaires;
+            $log_info .= " / request=" . $requestDate->format('Y-m-d H:i:s');
+            $log_info .= " / start=" . $start->format('Y-m-d H:i:s');
+            $log_info .= " / end=" . $end->format('Y-m-d H:i:s');
+            $log_info .= " / comments=" . $comment;
 
             // Validations
             // Si le status de l'absence Hamac est 2, l'absence est validée
@@ -290,26 +287,26 @@ class AbsenceImportCSVCommand extends Command
                 if ($debug) {
                     $this->log("Si le status de l'absence Hamac est 2, l'absence est validée au niveau 2", 'AbsenceImportCSV');
                 }
-                $valide_n1 = 99999;
-                $validation_n1 = new \DateTime();
-                $valide_n2 = 99999;
-                $validation_n2 = new \DateTime();
+                $validLevel1 = 99999;
+                $validLevel1Date = new \DateTime();
+                $validLevel2 = 99999;
+                $validLevel2Date = new \DateTime();
             } elseif ( in_array($tab[6], $status_waiting)) {
                 if ($debug) {
                     $this->log("Si le status de l'absence Hamac est 1, l'absence est validée au niveau 1", 'AbsenceImportCSV');
                 }
-                $valide_n1 = 99999;
-                $validation_n1 = new \DateTime();
-                $valide_n2 = 0;
-                $validation_n2 = null;
+                $validLevel1 = 99999;
+                $validLevel1Date = new \DateTime();
+                $validLevel2 = 0;
+                $validLevel2Date = null;
             } else {
                 if ($debug) {
                     $this->log("L'absence n'est pas validée", 'AbsenceImportCSV');
                 }
-                $valide_n1 = 0;
-                $validation_n1 = null;
-                $valide_n2 = 0;
-                $validation_n2 = null;
+                $validLevel1 = 0;
+                $validLevel1Date = null;
+                $validLevel2 = 0;
+                $validLevel2Date = null;
             }
 
 
@@ -319,25 +316,23 @@ class AbsenceImportCSVCommand extends Command
                     $this->log("Si l'absence n'est pas dans la base de données, on l'importe", 'AbsenceImportCSV');
                 }
 
-                $insert = array('perso_id' => $perso_id, 'debut' => $debut, 'fin' => $fin, 'motif' => $motif, 'commentaires' => $commentaires, 'demande' => $demande, 'valide' => $valide_n2, 'validation' => $validation_n2, 'valide_n1' => $valide_n1, 'validation_n1' => $validation_n1, 'cal_name' => 'hamac', 'ical_key' => $uid, 'uid' => $uid);
-
                 $absi = new Absence();
-                $absi->setStart($insert['debut']);
-                $absi->setEnd($insert['fin']);
-                $absi->setRequestDate($insert['demande']);
-                $absi->setValidLevel2Date($insert['validation']);
-                $absi->setValidLevel1Date($insert['validation_n1']);
-                $absi->setUser($insert['perso_id']);
-                $absi->setValidLevel2($insert['valide']);
-                $absi->setValidLevel1($insert['valide_n1']);
-                $absi->setReason($insert['motif']);
-                $absi->setComment($insert['commentaires']);
-                $absi->setCalName($insert['cal_name']);
-                $absi->setICalKey($insert['ical_key']);
-                $absi->setUid($insert['uid']);
-                $absi->setOtherReason($insert['motif_autre'] ?? '');
-                $absi->setStatus($insert['etat'] ?? '');
-                $absi->setOriginId($insert['id_origin'] ?? 0);
+                $absi->setStart($start);
+                $absi->setEnd($end);
+                $absi->setRequestDate($requestDate);
+                $absi->setValidLevel2Date($validLevel2Date);
+                $absi->setValidLevel1Date($validLevel1Date);
+                $absi->setUserId($perso_id);
+                $absi->setValidLevel2($validLevel2);
+                $absi->setValidLevel1($validLevel1);
+                $absi->setReason($motif);
+                $absi->setComment($comment);
+                $absi->setCalName('hamac');
+                $absi->setICalKey($uid);
+                $absi->setUid($uid);
+                $absi->setOtherReason('');
+                $absi->setStatus('');
+                $absi->setOriginId(0);
                 $this->entityManager->persist($absi);
 
                 if ($debug) {
@@ -353,44 +348,41 @@ class AbsenceImportCSVCommand extends Command
             if ($debug) {
                 $this->log("Si l'absence existe, on vérifie si elle a changé", 'AbsenceImportCSV');
             }
-            $absence = $absences[$uid];
+            $absu = $absences[$uid];
 
-            if ($absence->getUser() != $perso_id
-                or $absence->getStart() != $debut
-                or $absence->getEnd() != $fin
-                or $absence->getComment() != $commentaires
-                or $absence->getValidLevel1() != $valide_n1
-                or $absence->getValidLevel2() != $valide_n2) {
+            if ($absu->getUserId() != $perso_id
+                or $absu->getStart() != $start
+                or $absu->getEnd() != $end
+                or $absu->getComment() != $comment
+                or $absu->getValidLevel1() != $validLevel1
+                or $absu->getValidLevel2() != $validLevel2) {
                 // Si l'absence a changé, on met à jour la base de données
                 if ($debug) {
                     $this->log("Si l'absence a changé, on met à jour la base de données", 'AbsenceImportCSV');
                 }
-                $update = array('perso_id' => $perso_id, 'debut' => $debut, 'fin' => $fin, 'commentaires' => $commentaires, 'valide' => $valide_n2, 'validation' => $validation_n2, 'valide_n1' => $valide_n1, 'validation_n1' => $validation_n1, 'id' => $absence['id']);
 
-                $absu = $this->entityManager->getRepository(Absence::class)->find($update['id']);
-
-                $absu->setStart($update['debut']);
-                $absu->setEnd($update['fin']);
-                $absu->setRequestDate($update['demande']);
-                $absu->setValidLevel2Date($update['validation']);
-                $absu->setValidLevel1Date($update['validation_n1']);
-                $absu->setUser($update['perso_id'] ?? null);
-                $absu->setValidLevel2($update['valide'] ?? 0);
-                $absu->setValidLevel1($update['valide_n1'] ?? 0);
-                $absu->setReason($update['motif'] ?? '');
-                $absu->setComment($update['commentaires'] ?? '');
+                $absu->setStart($start);
+                $absu->setEnd($end);
+                $absu->setRequestDate($requestDate);
+                $absu->setValidLevel2Date($validLevel2Date);
+                $absu->setValidLevel1Date($validLevel1Date);
+                $absu->setUserId($perso_id);
+                $absu->setValidLevel2($validLevel2);
+                $absu->setValidLevel1($validLevel1);
+                $absu->setReason('');
+                $absu->setComment($comment);
                 $absu->setCalName('hamac');
-                $absu->setICalKey($update['ical_key'] ?? null);
-                $absu->setUid($update['uid'] ?? null);
-                $absu->setOtherReason($update['motif_autre'] ?? '');
-                $absu->setStatus($update['etat'] ?? '');
-                $absu->setOriginId($update['id_origin'] ?? 0);
+                $absu->setICalKey(null);
+                $absu->setUid(null);
+                $absu->setOtherReason('');
+                $absu->setStatus('');
+                $absu->setOriginId(0);
 
                 if ($debug) {
                     $this->log("Absence changée dans la base de donnée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
                 }
 
-                $this->log("Absence updated : $uid / {$absence['id']} / $log_info", 'AbsenceImportCSV');
+                $this->log("Absence updated : $uid / {$absu->getId()} / $log_info", 'AbsenceImportCSV');
 
                 continue;
             }
@@ -398,20 +390,17 @@ class AbsenceImportCSVCommand extends Command
         fclose($inF);
 
         // Remove entries deleted from source file
-        if (!empty($absences_db)) {
-            foreach ($absences_db as $elem) {
-                if (!in_array($elem, $absences_file)) {
-                    $absd = $this->entityManager->getRepository(Absence::class)->findBy(['cal_name' => 'hamac', 'ical_key' => $elem]);
-                    if (!empty($absd)) {
-                        foreach ($absd as $a) {
-                            $this->entityManager->remove($a);
-                        }
-                    }
-
-                    $this->log("Absence deleted from source file : $elem", 'AbsenceImportCSV');
+        foreach ($absences_db as $elem) {
+            if (!in_array($elem, $absences_file)) {
+                $absd = $this->entityManager->getRepository(Absence::class)->findBy(['cal_name' => 'hamac', 'ical_key' => $elem]);
+                foreach ($absd as $a) {
+                    $this->entityManager->remove($a);
                 }
+
+                $this->log("Absence deleted from source file : $elem", 'AbsenceImportCSV');
             }
         }
+
         $this->entityManager->flush();  
         // Unlock
         unlink($lockFile);

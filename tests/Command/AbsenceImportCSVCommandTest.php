@@ -3,14 +3,15 @@
 namespace App\Tests\Command;
 
 use App\Entity\Agent;
-use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Tester\CommandTester;
 use Tests\PLBWebTestCase;
 
 class AbsenceImportCSVCommandTest extends PLBWebTestCase
 {
     private string $lockFile;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -19,12 +20,18 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
         if (file_exists($this->lockFile)) {
             @unlink($this->lockFile);
         }
+
+        $origin = new \DateTimeImmutable('2025-10-14');
+        $now = new \DateTimeImmutable();
+        $interval = $origin->diff($now);
+        $daysBefore = (int) $interval->format('%R%a');
+
         $params = [
             'hamac_status_extra' => [0,1],
             'hamac_status_waiting' => [3],
             'hamac_status_validated' => [2,5],
-            'hamac_days_before' => "2020-11-14 00:00:00",
-            'Hamac-debug' => true,
+            'hamac_days_before' => $daysBefore,
+            'Hamac-debug' => 1,
             'Hamac-motif' => 'Hamac',
             'Hamac-id' => 'matricule',
             'Hamac-status' => '2,3,5',
@@ -93,11 +100,12 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
         $command = $application->find('app:absence:import-csv');
 
         $commandTester = new CommandTester($command);
-        $commandTester->execute([
-            'command'  => $command->getName()
-        ], [
-            'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-        ]);
+        $commandTester->execute(
+            ['command'  => $command->getName()],
+            ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]
+        );
+
+
         $commandTester->assertCommandIsSuccessful();
 
     }

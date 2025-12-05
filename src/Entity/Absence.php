@@ -81,163 +81,14 @@ class Absence
     #[ORM\Column]
     private ?int $id_origin = null;
 
-    public function getId(): ?int
+    public function getAttachmentNA(): ?int
     {
-        return $this->id;
+        return $this->so;
     }
 
-    public function getStart(): ?\DateTime
+    public function setAttachmentNA(?int $attachmentNA): static
     {
-        return $this->debut;
-    }
-
-    public function setStart(?\DateTime $start): static
-    {
-        $this->debut = $start;
-
-        return $this;
-    }
-
-    public function getEnd(): ?\DateTime
-    {
-        return $this->fin;
-    }
-
-    public function setEnd(?\DateTime $end): static
-    {
-        $this->fin = $end;
-
-        return $this;
-    }
-
-    public function getUid(): ?string
-    {
-        return $this->uid;
-    }
-
-    public function setUid(?string $uid): static
-    {
-        $this->uid = $uid;
-
-        return $this;
-    }
-
-    public function getUser(): ?int
-    {
-        return $this->perso_id;
-    }
-
-    public function setUser(?int $user): static
-    {
-        $this->perso_id = $user;
-
-        return $this;
-    }
-
-    public function getComment(): ?string
-    {
-        return $this->commentaires;
-    }
-
-    public function setComment(?string $comment): static
-    {
-        $this->commentaires = $comment;
-
-        return $this;
-    }
-
-    public function getValidLevel1(): ?int
-    {
-        return $this->valide_n1;
-    }
-
-    public function setValidLevel1(?int $validLevel1): static
-    {
-        $this->valide_n1 = $validLevel1;
-
-        return $this;
-    }
-
-    public function getValidLevel2(): ?int
-    {
-        return $this->valide;
-    }
-
-    public function setValidLevel2(?int $validLevel2): ?static
-    {
-        $this->valide = $validLevel2;
-
-        return $this;
-    }
-
-    public function getRequestDate(): ?\DateTime
-    {
-        return $this->demande;
-    }
-
-    public function setRequestDate(?\DateTime $requestDate): static
-    {
-        $this->demande = $requestDate;
-
-        return $this;
-    }
-
-    public function getReason(): ?string
-    {
-        return $this->motif;
-    }
-
-    public function setReason(?string $reason): static
-    {
-        $this->motif = $reason;
-
-        return $this;
-    }
-
-    public function getOtherReason(): ?string
-    {
-        return $this->motif_autre;
-    }
-
-    public function setOtherReason(?string $otherReason): static
-    {
-        $this->motif_autre = $otherReason;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->etat;
-    }
-
-    public function setStatus(?string $status): static
-    {
-        $this->etat = $status;
-
-        return $this;
-    }
-
-    public function getValidLevel2Date(): ?\DateTime
-    {
-        return $this->validation;
-    }
-
-    public function setValidLevel2Date(?\DateTime $validLevel2Date): static
-    {
-        $this->validation = $validLevel2Date;
-
-        return $this;
-    }
-
-    public function getValidLevel1Date(): ?\DateTime
-    {
-        return $this->validation_n1;
-    }
-
-    public function setValidLevel1Date(?\DateTime $validLevel1Date): static
-    {
-        $this->validation_n1 = $validLevel1Date;
+        $this->so = $attachmentNA;
 
         return $this;
     }
@@ -266,14 +117,38 @@ class Absence
         return $this;
     }
 
-    public function getAttachmentNA(): ?int
+    public function getCalName(): ?string
     {
-        return $this->so;
+        return $this->cal_name;
     }
 
-    public function setAttachmentNA(?int $attachmentNA): static
+    public function setCalName(?string $calName): static
     {
-        $this->so = $attachmentNA;
+        $this->cal_name = $calName;
+
+        return $this;
+    }
+    
+    public function getComment(): ?string
+    {
+        return $this->commentaires;
+    }
+
+    public function setComment(?string $comment): static
+    {
+        $this->commentaires = $comment;
+
+        return $this;
+    }
+
+    public function getEnd(): ?\DateTime
+    {
+        return $this->fin;
+    }
+
+    public function setEnd(?\DateTime $end): static
+    {
+        $this->fin = $end;
 
         return $this;
     }
@@ -290,18 +165,6 @@ class Absence
         return $this;
     }
 
-    public function getCalName(): ?string
-    {
-        return $this->cal_name;
-    }
-
-    public function setCalName(?string $calName): static
-    {
-        $this->cal_name = $calName;
-
-        return $this;
-    }
-
     public function getICalKey(): ?string
     {
         return $this->ical_key;
@@ -314,6 +177,11 @@ class Absence
         return $this;
     }
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     public function getLastModified(): ?string
     {
         return $this->last_modified;
@@ -322,6 +190,54 @@ class Absence
     public function setLastModified(?string $lastModified): static
     {
         $this->last_modified = $lastModified;
+
+        return $this;
+    }
+
+    public function getOriginId(): ?int
+    {
+        return $this->id_origin;
+    }
+
+    public function setOriginId(?int $originId): static
+    {
+        $this->id_origin = $originId;
+
+        return $this;
+    }
+
+    public function getOtherReason(): ?string
+    {
+        return $this->motif_autre;
+    }
+
+    public function setOtherReason(?string $otherReason): static
+    {
+        $this->motif_autre = $otherReason;
+
+        return $this;
+    }
+
+    public function getReason(): ?string
+    {
+        return $this->motif;
+    }
+
+    public function setReason(?string $reason): static
+    {
+        $this->motif = $reason;
+
+        return $this;
+    }
+
+    public function getRequestDate(): ?\DateTime
+    {
+        return $this->demande;
+    }
+
+    public function setRequestDate(?\DateTime $requestDate): static
+    {
+        $this->demande = $requestDate;
 
         return $this;
     }
@@ -338,14 +254,98 @@ class Absence
         return $this;
     }
 
-    public function getOriginId(): ?int
+    public function getStart(): ?\DateTime
     {
-        return $this->id_origin;
+        return $this->debut;
     }
 
-    public function setOriginId(?int $originId): static
+    public function setStart(?\DateTime $start): static
     {
-        $this->id_origin = $originId;
+        $this->debut = $start;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->etat = $status;
+
+        return $this;
+    }
+
+    public function getUid(): ?string
+    {
+        return $this->uid;
+    }
+
+    public function setUid(?string $uid): static
+    {
+        $this->uid = $uid;
+
+        return $this;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->perso_id;
+    }
+
+    public function setUserId(?int $user): static
+    {
+        $this->perso_id = $user;
+
+        return $this;
+    }
+
+    public function getValidLevel1(): ?int
+    {
+        return $this->valide_n1;
+    }
+
+    public function setValidLevel1(?int $validLevel1): static
+    {
+        $this->valide_n1 = $validLevel1;
+
+        return $this;
+    }
+
+    public function getValidLevel2(): ?int
+    {
+        return $this->valide;
+    }
+
+    public function setValidLevel2(?int $validLevel2): ?static
+    {
+        $this->valide = $validLevel2;
+
+        return $this;
+    }
+
+    public function getValidLevel1Date(): ?\DateTime
+    {
+        return $this->validation_n1;
+    }
+
+    public function setValidLevel1Date(?\DateTime $validLevel1Date): static
+    {
+        $this->validation_n1 = $validLevel1Date;
+
+        return $this;
+    }
+
+    public function getValidLevel2Date(): ?\DateTime
+    {
+        return $this->validation;
+    }
+
+    public function setValidLevel2Date(?\DateTime $validLevel2Date): static
+    {
+        $this->validation = $validLevel2Date;
 
         return $this;
     }
