@@ -2,6 +2,7 @@
 
 namespace App\Tests\Command;
 
+use App\Entity\Absence;
 use App\Entity\Agent;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -64,21 +65,31 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
     public function testAgent(): void
     {
 
-        $this->builder->build(Agent::class, [
+        $a=$this->builder->build(Agent::class, [
             'login' => 'alice', 'mail' => 'alice@example.com', 'nom' => 'Doe', 'prenom' => 'Alice',
             'supprime' => 0, 'check_hamac' => 1, 'matricule' => '0000000ff040'
         ]);
-        $this->builder->build(Agent::class, [
+        $b=$this->builder->build(Agent::class, [
             'login' => 'jdevoe', 'mail' => 'jdevoe@example.com', 'nom' => 'Devoe', 'prenom' => 'John',
             'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000ee490'
         ]);
-        $this->builder->build(Agent::class, [
+        $c=$this->builder->build(Agent::class, [
             'login' => 'abreton', 'mail' => 'abreton@example.com', 'nom' => 'Breton', 'prenom' => 'Aubert',
             'supprime' => 1,'check_hamac' => 1, 'matricule' => '0000000ee493'
         ]);
         $this->builder->build(Agent::class, [
             'login' => 'kboivin', 'mail' => 'kboivin@example.com', 'nom' => 'Boivin', 'prenom' => 'Karel',
             'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000ee856'
+        ]);
+
+        $this->builder->build(Absence::class, [
+            'perso_id' => $a->getId(), 'groupe' => '' ,'cal_name'=>'hamac'
+        ]);
+        $this->builder->build(Absence::class, [
+            'perso_id' => $a->getId(),'groupe' => '' ,'cal_name'=>'hamac'
+        ]);
+        $this->builder->build(Absence::class, [
+            'perso_id' => $a->getId(),'groupe' => '' ,'cal_name'=>'hamac'
         ]);
 
         $countBefore = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM absences");
