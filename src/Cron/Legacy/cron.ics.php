@@ -192,6 +192,7 @@ foreach ($agents as $agent) {
         $ics->CSRFToken = $CSRFToken;
         $ics->updateTable();
     }
+    sleep($config['ICS-Delay']);
 }
 
 // Unlock
