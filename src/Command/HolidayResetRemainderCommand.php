@@ -72,7 +72,7 @@ class HolidayResetRemainderCommand extends Command
         }
 
         // Modifie les crédits
-        $this->entityManager->getRepository(Agent::class)->holidayResetReminder();
+        $this->entityManager->getRepository(Agent::class)->holidayResetRemainder();
 
         $this->entityManager->flush();
 

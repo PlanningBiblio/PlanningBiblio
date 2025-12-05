@@ -78,8 +78,8 @@
 | previousCompTime | recup_prec |
 | previousCredit | solde_prec |
 | previousRemainder | relicat_prec |
-| quotaHours | heures_hebdo |
-| quotaSP | quota_sp |
+| weeklyServiceHours | heures_hebdo | For Agent |
+| quotaSP | quota_sp | For Position |
 | rank | rang |
 | recoveryMenu | recup |
 | service | service |
@@ -88,7 +88,7 @@
 | skills | postes | for Agents |
 | start | debut |
 | statistics | statistiques |
-| statut | status |
+| status | statut |
 | table | tableau |
 | teleworking | teleworking |
 | user | agent |
@@ -99,7 +99,7 @@
 | validLevel2Date | validation or validation_n2 |
 | value | valeur |
 | values | valeurs |
-| workedHours | heures_travail |
+| weeklyWorkingHours | heures_travail | For Agent |
 | workingHours | temps |
 
 ## Migrations

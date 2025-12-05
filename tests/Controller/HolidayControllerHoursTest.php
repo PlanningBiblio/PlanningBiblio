@@ -70,9 +70,9 @@ class HolidayControllerHoursTest extends PLBWebTestCase
 
         $entityManager->refresh($jdevoe);
         $this->assertEquals($jdevoe->getHolidayCredit(), 175, 'credit has not been updated yet');
-        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->getCompTime(), 35, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 35, "comp time didn't change");
     }
 
     public function testHolidayOneAgentAllDay()
@@ -115,9 +115,9 @@ class HolidayControllerHoursTest extends PLBWebTestCase
 
         $entityManager->refresh($jdevoe);
         $this->assertEquals($jdevoe->getHolidayCredit(), 168, 'credit has been updated');
-        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->getCompTime(), 35, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 35, "comp time didn't change");
     }
 
     public function testHolidayOneAgentOneHour()
@@ -165,9 +165,9 @@ class HolidayControllerHoursTest extends PLBWebTestCase
 
         $entityManager->refresh($jdevoe);
         $this->assertEquals($jdevoe->getHolidayCredit(), 174, 'credit has been updated');
-        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->getCompTime(), 35, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 35, "comp time didn't change");
 
     }
 
@@ -214,9 +214,9 @@ class HolidayControllerHoursTest extends PLBWebTestCase
 
         $entityManager->refresh($jdevoe);
         $this->assertEquals($jdevoe->getHolidayCredit(), 175, "credit didn't change");
-        $this->assertEquals($jdevoe->getRemainder(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->getAnticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->getCompTime(), 28, "comp time was updated");
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 28, "comp time was updated");
 
     }
 
