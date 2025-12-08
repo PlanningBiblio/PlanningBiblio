@@ -168,3 +168,4 @@ class HolidayResetRemainderCommandTest extends PLBWebTestCase
         $commandTester->assertCommandIsSuccessful();
     }
 }
+
