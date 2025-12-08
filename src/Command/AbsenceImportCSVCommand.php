@@ -133,11 +133,10 @@ class AbsenceImportCSVCommand extends Command
             }
         }
 
-        $ids_list = array_values($perso_ids);
-        $ids_list_str = implode(',', $ids_list);
+        $ids_list = implode(',', $perso_ids);
 
         if ($debug) {
-            $this->log("\$ids_list = " . $ids_list_str, 'AbsenceImportCSV');
+            $this->log("\$ids_list = " . $ids_list, 'AbsenceImportCSV');
 
         }
 
@@ -147,7 +146,7 @@ class AbsenceImportCSVCommand extends Command
         }
 
         $absences = array();
-        $abs = $this->entityManager->getRepository(Absence::class)->getByUserIds($ids_list, 'hamac');
+        $abs = $this->entityManager->getRepository(Absence::class)->getByUserIds($perso_ids, 'hamac');
         foreach ($abs as $elem) {
             // On indexe le tableau avec le champ UID qui n'est autre que l'id Hamac
             $absences[$elem->getUid()] = $elem;

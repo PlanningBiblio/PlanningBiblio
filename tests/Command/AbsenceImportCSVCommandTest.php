@@ -66,30 +66,40 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
     {
 
         $a=$this->builder->build(Agent::class, [
-            'login' => 'alice', 'mail' => 'alice@example.com', 'nom' => 'Doe', 'prenom' => 'Alice',
+            'login' => 'alice',
             'supprime' => 0, 'check_hamac' => 1, 'matricule' => '0000000ff040'
         ]);
         $b=$this->builder->build(Agent::class, [
-            'login' => 'jdevoe', 'mail' => 'jdevoe@example.com', 'nom' => 'Devoe', 'prenom' => 'John',
+            'login' => 'jdevoe',
             'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000ee490'
         ]);
         $c=$this->builder->build(Agent::class, [
-            'login' => 'abreton', 'mail' => 'abreton@example.com', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'supprime' => 1,'check_hamac' => 1, 'matricule' => '0000000ee493'
+            'login' => 'abreton',
+            'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000ee493'
         ]);
         $this->builder->build(Agent::class, [
-            'login' => 'kboivin', 'mail' => 'kboivin@example.com', 'nom' => 'Boivin', 'prenom' => 'Karel',
+            'login' => 'kboivin',
             'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000ee856'
         ]);
-
-        $this->builder->build(Absence::class, [
-            'perso_id' => $a->getId(), 'groupe' => '' ,'cal_name'=>'hamac'
+        $this->builder->build(Agent::class, [
+            'login' => 'aaa',
+            'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000xx421'
         ]);
-        $this->builder->build(Absence::class, [
-            'perso_id' => $a->getId(),'groupe' => '' ,'cal_name'=>'hamac'
+        $this->builder->build(Agent::class, [
+            'login' => 'bbb',
+            'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000xx941'
         ]);
-        $this->builder->build(Absence::class, [
-            'perso_id' => $a->getId(),'groupe' => '' ,'cal_name'=>'hamac'
+        $this->builder->build(Agent::class, [
+            'login' => 'ccc',
+            'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000aa928'
+        ]);
+        $this->builder->build(Agent::class, [
+            'login' => 'ddd',
+            'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000cc203'
+        ]);
+        $this->builder->build(Agent::class, [
+            'login' => 'eee',
+            'supprime' => 0,'check_hamac' => 1, 'matricule' => '0000000dd322'
         ]);
 
         $countBefore = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM absences");
@@ -98,7 +108,7 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
         $this->execute();
 
         $countAfter = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM absences");
-        $this->assertSame(96, $countAfter, '96 absence should be imported');
+        $this->assertSame(241, $countAfter, '241 absence should be imported');//252-10-1
         
         $this->restore();
     }
