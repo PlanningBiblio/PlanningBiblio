@@ -14,13 +14,13 @@ class HolidayResetRemainderCommandTest extends PLBWebTestCase
     public function testResetRemainderCommand(): void
     {
         $alice = $this->builder->build(Agent::class, [
-            'login' => 'alice', 'conges_credit' => 11, 'comp_time' => 22, 'conges_anticipation' => 33 
+            'login' => 'alice', 'conges_credit' => 11, 'comp_time' => 22, 'conges_anticipation' => 33, 'conges_reliquat' => 1.11
         ]);
         $alex = $this->builder->build(Agent::class, [
-            'login' => 'alex', 'conges_credit' => 44, 'comp_time' => 55, 'conges_anticipation' => 66 
+            'login' => 'alex', 'conges_credit' => 44, 'comp_time' => 55, 'conges_anticipation' => 66, 'conges_reliquat' => 2.22
         ]);
         $amy = $this->builder->build(Agent::class, [
-            'login' => 'amy', 'conges_credit' => 77, 'comp_time' => 88, 'conges_anticipation' => 99 
+            'login' => 'amy', 'conges_credit' => 77, 'comp_time' => 88, 'conges_anticipation' => 99, 'conges_reliquat' => 3.33
         ]);
 
         $repo = $this->entityManager->getRepository(Agent::class);
@@ -40,6 +40,11 @@ class HolidayResetRemainderCommandTest extends PLBWebTestCase
             $alice->getHolidayAnticipation(),
             'alice HolidayAnticipation should be 33.'
         );
+        $this->assertEquals(
+            1.11,
+            $alice->getHolidayRemainder(),
+            'alice HolidayRemainder should be 1.11.'
+        );
 
         $this->assertEquals(
             44,
@@ -56,6 +61,11 @@ class HolidayResetRemainderCommandTest extends PLBWebTestCase
             $alex->getHolidayAnticipation(),
             'alex HolidayAnticipation should be 66.'
         );
+        $this->assertEquals(
+            2.22,
+            $alex->getHolidayRemainder(),
+            'alex HolidayRemainder should be 2.22.'
+        );
 
         $this->assertEquals(
             77,
@@ -71,6 +81,11 @@ class HolidayResetRemainderCommandTest extends PLBWebTestCase
             99,
             $amy->getHolidayAnticipation(),
             'amy HolidayAnticipation should be 99.'
+        );
+        $this->assertEquals(
+            3.33,
+            $amy->getHolidayRemainder(),
+            'amy HolidayRemainder should be 3.33.'
         );
         
         $this->execute();
