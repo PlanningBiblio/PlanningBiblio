@@ -4,8 +4,8 @@ namespace App\Command;
 
 use App\Entity\Config;
 use App\Entity\PlanningPosition;
-use App\Entity\PlanningPositionTabAffectation;
 use App\Entity\PlanningPositionLock;
+use App\Entity\PlanningPositionTabAffectation;
 use App\Planno\Framework;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -111,13 +111,14 @@ class PlanningControlCommand extends Command
                     'date'     => $dateObj,
                     'site'     => $site[0],
                 ]);
+
                 if (!$planningPositionTabAffectation) {
                     $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas cr&eacute;&eacute;</span></strong>\n";
                     continue;
                 } else {
                     // Si le planning est créé, on récupère le numéro du tableau pour ensuite
                     // comparer la structure au planning complété afin de trouver les cellules vides
-                    $tableauId=$planningPositionTabAffectation[0]->getTable();
+                    $tableauId = $planningPositionTabAffectation[0]->getTable();
 
                     // On recherche les plannings qui ne sont pas validés
                     $planningPositionLock = $this->entityManager->getRepository(PlanningPositionLock::class)->findBy([
@@ -126,9 +127,9 @@ class PlanningControlCommand extends Command
                         'verrou2'  => 1, 
                     ]);
                     if ($planningPositionLock) {
-                        $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)."</strong> est valid&eacute;\n";
+                        $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)."</strong> est validé;\n";
                     } else {
-                        $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas valid&eacute;</span></strong>\n";
+                        $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas validé;</span></strong>\n";
                     }
                 }
 
@@ -178,34 +179,32 @@ class PlanningControlCommand extends Command
                                 // Si la dernière execution de la requête donne un résultat
                                 // Vérifier qu'au moins un des agents issus de ce résultat n'est pas absent
                                 $tousAbsents=true;
-                                if ($result) {
-                                    foreach ($result as $res) {
-                                        // Contrôle des absences
-                                        $absent=false;
-                                        $a=new \absences();
-                                        if ($a->check($res->getUser(), $date." ".$h['debut'], $date." ".$h['fin'])) {
-                                            $absent=true;
-                                        }
+                                foreach ($result as $res) {
+                                    // Contrôle des absences
+                                    $absent=false;
+                                    $a=new \absences();
+                                    if ($a->check($res->getUser(), $date." ".$h['debut'], $date." ".$h['fin'])) {
+                                        $absent=true;
+                                    }
 
-                                        // Contrôle des congés
-                                        $conges=false;
-                                        if ($config['Conges-Enable']) {
-                                            $c=new \conges();
-                                            if ($c->check($res->getUser(), $date." ".$h['debut'], $date." ".$h['fin'])) {
-                                                $conges=true;
-                                            }
+                                    // Contrôle des congés
+                                    $conges=false;
+                                    if ($config['Conges-Enable']) {
+                                        $c=new \conges();
+                                        if ($c->check($res->getUser(), $date." ".$h['debut'], $date." ".$h['fin'])) {
+                                            $conges=true;
                                         }
+                                    }
 
-                                        // Si l'agent n'est ni absent, ni en congés : on a une présence
-                                        if (!$absent and !$conges) {
-                                            $tousAbsents=false;
-                                            break;
-                                        }
+                                    // Si l'agent n'est ni absent, ni en congés : on a une présence
+                                    if (!$absent and !$conges) {
+                                        $tousAbsents=false;
+                                        break;
                                     }
                                 }
 
                                 // Si la dernière execution de la requête ne donne pas de résultat ou que tous les agents issus du résultat sont absents
-                                if (!$result or $tousAbsents) {
+                                if (empty($result) or $tousAbsents) {
                                     // On enregistre dans le table les informations de la cellule
 
                                     // On regroupe les horaires qui se suivent sur un même poste
