@@ -6,13 +6,13 @@ use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionHours;
 use App\Entity\PlanningPositionLines;
 use App\Entity\PlanningPositionLock;
-use App\Entity\PlanningPositionTabAffectation;
 use App\Entity\PlanningPositionTab;
+use App\Entity\PlanningPositionTabAffectation;
 use App\Entity\Position;
-use Tests\PLBWebTestCase;
-use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Tester\CommandTester;
+use Tests\PLBWebTestCase;
+
 class PlanningControlCommandTest extends PLBWebTestCase
 {
 
@@ -30,31 +30,32 @@ class PlanningControlCommandTest extends PLBWebTestCase
         $this->setParam('Conges-Enable', 0);
         $this->setParam('Mail-Planning', 'xxx.ss@biblibre.com');
 
-        $dt1 = new \DateTime('today 09:00:00');
-        $dt2 = new \DateTime('today 10:00:00');
+        //TODO use Panther instead
+        $start = new \DateTime('today 09:00:00');
+        $end = new \DateTime('today 10:00:00');
 
         $today = new \DateTime('');
-        $ppta = $this->builder->build(PlanningPositionTabAffectation::class, [
+        $this->builder->build(PlanningPositionTabAffectation::class, [
             'date' => $today, 'tableau' => 1, 'site' => 1
         ]);
-        $ppl = $this->builder->build(PlanningPositionLock::class, [
-            'date' => $today, 'verrou' => '1', 'perso' => '0',
-            'verrou2' => 1, 'validation2' => new \DateTime('2025-11-17 10:19:36'), 'perso2' => '1','vivier'=>'0','site'=>'1'
+        $this->builder->build(PlanningPositionLock::class, [
+            'date' => $today, 'verrou' => '1', 'perso' => 0,
+            'verrou2' => 1, 'validation2' => new \DateTime('2025-11-17 10:19:36'), 'perso2' => 1, 'site' => 1
         ]);
         $this->builder->build(PlanningPositionTab::class, [
-            'id' => 1, 'tableau'=>1,
+            'id' => 1, 'tableau' => 1,
             'nom' => 'Scolaire : Mercredi - Samedi',
-            'site'=> 1
+            'site' => 1
         ]);
         $this->builder->build(PlanningPosition::class, [
-            'id'=> 1,
-            'perso_id' => 19, 'date'=>$today,
-            'site'=>1, 'debut' => $dt1, 'fin' => $dt2
+            'id' => 1,
+            'perso_id' => 19, 'date' => $today,
+            'site' => 1, 'debut' => $start, 'fin' => $end
         ]);
         $this->builder->build(PlanningPositionHours::class, [
             'numero'  => 1,
             'tableau' => 1,
-            'debut' => $dt1, 'fin' => $dt2
+            'debut' => $start, 'fin' => $end
         ]);
 
         $pos = new Position();
