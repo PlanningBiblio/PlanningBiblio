@@ -39,4 +39,21 @@ class WorkingHourRepository extends EntityRepository
         return $result;
     }
 
+    public function changeCurrent()
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->update(WorkingHour::class, 'w')
+            ->set('w.actuel', 0)
+            ->where('w.debut > CURRENT_DATE() OR w.fin < CURRENT_DATE()')
+            ->getQuery()
+            ->execute();
+
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->update(WorkingHour::class, 'w')
+            ->set('w.actuel', 1)
+            ->where('w.debut <= CURRENT_DATE() AND w.fin >= CURRENT_DATE()')
+            ->getQuery()
+            ->execute();
+
+    }
 }

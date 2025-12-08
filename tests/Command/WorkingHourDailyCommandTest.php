@@ -18,6 +18,7 @@ class WorkingHourDailyCommandTest extends PLBWebTestCase
             'actuel' => 0,
             'valide' => 1,
             'debut' => new \DateTime("2000-01-01"),
+            'fin' => new \DateTime("2022-01-01")
         )); 
 
         $WorkingHour2 = $this->builder->build(WorkingHour::class,array(
@@ -25,6 +26,7 @@ class WorkingHourDailyCommandTest extends PLBWebTestCase
             'actuel' => 1,
             'valide' => 1,
             'debut' => new \DateTime("2000-01-01"),
+            'fin' => new \DateTime()
         )); 
 
         $WorkingHour3 = $this->builder->build(WorkingHour::class,array(
@@ -49,7 +51,7 @@ class WorkingHourDailyCommandTest extends PLBWebTestCase
         $wh3 = $repo->find($id3);
 
         $this->assertEquals(0, $wh1->isCurrent(), 'Before WorkingHour1 should NOT be current');
-        $this->assertEquals(1, $wh2->isCurrent(), 'Before WorkingHour2 should NOT be current');
+        $this->assertEquals(1, $wh2->isCurrent(), 'Before WorkingHour2 should be current');
         $this->assertEquals(0, $wh3->isCurrent(), 'Before WorkingHour3 should NOT be current');
 
         $this->execute();
@@ -62,8 +64,8 @@ class WorkingHourDailyCommandTest extends PLBWebTestCase
         $wh33 = $repo->find($id3);
 
         $this->assertEquals(0, $wh11->isCurrent(), 'After WorkingHour1 should NOT be current');
-        $this->assertEquals(0, $wh22->isCurrent(), 'After WorkingHour2 should NOT be current');
-        $this->assertEquals(1, $wh33->isCurrent(), 'After WorkingHour3 should NOT be current');
+        $this->assertEquals(1, $wh22->isCurrent(), 'After WorkingHour2 should be current');
+        $this->assertEquals(1, $wh33->isCurrent(), 'After WorkingHour3 should be current');
         
         $this->restore();
     }
@@ -75,15 +77,14 @@ class WorkingHourDailyCommandTest extends PLBWebTestCase
  
         $command = $application->find('app:workinghour:daily');
         $commandTester = new CommandTester($command);
-        $commandTester->execute([
-            'command'  => $command->getName()
-        ], [
-            'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-        ]);
+        $commandTester->execute(
+            ['command'  => $command->getName()], 
+            ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]
+        );
 
         $commandTester->assertCommandIsSuccessful();
-        $output = $commandTester->getDisplay();
 
+        $output = $commandTester->getDisplay();
         $this->assertStringContainsString('Weekly planning records have been successfully updated for all employees.', $output);
 
     }

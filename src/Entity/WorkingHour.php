@@ -69,12 +69,6 @@ class WorkingHour
     public function getId(): ?int
     {
         return $this->id;
-    }    
-    
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-        return $this;
     }
 
     public function getBreaktime(): ?array
@@ -135,6 +129,7 @@ class WorkingHour
 
         return $this;
     }
+
     public function getWorkingHours(): ?string
     {
         return $this->temps;
@@ -158,6 +153,7 @@ class WorkingHour
 
         return $this;
     }
+
     public function getChange(): ?int
     {
         return $this->modif;
@@ -169,6 +165,7 @@ class WorkingHour
 
         return $this;
     }
+
     public function getChangeDate(): ?\DateTime
     {
         return $this->modification;
@@ -180,6 +177,7 @@ class WorkingHour
 
         return $this;
     }
+
     public function getValideLevel1(): ?int
     {
         return $this->valide_n1;
@@ -191,6 +189,7 @@ class WorkingHour
 
         return $this;
     }
+
     public function getValideLevel2(): ?int
     {
         return $this->valide;
@@ -202,6 +201,7 @@ class WorkingHour
 
         return $this;
     }
+
     public function getDateValideLevel2(): ?\DateTime
     {
         return $this->validation;
@@ -213,6 +213,7 @@ class WorkingHour
 
         return $this;
     }
+
     public function isCurrent(): ?bool
     {
         return $this->actuel;
@@ -224,6 +225,7 @@ class WorkingHour
 
         return $this;
     }
+
     public function getReplace(): ?int
     {
         return $this->remplace;
@@ -235,6 +237,7 @@ class WorkingHour
 
         return $this;
     }
+    
     public function getException(): ?int
     {
         return $this->exception;
