@@ -137,7 +137,6 @@ class AbsenceImportCSVCommand extends Command
 
         if ($debug) {
             $this->log("\$ids_list = " . $ids_list, 'AbsenceImportCSV');
-
         }
 
         // Recherche de toutes les absences déjà importées depuis Hamac
@@ -200,7 +199,6 @@ class AbsenceImportCSVCommand extends Command
             foreach ($absx as $elem) {
                 $absences_db[] = $elem['ical_key'];
             }
-            
         }
 
         // On lit le fichier CSV
