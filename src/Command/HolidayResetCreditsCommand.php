@@ -49,7 +49,7 @@ class HolidayResetCreditsCommand extends Command
                 $io->warning('Operation cancelled.');
                 return Command::SUCCESS;
             }
-	    }
+        }
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
         $transferCompTime = (bool) !empty($config['Conges-transfer-comp-time']);
