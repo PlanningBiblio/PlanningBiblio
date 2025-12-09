@@ -2,6 +2,7 @@
 
 namespace App\Tests\Command;
 
+use App\Entity\Agent;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionHours;
 use App\Entity\PlanningPositionLines;
@@ -9,6 +10,8 @@ use App\Entity\PlanningPositionLock;
 use App\Entity\PlanningPositionTab;
 use App\Entity\PlanningPositionTabAffectation;
 use App\Entity\Position;
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tests\PLBWebTestCase;
@@ -29,6 +32,56 @@ class PlanningControlCommandTest extends PLBWebTestCase
         $this->setParam('Rappels-Renfort', 0);
         $this->setParam('Conges-Enable', 0);
         $this->setParam('Mail-Planning', 'xxx.ss@biblibre.com');
+
+        // Setup Panther
+        $this->setUpPantherClient();
+
+        // Create an agent and log in
+        $agent = $this->builder->build(Agent::class, array(
+            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
+            'droits' => array(4, 21, 99, 100, 301), 'supprime' => 0, 'actif' => 'Actif',
+        ));
+
+        $this->login($agent);
+
+        // Open the planning page
+        $crawler = $this->client->request('GET', '/');
+
+        $link = $crawler->filter('#planning-import');
+
+        $this->assertTrue($link->count() == 1, 'Importer un modèle');
+
+        $link->click();
+        $crawler = $this->client->refreshCrawler();
+
+        $this->client->wait(15)->until($this->jqueryAjaxFinished());
+
+        $this->client->wait(10)->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(
+                WebDriverBy::id('model')
+            )
+        );
+
+        $this->client->wait(5)->until(
+            WebDriverExpectedCondition::visibilityOfElementLocated(
+                WebDriverBy::id('model')
+            )
+        );
+
+
+        $select = $this->getSelect('model');
+        $options = $select->getOptions();
+
+        $this->assertGreaterThan(
+            1,
+            count($options),
+            'There should be options'
+        );
+
+        $select->selectByValue('5');
+        $buttonValide = $crawler->selectButton('Valider');
+        $buttonValide->click();
+
 
         //TODO use Panther instead
         $start = new \DateTime('today 09:00:00');
