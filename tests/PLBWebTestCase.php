@@ -119,7 +119,6 @@ class PLBWebTestCase extends PantherTestCase
         $entityManager->flush();
 
         $crawler = $this->client->request('GET', '/login');
-        dump($crawler->html());
 
         $form = $crawler->selectButton('Valider')->form();
         $form['login'] = $agent->getLogin();
