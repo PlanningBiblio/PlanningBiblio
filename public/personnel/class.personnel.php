@@ -31,17 +31,17 @@ class personnel
     // Tableau, valeur 0=pas supprimé, 1=1ère suppression (corbeille), 2=suppression définitive
     public $supprime=array(0);
   
-    public $CSRFToken = null;
+    public $CSRFToken;
 
     public $offset = 0;
 
-    public $responsablesParAgent = null;
+    public $responsablesParAgent;
 
     public function __construct()
     {
     }
 
-    public function delete($liste)
+    public function delete($liste): void
     {
         // Suppresion des informations de la table personnel
         // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
@@ -88,7 +88,7 @@ class personnel
 
         // Filtre selon le champ actif (administratif, service public)
         $actif = htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
-        if ($actif) {
+        if ($actif !== '' && $actif !== '0') {
             $filter['actif'] = $actif;
         }
 
@@ -191,7 +191,7 @@ class personnel
      * @result array : si $id est un chiffre : $this->elements[0] contient les informations de l'agent
      * @result array : si $id est un tableau : $this->elements contient les informations des agents avec l'id des agents comme clé
      */
-    public function fetchById($id)
+    public function fetchById($id): void
     {
         if (is_numeric($id)) {
             $db=new db();
@@ -286,7 +286,7 @@ class personnel
      * @param int $id : id de l'agent
      * @return string $url
      */
-    public function getICSURL($id)
+    public function getICSURL($id): string
     {
         $url = "/ical?id=$id";
         if ($GLOBALS['config']['ICS-Code']) {
@@ -300,8 +300,7 @@ class personnel
     {
         $db=new db();
         $db->query("SHOW TABLE STATUS FROM `{$GLOBALS['config']['dbname']}` LIKE '{$GLOBALS['config']['dbprefix']}personnel';");
-        $result = isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
-        return $result;
+        return isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
     }
   
     public function updateEDTSamedi($eDTSamedi, $debut, $fin, $perso_id)
@@ -312,7 +311,7 @@ class personnel
 
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
-        $db->delete("edt_samedi", array('semaine' => ">=$debut", 'semaine' => "<=$fin", 'perso_id' => $perso_id));
+        $db->delete("edt_samedi", array('semaine' => "<=$fin", 'perso_id' => $perso_id));
 
         if (!empty($eDTSamedi)) {
             $insert=array();

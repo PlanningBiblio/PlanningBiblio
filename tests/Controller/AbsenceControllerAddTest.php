@@ -14,7 +14,7 @@ class AbsenceControllerAddTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $this->setParam('Absences-notifications-agent-par-agent', 0);
         $this->setParam('Multisites-nombre', 1);

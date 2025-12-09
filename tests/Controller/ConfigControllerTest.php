@@ -7,7 +7,7 @@ use Tests\FixtureBuilder;
 
 class ConfigControllerTest extends PLBWebTestCase
 {
-    public function testAccessWithNonLoggedIn() {
+    public function testAccessWithNonLoggedIn(): void {
         $this->client->request('GET', '/config');
 
         $response = $this->client->getResponse()->getContent();
@@ -21,7 +21,7 @@ class ConfigControllerTest extends PLBWebTestCase
 
     }
 
-    public function testAccessWithAuthorizedUser() {
+    public function testAccessWithAuthorizedUser(): void {
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);

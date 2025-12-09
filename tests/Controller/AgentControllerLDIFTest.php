@@ -14,7 +14,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testLDIFImport()
+    public function testLDIFImport(): void
     {
         $this->setParam('LDIF-File', __DIR__ . '/../../data/ldif_sample.ldif');
         $this->setParam('LDIF-ID-Attribute', 'uid');

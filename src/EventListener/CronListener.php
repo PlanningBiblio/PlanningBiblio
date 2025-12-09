@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 class CronListener
 {
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
 
         $session = $event->getRequest()->getSession();

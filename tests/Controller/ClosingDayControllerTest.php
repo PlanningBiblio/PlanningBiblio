@@ -14,7 +14,7 @@ use Tests\FixtureBuilder;
 class ClosingDayControllerTest extends PLBWebTestCase
 {
 
-    public function testListClosingDay()
+    public function testListClosingDay(): void
     {
         $this->builder->delete(Agent::class);
 

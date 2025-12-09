@@ -55,7 +55,7 @@ class BaseController extends AbstractController
         $this->config = $GLOBALS['config'];
     }
 
-    public function setNotifier(Notifier $notifier) {
+    public function setNotifier(Notifier $notifier): void {
         $this->notifier = $notifier;
     }
 
@@ -95,7 +95,7 @@ class BaseController extends AbstractController
         return $this->config[$key];
     }
 
-    protected function csrf_protection(Request $request)
+    protected function csrf_protection(Request $request): bool
     {
         $submittedToken = $request->request->get('_token');
 
@@ -107,7 +107,7 @@ class BaseController extends AbstractController
         return true;
     }
 
-    protected function returnError($error, $module = 'Planno', $status = 200)
+    protected function returnError($error, $module = 'Planno', $status = 200): \Symfony\Component\HttpFoundation\Response
     {
         $this->logger->error($module . ':' . $error);
         $response = new Response();

@@ -30,7 +30,7 @@ class PlanningJobController extends BaseController
     private Array $droits;
 
     #[Route(path: '/planningjob/contextmenu', name: 'planningjob.contextmenu', methods: ['GET'])]
-    public function contextmenu(Request $request)
+    public function contextmenu(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();
 
@@ -108,7 +108,7 @@ class PlanningJobController extends BaseController
         $statuts = array();
 
         if (!empty($categories)) {
-            $categories = join(",", $categories);
+            $categories = implode(",", $categories);
             $db = new \db();
             $categories = $db->escapeString($categories);
             $db->select('select_statuts', null, "categorie IN ($categories)");
@@ -220,7 +220,7 @@ class PlanningJobController extends BaseController
                         . "FROM `{$dbprefix}pl_poste` "
                         . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
                         . "WHERE `{$dbprefix}pl_poste`.`debut`<'$end_with_journey' AND `{$dbprefix}pl_poste`.`fin`>'$start_with_journey' "
-                        . "AND `{$dbprefix}pl_poste`.`poste` IN (" . join(",", $autres_postes) . ") "
+                        . "AND `{$dbprefix}pl_poste`.`poste` IN (" . implode(",", $autres_postes) . ") "
                         . "AND `{$dbprefix}pl_poste`.`site` = $site "
                         . "AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
                     $db = new \db();
@@ -252,7 +252,7 @@ class PlanningJobController extends BaseController
 
         // Count day hours for all agent.
         $day_hours = array();
-        if ($break_countdown) {
+        if ($break_countdown !== 0) {
             $db = new \db();
             $dateSQL = $db->escapeString($date);
 
@@ -416,7 +416,7 @@ class PlanningJobController extends BaseController
                     $exclusion[$elem['id']][]="horaires";
                 }
 
-                if ($break_countdown) {
+                if ($break_countdown !== 0) {
                     $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
 
                     $is_a_break = $positions->find($poste)->lunch();
@@ -431,7 +431,7 @@ class PlanningJobController extends BaseController
                     }
 
                     $breaktime = isset($breaktimes[$elem['id']][$jour]) ? (float) $breaktimes[$elem['id']][$jour] * 3600 : 0;
-                    $hours_limit = $hours_limit - $breaktime;
+                    $hours_limit -= $breaktime;
 
                     if ($day_hour + $requested_hours > $hours_limit) {
                         $exclusion[$elem['id']][]="break";
@@ -500,7 +500,7 @@ class PlanningJobController extends BaseController
                 $cellule_grise = $elem['grise'] == 1 ? true : $cellule_grise;
             }
         }
-        $exclus=join(',', $tab_exclus);
+        $exclus=implode(',', $tab_exclus);
 
         // Looking for availables agents.
         $agents_dispo = array();
@@ -575,11 +575,7 @@ class PlanningJobController extends BaseController
                         $motifExclusion[$elem['id']][]="skills";
                     }
                     if (in_array('categories', $exclusion[$elem['id']])) {
-                        if ($categories_nb > 1) {
-                            $motifExclusion[$elem['id']][]="no_cat";
-                        } else {
-                            $motifExclusion[$elem['id']][]="wrong_cat";
-                        }
+                        $motifExclusion[$elem['id']][] = $categories_nb > 1 ? "no_cat" : "wrong_cat";
                     }
                     if (in_array('absence', $exclusion[$elem['id']])) {
                         $motifExclusion[$elem['id']][] = 'absence';
@@ -597,9 +593,9 @@ class PlanningJobController extends BaseController
         foreach ($agents_dispo as $elem) {
             $agents_qualif[]=$elem['id'];
         }
-        $agents_qualif = join(',', $agents_qualif);
-        $absents = join(',', $absents);
-        $tab_deja_place = join(',', $tab_deja_place);
+        $agents_qualif = implode(',', $agents_qualif);
+        $absents = implode(',', $absents);
+        $tab_deja_place = implode(',', $tab_deja_place);
 
         $db = new \db();
         $dateSQL = $db->escapeString($date);
@@ -635,23 +631,19 @@ class PlanningJobController extends BaseController
 
         // Groupe agents by service.
         $newtab = array();
-        if ($agents_dispo) {
-            foreach ($agents_dispo as $elem) {
-                if ($elem['id']!=2) {
-                    if (!trim($elem['service'])) {
-                        $newtab["Sans service"][]=$elem['id'];
-                    } else {
-                        $newtab[$elem['service']][]=$elem['id'];
-                    }
+        foreach ($agents_dispo as $elem) {
+            if ($elem['id']!=2) {
+                if (trim($elem['service']) === '' || trim($elem['service']) === '0') {
+                    $newtab["Sans service"][]=$elem['id'];
+                } else {
+                    $newtab[$elem['service']][]=$elem['id'];
                 }
             }
         }
 
-        if ($autres_agents) {
-            foreach ($autres_agents as $elem) {
-                if ($elem['id']!=2) {
-                    $newtab["Autres"][]=$elem['id'];
-                }
+        foreach ($autres_agents as $elem) {
+            if ($elem['id']!=2) {
+                $newtab["Autres"][]=$elem['id'];
             }
         }
 
@@ -659,7 +651,7 @@ class PlanningJobController extends BaseController
         if (is_array($services)) {
             foreach ($services as $elem) {
                 if (array_key_exists($elem['service'], $newtab)) {
-                    $listparservices[] = join(',', $newtab[$elem['service']]);
+                    $listparservices[] = implode(',', $newtab[$elem['service']]);
                 } else {
                     // FIXME is this useful to push null element ?
                     $listparservices[] = null;
@@ -667,12 +659,8 @@ class PlanningJobController extends BaseController
             }
         }
 
-        if (array_key_exists("Autres", $newtab)) {
-            $listparservices[] = join(',', $newtab['Autres']);
-        } else {
-            $listparservices[] = null;
-        }
-        $tab_agent = join(';', $listparservices);
+        $listparservices[] = array_key_exists("Autres", $newtab) ? implode(',', $newtab['Autres']) : null;
+        $tab_agent = implode(';', $listparservices);
 
         $tableaux = array(
             'position_name' => $posteNom, 'position_id' => $poste,
@@ -775,7 +763,7 @@ class PlanningJobController extends BaseController
     }
 
     #[Route(path: '/ajax/planningjob/checkcopy', name: 'ajax.planningjobcheckcopy', methods: ['GET'])]
-    public function checkCopy(Request $request)
+    public function checkCopy(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         // Initilisation des variables
         $date = $request->get('date');
@@ -993,19 +981,14 @@ class PlanningJobController extends BaseController
         return $this->json($response);
     }
 
-    private function canManagePlanning($session, $site)
+    private function canManagePlanning($session, $site): bool
     {
         if (!$session->get('loginId')) {
             return false;
         }
 
         $droits = $GLOBALS['droits'];
-
-        if (!in_array((300 + $site), $droits) and !in_array((1000 + $site), $droits)) {
-            return false;
-        }
-
-        return true;
+        return !(!in_array((300 + $site), $droits) and !in_array((1000 + $site), $droits));
     }
 
     private function convertActionDates($action)

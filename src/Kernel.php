@@ -15,25 +15,16 @@ class Kernel extends BaseKernel
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
-    /**
-     * @return string
-    */
     public function getCacheDir(): string
     {
         return $this->getProjectDir().'/var/cache/'.$this->environment;
     }
 
-    /**
-     * @return string
-    */
     public function getLogDir(): string
     {
         return $this->getProjectDir().'/var/log';
     }
 
-    /**
-     * @return iterable
-     */
     public function registerBundles(): iterable
     {
         $contents = require $this->getProjectDir().'/config/bundles.php';

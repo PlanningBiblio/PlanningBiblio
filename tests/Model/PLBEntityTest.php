@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class PLBEntityTest extends TestCase
 {
 
-    public function test__call(){
+    public function test__call(): void{
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
@@ -21,7 +21,7 @@ class PLBEntityTest extends TestCase
         $agent->add();
     }
 
-    public function testDisable() {
+    public function testDisable(): void {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
@@ -34,7 +34,7 @@ class PLBEntityTest extends TestCase
         $absence->disable();
     }
 
-    public function testEnable() {
+    public function testEnable(): void {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
