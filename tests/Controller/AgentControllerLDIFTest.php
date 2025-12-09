@@ -9,7 +9,6 @@ class AgentControllerLDIFTest extends PLBWebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->builder->delete(Agent::class);
     }
 
@@ -20,8 +19,6 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         $this->setParam('LDIF-Matricule', 'supannempid');
         $this->setParam('Multisites-nombre', '1');
         $this->setUpPantherClient();
-
-        $this->builder->delete(Agent::class);
 
         $agent = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
