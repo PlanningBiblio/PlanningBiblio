@@ -18,6 +18,12 @@ use Tests\PLBWebTestCase;
 
 class PlanningControlCommandTest extends PLBWebTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        parent::setData('data7');
+
+    }
 
     public function testPlanningControlCommand(): void
     {
@@ -33,15 +39,12 @@ class PlanningControlCommandTest extends PLBWebTestCase
         $this->setParam('Conges-Enable', 0);
         $this->setParam('Mail-Planning', 'xxx.ss@biblibre.com');
 
+
         // Setup Panther
         $this->setUpPantherClient();
 
         // Create an agent and log in
-        $agent = $this->builder->build(Agent::class, array(
-            'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'droits' => array(4, 21, 99, 100, 301), 'supprime' => 0, 'actif' => 'Actif',
-        ));
-
+        $agent = $this->entityManager->getRepository(Agent::class)->find(1);
         $this->login($agent);
 
         // Open the planning page
@@ -81,7 +84,6 @@ class PlanningControlCommandTest extends PLBWebTestCase
         $select->selectByValue('5');
         $buttonValide = $crawler->selectButton('Valider');
         $buttonValide->click();
-
 
         //TODO use Panther instead
         $start = new \DateTime('today 09:00:00');
