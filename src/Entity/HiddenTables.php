@@ -28,7 +28,7 @@ class HiddenTables
         return $this->id;
     }
 
-    public function purge()
+    public function purge(): void
     {
         error_log("hidden tables purge");
     }

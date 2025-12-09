@@ -110,16 +110,17 @@ class PLBWebTestCase extends PantherTestCase
         };
     }
 
-    protected function getSelect($id = null)
+    protected function getSelect($id = null): \Facebook\WebDriver\WebDriverSelect
     {
         $driver = $this->client->getWebDriver();
 
-        $select = new WebDriverSelect($driver->findElement(WebDriverBy::id($id)));
-
-        return $select;
+        return new WebDriverSelect($driver->findElement(WebDriverBy::id($id)));
     }
 
-    protected function getSelectValues($id = null)
+    /**
+     * @return mixed[]
+     */
+    protected function getSelectValues($id = null): array
     {
         $select = $this->getSelect($id);
         $options = array();
@@ -131,7 +132,10 @@ class PLBWebTestCase extends PantherTestCase
         return $options;
     }
 
-    protected function getElementsText($selector = null)
+    /**
+     * @return mixed[]
+     */
+    protected function getElementsText($selector = null): array
     {
         $driver = $this->client->getWebDriver();
 

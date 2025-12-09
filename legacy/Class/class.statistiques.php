@@ -4,14 +4,12 @@ Description :
 Classe statistiques
 
 Utilisée par les fichiers du dossier "statistiques"
+ * @return mixed[]
 */
-
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-
 // AJouter les html_entity_decode latin1
 // AJouter les variables $nom, (agents,service,statut)
-
-function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours, $debut, $fin)
+function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours, $debut, $fin): array
 {
     $titre="Statistiques par $nom du $debutAlpha au $finAlpha";
 
@@ -239,7 +237,7 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
                         // $count2 permet de n'afficher qu'une ligne par date et de compter les occurences correspondantes
                         $count2 = array();
                         foreach ($v as $e) {
-                            $count2[$e] = empty($count2[$e]) ? 1 : $count2[$e] = $count2[$e] +1;
+                            $count2[$e] = empty($count2[$e]) ? 1 : ($count2[$e] += 1);
                         }
             
                         $keys = array_keys($count2);
@@ -262,7 +260,10 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
     return $lignes;
 }
 
-function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours)
+/**
+ * @return mixed[]
+ */
+function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours): array
 {
     $titre="Statistiques sur les samedis travaillés du $debut au $fin";
     $lignes=array($titre,null);
@@ -332,11 +333,11 @@ function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours)
 
 class statistiques
 {
-    public $debut=null;
-    public $fin=null;
-    public $selectedSites=null;
+    public $debut;
+    public $fin;
+    public $selectedSites;
 
-    public function ouverture()
+    public function ouverture(): void
     {
 
     // Recherche du nombre d'heures, de jours et de semaine d'ouverture au public par site
@@ -404,7 +405,7 @@ class statistiques
     /**
      * Count average hours
      */
-    public static function average($numberOfHours, $start, $end = null, $type = 'weekly')
+    public static function average($numberOfHours, $start, $end = null, $type = 'weekly'): float
     {
         $end = $end ?? $start;
         $numberOfHours = floatval($numberOfHours);

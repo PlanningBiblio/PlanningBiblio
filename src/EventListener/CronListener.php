@@ -15,7 +15,7 @@ class CronListener
         $this->cronCommand = $cronCommand;
     }
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
 
         $session = $event->getRequest()->getSession();

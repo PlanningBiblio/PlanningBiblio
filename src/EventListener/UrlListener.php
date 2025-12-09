@@ -18,7 +18,7 @@ class UrlListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $config = $this->entityManager
             ->getRepository(Config::class)

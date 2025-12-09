@@ -95,7 +95,7 @@ class ConfigController extends BaseController
     }
 
     #[Route(path: '/config', name: 'config.update', methods: ['POST'])]
-    public function update(Request $request, Session $session)
+    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -122,11 +122,7 @@ class ConfigController extends BaseController
                 }
                 // boolean and checkboxes elements.
                 if (!isset($params[$cp->getName()])) {
-                    if ($cp->getType() == 'boolean') {
-                        $params[$cp->getName()] = '0';
-                    } else {
-                        $params[$cp->getName()] = array();
-                    }
+                    $params[$cp->getName()] = $cp->getType() == 'boolean' ? '0' : array();
                 }
                 $value = $params[$cp->getName()];
 
@@ -172,7 +168,7 @@ class ConfigController extends BaseController
     }
 
     #[Route('/config/ldap-test', name: 'config.ldap_test', methods: ['POST'])]
-    public function ldapTest(Request $request)
+    public function ldapTest(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $filter = $request->get('filter');
         $host = $request->get('host');
@@ -196,11 +192,7 @@ class ConfigController extends BaseController
                 ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
 
                 if ($bind = @ldap_bind($ldapconn, $rdn, $password)) {
-                    if ($search = @ldap_search($ldapconn, $suffix, $filter, array($idAttribute))) {
-                        $return = ['ok'];
-                    } else {
-                        $return = ['search'];
-                    }
+                    $return = $search = @ldap_search($ldapconn, $suffix, $filter, array($idAttribute)) ? ['ok'] : ['search'];
                 } else {
                     $return = ['bind'];
                 }

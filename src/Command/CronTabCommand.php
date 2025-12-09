@@ -130,7 +130,7 @@ class CronTabCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function update_cron($cron)
+    private function update_cron($cron): void
     {
         $last = date_create();
 
