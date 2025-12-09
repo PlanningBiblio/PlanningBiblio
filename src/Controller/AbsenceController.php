@@ -257,7 +257,7 @@ class AbsenceController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        $result = $this->save_new($request, $this->admin);
+        $result = $this->save_new($request);
 
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
@@ -367,22 +367,22 @@ class AbsenceController extends BaseController
         }
 
         $absence['status'] = 'ASKED';
-        $absence['status_editable'] = ($adminN1 or $adminN2) ? true : false;
+        $absence['status_editable'] = $adminN1 or $adminN2;
         if ($valide == 0 && $valideN1 > 0) {
             $absence['status'] = 'ACCEPTED_N1';
         }
         if ($valide > 0) {
             $absence['status'] = 'ACCEPTED_N2';
-            $absence['status_editable'] = $adminN2 ? true : false;
-            $absence['editable'] = $adminN2 ? true : false;
+            $absence['status_editable'] = $adminN2;
+            $absence['editable'] = $adminN2;
         }
         if ($valide == 0 && $valideN1 < 0) {
             $absence['status'] = 'REJECTED_N1';
         }
         if ($valide < 0) {
             $absence['status'] = 'REJECTED_N2';
-            $absence['status_editable'] = $adminN2 ? true : false;
-            $absence['editable'] = $adminN2 ? true : false;
+            $absence['status_editable'] = $adminN2;
+            $absence['editable'] = $adminN2;
         }
 
         // Sécurité
@@ -455,7 +455,7 @@ class AbsenceController extends BaseController
     }
 
     #[Route(path: '/absence', name: 'absence.delete', methods: ['DELETE'])]
-    public function delete_absence(Request $request)
+    public function delete_absence(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();
 
@@ -1404,7 +1404,7 @@ class AbsenceController extends BaseController
         }
 
         $message.="<li>Motif : $motif";
-        if ($motif_autre) {
+        if ($motif_autre !== '' && $motif_autre !== '0') {
             $message.=" / $motif_autre";
         }
         $message.="</li>";
@@ -1453,7 +1453,10 @@ class AbsenceController extends BaseController
         return $this->redirectToRoute('absence.index');
     }
 
-    private function filterAgents($request)
+    /**
+     * @return mixed[]
+     */
+    private function filterAgents($request): array
     {
         $session = $request->getSession();
 
@@ -1530,7 +1533,7 @@ class AbsenceController extends BaseController
         return $valid_ids;
     }
 
-    private function setAdminPermissions()
+    private function setAdminPermissions(): void
     {
         // If can validate level 1: admin = true.
         // If can validate level 2: adminN2 = true.
@@ -1548,7 +1551,10 @@ class AbsenceController extends BaseController
         }
     }
 
-    private function availablesReasons()
+    /**
+     * @return mixed[]
+     */
+    private function availablesReasons(): array
     {
         $db_reasons=new \db();
         $db_reasons->select("select_abs", null, null, "order by rang");
@@ -1578,9 +1584,9 @@ class AbsenceController extends BaseController
         return $reasons;
     }
 
-    private function reasonTypes()
+    private function reasonTypes(): array
     {
-        $reason_types = array(
+        return array(
             array(
                 'id' => 0,
                 'valeur' => 'N1 cliquable'
@@ -1594,11 +1600,12 @@ class AbsenceController extends BaseController
                 'valeur' => 'N2'
             )
         );
-
-        return $reason_types;
     }
 
-    private function absenceInfos()
+    /**
+     * @return mixed[]
+     */
+    private function absenceInfos(): array
     {
         $date = date("Y-m-d");
         $db = new \db();
@@ -1615,7 +1622,7 @@ class AbsenceController extends BaseController
         return $absences_infos;
     }
 
-    private function canEdit($session, $perso_ids)
+    private function canEdit($session, $perso_ids): bool
     {
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             if (in_array((200+$i), $this->droits) or in_array((500+$i), $this->droits)) {
@@ -1626,11 +1633,6 @@ class AbsenceController extends BaseController
         if ($this->edit_own_absences and count($perso_ids) == 1 and in_array($session->get('loginId'), $perso_ids)) {
             return true;
         }
-
-        if ($this->agents_multiples and $this->edit_own_absences and in_array($session->get('loginId'), $perso_ids)) {
-            return true;
-        }
-
-        return false;
+        return $this->agents_multiples and $this->edit_own_absences and in_array($session->get('loginId'), $perso_ids);
     }
 }

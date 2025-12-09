@@ -76,10 +76,9 @@ class Ldif2Array {
 
 
     /**
-    * Sanity check before building the array, returns false if error
-    * @return bool
-    */
-    function makeArray() {
+     * Sanity check before building the array, returns false if error
+     */
+    function makeArray(): bool {
        if($this->file == '') {
          if($this->rawdata == '') {
            echo "No filename specified, aborting";
@@ -113,10 +112,9 @@ class Ldif2Array {
 
 
     /**
-    * Build the array in two passes
-    * @return void
-    */
-    function parse2Array() {
+     * Build the array in two passes
+     */
+    function parse2Array(): void {
         /**
         * Thanks to Vladimir Struchkov <great_boba yahoo com> for providing the
         * code to extract base64 encoded values

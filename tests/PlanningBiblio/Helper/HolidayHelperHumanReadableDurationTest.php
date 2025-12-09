@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class HolidayHelperHumanReadableDurationTest extends TestCase
 {
-    public function testHumanReadableDuration() {
+    public function testHumanReadableDuration(): void {
         $GLOBALS['config']['Conges-Mode'] = 'jours';
 
         $holiday_helper = new HolidayHelper();

@@ -106,7 +106,7 @@ class CompTimeController extends BaseController
     }
 
     #[Route(path: '/comptime', name: 'comptime.save', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $session = $request->getSession();
 
@@ -182,7 +182,7 @@ class CompTimeController extends BaseController
         if ($hre_fin != '23:59:59') {
             $message .= ' ' . heure3($hre_fin);
         }
-        if ($commentaires) {
+        if ($commentaires !== '' && $commentaires !== '0') {
             $message .= "<br/><br/>Commentaire :<br/>$commentaires<br/>";
         }
 

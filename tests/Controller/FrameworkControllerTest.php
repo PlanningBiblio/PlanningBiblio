@@ -19,7 +19,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testListTable()
+    public function testListTable(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
@@ -112,7 +112,7 @@ class FrameworkControllerTest extends PLBWebTestCase
 
     }
 
-    public function testListLine()
+    public function testListLine(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
@@ -176,7 +176,7 @@ class FrameworkControllerTest extends PLBWebTestCase
 
     }
 
-    public function testListGroup()
+    public function testListGroup(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
@@ -267,7 +267,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(4)->text(),"Imprimer");
     }
 
-    public function testGroupAdd()
+    public function testGroupAdd(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
@@ -316,7 +316,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertTrue(in_array(0, $table_list), 'Tab1');
     }
 
-    public function testEditAffectedTable()
+    public function testEditAffectedTable(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
@@ -400,7 +400,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(2)->attr('aria-disabled'),'true');
     }
 
-    public function testEditNoAffectedTable()
+    public function testEditNoAffectedTable(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
