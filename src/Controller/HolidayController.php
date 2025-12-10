@@ -591,6 +591,7 @@ class HolidayController extends BaseController
         $reliquat_jours = null;
 
         $hoursPerDay = null;
+        $hoursPerDayInHoursMinutes = null;
         if ($holiday_helper->showHoursToDays()) {
 
             $hoursPerDay               = $holiday_helper->hoursPerDay($perso_id);
