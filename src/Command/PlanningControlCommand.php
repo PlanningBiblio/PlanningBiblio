@@ -113,7 +113,7 @@ class PlanningControlCommand extends Command
                 ]);
 
                 if (!$planningPositionTabAffectation) {
-                    $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas cr&eacute;&eacute;</span></strong>\n";
+                    $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas créé</span></strong>\n";
                     continue;
                 } else {
                     // Si le planning est créé, on récupère le numéro du tableau pour ensuite
