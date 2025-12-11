@@ -18,7 +18,7 @@ final class Version20251205155710 extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `technical`, `ordre`) VALUES ('ICS-Delay', 'text', '1', 'ICS', 'D&eacute;lai entre chaque requ&ecirc;te ICS lors de l\'import', 1, '71');");
+        $this->addSql("INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `technical`, `ordre`) VALUES ('ICS-Delay', 'text', '1', 'ICS', 'Délai entre chaque requête ICS lors de l\'import', 1, '71');");
     }
 
     public function down(Schema $schema): void
