@@ -12,7 +12,7 @@ class LoggerTest extends TestCase
 
     private $entityManager;
 
-    public function testLog(): void{
+    public function testLog(){
         global $entityManager;
         global $stdout;
 

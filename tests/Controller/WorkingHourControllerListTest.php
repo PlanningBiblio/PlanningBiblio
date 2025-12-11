@@ -49,7 +49,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
         return $week_planning->getId();
     }
 
-    public function testWeekPlanningList(): void
+    public function testWeekPlanningList()
     {
         $this->setParam('Absences-notifications-agent-par-agent', 1);
         $this->setParam('Multisites-nombre', 1);
@@ -117,7 +117,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
         $this->assertStringContainsString('Jean', $result->eq(2)->text(null,false));
     }
 
-    public function testStatuses(): void
+    public function testStatuses()
     {
         $this->setParam('Absences-notifications-agent-par-agent', 1);
         $this->setParam('Multisites-nombre', 1);

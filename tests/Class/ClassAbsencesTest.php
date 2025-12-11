@@ -13,7 +13,7 @@ require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 
 class ClassAbsencesTest extends PLBWebTestCase
 {
-    public function testBuildICSContent(): void
+    public function testBuildICSContent()
     {
         $absence = new absences();
         $absence->perso_id = 8;
@@ -43,7 +43,7 @@ class ClassAbsencesTest extends PLBWebTestCase
         $this->assertEquals("DTEND;TZID=$timezone:20220117T123000", $lines[15], 'DTEND;TZID h:m');
     }
 
-    public function testRecipients(): void
+    public function testRecipients()
     {
         global $entityManager;
 
@@ -77,7 +77,7 @@ class ClassAbsencesTest extends PLBWebTestCase
         $this->assertEmpty($destinataires, 'When all Absences-notification* are empty arrays, recipients is empty');
     }
 
-    public function testGetRecipients2(): void
+    public function testGetRecipients2()
     {
         $this->setParam('Absences-notifications-agent-par-agent', 1);
         $this->setParam('Absences-validation', 1);

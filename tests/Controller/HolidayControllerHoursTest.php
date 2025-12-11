@@ -26,7 +26,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->logInAgent($admin, array(100));
     }
 
-    public function testHolidayOneAgentAllDayNonValidated(): void
+    public function testHolidayOneAgentAllDayNonValidated()
     {
         $entityManager = $this->entityManager;
 
@@ -75,7 +75,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->assertEquals($jdevoe->getCompTime(), 35, "comp time didn't change");
     }
 
-    public function testHolidayOneAgentAllDay(): void
+    public function testHolidayOneAgentAllDay()
     {
         $entityManager = $this->entityManager;
 
@@ -120,7 +120,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->assertEquals($jdevoe->getCompTime(), 35, "comp time didn't change");
     }
 
-    public function testHolidayOneAgentOneHour(): void
+    public function testHolidayOneAgentOneHour()
     {
         $entityManager = $this->entityManager;
 
@@ -171,7 +171,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
 
     }
 
-    public function testHolidayOneAgentOneDayOnCompTime(): void
+    public function testHolidayOneAgentOneDayOnCompTime()
     {
         $entityManager = $this->entityManager;
 
@@ -220,17 +220,14 @@ class HolidayControllerHoursTest extends PLBWebTestCase
 
     }
 
-    private function deleteWorkingHours(): void
+    private function deleteWorkingHours()
     {
         $db = new \db();
         $db->CSRFToken = '00000';
         $db->delete('planning_hebdo');
     }
 
-    /**
-     * @return mixed[]
-     */
-    private function getHolidayData($replace = array()): array
+    private function getHolidayData($replace = array())
     {
         $data = array(
             'CSRFToken' => '00000',
@@ -259,7 +256,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         return $data;
     }
 
-    private function addWorkingHours($agent, $times): void
+    private function addWorkingHours($agent, $times)
     {
         $workinghours = array(
             0 => array('0' => $times[0], '1' => $times[1], '2' => $times[2], '3' => $times[3]),

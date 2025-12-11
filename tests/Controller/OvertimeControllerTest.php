@@ -12,7 +12,7 @@ use Tests\FixtureBuilder;
 class OvertimeControllerTest extends PLBWebTestCase
 {
 
-    public function testSave(): void
+    public function testSave()
     {
         $entityManager = $this->entityManager;
 
@@ -57,7 +57,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $this->assertEquals('heures supp', $overTime2->getComment(), 'Commentaire is heures supp');
     }
 
-    public function testIndex(): void
+    public function testIndex()
     {
         $entityManager = $this->entityManager;
         date_default_timezone_set('UTC');
@@ -110,7 +110,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $entityManager->flush();
 
         if (date('m') < 9) {
-            $y -= 1;
+            $y = $y -1;
         }
 
         $crawler = $this->client->request('GET', '/overtime', array(
@@ -170,7 +170,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('1h30', $result->text('Node does not exist', false), 'heures is 1h30');
     }
 
-    public function testEdit(): void
+    public function testEdit()
     {
         $entityManager = $this->entityManager;
 

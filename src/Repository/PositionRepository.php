@@ -9,10 +9,7 @@ use App\Entity\PlanningPositionLines;
 
 class PositionRepository extends EntityRepository
 {
-    /**
-     * @return mixed[]
-     */
-    public function getAllSkills(): array {
+    public function getAllSkills() {
         $entityManager = $this->getEntityManager();
         $positions = $entityManager->getRepository(Position::class)->findAll();
         $all_skills = array();
@@ -24,10 +21,11 @@ class PositionRepository extends EntityRepository
                 }
             }
         }
-        return array_unique($all_skills);
+        $all_skills = array_unique($all_skills);
+        return $all_skills;
     }
 
-    public function purgeAll($limit_date): int {
+    public function purgeAll($limit_date) {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')
@@ -45,7 +43,7 @@ class PositionRepository extends EntityRepository
                     ->andWhere('a.poste = :id')
                     ->setParameter('id', $result->getId());
             $lines = $builder->getQuery()->getResult();
-            if (count($lines) == 0) {
+            if (sizeof($lines) == 0) {
                 $entityManager->remove($result);
                 $deleted_position++;
             }

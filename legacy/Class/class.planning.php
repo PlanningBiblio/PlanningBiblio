@@ -14,18 +14,18 @@ use App\Entity\Position;
 
 class planning
 {
-    public $CSRFToken;
-    public $date;
+    public $CSRFToken = null;
+    public $date=null;
     public $site=1;
     public $categorieA=false;
     public $elements=array();
-    public $menudiv;
-    public $notes;
-    public $notesTextarea;
-    public $validation;
+    public $menudiv=null;
+    public $notes=null;
+    public $notesTextarea=null;
+    public $validation=null;
 
 
-    public function fetch(): void
+    public function fetch()
     {
         if (!$this->date) {
             return;
@@ -99,7 +99,7 @@ class planning
     }
 
     // Affiche la liste des agents dans le menudiv
-    public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $quotaSP, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey): void
+    public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $quotaSP, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey)
     {
         $config=$GLOBALS['config'];
         $dbprefix=$config['dbprefix'];
@@ -237,7 +237,7 @@ class planning
                             }
               
                             $heuresHebdoTitle="Quota hebdomadaire = ".heure4($heuresHebdo, true)." - ".heure4($heuresAbsences, true)." (Absences{$pourcent})";
-                            $heuresHebdo -= $heuresAbsences;
+                            $heuresHebdo=$heuresHebdo-$heuresAbsences;
                             if ($heuresHebdo<0) {
                                 $heuresHebdo=0;
                             }
@@ -372,7 +372,7 @@ class planning
     * @param string $this->date , date au format YYYY-MM-DD
     * Envoie des notifications en cas de validation ou changement de planning aux agents concernés
     */
-    public function notifications(): void
+    public function notifications()
     {
         $version="ajax";
         require_once 'class.personnel.php';
@@ -481,7 +481,7 @@ class planning
             $notificationType="nouveauPlanning";
 
             // Enregistrement des infos dans la table BDD
-            $insert=array("date"=>$date, "site"=>$site, "data"=>json_encode($tab));
+            $insert=array("date"=>$date, "site"=>$site, "data"=>json_encode((array)$tab));
             $db2=new db();
             $db2->CSRFToken = $this->CSRFToken;
             $db2->insert("pl_notifications", $insert);
@@ -539,7 +539,7 @@ class planning
             }
 
             // Modification des infos dans la BDD
-            $update=array("data"=>json_encode($tab));
+            $update=array("data"=>json_encode((array)$tab));
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
             $db->update("pl_notifications", $update, array("date"=>$date, "site"=>$site));
@@ -683,7 +683,7 @@ class planning
   
     // Notes
     // Récupère les notes (en bas des plannings)
-    public function getNotes(): void
+    public function getNotes()
     {
         $date = $this->date;
 
@@ -729,14 +729,14 @@ class planning
                     'notes' => $notes,
                     'textarea' => $notesTextarea,
                     'validation' => $validation,
-                    'display' => (bool) trim(strval($notes)),
+                    'display' => trim(strval($notes)) ? true : false,
                     'deleted' => ($validation and !trim(strval($notes))) ? 'Suppression du commentaire : ' : null,
                );
             }
         }
     }
 
-    public function update_cell_add_agents($date, $debut, $fin, $poste, $site, $perso_id, $login_id, $CSRFToken): void
+    public function update_cell_add_agents($date, $debut, $fin, $poste, $site, $perso_id, $login_id, $CSRFToken)
     {
         $insert = array(
             "date" => $date,
@@ -755,7 +755,7 @@ class planning
     }
 
     // Insertion, mise à jour des notes
-    public function updateNotes(): void
+    public function updateNotes()
     {
         $date=$this->date;
         $site=$this->site;

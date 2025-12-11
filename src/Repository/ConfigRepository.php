@@ -13,7 +13,7 @@ class ConfigRepository extends EntityRepository
     /**
      * @return Config[] Returns an array of Config objects
      */
-    public function getAll(): array {
+    public function getAll() {
         $entityManager = $this->getEntityManager();
         $entities = $entityManager->getRepository(Config::class)->findAll();
 

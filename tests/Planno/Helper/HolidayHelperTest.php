@@ -9,7 +9,7 @@ use Tests\FixtureBuilder;
 
 class HolidayHelperTest extends TestCase
 {
-    public function testgetCountedHoursWithCongesFulldayReferenceTime(): void {
+    public function testgetCountedHoursWithCongesFulldayReferenceTime() {
         $GLOBALS['config']['Conges-Mode'] = 'jours';
         $GLOBALS['config']['Conges-fullday-switching-time'] = 4.25;
         $GLOBALS['config']['Conges-fullday-reference-time'] = 7.5;
@@ -169,7 +169,7 @@ class HolidayHelperTest extends TestCase
         $this->assertEquals(0, $result['days'], 'Closing day: 0 day');
     }
 
-    public function testgetCountedHoursHolidayModeDays(): void {
+    public function testgetCountedHoursHolidayModeDays() {
         $GLOBALS['config']['Conges-Mode'] = 'jours';
         $GLOBALS['config']['Conges-fullday-switching-time'] = '';
         $GLOBALS['config']['Conges-fullday-reference-time'] = '';
@@ -225,7 +225,7 @@ class HolidayHelperTest extends TestCase
 
     }
 
-    public function testgetCountedHoursHolidayModeHours(): void {
+    public function testgetCountedHoursHolidayModeHours() {
         $GLOBALS['config']['Conges-Mode'] = 'heures';
         $GLOBALS['config']['Conges-Recuperations'] = 0;
         $GLOBALS['config']['Conges-demi-journees'] = 0;

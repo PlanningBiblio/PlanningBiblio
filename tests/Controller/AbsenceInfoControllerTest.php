@@ -13,7 +13,7 @@ use Tests\FixtureBuilder;
 class AbsenceInfoControllerTest extends PLBWebTestCase
 {
 
-    public function testAdd(): void
+    public function testAdd()
     {
         $entityManager = $this->entityManager;
 
@@ -38,7 +38,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
     }
 
-    public function testNewForm(): void
+    public function testNewForm()
     {
         $entityManager = $this->entityManager;
 
@@ -77,7 +77,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($class->text('Node does not exist', false), 'Annuler','a button is Annuler');
     }
 
-    public function testFormEdit(): void
+    public function testFormEdit()
     {
         $entityManager = $this->entityManager;
 
@@ -131,7 +131,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($class->text('Node does not exist', false), 'Supprimer','a button is Supprimer');
     }
 
-    public function testAbsenceInfoList(): void
+    public function testAbsenceInfoList()
     {
         $entityManager = $this->entityManager;
         date_default_timezone_set('UTC');

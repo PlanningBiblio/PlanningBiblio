@@ -11,7 +11,7 @@ use App\Entity\Skill;
 
 class SkillRepository extends EntityRepository
 {
-    public function purge($id): int
+    public function purge($id)
     {
         $entityManager = $this->getEntityManager();
         $all_skills = $entityManager->getRepository(Position::class)->getAllSkills();
@@ -32,7 +32,7 @@ class SkillRepository extends EntityRepository
         return 1;
     }
 
-    public function purgeAll($limit_date): int {
+    public function purgeAll($limit_date) {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')

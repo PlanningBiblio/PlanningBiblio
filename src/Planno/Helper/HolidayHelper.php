@@ -32,7 +32,7 @@ class HolidayHelper extends BaseHelper
           $hours = 0;
         }
 
-        $negative = $hours < 0;
+        $negative = $hours < 0 ? true : false;
         if ($negative) {
             $hours = abs($hours);
         }
@@ -65,10 +65,7 @@ class HolidayHelper extends BaseHelper
         return "$days jour";
     }
 
-    /**
-     * @return mixed[]
-     */
-    public function getCountedHours(): array
+    public function getCountedHours()
     {
         $debut = $this->data['start'];
         $hre_debut = $this->data['hour_start'];
@@ -207,7 +204,7 @@ class HolidayHelper extends BaseHelper
                 // 3600 = 1h, 12600 = 3,5h, 25200 = 7h
                 // the default time for switching from half-day to full-day is 4 hours (14400 seconds)
                 $switching_time = (float) ($this->config['Conges-fullday-switching-time'] ?? 4);
-                $switching_time *= 3600;
+                $switching_time = $switching_time * 3600;
 
                 if (is_numeric($this->config('Conges-fullday-reference-time'))) {
                     $reference_time = $this->config('Conges-fullday-reference-time') * 3600;
@@ -306,7 +303,7 @@ class HolidayHelper extends BaseHelper
         return $this->config('conges-hours-per-day');
     }
 
-    public function halfDayStartEndHours(): array
+    public function halfDayStartEndHours()
     {
         $agent = $this->data['agent'];
         $start = $this->data['start'];
@@ -350,7 +347,11 @@ class HolidayHelper extends BaseHelper
         // If the 2nd period doesn't exist and the first start before 12:00,
         // morning_end is 12:00
         if (empty($hours_last_day[1][0])) {
-            $morning_end = $hours_last_day[0][0] >= '12:00:00' ? $hours_last_day[0][0] : '12:00:00';
+            if ($hours_last_day[0][0] >= '12:00:00') {
+                $morning_end = $hours_last_day[0][0];
+            } else {
+                $morning_end = '12:00:00';
+            }
         }
 
         if ($start == $end && $start_halfday == 'morning') {
@@ -454,7 +455,7 @@ class HolidayHelper extends BaseHelper
          return array('times' => $times, 'breaktimes' => $breaktimes, 'nb_semaine' => $nb_semaine);
     }
 
-    private function isClosingDay($date): bool
+    private function isClosingDay($date)
     {
         $j = new ClosingDay();
         $j->fetchByDate($date);
@@ -469,7 +470,7 @@ class HolidayHelper extends BaseHelper
         return false;
     }
 
-    private function hasFixedBreak($times): bool
+    private function hasFixedBreak($times)
     {
         $indexes = array(0,1,2,3,5,6);
 
@@ -480,7 +481,9 @@ class HolidayHelper extends BaseHelper
             }
         }
 
-        return $slots > 2;
+        $break = $slots > 2;
+
+        return $break;
     }
 
     /** The standardizeTime function fills cells 0 and 3 in all cases to be able to place the break on cells 1 and 2

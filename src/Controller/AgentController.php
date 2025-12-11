@@ -196,7 +196,7 @@ class AgentController extends BaseController
 
         $actif = null;
         $droits = $GLOBALS['droits'];
-        $admin = in_array(21, $droits);
+        $admin = in_array(21, $droits) ? true : false;
 
         $db_groupes = new \db();
         $db_groupes->select2("acces", array("groupe_id", "groupe", "categorie", "ordre"), "groupe_id not in (99,100)", "group by groupe");
@@ -342,7 +342,7 @@ class AgentController extends BaseController
             $informations = stripslashes($db->result[0]['informations']);
             $recup = stripslashes($db->result[0]['recup']);
             $sites = html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-            $sites = $sites !== '' && $sites !== '0'?json_decode($sites, true):array();
+            $sites = $sites?json_decode($sites, true):array();
             $action = "modif";
             $titre = $nom." ".$prenom;
 
@@ -496,7 +496,7 @@ class AgentController extends BaseController
             $end = 40;
             $times = array();
             for ($i = 1; $i < $end; $i++) {
-                $times[] = array($i, $i . 'h00');
+                $times[] = array($i + 0, $i . 'h00');
                 $minute = 0;
                 for ($y = 1; $y < $nb_interval; $y++) {
                     $minute = sprintf("%02d", $minute + $granularite);
@@ -611,7 +611,7 @@ class AgentController extends BaseController
             }
 
             if ( is_array($acces) ) {
-                $elem['checked'] = in_array($elem['groupe_id'], $acces);
+                $elem['checked'] = in_array($elem['groupe_id'], $acces) ? true : false;
             }
 
             $rights[ $elem['categorie'] ]['rights'][] = $elem;
@@ -651,7 +651,7 @@ class AgentController extends BaseController
 
                     $checked = false;
                     if (is_array($acces)) {
-                        $checked = in_array($groupe_id, $acces);
+                        $checked = in_array($groupe_id, $acces) ? true : false;
                     }
 
                     $elem['sites'][] = array(
@@ -764,7 +764,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent', name: 'agent.save', methods: ['POST'])]
-    public function save(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request)
     {
 
         $params = $request->request->all();
@@ -1052,7 +1052,7 @@ class AgentController extends BaseController
         }
     }
 
-    private function changeAgentPassword(Request $request, $agent_id, $password): \Symfony\Component\HttpFoundation\Response {
+    private function changeAgentPassword(Request $request, $agent_id, $password) {
 
         $agent = $this->entityManager->find(Agent::class, $agent_id);
 
@@ -1116,7 +1116,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/check-password', name: 'ajax.checkpassword', methods: ['GET'])]
-    public function check_password(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function check_password(Request $request)
     {
         $password = $request->get('password');
         $response = new Response();
@@ -1128,7 +1128,7 @@ class AgentController extends BaseController
     }
 
     // Returns true if the password is complex enough, and false otherwise
-    private function check_password_complexity($password): bool
+    private function check_password_complexity($password)
     {
         $minimum_password_length = $this->config('Auth-PasswordLength') ?? 8;
         if (strlen($password) < $minimum_password_length) {
@@ -1154,7 +1154,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/is-current-password', name: 'ajax.iscurrentpassword', methods: ['GET'])]
-    public function isCurrentPassword(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function isCurrentPassword(Request $request)
     {
         $session = $request->getSession();
 
@@ -1349,7 +1349,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent/ldap', name: 'agent.ldap.import', methods: ['POST'])]
-    public function ldap_import(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function ldap_import(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
         $actif = 'Actif';
@@ -1502,7 +1502,7 @@ class AgentController extends BaseController
 
 
     #[Route(path: '/agent/ldif', name: 'agent.ldif.import', methods: ['POST'])]
-    public function ldif_import(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function ldif_import(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
         $erreurs = false;
@@ -1572,10 +1572,7 @@ class AgentController extends BaseController
     }
 
 
-    /**
-     * @return mixed[]|non-empty-array[]
-     */
-    private function ldif_search($searchTerms): array {
+    private function ldif_search($searchTerms) {
 
         // Return an empty list if $searchTerms is empty (as for an LDAP search)
         if (empty($searchTerms)) {
@@ -1662,7 +1659,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent', name: 'agent.delete', methods: ['DELETE'])]
-    public function deleteAgent(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
+    public function deleteAgent(Request $request, Session $session)
     {
         // Initialisation des variables
         $id = $request->get('id');
@@ -1890,7 +1887,7 @@ class AgentController extends BaseController
     }
 
     #[Route('/agent/ics/reset-url', name: 'agent.ics.reset_url', methods: ['POST'])]
-    public function resetIcsUrl(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function resetIcsUrl(Request $request)
     {
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');
@@ -1915,7 +1912,7 @@ class AgentController extends BaseController
      * Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.php
      */
     #[Route(path: '/agent/update-list', name: 'agent.update_list', methods: ['GET'])]
-    public function updateAgentList(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function updateAgentList(Request $request)
     {
         $p=new \personnel();
         if ($request->get('deleted')=="yes") {
@@ -1996,7 +1993,7 @@ class AgentController extends BaseController
         return $credits;
     }
 
-    private function login($firstname = '', $lastname = '', $mail = ''): string
+    private function login($firstname = '', $lastname = '', $mail = '')
     {
 
         $firstname = trim($firstname);
@@ -2007,10 +2004,10 @@ class AgentController extends BaseController
 
         switch ($this->config('Auth-LoginLayout')) {
             case 'lastname.firstname' :
-                if ($lastname !== '' && $lastname !== '0') {
+                if ($lastname) {
                     $tmp[] = $lastname;
                 }
-                if ($firstname !== '' && $firstname !== '0') {
+                if ($firstname) {
                     $tmp[] = $firstname;
                 }
                 break;
@@ -2024,10 +2021,10 @@ class AgentController extends BaseController
                 break;
 
             default :
-                if ($firstname !== '' && $firstname !== '0') {
+                if ($firstname) {
                     $tmp[] = $firstname;
                 }
-                if ($lastname !== '' && $lastname !== '0') {
+                if ($lastname) {
                     $tmp[] = $lastname;
                 }
                 break;
@@ -2061,10 +2058,7 @@ class AgentController extends BaseController
     }
 
     // Ajout des noms dans les tableaux postes attribués et dispo
-    /**
-     * @return array{mixed, mixed}[]
-     */
-    private function postesNoms($postes, $tab_noms): array
+    private function postesNoms($postes, $tab_noms)
     {
         $tmp = array();
         if (is_array($postes)) {

@@ -23,7 +23,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         $this->logInAgent($admin, array(100));
     }
 
-    public function testHolidayOnHalfday(): void
+    public function testHolidayOnHalfday()
     {
         $entityManager = $this->entityManager;
 
@@ -56,7 +56,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         $this->assertEquals($result->rest, 0, 'Morning Holiday rest is 0');
     }
 
-    private function addWorkingHours($agent, $times): void
+    private function addWorkingHours($agent, $times)
     {
         $workinghours = array(
             0 => array('0' => $times[0], '1' => $times[1], '2' => $times[2], '3' => $times[3]),
@@ -83,7 +83,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         );
     }
 
-    private function deleteWorkingHours(): void
+    private function deleteWorkingHours()
     {
         $db = new \db();
         $db->CSRFToken = '00000';

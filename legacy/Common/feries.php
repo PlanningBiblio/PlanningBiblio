@@ -24,7 +24,7 @@ if (!isset($version)) {
     exit;
 }
 
-function jour_ferie($date): ?string
+function jour_ferie($date)
 {
     $tmp=explode("-", $date);
     $jour = $tmp[2];

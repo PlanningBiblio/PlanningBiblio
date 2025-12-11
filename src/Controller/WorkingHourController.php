@@ -80,7 +80,7 @@ class WorkingHourController extends BaseController
             $p->fetch();
             $this->workinghours = $p->elements[0];
             $cle = $p->elements[0]['cle'];
-            $this->imported = (bool) $cle;
+            $this->imported = $cle ? true : false;
             $perso_id = $p->elements[0]['perso_id'];
             $temps = $p->elements[0]['temps'];
             $breaktime = $p->elements[0]['breaktime'] ?? array();
@@ -438,7 +438,7 @@ class WorkingHourController extends BaseController
 
         $remplace = $p->elements[0]['remplace'];
         $cle = $p->elements[0]['cle'];
-        $this->imported = (bool) $cle;
+        $this->imported = $cle ? true : false;
         // Informations sur l'agents
         $p = new \personnel();
         $p->fetchById($perso_id);
@@ -475,10 +475,10 @@ class WorkingHourController extends BaseController
 
         if (!$cle) {
             if ($modifAutorisee) {
-                $selected1 = isset($valide_n1) && $valide_n1 > 0;
-                $selected2 = isset($valide_n1) && $valide_n1 < 0;
-                $selected3 = isset($valide_n2) && $valide_n2 > 0;
-                $selected4 = isset($valide_n2) && $valide_n2 < 0;
+                $selected1 = isset($valide_n1) && $valide_n1 > 0 ? true : false;
+                $selected2 = isset($valide_n1) && $valide_n1 < 0 ? true : false;
+                $selected3 = isset($valide_n2) && $valide_n2 > 0 ? true : false;
+                $selected4 = isset($valide_n2) && $valide_n2 < 0 ? true : false;
                 // Si pas admin, affiche le niveau en validation en texte simple
             } else {
                 $selected1 = false;
@@ -541,7 +541,7 @@ class WorkingHourController extends BaseController
     }
 
     #[Route(path: '/workinghour', name: 'workinghour.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
+    public function save(Request $request, Session $session){
         $post = $request->request->all();
         $msg = null;
         $msgType = 'notice';
@@ -625,7 +625,7 @@ class WorkingHourController extends BaseController
     }
 
     #[Route(path: '/workinghour', name: 'workinghour.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
+    public function delete(Request $request, Session $session){
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get("id");
 
@@ -645,7 +645,7 @@ class WorkingHourController extends BaseController
     * Fichier appelé en arrière plan par la fonction JS plHebdoVerifForm (public/js/workingHour.js)
     */
     #[Route(path: '/workinghour/check', name: 'workinghour.check', methods: ['GET'])]
-    public function check(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    public function check(Request $request, Session $session)
     {
         $debut = $request->get('debut');
         $fin = $request->get('fin');
@@ -733,7 +733,7 @@ class WorkingHourController extends BaseController
         return new Response(json_encode($result));
     }
 
-    private function can_edit(): bool
+    private function can_edit()
     {
         // Working hours imported from external
         // sources cannot be edited.
@@ -747,6 +747,10 @@ class WorkingHourController extends BaseController
         }
 
         $valide_n2 = $this->workinghours['valide'] ?? 0;
-        return !($valide_n2 && !$this->adminN2);
+        if ($valide_n2 && !$this->adminN2) {
+            return false;
+        }
+
+        return true;
     }
 }

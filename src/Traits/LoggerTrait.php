@@ -6,7 +6,7 @@ use App\Entity\Log;
 
 trait LoggerTrait
 {
-    public function log($message, $program, $stdout = false): void {
+    public function log($message, $program, $stdout = false) {
         if ($stdout) {
             echo $message . "\n";
 	    }

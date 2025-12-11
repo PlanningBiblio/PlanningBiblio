@@ -57,7 +57,7 @@ class AppExtension extends AbstractExtension
         return dateFr($date, true);
     }
 
-    public function digit($number, $digits): string
+    public function digit($number, $digits)
     {
         return sprintf('%0' . $digits . 'd', $number);
     }
@@ -80,7 +80,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function userCan($right, $site = 0): bool
+    public function userCan($right, $site = 0)
     {
         $droits = $GLOBALS['droits'];
 
@@ -98,7 +98,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function hoursToDays($hours, $perso_id): string
+    public function hoursToDays($hours, $perso_id)
     {
         $holiday_helper = new HolidayHelper();
         if ($hours && $perso_id) {
@@ -137,7 +137,7 @@ class AppExtension extends AbstractExtension
         return $config[$key];
     }
 
-    public function menuIsActive($menu, $requested_url): bool
+    public function menuIsActive($menu, $requested_url)
     {
         $config = $GLOBALS['config'];
 
@@ -152,7 +152,12 @@ class AppExtension extends AbstractExtension
             if (preg_match('/^\/(\/d{4}-\d{2}-\d{2})/', $uri)) {
                 return true;
             }
-            return (bool) preg_match('/^\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri);
+
+            if (preg_match('/^\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri)) {
+                return true;
+            }
+
+            return false;
         }
 
         if(strpos($requested_url, "{$config['URL']}/$menu") !== false){

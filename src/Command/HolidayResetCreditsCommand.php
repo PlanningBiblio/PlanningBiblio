@@ -52,7 +52,7 @@ class HolidayResetCreditsCommand extends Command
 	}
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
-        $transferCompTime = !empty($config['Conges-transfer-comp-time']);
+        $transferCompTime = (bool) !empty($config['Conges-transfer-comp-time']);
 
         $CSRFToken = CSRFToken();
 

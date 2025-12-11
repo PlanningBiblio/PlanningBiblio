@@ -11,21 +11,21 @@ require_once 'class.absences.php';
 
 class planningHebdo
 {
-    public $agent;
+    public $agent=null;
     public $config=array();
-    public $CSRFToken;
+    public $CSRFToken=null;
     public $dates=array();
-    public $debut;
+    public $debut=null;
     public $elements=array();
-    public $error;
-    public $fin;
-    public $id;
-    public $ignoreActuels;
-    public $periodes;
-    public $perso_id;
-    public $perso_ids;
-    public $tri;
-    public $valide;
+    public $error=null;
+    public $fin=null;
+    public $id=null;
+    public $ignoreActuels=null;
+    public $periodes=null;
+    public $perso_id=null;
+    public $perso_ids=null;
+    public $tri=null;
+    public $valide=null;
     public $merge_exception = true;
     public Array $recipients;
 
@@ -33,7 +33,7 @@ class planningHebdo
     {
     }
 
-    public function add($data): void
+    public function add($data)
     {
         // Modification du format des dates de début et de fin si elles sont en français
         if (array_key_exists("debut", $data)) {
@@ -204,7 +204,7 @@ class planningHebdo
         $p->add($data);
     }
   
-    public function fetch(): void
+    public function fetch()
     {
         // Recherche des services
         $p=new personnel();
@@ -364,7 +364,7 @@ class planningHebdo
      * - 4 : validation N2
      * @param int $perso_id = ID de l'agent concerné par le planning de présence
      */
-    public function getRecipients($validation, $perso_id): void
+    public function getRecipients($validation, $perso_id)
     {
         $categories=$GLOBALS['config']["PlanningHebdo-notifications{$validation}"];
         $categories=json_decode(html_entity_decode(stripslashes($categories), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
@@ -457,7 +457,7 @@ class planningHebdo
     }
 
 
-    public function update($data): void
+    public function update($data)
     {
         // Modification du format des dates de début et de fin si elles sont en français
         $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['debut']);
@@ -597,7 +597,8 @@ class planningHebdo
     {
         $db=new db();
         $db->query("SHOW TABLE STATUS FROM `{$GLOBALS['config']['dbname']}` LIKE '{$GLOBALS['config']['dbprefix']}planning_hebdo';");
-        return isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
+        $result = isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
+        return $result;
     }
   
 }

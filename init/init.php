@@ -44,7 +44,7 @@ if ($version!=$config['Version'] && $version != 'ajax') {
 $request = Request::createFromGlobals();
 
 $date = $request->get('date');
-$show_menu = $request->get('menu') != 'off';
+$show_menu = $request->get('menu') == 'off' ? false : true;
 
 // To control access rights, we keep only the part of the URI before the numbers
 // e.g. : we keep /absences/info when the URI is /absences/info/11/edit

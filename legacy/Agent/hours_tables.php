@@ -161,7 +161,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         }
 
         if ($config['Multisites-nombre']>1) {
-            if ($disabled !== '' && $disabled !== '0') {
+            if ($disabled) {
                 $site=null;
                 if (isset($temps[$i-1][4])) {
                     $site="Multisites-site".$temps[$i-1][4];
