@@ -8,7 +8,6 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/config',
         __DIR__ . '/init',
-        __DIR__ . '/legacy',
         __DIR__ . '/public',
         __DIR__ . '/src',
         __DIR__ . '/tests',
@@ -18,4 +17,7 @@ return RectorConfig::configure()
     // ->withPhpSets()
     ->withTypeCoverageLevel(24)
     ->withDeadCodeLevel(24)
-    ->withCodeQualityLevel(24);
+    ->withCodeQualityLevel(24)
+    ->withSkip([
+        Rector\CodeQuality\Rector\FunctionLike\SimplifyUselessVariableRector::class,
+    ]);
