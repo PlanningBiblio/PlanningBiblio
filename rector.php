@@ -18,4 +18,7 @@ return RectorConfig::configure()
     // ->withPhpSets()
     ->withTypeCoverageLevel(24)
     ->withDeadCodeLevel(24)
-    ->withCodeQualityLevel(24);
+    ->withCodeQualityLevel(24)
+    ->withSkip([
+        Rector\CodeQuality\Rector\FunctionLike\SimplifyUselessVariableRector::class,
+    ]);
