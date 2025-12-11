@@ -791,17 +791,8 @@ function CSRFToken()
     if (!empty($_SESSION['oups']['CSRFToken'])) {
         return $_SESSION['oups']['CSRFToken'];
     }
-  
-    // PHP 7
-    if (phpversion() >= 7) {
-        $CSRFToken = bin2hex(random_bytes(32));
-    }
 
-    // PHP 5.3+
-    else {
-        $CSRFToken = bin2hex(openssl_random_pseudo_bytes(32));
-    }
-
+    $CSRFToken = bin2hex(random_bytes(32));
     $_SESSION['oups']['CSRFToken'] = $CSRFToken;
 
     return $CSRFToken;
