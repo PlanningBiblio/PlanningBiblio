@@ -76,7 +76,7 @@ class PlanningControlCommand extends Command
             // Si le jour courant est un samedi, nous recherchons 2 jours supplémentaires pour avoir le bon nombre de jours ouvrés.
             // Nous controlons également le samedi et le dimanche
             if ($jour_semaine==6) {
-                $jours=$jours+2;
+                $jours += 2;
             }
         }
 
@@ -166,29 +166,27 @@ class PlanningControlCommand extends Command
                                 // Si la dernière execution de la requête donne un résultat
                                 // Vérifier qu'au moins un des agents issus de ce résultat n'est pas absent
                                 $tousAbsents=true;
-                                if (!empty($result)) {
-                                    foreach ($result as $res) {
-                                        // Contrôle des absences
-                                        $absent=false;
-                                        $a=new \absences();
-                                        if ($a->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
-                                            $absent=true;
-                                        }
+                                foreach ($result as $res) {
+                                    // Contrôle des absences
+                                    $absent=false;
+                                    $a=new \absences();
+                                    if ($a->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
+                                        $absent=true;
+                                    }
 
-                                        // Contrôle des congés
-                                        $conges=false;
-                                        if ($config['Conges-Enable']) {
-                                            $c=new \conges();
-                                            if ($c->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
-                                                $conges=true;
-                                            }
+                                    // Contrôle des congés
+                                    $conges=false;
+                                    if ($config['Conges-Enable']) {
+                                        $c=new \conges();
+                                        if ($c->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
+                                            $conges=true;
                                         }
+                                    }
 
-                                        // Si l'agent n'est ni absent, ni en congés : on a une présence
-                                        if (!$absent and !$conges) {
-                                            $tousAbsents=false;
-                                            break;
-                                        }
+                                    // Si l'agent n'est ni absent, ni en congés : on a une présence
+                                    if (!$absent and !$conges) {
+                                        $tousAbsents=false;
+                                        break;
                                     }
                                 }
 

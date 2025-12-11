@@ -2,9 +2,9 @@
 /**
 Description :
 Fonctions utilisées pour la gestion des plannings et des tableaux.
+ * @return mixed[]
 */
-
-function deja_place($date, $poste)
+function deja_place($date, $poste): array
 {
     $deja=array(0);
     $db=new db();
@@ -17,7 +17,10 @@ function deja_place($date, $poste)
     return $deja;
 }
 
-function deuxSP($date, $debut, $fin)
+/**
+ * @return mixed[]
+ */
+function deuxSP($date, $debut, $fin): array
 {
     $tab=array(0);
     $db=new db();

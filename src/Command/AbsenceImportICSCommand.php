@@ -84,9 +84,9 @@ class AbsenceImportICSCommand extends Command
         $var=array(1=>null, 2=>null);
 
         for ($i=1; $i<3; $i++) {
-            if (trim($config["ICS-Server$i"])) {
+            if (trim($config["ICS-Server$i"]) !== '' && trim($config["ICS-Server$i"]) !== '0') {
                 $servers[$i]=trim($config["ICS-Server$i"]);
-                if ($servers[$i]) {
+                if ($servers[$i] !== '' && $servers[$i] !== '0') {
                     $pos1=strpos($servers[$i], "[");
 
                     if ($pos1) {

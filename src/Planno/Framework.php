@@ -6,16 +6,16 @@ require_once(__DIR__ . '/../../legacy/Class/class.planningFunctions.php');
 
 class Framework
 {
-    public $CSRFToken = null;
+    public $CSRFToken;
     public $elements=array();
-    public $id=null;
-    public $length=null;
-    public $next=null;
-    public $number=null;
-    public $numbers=null;
-    public $supprime=null;
+    public $id;
+    public $length;
+    public $next;
+    public $number;
+    public $numbers;
+    public $supprime;
 
-    public function deleteGroup()
+    public function deleteGroup(): void
     {
         if ($this->id) {
             $db = new \db();
@@ -24,7 +24,7 @@ class Framework
         }
     }
 
-    public function deleteLine()
+    public function deleteLine(): void
     {
         if ($this->id) {
             $db = new \db();
@@ -33,7 +33,7 @@ class Framework
         }
     }
 
-    public function deleteTab()
+    public function deleteTab(): void
     {
         if ($this->number) {
             $id=$this->number;
@@ -55,7 +55,7 @@ class Framework
      * @param boolean $this->supprime : si true : affiche les tableaux supprimés lors de la dernière année, sinon, affiche les tableaux non-supprimés, default = false
      * @return Array $this->elements
      */
-    public function fetchAll()
+    public function fetchAll(): void
     {
         $db = new \db();
         if ($this->supprime) {
@@ -71,7 +71,7 @@ class Framework
         $this->elements=$tab;
     }
 
-    public function fetchAllGroups()
+    public function fetchAllGroups(): void
     {
         $db = new \db();
         $db->select2("pl_poste_tab_grp", null, array("supprime"=>null));
@@ -82,7 +82,7 @@ class Framework
         $this->elements=$tab;
     }
 
-    public function fetchGroup($id)
+    public function fetchGroup($id): void
     {
         $db = new \db();
         $db->select2("pl_poste_tab_grp", "*", "`id`='$id'");
@@ -90,7 +90,7 @@ class Framework
     }
 
     // Recherche tous les éléments d'un tableau pour l'afficher
-    public function get()
+    public function get(): void
     {
         $tableauNumero=$this->id;
 
@@ -171,7 +171,7 @@ class Framework
         $this->elements=$tabs;
     }
 
-    public function getNumbers()
+    public function getNumbers(): void
     {
         $db = new \db();
         $db->select2("pl_poste_horaires", "tableau", array("numero"=>$this->id), "group by tableau");
@@ -192,7 +192,7 @@ class Framework
         $this->numbers=$numbers;
     }
 
-    public function setNumbers($number)
+    public function setNumbers($number): void
     {
         $this->getNumbers();
         $length=$this->length;
@@ -228,7 +228,7 @@ class Framework
         }
     }
 
-    public function update($post)
+    public function update($post): void
     {
         //		Update
         $post['nom']=trim($post['nom']);
@@ -245,7 +245,7 @@ class Framework
         }
     }
 
-    public function is_used()
+    public function is_used(): bool
     {
         $db = new \db();
         $db->select('pl_poste_tab_affect', null, "tableau = $this->id");

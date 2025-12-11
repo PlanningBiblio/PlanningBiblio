@@ -8,7 +8,7 @@ use App\Entity\Config;
 
 trait EntityValidationStatuses
 {
-    public function getStatusesParams($agent_ids, $module, $entity_id = null, String $workflow = 'A')
+    public function getStatusesParams($agent_ids, $module, $entity_id = null, String $workflow = 'A'): array
     {
         if (!$agent_ids) {
             throw new \Exception("EntityValidationStatuses::getStatusesParams: No agent");
@@ -33,8 +33,8 @@ trait EntityValidationStatuses
                 ->forAgent($id)
                 ->getValidationLevelFor($_SESSION['login_id'], $workflow);
 
-            $adminN1 = $N1 ? $adminN1 : false;
-            $adminN2 = $N2 ? $adminN2 : false;
+            $adminN1 = $N1 && $adminN1;
+            $adminN2 = $N2 && $adminN2;
         }
         $show_select = $adminN1 || $adminN2;
         $show_n1 = $adminN1 || $adminN2;

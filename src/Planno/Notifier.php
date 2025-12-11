@@ -29,7 +29,7 @@ class Notifier
         $this->setTransporter(new \CJMail());
     }
 
-    public function send()
+    public function send(): void
     {
         if (!$this->config['Mail-IsEnabled']) {
             return;

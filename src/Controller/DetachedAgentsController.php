@@ -60,7 +60,7 @@ class DetachedAgentsController extends BaseController
     }
 
     #[Route(path: '/detached/add', name: 'detached.add', methods: ['POST'])]
-    public function add(Request $request)
+    public function add(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');

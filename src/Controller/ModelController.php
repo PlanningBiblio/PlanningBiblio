@@ -35,7 +35,7 @@ class ModelController extends BaseController
 
         $multi_sites = $this->config('Multisites-nombre') > 1 ? 1 : 0;
         $sites = array();
-        if ($multi_sites) {
+        if ($multi_sites !== 0) {
             for ($i=1; $i < $this->config('Multisites-nombre')+1; $i++) {
                 $sites[$i] = $this->config("Multisites-site$i");
             }
@@ -51,7 +51,7 @@ class ModelController extends BaseController
     }
 
     #[Route(path: '/model', name: 'model.save', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $id = $request->get('id');
         $name = $request->get('name');
@@ -78,7 +78,7 @@ class ModelController extends BaseController
     }
 
     #[Route(path: '/model-add', name: 'model.add', methods: ['POST', 'GET'])]
-    public function add(Request $request, Session $session)
+    public function add(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         $name = $request->get('name');
         $site = $request->get('site');
@@ -144,7 +144,7 @@ class ModelController extends BaseController
 
 
     #[Route(path: '/model/{id}', name: 'model.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session)
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $id = $request->get('id');
 
@@ -167,7 +167,7 @@ class ModelController extends BaseController
         return $this->json(array('id' => $id));
     }
 
-  public function save_model($nom, $date, $semaine, $site, $CSRFToken)
+  public function save_model($nom, $date, $semaine, $site, $CSRFToken): void
   {
       $dbprefix=$GLOBALS['config']['dbprefix'];
       $d = new \datePl($date);
