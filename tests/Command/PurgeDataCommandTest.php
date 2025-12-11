@@ -36,38 +36,86 @@ class PurgeDataCommandTest extends PLBWebTestCase
         $this->restore();
 
 	    $date = new DateTime();
-        $date->modify('-5 years');
+        $thisYear = $date->format('Y');
+        $limit_date = (clone $date)->modify('first day of January this year')->modify('-2 years');
+        $end_of_week_limit_date = (clone $limit_date)->modify('-6 days');
+        $three_years_limit_date = (clone $date)->modify('first day of January this year')->modify('-3 years');
 
-	    for ($i = 0; $i < 11 ; $i ++) {
+        // datas to be deleted before limit_date
+        $dates_to_delete = [
+            (clone $limit_date)->modify('-1 day'),
+            (clone $limit_date)->modify('-2 days'),
+            (clone $limit_date)->modify('-3 days'),
+            (clone $limit_date)->modify('-6 months'),
+            (clone $limit_date)->modify('-1 year'),
+        ];
+
+        // datas should not be deleted after (>=) limit_date）
+        $dates_to_keep = [
+            clone $limit_date,
+            (clone $limit_date)->modify('+1 day'),
+            (clone $limit_date)->modify('+2 days'),
+            (clone $limit_date)->modify('+1 month'),
+            (clone $limit_date)->modify('+6 months'),
+        ];
+
+        // cover three_years_limit_date
+        $public_holiday_dates = [
+            (clone $three_years_limit_date)->modify('-1 day'),   //to be deleted
+            (clone $three_years_limit_date)->modify('-2 days'),
+            clone $three_years_limit_date,                       // should not be deleted
+            (clone $three_years_limit_date)->modify('+1 day'),
+            (clone $three_years_limit_date)->modify('+1 month'),
+        ];
+
+        // cover SaturdayWorkingHours
+        $week_dates = [
+            (clone $end_of_week_limit_date)->modify('-1 day'),   // to be deleted
+            (clone $end_of_week_limit_date)->modify('-2 days'),
+            clone $end_of_week_limit_date,                       // should not be deleted
+            (clone $end_of_week_limit_date)->modify('+1 day'),
+            (clone $end_of_week_limit_date)->modify('+1 month'),
+        ];
+
+        $agentRef = $this->builder->build(Agent::class, ['supprime' => 0]); // only this agent should not be deleted
+        $refId = $agentRef->getId();
+
+	    foreach (array_merge($dates_to_delete, $dates_to_keep) as $date) {
             $this->builder->build(AbsenceInfo::class,                    ['fin' => $date]);
             $this->builder->build(AdminInfo::class,                      ['fin' => $date]);
             $this->builder->build(CallForHelp::class,                    ['timestamp' => $date, 'date' => $date, 'debut' => $date, 'fin' => $date]);
-            $this->builder->build(OverTime::class,                       ['date' => $date, 'perso_id'=> 9999]);
-            $this->builder->build(Detached::class,                       ['date' => $date, 'perso_id'=> 9999]);
-            $this->builder->build(Holiday::class,                        ['fin' => $date, 'perso_id'=> 9999]);
+            $this->builder->build(OverTime::class,                       ['date' => $date, 'perso_id'=> $refId]);
+            $this->builder->build(Detached::class,                       ['date' => $date, 'perso_id'=> $refId]);
+            $this->builder->build(Holiday::class,                        ['fin' => $date, 'perso_id'=> $refId]);
             $this->builder->build(HolidayInfo::class,                    ['fin' => $date]);
             $this->builder->build(IPBlocker::class,                      ['timestamp' => $date, 'status' => 'success']);
             $this->builder->build(Log::class,                            ['timestamp' => $date]);
-            $this->builder->build(PlanningNote::class,                   ['date' => $date, 'perso_id'=> 9999]);
+            $this->builder->build(PlanningNote::class,                   ['date' => $date, 'perso_id'=> $refId]);
             $this->builder->build(PlanningNotification::class,           ['date' => $date]);
-            $this->builder->build(PlanningPosition::class,               ['date' => $date, 'debut'=>$date, 'fin'=>$date, 'perso_id'=> 9999]);
-            $this->builder->build(PlanningPositionLock::class,           ['date' => $date, 'perso'=> 99, 'perso2'=> 99]);
-            $this->builder->build(PlanningPositionTabAffectation::class, ['date' => $date, 'tableau' => 999]);
-            $this->builder->build(PublicHoliday::class,                  ['jour' => $date, 'annee'=>'2025']);
-            $this->builder->build(WorkingHour::class,                    ['fin' => $date, 'perso_id'=> 9999]);
-            $this->builder->build(Absence::class,                    ['fin' => $date, 'groupe' => 1, 'perso_id'=> 9999]);
+            $this->builder->build(PlanningPosition::class,               ['date' => $date, 'debut'=>$date, 'fin'=>$date, 'perso_id'=> $refId]);
+            $this->builder->build(PlanningPositionLock::class,           ['date' => $date, 'perso'=> $refId, 'perso2'=> $refId]);
+            $this->builder->build(PlanningPositionTabAffectation::class, ['date' => $date, 'tableau' => $refId]);
+            $this->builder->build(WorkingHour::class,                    ['fin' => $date, 'perso_id'=> $refId]);
+            $this->builder->build(Absence::class,                    ['fin' => $date, 'groupe' => 1, 'perso_id'=> $refId]);
             $this->builder->build(Agent::class,                    ['supprime' => 2]);
             $this->builder->build(PlanningPositionTab::class,                    ['supprime' => $date]);
             $this->builder->build(Position::class,                    ['supprime' => $date]);
             $this->builder->build(Skill::class,                    ['supprime' => $date]);
-            $this->builder->build(RecurringAbsence::class,                    ['timestamp' => $date, 'perso_id'=> 9999, 'end' => 1]);
-            $this->builder->build(SaturdayWorkingHours::class,           ['semaine' => $date, 'perso_id'=> 9999]);
-
-            $date->modify('+6 months');
+            $this->builder->build(RecurringAbsence::class,                    ['timestamp' => $date, 'perso_id'=> $refId, 'end' => 1]);
 	    }
 
-        $this->builder->build(Agent::class,                    ['supprime' => 1]);
-        $this->builder->build(Agent::class,                    ['supprime' => 0]);
+        foreach ($public_holiday_dates as $d) {
+            $this->builder->build(PublicHoliday::class, ['jour' => $d, 'annee' => $thisYear]);
+        }
+
+        foreach ($week_dates as $d) {
+            $this->builder->build(SaturdayWorkingHours::class, ['semaine' => $d, 'perso_id'=> $refId]);
+        }
+
+        // RecurringAbsence
+        $this->builder->build(RecurringAbsence::class, ['timestamp' => (clone $limit_date)->modify('-1 day'), 'end' => 1, 'perso_id'=> $refId]);
+        $this->builder->build(RecurringAbsence::class, ['timestamp' => clone $limit_date, 'end' => 1, 'perso_id'=> $refId]); // should not be deleted
+
 
         $countBeforeAbsenceInfo                     = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM absences_infos");
         $countBeforeAdminInfo                       = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM infos");
@@ -92,29 +140,29 @@ class PurgeDataCommandTest extends PLBWebTestCase
         $countBeforePosition                        = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM postes");
         $countBeforeSkill                           = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM activites");
         $countBeforeRecurringAbsence                = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM absences_recurrentes");
-        $this->assertSame(11, $countBeforeAbsenceInfo                   , '11 should be founded');
-        $this->assertSame(11, $countBeforeAdminInfo                     , '11 should be founded');
-        $this->assertSame(11, $countBeforeCallForHelp                   , '11 should be founded');
-        $this->assertSame(11, $countBeforeOverTime                      , '11 should be founded');
-        $this->assertSame(11, $countBeforeDetached                      , '11 should be founded');
-        $this->assertSame(11, $countBeforeHoliday                       , '11 should be founded');
-        $this->assertSame(11, $countBeforeHolidayInfo                   , '11 should be founded');
-        $this->assertSame(11, $countBeforeSaturdayWorkingHours          , '11 should be founded');
-        $this->assertSame(11, $countBeforeIPBlocker                     , '11 should be founded');
-        $this->assertSame(11, $countBeforeLog                           , '11 should be founded');
-        $this->assertSame(11, $countBeforePlanningNote                  , '11 should be founded');
-        $this->assertSame(11, $countBeforePlanningNotification          , '11 should be founded');
-        $this->assertSame(11, $countBeforePlanningPosition              , '11 should be founded');
-        $this->assertSame(11, $countBeforePlanningPositionLock          , '11 should be founded');
-        $this->assertSame(11, $countBeforePlanningPositionTabAffectation, '11 should be founded');
-        $this->assertSame(11, $countBeforePublicHoliday                 , '11 should be founded');
-        $this->assertSame(11, $countBeforeWorkingHour                   , '11 should be founded');
-        $this->assertSame(11, $countBeforeAbsence                       , '11 should be founded');
-        $this->assertSame(15, $countBeforeAgent                         , '15 should be founded');//Administrateur, Tout le monde and 2 whose supprime != 2
-        $this->assertSame(12, $countBeforePlanningPositionTab           , '12 should be founded');
-        $this->assertSame(43, $countBeforePosition                      , '43 position should be founded');
-        $this->assertSame(23, $countBeforeSkill                         , '23 should be founded');
-        $this->assertSame(11, $countBeforeRecurringAbsence              , '11 should be founded');
+        $this->assertSame(10, $countBeforeAbsenceInfo                   , '10 should be founded');
+        $this->assertSame(10, $countBeforeAdminInfo                     , '10 should be founded');
+        $this->assertSame(10, $countBeforeCallForHelp                   , '10 should be founded');
+        $this->assertSame(10, $countBeforeOverTime                      , '10 should be founded');
+        $this->assertSame(10, $countBeforeDetached                      , '10 should be founded');
+        $this->assertSame(10, $countBeforeHoliday                       , '10 should be founded');
+        $this->assertSame(10, $countBeforeHolidayInfo                   , '10 should be founded');
+        $this->assertSame(5, $countBeforeSaturdayWorkingHours           , '5 should be founded');
+        $this->assertSame(10, $countBeforeIPBlocker                     , '10 should be founded');
+        $this->assertSame(10, $countBeforeLog                           , '10 should be founded');
+        $this->assertSame(10, $countBeforePlanningNote                  , '10 should be founded');
+        $this->assertSame(10, $countBeforePlanningNotification          , '10 should be founded');
+        $this->assertSame(10, $countBeforePlanningPosition              , '10 should be founded');
+        $this->assertSame(10, $countBeforePlanningPositionLock          , '10 should be founded');
+        $this->assertSame(10, $countBeforePlanningPositionTabAffectation, '10 should be founded');
+        $this->assertSame(5, $countBeforePublicHoliday                  , '5 should be founded');
+        $this->assertSame(10, $countBeforeWorkingHour                   , '10 should be founded');
+        $this->assertSame(10, $countBeforeAbsence                       , '10 should be founded');
+        $this->assertSame(13, $countBeforeAgent                         , '13 should be founded');//Administrateur, Tout le monde
+        $this->assertSame(11, $countBeforePlanningPositionTab           , '11 should be founded');
+        $this->assertSame(42, $countBeforePosition                      , '42 position should be founded');
+        $this->assertSame(22, $countBeforeSkill                         , '22 should be founded');
+        $this->assertSame(12, $countBeforeRecurringAbsence              , '12 should be founded');
 
         $this->execute();
 
@@ -142,28 +190,28 @@ class PurgeDataCommandTest extends PLBWebTestCase
         $countAfterSkill                           = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM activites");
         $countAfterRecurringAbsence                = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM absences_recurrentes");
 
-        $this->assertSame(6, $countAfterAbsenceInfo                   , '6 should be founded');
-        $this->assertSame(6, $countAfterAdminInfo                     , '6 should be founded');
-        $this->assertSame(6, $countAfterCallForHelp                   , '6 should be founded');
-        $this->assertSame(6, $countAfterOverTime                      , '6 should be founded');
-        $this->assertSame(6, $countAfterDetached                      , '6 should be founded');
-        $this->assertSame(6, $countAfterHoliday                       , '6 should be founded');
-        $this->assertSame(6, $countAfterHolidayInfo                   , '6 should be founded');
-        $this->assertSame(6, $countAfterSaturdayWorkingHours          , '6 should be founded');
-        $this->assertSame(6, $countAfterIPBlocker                     , '6 should be founded');
-        $this->assertSame(35, $countAfterLog                          , '35 should be founded');//4 plus 29 logs from DataPurger
-        $this->assertSame(6, $countAfterPlanningNote                  , '6 should be founded');
-        $this->assertSame(6, $countAfterPlanningNotification          , '6 should be founded');
-        $this->assertSame(6, $countAfterPlanningPosition              , '6 should be founded');
-        $this->assertSame(6, $countAfterPlanningPositionLock          , '6 should be founded');
-        $this->assertSame(6, $countAfterPlanningPositionTabAffectation, '6 should be founded');
-        $this->assertSame(8, $countAfterPublicHoliday                 , '8 should be founded');//Purge datas older than 3 years; keep the last 3 years of data.
-        $this->assertSame(6, $countAfterWorkingHour                   , '6 should be founded');
-        $this->assertSame(6, $countAfterAbsence                       , '6 should be founded');
-        $this->assertSame(4, $countAfterAgent                         , '4 should be founded');
-        $this->assertSame(7, $countAfterPlanningPositionTab           , '7 should be founded');
-        $this->assertSame(38, $countAfterPosition                      , '38 should be founded');
-        $this->assertSame(18, $countAfterSkill                         , '18 should be founded');
+        $this->assertSame(5, $countAfterAbsenceInfo                   , '5 should be founded');
+        $this->assertSame(5, $countAfterAdminInfo                     , '5 should be founded');
+        $this->assertSame(5, $countAfterCallForHelp                   , '5 should be founded');
+        $this->assertSame(5, $countAfterOverTime                      , '5 should be founded');
+        $this->assertSame(5, $countAfterDetached                      , '5 should be founded');
+        $this->assertSame(5, $countAfterHoliday                       , '5 should be founded');
+        $this->assertSame(5, $countAfterHolidayInfo                   , '5 should be founded');
+        $this->assertSame(3, $countAfterSaturdayWorkingHours          , '3 should be founded');
+        $this->assertSame(5, $countAfterIPBlocker                     , '5 should be founded');
+        $this->assertSame(34, $countAfterLog                          , '34 should be founded');
+        $this->assertSame(5, $countAfterPlanningNote                  , '5 should be founded');
+        $this->assertSame(5, $countAfterPlanningNotification          , '5 should be founded');
+        $this->assertSame(5, $countAfterPlanningPosition              , '5 should be founded');
+        $this->assertSame(5, $countAfterPlanningPositionLock          , '5 should be founded');
+        $this->assertSame(5, $countAfterPlanningPositionTabAffectation, '5 should be founded');
+        $this->assertSame(3, $countAfterPublicHoliday                 , '3 should be founded');//Purge datas older than 3 years; keep the last 3 years of data.
+        $this->assertSame(5, $countAfterWorkingHour                   , '5 should be founded');
+        $this->assertSame(5, $countAfterAbsence                       , '5 should be founded');
+        $this->assertSame(3, $countAfterAgent                         , '7 should be founded');
+        $this->assertSame(6, $countAfterPlanningPositionTab           , '6 should be founded');
+        $this->assertSame(37, $countAfterPosition                      , '37 should be founded');
+        $this->assertSame(17, $countAfterSkill                         , '17 should be founded');
         $this->assertSame(6, $countAfterRecurringAbsence              , '6 should be founded');
         
     }
