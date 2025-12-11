@@ -288,34 +288,4 @@ class personnel
         $result = isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
         return $result;
     }
-  
-    public function updateEDTSamedi($eDTSamedi, $debut, $fin, $perso_id)
-    {
-        if (!$GLOBALS['config']['EDTSamedi'] or $GLOBALS['config']['PlanningHebdo']) {
-            return false;
-        }
-
-        $db=new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->delete("edt_samedi", array('semaine' => ">=$debut", 'semaine' => "<=$fin", 'perso_id' => $perso_id));
-
-        if (!empty($eDTSamedi)) {
-            $insert=array();
-            foreach ($eDTSamedi as $elem) {
-
-        // Si config['EDTSamedi'] == 1 (Emploi du temps différent les semaines avec samedi travaillé)
-                if (! is_array($elem)) {
-                    $insert[] = array('perso_id' => $perso_id, 'semaine' => $elem, 'tableau' => 2 );
-
-                // Si config['EDTSamedi'] == 2 (Emploi du temps différent les semaines avec samedi travaillé et en ouverture restreinte)
-                } else {
-                    $insert[] = array('perso_id' => $perso_id, 'semaine' => $elem[0], 'tableau' => $elem[1] );
-                }
-            }
-
-            $db=new db();
-            $db->CSRFToken = $this->CSRFToken;
-            $db->insert("edt_samedi", $insert);
-        }
-    }
 }

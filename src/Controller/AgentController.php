@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Entity\SaturdayWorkingHours;
 use App\Planno\Event\OnTransformLeaveDays;
 use App\Planno\Event\OnTransformLeaveHours;
 use App\Planno\Helper\HolidayHelper;
@@ -926,9 +927,11 @@ class AgentController extends BaseController
             $db->insert("personnel", $insert);
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-            $p = new \personnel();
-            $p->CSRFToken = $CSRFToken;
-            $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
+            if ($GLOBALS['config']['EDTSamedi'] and !$GLOBALS['config']['PlanningHebdo']) {
+                $repos = $this->entityManager->getRepository(SaturdayWorkingHours::class);
+                $repos->deleteEdtSamediBetweenWeeks($premierLundi, $dernierLundi, $id);
+                $repos->insertEdtSamedi($eDTSamedi, $id);
+            }
 
             return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
 
@@ -1042,9 +1045,11 @@ class AgentController extends BaseController
             }
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-            $p = new \personnel();
-            $p->CSRFToken = $CSRFToken;
-            $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
+            if ($GLOBALS['config']['EDTSamedi'] and !$GLOBALS['config']['PlanningHebdo']) {
+                $repos = $this->entityManager->getRepository(SaturdayWorkingHours::class);
+                $repos->deleteEdtSamediBetweenWeeks($premierLundi, $dernierLundi, $id);
+                $repos->insertEdtSamedi($eDTSamedi, $id);
+            }
 
             return $this->redirectToRoute('agent.index');
 

@@ -79,6 +79,7 @@
 | validLevel2Date | validation or validation_n2 |
 | value | valeur |
 | values | valeurs |
+| week | semiane |
 | workingHours | temps |
 
 ## Migrations

@@ -27,4 +27,40 @@ class SaturdayWorkingHours
     {
         return $this->id;
     }
+
+    public function getuserId(): ?int
+    {
+        return $this->perso_id;
+    }
+
+    public function setuserId($userId): static
+    {
+        $this->perso_id = $userId;
+
+        return $this;
+    }
+
+    public function getWeek(): ?int
+    {
+        return $this->semaine;
+    }
+
+    public function setWeek($week): static
+    {
+        $this->semaine = $week;
+
+        return $this;
+    }
+
+    public function getTable(): ?int
+    {
+        return $this->tableau;
+    }
+
+    public function setTable($table): static
+    {
+        $this->tableau = $table;
+
+        return $this;
+    }
 }
