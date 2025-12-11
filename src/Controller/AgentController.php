@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Entity\SaturdayWorkingHours;
 use App\Planno\Event\OnTransformLeaveDays;
 use App\Planno\Event\OnTransformLeaveHours;
 use App\Planno\Helper\HolidayHelper;
@@ -813,8 +814,8 @@ class AgentController extends BaseController
             }
         }
 
-        $premierLundi = array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
-        $dernierLundi = array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
+        $firstMonday = array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
+        $lastMonday = array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
 
         if (is_array($temps)) {
             foreach ($temps as $day => $hours) {
@@ -926,9 +927,10 @@ class AgentController extends BaseController
             $db->insert("personnel", $insert);
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-            $p = new \personnel();
-            $p->CSRFToken = $CSRFToken;
-            $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
+            if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
+                $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
+                $repo->update($eDTSamedi, $firstMonday, $lastMonday, $id);
+            }
 
             return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
 
@@ -1042,9 +1044,10 @@ class AgentController extends BaseController
             }
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-            $p = new \personnel();
-            $p->CSRFToken = $CSRFToken;
-            $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
+            if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
+                $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
+                $repo->update($eDTSamedi, $firstMonday, $lastMonday, $id);
+            }
 
             return $this->redirectToRoute('agent.index');
 
