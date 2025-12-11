@@ -233,11 +233,11 @@ class PlanningControlCommand extends Command
                     $msg.=$site['message'];
                 }
                 if (array_key_exists("tableau", $site)) {
-                    $msg.="<br/>\nLes postes suivants ne sont pas occup&eacute;s :\n<ul>\n";
+                    $msg.="<br/>\nLes postes suivants ne sont pas occupés :\n<ul>\n";
                     foreach ($site['tableau'] as $tableau) {
                         $msg.="<li>Tableau <strong>{$tableau['tableau']}</strong> :\n<ul>\n";
                         foreach ($tableau['data'] as $poste) {
-                            $msg.="<li>{$poste['poste']}, de ".heure2($poste['debut'])." &agrave; ".heure2($poste['fin'])."</li>\n";
+                            $msg.="<li>{$poste['poste']}, de ".heure2($poste['debut'])." à ".heure2($poste['fin'])."</li>\n";
                         }
                         $msg.="</ul>\n";
                     }

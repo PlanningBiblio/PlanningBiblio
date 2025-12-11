@@ -25,141 +25,6 @@ class PlanningControlCommandTest extends PLBWebTestCase
         parent::setData('data7');
     }
 
-    public function testPlanningImportModelValided(): void
-    {        
-        $this->setParam('Rappels-Actifs', 1);
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('Multisites-site1', 1);
-        $this->setParam('Multisites-site2', 0);
-        $this->setParam('Multisites-site3', 0);
-        $this->setParam('Multisites-site4', 0);
-        $this->setParam('Rappels-Jours', 1);
-        $this->setParam('Dimanche', 0);
-        $this->setParam('Rappels-Renfort', 0);
-        $this->setParam('Conges-Enable', 0);
-        $this->setParam('Mail-Planning', 'xxx.ss@biblibre.com');
-
-        // Setup Panther
-        $this->setUpPantherClient();
-
-        // Use agent 9 and log in
-        $agent = $this->entityManager->getRepository(Agent::class)->find(9);
-        $this->login($agent);
-
-        // Open the planning page
-        $crawler = $this->client->request('GET', '/');
-
-        //load a model
-        $linkModel = $crawler->filter('#planning-import');
-
-        $this->assertTrue($linkModel->count() == 1, 'Importer un modèle');
-
-        $linkModel->click();
-        $crawler = $this->client->refreshCrawler();
-
-        $select = $this->getSelect('model');
-        $options = $select->getOptions();
-
-        $this->assertGreaterThan(
-            1,
-            count($options),
-            'There should be options'
-        );
-
-        $select->selectByValue('1');
-
-        $this->client
-            ->waitFor('#import-model-dialog'); // ensure dialog loaded
-
-        $button = $crawler->filter('.ui-dialog-buttonpane button')->eq(1);
-        $button->click();
-        $crawler = $this->client->refreshCrawler();
-
-        //lock
-        $linkLock = $crawler->filter('#icon-unlock');
-
-        $this->assertTrue($linkLock->count() == 1, 'lock');
-
-        $linkLock->click();
-
-        $output = $this->execute();
-
-        $this->assertStringContainsString("To: xxx.ss@biblibre.com", $output);
-        $this->assertStringContainsString("Subject: Plannings", $output);
-        $this->assertStringContainsString("Message:", $output);
-        $this->assertStringContainsString(" est validé;", $output);
-
-    }
-
-    public function testPlanningImportModelNotValided(): void
-    {
-        $this->setParam('Rappels-Actifs', 1);
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('Multisites-site1', 1);
-        $this->setParam('Multisites-site2', 0);
-        $this->setParam('Multisites-site3', 0);
-        $this->setParam('Multisites-site4', 0);
-        $this->setParam('Rappels-Jours', 1);
-        $this->setParam('Dimanche', 0);
-        $this->setParam('Rappels-Renfort', 0);
-        $this->setParam('Conges-Enable', 0);
-        $this->setParam('Mail-Planning', 'xxx.ss@biblibre.com');
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-        // $con = $this->entityManager
-        //     ->getRepository(Config::class)
-        //     ->findOneBy(['nom' => 'Rappels-Actifs']);
-        // echo('****' . $con->getValue().'****');
-        // $this->setParam('Rappels-Actifs', 1);
-        // $con = $this->entityManager
-        //     ->getRepository(Config::class)
-        //     ->findOneBy(['nom' => 'Rappels-Actifs']);
-        // echo('------' . $con->getValue().'------');
-
-        // Setup Panther
-        $this->setUpPantherClient();
-
-        // Use agent 9 and log in
-        $agent = $this->entityManager->getRepository(Agent::class)->find(9);
-        $this->login($agent);
-
-        // Open the planning page
-        $crawler = $this->client->request('GET', '/');
-
-        //load a model
-        $linkModel = $crawler->filter('#planning-import');
-
-        $this->assertTrue($linkModel->count() == 1, 'Importer un modèle');
-
-        $linkModel->click();
-        $crawler = $this->client->refreshCrawler();
-
-        $select = $this->getSelect('model');
-        $options = $select->getOptions();
-
-        $this->assertGreaterThan(
-            1,
-            count($options),
-            'There should be options'
-        );
-
-        // $select->selectByValue('1');
-
-        // $this->client
-        //     ->waitFor('#import-model-dialog'); // ensure dialog loaded
-
-        // $button = $crawler->filter('.ui-dialog-buttonpane button')->eq(1);
-        // $button->click();
-        // $crawler = $this->client->refreshCrawler();
-
-        $output = $this->execute();
-        
-        $this->assertStringContainsString("To: xxx.ss@biblibre.com", $output);
-        $this->assertStringContainsString("Subject: Plannings", $output);
-        $this->assertStringContainsString("Message:", $output);
-        $this->assertStringContainsString("n'est pas créé", $output);
-    }
-
     public function testPlanningImportModel(): void
     {
         $this->setParam('Rappels-Actifs', 1);
@@ -174,10 +39,8 @@ class PlanningControlCommandTest extends PLBWebTestCase
         $this->setParam('Conges-Enable', 0);
         $this->setParam('Mail-Planning', 'xxx.ss@biblibre.com');
 
-        // $con = $this->entityManager
-        //     ->getRepository(Config::class)
-        //     ->findOneBy(['nom' => 'Rappels-Actifs']);
-        // echo($con->getValue().'\n');
+        $this->testPlanningControlCommandPlanningNotCreated();
+
         // Setup Panther
         $this->setUpPantherClient();
 
@@ -188,7 +51,22 @@ class PlanningControlCommandTest extends PLBWebTestCase
         // Open the planning page
         $crawler = $this->client->request('GET', '/');
 
-        //load a model
+        // Delete the planning exist
+        try {
+            $linkUnlock = $crawler->filter('#icon-lock');
+            $this->assertTrue($linkUnlock->count() == 1, 'unlock');
+            $linkUnlock->click();
+            $crawler = $this->client->refreshCrawler();
+
+            $delete = $crawler->filter('#planning-drop');
+            $this->assertTrue($delete->count() == 1, 'delete');
+            $delete->click();
+            $crawler = $this->client->refreshCrawler();
+            } catch (\Exception $e) {
+
+        }
+
+        // Load a model
         $linkModel = $crawler->filter('#planning-import');
 
         $this->assertTrue($linkModel->count() == 1, 'Importer un modèle');
@@ -214,12 +92,45 @@ class PlanningControlCommandTest extends PLBWebTestCase
         $button->click();
         $crawler = $this->client->refreshCrawler();
 
-        //lock
+        $this->testPlanningControlCommandPlanningNotValidated();
+
+        // Lock
         $linkLock = $crawler->filter('#icon-unlock');
-
         $this->assertTrue($linkLock->count() == 1, 'lock');
-
         $linkLock->click();
+        $crawler = $this->client->refreshCrawler();
+    
+        $this->testPlanningControlCommandPlanningValidated();
+
+        $this->testPlanningControlCommandEmptyCells();
+    }
+
+    private function testPlanningControlCommandPlanningNotCreated(): void // no import??
+    {
+        $output = $this->execute();
+
+        $this->assertStringContainsString("To: xxx.ss@biblibre.com", $output);
+        $this->assertStringContainsString("Subject: Plannings", $output);
+        $this->assertStringContainsString("Message:", $output);
+        $this->assertStringContainsString("n'est pas créé", $output);
+    }
+
+    private function testPlanningControlCommandEmptyCells(): void
+    {
+        $output = $this->execute();
+        $this->assertStringContainsString("Renseignement RDC, de 11h30 à 16h00", $output);
+    }
+
+    private function testPlanningControlCommandPlanningNotValidated(): void // no lock
+    {
+        $output = $this->execute();
+        $this->assertStringContainsString("n'est pas validé;", $output);
+    }
+
+    private function testPlanningControlCommandPlanningValidated(): void // no import??
+    {
+        $output = $this->execute();
+        $this->assertStringContainsString("n'est pas créé", $output);
     }
 
     private function execute(): string
@@ -238,5 +149,4 @@ class PlanningControlCommandTest extends PLBWebTestCase
 
         return $output;
     }
-    
 }
