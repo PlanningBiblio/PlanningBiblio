@@ -54,8 +54,6 @@ class AbsenceImportCSVCommand extends Command
         $debug = $config['Hamac-debug'] ?? false;
         $motif = !empty(trim($config['Hamac-motif'])) ? trim($config['Hamac-motif']) : 'Hamac';
 
-        $CSRFToken = CSRFToken();
-
         $this->log('Start CSV import', 'AbsenceImportCSV');
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
