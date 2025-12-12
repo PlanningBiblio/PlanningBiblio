@@ -164,18 +164,6 @@ class Agent
         return $this;
     }
 
-    public function getHolidayAnticipation(): ?float
-    {
-        return $this->conges_anticipation;
-    }
-
-    public function setHolidayAnticipation(?float $holidayAnticipation): static
-    {
-        $this->conges_anticipation = $holidayAnticipation;
-
-        return $this;
-    }
-
     public function getArrival(): ?\DateTime
     {
         return $this->arrivee;
@@ -196,18 +184,6 @@ class Agent
     public function setCategory(?string $category): static
     {
         $this->categorie = $category;
-
-        return $this;
-    }
-
-    public function getHolidayCompTime(): ?float
-    {
-        return $this->comp_time;
-    }
-
-    public function setHolidayCompTime(?float $holidayCompTime): static
-    {
-        $this->comp_time = $holidayCompTime;
 
         return $this;
     }
@@ -248,14 +224,38 @@ class Agent
         return $this;
     }
 
-    public function getAnnualCredit(): ?float
+    public function getHolidayAnnualCredit(): ?float
     {
         return $this->conges_annuel;
     }
 
-    public function setAnnualCredit(?float $annualCredit): static
+    public function setHolidayAnnualCredit(?float $annualCredit): static
     {
         $this->conges_annuel = $annualCredit;
+
+        return $this;
+    }
+
+    public function getHolidayAnticipation(): ?float
+    {
+        return $this->conges_anticipation;
+    }
+
+    public function setHolidayAnticipation(?float $holidayAnticipation): static
+    {
+        $this->conges_anticipation = $holidayAnticipation;
+
+        return $this;
+    }
+
+    public function getHolidayCompTime(): ?float
+    {
+        return $this->comp_time;
+    }
+
+    public function setHolidayCompTime(?float $holidayCompTime): static
+    {
+        $this->comp_time = $holidayCompTime;
 
         return $this;
     }
@@ -268,6 +268,18 @@ class Agent
     public function setHolidayCredit(?float $holidayCredit): static
     {
         $this->conges_credit = $holidayCredit;
+
+        return $this;
+    }
+
+    public function getHolidayRemainder(): ?float
+    {
+        return $this->conges_reliquat;
+    }
+
+    public function setHolidayRemainder(?float $holidayRemainder): static
+    {
+        $this->conges_reliquat = $holidayRemainder;
 
         return $this;
     }
@@ -328,18 +340,6 @@ class Agent
     public function setPassword(?string $password): static
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    public function getHolidayRemainder(): ?float
-    {
-        return $this->conges_reliquat;
-    }
-
-    public function setHolidayRemainder(?float $holidayRemainder): static
-    {
-        $this->conges_reliquat = $holidayRemainder;
 
         return $this;
     }

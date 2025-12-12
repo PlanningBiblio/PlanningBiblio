@@ -52,21 +52,21 @@ class HolidayResetCreditsCommandTest extends PLBWebTestCase
         $this->assertEquals(22, $jdupontBefore->getHolidayRemainder(), 'Before jdupont conges_reliquat should be 22');
         $this->assertEquals(33, $jdupontBefore->getHolidayAnticipation(), 'Before jdupont conges_anticipation should be 33');
         $this->assertEquals(44, $jdupontBefore->getHolidayCompTime(), 'Before jdupont comp_time should be 44');
-        $this->assertEquals(55, $jdupontBefore->getAnnualCredit(), 'Before jdupont conges_annuel should be 55');
+        $this->assertEquals(55, $jdupontBefore->getHolidayAnnualCredit(), 'Before jdupont conges_annuel should be 55');
 
         $aliceBefore = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alice']);
         $this->assertEquals(1.1, $aliceBefore->getHolidayCredit(), 'Before alice conges_credit should be 1.1');
         $this->assertEquals(2.2, $aliceBefore->getHolidayRemainder(), 'Before alice conges_reliquat should be 2.2');
         $this->assertEquals(3.3, $aliceBefore->getHolidayAnticipation(), 'Before alice conges_anticipation should be 3.3');
         $this->assertEquals(4.4, $aliceBefore->getHolidayCompTime(), 'Before alice comp_time should be 4.4');
-        $this->assertEquals(5.5, $aliceBefore->getAnnualCredit(), 'Before alice conges_annuel should be 5.5');
+        $this->assertEquals(5.5, $aliceBefore->getHolidayAnnualCredit(), 'Before alice conges_annuel should be 5.5');
 
         $alexBefore = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $this->assertEquals(1.11, $alexBefore->getHolidayCredit(), 'Before alex conges_credit should be 1.11');
         $this->assertEquals(2.22, $alexBefore->getHolidayRemainder(), 'Before alex conges_reliquat should be 2.22');
         $this->assertEquals(3.33, $alexBefore->getHolidayAnticipation(), 'Before alex conges_anticipation should be 3.33');
         $this->assertEquals(4.44, $alexBefore->getHolidayCompTime(), 'Before alex comp_time should be 4.44');
-        $this->assertEquals(5.55, $alexBefore->getAnnualCredit(), 'Before alex conges_annuel should be 5.55');
+        $this->assertEquals(5.55, $alexBefore->getHolidayAnnualCredit(), 'Before alex conges_annuel should be 5.55');
 
         $this->execute();
         $this->entityManager->clear();
@@ -76,21 +76,21 @@ class HolidayResetCreditsCommandTest extends PLBWebTestCase
         $this->assertEquals(55, $jdupontAfter->getHolidayRemainder(), 'After jdupont conges_reliquat should be 55');
         $this->assertEquals(0, $jdupontAfter->getHolidayAnticipation(), 'After jdupont conges_anticipation should be 0');
         $this->assertEquals(0, $jdupontAfter->getHolidayCompTime(), 'After jdupont comp_time should be 0');
-        $this->assertEquals(55, $jdupontAfter->getAnnualCredit(), 'After jdupont conges_annuel should be 55');
+        $this->assertEquals(55, $jdupontAfter->getHolidayAnnualCredit(), 'After jdupont conges_annuel should be 55');
 
         $aliceAfter = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alice']);
         $this->assertEquals(2.2, $aliceAfter->getHolidayCredit(), 'After alice conges_credit should be 2.2');
         $this->assertEquals(5.5, $aliceAfter->getHolidayRemainder(), 'After alice conges_reliquat should be 5.5');
         $this->assertEquals(0, $aliceAfter->getHolidayAnticipation(), 'After alice conges_anticipation should be 0');
         $this->assertEquals(0, $aliceAfter->getHolidayCompTime(), 'After alice comp_time should be 0');
-        $this->assertEquals(5.5, $aliceAfter->getAnnualCredit(), 'After alice conges_annuel should be 5.5');
+        $this->assertEquals(5.5, $aliceAfter->getHolidayAnnualCredit(), 'After alice conges_annuel should be 5.5');
 
         $alexAfter = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $this->assertEquals(2.22, $alexAfter->getHolidayCredit(), 'After alex conges_credit should be 2.22');
         $this->assertEquals(5.55, $alexAfter->getHolidayRemainder(), 'After alex conges_reliquat should be 5.55');
         $this->assertEquals(0, $alexAfter->getHolidayAnticipation(), 'After alex conges_anticipation should be 0');
         $this->assertEquals(0, $alexAfter->getHolidayCompTime(), 'After alex comp_time should be 0');
-        $this->assertEquals(5.55, $alexAfter->getAnnualCredit(), 'After alex conges_annuel should be 5.55');
+        $this->assertEquals(5.55, $alexAfter->getHolidayAnnualCredit(), 'After alex conges_annuel should be 5.55');
 
         $jdupontCongeAfter = $this->entityManager->getRepository(Holiday::class)->findOneBy(['perso_id' => $jdupontAfter->getId()]);
         $this->assertEquals(11, $jdupontCongeAfter->getPreviousCredit(), 'After Holiday solde_prec should be 11');
@@ -132,21 +132,21 @@ class HolidayResetCreditsCommandTest extends PLBWebTestCase
         $this->assertEquals(22, $jdupontBefore->getHolidayRemainder(), 'Before jdupont conges_reliquat should be 22');
         $this->assertEquals(33, $jdupontBefore->getHolidayAnticipation(), 'Before jdupont conges_anticipation should be 33');
         $this->assertEquals(44, $jdupontBefore->getHolidayCompTime(), 'Before jdupont comp_time should be 44');
-        $this->assertEquals(55, $jdupontBefore->getAnnualCredit(), 'Before jdupont conges_annuel should be 55');
+        $this->assertEquals(55, $jdupontBefore->getHolidayAnnualCredit(), 'Before jdupont conges_annuel should be 55');
 
         $aliceBefore = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alice']);
         $this->assertEquals(1.1, $aliceBefore->getHolidayCredit(), 'Before alice conges_credit should be 1.1');
         $this->assertEquals(2.2, $aliceBefore->getHolidayRemainder(), 'Before alice conges_reliquat should be 2.2');
         $this->assertEquals(3.3, $aliceBefore->getHolidayAnticipation(), 'Before alice conges_anticipation should be 3.3');
         $this->assertEquals(4.4, $aliceBefore->getHolidayCompTime(), 'Before alice comp_time should be 4.4');
-        $this->assertEquals(5.5, $aliceBefore->getAnnualCredit(), 'Before alice conges_annuel should be 5.5');
+        $this->assertEquals(5.5, $aliceBefore->getHolidayAnnualCredit(), 'Before alice conges_annuel should be 5.5');
 
         $alexBefore = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $this->assertEquals(1.11, $alexBefore->getHolidayCredit(), 'Before alex conges_credit should be 1.11');
         $this->assertEquals(2.22, $alexBefore->getHolidayRemainder(), 'Before alex conges_reliquat should be 2.22');
         $this->assertEquals(3.33, $alexBefore->getHolidayAnticipation(), 'Before alex conges_anticipation should be 3.33');
         $this->assertEquals(4.44, $alexBefore->getHolidayCompTime(), 'Before alex comp_time should be 4.44');
-        $this->assertEquals(5.55, $alexBefore->getAnnualCredit(), 'Before alex conges_annuel should be 5.55');
+        $this->assertEquals(5.55, $alexBefore->getHolidayAnnualCredit(), 'Before alex conges_annuel should be 5.55');
 
         $this->execute();
         $this->entityManager->clear();
@@ -156,21 +156,21 @@ class HolidayResetCreditsCommandTest extends PLBWebTestCase
         $this->assertEquals(11, $jdupontAfter->getHolidayRemainder(), 'After jdupont conges_reliquat should be 11');
         $this->assertEquals(0, $jdupontAfter->getHolidayAnticipation(), 'After jdupont conges_anticipation should be 0');
         $this->assertEquals(44, $jdupontAfter->getHolidayCompTime(), 'After jdupont comp_time should be 44');
-        $this->assertEquals(55, $jdupontAfter->getAnnualCredit(), 'After jdupont conges_annuel should be 55');
+        $this->assertEquals(55, $jdupontAfter->getHolidayAnnualCredit(), 'After jdupont conges_annuel should be 55');
 
         $aliceAfter = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alice']);
         $this->assertEquals(2.2, $aliceAfter->getHolidayCredit(), 'After alice conges_credit should be 2.2');
         $this->assertEquals(1.1, $aliceAfter->getHolidayRemainder(), 'After alice conges_reliquat should be 1.1');
         $this->assertEquals(0, $aliceAfter->getHolidayAnticipation(), 'After alice conges_anticipation should be 0');
         $this->assertEquals(4.4, $aliceAfter->getHolidayCompTime(), 'After alice comp_time should be 4.4');
-        $this->assertEquals(5.5, $aliceAfter->getAnnualCredit(), 'After alice conges_annuel should be 5.5');
+        $this->assertEquals(5.5, $aliceAfter->getHolidayAnnualCredit(), 'After alice conges_annuel should be 5.5');
 
         $alexAfter = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $this->assertEquals(2.22, $alexAfter->getHolidayCredit(), 'After alex conges_credit should be 2.22');
         $this->assertEquals(1.11, $alexAfter->getHolidayRemainder(), 'After alex conges_reliquat should be 1.11');
         $this->assertEquals(0, $alexAfter->getHolidayAnticipation(), 'After alex conges_anticipation should be 0');
         $this->assertEquals(4.44, $alexAfter->getHolidayCompTime(), 'After alex comp_time should be 4.44');
-        $this->assertEquals(5.55, $alexAfter->getAnnualCredit(), 'After alex conges_annuel should be 5.55');
+        $this->assertEquals(5.55, $alexAfter->getHolidayAnnualCredit(), 'After alex conges_annuel should be 5.55');
 
         $jdupontCongeAfter = $this->entityManager->getRepository(Holiday::class)->findOneBy(['perso_id' => $jdupontAfter->getId()]);
         $this->assertEquals(11, $jdupontCongeAfter->getPreviousCredit(), 'After Holiday solde_prec should be 11');
