@@ -5,7 +5,7 @@ use Tests\FixtureBuilder;
 use PHPUnit\Framework\TestCase;
 use App\Entity\SaturdayWorkingHours;
 
-class SaturdayWorkingHoursTest extends TestCase
+class SaturdayWorkingHoursRepositoryTest extends TestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -27,7 +27,7 @@ class SaturdayWorkingHoursTest extends TestCase
         $this->expiredDate = (clone $this->date)->modify('-10 days');
     }
 
-    public function testDeleteEdtSamediBetweenWeeks()
+    public function testDeleteBetweenWeeks()
     {
         $builder = new FixtureBuilder();
         $builder->delete(SaturdayWorkingHours::class);
@@ -42,13 +42,13 @@ class SaturdayWorkingHoursTest extends TestCase
 
         $repos = $this->entityManager->getRepository(SaturdayWorkingHours::class);
 
-        $repos->deleteEdtSamediBetweenWeeks($this->start, $this->end, $perso_id);
+        $repos->deleteBetweenWeeks($this->start, $this->end, $perso_id);
 
         $this->assertCount(2, $repos->findBy(['perso_id' => $perso_id]));
         $this->assertCount(1, $repos->findBy(['perso_id' => $other_perso_id]));
     }
 
-    public function testInsertEdtSamedi()
+    public function testInsert()
     {
         $builder = new FixtureBuilder();
         $builder->delete(SaturdayWorkingHours::class);
@@ -62,7 +62,7 @@ class SaturdayWorkingHoursTest extends TestCase
         ];
 
         $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
-        $repo->insertEdtSamedi($weeks, $perso_id);
+        $repo->insert($weeks, $perso_id);
 
         $results = $repo->findBy(['perso_id' => $perso_id]);
 

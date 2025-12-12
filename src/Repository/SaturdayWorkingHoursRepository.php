@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityRepository;
 
 class SaturdayWorkingHoursRepository extends EntityRepository
 {
-    public function deleteEdtSamediBetweenWeeks($debut, $fin, $perso_id)
+    public function deleteBetweenWeeks($start, $end, $user)
     {
         $builder = $this->getEntityManager()->createQueryBuilder();
 
@@ -15,30 +15,30 @@ class SaturdayWorkingHoursRepository extends EntityRepository
             ->where('s.semaine >= :debut')
             ->andWhere('s.semaine <= :fin')
             ->andWhere('s.perso_id = :perso_id')
-            ->setParameter('debut', $debut)
-            ->setParameter('fin', $fin)
-            ->setParameter('perso_id', $perso_id)
+            ->setParameter('debut', $start)
+            ->setParameter('fin', $end)
+            ->setParameter('perso_id', $user)
             ->getQuery();
 
         $query->execute();
     }
 
-    public function insertEdtSamedi(array $eDTSamedi, int $perso_id)
+    public function insert(array $workingHours, int $user)
     {
         $entityManager = $this->getEntityManager();
 
-        foreach ($eDTSamedi as $elem) {
+        foreach ($workingHours as $elem) {
 
             $entry = new SaturdayWorkingHours();
 
             if (!is_array($elem)) {
                 // Si config['EDTSamedi'] == 1 (Emploi du temps différent les semaines avec samedi travaillé)
-                $entry->setUserId($perso_id);
+                $entry->setUserId($user);
                 $entry->setWeek($elem);
                 $entry->setTable(2);
             } else {
                 // Si config['EDTSamedi'] == 2 (Emploi du temps différent les semaines avec samedi travaillé et en ouverture restreinte)
-                $entry->setUserId($perso_id);
+                $entry->setUserId($user);
                 $entry->setWeek($elem[0]);
                 $entry->setTable($elem[1]);
             }

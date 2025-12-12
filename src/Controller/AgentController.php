@@ -814,8 +814,8 @@ class AgentController extends BaseController
             }
         }
 
-        $premierLundi = array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
-        $dernierLundi = array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
+        $firstMonday = array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
+        $lastMonday = array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
 
         if (is_array($temps)) {
             foreach ($temps as $day => $hours) {
@@ -927,10 +927,10 @@ class AgentController extends BaseController
             $db->insert("personnel", $insert);
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-            if ($GLOBALS['config']['EDTSamedi'] and !$GLOBALS['config']['PlanningHebdo']) {
+            if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
                 $repos = $this->entityManager->getRepository(SaturdayWorkingHours::class);
-                $repos->deleteEdtSamediBetweenWeeks($premierLundi, $dernierLundi, $id);
-                $repos->insertEdtSamedi($eDTSamedi, $id);
+                $repos->deleteBetweenWeeks($firstMonday, $lastMonday, $id);
+                $repos->insert($eDTSamedi, $id);
             }
 
             return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
@@ -1045,10 +1045,10 @@ class AgentController extends BaseController
             }
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-            if ($GLOBALS['config']['EDTSamedi'] and !$GLOBALS['config']['PlanningHebdo']) {
+            if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
                 $repos = $this->entityManager->getRepository(SaturdayWorkingHours::class);
-                $repos->deleteEdtSamediBetweenWeeks($premierLundi, $dernierLundi, $id);
-                $repos->insertEdtSamedi($eDTSamedi, $id);
+                $repos->deleteBetweenWeeks($firstMonday, $lastMonday, $id);
+                $repos->insert($eDTSamedi, $id);
             }
 
             return $this->redirectToRoute('agent.index');
