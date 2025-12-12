@@ -14,7 +14,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         parent::__construct();
     }
 
-    public function add($date, $beginning, $end, $site, $position, $login_id, $perso_id, $play_before = false)
+    public function add($date, $beginning, $end, $site, $position, $login_id, $perso_id, $play_before = false): void
     {
         $action = $this->save('add', $date, $beginning, $end, $site, $position, $login_id, array($perso_id));
 
@@ -26,7 +26,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
-    public function disable($date, $beginning, $end, $site, $position, $login_id, $perso_id_origine)
+    public function disable($date, $beginning, $end, $site, $position, $login_id, $perso_id_origine): void
     {
         $action = $this->save('disable', $date, $beginning, $end, $site, $position, $login_id, array($perso_id_origine));
 
@@ -40,7 +40,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
-    public function put($date, $beginning, $end, $site, $position, $login_id, $perso_id, $perso_id_origin = 0)
+    public function put($date, $beginning, $end, $site, $position, $login_id, $perso_id, $perso_id_origin = 0): void
     {
         // Check from DB if there is deletion before because $perso_id_origin is not reset when the original cell is empty
         // (perso_id_origin may be != 0 even if the cell is empty).
@@ -52,7 +52,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
             'poste' => $position,
         ]);
 
-        $deleteBefore = $before ? true : false;
+        $deleteBefore = (bool) $before;
 
         if ($deleteBefore) {
             $this->delete($date, $beginning, $end, $site, $position, $login_id, $perso_id_origin);
@@ -61,7 +61,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         $this->save('put', $date, $beginning, $end, $site, $position, $login_id, array($perso_id), $deleteBefore);
     }
 
-    public function cross($date, $beginning, $end, $site, $position, $login_id, $perso_id = null)
+    public function cross($date, $beginning, $end, $site, $position, $login_id, $perso_id = null): void
     {
         // Select agents who are not crossed before
         $perso_ids = array();
@@ -84,11 +84,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
             }
 
             if (!empty($perso_id)) {
-                if (in_array($perso_id, $perso_ids)) {
-                    $perso_ids = array(intval($perso_id));
-                } else {
-                    $perso_ids = array();
-                }
+                $perso_ids = in_array($perso_id, $perso_ids) ? array(intval($perso_id)) : array();
             }
 
             if (!empty($perso_ids)) {
@@ -97,7 +93,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
-    public function delete($date, $beginning, $end, $site, $position, $login_id, $perso_id = null)
+    public function delete($date, $beginning, $end, $site, $position, $login_id, $perso_id = null): void
     {
         // Select agents who are in the cell before
         $perso_ids = array();
@@ -119,11 +115,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
             }
 
             if (!empty($perso_id)) {
-                if (in_array($perso_id, $perso_ids)) {
-                    $perso_ids = array(intval($perso_id));
-                } else {
-                    $perso_ids = array();
-                }
+                $perso_ids = in_array($perso_id, $perso_ids) ? array(intval($perso_id)) : array();
             }
 
             if (!empty($perso_ids)) {
@@ -132,7 +124,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
-    public function delete_plannings($session, $start, $end, $site, $reason = 'delete-planning')
+    public function delete_plannings($session, $start, $end, $site, $reason = 'delete-planning'): void
     {
         $from = \DateTime::createFromFormat('Y-m-d', $start);
         $to = \DateTime::createFromFormat('Y-m-d', $end);
@@ -158,7 +150,7 @@ class PlanningPositionHistoryHelper extends BaseHelper
         }
     }
 
-    private function save($action, $date, $beginning, $end, $site, $position, $login_id, $perso_ids, $playBefore = false) {
+    private function save($action, $date, $beginning, $end, $site, $position, $login_id, $perso_ids, $playBefore = false): \App\Model\PlanningPositionHistory {
 
         // Format data
         $date = \DateTime::createFromFormat('Y-m-d', $date);

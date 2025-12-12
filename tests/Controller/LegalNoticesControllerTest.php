@@ -16,7 +16,7 @@ class LegalNoticesControllerTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testLegalNotices()
+    public function testLegalNotices(): void
     {
         global $entityManager;
         $builder = new FixtureBuilder();

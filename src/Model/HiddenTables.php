@@ -25,7 +25,7 @@ class HiddenTables extends PLBEntity
     /** @Column(type="text") **/
     protected $hidden_tables;
 
-    public function purge()
+    public function purge(): void
     {
         error_log("hidden tables purge");
     }

@@ -5,7 +5,7 @@ use App\PlanningBiblio\Menu;
 
 class ClassDatePlTest extends TestCase
 {
-    public function testDatePl()
+    public function testDatePl(): void
     {
         // Setup
         $savDateDebutPlHebdo = $GLOBALS['config']['dateDebutPlHebdo'];

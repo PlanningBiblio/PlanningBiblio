@@ -9,7 +9,7 @@ require_once(__DIR__ . '/../../public/absences/class.absences.php');
 
 class ClassAbsencesTest extends TestCase
 {
-    public function testBuildICSContent()
+    public function testBuildICSContent(): void
     {
         $absence = new absences();
         $absence->perso_id = 8;
@@ -38,7 +38,7 @@ class ClassAbsencesTest extends TestCase
         $this->assertEquals('DTEND;TZID=UTC:20220117T123000', $lines[15], 'DTEND;TZID h:m');
     }
 
-    public function testRecipients()
+    public function testRecipients(): void
     {
         global $entityManager;
 

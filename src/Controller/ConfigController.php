@@ -95,7 +95,7 @@ class ConfigController extends BaseController
 
 
     #[Route(path: '/config', name: 'config.update')] // , methods={"POST"})
-    public function update(Request $request, Session $session)
+    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -122,11 +122,7 @@ class ConfigController extends BaseController
                 }
                 // boolean and checkboxes elements.
                 if (!isset($params[$cp->nom()])) {
-                    if ($cp->type() == 'boolean') {
-                        $params[$cp->nom()] = '0';
-                    } else {
-                        $params[$cp->nom()] = array();
-                    }
+                    $params[$cp->nom()] = $cp->type() == 'boolean' ? '0' : array();
                 }
                 $value = $params[$cp->nom()];
 

@@ -38,11 +38,11 @@ class PlanningController extends BaseController
     private $absences = [];
     private $cellId = 0;
     private $cells = [];
-    private $date = null;
+    private $date;
     private $dates = [];
     private $locked = 0;
-    private $lockDate = null;
-    private $lockPerson = null;
+    private $lockDate;
+    private $lockPerson;
     private $holidays = [];
     private $positions = [];
     private $schedules = [];
@@ -128,7 +128,7 @@ class PlanningController extends BaseController
         $pasDeDonneesSemaine = $this->noWeekDataFor($this->dates[4], $site);
 
         $tab = 0;
-        if ($show_framework_select) {
+        if ($show_framework_select !== 0) {
             $db = new \db();
             $db->select2("pl_poste_tab", "*", array("supprime"=>null), "order by `nom` DESC");
             $frameworks = $db->result;
@@ -260,7 +260,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/deleteplanning', name: 'planning.delete', methods: ['POST'])]
-    public function delete_planning(Request $request, Session $session)
+    public function delete_planning(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $week = $request->get('week');
@@ -549,7 +549,7 @@ class PlanningController extends BaseController
 
                         $db2 = new \db();
                         $db2->select('absences', '*', "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
-                        $absent = $db2->result ? true : false;
+                        $absent = (bool) $db2->result;
 
                         // Look for hollidays
                         $db2 = new \db();
@@ -570,11 +570,7 @@ class PlanningController extends BaseController
                         $week_number = !empty($tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine']) ? $tempsPlanningHebdo[$elem2['perso_id']]['nb_semaine'] : 0 ;
                     } else {
                         $agent = $this->entityManager->find(Agent::class, $elem2['perso_id']);
-                        if (!empty($agent)) {
-                            $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
-                        } else {
-                            $temps = array();
-                        }
+                        $temps = !empty($agent) ? json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true) : array();
                     }
 
                     $d = new \datePl($elem);
@@ -644,7 +640,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/setFramework', name: 'planning.setFramework', methods: ['POST'])]
-    public function setFramework(Request $request)
+    public function setFramework(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -673,7 +669,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/setFrameworkGroup', name: 'planning.setFrameworkGroup', methods: ['POST'])]
-    public function setFrameworkGroup(Request $request)
+    public function setFrameworkGroup(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -722,7 +718,7 @@ class PlanningController extends BaseController
         return $this->redirectToRoute('home');
     }
 
-    private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site)
+    private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site): string
     {
         $resultats=array();
         $classe=array();
@@ -891,7 +887,7 @@ class PlanningController extends BaseController
         return $cellule;
     }
 
-    private function createPlannings($request, $view)
+    private function createPlannings($request, $view): void
     {
         list($site, $date, $d, $semaine, $dates, $autorisationN1, $autorisationN2, $autorisationNotes, $comments) = $this->initPlanning($request, $view);
 
@@ -1128,12 +1124,12 @@ class PlanningController extends BaseController
         return $tabs;
     }
 
-    private function getAbsenceReasons()
+    private function getAbsenceReasons(): void
     {
         $this->absenceReasons = $this->entityManager->getRepository(AbsenceReason::class);
     }
 
-    private function getAbsences($date)
+    private function getAbsences($date): void
     {
         $a = new \absences();
         $a->valide = false;
@@ -1222,7 +1218,10 @@ class PlanningController extends BaseController
         return $absences;
     }
 
-    private function getCategories()
+    /**
+     * @return mixed[]
+     */
+    private function getCategories(): array
     {
         $categories = array();
 
@@ -1237,7 +1236,7 @@ class PlanningController extends BaseController
         return $categories;
     }
 
-    private function getCells($date, $site)
+    private function getCells($date, $site): void
     {
         $dbprefix = $this->config('dbprefix');
         $skills = $this->getSkills();
@@ -1307,7 +1306,7 @@ class PlanningController extends BaseController
         return $t->elements;
     }
 
-    private function getFrameworkStructure($tab)
+    private function getFrameworkStructure($tab): array
     {
         $t = new Framework();
         $t->id = $tab;
@@ -1360,7 +1359,7 @@ class PlanningController extends BaseController
         return [];
     }
 
-    private function getInfoMessages($dates, $date, $view)
+    private function getInfoMessages($dates, $date, $view): ?string
     {
         switch ($view) {
             case 'week' :
@@ -1390,7 +1389,7 @@ class PlanningController extends BaseController
         return $messages_infos;
     }
 
-    private function getLockData(String $date = null)
+    private function getLockData(String $date = null): void
     {
         $this->locked = 0;
         $this->lockDate = null;
@@ -1410,7 +1409,7 @@ class PlanningController extends BaseController
         }
     }
 
-    private function getPermissionsFor($site)
+    private function getPermissionsFor($site): array
     {
         $autorisationN1 = (in_array((300 + $site), $this->permissions)
             or in_array((1000 + $site), $this->permissions));
@@ -1428,7 +1427,7 @@ class PlanningController extends BaseController
         return array($autorisationN1, $autorisationN2, $autorisationNotes);
     }
 
-    private function getPositions()
+    private function getPositions(): void
     {
         $positions = array();
 
@@ -1480,7 +1479,7 @@ class PlanningController extends BaseController
         $this->positions = $positions;
     }
 
-    private function getSeparations()
+    private function getSeparations(): void
     {
         // Separation lines
         $separationE = $this->entityManager->getRepository(SeparationLine::class)->findAll();
@@ -1506,7 +1505,7 @@ class PlanningController extends BaseController
     {
         switch ($this->config('nb_semaine')) {
             case 2:
-                $type_sem = $semaine % 2 ? 'Impaire' : 'Paire';
+                $type_sem = $semaine % 2 !== 0 ? 'Impaire' : 'Paire';
                 $affSem = "$type_sem ($semaine)";
                 break;
             case 3: 
@@ -1521,7 +1520,7 @@ class PlanningController extends BaseController
         return $affSem;
     }
 
-    private function initPlanning($request, $view)
+    private function initPlanning($request, $view): array
     {
         $weekView = $view == 'week';
         $_SESSION['week'] = $weekView;
@@ -1584,7 +1583,7 @@ class PlanningController extends BaseController
     }
 
     // Check if the line is empty or not
-    private function isAnEmptyLine($position)
+    private function isAnEmptyLine($position): bool
     {
         if (!$position) {
             return false;
@@ -1599,20 +1598,15 @@ class PlanningController extends BaseController
         return true;
     }
 
-    private function noWeekDataFor($dates, $site)
+    private function noWeekDataFor($dates, $site): bool
     {
         $dates = implode(",", $dates);
         $db = new \db();
         $db->select2('pl_poste', '*', array('date' => "IN$dates", 'site' => $site));
-
-        if ($db->result) {
-            return false;
-        }
-
-        return true;
+        return !$db->result;
     }
 
-    private function positionExists($agent, $positions, $horaires)
+    private function positionExists($agent, $positions, $horaires): bool
     {
         if (!in_array($agent['poste'], $positions)) {
             return false;
@@ -1627,7 +1621,7 @@ class PlanningController extends BaseController
         return false;
     }
 
-    private function setDates(Request $request)
+    private function setDates(Request $request): void
     {
         $session = $request->getSession();
 
@@ -1656,7 +1650,7 @@ class PlanningController extends BaseController
         );
     }
 
-    private function setSite(Request $request)
+    private function setSite(Request $request): void
     {
         $session = $request->getSession();
 

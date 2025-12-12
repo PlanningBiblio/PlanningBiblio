@@ -8,7 +8,10 @@ use App\Model\AbsenceReason;
 
 class AbsenceReasonRepository extends EntityRepository
 {
-    public function getRemoteWorkingDescriptions()
+    /**
+     * @return mixed[]
+     */
+    public function getRemoteWorkingDescriptions(): array
     {
         $entityManager = $this->getEntityManager();
 

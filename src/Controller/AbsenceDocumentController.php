@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class AbsenceDocumentController extends BaseController
 {
     #[Route(path: '/absences/document/{id}', name: 'absences.document.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         $id = $request->get('id');
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
@@ -71,7 +71,7 @@ class AbsenceDocumentController extends BaseController
     }
 
    #[Route(path: '/absences/documents/{id_absence}', name: 'absences.document.list', methods: ['GET'])]
-    public function list(Request $request, Session $session)
+    public function list(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         $id = $request->get('id_absence');
         $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);

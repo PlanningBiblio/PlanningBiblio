@@ -21,7 +21,7 @@ class AjaxController extends BaseController
 {
 
     #[Route(path: '/ajax/sanitize-html', name: 'ajax.sanitizehtml', methods: ['POST'])]
-    public function ajax_sanitize_html(Request $request)
+    public function ajax_sanitize_html(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $text = $request->get('text');
         $response = new Response();
@@ -33,7 +33,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/agents-by-sites', name: 'ajax.agentsbysites', methods: ['GET'])]
-    public function agentsBySites(Request $request)
+    public function agentsBySites(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();
 
@@ -61,7 +61,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/holiday-delete', name: 'ajax.holidaydelete', methods: ['GET'])]
-    public function deleteHoliday(Request $request)
+    public function deleteHoliday(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');
@@ -75,7 +75,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/mail-test', name: 'ajax.mailtest', methods: ['POST'])]
-    public function mailTest(Request $request)
+    public function mailTest(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
 
         include_once(__DIR__ . '/../../public/include/config.php');
@@ -132,7 +132,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/edit-absence-reasons', name: 'ajax.editabsencereasons', methods: ['POST'])]
-    public function editAbsenceReasons(Request $request)
+    public function editAbsenceReasons(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $data = $request->get('data');
@@ -161,7 +161,7 @@ class AjaxController extends BaseController
 
 
     #[Route(path: '/ajax/holiday-absence-control', name: 'ajax.holiday.absence.control', methods: ['GET'])]
-    public function holidayAbsenceControl(Request $request)
+    public function holidayAbsenceControl(Request $request): \Symfony\Component\HttpFoundation\Response
     {
       $session = $request->getSession();
 
@@ -175,7 +175,7 @@ class AjaxController extends BaseController
       $perso_ids = json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
       // Get comma separated sites for agent
-      $sites = join(',', $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids));
+      $sites = implode(',', $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids));
 
       $fin = $fin ?? str_replace('00:00:00', '23:59:59', $debut);
       $result = array();
@@ -279,7 +279,7 @@ class AjaxController extends BaseController
 
                   $db->select2("pl_poste_verrou", "*", array("date"=>$date, "verrou2"=>"1", "site" => "IN $sites"));
                   // S'ils ne sont pas tous validés, vérifie si certains d'entre eux sont commencés
-                  if ($db->nb < sizeof($result)) {
+                  if ($db->nb < count($result)) {
                       // TODO : ceci peut être amélioré en cherchant en particulier si les sites non validés sont commencés, car les sites non validés et non commencés ne nous interressent pas.
                       // for($i=1;$i<=$this->config('Multisites-nombre');$i++){} // Attention, faire une première requête si $db->nb=0 pour éviter les erreurs foreach not array
                       // Le nom des sites pourrait également être retourné

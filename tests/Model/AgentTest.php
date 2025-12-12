@@ -17,7 +17,7 @@ require_once(__DIR__ . '/../../public/conges/class.conges.php');
 
 class AgentTest extends TestCase
 {
-    public function testAdd() {
+    public function testAdd(): void {
         global $entityManager;
         $agent = $entityManager->find(Agent::class, 1);
 
@@ -25,7 +25,7 @@ class AgentTest extends TestCase
         $this->assertEquals('admin', $agent->login());
     }
 
-    public function testCanAccess() {
+    public function testCanAccess(): void {
 
         $access = new Access();
         $access->groupe_id(99);
@@ -42,7 +42,7 @@ class AgentTest extends TestCase
         $this->assertFalse($agent->can_access(array($access_bad)));
     }
 
-    public function testIsOnVacationOn(){
+    public function testIsOnVacationOn(): void{
         global $entityManager;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -66,7 +66,7 @@ class AgentTest extends TestCase
         $this->assertFalse($agent->isOnVacationOn('', ''));
     }
 
-    public function testIsBlockedOn(){
+    public function testIsBlockedOn(): void{
         global $entityManager;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -118,7 +118,7 @@ class AgentTest extends TestCase
         $this->assertFalse($agent2->isBlockedOn($date_ok->format('Y-m-d'), $start->format('H:i:s'), $end->format('H:i:s')));
     }
 
-    public function testGetWorkingHoursOn(){
+    public function testGetWorkingHoursOn(): void{
         global $entityManager;
         $GLOBALS['config']['PlanningHebdo'] = 0;
         $builder = new FixtureBuilder();
@@ -225,7 +225,7 @@ class AgentTest extends TestCase
         $this->assertNotEquals($agent3->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][2], '12:30:00','check Working Hours of the agent with planningHebdo');
     }
 
-    public function testSkills(){
+    public function testSkills(): void{
         global $entityManager;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -246,7 +246,7 @@ class AgentTest extends TestCase
 
     }
 
-    public function test_get_planning_unit_mails(){
+    public function test_get_planning_unit_mails(): void{
         global $entityManager;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -298,7 +298,7 @@ class AgentTest extends TestCase
 
     }
 
-    public function testIsAbsentOn(){
+    public function testIsAbsentOn(): void{
 
         global $entityManager;
         $builder = new FixtureBuilder();
@@ -328,14 +328,14 @@ class AgentTest extends TestCase
         $this->assertTrue($agent->isAbsentOn('2022-12-14', '2022-12-25'));
     }
 
-    public function test_get_manager_emails(){
+    public function test_get_manager_emails(): void{
         global $entityManager;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
         // MT39529: No managers should return an empty array, not an array with an empty value.
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'mails_responsables' => ''));
-        $this->assertEquals(sizeof($agent->get_manager_emails()), 0);
+        $this->assertEquals(count($agent->get_manager_emails()), 0);
 
         $builder->delete(Agent::class);
 

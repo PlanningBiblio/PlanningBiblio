@@ -46,15 +46,15 @@ require_once(__DIR__.'/../personnel/class.personnel.php');
 
 class CJICS
 {
-    public $CSRFToken = null;
-    public $error=null;
-    public $logs=null;
+    public $CSRFToken;
+    public $error;
+    public $logs;
     public $number = 0;
-    public $pattern=null;
+    public $pattern;
     public $desc = true;
     public $perso_id=0;
     public $status = 'CONFIRMED';
-    public $src=null;
+    public $src;
     public $table="absences";
 
     /** 
@@ -63,7 +63,7 @@ class CJICS
      * @return $event array
      */
 
-    public static function createIcsEvent($params) {
+    public static function createIcsEvent($params): array {
     
         /* 
         For absences, params are $id, $start, $end, $reason, $comment, $status, $createdAt, $lastModified
