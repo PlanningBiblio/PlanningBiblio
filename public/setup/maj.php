@@ -3812,6 +3812,14 @@ if (version_compare($config['Version'], $v) === -1) {
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+ 
+$v="25.04.14";
+
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `technical`, `ordre`) VALUES ('ICS-Delay', 'text', '1', 'ICS', 'Délai entre chaque requête ICS lors de l\'import', 1, '71');";
+    $sql[] = "UPDATE {$dbprefix}postes SET categories = '[]' WHERE categories = '0'";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 # MARKER
 
 //	Execution des requetes et affichage
