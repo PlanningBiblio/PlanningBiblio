@@ -1,5 +1,15 @@
 # Changelog Planno
 
+## Version 25.11.09 (2025-12-12)
+
+### Plumbing
+
+- MT50832: Holiday reset comptime, use entity manager #1272
+- MT50832: Holiday reset remainder, use entity manager #1273
+- MT50832: Holiday reset credits, use entity manager #1274
+- MT50832: Absence import CSV, use entity manager #1275
+- MT50832: Homogenize Agent::g/setHoliday methods
+
 ## Version 25.11.08 (2025-12-12)
 
 ### Enhancement
