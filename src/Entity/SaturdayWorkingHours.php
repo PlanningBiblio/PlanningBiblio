@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\SaturdayWorkingHoursRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: SaturdayWorkingHours::class)]
 #[ORM\Table(name: 'edt_samedi')]
 class SaturdayWorkingHours
 {
@@ -28,12 +29,12 @@ class SaturdayWorkingHours
         return $this->id;
     }
 
-    public function getuserId(): ?int
+    public function getUserId(): ?int
     {
         return $this->perso_id;
     }
 
-    public function setuserId($userId): static
+    public function setUserId($userId): static
     {
         $this->perso_id = $userId;
 
