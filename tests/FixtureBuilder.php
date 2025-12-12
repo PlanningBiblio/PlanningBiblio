@@ -17,7 +17,7 @@ class FixtureBuilder
 
     }
 
-    public function build($model, $values = array())
+    public function build($model, $values = array()): object
     {
         $metadata = $this->em->getClassMetadata($model);
         $entity_fields = $metadata->getFieldNames();
@@ -63,7 +63,7 @@ class FixtureBuilder
         return $entity;
     }
 
-    public function delete($model)
+    public function delete($model): void
     {
         $entities = $this->em->getRepository($model)->findAll();
         foreach ($entities as $entity) {
@@ -75,7 +75,7 @@ class FixtureBuilder
         $this->em->flush();
     }
 
-    private function getDefaultFixture($model)
+    private function getDefaultFixture($model): ?object
     {
         $namespace = explode('\\', $model);
         $name = end($namespace);
@@ -125,7 +125,7 @@ class FixtureBuilder
         return $value;
     }
 
-    private function random_text($length)
+    private function random_text($length): string
     {
         $length ??= 20;
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -138,17 +138,17 @@ class FixtureBuilder
         return $randstring;
     }
 
-    private function random_date()
+    private function random_date(): \DateTime
     {
         return new \DateTime(date('Y-m-d'));
     }
 
-    private function random_json_array()
+    private function random_json_array(): array
     {
         return array();
     }
 
-    private function random_datetime()
+    private function random_datetime(): \DateTime
     {
         return new \DateTime(date("Y-m-d H:i:s"));
     }
@@ -158,7 +158,7 @@ class FixtureBuilder
         return rand(0, 55) / 10;
     }
 
-    private function random_integer()
+    private function random_integer(): int
     {
         return rand(0, 9);
     }

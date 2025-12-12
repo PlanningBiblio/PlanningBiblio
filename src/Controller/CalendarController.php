@@ -28,7 +28,7 @@ class CalendarController extends BaseController
 
         $debut = $debut ? $debut : $_SESSION['agenda_debut'];
         $fin = $fin ? $fin : $_SESSION['agenda_fin'];
-        $admin = in_array(3, $GLOBALS['droits'])?true:false;
+        $admin = in_array(3, $GLOBALS['droits']);
         if($admin){
             $perso_id = $request->get('perso_id');
             $perso_id = $perso_id?$perso_id:$_SESSION['agenda_perso_id'];
@@ -291,11 +291,7 @@ class CalendarController extends BaseController
                 $site = 1;
                 if ($nbSites > 1 and isset($horaires[4])) {
                     $site = $horaires[4];
-                    if ($site != '-1') {
-                        $site_name = $this->config("Multisites-site$site");
-                    } else {
-                        $site_name = '';
-                    }
+                    $site_name = $site != '-1' ? $this->config("Multisites-site$site") : '';
                 }
                 $schedule = array();
                 if (!empty($horaires[0]) and !empty($horaires[1])) {
@@ -353,7 +349,7 @@ class CalendarController extends BaseController
                 $tmp = array();
                 $j = 0;
                 for ($i = 0; $i < count($current_postes); $i++) {
-                    $current_postes[$i]['absent'] = $current_postes[$i]['absent'] == 1 ? true : false;
+                    $current_postes[$i]['absent'] = $current_postes[$i]['absent'] == 1;
 
                     if ($i == 0) {
                         $tmp[$j] = $current_postes[$i];

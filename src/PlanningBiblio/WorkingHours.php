@@ -15,7 +15,10 @@ class WorkingHours
         $this->free_break_already_removed = $free_break_already_removed;
     }
 
-    public function hoursOf($day)
+    /**
+     * @return array{0?: mixed, 1: mixed}[]
+     */
+    public function hoursOf($day): array
     {
 
         /**
@@ -81,7 +84,7 @@ class WorkingHours
             $substracted = 0;
             foreach (array(2, 1, 0) as $i) {
                 if (isset($tab[$i])) {
-                    if (!$substracted) {
+                    if ($substracted === 0) {
                         $tab[$i][1] = $this->substractBreak($tab[$i][1], $break);
                     }
                     $substracted = 1;
@@ -99,7 +102,7 @@ class WorkingHours
         return $tab;
     }
 
-    private function substractBreak($hour, $interval)
+    private function substractBreak($hour, $interval): string
     {
          $minutes = $interval * 60;
          $new_hour = date('H:i:s', strtotime("- $minutes minutes $hour"));

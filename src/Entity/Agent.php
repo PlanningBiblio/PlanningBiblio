@@ -443,13 +443,13 @@ class Agent
         return $this->managers->toArray();
     }
 
-    public function addManaged(Manager $managed)
+    public function addManaged(Manager $managed): void
     {
         $this->managed->add($managed);
         $managed->setManager($this);
     }
 
-    public function isManagerOf($agent_ids = array(), $requested_level = null)
+    public function isManagerOf($agent_ids = array(), $requested_level = null): bool
     {
         $managed_ids = array();
         $managed = $this->getManaged();
@@ -472,7 +472,7 @@ class Agent
         return true;
     }
 
-    public function can_access(array $accesses) {
+    public function can_access(array $accesses): bool {
         if (empty($accesses)) {
             return false;
         }
@@ -507,7 +507,10 @@ class Agent
         return false;
     }
 
-    public function get_planning_unit_mails() {
+    /**
+     * @return mixed[]
+     */
+    public function get_planning_unit_mails(): array {
         $config = $GLOBALS['config'];
 
         // Get mails defined in Mail-Planning config element.
@@ -545,24 +548,16 @@ class Agent
         return explode(';', $emails_string);
     }
 
-    public function isAbsentOn($from, $to)
+    public function isAbsentOn($from, $to): bool
     {
         $a = new \absences();
-        if ($a->check($this->id, $from, $to, true)) {
-            return true;
-        }
-
-        return false;
+        return (bool) $a->check($this->id, $from, $to, true);
     }
 
-    public function isOnVacationOn($from, $to)
+    public function isOnVacationOn($from, $to): bool
     {
         $c = new \conges();
-        if ($c->check($this->id, $from, $to, true)) {
-            return true;
-        }
-
-        return false;
+        return (bool) $c->check($this->id, $from, $to, true);
     }
 
     public function getWorkingHoursOn($date)
@@ -587,7 +582,7 @@ class Agent
         return $working_hours->elements[0];
     }
 
-    public function isBlockedOn($date, $start, $end)
+    public function isBlockedOn($date, $start, $end): bool
     {
         $id = $this->id;
 
@@ -620,13 +615,16 @@ class Agent
         return false;
     }
 
-    public function skills()
+    public function skills(): array
     {
         $skills = json_decode($this->postes);
         return is_array($skills) ? $skills : [];
     }
 
-    public function managedSites($needed_l1, $needed_l2)
+    /**
+     * @return int[]
+     */
+    public function managedSites($needed_l1, $needed_l2): array
     {
         $sites_number = $GLOBALS['config']['Multisites-nombre'];
 
@@ -648,7 +646,7 @@ class Agent
         return $managed_sites;
     }
 
-    public function inOneOfSites($sites)
+    public function inOneOfSites($sites): bool
     {
         $agent_sites = json_decode($this->sites, true);
 

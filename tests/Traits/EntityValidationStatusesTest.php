@@ -22,7 +22,7 @@ class EntityValidationStatusesTest extends PLBWebTestCase
     }
 
 
-    public function testGetStatusesParams()
+    public function testGetStatusesParams(): void
     {
         $this->setUpPantherClient();
         $this->setParam('Absences-notifications-agent-par-agent', 1);
@@ -401,7 +401,7 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->assertTrue($params['show_n2'], 'Show n2');
     }
 
-    private function debug_absence($id) {
+    private function debug_absence($id): void {
         $absence = new \absences();
         $absence->fetchById($id);
         print_r($absence->elements);

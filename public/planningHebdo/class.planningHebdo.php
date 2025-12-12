@@ -21,21 +21,21 @@ require_once __DIR__."/../absences/class.absences.php";
 
 class planningHebdo
 {
-    public $agent=null;
+    public $agent;
     public $config=array();
-    public $CSRFToken=null;
+    public $CSRFToken;
     public $dates=array();
-    public $debut=null;
+    public $debut;
     public $elements=array();
-    public $error=null;
-    public $fin=null;
-    public $id=null;
-    public $ignoreActuels=null;
-    public $periodes=null;
-    public $perso_id=null;
-    public $perso_ids=null;
-    public $tri=null;
-    public $valide=null;
+    public $error;
+    public $fin;
+    public $id;
+    public $ignoreActuels;
+    public $periodes;
+    public $perso_id;
+    public $perso_ids;
+    public $tri;
+    public $valide;
     public $merge_exception = true;
     public Array $recipients;
 
@@ -43,7 +43,7 @@ class planningHebdo
     {
     }
 
-    public function add($data)
+    public function add($data): void
     {
         // Modification du format des dates de début et de fin si elles sont en français
         if (array_key_exists("debut", $data)) {
@@ -214,7 +214,7 @@ class planningHebdo
         $p->add($data);
     }
   
-    public function fetch()
+    public function fetch(): void
     {
         // Recherche des services
         $p=new personnel();
@@ -374,7 +374,7 @@ class planningHebdo
      * - 4 : validation N2
      * @param int $perso_id = ID de l'agent concerné par le planning de présence
      */
-    public function getRecipients($validation, $perso_id)
+    public function getRecipients($validation, $perso_id): void
     {
         $categories=$GLOBALS['config']["PlanningHebdo-notifications{$validation}"];
         $categories=json_decode(html_entity_decode(stripslashes($categories), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
@@ -467,7 +467,7 @@ class planningHebdo
     }
 
 
-    public function update($data)
+    public function update($data): void
     {
         // Modification du format des dates de début et de fin si elles sont en français
         $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['debut']);

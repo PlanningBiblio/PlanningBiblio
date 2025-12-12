@@ -12,7 +12,7 @@ use Tests\FixtureBuilder;
 
 class PositionControllerTest extends PLBWebTestCase
 {
-    public function testAdd()
+    public function testAdd(): void
     {
         $entityManager = $this->entityManager;
 
@@ -27,7 +27,7 @@ class PositionControllerTest extends PLBWebTestCase
         $extract_result = $crawler->filter('input[name="_token"]')->extract(array('value'));
         $token = $extract_result[0];
 
-        $this->client->request('POST', '/position', array('nom' => 'bureau', 'activites' => [], 'categories' => [], 'site' => 1, 'bloquant' => 1, 'statistiques' => 0, 'teleworking' => 1, 'etage' => '', 'groupe' => 'admin', 'groupe_id' => '', 'obligatoire' => 'Obligatoire', 'site' => '', '_token' => $token));
+        $this->client->request('POST', '/position', array('nom' => 'bureau', 'activites' => [], 'categories' => [], 'bloquant' => 1, 'statistiques' => 0, 'teleworking' => 1, 'etage' => '', 'groupe' => 'admin', 'groupe_id' => '', 'obligatoire' => 'Obligatoire', 'site' => '', '_token' => $token));
 
         $position = $entityManager->getRepository(Position::class)->findOneBy(array('nom' => 'bureau'));
 
@@ -39,7 +39,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($position->getGroup(), 'admin', 'post group is admin');
     }
 
-    public function testNewForm()
+    public function testNewForm(): void
     {
         $entityManager = $this->entityManager;
 
@@ -71,7 +71,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Statistiques :',$result->text('Node does not exist', false), 'label is Statistiques: ');
         $this->assertStringContainsString('Compatible télétravail :',$result->text('Node does not exist', false), 'label is Compatible télétravail');
 
-        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :','label is Nom du post');
+        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :');
         $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance audiovisuel');
         $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance autoformation');
         $this->assertStringContainsString(' Communication', $result->eq(1)->text('Node does not exist', false), 'checkBox is Communication');
@@ -118,7 +118,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('* Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste', $result->text('Node does not exist', false), 'noteBasDePage is ok');
     }
 
-    public function testFormEdit()
+    public function testFormEdit(): void
     {
         $entityManager = $this->entityManager;
 
@@ -171,7 +171,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Statistiques :',$result->text('Node does not exist', false), 'label is Statistiques: ');
         $this->assertStringContainsString('Compatible télétravail :',$result->text('Node does not exist', false), 'label is Compatible télétravail');
 
-        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :','label is Nom du post');
+        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :');
         $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance audiovisuel');
         $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance autoformation');
         $this->assertStringContainsString(' Communication', $result->eq(1)->text('Node does not exist', false), 'checkBox is Communication');
@@ -223,7 +223,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('* Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste', $result->text('Node does not exist', false), 'noteBasDePage is ok');
     }
 
-    public function testPositionList()
+    public function testPositionList(): void
     {
         $entityManager = $this->entityManager;
 

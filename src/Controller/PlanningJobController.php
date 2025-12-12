@@ -28,7 +28,7 @@ class PlanningJobController extends BaseController
     use \App\Traits\PlanningJobTrait;
 
     #[Route(path: '/planningjob/contextmenu', name: 'planningjob.contextmenu', methods: ['GET'])]
-    public function contextmenu(Request $request)
+    public function contextmenu(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();
 
@@ -47,7 +47,7 @@ class PlanningJobController extends BaseController
     }
 
     #[Route(path: '/ajax/planningjob/checkcopy', name: 'ajax.planningjobcheckcopy', methods: ['GET'])]
-    public function checkCopy(Request $request)
+    public function checkCopy(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         // Initilisation des variables
         $date = $request->get('date');

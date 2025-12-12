@@ -5,7 +5,7 @@ use App\PlanningBiblio\Menu;
 
 class ClassMenuTest extends TestCase
 {
-    public function testMenuContent()
+    public function testMenuContent(): void
     {
         $menu = new Menu();
         $this->assertEquals($menu->checkCondition('random string'), false, 'random string is false');
