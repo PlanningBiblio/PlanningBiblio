@@ -17,10 +17,7 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
-/**
- * @return mixed[]
- */
-function deja_place($date, $poste): array
+function deja_place($date, $poste)
 {
     $deja=array(0);
     $db=new db();
@@ -33,10 +30,7 @@ function deja_place($date, $poste): array
     return $deja;
 }
 
-/**
- * @return mixed[]
- */
-function deuxSP($date, $debut, $fin): array
+function deuxSP($date, $debut, $fin)
 {
     $tab=array(0);
     $db=new db();
@@ -66,6 +60,7 @@ function nb30($debut, $fin)
 {
     $tmpFin=explode(":", $fin);
     $tmpDebut=explode(":", $debut);
-    return (($tmpFin[0]*60)+$tmpFin[1]-($tmpDebut[0]*60)-$tmpDebut[1])/15;
+    $time=(($tmpFin[0]*60)+$tmpFin[1]-($tmpDebut[0]*60)-$tmpDebut[1])/15;
+    return $time;
 }
 //		-------------	FIN paramétrage de la largeur des colonnes		--------------//

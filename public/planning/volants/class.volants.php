@@ -23,7 +23,7 @@ require_once __DIR__.'/../../personnel/class.personnel.php';
 
 class volants
 {
-    public $error;
+    public $error = null;
     public $selected = array();
     public $tous = array();
 
@@ -31,7 +31,7 @@ class volants
     {
     }
   
-    public function fetch($date): void
+    public function fetch($date)
     {
 
     // Date du lundi
@@ -68,7 +68,7 @@ class volants
         $this->tous = $tous;
     }
   
-    public function set($date, $ids, $CSRFToken): void
+    public function set($date, $ids, $CSRFToken)
     {
         $db = new db();
         $db->CSRFToken = $CSRFToken;

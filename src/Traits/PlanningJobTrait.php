@@ -12,14 +12,19 @@ trait PlanningJobTrait
 
     private Array $droits;
 
-    public function canManagePlanning($session, $site): bool
+    public function canManagePlanning($session, $site)
     {
         if (!$session->get('loginId')) {
             return false;
         }
 
         $droits = $GLOBALS['droits'];
-        return !(!in_array((300 + $site), $droits) and !in_array((1000 + $site), $droits));
+
+        if (!in_array((300 + $site), $droits) and !in_array((1000 + $site), $droits)) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getContextMenuInfos($site, $date, $debut, $fin, $perso_id, $perso_nom, $poste, $CSRFToken, $session) {
@@ -88,7 +93,7 @@ trait PlanningJobTrait
         $statuts = array();
 
         if (!empty($categories)) {
-            $categories = implode(",", $categories);
+            $categories = join(",", $categories);
             $db = new \db();
             $categories = $db->escapeString($categories);
             $db->select('select_statuts', null, "categorie IN ($categories)");
@@ -200,7 +205,7 @@ trait PlanningJobTrait
                         . "FROM `{$dbprefix}pl_poste` "
                         . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
                         . "WHERE `{$dbprefix}pl_poste`.`debut`<'$end_with_journey' AND `{$dbprefix}pl_poste`.`fin`>'$start_with_journey' "
-                        . "AND `{$dbprefix}pl_poste`.`poste` IN (" . implode(",", $autres_postes) . ") "
+                        . "AND `{$dbprefix}pl_poste`.`poste` IN (" . join(",", $autres_postes) . ") "
                         . "AND `{$dbprefix}pl_poste`.`site` = $site "
                         . "AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
                     $db = new \db();
@@ -232,7 +237,7 @@ trait PlanningJobTrait
 
         // Count day hours for all agent.
         $day_hours = array();
-        if ($break_countdown !== 0) {
+        if ($break_countdown) {
 
             $events = $this->entityManager->getRepository(PlanningPosition::class)->findBy([
                 'date' => new \DateTime($dateSQL),
@@ -401,7 +406,7 @@ trait PlanningJobTrait
                     $exclusion[$elem['id']][]="horaires";
                 }
 
-                if ($break_countdown !== 0) {
+                if ($break_countdown) {
                     $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
 
                     $is_a_break = $positions->find($poste)->isLunch();
@@ -416,7 +421,7 @@ trait PlanningJobTrait
                     }
 
                     $breaktime = isset($breaktimes[$elem['id']][$jour]) ? (float) $breaktimes[$elem['id']][$jour] * 3600 : 0;
-                    $hours_limit -= $breaktime;
+                    $hours_limit = $hours_limit - $breaktime;
 
                     if ($day_hour + $requested_hours > $hours_limit) {
                         $exclusion[$elem['id']][]="break";
@@ -485,7 +490,7 @@ trait PlanningJobTrait
                 $cellule_grise = $elem['grise'] == 1 ? true : $cellule_grise;
             }
         }
-        $exclus=implode(',', $tab_exclus);
+        $exclus=join(',', $tab_exclus);
 
         // Looking for availables agents.
         $agents_dispo = array();
@@ -560,7 +565,11 @@ trait PlanningJobTrait
                         $motifExclusion[$elem['id']][]="skills";
                     }
                     if (in_array('categories', $exclusion[$elem['id']])) {
-                        $motifExclusion[$elem['id']][] = $categories_nb > 1 ? "no_cat" : "wrong_cat";
+                        if ($categories_nb > 1) {
+                            $motifExclusion[$elem['id']][]="no_cat";
+                        } else {
+                            $motifExclusion[$elem['id']][]="wrong_cat";
+                        }
                     }
                     if (in_array('absence', $exclusion[$elem['id']])) {
                         $motifExclusion[$elem['id']][] = 'absence';
@@ -578,9 +587,9 @@ trait PlanningJobTrait
         foreach ($agents_dispo as $elem) {
             $agents_qualif[]=$elem['id'];
         }
-        $agents_qualif = implode(',', $agents_qualif);
-        $absents = implode(',', $absents);
-        $tab_deja_place = implode(',', $tab_deja_place);
+        $agents_qualif = join(',', $agents_qualif);
+        $absents = join(',', $absents);
+        $tab_deja_place = join(',', $tab_deja_place);
 
         $db = new \db();
         $dateSQL = $db->escapeString($date);
@@ -616,19 +625,23 @@ trait PlanningJobTrait
 
         // Groupe agents by service.
         $newtab = array();
-        foreach ($agents_dispo as $elem) {
-            if ($elem['id']!=2) {
-                if (trim($elem['service']) === '' || trim($elem['service']) === '0') {
-                    $newtab["Sans service"][]=$elem['id'];
-                } else {
-                    $newtab[$elem['service']][]=$elem['id'];
+        if ($agents_dispo) {
+            foreach ($agents_dispo as $elem) {
+                if ($elem['id']!=2) {
+                    if (!trim($elem['service'])) {
+                        $newtab["Sans service"][]=$elem['id'];
+                    } else {
+                        $newtab[$elem['service']][]=$elem['id'];
+                    }
                 }
             }
         }
 
-        foreach ($autres_agents as $elem) {
-            if ($elem['id']!=2) {
-                $newtab["Autres"][]=$elem['id'];
+        if ($autres_agents) {
+            foreach ($autres_agents as $elem) {
+                if ($elem['id']!=2) {
+                    $newtab["Autres"][]=$elem['id'];
+                }
             }
         }
 
@@ -636,7 +649,7 @@ trait PlanningJobTrait
         if (is_array($services)) {
             foreach ($services as $elem) {
                 if (array_key_exists($elem['service'], $newtab)) {
-                    $listparservices[] = implode(',', $newtab[$elem['service']]);
+                    $listparservices[] = join(',', $newtab[$elem['service']]);
                 } else {
                     // FIXME is this useful to push null element ?
                     $listparservices[] = null;
@@ -644,8 +657,12 @@ trait PlanningJobTrait
             }
         }
 
-        $listparservices[] = array_key_exists("Autres", $newtab) ? implode(',', $newtab['Autres']) : null;
-        $tab_agent = implode(';', $listparservices);
+        if (array_key_exists("Autres", $newtab)) {
+            $listparservices[] = join(',', $newtab['Autres']);
+        } else {
+            $listparservices[] = null;
+        }
+        $tab_agent = join(';', $listparservices);
 
         $tableaux = array(
             'position_name' => $posteNom, 'position_id' => $poste,

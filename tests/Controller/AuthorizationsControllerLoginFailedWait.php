@@ -7,7 +7,7 @@ use Tests\FixtureBuilder;
 
 class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
 {
-    public function testLoginFailedWait(): void
+    public function testLoginFailedWait()
     {
         $GLOBALS['config']['IPBlocker-Attempts'] = 3;
         $_SERVER['REMOTE_ADDR'] = '11.11.11.11';

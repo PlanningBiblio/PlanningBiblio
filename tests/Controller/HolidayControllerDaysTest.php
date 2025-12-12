@@ -26,7 +26,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->logInAgent($admin, array(100));
     }
 
-    public function testHolidayOneAgentManyDays(): void
+    public function testHolidayOneAgentManyDays()
     {
         $entityManager = $this->entityManager;
 
@@ -76,7 +76,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($jdevoe->getCompTime(), 0, "comp time didn't change");
     }
 
-    public function testHolidayManyAgentManyDays(): void
+    public function testHolidayManyAgentManyDays()
     {
         $entityManager = $this->entityManager;
 
@@ -162,7 +162,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($adenis->getCompTime(), 10, "comp time didn't change");
     }
 
-    public function testHolidayManyAgentManyDaysWithRemainingHoliday(): void
+    public function testHolidayManyAgentManyDaysWithRemainingHoliday()
     {
         $entityManager = $this->entityManager;
 
@@ -248,17 +248,14 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         $this->assertEquals($adenis->getCompTime(), 10, "comp time didn't change");
     }
 
-    private function deleteWorkingHours(): void
+    private function deleteWorkingHours()
     {
         $db = new \db();
         $db->CSRFToken = '00000';
         $db->delete('planning_hebdo');
     }
 
-    /**
-     * @return mixed[]
-     */
-    private function getHolidayData($replace = array()): array
+    private function getHolidayData($replace = array())
     {
         $data = array(
             'CSRFToken' => '00000',
@@ -286,7 +283,7 @@ class HolidayControllerDaysTest extends PLBWebTestCase
         return $data;
     }
 
-    private function addWorkingHours($agent, $times): void
+    private function addWorkingHours($agent, $times)
     {
         $workinghours = array(
             0 => array('0' => $times[0], '1' => $times[1], '2' => $times[2], '3' => $times[3]),

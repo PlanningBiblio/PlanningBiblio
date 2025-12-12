@@ -24,7 +24,7 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
-function sanitize_html($input): string {
+function sanitize_html($input) {
     $htmlSanitizer = new HtmlSanitizer(
         (new HtmlSanitizerConfig())->allowSafeElements()
     );
@@ -124,7 +124,7 @@ function sanitize_on($input)
 
 // sanitize_on01 retourne 0 par défaut, sinon 1
 // Permet par exemple de controler les checkboxes
-function sanitize_on01($input): int
+function sanitize_on01($input)
 {
     $reponse_filtre = 0;
     // Vérifions si le format est valide

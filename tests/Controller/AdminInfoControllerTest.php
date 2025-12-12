@@ -8,7 +8,7 @@ use Tests\FixtureBuilder;
 
 class AdminInfoControllerTest extends PLBWebTestCase
 {
-    public function testAdd(): void
+    public function testAdd()
     {
         $entityManager = $this->entityManager;
 
@@ -33,7 +33,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->assertEquals('20211010', $info->getEnd(), 'fin is 20211010');
     }
 
-    public function testNewForm(): void
+    public function testNewForm()
     {
         $entityManager = $this->entityManager;
 
@@ -77,7 +77,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('name'),'text','textarea name is texte');
     }
 
-    public function testFormEdit(): void
+    public function testFormEdit()
     {
         $entityManager = $this->entityManager;
 

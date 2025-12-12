@@ -33,38 +33,38 @@ use App\Entity\Cron;
 
 class conges
 {
-    public $agent;
+    public $agent=null;
     public $agents = array();
     public $agents_supprimes=array(0);
     public $admin=false;
-    public $annee;
-    public $bornesExclues;
-    public $CSRFToken;
+    public $annee=null;
+    public $bornesExclues=null;
+    public $CSRFToken=null;
     public $data=array();
-    public $debit;
-    public $debut;
+    public $debit=null;
+    public $debut=null;
     public $elements=array();
     public $error=false;
-    public $fin;
-    public $heures;
-    public $heures2;
-    public $id;
+    public $fin=null;
+    public $heures=null;
+    public $heures2=null;
+    public $id=null;
     public $information = true;
-    public $message;
-    public $minutes;
-    public $perso_id;
-    public $recupId;
+    public $message=null;
+    public $minutes=null;
+    public $perso_id=null;
+    public $recupId=null;
     public $responsables = array();
     public $samedis=array();
     public $sites=array();
     public $supprime = true;
-    public $valide;
+    public $valide=null;
 
     public function __construct()
     {
     }
 
-    public function add($data): void
+    public function add($data)
     {
         $data['fin']=$data['fin']?$data['fin']:$data['debut'];
         $data['debit']=isset($data['debit'])?$data['debit']:"credit";
@@ -113,7 +113,7 @@ class conges
         }
     }
 
-    public function calculCredit($debut, $hre_debut, $fin, $hre_fin, $perso_id): void
+    public function calculCredit($debut, $hre_debut, $fin, $hre_fin, $perso_id)
     {
         // Calcul du nombre d'heures correspondant aux congés demandés
         $current=$debut;
@@ -156,21 +156,21 @@ class conges
             $finConges=$current==$fin?$hre_fin:"23:59:59";
             $debutConges=strtotime($debutConges);
             $finConges=strtotime($finConges);
-
+      
             $wh = new WorkingHours($p->elements[0]['temps']);
             $temps = $wh->hoursOf($jour);
-
+      
             foreach ($temps as $t) {
                 $t0 = strtotime($t[0]);
                 $t1 = strtotime($t[1]);
-
+        
                 $debutConges1 = $debutConges > $t0 ? $debutConges : $t0;
                 $finConges1 = $finConges < $t1 ? $finConges : $t1;
                 if ($finConges1 > $debutConges1) {
                     $difference += $finConges1 - $debutConges1;
                 }
             }
-
+        
             $current=date("Y-m-d", strtotime("+1 day", strtotime($current)));
         }
         $this->minutes=$difference/60;                                      // nombre de minutes (ex 2h30 => 150)
@@ -185,7 +185,7 @@ class conges
     * Calcule les crédits de récupération disponible pour l'agent $perso_id à la date $date
     * Les crédits obtenus à des dates supérieures sont déduits
     */
-    public function calculCreditRecup($perso_id, $date = null, $id = null): array
+    public function calculCreditRecup($perso_id, $date = null, $id = null)
     {
         if (!$date) {
             $date = date('Y-m-d');
@@ -308,7 +308,7 @@ class conges
     * Retourne true si absent, false sinon
     * Si $valide==false, les absences non validées seront également prises en compte
     */
-    public function check($perso_id, $debut, $fin, $valide=true): bool
+    public function check($perso_id, $debut, $fin, $valide=true)
     {
         if (strlen($debut)==10) {
             $debut.=" 00:00:00";
@@ -332,10 +332,13 @@ class conges
     
         $db=new db();
         $db->select2("conges", null, $filter);
-        return (bool) $db->result;
+        if ($db->result) {
+            return true;
+        }
+        return false;
     }
 
-    public function delete(): void
+    public function delete()
     {
         // Marque une demande de congé comme supprimée
         // Contrôle si le congé avait été validé.
@@ -443,7 +446,7 @@ class conges
     }
 
 
-    public function fetch(): void
+    public function fetch()
     {
         // Filtre de recherche
         $filter="1";
@@ -789,7 +792,7 @@ class conges
             $tab[$perso_id]['anticipation_classe']=$tab[$perso_id]['anticipation_demande']!=$tab[$perso_id]['anticipation_utilise']?"bold":null;
 
             foreach ($tab[$perso_id] as $key => $value) {
-                if (!in_array($key, ['nom', 'prenom', 'agent'])) {
+                if ($key != 'nom' && $key != 'prenom' && $key != 'agent') {
                     if ($value == 0) {
                         $tab[$perso_id][$key] = '';
                     } elseif ($GLOBALS['config']['Conges-Mode'] == 'jours') {
@@ -804,7 +807,7 @@ class conges
     }
 
 
-    public function fetchCredit(): void
+    public function fetchCredit()
     {
         if (!$this->perso_id) {
             $this->elements=array("annuel"=>null,"anticipation"=>null,"credit"=>null,"recup"=>null,"reliquat"=>null,
@@ -847,7 +850,7 @@ class conges
         }
     }
 
-    public function getRecup(): void
+    public function getRecup()
     {
         $debut=$this->debut?$this->debut:date("Y-m-d", strtotime("-1 month", time()));
         $fin=$this->fin?$this->fin:date("Y-m-d", strtotime("+1 year", time()));
@@ -896,7 +899,7 @@ class conges
         }
     }
 
-    public function getResponsables($debut=null, $fin=null, $perso_id=0): void
+    public function getResponsables($debut=null, $fin=null, $perso_id=0)
     {
         $responsables=array();
         $droitsConges=array();
@@ -918,7 +921,11 @@ class conges
                     $p->valide=true;
                     $p->fetch();
 
-                    $temps = empty($p->elements) ? array() : $p->elements[0]['temps'];
+                    if (empty($p->elements)) {
+                        $temps=array();
+                    } else {
+                        $temps=$p->elements[0]['temps'];
+                    }
                 }
                 // Vérifions le numéro de la semaine de façon à contrôler le bon planning de présence hebdomadaire
                 $d=new datePl($date);
@@ -971,7 +978,7 @@ class conges
         $this->responsables=$responsables;
     }
 
-    public function getSaturday(): void
+    public function getSaturday()
     {
         // Liste des samedis des 2 derniers mois
         $perso_id=isset($this->perso_id)?$this->perso_id:$_SESSION['login_id'];
@@ -1061,17 +1068,20 @@ class conges
 
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
-            return $db->insert("conges", $insert);
+            $inserted_id = $db->insert("conges", $insert);
+            return $inserted_id;
         }
     }
 
-    public function update($data): void
+    public function update($data)
     {
         $data['debit']=isset($data['debit'])?$data['debit']:"credit";
         $data['hre_debut']=$data['hre_debut']?$data['hre_debut']:"00:00:00";
         $data['hre_fin']=$data['hre_fin']?$data['hre_fin']:"23:59:59";
         $data['heures']=$data['heures'].".".$data['minutes'];
+        $data['commentaires'] = $data['commentaires'];
         $data['halfday'] = isset($data['halfday']) && $data['halfday'] == 'on' ? 1 : 0;
+        $data['refus'] = $data['refus'];
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
 
@@ -1116,7 +1126,7 @@ class conges
         }
     }
 
-    private function calcCreditsOnValidation($data): void {
+    private function calcCreditsOnValidation($data) {
         // On débite les crédits dans la fiche de l'agent
         // Recherche des crédits actuels
 
@@ -1135,7 +1145,7 @@ class conges
         if ($data['conges-recup'] == 0) {
             // Calcul du reliquat après décompte
             $reste=0;
-            $reliquat -= $heures;
+            $reliquat=$reliquat-$heures;
             if ($reliquat<0) {
                 $reste=-$reliquat;
                 $reliquat=0;
@@ -1143,7 +1153,7 @@ class conges
             $reste2=0;
             // Calcul du crédit de récupération
             if ($data["debit"]=="recuperation") {
-                $recuperation -= $reste;
+                $recuperation=$recuperation-$reste;
                 if ($recuperation<0) {
                     $reste2=-$recuperation;
                     $recuperation=0;
@@ -1151,7 +1161,7 @@ class conges
             }
             // Calcul du crédit de congés
             elseif ($data["debit"]=="credit") {
-                $credit -= $reste;
+                $credit=$credit-$reste;
                 if ($credit<0) {
                     $reste2=-$credit;
                     $credit=0;
@@ -1161,13 +1171,13 @@ class conges
             $reste3=0;
             if ($reste2) {
                 if ($data["debit"]=="recuperation") {
-                    $credit -= $reste2;
+                    $credit=$credit-$reste2;
                     if ($credit<0) {
                         $reste3=-$credit;
                         $credit=0;
                     }
                 } elseif ($data["debit"]=="credit") {
-                    $recuperation -= $reste2;
+                    $recuperation=$recuperation-$reste2;
                     if ($recuperation<0) {
                         $reste3=-$recuperation;
                         $recuperation=0;
@@ -1185,13 +1195,13 @@ class conges
             if ($data["debit"]=="credit") {
                 // Calcul du reliquat après décompte
                 $reste=0;
-                $reliquat -= $heures;
+                $reliquat=$reliquat-$heures;
                 if ($reliquat<0) {
                     $reste=-$reliquat;
                     $reliquat=0;
                 }
                 // Calcul du crédit de congés
-                $credit -= $reste;
+                $credit=$credit-$reste;
                 if ($credit<0) {
                     $reste=-$credit;
                     $credit=0;
@@ -1205,7 +1215,7 @@ class conges
 
             // Calcul du crédit de récupération
             else {
-                $recuperation -= $heures;
+                $recuperation = $recuperation - $heures;
             }
         }
 
@@ -1223,7 +1233,7 @@ class conges
             'end' => $data['fin'],
             'hour_end' => $data['hre_fin'],
             'perso_id' => $data['perso_id'],
-            'is_recover' => $data['debit'] == 'recuperation'
+            'is_recover' => $data['debit'] == 'recuperation' ? true : false
         ));
         $result = $holidayHlper->getCountedHours();
         $regul = isset($result['rest']) ? $result['rest'] : 0;
@@ -1270,7 +1280,7 @@ class conges
     }
 
 
-    public function updateCETCredits(): void
+    public function updateCETCredits()
     {
         $data=$this->data;
         if (!empty($data) and $data['valide_n2']>0) {
@@ -1285,10 +1295,7 @@ class conges
         }
     }
 
-    /**
-     * @return mixed[]
-     */
-    public function all($from, $to, $rejected = 0, $sites = []): array
+    public function all($from, $to, $rejected = 0, $sites = [])
     {
         $this->debut = $from;
         $this->fin = $to;
@@ -1314,7 +1321,7 @@ class conges
 
     }
 
-    public static function exists($agent_id, $from, $to, $id = null): ?array {
+    public static function exists($agent_id, $from, $to, $id = null) {
         $db = new db();
         $db->select('conges', null, "`id`<>'$id' AND `perso_id`='$agent_id' AND `debut` < '$to' AND `fin` > '$from' AND `supprime`='0' AND `information`='0' AND `valide`>='0' ", "ORDER BY `debut`,`fin`");
         if (!$db->result) {

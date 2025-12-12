@@ -17,12 +17,16 @@ class BaseEvent extends Event
         $this->params = $params;
     }
 
-    public function hasResponse(): bool
+    public function hasResponse()
     {
-        return $this->has_response == 1;
+        if ( $this->has_response == 1 ) {
+            return true;
+        }
+
+        return false;
     }
 
-    public function setResponse( $response ): void
+    public function setResponse( $response )
     {
         $this->has_response = 1;
         $this->$response = $response;

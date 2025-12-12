@@ -34,16 +34,16 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class datePl
 {
-    public $dates;
-    public $date;
-    public $jour;
-    public $jour_complet;
-    public $sam;
-    public $sem;
-    public $semaine;
-    public $semaine3;
-    public $position;
-    public $nb_semaine;
+    public $dates = null;
+    public $date = null;
+    public $jour = null;
+    public $jour_complet = null;
+    public $sam = null;
+    public $sem = null;
+    public $semaine = null;
+    public $semaine3 = null;
+    public $position = null;
+    public $nb_semaine = null;
   
     public function __construct($date, $nb_semaine = null)
     {
@@ -88,19 +88,19 @@ class datePl
         }
 
         if ($nb_semaine == 2) {
-            return $this->semaine % 2 !== 0 ? 1 : 2;
+            return $this->semaine % 2 ? 1 : 2;
         }
 
         $interval = $this->getNumberOfWeeksSinceStartDate($this->date);
         if ($nb_semaine == 3) {
             $week_id = null;
-            if ((int) $interval % 3 === 0) {
+            if (!((int) $interval % 3)) {
                 $week_id = 1;
             }
-            if ((int) ($interval + 2) % 3 === 0) {
+            if (!((int) ($interval + 2) % 3)) {
                 $week_id = 2;
             }
-            if ((int) ($interval + 1) % 3 === 0) {
+            if (!((int) ($interval + 1) % 3)) {
                 $week_id = 3;
             }
 
@@ -114,7 +114,7 @@ class datePl
         return $this->getCycleNumber($interval, $nb_semaine);
     }
 
-    public function getCycleNumber($weeknumber, $cycles): int {
+    public function getCycleNumber($weeknumber, $cycles) {
         $weekcycle = 0;
 
         for ($i = 1; $i <= $weeknumber; $i++) {
@@ -140,7 +140,8 @@ class datePl
 
         $interval=$dateNow->diff($dateFrom);
         $interval=$interval->format("%a");
-        return $interval/7;
+        $interval=$interval/7;
+        return $interval;
     }
 
     public function planning_day_index_for($agent_id, $week_number = 0)
@@ -169,12 +170,12 @@ class datePl
 
 class CJMail implements NotificationTransporterInterface
 {
-    public $message;
-    public $to;
-    public $subject;
+    public $message=null;
+    public $to=null;
+    public $subject=null;
     public $error="";
-    public $error_CJInfo;
-    public $error_encoded;
+    public $error_CJInfo=null;
+    public $error_encoded=null;
     public $failedAddresses=array();
     public $notReally = false;
     public $successAddresses=array();
@@ -256,14 +257,14 @@ class CJMail implements NotificationTransporterInterface
         $message .= $this->message;
         $message .= "<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
         $message .= "</body></html>";
-        $message  = stripslashes($message);
+        $message  = stripslashes((string) $message);
         $message  = str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $message);
 
         $this->message = $message;
     }
 
 
-    public function setPHPMailer($to): \PHPMailer\PHPMailer\PHPMailer
+    public function setPHPMailer($to)
     {
         $mail = new PHPMailer();
         $mail->setLanguage('fr');
@@ -299,7 +300,7 @@ class CJMail implements NotificationTransporterInterface
         return $mail;
     }
 
-    public function send(): bool
+    public function send()
     {
         if ($this->prepare() === false) {
             return false;
@@ -383,7 +384,7 @@ function authSQL($login, $password)
 * pour gagner du temps lors des appels suivants.
 * Fonction utilisée par planning::menudivAfficheAgents et dans le script statistiques/temps.php
 */
-function calculHeuresSP($date, $CSRFToken): array
+function calculHeuresSP($date, $CSRFToken)
 {
     $config = $GLOBALS['config'];
     $em = $GLOBALS['entityManager'];
@@ -419,7 +420,7 @@ function calculHeuresSP($date, $CSRFToken): array
         // Vérifie si la table planning_hebdo a été mise à jour depuis le dernier calcul
         $p=new planningHebdo();
         $pHUpdate=strtotime($p->update_time());
-
+    
         // Vérifie si la table personnel a été mise à jour depuis le dernier calcul
         $p=new personnel();
         $pUpdate=strtotime($p->update_time());
@@ -430,12 +431,12 @@ function calculHeuresSP($date, $CSRFToken): array
 
         if ($pHUpdate>=$heuresSPUpdate or $pUpdate>=$heuresSPUpdate or $pHUpdate == null or $pUpdate == null) {
             $heuresSP=array();
-
+    
             // Recherche de tous les agents pouvant faire du service public
             $p=new personnel();
             $p->supprime=array(0,1,2);
             $p->fetch("nom", "Actif");
-
+      
             // Recherche de tous les plannings de présence
             $ph=new planningHebdo();
             $ph->debut=$j1;
@@ -509,7 +510,7 @@ function calculHeuresSP($date, $CSRFToken): array
                 // Utilisateur "Tout le monde"
                 $heuresSP[2]=0;
             }
-
+      
             // Enregistrement des horaires dans la base de données
             $db=new db();
             $db->CSRFToken = $CSRFToken;
@@ -603,7 +604,7 @@ function calculHeuresSP($date, $CSRFToken): array
  *  @param int $jour : jour de la semaine de 0 à 6 puis de 7 à 13 en semaines paires/impaires, etc.
  *  La fonction retourne true si l'agent est disponible pendant toute, false s'il la plage est en dehors de ses horaires de travail ou s'il est en pause
  */
-function calculSiPresent($debut, $fin, $temps, $jour): bool
+function calculSiPresent($debut, $fin, $temps, $jour)
 {
     $config = $GLOBALS['config'];
 
@@ -633,49 +634,49 @@ function calculSiPresent($debut, $fin, $temps, $jour): bool
 /** @fonctions de comparaison
  */
 
-function cmp_01($a, $b): int
+function cmp_01($a, $b)
 {
     return ($a[0][1] > $b[0][1]) ? 1 : -1;
 }
 
-function cmp_02($a, $b): int
+function cmp_02($a, $b)
 {
     return ($a[0][2] > $b[0][2]) ? 1 : -1;
 }
 
-function cmp_03($a, $b): int
+function cmp_03($a, $b)
 {
     return ($a[0][3] > $b[0][3]) ? 1 : -1;
 }
 
-function cmp_03desc($a, $b): int
+function cmp_03desc($a, $b)
 {
     return ($a[0][3] < $b[0][3]) ? 1 : -1;
 }
 
-function cmp_1($a, $b): int
+function cmp_1($a, $b)
 {
     $a[1]=html_entity_decode($a[1], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b[1]=html_entity_decode($b[1], ENT_QUOTES|ENT_IGNORE, "utf-8");
     return (strtolower($a[1]) > strtolower($b[1])) ? 1 : -1;
 }
 
-function cmp_2($a, $b): int
+function cmp_2($a, $b)
 {
     return ($a[2] > $b[2]) ? 1 : -1;
 }
 
-function cmp_2desc($a, $b): int
+function cmp_2desc($a, $b)
 {
     return ($a[2] < $b[2]) ? 1 : -1;
 }
 
-function cmp_jour($a, $b): int
+function cmp_jour($a, $b)
 {
     return ($a['jour'] > $b['jour']) ? 1 : -1;
 }
 
-function cmp_debut_fin($a, $b): int
+function cmp_debut_fin($a, $b)
 {
     if ($a['debut'] == $b['debut']) {
         return ($a['fin'] > $b['fin']) ? 1 : -1;
@@ -683,7 +684,7 @@ function cmp_debut_fin($a, $b): int
     return ($a['debut'] > $b['debut']) ? 1 : -1;
 }
 
-function cmp_debut_fin_nom($a, $b): int
+function cmp_debut_fin_nom($a, $b)
 {
     if ($a['debut'] == $b['debut']) {
         if ($a['fin'] == $b['fin']) {
@@ -694,7 +695,7 @@ function cmp_debut_fin_nom($a, $b): int
     return ($a['debut'] > $b['debut']) ? 1 : -1;
 }
 
-function cmp_nom($a, $b): int
+function cmp_nom($a, $b)
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
@@ -706,7 +707,7 @@ function cmp_nom($a, $b): int
     return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
-function cmp_nom_prenom($a, $b): int
+function cmp_nom_prenom($a, $b)
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
@@ -718,7 +719,7 @@ function cmp_nom_prenom($a, $b): int
     return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
-function cmp_nom_prenom_debut_fin($a, $b): int
+function cmp_nom_prenom_debut_fin($a, $b)
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
@@ -736,12 +737,12 @@ function cmp_nom_prenom_debut_fin($a, $b): int
     return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
-function cmp_ordre($a, $b): int
+function cmp_ordre($a, $b)
 {
     return ($a['ordre'] > $b['ordre']) ? 1 : -1;
 }
 
-function cmp_perso_debut_fin($a, $b): int
+function cmp_perso_debut_fin($a, $b)
 {
     if ($a['perso_id'] == $b['perso_id']) {
         if ($a['debut'] == $b['debut']) {
@@ -752,7 +753,7 @@ function cmp_perso_debut_fin($a, $b): int
     return ($a['perso_id'] > $b['perso_id']) ? 1 : -1;
 }
 
-function cmp_prenom_nom($a, $b): int
+function cmp_prenom_nom($a, $b)
 {
     $a['nom']=html_entity_decode($a['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
     $b['nom']=html_entity_decode($b['nom'], ENT_QUOTES|ENT_IGNORE, "utf-8");
@@ -764,7 +765,7 @@ function cmp_prenom_nom($a, $b): int
     return (strtolower($a['prenom']) > strtolower($b['prenom'])) ? 1 : -1;
 }
 
-function createURL($page=null): string
+function createURL($page=null)
 {
     // Construction d'une URL
 
@@ -792,14 +793,21 @@ function CSRFToken()
     }
   
     // PHP 7
-    $CSRFToken = phpversion() >= 7 ? bin2hex(random_bytes(32)) : bin2hex(openssl_random_pseudo_bytes(32));
+    if (phpversion() >= 7) {
+        $CSRFToken = bin2hex(random_bytes(32));
+    }
+
+    // PHP 5.3+
+    else {
+        $CSRFToken = bin2hex(openssl_random_pseudo_bytes(32));
+    }
 
     $_SESSION['oups']['CSRFToken'] = $CSRFToken;
 
     return $CSRFToken;
 }
 
-function date_time($date): ?string
+function date_time($date)
 {
     if ($date=="0000-00-00 00:00:00") {
         return null;
@@ -810,7 +818,12 @@ function date_time($date): ?string
         $h=substr($date, 11, 2);
         $min=substr($date, 14, 2);
         $today=date("d/m/Y");
-        return $today == "$j/$m/$a" ? "$h:$min" : "$j/$m/$a $h:$min";
+        if ($today=="$j/$m/$a") {
+            $date="$h:$min";
+        } else {
+            $date="$j/$m/$a $h:$min";
+        }
+        return $date;
     }
 }
 
@@ -861,7 +874,7 @@ function dateAlpha($date, $day=true, $year=true)
     return $return;
 }
 
-function dateAlpha2($date): string
+function dateAlpha2($date)
 {
     $tmp=explode("-", $date);
     $dayOfMonth=($tmp[2]=="01")?"1er":intval($tmp[2]);
@@ -892,7 +905,7 @@ function dateAlpha2($date): string
     return $day."<br/>".$dayOfMonth." ".$month;
 }
 
-function dateFr($date, $heure=null): ?string
+function dateFr($date, $heure=null)
 {
     if ($date=="0000-00-00" or $date=="00/00/0000" or $date=="" or !$date) {
         return null;
@@ -904,7 +917,8 @@ function dateFr($date, $heure=null): ?string
         }
         return $dateFr;
     } else {
-        return substr($date, 6, 4)."-".substr($date, 3, 2)."-".substr($date, 0, 2);
+        $dateEn=substr($date, 6, 4)."-".substr($date, 3, 2)."-".substr($date, 0, 2);
+        return $dateEn;
     }
 }
 
@@ -950,7 +964,7 @@ function decrypt($crypted_token)
     return $decrypted_token;
 }
 
-function encrypt($string): ?string
+function encrypt($string)
 {
     if ($string === null) {
         return null;
@@ -970,7 +984,7 @@ function encrypt($string): ?string
     return $crypted_string;
 }
 
-function gen_trivial_password($len = 6): string
+function gen_trivial_password($len = 6)
 {
     $r = '';
     for ($i=0; $i<$len; $i++) {
@@ -1011,10 +1025,11 @@ function heure2($heure)
 
     $h=$heure[0];
     $m=$heure[1];
-    return $h."h".$m;
+    $heure=$h."h".$m;
+    return $heure;
 }
 
-function heure3($heure): string
+function heure3($heure)
 {
     $heure=str_replace(":", "h", $heure);
     $heure=substr($heure, 0, 5);
@@ -1115,7 +1130,7 @@ function html_entity_decode_latin1($n)
  * @param int config IPBlocker-TimeChecked : période en minutes pendant laquelle on recherche les échecs
  * @param int config IPBlocker-Attempts : nombre d'échecs autorisés
  */
-function loginFailed($login, $CSRFToken): void
+function loginFailed($login, $CSRFToken)
 {
     // Recherche le nombre de login failed lors des $seconds dernières secondes
     $seconds=$GLOBALS['config']['IPBlocker-TimeChecked']*60;
@@ -1138,7 +1153,7 @@ function loginFailed($login, $CSRFToken): void
  * Retourne le nombre de secondes restantes avant que l'IP bloquée soit de nouveau autorisée à se connecter
  * @param int config IPBlocker-Wait : temps de blocages des IP en minutes
  */
-function loginFailedWait(): int
+function loginFailedWait()
 {
     $seconds=$GLOBALS['config']['IPBlocker-Wait']*60;
     $wait=0;
@@ -1159,7 +1174,7 @@ function loginFailedWait(): int
  * Log le login et l'adresse IP du client dans la table ip_blocker pour informations
  * @param string $login : login saisi par l'utilisateur
  */
-function loginSuccess($login, $CSRFToken): void
+function loginSuccess($login, $CSRFToken)
 {
     $insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
     $db=new db();
@@ -1167,7 +1182,7 @@ function loginSuccess($login, $CSRFToken): void
     $db->insert("ip_blocker", $insert);
 }
 
-function logs($msg, $program=null, $CSRFToken=null): void
+function logs($msg, $program=null, $CSRFToken=null)
 {
     $db=new db();
     $db->CSRFToken = $CSRFToken;
@@ -1182,7 +1197,7 @@ function logs($msg, $program=null, $CSRFToken=null): void
  * @param string $format: format de la chaîne retournée (ex: nom p)
  * @param array $agents : liste de tous les agents (permet de réduire le nombre de requêtes SQL et la latence si la fonction nom est utilisée dans une boucle
  */
-function nom($id, $format="nom p", $agents=array()): ?string
+function nom($id, $format="nom p", $agents=array())
 {
 
   // id 99999 == cron (tâche planifiée)
@@ -1216,9 +1231,12 @@ function nom($id, $format="nom p", $agents=array()): ?string
     return $nom;
 }
 
-function pl_stristr($haystack, $needle): bool
+function pl_stristr($haystack, $needle)
 {
-    return (bool) stristr(removeAccents($haystack), removeAccents(trim($needle)));
+    if (stristr(removeAccents($haystack), removeAccents(trim($needle)))) {
+        return true;
+    }
+    return false;
 }
 
 function removeAccents($string)
@@ -1228,7 +1246,7 @@ function removeAccents($string)
     }
     $string=html_entity_decode($string, ENT_QUOTES|ENT_IGNORE, "UTF-8");
     $pairs=array("À"=>"A","Á"=>"A","Â"=>"A","Ã"=>"A","Ä"=>"A","Å"=>"A","à"=>"a","á"=>"a","â"=>"a",
-    "ã"=>"a","ä"=>"a","å"=>"a","Ò"=>"O","Ó"=>"O","Ô"=>"O","Õ"=>"O","Ö"=>"O","Ø"=>"O",
+    "ã"=>"a","ä"=>"a","å"=>"a","Ò"=>"O","Ó"=>"O","Ô"=>"O","Õ"=>"O","Õ"=>"O","Ö"=>"O","Ø"=>"O",
     "ò"=>"o","ó"=>"o","ô"=>"o","õ"=>"o","ö"=>"o","ø"=>"o","È"=>"E","É"=>"E","Ê"=>"E","Ë"=>"E",
     "è"=>"e","é"=>"e","ê"=>"e","ë"=>"e","ð"=>"e","Ç"=>"C","ç"=>"c","Ð"=>"d","Ì"=>"I","Í"=>"I",
     "Î"=>"I","Ï"=>"I","ì"=>"i","í"=>"i","î"=>"i","ï"=>"i","Ù"=>"U","Ú"=>"U","Û"=>"U","Ü"=>"U",
@@ -1238,7 +1256,7 @@ function removeAccents($string)
     return htmlentities($string, ENT_QUOTES|ENT_IGNORE, "UTF-8");
 }
 
-function recurrenceRRuleText($rrule): string
+function recurrenceRRuleText($rrule)
 {
     $freq       = preg_replace('/.*FREQ=(\w*).*/', "$1", $rrule);
     $interval   = strpos($rrule, 'INTERVAL')      ? preg_replace('/.*INTERVAL=(\d*).*/', "$1", $rrule)      : 1;
@@ -1256,11 +1274,19 @@ function recurrenceRRuleText($rrule): string
 
     switch ($freq) {
     case 'DAILY':
-      $text = ($interval == 1 or $interval == null) ? 'Tous les jours' : "Tous les $interval jours";
+      if ($interval == 1 or $interval == null) {
+          $text = 'Tous les jours';
+      } else {
+          $text = "Tous les $interval jours";
+      }
       break;
 
     case 'WEEKLY':
-      $text = ($interval == 1 or $interval == null) ? 'Chaque semaine' : "Toutes les $interval semaines";
+      if ($interval == 1 or $interval == null) {
+          $text = 'Chaque semaine';
+      } else {
+          $text = "Toutes les $interval semaines";
+      }
 
       if ($byday) {
           $days = str_replace(array('MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'), array(' lundis', ' mardis', ' mercredis', ' jeudis', ' vendredis', ' samedis', ' dimanches'), $byday);
@@ -1270,7 +1296,11 @@ function recurrenceRRuleText($rrule): string
       break;
 
     case 'MONTHLY':
-      $text = ($interval == 1 or $interval == null) ? 'Tous les mois' : "Tous les $interval mois";
+      if ($interval == 1 or $interval == null) {
+          $text = 'Tous les mois';
+      } else {
+          $text = "Tous les $interval mois";
+      }
 
       if ($byday) {
           if (substr($byday, 0, 2) == '-1') {

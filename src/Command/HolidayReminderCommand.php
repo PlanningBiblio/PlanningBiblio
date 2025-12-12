@@ -82,12 +82,12 @@ Exemple à ajouter en crontab :
             // Si le jour courant est un samedi, nous recherchons 2 jours supplémentaires pour avoir le bon nombre de jours ouvrés.
             // Nous controlons également le samedi et le dimanche
             if ($jour_semaine == 6) {
-                $jours += 2;
+                $jours = $jours + 2;
             }
         }
 
         $debut = $dates[0];
-        $fin = $dates[count($dates) -1];
+        $fin = $dates[sizeof($dates) -1];
 
         /**
          * Dates de contrôle         $debut                  $fin
@@ -148,7 +148,11 @@ Exemple à ajouter en crontab :
 
             // Consider the validation scheme (config Absences-notifications-agent-par-agent)
             if ($config['Absences-notifications-agent-par-agent']) {
-                $tmp->recipients = $elem->getValidLevel1() == 0 ? $agent->notification_level1 : $agent->notification_level2;
+                if ($elem->getValidLevel1() == 0) {
+                    $tmp->recipients = $agent->notification_level1;
+                } else { 
+                    $tmp->recipients = $agent->notification_level2;
+                }
 
             } else {
                 // TODO : Use Absences-notifications-A1, Absences-notifications-B1 instead of Conges-Rappels-N1, then remove param Conges-Rappels-N1

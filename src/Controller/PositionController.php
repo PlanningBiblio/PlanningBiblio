@@ -66,7 +66,7 @@ class PositionController extends BaseController
 
         $positions = array();
 
-        foreach ($postes as $value) {
+        foreach ($postes as $id => $value) {
             // Affichage des 3 premières activités dans le tableau, toutes les activités dans l'infobulle
 
             $activites = array();
@@ -257,7 +257,7 @@ class PositionController extends BaseController
     }
 
     #[Route(path: '/position', name: 'position.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
         $nom = $request->get('nom');
@@ -353,7 +353,7 @@ class PositionController extends BaseController
     }
 
     #[Route(path: '/position', name: 'position.delete', methods: ['DELETE'])]
-     public function delete_position(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
+     public function delete_position(Request $request, Session $session){
 
         $id = $request->get('id');
         $p = $this->entityManager->getRepository(Position::class)->find($id);

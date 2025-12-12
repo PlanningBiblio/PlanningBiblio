@@ -23,7 +23,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
         $this->entityManager = $entityManager;
     }
 
-    public function testgetValidationLevelForWorkingHours(): void
+    public function testgetValidationLevelForWorkingHours()
     {
 
         $this->setParam('PlanningHebdo-notifications-agent-par-agent', 0);
@@ -68,7 +68,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
         $this->assertFalse($adminN2, 'Agent 3 doesn\'t have admin level 2 for working hours');
     }
 
-    public function testgetValidationLevelForWorkingHoursByAgent(): void
+    public function testgetValidationLevelForWorkingHoursByAgent()
     {
         $this->setParam('PlanningHebdo-notifications-agent-par-agent', 1);
 
@@ -132,7 +132,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
         $this->assertFalse($adminN2, 'Manager is not admin L2 for agent 3');
     }
 
-    public function testgetValidationLevelForAbsences(): void
+    public function testgetValidationLevelForAbsences()
     {
 
         $this->setParam('Absences-notifications-agent-par-agent', 0);
@@ -179,7 +179,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
         $this->assertFalse($adminN2, 'Agent 3 doesn\'t have admin level 2 for absence');
     }
 
-    public function testgetValidationLevelForAbsencesMultiSites(): void
+    public function testgetValidationLevelForAbsencesMultiSites()
     {
 
         $this->setParam('Absences-notifications-agent-par-agent', 0);
@@ -226,7 +226,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
         $this->assertTrue($adminN2, 'Agent 3 have admin level 2 for absence');
     }
 
-    public function testgetValidationLevelForAbsencesByAgent(): void
+    public function testgetValidationLevelForAbsencesByAgent()
     {
 
         $this->setParam('Absences-notifications-agent-par-agent', 1);

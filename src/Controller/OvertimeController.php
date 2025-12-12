@@ -168,7 +168,7 @@ class OvertimeController extends BaseController
         ));
 
         $categories = array();
-        foreach ($managed as $m) {
+        foreach ($managed as $index => $m) {
             $categories[$m->getId()] = $m->getCategory();
         }
 
@@ -243,7 +243,7 @@ class OvertimeController extends BaseController
     }
 
     #[Route(path: '/overtime', name: 'overtime.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get('id');
@@ -364,10 +364,10 @@ class OvertimeController extends BaseController
                 $message .= "Date : ".dateFr($recup['date']);
                 $message .= "<br/>\n";
                 $message .= "Nombre d'heures : ".heure4($update['heures']);
-                if ($update['commentaires'] !== '' && $update['commentaires'] !== '0') {
+                if ($update['commentaires']) {
                     $message.="<br/><br/><u>Commentaires</u> :<br/>".str_replace("\n", "<br/>", $update['commentaires']);
                 }
-                if ($update['refus'] !== '' && $update['refus'] !== '0') {
+                if ($update['refus']) {
                     $message.="<br/><br/><u>Motif du refus</u> :<br/>".str_replace("\n", "<br/>", $update['refus']);
                 }
 

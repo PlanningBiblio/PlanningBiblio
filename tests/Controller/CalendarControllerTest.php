@@ -9,7 +9,7 @@ use Tests\FixtureBuilder;
 
 class CalendarControllerTest extends PLBWebTestCase
 {
-    public function testCalendarWithMultiSites(): void
+    public function testCalendarWithMultiSites()
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -60,7 +60,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('de 15h15 à 18h15', $result->eq(2)->text('Node does not exist', false), 'de 15h15 à 18h15');
     }
 
-    public function testCalendarWithPlanningHebdo(): void{
+    public function testCalendarWithPlanningHebdo(){
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'actif' => 'Actif'));
@@ -114,7 +114,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('de 13h30 à 17h00', $result->text('Node does not exist', false), 'de 13h30 à 17h00');
     }
 
-    public function testCalendarWithAbsence(): void
+    public function testCalendarWithAbsence()
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -168,7 +168,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('À partir de 08h00 : malade', $result->eq(0)->text('Node does not exist', false), 'À partir de 08h00 : malade');
     }
 
-    public function testFullCalendar(): void
+    public function testFullCalendar()
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -215,7 +215,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('de 13h15 à 17h15', $result->text('Node does not exist', false), 'de 13h15 à 17h15');
     }
 
-    public function testEmptyCalendar(): void
+    public function testEmptyCalendar()
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -257,7 +257,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Vendredi', $result->text('Node does not exist', false), 'Vendredi');
     }
 
-    public function testDeletedAgentCalendar(): void
+    public function testDeletedAgentCalendar()
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);

@@ -93,8 +93,12 @@ class Model
         return $this;
     }
 
-    public function isWeek(): bool
+    public function isWeek()
     {
-        return $this->jour != 9;
+        if ($this->jour != 9) {
+            return true;
+        }
+
+        return false;
     }
 }

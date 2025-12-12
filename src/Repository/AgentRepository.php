@@ -31,14 +31,11 @@ class AgentRepository extends EntityRepository
 
     private $by_agent_param = 'Absences-notifications-agent-par-agent';
 
-    private $agent_id;
+    private $agent_id = null;
 
     private $check_by_site = true;
 
-    /**
-     * @return mixed[]
-     */
-    public function getAllSkills(): array {
+    public function getAllSkills() {
         $entityManager = $this->getEntityManager();
         $agents = $entityManager->getRepository(Agent::class)->findAll();
         $all_skills = array();
@@ -50,20 +47,22 @@ class AgentRepository extends EntityRepository
                 }
             }
         }
-        return array_unique($all_skills);
+        $all_skills = array_unique($all_skills);
+        return $all_skills;
     }
 
     public function getMaxId() {
         $entityManager = $this->getEntityManager();
-
-        return $entityManager->createQueryBuilder()
+        $id = $entityManager->createQueryBuilder()
             ->select('MAX(a.id)')
             ->from(Agent::class, 'a')
             ->getQuery()
             ->getSingleScalarResult();
+
+        return $id;
     }
 
-    public function purgeAll(): int
+    public function purgeAll()
     {
         $agents = $this->findBy(['supprime' => '2']);
         $entityManager = $this->getEntityManager();
@@ -99,7 +98,7 @@ class AgentRepository extends EntityRepository
                 ->orWhere($planningPositionLockCriteria->expr()->eq('perso2', $perso_id));
 
             $planningPositionLocks = $entityManager->getRepository(PlanningPositionLock::class)->matching($planningPositionLockCriteria);
-            if (count($planningPositionLocks) > 0) { $delete = false; continue; }
+            if (count($planningPositionLocks)) { $delete = false; continue; }
 
             // Managers
             $managerCriteria = new \Doctrine\Common\Collections\Criteria();
@@ -108,7 +107,7 @@ class AgentRepository extends EntityRepository
                 ->orWhere($managerCriteria->expr()->eq('responsable', $agent));
 
             $managers = $entityManager->getRepository(Manager::class)->matching($managerCriteria);
-            if (count($managers) > 0) { $delete = false; continue; }
+            if (count($managers)) { $delete = false; continue; }
 
             if ($delete == true) {
                 $entityManager->remove($agent);
@@ -161,10 +160,7 @@ class AgentRepository extends EntityRepository
         return $this;
     }
 
-    /**
-     * @return array{id: int<1, max>, name: mixed}[]
-     */
-    public function getManagedSitesFor($loggedin_id): array
+    public function getManagedSitesFor($loggedin_id)
     {
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
@@ -271,7 +267,7 @@ class AgentRepository extends EntityRepository
         return array($loggedin);
     }
 
-    public function getValidationLevelFor($loggedin_id, String $workflow = 'A'): array
+    public function getValidationLevelFor($loggedin_id, String $workflow = 'A')
     {
 
         $entityManager = $this->getEntityManager();
@@ -375,14 +371,13 @@ class AgentRepository extends EntityRepository
                     ->setParameter('deleted', '0');
         }
 
-        return $builder->getQuery()->getResult();
+        $agents = $builder->getQuery()->getResult();
+
+        return $agents;
     }
 
     /* Returns an array of sites for the given agents */
-    /**
-     * @return mixed[]
-     */
-    public function getSitesForAgents($agent_ids = array()): array
+    public function getSitesForAgents($agent_ids = array())
     {
         if ($GLOBALS['config']['Multisites-nombre'] == 1) {
             return array("1");
@@ -398,6 +393,7 @@ class AgentRepository extends EntityRepository
             }
         }
         $sites_array = array_unique($sites_array);
-        return array_values($sites_array);
+        $sites_array = array_values($sites_array);
+        return $sites_array;
     }
 }

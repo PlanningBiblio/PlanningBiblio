@@ -6,7 +6,7 @@ require_once(__DIR__ . '/../../public/include/function.php');
 
 class IncludeFunctionTest extends TestCase
 {
-    public function testHeure4(): void
+    public function testHeure4()
     {
         // Numeric to string
         $heure = heure4('0');

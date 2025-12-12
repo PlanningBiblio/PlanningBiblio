@@ -166,7 +166,7 @@ class AuthorizationsController extends BaseController
     }
 
     #[Route(path: '/logout', name: 'logout', methods: ['GET'])]
-    public function logout(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function logout(Request $request)
     {
         session_destroy();
 
@@ -198,13 +198,13 @@ class AuthorizationsController extends BaseController
     }
 
     #[Route(path: '/access-denied', name: 'access-denied', methods: ['GET'])]
-    public function denied(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function denied(Request $request)
     {
         $content = $this->renderView('access-denied.html.twig');
         return new Response($content, 403);
     }
 
-    private function redirectCAS(Request $request, $logger): string
+    private function redirectCAS(Request $request, $logger)
     {
         $session = $request->getSession();
 

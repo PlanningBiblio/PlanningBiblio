@@ -266,7 +266,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/holidays-hours-to-days', name: 'ajax.holidays-hours-to-days', methods: ['GET'])]
-    public function hoursToDays(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
+    public function hoursToDays(Request $request, Session $session)
     {
         $hours_to_convert = $request->get('hours_to_convert');
         $hours_per_year = $request->get('hours_per_year');
@@ -359,7 +359,7 @@ class HolidayController extends BaseController
         }
 
         $this->templateParams(array('CSRFToken' => $GLOBALS['CSRFSession']));
-        $valide=$data['valide']>0;
+        $valide=$data['valide']>0?true:false;
         $displayRefus = ($data['valide_n1'] < 0 and ($adminN1 or $adminN2)) ? null : "display:none;";
         $displayRefus = $data['valide'] > 0 ? "display:none;" : $displayRefus;
         $debut=dateFr(substr($data['debut'], 0, 10));
@@ -516,7 +516,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/holiday', name: 'holiday.save', methods: ['POST'])]
-    public function add_confirm(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function add_confirm(Request $request, Session $session)
     {
         $result = $this->save($request);
 
@@ -763,7 +763,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/holiday-halfday-hours', name: 'ajax.holiday-halfday-hours', methods: ['GET'])]
-    public function halfdayHours(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function halfdayHours(Request $request)
     {
         $agent = $request->get('agent');
         $start = $request->get('start');
@@ -821,7 +821,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/check-planning', name: 'ajax.checkplanning', methods: ['POST'])]
-    public function checkPlanning(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function checkPlanning(Request $request)
     {
         $perso_ids = json_decode($request->get('perso_ids'));
         $start =dateSQL($request->get('start'));
@@ -851,7 +851,7 @@ class HolidayController extends BaseController
             }
         }
         if (!empty($agents)) {
-            $message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour les agents suivants: " . implode(', ', $agents);
+            $message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour les agents suivants: " . join(', ', $agents);
             if ($unknownHours > $maxAgentsDisplay) {
                 $agentsLeft = $unknownHours - $maxAgentsDisplay;
                 $message .= " et " . $agentsLeft . ($agentsLeft == 1 ? " autre." : " autres.");
@@ -861,7 +861,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/holiday-credit', name: 'ajax.holidaycredit', methods: ['GET'])]
-    public function checkCredit(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function checkCredit(Request $request)
     {
         // Initilisation des variables
         $id = $request->get('id');
@@ -910,7 +910,7 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/ajax/current-credits', name: 'ajax.currentcredits', methods: ['get'])]
-    public function current_credits(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function current_credits(Request $request)
     {
         $agent_id = $request->get('id');
 
@@ -929,7 +929,7 @@ class HolidayController extends BaseController
         return $this->json($holiday_account);
     }
 
-    private function save($request): array
+    private function save($request)
     {
         $session = $request->getSession();
 
@@ -1096,10 +1096,7 @@ class HolidayController extends BaseController
         );
     }
 
-    /**
-     * @return mixed[]
-     */
-    private function update($request): array
+    private function update($request)
     {
         $post = $request->request->all();
 
@@ -1151,25 +1148,25 @@ class HolidayController extends BaseController
         switch ($valide) {
         // Modification sans validation
         case 0:
-          $sujet = $recover !== 0 ? "Modification d'une récupération" : "Modification de congés";
+          $sujet = $recover ? "Modification d'une récupération" : "Modification de congés";
           $notifications='2';
           break;
         // Validations Niveau 2
         case 1:
-          $sujet = $recover !== 0 ? "Validation d'une récupération" : "Validation de congés";
+          $sujet = $recover ? "Validation d'une récupération" : "Validation de congés";
           $notifications='4';
           break;
         case -1:
-          $sujet = $recover !== 0 ? "Refus d'une récupération" : "Refus de congés";
+          $sujet = $recover ? "Refus d'une récupération" : "Refus de congés";
           $notifications='4';
           break;
         // Validations Niveau 1
         case 2:
-          $sujet = $recover !== 0 ? $lang['comp_time_subject_accepted_pending'] : $lang['leave_subject_accepted_pending'];
+          $sujet = $recover ? $lang['comp_time_subject_accepted_pending'] : $lang['leave_subject_accepted_pending'];
           $notifications='3';
           break;
         case -2:
-          $sujet = $recover !== 0 ? $lang['comp_time_subject_refused_pending'] : $lang['leave_subject_refused_pending'];
+          $sujet = $recover ? $lang['comp_time_subject_refused_pending'] : $lang['leave_subject_refused_pending'];
           $notifications='3';
           break;
         }
@@ -1224,7 +1221,7 @@ class HolidayController extends BaseController
     /**
      * Make mail message
      */
-    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id, $recover = 0): string {
+    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id, $recover = 0) {
         $message  = "<b><u>$subject :</u></b><br/>";
         $message .= "<ul><li>Agent : <strong>$name</strong></li>";
         $message .= "<li>Début : <strong>$begin";
@@ -1247,7 +1244,8 @@ class HolidayController extends BaseController
 
         // ajout d'un lien permettant de rebondir sur la demande
         $url = $this->config('URL') . "/holiday/edit/$id";
+        $message.="<p>Lien vers la demande de " . ($recover ? "récupération" : "congé") . " :<br/><a href='$url'>$url</a></p>";
 
-        return $message . ("<p>Lien vers la demande de " . $recover ? "récupération" : "congé" . " :<br/><a href='$url'>$url</a></p>");
+        return $message;
     }
 }

@@ -8,7 +8,7 @@ use App\Entity\ConfigParam;
 
 trait EntityValidationStatuses
 {
-    public function getStatusesParams($agent_ids, $module, $entity_id = null, String $workflow = 'A'): array
+    public function getStatusesParams($agent_ids, $module, $entity_id = null, String $workflow = 'A')
     {
         if (!$agent_ids) {
             throw new \Exception("EntityValidationStatuses::getStatusesParams: No agent");
@@ -33,8 +33,8 @@ trait EntityValidationStatuses
                 ->forAgent($id)
                 ->getValidationLevelFor($_SESSION['login_id'], $workflow);
 
-            $adminN1 = $N1 && $adminN1;
-            $adminN2 = $N2 && $adminN2;
+            $adminN1 = $N1 ? $adminN1 : false;
+            $adminN2 = $N2 ? $adminN2 : false;
         }
         $show_select = $adminN1 || $adminN2;
         $show_n1 = $adminN1 || $adminN2;
@@ -65,12 +65,13 @@ trait EntityValidationStatuses
         if ($entity_state == 1 && $module == 'holiday') {
             $show_select = false;
         }
-        return array(
+        $params = array(
             'entity_state_desc' => $entity_state_desc,
             'entity_state'      => $entity_state,
             'show_select'       => $show_select,
             'show_n1'           => $show_n1,
             'show_n2'           => $show_n2,
         );
+        return $params;
     }
 }

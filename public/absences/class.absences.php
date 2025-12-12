@@ -39,47 +39,47 @@ use App\PlanningBiblio\ClosingDay;
 class absences
 {
     public $agents_supprimes=array(0);
-    public $CSRFToken;
+    public $CSRFToken=null;
     public $cal_name;
-    public $commentaires;
-    public $debut;
+    public $commentaires=null;
+    public $debut=null;
     public $documents = true;
-    public $dtstamp;
+    public $dtstamp=null;
     public $edt=array();
     public $elements=array();
     public $error=false;
-    public $exdate;
-    public $fin;
-    public $groupe;
+    public $exdate = null;
+    public $fin=null;
+    public $groupe=null;
     public $heures=0;
-    public $heures2;
-    public $hre_debut;
-    public $hre_fin;
-    public $id;
+    public $heures2=null;
+    public $hre_debut = null;
+    public $hre_fin = null;
+    public $id = null;
     public $ignoreFermeture=false;
-    public $last_modified;
+    public $last_modified = null;
     public $message = '';
     public $minutes=0;
     public $msg2 = '';
     public $msg2_type = '';
-    public $motif;
-    public $motif_autre;
-    public $perso_id;
+    public $motif = null;
+    public $motif_autre = null;
+    public $perso_id=null;
     public $perso_ids=array();
-    public $pj1;
-    public $pj2;
-    public $so;
+    public $pj1 = null;
+    public $pj2 = null;
+    public $so = null;
     public $recipients=array();
     public $responsables = array();
-    public $rrule;
+    public $rrule = null;
     public $teleworking = true;
-    public $validation_n1;
-    public $validation_n2;
+    public $validation_n1 = null;
+    public $validation_n2 = null;
     public $valide=false;
     public $rejected = true;
-    public $valide_n1;
-    public $valide_n2;
-    public $uid;
+    public $valide_n1 = null;
+    public $valide_n2 = null;
+    public $uid=null;
     public $unique=false;
     public $update_db = false;
 
@@ -93,7 +93,7 @@ class absences
      * @params : tous les éléments nécessaires à la création d'une absence
      * @return : message d'erreur ou de succès de l'enregistrement et de l'envoi des notifications
      */
-    public function add(): void
+    public function add()
     {
         $debut = $this->debut;
         $fin = $this->fin;
@@ -369,7 +369,7 @@ class absences
     * Calcule les heures d'absences des agents pour la semaine définie par $date ($date = une date de la semaine)
     * Utilisée par planning::menudivAfficheAgent pour ajuster le nombre d'heure de SP à effectuer en fonction des absences
     */
-    public function calculHeuresAbsences($date): array
+    public function calculHeuresAbsences($date)
     {
         $config=$GLOBALS['config'];
         $version=$GLOBALS['version'];
@@ -494,7 +494,11 @@ class absences
                     $a->calculTemps2();
 
                     $h=$a->heures;
-                    $h = is_numeric($h) ? $h+$h1 : 0;
+                    if (is_numeric($h)) {
+                        $h=$h+$h1;
+                    } else {
+                        $h=0;
+                    }
 
                     $heures[$perso_id]=$h;
                 }
@@ -616,7 +620,7 @@ class absences
                 $jour=$d->position?$d->position:7;
                 $jour=$jour+(($semaine-1)*7)-1;
             }
-
+      
 
             $wh = new WorkingHours($edt['temps'], $edt['breaktime']);
             $temps = $wh->hoursOf($jour);
@@ -624,7 +628,7 @@ class absences
             foreach ($temps as $t) {
                 $t0 = strtotime($t[0]);
                 $t1 = strtotime($t[1]);
-
+        
                 $debutAbsence1 = $debutAbsence > $t0 ? $debutAbsence : $t0;
                 $finAbsence1 = $finAbsence < $t1 ? $finAbsence : $t1;
                 if ($finAbsence1 > $debutAbsence1) {
@@ -651,7 +655,7 @@ class absences
     * Retourne true si absent, false sinon
     * Si $valide==false, les absences non validées seront également prises en compte
     */
-    public function check($perso_id, $debut, $fin, $valide=true): bool
+    public function check($perso_id, $debut, $fin, $valide=true)
     {
         if (strlen($debut)==10) {
             $debut.=" 00:00:00";
@@ -669,10 +673,13 @@ class absences
     
         $db=new db();
         $db->select2("absences", null, $filter);
-        return (bool) $db->result;
+        if ($db->result) {
+            return true;
+        }
+        return false;
     }
 
-    public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null): void
+    public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
         $entityManager = $GLOBALS['entityManager'];
 
@@ -684,7 +691,7 @@ class absences
         if ($debut) {
             $fin=$fin?$fin:$date;
             if (strlen($fin)==10) {
-                $fin .= " 23:59:59";
+                $fin=$fin." 23:59:59";
             }
             $dates="`debut`<='$fin' AND `fin`>='$debut'";
         } else {
@@ -915,12 +922,12 @@ class absences
             }
         }
     
-        if ($result !== []) {
+        if ($result) {
             $this->elements=$result;
         }
     }
 
-    public function fetchForStatistics($debut=null, $fin=null): void
+    public function fetchForStatistics($debut=null, $fin=null)
     {
         $filter = "";
 
@@ -958,12 +965,12 @@ class absences
             }
         }
 
-        if ($all !== []) {
+        if ($all) {
             $this->elements=$all;
         }
     }
 
-    public function fetchById($id): void
+    public function fetchById($id)
     {
         // Search absence by Id
         $db=new db();
@@ -1068,7 +1075,7 @@ class absences
     }
 
 
-    public function getResponsables($debut=null, $fin=null, $perso_id=0, $droit = 200): void
+    public function getResponsables($debut=null, $fin=null, $perso_id=0, $droit = 200)
     {
         $responsables=array();
         $droitsAbsences=array();
@@ -1090,7 +1097,11 @@ class absences
                     $p->valide=true;
                     $p->fetch();
 
-                    $temps = empty($p->elements) ? array() : $p->elements[0]['temps'];
+                    if (empty($p->elements)) {
+                        $temps=array();
+                    } else {
+                        $temps=$p->elements[0]['temps'];
+                    }
                 }
                 // Vérifions le numéro de la semaine de façon à contrôler le bon planning de présence hebdomadaire
                 $d=new datePl($date);
@@ -1136,7 +1147,7 @@ class absences
         $this->responsables=$responsables;
     }
 
-    public function getRecipients($validation, $responsables, App\Entity\Agent $agent, $type = 'Absences'): void
+    public function getRecipients($validation, $responsables, App\Entity\Agent $agent, $type = 'Absences')
     {
         /*
         Retourne la liste des destinataires des notifications en fonction du niveau de validation.
@@ -1228,7 +1239,7 @@ class absences
      * @param string fin, date de fin d'absence au format YYYY-MM-DD HH:ii:ss
      * @return array $recipients, tableau contenant les mails des agents à notifier
      */
-    public function getRecipients2($agents_tous, $agents, $notifications, $droit = 500, $debut = null, $fin = null): void
+    public function getRecipients2($agents_tous, $agents, $notifications, $droit = 500, $debut = null, $fin = null)
     {
 
     // Si le tableau contenant les informations sur les agents n'est pas fourni, on le créé
@@ -1321,7 +1332,7 @@ class absences
      * @params : tous les éléments d'une absence : date et heure de début et de fin, motif, commentaires, validation, ID de l'agent, règle de récurrence (rrule)
      * @param string $this->exdate : doit être la ligne complète commençant par EXDATE et finissant par \n
      */
-    public function ics_add_event(): void
+    public function ics_add_event()
     {
 
     // Initilisation des variables, adaptation des valeurs
@@ -1362,7 +1373,7 @@ class absences
         unlink($file);
     }
 
-    public function build_ics_content(): string
+    public function build_ics_content()
     {
         $perso_id = $this->perso_id;
         $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '$3$2$1', $this->debut).'T';
@@ -1437,8 +1448,9 @@ class absences
             $ics_content .= $this->exdate;
         }
         $ics_content .= "END:VEVENT\n";
+        $ics_content .= "END:VCALENDAR\n";
 
-        return $ics_content . "END:VCALENDAR\n";
+        return $ics_content;
     }
 
 
@@ -1448,7 +1460,7 @@ class absences
      * @param string $date : date et heure de l'exception au format ICS (ex: 20171110T120000)
      * @desc : ajoute une exception sur un événement ICS "Planning Biblio"
      */
-    public function ics_add_exdate($date): void
+    public function ics_add_exdate($date)
     {
         $this->ics_get_event();
         $ics_event = $this->elements;
@@ -1499,7 +1511,7 @@ class absences
      * @desc : supprime un événement ICS "Planning Biblio"
      * @note : Les lignes UID des fichiers ICS doivent directement suivre les lignes BEGIN:VEVENT
      */
-    public function ics_delete_event(): void
+    public function ics_delete_event()
     {
         $perso_id = $this->perso_id;
         $uid = $this->uid;
@@ -1523,7 +1535,7 @@ class absences
      * @return $this->elements = null si le fichier ICS n'a pas été trouvé
      * @note : Les lignes UID des fichiers ICS doivent directement suivre les lignes BEGIN:VEVENT
      */
-    public function ics_get_event(): void
+    public function ics_get_event()
     {
   
     // Récupère l'événement depuis la base de données
@@ -1730,7 +1742,7 @@ class absences
      * @desc : Recherche une fois par jour si des occurences liées à des absences récurrentes sans date de fin doivent être ajoutées dans la table absences
      * @note : la méthode CJICS::updateTable utilisée pour alimenter la table absence n'ajoute que les événements des 2 prochaines année, c'est pourquoi nous devons la réexecuter régulièrement
      */
-    public function ics_update_table(): void
+    public function ics_update_table()
     {
         $db = new db();
         $db->select2('absences_recurrentes', null, array('end' => '0' , 'last_check' => "< CURDATE"));
@@ -1774,7 +1786,7 @@ class absences
      * @param string $datetime : date et heure de fin de série, format ICS, timezone GMT (20171110T120000Z)
      * @desc : modifie la date de fin de série d'un événement ICS "Planning Biblio"
      */
-    public function ics_update_until($datetime): void
+    public function ics_update_until($datetime)
     {
         $this->ics_get_event();
         $ics_event = $this->elements;
@@ -1835,7 +1847,7 @@ class absences
     * (dates des plannings concernés, validés ou non, postes et sites concernés)
     * TODO : voir s'il faut faire une synthèse pour alléger le mail si de nombreux plannings sont concernés
     */
-    public function infoPlannings(): void
+    public function infoPlannings()
     {
         $version="absences";
         require_once __DIR__ . '/../postes/class.postes.php';
@@ -1941,7 +1953,7 @@ class absences
         $this->message=$message;
     }
 
-    public function piecesJustif($id, $pj, $checked): void
+    public function piecesJustif($id, $pj, $checked)
     {
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;

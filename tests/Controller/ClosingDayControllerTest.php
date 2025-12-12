@@ -8,7 +8,7 @@ use Tests\PLBWebTestCase;
 class ClosingDayControllerTest extends PLBWebTestCase
 {
 
-    public function testListClosingDay(): void
+    public function testListClosingDay()
     {
         $this->builder->delete(Agent::class);
 

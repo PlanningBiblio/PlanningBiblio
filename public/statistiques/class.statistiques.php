@@ -25,10 +25,8 @@ if (!isset($version)) {
 
 // AJouter les html_entity_decode latin1
 // AJouter les variables $nom, (agents,service,statut)
-/**
- * @return mixed[]
- */
-function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours, $debut, $fin): array
+
+function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours, $debut, $fin)
 {
     $titre="Statistiques par $nom du $debutAlpha au $finAlpha";
 
@@ -256,7 +254,7 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
                         // $count2 permet de n'afficher qu'une ligne par date et de compter les occurences correspondantes
                         $count2 = array();
                         foreach ($v as $e) {
-                            $count2[$e] = empty($count2[$e]) ? 1 : ($count2[$e] += 1);
+                            $count2[$e] = empty($count2[$e]) ? 1 : $count2[$e] = $count2[$e] +1;
                         }
             
                         $keys = array_keys($count2);
@@ -279,10 +277,7 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
     return $lignes;
 }
 
-/**
- * @return mixed[]
- */
-function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours): array
+function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours)
 {
     $titre="Statistiques sur les samedis travaillés du $debut au $fin";
     $lignes=array($titre,null);
@@ -352,11 +347,11 @@ function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours): array
 
 class statistiques
 {
-    public $debut;
-    public $fin;
-    public $selectedSites;
+    public $debut=null;
+    public $fin=null;
+    public $selectedSites=null;
 
-    public function ouverture(): void
+    public function ouverture()
     {
 
     // Recherche du nombre d'heures, de jours et de semaine d'ouverture au public par site
@@ -424,7 +419,7 @@ class statistiques
     /**
      * Count average hours
      */
-    public static function average($numberOfHours, $start, $end = null, $type = 'weekly'): float
+    public static function average($numberOfHours, $start, $end = null, $type = 'weekly')
     {
         $end = $end ?? $start;
         $numberOfHours = floatval($numberOfHours);

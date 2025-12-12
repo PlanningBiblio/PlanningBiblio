@@ -36,7 +36,7 @@ class HolidayControllerListTest extends PLBWebTestCase
         return $holiday->getId();
     }
 
-    public function testHolidayList(): void
+    public function testHolidayList()
     {
         $this->setParam('Absences-notifications-agent-par-agent', 1);
         $this->setParam('Multisites-nombre', 1);
@@ -123,7 +123,7 @@ class HolidayControllerListTest extends PLBWebTestCase
         $this->assertStringContainsString('Dupont J', $result->text(null,false));
     }
 
-    public function testStatuses(): void
+    public function testStatuses()
     {
         $this->setParam('Absences-notifications-agent-par-agent', 1);
         $this->setParam('Multisites-nombre', 1);

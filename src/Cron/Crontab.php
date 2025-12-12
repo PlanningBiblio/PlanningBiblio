@@ -53,7 +53,7 @@ class Crontab {
         return $this->executable_crons;
     }
 
-    public function execute(): void
+    public function execute()
     {
         if (php_sapi_name() != 'cli') {
 
@@ -74,7 +74,7 @@ class Crontab {
         }
     }
 
-    public static function update_cron($cron): void
+    public static function update_cron($cron)
     {
         $last = date_create();
 

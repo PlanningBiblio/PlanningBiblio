@@ -59,7 +59,7 @@ class MSGraphClient
         $this->full = $full;
     }
 
-    public function retrieveEvents(): void {
+    public function retrieveEvents() {
         $this->log("Start absences import from MS Graph Calendars");
         $this->log("full scan: $this->full");
         $this->getIncomingEvents();
@@ -71,7 +71,7 @@ class MSGraphClient
         $this->log("End absences import from MS Graph Calendars");
     }
 
-    private function getDateRange(): array {
+    private function getDateRange() {
         $range = array();
         $today = date("Y-m-d");
         $range['from'] = date("Y-m-d", strtotime($today . '- 15 days'));
@@ -79,7 +79,7 @@ class MSGraphClient
         return $range;
     }
 
-    private function getIncomingEvents(): void {
+    private function getIncomingEvents() {
         $this->incomingEvents = array();
         $this->graphUsers = array();
         $users = $this->entityManager->getRepository(Agent::class)->findBy(['supprime' => 0, 'check_ms_graph' => 1]);
@@ -118,7 +118,7 @@ class MSGraphClient
         $this->log("Amount of incoming events: " . count($this->incomingEvents));
     }
 
-    private function addToIncomingEvents($user, $response, $from, $to, $nextLink = null): void {
+    private function addToIncomingEvents($user, $response, $from, $to, $nextLink = null) {
         if ($nextLink) {
             $response = $this->sendGet($nextLink, true);
             if (!$response || $response->code != 200) {
@@ -144,13 +144,16 @@ class MSGraphClient
         }
     }
 
-    private function isEventEmpty($login, $id): bool {
+    private function isEventEmpty($login, $id) {
         $query = "/users/$login" . $this->login_suffix . '/events/' . $id;
         $response = $this->sendGet($query);
-        return !($response && $response->code == 200);
+        if ($response && $response->code == 200) {
+            return false;
+        }
+        return true;
     }
 
-    private function getLocalEvents(): void {
+    private function getLocalEvents() {
         $usersSQLIds = implode(',', $this->graphUsers);
 
         if ($this->full) {
@@ -180,13 +183,16 @@ class MSGraphClient
         return false;
     }
 
-    private function isGraphUser($user): bool {
+    private function isGraphUser($user) {
         $login = $user->getLogin();
         $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar');
-        return $response && $response->code == 200;
+        if ($response && $response->code == 200) {
+            return true;
+        }
+        return false;
     }
 
-    private function deleteEvents(): void {
+    private function deleteEvents() {
         // The SQL calls in this function should be replaced by doctrine calls when available
         $query = "DELETE FROM " . $this->dbprefix . "absences WHERE ical_key=:ical_key AND perso_id=:perso_id";
         $statement = $this->entityManager->getConnection()->prepare($query);
@@ -200,7 +206,7 @@ class MSGraphClient
         }
     }
 
-    private function insertOrUpdateEvents(): void {
+    private function insertOrUpdateEvents() {
         // The SQL calls in this function should be replaced by doctrine calls when available
         foreach ($this->incomingEvents as $eventArray) {
             $incomingEvent = $eventArray['event'];
@@ -283,11 +289,11 @@ class MSGraphClient
         return $response;
     }
 
-    private function log($message): void {
+    private function log($message) {
         $this->logger->log($message, "MSGraphClient");
     }
 
-    private function formatDate($graphdate, $format = "Y-m-d H:i:s"): string {
+    private function formatDate($graphdate, $format = "Y-m-d H:i:s") {
         $time = strtotime($graphdate->dateTime . $graphdate->timeZone);
         return date($format, $time);
     }

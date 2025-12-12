@@ -9,7 +9,7 @@ use App\Entity\Agent;
 
 class ManagerRepository extends EntityRepository
 {
-    public function deleteForAgents($agent_ids = array()): void
+    public function deleteForAgents($agent_ids = array())
     {
         $entityManager = $this->getEntityManager();
 
@@ -42,7 +42,7 @@ class ManagerRepository extends EntityRepository
         return $this;
     }
 
-    public function addManagers($agent_id, $manager_ids, $notifications, $level = 1): void
+    public function addManagers($agent_id, $manager_ids, $notifications, $level = 1)
     {
         $entityManager = $this->getEntityManager();
         $agent = $entityManager->getRepository(Agent::class)->find($agent_id);

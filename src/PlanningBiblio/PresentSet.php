@@ -19,10 +19,7 @@ class PresentSet
         $this->site = $site;
     }
 
-    /**
-     * @return array{id: mixed, nom: non-falsy-string, site: (non-falsy-string | null), heures: non-falsy-string}[]
-     */
-    public function all(): array
+    public function all()
     {
         $config = $GLOBALS['config'];
         $version = $GLOBALS['version'];
@@ -76,7 +73,11 @@ class PresentSet
             if ($heures and !in_array($elem['id'], $absents)) {
                 if ($config['Multisites-nombre']>1) {
                     if (!empty($heures[4])) {
-                        $siteAgent = $heures[4] == -1 ? "Tout site" : $config['Multisites-site'.$heures[4]];
+                        if ($heures[4] == -1) {
+                            $siteAgent = "Tout site";
+                        } else {
+                            $siteAgent=$config['Multisites-site'.$heures[4]];
+                        }
                     }
                 }
                 $siteAgent=$siteAgent?$siteAgent.", ":null;
@@ -98,10 +99,7 @@ class PresentSet
         return $presents;
     }
 
-    /**
-     * @return mixed[]
-     */
-    private static function getPlanningHebdo($date): array
+    private static function getPlanningHebdo($date)
     {
         // if module PlanningHebdo: search related plannings.
         require_once __DIR__ . '/../../public/planningHebdo/class.planningHebdo.php';
