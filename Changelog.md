@@ -1,5 +1,16 @@
 # Changelog Planno
 
+## Version 25.11.08 (2025-12-12)
+
+### Enhancement
+
+- MT51278: Delay requests for the app:absence:import-ics command #1262
+
+### Fixes
+
+- MT51402: Define hoursPerDayInHoursMinutes #1267
+- MT51394: Fix postes.categorires invalid values #1269
+
 ## Version 25.11.07 (2025-12-05)
 
 ### Fixes
