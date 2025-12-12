@@ -10,7 +10,7 @@ use App\Model\AbsenceDocument;
 
 class AbsenceRepository extends EntityRepository
 {
-    private function purge($id): void
+    private function purge($id)
     {
         $entityManager = $this->getEntityManager();
         $this->deleteAllDocuments($id, false);
@@ -23,7 +23,7 @@ class AbsenceRepository extends EntityRepository
         */
     }
 
-    public function purgeAll($limit_date): int {
+    public function purgeAll($limit_date) {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')
@@ -41,7 +41,7 @@ class AbsenceRepository extends EntityRepository
         return $deleted_absences;
     }
 
-    public function deleteAllDocuments($id, bool $flush = true): void {
+    public function deleteAllDocuments($id, bool $flush = true) {
         $entityManager = $this->getEntityManager();
         $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
         foreach ($absdocs as $absdoc) {

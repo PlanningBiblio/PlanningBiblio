@@ -24,7 +24,7 @@ class AgentManagerTest extends TestCase
         $this->entityManager = $entityManager;
     }
 
-    public function testIsManagerOf(): void
+    public function testIsManagerOf()
     {
         $agent_manager = $this->builder->build(Agent::class);
         $agent1 = $this->builder->build(Agent::class);
@@ -59,7 +59,7 @@ class AgentManagerTest extends TestCase
         $this->assertTrue($agent_manager->isManagerOf(array($agent1->id(), $agent2->id())));
     }
 
-    public function testIsManagerOfByLevel(): void
+    public function testIsManagerOfByLevel()
     {
         $agent_manager = $this->builder->build(Agent::class);
         $agent1 = $this->builder->build(Agent::class);

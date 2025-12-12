@@ -84,7 +84,7 @@ echo "</form>\n";
 if ($file = fopen($env_local_file, "w\n")) {
 
     foreach ($env_local_data as $line) {
-        fwrite($file, $line."\n");
+        fputs($file, $line."\n");
     }
     fclose($file);
 

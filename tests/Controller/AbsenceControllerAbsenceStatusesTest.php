@@ -15,7 +15,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $GLOBALS['config']['Absences-validation'] = 1;
     }
 
-    public function testNewAbsenceWithoutRight(): void
+    public function testNewAbsenceWithoutRight()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -39,7 +39,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->assertEquals('Demandée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
     }
 
-    public function testNewAbsenceRightN1(): void
+    public function testNewAbsenceRightN1()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -66,7 +66,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testNewAbsenceRightN1AndN2(): void
+    public function testNewAbsenceRightN1AndN2()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -95,7 +95,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testNewAbsenceRightN2(): void
+    public function testNewAbsenceRightN2()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -124,7 +124,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testNewAbsenceRightN2WithAbsencesValidationN2(): void
+    public function testNewAbsenceRightN2WithAbsencesValidationN2()
     {
         $this->setParam('Absences-Validation-N2', 1);
 
@@ -147,7 +147,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->assertEquals('Demandée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
     }
 
-    public function testEditAskedAbsenceWithoutRight(): void
+    public function testEditAskedAbsenceWithoutRight()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -169,7 +169,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->assertEquals('Demandée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
     }
 
-    public function testEditAskedAbsenceRightN1(): void
+    public function testEditAskedAbsenceRightN1()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -198,7 +198,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditAskedAbsenceRightN1AndN2(): void
+    public function testEditAskedAbsenceRightN1AndN2()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -229,7 +229,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditAskedAbsenceRightN2(): void
+    public function testEditAskedAbsenceRightN2()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -260,7 +260,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditAskedAbsenceRightN2WithAbsencesValidationN2(): void
+    public function testEditAskedAbsenceRightN2WithAbsencesValidationN2()
     {
         $this->setParam('Absences-Validation-N2', 1);
 
@@ -286,7 +286,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1AbsenceWithoutRight(): void
+    public function testEditN1AbsenceWithoutRight()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -308,7 +308,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
     }
 
-    public function testEditN1AbsenceRightN1(): void
+    public function testEditN1AbsenceRightN1()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -337,7 +337,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1AbsenceRightN1AndN2(): void
+    public function testEditN1AbsenceRightN1AndN2()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -368,7 +368,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1AbsenceRightN2(): void
+    public function testEditN1AbsenceRightN2()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -399,7 +399,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1AbsenceRightN2WithAbsencesValidationN2(): void
+    public function testEditN1AbsenceRightN2WithAbsencesValidationN2()
     {
         $this->setParam('Absences-Validation-N2', 1);
 
@@ -430,7 +430,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2AbsenceWithoutRight(): void
+    public function testEditN2AbsenceWithoutRight()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -452,7 +452,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->assertEquals('Acceptée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
     }
 
-    public function testEditN2AbsenceRightN1(): void
+    public function testEditN2AbsenceRightN1()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -478,7 +478,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2AbsenceRightN1AndN2(): void
+    public function testEditN2AbsenceRightN1AndN2()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -509,7 +509,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2AbsenceRightN2(): void
+    public function testEditN2AbsenceRightN2()
     {
         $this->setParam('Absences-Validation-N2', 0);
 
@@ -540,7 +540,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2AbsenceRightN2WithAbsencesValidationN2(): void
+    public function testEditN2AbsenceRightN2WithAbsencesValidationN2()
     {
         $this->setParam('Absences-Validation-N2', 1);
 

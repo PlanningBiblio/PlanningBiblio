@@ -35,7 +35,7 @@ class ControllerAuthorizationListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(RequestEvent $event): void
+    public function onKernelRequest(RequestEvent $event)
     {
         $page = $event->getRequest()->getPathInfo();
         $page = preg_replace('/([a-z-\/]*).*/', "$1", $page);
@@ -82,7 +82,7 @@ class ControllerAuthorizationListener
         }
     }
 
-    private function canAccess($route): bool
+    private function canAccess($route)
     {
         if (!isset($this->permissions[$route])) {
             return true;
@@ -119,7 +119,7 @@ class ControllerAuthorizationListener
         return false;
     }
 
-    private function triggerAccessDenied(RequestEvent $event): void{
+    private function triggerAccessDenied(RequestEvent $event){
 
         $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
 

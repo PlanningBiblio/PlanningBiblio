@@ -7,7 +7,7 @@ use App\Model\Agent;
 
 trait EntityValidationStatuses
 {
-    public function setStatusesParams($agent_ids, $module, $entity_id = null): void
+    public function setStatusesParams($agent_ids, $module, $entity_id = null)
     {
         if (!$agent_ids) {
             throw new \Exception("EntityValidationStatuses::setStatusesParams: No agent");
@@ -32,8 +32,8 @@ trait EntityValidationStatuses
                 ->forAgent($id)
                 ->getValidationLevelFor($_SESSION['login_id']);
 
-            $adminN1 = $N1 && $adminN1;
-            $adminN2 = $N2 && $adminN2;
+            $adminN1 = $N1 ? $adminN1 : false;
+            $adminN2 = $N2 ? $adminN2 : false;
         }
 
         $show_select = $adminN1 || $adminN2;

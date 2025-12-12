@@ -27,9 +27,13 @@ class Model extends PLBEntity
     /** @Column(type="integer") **/
     protected $site;
 
-    public function isWeek(): bool
+    public function isWeek()
     {
-        return $this->jour != 9;
+        if ($this->jour != 9) {
+            return true;
+        }
+
+        return false;
     }
 
 }

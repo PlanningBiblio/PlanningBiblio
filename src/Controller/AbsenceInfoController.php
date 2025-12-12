@@ -63,7 +63,7 @@ class AbsenceInfoController extends BaseController
     }
 
     #[Route(path: '/absences/info', name: 'absences.info.update', methods: ['POST'])]
-    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function update(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -102,7 +102,7 @@ class AbsenceInfoController extends BaseController
     }
 
     #[Route(path: '/absences/info', name: 'absences.info.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    public function delete(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();

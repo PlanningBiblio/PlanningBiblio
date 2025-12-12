@@ -6,20 +6,20 @@ require_once(__DIR__ . "/../../public/include/feries.php");
 
 class ClosingDay
 {
-    public $annee;
-    public $debut;
-    public $fin;
-    public $auto;
+    public $annee=null;
+    public $debut=null;
+    public $fin=null;
+    public $auto=null;
     public $elements=array();
     public $error=false;
-    public $index;
-    public $CSRFToken;
+    public $index=null;
+    public $CSRFToken = null;
 
     public function __construct()
     {
     }
 
-    public function fetch(): void
+    public function fetch()
     {
         $tab=array();
         $annees=array();
@@ -77,7 +77,7 @@ class ClosingDay
         $this->elements=$tab;
     }
 
-    public function fetchByDate($date): void
+    public function fetchByDate($date)
     {
         // Recherche du jour férié correspondant à la date $date
         $tab=array();
@@ -89,7 +89,7 @@ class ClosingDay
         $this->elements=$tab;
     }
 
-    public function fetchYears(): void
+    public function fetchYears()
     {
         $db=new \db();
         $db->select("jours_feries", "annee", null, "GROUP BY `annee` desc");
@@ -100,7 +100,7 @@ class ClosingDay
         }
     }
 
-    public function update($p): void
+    public function update($p)
     {
         $error=false;
         $data=array();

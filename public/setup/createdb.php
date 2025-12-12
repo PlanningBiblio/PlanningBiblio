@@ -91,7 +91,7 @@ include "db_data.php";
 if ($dbconn) {
     foreach ($sql as $elem) {
         $message.=str_replace("\n", "<br/>", $elem)."<br/>";
-        if (trim($elem) !== '' && trim($elem) !== '0') {
+        if (trim($elem)) {
             if (!mysqli_multi_query($dblink, $elem)) {
                 $erreur=true;
                 $message.="<p style='color:red'>ERROR : ";

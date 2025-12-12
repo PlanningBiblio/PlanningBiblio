@@ -61,11 +61,13 @@ class SkillController extends BaseController
             }
         }
 
-        foreach($tab as $elem){
-            if(is_array ($elem)){
-                foreach ($elem as $act){
-                    if (!in_array ($act, $activites_utilisees)){
-                        $activites_utilisees[] = $act;
+        if(!empty($tab)){
+            foreach($tab as $elem){
+                if(is_array ($elem)){
+                    foreach ($elem as $act){
+                        if (!in_array ($act, $activites_utilisees)){
+                            $activites_utilisees[] = $act;
+                        }
                     }
                 }
             }
@@ -120,7 +122,7 @@ class SkillController extends BaseController
 
 
     #[Route(path: '/skill', name: 'skill.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
+    public function save(Request $request, Session $session){
         $id = $request->get('id');
         $nom = $request->get('nom');
 
@@ -171,7 +173,7 @@ class SkillController extends BaseController
     }
 
     #[Route(path: '/skill', name: 'skill.delete', methods: ['DELETE'])]
-    public function delete_skill(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
+    public function delete_skill(Request $request, Session $session){
 
         $id = $request->get('id');
 

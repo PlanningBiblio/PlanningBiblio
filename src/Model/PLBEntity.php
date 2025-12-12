@@ -21,14 +21,14 @@ class PLBEntity {
         return $this;
     }
 
-    public function disable(): void {
+    public function disable() {
         if (!property_exists($this, 'supprime')) {
             throw new \Exception("This entity cannot be disabled");
         }
             $this->supprime(new \DateTime());
     }
 
-    public function enable(): void {
+    public function enable() {
         if (!property_exists($this, 'supprime')) {
             throw new \Exception("This entity cannot be enabled");
         }

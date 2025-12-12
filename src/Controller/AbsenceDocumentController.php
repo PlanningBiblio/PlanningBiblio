@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class AbsenceDocumentController extends BaseController
 {
     #[Route(path: '/absences/document/{id}', name: 'absences.document.index', methods: ['GET'])]
-    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function index(Request $request, Session $session)
     {
         $id = $request->get('id');
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
@@ -24,7 +24,9 @@ class AbsenceDocumentController extends BaseController
         $absenceDocument = new AbsenceDocument();
         $file = new File($absenceDocument->upload_dir() . $ad->absence_id() . '/' . $ad->id() . '/' . $ad->filename());
 
-        return new BinaryFileResponse($file);
+        $response = new BinaryFileResponse($file);
+
+        return $response;
     }
 
     #[Route(path: '/absences/document/{id}', name: 'absences.document.delete', methods: ['DELETE'])]
@@ -39,7 +41,8 @@ class AbsenceDocumentController extends BaseController
         $ad->deleteFile();
         $this->entityManager->remove($ad);
         $this->entityManager->flush();
-        return new Response();
+        $response = new Response();
+        return $response;
     }
 
    #[Route(path: '/absences/document/{id_absence}', name: 'absences.document.add', methods: ['POST'])]
@@ -63,11 +66,12 @@ class AbsenceDocumentController extends BaseController
             $absenceDocument = new AbsenceDocument();
             $file->move($absenceDocument->upload_dir() . $id . '/' . $ad->id(), $filename);
         }
-        return new Response();
+        $response = new Response();
+        return $response;
     }
 
    #[Route(path: '/absences/documents/{id_absence}', name: 'absences.document.list', methods: ['GET'])]
-    public function list(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    public function list(Request $request, Session $session)
     {
         $id = $request->get('id_absence');
         $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);

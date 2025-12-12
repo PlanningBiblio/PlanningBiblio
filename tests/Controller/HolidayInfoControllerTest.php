@@ -10,7 +10,7 @@ use Tests\FixtureBuilder;
 
 class HolidayInfoControllerTest extends PLBWebTestCase
 {
-    public function testAdd(): void
+    public function testAdd()
     {
         $entityManager = $this->entityManager;
 
@@ -37,7 +37,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
 
 
-    public function testNewForm(): void
+    public function testNewForm()
     {
         $entityManager = $this->entityManager;
 
@@ -76,7 +76,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','a/span button is Annuler');
     }
 
-    public function testFormEdit(): void
+    public function testFormEdit()
     {
         $entityManager = $this->entityManager;
 
@@ -131,7 +131,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($class->text('Node does not exist', false), 'Supprimer','a button is Supprimer');
     }
 
-    public function testHolidayInfoList(): void
+    public function testHolidayInfoList()
     {
         $entityManager = $this->entityManager;
         date_default_timezone_set('UTC');

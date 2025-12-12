@@ -13,7 +13,7 @@ use Tests\FixtureBuilder;
 
 class PlanningControllerTest extends PLBWebTestCase
 {
-    public function testPlanningNotReadyWithoutPermission(): void
+    public function testPlanningNotReadyWithoutPermission()
     {
         $this->builder->delete(Agent::class);
         $this->builder->delete(PlanningPosition::class);

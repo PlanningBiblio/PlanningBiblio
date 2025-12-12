@@ -14,7 +14,7 @@ use App\Model\PlanningPositionTabGroup;
 
 class PlanningPositionTabRepository extends EntityRepository
 {
-    public function purge($id): int
+    public function purge($id)
     {
         $planningPositionTab = $this->find($id);
         $tableau = $planningPositionTab->tableau();
@@ -48,7 +48,7 @@ class PlanningPositionTabRepository extends EntityRepository
         return 1;
     }
 
-    public function purgeAll($limit_date): int {
+    public function purgeAll($limit_date) {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')
@@ -66,7 +66,7 @@ class PlanningPositionTabRepository extends EntityRepository
     }
 
 
-    private function removeObjects($class, $field, $value): void {
+    private function removeObjects($class, $field, $value) {
         $entityManager = $this->getEntityManager();
         $objects = $entityManager->getRepository($class)->findBy([$field => $value]);
         foreach ($objects as $object) {

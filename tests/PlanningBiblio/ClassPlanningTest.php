@@ -7,7 +7,7 @@ require_once(__DIR__ . '/../../public/include/db.php');
 
 class ClassPlanningTest extends TestCase
 {
-    public function testWorkingHours(): void {
+    public function testWorkingHours() {
         $_SESSION['oups']['CSRFToken'] = 'FOO';
         $_SESSION['login_id'] = 1;
 
@@ -97,7 +97,7 @@ class ClassPlanningTest extends TestCase
         $this->assertEquals('2', $wednesday_exception_hours[4], 'Wednesday exception on site 2');
     }
 
-    public function testWorkingHoursWithTwoWeeksTurnover(): void {
+    public function testWorkingHoursWithTwoWeeksTurnover() {
         $_SESSION['oups']['CSRFToken'] = 'FOO';
         $_SESSION['login_id'] = 1;
         $GLOBALS['config']['nb_semaine'] = "2";

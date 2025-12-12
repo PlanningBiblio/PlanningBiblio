@@ -25,7 +25,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
     }
 
 
-    public function createWeekPlanningFor($agent): void
+    public function createWeekPlanningFor($agent)
     {
 
         $start = \DateTime::createFromFormat("d/m/Y", "01/10/2021");
@@ -65,7 +65,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $id = $poste->id();
 
-        return $this->builder->build(PlanningPosition::class, array(
+        $planning_post = $this->builder->build(PlanningPosition::class, array(
             'perso_id' => $agent->id(),
             'debut' => $start,
             'fin' => $end,
@@ -79,10 +79,12 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'supprime' => 0,
             'grise' => 0,
         ));
+
+        return $planning_post;
     }
 
 
-    public function testContextMenuAgentsDispo(): void
+    public function testContextMenuAgentsDispo()
     {
         $GLOBALS['config']['PlanningHebdo-Agents'] = 0;
         $GLOBALS['config']['toutlemonde'] = 0;
@@ -198,7 +200,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
     }
 
 
-    public function testContextMenuWithAgentsIndispo(): void
+    public function testContextMenuWithAgentsIndispo()
     {
         $GLOBALS['config']['PlanningHebdo'] = 1;
         $GLOBALS['config']['Absences-validation'] = 1;
@@ -315,7 +317,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
     }
 
 
-    public function testContextMenuWithClasseParService(): void
+    public function testContextMenuWithClasseParService()
     {
         $GLOBALS['config']['PlanningHebdo-Agents'] = 0;
         $GLOBALS['config']['PlanningHebdo'] = 1;
@@ -412,7 +414,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
     }
 
 
-    public function testContextMenuWithMultiSite(): void
+    public function testContextMenuWithMultiSite()
     {
         $GLOBALS['config']['PlanningHebdo-Agents'] = 0;
         $GLOBALS['config']['PlanningHebdo'] = 1;

@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class WorkingHoursTest extends TestCase
 {
-    public function testOne(): void {
+    public function testOne() {
         $working_hours = array(
             0 => array('0' => '', '1' => '', '2' => '', '3' => ''),
             1 => array('0' => '', '1' => '', '2' => '', '3' => ''),
@@ -39,7 +39,7 @@ class WorkingHoursTest extends TestCase
         $this->assertEmpty($times, 'Saturday is empty');
     }
 
-    public function testTwo(): void
+    public function testTwo()
     {
         $working_hours = array(
             0 => array('0' => '09:00:00', '1' => '16:00:00', '2' => '', '3' => ''),
@@ -77,7 +77,7 @@ class WorkingHoursTest extends TestCase
         $this->assertEmpty($times, 'Friday is empty');
     }
 
-    public function testWithPause2(): void
+    public function testWithPause2()
     {
         $working_hours = array(
             0 => array('0' => '11:00:00', '1' => '', '2' => '', '3' => '', '5' => '19:00:00', '6' => ''),
@@ -114,7 +114,7 @@ class WorkingHoursTest extends TestCase
         $this->assertEquals('16:00:00', $times[2][1], 'Thursday third part ends at 16:00');
     }
 
-    public function testWithFreeBreaks(): void
+    public function testWithFreeBreaks()
     {
         $working_hours = array(
             0 => array('0' => '08:00:00', '1' => '', '2' => '', '3' => '16:00:00'),
@@ -200,7 +200,7 @@ class WorkingHoursTest extends TestCase
         $this->assertArrayNotHasKey(2, $times, 'Wednesday third part does not exist');
     }
 
-    public function testWithInvalidTime(): void
+    public function testWithInvalidTime()
     {
         $wh = new WorkingHours(array());
         $times = $wh->hoursOf(0);

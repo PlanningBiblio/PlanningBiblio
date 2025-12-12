@@ -57,7 +57,7 @@ class AbsenceBlockController extends BaseController
     }
 
     #[Route("/absence/block", name: "absence.block.update", methods: ["POST"])]
-    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function update(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
             $session->getFlashBag()->add('error', 'CSRF Token Error');
@@ -97,7 +97,7 @@ class AbsenceBlockController extends BaseController
     }
 
     #[Route("/absence/block", name: "absence.block.delete", methods: ["DELETE"])]
-    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    public function delete(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();

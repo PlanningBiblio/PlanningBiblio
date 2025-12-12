@@ -8,7 +8,7 @@ class HourHelperTest extends TestCase
 {
 
 
-    public function testDecimalToHoursMinutes(): void
+    public function testDecimalToHoursMinutes()
     {
         $hh = new HourHelper();
 
@@ -66,7 +66,7 @@ class HourHelperTest extends TestCase
 
     }
 
-    public function testHourMinutesToDecimal(): void
+    public function testHourMinutesToDecimal()
     {
         $hh = new HourHelper();
 
@@ -92,7 +92,7 @@ class HourHelperTest extends TestCase
         $result = $hh->hoursMinutesToDecimal('-0', 60);
     }
 
-    public function testHoursMinutesToDecimalAndDecimalToHoursMinutesBijection(): void
+    public function testHoursMinutesToDecimalAndDecimalToHoursMinutesBijection()
     {
         $hh = new HourHelper();
 
@@ -113,7 +113,7 @@ class HourHelperTest extends TestCase
         }
     }
 
-    public function testtoHis(): void
+    public function testtoHis()
     {
         $hh = new HourHelper();
 

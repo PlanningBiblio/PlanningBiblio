@@ -145,13 +145,13 @@ class Agent extends PLBEntity
         return $this->managers->toArray();
     }
 
-    public function addManaged(Manager $managed): void
+    public function addManaged(Manager $managed)
     {
         $this->managed->add($managed);
         $managed->responsable($this);
     }
 
-    public function isManagerOf($agent_ids = array(), $requested_level = null): bool
+    public function isManagerOf($agent_ids = array(), $requested_level = null)
     {
         $managed_ids = array();
         $managed = $this->getManaged();
@@ -172,7 +172,7 @@ class Agent extends PLBEntity
         return true;
     }
 
-    public function can_access(array $accesses): bool {
+    public function can_access(array $accesses) {
         if (empty($accesses)) {
             return false;
         }
@@ -207,10 +207,7 @@ class Agent extends PLBEntity
         return false;
     }
 
-    /**
-     * @return mixed[]
-     */
-    public function get_planning_unit_mails(): array {
+    public function get_planning_unit_mails() {
         $config = $GLOBALS['config'];
 
         // Get mails defined in Mail-Planning config element.
@@ -233,7 +230,9 @@ class Agent extends PLBEntity
             }
         }
 
-        return array_unique($unit_mails);
+        $unit_mails = array_unique($unit_mails);
+
+        return $unit_mails;
     }
 
     public function get_manager_emails() {
@@ -246,16 +245,24 @@ class Agent extends PLBEntity
         return explode(';', $emails_string);
     }
 
-    public function isAbsentOn($from, $to): bool
+    public function isAbsentOn($from, $to)
     {
         $a = new \absences();
-        return (bool) $a->check($this->id(), $from, $to, true);
+        if ($a->check($this->id(), $from, $to, true)) {
+            return true;
+        }
+
+        return false;
     }
 
-    public function isOnVacationOn($from, $to): bool
+    public function isOnVacationOn($from, $to)
     {
         $c = new \conges();
-        return (bool) $c->check($this->id(), $from, $to, true);
+        if ($c->check($this->id(), $from, $to, true)) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getWorkingHoursOn($date)
@@ -280,7 +287,7 @@ class Agent extends PLBEntity
         return $working_hours->elements[0];
     }
 
-    public function isBlockedOn($date, $start, $end): bool
+    public function isBlockedOn($date, $start, $end)
     {
         $id = $this->id();
 
@@ -313,16 +320,13 @@ class Agent extends PLBEntity
         return false;
     }
 
-    public function skills(): array
+    public function skills()
     {
         $skills = json_decode($this->postes());
         return is_array($skills) ? $skills : [];
     }
 
-    /**
-     * @return int[]
-     */
-    public function managedSites($needed_l1, $needed_l2): array
+    public function managedSites($needed_l1, $needed_l2)
     {
         $sites_number = $GLOBALS['config']['Multisites-nombre'];
 
@@ -344,7 +348,7 @@ class Agent extends PLBEntity
         return $managed_sites;
     }
 
-    public function inOneOfSites($sites): bool
+    public function inOneOfSites($sites)
     {
         $agent_sites = json_decode($this->sites(), true);
 

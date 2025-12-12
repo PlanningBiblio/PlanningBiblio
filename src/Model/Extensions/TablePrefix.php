@@ -22,7 +22,7 @@ class TablePrefix implements EventSubscriber
         return ['loadClassMetadata'];
     }
 
-    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs): void
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
         $classMetadata = $eventArgs->getClassMetadata();
 

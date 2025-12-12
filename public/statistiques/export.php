@@ -313,9 +313,9 @@ $lignes=array_map("html_entity_decode_latin1", $lignes);
 
 foreach ($lignes as $elem) {
     if ($type=="csv") {
-        fwrite($inF, "'$elem'\n");
+        fputs($inF, "'$elem'\n");
     } else {
-        fwrite($inF, $elem."\n");
+        fputs($inF, $elem."\n");
     }
 }
 fclose($inF);

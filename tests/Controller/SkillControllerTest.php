@@ -12,7 +12,7 @@ use Tests\FixtureBuilder;
 
 class SkillControllerTest extends PLBWebTestCase
 {
-    public function testAdd(): void
+    public function testAdd()
     {
         $entityManager = $this->entityManager;
 
@@ -36,7 +36,7 @@ class SkillControllerTest extends PLBWebTestCase
 
     }
 
-    public function testNewForm(): void
+    public function testNewForm()
     {
         $entityManager = $this->entityManager;
 
@@ -64,7 +64,7 @@ class SkillControllerTest extends PLBWebTestCase
         $this->assertEquals($class->attr('value'),'Annuler','input submit value is Annuler');
     }
 
-    public function testFormEdit(): void
+    public function testFormEdit()
     {
         $entityManager = $this->entityManager;
 
@@ -101,7 +101,7 @@ class SkillControllerTest extends PLBWebTestCase
         $this->assertEquals($class->attr('value'),'Annuler','input submit value is Annuler');
     }
 
-    public function testSkillList(): void
+    public function testSkillList()
     {
         $entityManager = $this->entityManager;
 

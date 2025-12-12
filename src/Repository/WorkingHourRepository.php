@@ -35,7 +35,9 @@ class WorkingHourRepository extends EntityRepository
             $builder->andWhere('w.valide > 0');
         }
 
-        return $builder->getQuery()->getResult();
+        $result = $builder->getQuery()->getResult();
+
+        return $result;
     }
 
 }

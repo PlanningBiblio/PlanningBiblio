@@ -23,7 +23,7 @@ class AbsenceDocument extends PLBEntity
     /** @Column(type="datetime") */
     protected $date;
 
-    public function deleteFile(): void {
+    public function deleteFile() {
         if (!$this->absence_id || !$this->filename || !$this->id) return;
 
         unlink($this->upload_dir() . $this->absence_id . '/' . $this->id . '/' . $this->filename);

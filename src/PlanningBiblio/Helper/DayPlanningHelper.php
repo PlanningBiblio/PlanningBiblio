@@ -16,7 +16,7 @@ class DayPlanningHelper extends BaseHelper
         parent::__construct();
     }
 
-    public function IsWorked(): bool
+    public function IsWorked()
     {
         // At least 2 values should be
         // given for this to be a range
@@ -27,6 +27,11 @@ class DayPlanningHelper extends BaseHelper
         if ($this->day_planning[2] && $this->day_planning[3]) {
             return true;
         }
-        return $this->day_planning[0] && $this->day_planning[3];
+
+        if ($this->day_planning[0] && $this->day_planning[3]) {
+            return true;
+        }
+
+        return false;
     }
 }
