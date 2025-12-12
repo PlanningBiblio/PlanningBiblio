@@ -6,7 +6,7 @@ use App\Repository\SaturdayWorkingHoursRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: SaturdayWorkingHours::class)]
+#[ORM\Entity(repositoryClass: SaturdayWorkingHoursRepository::class)]
 #[ORM\Table(name: 'edt_samedi')]
 class SaturdayWorkingHours
 {
@@ -41,7 +41,7 @@ class SaturdayWorkingHours
         return $this;
     }
 
-    public function getWeek(): ?int
+    public function getWeek(): ?\DateTime
     {
         return $this->semaine;
     }

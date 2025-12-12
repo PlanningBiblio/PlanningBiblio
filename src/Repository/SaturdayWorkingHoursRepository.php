@@ -36,7 +36,6 @@ class SaturdayWorkingHoursRepository extends EntityRepository
                 $entry->setUserId($perso_id);
                 $entry->setWeek($elem);
                 $entry->setTable(2);
-
             } else {
                 // Si config['EDTSamedi'] == 2 (Emploi du temps différent les semaines avec samedi travaillé et en ouverture restreinte)
                 $entry->setUserId($perso_id);
