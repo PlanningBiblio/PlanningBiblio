@@ -2531,6 +2531,11 @@ table.dataTable th{
   border: 1px solid rgb(41, 73, 92, 0.3);
 }
 
+/* Emoji */
+.tableauFiches .emoji-menu-tabs td {
+  padding: 0 0 10px 10px;
+}
+
 @media only screen and (max-width: 1550px){
   #logo {
     width: 48px;

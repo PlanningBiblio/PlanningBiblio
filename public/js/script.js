@@ -893,6 +893,21 @@ $(function(){
       maxHour: '17',
     });
 
+    // Initializes and creates emoji set from sprite sheet
+    $('.emoji-picker-textarea').each(function() {
+      $(this).wrap('<p class="emoji-picker-container"></p>');
+      $(this).attr('data-emojiable', 'true');
+      $(this).attr('data-emoji-input', 'unicode');
+    });
+
+    window.emojiPicker = new EmojiPicker({
+        emojiable_selector: '[data-emojiable=true]',
+        assetsPath: url('vendor/emoji-lib/img/'),
+        popupButtonClasses: 'fa fa-smile-o'
+    });
+
+    window.emojiPicker.discover();
+
   });
 
   // Infobulles
