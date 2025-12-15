@@ -17,6 +17,11 @@
     <script type="text/JavaScript" src="{{ asset('js/datePickerFr.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('js/dataTables.sort.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('vendor/bootstrap-5.1.3-dist/js/bootstrap.js') }}"></script>
+    <!-- emoji -->
+    <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/config.min.js') }}"></script>
+    <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/util.min.js') }}"></script>
+    <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/jquery.emojiarea.min.js') }}"></script>
+    <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/emoji-picker.min.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('js/script.js') }}"></script>
     {% block specificjs %}{% endblock %}
 
@@ -24,6 +29,9 @@
     <link rel="StyleSheet" href="{{ asset('vendor/DataTables/datatables.min.css') }}" type="text/css" media="all"/>
     <link rel='StyleSheet' href='{{ asset("themes/" ~ themeJQuery ~ "/jquery-ui.min.css") }}' type='text/css' media='all'/>
     <link rel='StyleSheet' href='{{ asset("themes/default/jquery.timepicker.min.css") }}' type='text/css' media='all'/>
+    <!-- emoji -->
+    <link rel="StyleSheet" href="{{ asset('vendor/emoji-lib/css/emoji.css') }}" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel='StyleSheet' href='{{ asset("themes/default/default.css") }}' type='text/css' media='all'/>
     <link rel='StyleSheet' href='{{ asset("themes/default/print.css") }}' type='text/css' media='print'/>
     {% if theme != 'default' %}

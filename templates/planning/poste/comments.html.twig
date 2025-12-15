@@ -19,7 +19,7 @@
     </p>
 
     <form>
-      <textarea id='pl-notes-text'>{{ comments.textarea | raw_black_listed }}</textarea>
+      <textarea id="pl-notes-text" class="emoji-picker-textarea" data-emojiable="true" data-emoji-input="unicode">{{ comments.textarea | raw_black_listed }}</textarea>
     </form>
   </div>
 {% endif %}
