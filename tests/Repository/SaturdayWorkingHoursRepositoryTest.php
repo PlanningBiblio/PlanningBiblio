@@ -27,48 +27,41 @@ class SaturdayWorkingHoursRepositoryTest extends TestCase
         $this->expiredDate = (clone $this->date)->modify('-10 days');
     }
 
-    public function testDeleteBetweenWeeks()
+    public function testUpdate()
     {
         $builder = new FixtureBuilder();
         $builder->delete(SaturdayWorkingHours::class);
-
-        $perso_id = 30;
-        $other_perso_id = 31;
-
-        $builder->build(SaturdayWorkingHours::class, array('semaine' => $this->date, 'perso_id' => $perso_id));
-        $builder->build(SaturdayWorkingHours::class, array('semaine' => $this->expiredDate, 'perso_id' => $perso_id));
-        $builder->build(SaturdayWorkingHours::class, array('semaine' => $this->start, 'perso_id' => $perso_id));
-        $builder->build(SaturdayWorkingHours::class, array('semaine' => $this->end, 'perso_id' => $other_perso_id));
 
         $repos = $this->entityManager->getRepository(SaturdayWorkingHours::class);
 
-        $repos->deleteBetweenWeeks($this->start, $this->end, $perso_id);
+        $perso_id = 99;
+        $other_perso_id = 999;
 
-        $this->assertCount(2, $repos->findBy(['perso_id' => $perso_id]));
-        $this->assertCount(1, $repos->findBy(['perso_id' => $other_perso_id]));
-    }
+        $builder->build(SaturdayWorkingHours::class, array('semaine' => $this->expiredDate, 'perso_id' => $perso_id, 'tableau' => 3));// keep
+        $builder->build(SaturdayWorkingHours::class, array('semaine' => $this->start, 'perso_id' => $perso_id));// delete
+        $builder->build(SaturdayWorkingHours::class, array('semaine' => $this->end, 'perso_id' => $other_perso_id));// keep it because perso_id does not match
 
-    public function testInsert()
-    {
-        $builder = new FixtureBuilder();
-        $builder->delete(SaturdayWorkingHours::class);
-
-        $perso_id = 20;
         $weeks = [
             [$this->date->format('Y-m-d'), 1],
-            [$this->start->format('Y-m-d'), 1],
+            [$this->start->format('Y-m-d'), 4],
             $this->end->format('Y-m-d'),
             [$this->expiredDate->format('Y-m-d'), 3]
         ];
 
-        $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
-        $repo->insert($weeks, $perso_id);
+        $resultsBefore = $repos->findBy(['perso_id' => $perso_id]);
 
-        $results = $repo->findBy(['perso_id' => $perso_id]);
+        $this->assertCount(2, $resultsBefore);
 
-        $this->assertCount(4, $results);
+        $repos->update($weeks, $this->start->format('Y-m-d'), $this->end->format('Y-m-d'), $perso_id);
+        
+        $this->entityManager->clear();
+        $repos = $this->entityManager->getRepository(SaturdayWorkingHours::class);
+        $resultsAfter = $repos->findBy(['perso_id' => $perso_id]);
 
-        foreach ($results as $entry) {
+        $this->assertCount(5, $repos->findBy(['perso_id' => $perso_id]));
+        $this->assertCount(1, $repos->findBy(['perso_id' => $other_perso_id]));
+
+        foreach ($resultsAfter as $entry) {
             $this->assertEquals($perso_id, $entry->getUserId());
 
             $week = $entry->getWeek()->format('Y-m-d');
@@ -77,7 +70,7 @@ class SaturdayWorkingHoursRepositoryTest extends TestCase
                 $this->assertEquals(1, $entry->getTable());
 
             } elseif ($week === $this->start->format('Y-m-d')) {
-                $this->assertEquals(1, $entry->getTable());
+                $this->assertEquals(4, $entry->getTable());
 
             } elseif ($week === $this->end->format('Y-m-d')) {
                 $this->assertEquals(2, $entry->getTable());
@@ -90,5 +83,4 @@ class SaturdayWorkingHoursRepositoryTest extends TestCase
             }
         }
     }
-
 }
