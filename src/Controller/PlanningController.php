@@ -2275,16 +2275,16 @@ class PlanningController extends BaseController
     private function getWeekData($site, $semaine, $semaine3)
     {
         switch ($this->config('nb_semaine')) {
+            case 1:
+                $affSem = $semaine;
+                break;
             case 2:
                 $type_sem = $semaine % 2 ? 'Impaire' : 'Paire';
                 $affSem = "$type_sem ($semaine)";
                 break;
-            case 3: 
+            default: 
                 $type_sem = $semaine3;
                 $affSem = "$type_sem ($semaine)";
-                break;
-            default:
-                $affSem = $semaine;
                 break;
         }
 
