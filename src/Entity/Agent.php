@@ -103,7 +103,7 @@ class Agent
     private ?string $check_ics = null;
 
     #[ORM\Column]
-    private ?bool $check_hamac = true;
+    private ?bool $check_hamac = false;
 
     #[ORM\Column]
     private ?bool $check_ms_graph = false;
@@ -164,18 +164,6 @@ class Agent
         return $this;
     }
 
-    public function getHolidayAnticipation(): ?float
-    {
-        return $this->conges_anticipation;
-    }
-
-    public function setHolidayAnticipation(?float $holidayAnticipation): static
-    {
-        $this->conges_anticipation = $holidayAnticipation;
-
-        return $this;
-    }
-
     public function getArrival(): ?\DateTime
     {
         return $this->arrivee;
@@ -200,26 +188,14 @@ class Agent
         return $this;
     }
 
-    public function getHolidayCompTime(): ?float
-    {
-        return $this->comp_time;
-    }
-
-    public function setHolidayCompTime(?float $holidayCompTime): static
-    {
-        $this->comp_time = $holidayCompTime;
-
-        return $this;
-    }
-
-    public function getDelete(): ?int
+    public function getDeletion(): ?int
     {
         return $this->supprime;
     }
 
-    public function setDelete(?int $delete): static
+    public function setDeletion(?int $deletionStatus): static
     {
-        $this->supprime = $delete;
+        $this->supprime = $deletionStatus;
 
         return $this;
     }
@@ -248,14 +224,38 @@ class Agent
         return $this;
     }
 
-    public function getAnnualCredit(): ?float
+    public function getHolidayAnnualCredit(): ?float
     {
         return $this->conges_annuel;
     }
 
-    public function setAnnualCredit(?float $annualCredit): static
+    public function setHolidayAnnualCredit(?float $annualCredit): static
     {
         $this->conges_annuel = $annualCredit;
+
+        return $this;
+    }
+
+    public function getHolidayAnticipation(): ?float
+    {
+        return $this->conges_anticipation;
+    }
+
+    public function setHolidayAnticipation(?float $holidayAnticipation): static
+    {
+        $this->conges_anticipation = $holidayAnticipation;
+
+        return $this;
+    }
+
+    public function getHolidayCompTime(): ?float
+    {
+        return $this->comp_time;
+    }
+
+    public function setHolidayCompTime(?float $holidayCompTime): static
+    {
+        $this->comp_time = $holidayCompTime;
 
         return $this;
     }
@@ -268,6 +268,18 @@ class Agent
     public function setHolidayCredit(?float $holidayCredit): static
     {
         $this->conges_credit = $holidayCredit;
+
+        return $this;
+    }
+
+    public function getHolidayRemainder(): ?float
+    {
+        return $this->conges_reliquat;
+    }
+
+    public function setHolidayRemainder(?float $holidayRemainder): static
+    {
+        $this->conges_reliquat = $holidayRemainder;
 
         return $this;
     }
@@ -332,18 +344,6 @@ class Agent
         return $this;
     }
 
-    public function getHolidayRemainder(): ?float
-    {
-        return $this->conges_reliquat;
-    }
-
-    public function setHolidayRemainder(?float $holidayRemainder): static
-    {
-        $this->conges_reliquat = $holidayRemainder;
-
-        return $this;
-    }
-
     public function getService(): ?string
     {
         return $this->service;
@@ -392,26 +392,26 @@ class Agent
         return $this;
     }
 
-    public function getQuotaHours(): ?string
+    public function getWeeklyServiceHours(): ?string
     {
         return $this->heures_hebdo;
     }
 
-    public function setQuotaHours(?string $quotaHours): static
+    public function setWeeklyServiceHours(?string $weeklyServiceHours): static
     {
-        $this->heures_hebdo = $quotaHours;
+        $this->heures_hebdo = $weeklyServiceHours;
 
         return $this;
     }
 
-    public function getWorkedHours(): ?float
+    public function getWeeklyWorkingHours(): ?float
     {
         return $this->heures_travail;
     }
 
-    public function setWorkedHours(?float $workedHours): static
+    public function setWeeklyWorkingHours(?float $weeklyWorkingHours): static
     {
-        $this->heures_travail = $workedHours;
+        $this->heures_travail = $weeklyWorkingHours;
 
         return $this;
     }
@@ -433,9 +433,9 @@ class Agent
         return $this->commentaires;
     }
 
-    public function setComment(?string $commentaires): static
+    public function setComment(?string $comment): static
     {
-        $this->commentaires = $commentaires;
+        $this->commentaires = $comment;
 
         return $this;
     }
@@ -475,14 +475,14 @@ class Agent
         return $this;
     }
     
-    public function getMailsManagers(): ?string
+    public function getManagersMails(): ?string
     {
         return $this->mails_responsables;
     }
 
-    public function setMailsManagers(?string $mailsManagers): static
+    public function setManagersMails(?string $managersMails): static
     {
-        $this->mails_responsables = $mailsManagers;
+        $this->mails_responsables = $managersMails;
 
         return $this;
     }
@@ -540,7 +540,7 @@ class Agent
         return $this->url_ics;
     }
 
-    public function setiIcsUrl(?string $icsUrl): static
+    public function setIcsUrl(?string $icsUrl): static
     {
         $this->url_ics = $icsUrl;
 
