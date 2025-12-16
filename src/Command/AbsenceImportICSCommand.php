@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Agent;
 use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -103,10 +104,8 @@ class AbsenceImportICSCommand extends Command
         }
 
         // On recherche tout le personnel actif
-        $p= new \personnel();
-        $p->supprime = array(0);
-        $p->fetch();
-        $agents = $p->elements;
+        $repos = $this->entityManager->getRepository(Agent::class);
+        $agents = $repos->getAgentsByDeletion([0]);
 
         // Pour chaque agent, on créé les URL des fichiers ICS et on importe les événements
         foreach ($agents as $agent) {
@@ -126,24 +125,24 @@ class AbsenceImportICSCommand extends Command
                     // Selon le paramètre openURL (mail ou login)
                     switch ($var[$i]) {
                         case "login":
-                            if (!empty($agent["login"])) {
-                                $url=str_replace("[{$var[$i]}]", $agent["login"], $servers[$i]);
+                            if (!empty($agent->getLogin())) {
+                                $url=str_replace("[{$var[$i]}]", $agent->getLogin(), $servers[$i]);
                             }
                             break;
                         case "email":
                         case "mail":
-                            if (!empty($agent["mail"])) {
-                                $url=str_replace("[{$var[$i]}]", $agent["mail"], $servers[$i]);
+                            if (!empty($agent->getMail())) {
+                                $url=str_replace("[{$var[$i]}]", $agent->getMail(), $servers[$i]);
                             }
                             break;
                         case "matricule":
-                            if (!empty($agent["matricule"])) {
-                                $url=str_replace("[{$var[$i]}]", $agent["matricule"], $servers[$i]);
+                            if (!empty($agent->getEmployeeNumber())) {
+                                $url=str_replace("[{$var[$i]}]", $agent->getEmployeeNumber(), $servers[$i]);
                             }
                             break;
                         case "perso_id":
-                            if (!empty($agent["id"])) {
-                                $url=str_replace("[{$var[$i]}]", $agent["id"], $servers[$i]);
+                            if (!empty($agent->getId())) {
+                                $url=str_replace("[{$var[$i]}]", $agent->getId(), $servers[$i]);
                             }
                             break;
                         default: $url=false; break;
@@ -151,21 +150,22 @@ class AbsenceImportICSCommand extends Command
                 }
 
                 if ($i == 3) {
-                    $url = $agent['url_ics'];
+                    $url = $agent->getIcsUrl();
                 }
 
                 // If the current calendar checkbox is not checked, we do not import it and we purge the relative events already imported.
-                if (!$agent["ics_$i"]) {
-                    $this->log("Agent #{$agent['id']} : Check ICS $i is disabled", 'AbsenceImportICS');
+                // if (!$agent["ics_$i"]) { // TODO there are no columns named like ics_1 ics_2 ics_1
+                if (!json_decode($agent->getIcsCheck())[$i-1]) {
+                    $this->log("Agent #{$agent->getId()} : Check ICS $i is disabled", 'AbsenceImportICS');
                     if (!$url) {
-                        $this->log("Agent #{$agent['id']} : Impossible de constituer une URL valide. Purge abandonnée", 'AbsenceImportICS');
+                        $this->log("Agent #{$agent->getId()} : Impossible de constituer une URL valide. Purge abandonnée", 'AbsenceImportICS');
                         continue;
                     }
 
                     $ics=new \CJICS();
                     $ics->src = $url;
                     $ics->number = $i;
-                    $ics->perso_id = $agent["id"];
+                    $ics->perso_id = $agent->getId();
                     $ics->table = "absences";
                     $ics->logs = true;
                     $ics->CSRFToken = $CSRFToken;
@@ -175,13 +175,13 @@ class AbsenceImportICSCommand extends Command
                 }
 
                 if (!$url) {
-                    $this->log("Agent #{$agent['id']} : Impossible de constituer une URL valide", 'AbsenceImportICS');
+                    $this->log("Agent #{$agent->getId()} : Impossible de constituer une URL valide", 'AbsenceImportICS');
                     continue;
                 }
 
                 // Test si le fichier existe
                 if (substr($url, 0, 1) == '/' and !file_exists($url)) {
-                    $this->log("Agent #{$agent['id']} : Le fichier $url n'existe pas", 'AbsenceImportICS');
+                    $this->log("Agent #{$agent->getId()} : Le fichier $url n'existe pas", 'AbsenceImportICS');
                     continue;
                 }
 
@@ -190,17 +190,17 @@ class AbsenceImportICSCommand extends Command
                     $test = @get_headers($url, 1);
 
                     if (empty($test)) {
-                        $this->log("Agent #{$agent['id']} : $url is not a valid URL", 'AbsenceImportICS');
+                        $this->log("Agent #{$agent->getId()} : $url is not a valid URL", 'AbsenceImportICS');
                         continue;
                     }
 
                     if (!strstr($test[0], '200')) {
-                        $this->log("Agent #{$agent['id']} : $url {$test[0]}", 'AbsenceImportICS');
+                        $this->log("Agent #{$agent->getId()} : $url {$test[0]}", 'AbsenceImportICS');
                         continue;
                     }
                 }
 
-                $this->log("Agent #{$agent['id']} : Importation du fichier $url", 'AbsenceImportICS');
+                $this->log("Agent #{$agent->getId()} : Importation du fichier $url", 'AbsenceImportICS');
 
                 if (!$url) {
                     continue;
@@ -208,7 +208,7 @@ class AbsenceImportICSCommand extends Command
 
                 $ics=new \CJICS();
                 $ics->src=$url;
-                $ics->perso_id=$agent["id"];
+                $ics->perso_id=$agent->getId();
                 $ics->pattern = $config["ICS-Pattern$i"];
                 $ics->status = $config["ICS-Status$i"];
                 $ics->desc = $config["ICS-Description$i"];
