@@ -448,4 +448,14 @@ class AgentRepository extends EntityRepository
         $builder->update(Agent::class, 'a')->set('a.conges_reliquat', 0);
         $builder->getQuery()->execute();
     }
+    
+    public function getAgentsByDeletion(array $deletion)
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('a')
+            ->where('a.supprime IN (:deletion)')
+            ->setParameter('deletion', $deletion);
+
+        return $qb->getQuery()->getResult();
+    }
 }

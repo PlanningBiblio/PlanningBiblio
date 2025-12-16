@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Absence;
+use App\Entity\Agent;
 use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -100,10 +101,8 @@ class AbsenceImportCSVCommand extends Command
             $this->log('On recherche tout le personnel actif', 'AbsenceImportCSV');
         }
 
-        $p = new \personnel();
-        $p->supprime = array(0);
-        $p->fetch();
-        $agents = $p->elements;
+        $repos = $this->entityManager->getRepository(Agent::class);
+        $agents = $repos->getAgentsByDeletion([0]);
 
         // Les logins des agents qui acceptent la synchronisation depuis Hamac
         $logins = array();
@@ -114,17 +113,25 @@ class AbsenceImportCSVCommand extends Command
         }
 
         foreach ($agents as $elem) {
-            if ($debug) {
-                $this->log("mail = " . $elem['mail'] . " - login = " . $elem[$key], 'AbsenceImportCSV');
+            if($key == 'login') {
+                $login = $elem->getLogin();
+            } elseif($key == 'matricule') {
+                $login = $elem->getEmployeeNumber();
+            } else {
+                $login = '';
             }
-            if ($elem['check_hamac']) {
+
+            if ($debug) {
+                $this->log("mail = " . $elem->getMail() . " - login = " . $login, 'AbsenceImportCSV');
+            }
+            if ($elem->isHamacCheck()) {
                 if ($debug) {
                     $this->log("\$elem['check_hamac'] = true", 'AbsenceImportCSV');
                 }
-                $logins[] = $elem[$key];
-                $perso_ids[$elem[$key]] = $elem['id'];
+                $logins[] = $login;
+                $perso_ids[$login] = $elem->getId();
                 if ($debug) {
-                    $this->log("\$elem['id'] = " . $elem['id'] . " - \$perso_ids[\$elem[\$key]] = " . $perso_ids[$elem[$key]], 'AbsenceImportCSV');
+                    $this->log("\$elem['id'] = " . $elem->getId() . " - \$perso_ids[\$elem[\$key]] = " . $perso_ids[$login], 'AbsenceImportCSV');
                 }
             } else {
                 if ($debug) {
