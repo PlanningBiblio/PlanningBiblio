@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Absence;
+use App\Entity\Agent;
 use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -12,7 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 require_once __DIR__ . '/../../legacy/Common/function.php';
-require_once( __DIR__ . '/../../legacy/Class/class.personnel.php');
 
 #[AsCommand(
     name: 'app:absence:import-csv',
@@ -98,35 +98,41 @@ class AbsenceImportCSVCommand extends Command
             $this->log('On recherche tout le personnel actif', 'AbsenceImportCSV');
         }
 
-        $p = new \personnel();
-        $p->supprime = array(0);
-        $p->fetch();
-        $agents = $p->elements;
+        $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0]);
 
         // Les logins des agents qui acceptent la synchronisation depuis Hamac
         $logins = array();
         $perso_ids = array();
         $key = $config['Hamac-id'];
         if ($debug) {
-            $this->log("\$key = \$config['Hamac-id'] = " . $config['Hamac-id'], 'AbsenceImportCSV');
+            $this->log('$key = $config[\'Hamac-id\'] = ' . $config['Hamac-id'], 'AbsenceImportCSV');
         }
 
         foreach ($agents as $elem) {
-            if ($debug) {
-                $this->log("mail = " . $elem['mail'] . " - login = " . $elem[$key], 'AbsenceImportCSV');
+            if ($key == 'login') {
+                $login = $elem->getLogin();
+            } elseif ($key == 'matricule') {
+                $login = $elem->getEmployeeNumber();
+            } else {
+                $login = '';
             }
-            if ($elem['check_hamac']) {
+
+            if ($debug) {
+                $this->log('mail = ' . $elem->getMail() . ' - login = ' . $login, 'AbsenceImportCSV');
+            }
+
+            if ($elem->isHamacCheck()) {
                 if ($debug) {
-                    $this->log("\$elem['check_hamac'] = true", 'AbsenceImportCSV');
+                    $this->log('$elem->isHamacCheck() = true', 'AbsenceImportCSV');
                 }
-                $logins[] = $elem[$key];
-                $perso_ids[$elem[$key]] = $elem['id'];
+                $logins[] = $login;
+                $perso_ids[$login] = $elem->getId();
                 if ($debug) {
-                    $this->log("\$elem['id'] = " . $elem['id'] . " - \$perso_ids[\$elem[\$key]] = " . $perso_ids[$elem[$key]], 'AbsenceImportCSV');
+                    $this->log('$elem->getId() = ' . $elem->getId() . ' - $perso_ids[$elem[$key]] = ' . $perso_ids[$login], 'AbsenceImportCSV');
                 }
             } else {
                 if ($debug) {
-                    $this->log("\$elem['check_hamac'] = false", 'AbsenceImportCSV');
+                    $this->log('$elem->isHamacCheck() = false', 'AbsenceImportCSV');
                 }
             }
         }
@@ -134,12 +140,12 @@ class AbsenceImportCSVCommand extends Command
         $ids_list = implode(',', $perso_ids);
 
         if ($debug) {
-            $this->log("\$ids_list = " . $ids_list, 'AbsenceImportCSV');
+            $this->log('$ids_list = ' . $ids_list, 'AbsenceImportCSV');
         }
 
         // Recherche de toutes les absences déjà importées depuis Hamac
         if ($debug) {
-            $this->log("Recherche de toutes les absences déjà importées depuis Hamac", 'AbsenceImportCSV');
+            $this->log('Recherche de toutes les absences déjà importées depuis Hamac', 'AbsenceImportCSV');
         }
 
         $absences = array();
@@ -149,7 +155,7 @@ class AbsenceImportCSVCommand extends Command
             // On indexe le tableau avec le champ UID qui n'est autre que l'id Hamac
             $absences[$elem->getUid()] = $elem;
             if ($debug) {
-                $this->log("\$elem->getUid() = " . $elem->getUid() . " - \$absences[\$elem->getUid()] = " . json_encode($absences[$elem->getUid()]), 'AbsenceImportCSV');
+                $this->log('$elem->getUid() = ' . $elem->getUid() . ' - $absences[$elem->getUid()] = ' . json_encode($absences[$elem->getUid()]), 'AbsenceImportCSV');
             }
         }
 
@@ -179,7 +185,7 @@ class AbsenceImportCSVCommand extends Command
         $status = array_merge($status, $status_extra);
 
         if ($debug) {
-            $this->log("Status à importer : \$config['Hamac-status'] " . $config['Hamac-status'], 'AbsenceImportCSV');
+            $this->log('Status à importer : $config[\'Hamac-status\'] ' . $config['Hamac-status'], 'AbsenceImportCSV');
         }
 
         // Absences DB / file : used to remove entries deleted from source file
@@ -200,7 +206,7 @@ class AbsenceImportCSVCommand extends Command
         $inF = fopen($filename, 'r');
 
         if ($debug) {
-            $this->log("On lit le fichier CSV " . $filename, 'AbsenceImportCSV');
+            $this->log('On lit le fichier CSV ' . $filename, 'AbsenceImportCSV');
         }
 
         while ($tab = fgetcsv($inF, 1024, ';')) {
@@ -213,11 +219,11 @@ class AbsenceImportCSVCommand extends Command
             $absences_file[] = $uid;
 
             if ($debug) {
-                $this->log("uid = " . $uid, 'AbsenceImportCSV');
+                $this->log('uid = ' . $uid, 'AbsenceImportCSV');
             }
 
             if (!isset($tab[4]) and $debug) {
-                    $this->log("\$tab[4] is not defined", 'AbsenceImportCSV');
+                    $this->log('$tab[4] is not defined', 'AbsenceImportCSV');
                     continue;
             }
 
@@ -225,7 +231,7 @@ class AbsenceImportCSVCommand extends Command
             // Le tableau $logins ne contient que les agents actifs qui acceptent la synchronisation Hamac
             if (!in_array($tab[4], $logins)) {
                 if ($debug) {
-                    $this->log("\$tab[4] = " . $tab[4] . " ne fait pas partie des logins des agents actifs qui acceptent la synchronisation Hamac, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
+                    $this->log('$tab[4] = ' . $tab[4] . ' ne fait pas partie des logins des agents actifs qui acceptent la synchronisation Hamac, on passe à la ligne suivante dans le CSV', 'AbsenceImportCSV');
                 }
 
                 continue;
@@ -235,7 +241,7 @@ class AbsenceImportCSVCommand extends Command
             // Important : Faire la suppression avant le contrôle des status car le status 9 sera ignoré à la prochaine étape
             if ($tab[6] == 9 and in_array($uid, $uids)) {
                 if ($debug) {
-                    $this->log("Status = 9, absence supprimée, on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
+                    $this->log('Status = 9, absence supprimée, on passe à la ligne suivante dans le CSV', 'AbsenceImportCSV');
                 }
 
                 $absd = $this->entityManager->getRepository(Absence::class)->find($absences[$uid]->getId());
@@ -250,7 +256,7 @@ class AbsenceImportCSVCommand extends Command
             // Si le status de l'absence Hamac n'est pas dans la liste des status à importer, on passe.
             if (!in_array($tab[6], $status)) {
                 if ($debug) {
-                    $this->log("\$status = " . $tab[6] . " n'est pas dans la liste des status à importer (" . $config['Hamac-status'] . "), on passe à la ligne suivante dans le CSV", 'AbsenceImportCSV');
+                    $this->log('$status = ' . $tab[6] . ' n\'est pas dans la liste des status à importer (' . $config['Hamac-status'] . '), on passe à la ligne suivante dans le CSV', 'AbsenceImportCSV');
                 }
 
                 continue;
@@ -258,7 +264,7 @@ class AbsenceImportCSVCommand extends Command
 
             // Préparation des données
             if ($debug) {
-                $this->log("Préparation des données", 'AbsenceImportCSV');
+                $this->log('Préparation des données', 'AbsenceImportCSV');
             }
 
             $perso_id = $perso_ids[$tab[4]];
@@ -267,11 +273,11 @@ class AbsenceImportCSVCommand extends Command
             $end = \DateTime::createFromFormat('d/m/Y H:i:s', $tab[3]);
             $comment = $tab[1];
 
-            $log_info = "agent=" . $perso_id;
-            $log_info .= " / request=" . $requestDate->format('Y-m-d H:i:s');
-            $log_info .= " / start=" . $start->format('Y-m-d H:i:s');
-            $log_info .= " / end=" . $end->format('Y-m-d H:i:s');
-            $log_info .= " / comments=" . $comment;
+            $log_info = 'agent=' . $perso_id;
+            $log_info .= ' / request=' . $requestDate->format('Y-m-d H:i:s');
+            $log_info .= ' / start=' . $start->format('Y-m-d H:i:s');
+            $log_info .= ' / end=' . $end->format('Y-m-d H:i:s');
+            $log_info .= ' / comments=' . $comment;
 
             // Validations
             // Si le status de l'absence Hamac est 2, l'absence est validée
