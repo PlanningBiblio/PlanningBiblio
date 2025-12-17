@@ -51,4 +51,16 @@ class RecurringAbsence
 
         return $this;
     }
+
+    public function getLastCheck(): ?\DateTime
+    {
+        return $this->last_check;
+    }
+
+    public function setLastCheck(\DateTime $last_check): static
+    {
+        $this->last_check = $last_check;
+
+        return $this;
+    }
 }

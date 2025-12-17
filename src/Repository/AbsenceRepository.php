@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use DateTime;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 
@@ -114,9 +115,12 @@ class AbsenceRepository extends EntityRepository
         }
 
         // On met à jour le champ last_check de façon à ne pas relancer l'opération dans la journée
-        $db = new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->update('absences_recurrentes', array('last_check' => "SYSDATE"), array('end' => '0'));
+        $absences_recurrentes_update = $repos->findBy(['end' => '0']);
+        foreach($absences_recurrentes_update as $elem){
+            $elem->setLastCheck(new DateTime());
+        }
+
+        $this
         
     }
 }
