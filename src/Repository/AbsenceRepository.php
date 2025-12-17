@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Criteria;
 
 use App\Entity\Absence;
 use App\Entity\AbsenceDocument;
+use App\Entity\RecurringAbsence;
 
 class AbsenceRepository extends EntityRepository
 {
@@ -81,5 +82,41 @@ class AbsenceRepository extends EntityRepository
         }
         $entityManager->flush();
         return $deleted_absences;
+    }
+
+    public function ics_update_table()
+    {
+        $repos = $this->entityManager()->getRepository(RecurringAbsence::class);
+        $absences_recurrentes = $repos->findRecurringAbsenceActiveNotCheckedToday();
+        foreach ($absences_recurrentes as $elem) {
+            $perso_id = $elem['perso_id'];
+            $uid = $elem['uid'];
+            $event = $elem['event'];
+
+            $folder = sys_get_temp_dir();
+            $file = "$folder/PBCalendar-$perso_id.ics";
+
+            file_put_contents($file, $event);
+
+            // On actualise la base de données à partir du fichier ICS modifié
+            $ics=new CJICS();
+            $ics->src = $file;
+            $ics->perso_id = $perso_id;
+            $ics->pattern = '[SUMMARY]';
+            $ics->status = 'All';
+            $ics->table ="absences";
+            $ics->logs = true;
+            $ics->CSRFToken = $this->CSRFToken;
+            $ics->updateTable();
+
+            // On supprime le fichier
+            unlink($file);
+        }
+
+        // On met à jour le champ last_check de façon à ne pas relancer l'opération dans la journée
+        $db = new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->update('absences_recurrentes', array('last_check' => "SYSDATE"), array('end' => '0'));
+        
     }
 }
