@@ -166,6 +166,7 @@ class CJICS
 
         // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
         $ical   = new ICal($src);
+
         // Récupération du nom du calendrier
         $calName=$ical->calendarName();
         $calName = removeAccents($calName);
@@ -277,9 +278,6 @@ class CJICS
         $events_with_recurrence_id = array();
 
         foreach ($events as $elem) {
-            if (empty($elem['UID'])) {
-                continue; 
-            }
             // Add LAST-MODIFIED = Now, if this attribute doesn't exist (missing in Hamac)
             if (empty($elem['LAST-MODIFIED'])) {
                 $elem['LAST-MODIFIED'] = $now;
