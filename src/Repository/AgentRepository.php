@@ -449,12 +449,12 @@ class AgentRepository extends EntityRepository
         $builder->getQuery()->execute();
     }
     
-    public function getAgentsByDeletion(array $deletion)
+    public function getByDeletionStatus(array $deletionStatus)
     {
         $qb = $this->createQueryBuilder('a')
             ->select('a')
             ->where('a.supprime IN (:deletion)')
-            ->setParameter('deletion', $deletion);
+            ->setParameter('deletion', $deletionStatus);
 
         return $qb->getQuery()->getResult();
     }

@@ -13,7 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 require_once __DIR__ . '/../../legacy/Common/function.php';
-require_once( __DIR__ . '/../../legacy/Class/class.personnel.php');
 
 #[AsCommand(
     name: 'app:absence:import-csv',
@@ -101,8 +100,7 @@ class AbsenceImportCSVCommand extends Command
             $this->log('On recherche tout le personnel actif', 'AbsenceImportCSV');
         }
 
-        $repos = $this->entityManager->getRepository(Agent::class);
-        $agents = $repos->getAgentsByDeletion([0]);
+        $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0]);
 
         // Les logins des agents qui acceptent la synchronisation depuis Hamac
         $logins = array();
@@ -113,9 +111,9 @@ class AbsenceImportCSVCommand extends Command
         }
 
         foreach ($agents as $elem) {
-            if($key == 'login') {
+            if($key=='login') {
                 $login = $elem->getLogin();
-            } elseif($key == 'matricule') {
+            } elseif($key=='matricule') {
                 $login = $elem->getEmployeeNumber();
             } else {
                 $login = '';
