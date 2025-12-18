@@ -85,14 +85,14 @@ class AbsenceRepository extends EntityRepository
         return $deleted_absences;
     }
 
-    public function ics_update_table()
+    public function icsUpdateTable($CSRFToken)
     {
-        $repos = $this->entityManager()->getRepository(RecurringAbsence::class);
+        $repos = $this->getEntityManager()->getRepository(RecurringAbsence::class);
         $absences_recurrentes = $repos->findRecurringAbsenceActiveNotCheckedToday();
         foreach ($absences_recurrentes as $elem) {
-            $perso_id = $elem['perso_id'];
-            $uid = $elem['uid'];
-            $event = $elem['event'];
+            $perso_id = $elem->getUserId();
+            $uid = $elem->getUid();
+            $event = $elem->getEvent();
 
             $folder = sys_get_temp_dir();
             $file = "$folder/PBCalendar-$perso_id.ics";
@@ -100,14 +100,14 @@ class AbsenceRepository extends EntityRepository
             file_put_contents($file, $event);
 
             // On actualise la base de données à partir du fichier ICS modifié
-            $ics=new CJICS();
+            $ics=new \CJICS();
             $ics->src = $file;
             $ics->perso_id = $perso_id;
             $ics->pattern = '[SUMMARY]';
             $ics->status = 'All';
             $ics->table ="absences";
+            $ics->CSRFToken = $CSRFToken;
             $ics->logs = true;
-            $ics->CSRFToken = $this->CSRFToken;
             $ics->updateTable();
 
             // On supprime le fichier
@@ -119,8 +119,6 @@ class AbsenceRepository extends EntityRepository
         foreach($absences_recurrentes_update as $elem){
             $elem->setLastCheck(new DateTime());
         }
-
-        $this
-        
+        $this->getEntityManager()->flush();
     }
 }

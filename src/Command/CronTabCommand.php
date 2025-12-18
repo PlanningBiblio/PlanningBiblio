@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Absence;
 use App\Entity\Cron;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -117,12 +118,9 @@ class CronTabCommand extends Command
 
         // Absences : Met à jour la table absences avec les événements récurrents sans date de fin (J + 2ans)
         // 1 fois par jour
-        require_once __DIR__ . '/../../legacy/Class/class.absences.php';
 
-        $a = new \absences();
-        $a->CSRFToken = $CSRFToken;
-        $a->ics_update_table();
-  
+        $this->entityManager->getRepository(Absence::class)->icsUpdateTable($CSRFToken);
+  //test unitaire test last, create une absence_recurrente (ancienne,termine, sans date de fin)
         if ($output->isVerbose()) {
             $io->success('All scheduled cron jobs have been executed successfully.');
         }

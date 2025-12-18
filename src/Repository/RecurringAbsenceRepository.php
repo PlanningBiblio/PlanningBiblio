@@ -14,7 +14,7 @@ class RecurringAbsenceRepository extends EntityRepository
     {
         return $this->createQueryBuilder('ra')
             ->andWhere('ra.end = :end')
-            ->andWhere('ra.lastCheck < CURRENT_DATE()')
+            ->andWhere('ra.last_check < CURRENT_DATE()')
             ->setParameter('end', 0)
             ->getQuery()
             ->getResult();
