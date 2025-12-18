@@ -111,9 +111,9 @@ class AbsenceImportCSVCommand extends Command
         }
 
         foreach ($agents as $elem) {
-            if($key=='login') {
+            if ($key == 'login') {
                 $login = $elem->getLogin();
-            } elseif($key=='matricule') {
+            } elseif ($key == 'matricule') {
                 $login = $elem->getEmployeeNumber();
             } else {
                 $login = '';
