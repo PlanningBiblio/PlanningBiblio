@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Agent;
 use App\Entity\Config;
+use App\Entity\Holiday;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -13,8 +14,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 require_once __DIR__ . '/../../legacy/Common/function.php';
-require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
-require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 
 #[AsCommand(
     name: 'app:holiday:reset:credits',
@@ -54,30 +53,22 @@ class HolidayResetCreditsCommand extends Command
         $config = $this->entityManager->getRepository(Config::class)->getAll();
         $transferCompTime = !empty($config['Conges-transfer-comp-time']);
 
-        $CSRFToken = CSRFToken();
+        $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);
 
-        $p = new \personnel();
-        $p->supprime = array(0,1);
-        $p->fetch();
-        if ($p->elements) {
-            foreach ($p->elements as $elem) {
-                $credits = array();
-                $credits['conges_credit'] = floatval($elem['conges_annuel']) - floatval($elem['conges_anticipation']);
-                $credits['conges_anticipation'] = 0;
+        foreach ($agents as $elem) {
+            $credits = array();
+            $credits['conges_credit'] = floatval($elem->getHolidayAnnualCredit()) - floatval($elem->getHolidayAnticipation());
+            $credits['conges_anticipation'] = 0;
 
-                if ($transferCompTime) {
-                    $credits['conges_reliquat'] = floatval($elem['conges_credit']) + floatval($elem['comp_time']);
-                    $credits['comp_time'] = 0;
-                } else {
-                    $credits['conges_reliquat'] = $elem['conges_credit'];
-                    $credits['comp_time'] = $elem['comp_time'];
-                }
-
-                $c = new \conges();
-                $c->perso_id = $elem['id'];
-                $c->CSRFToken = $CSRFToken;
-                $c->maj($credits, 'modif', true);
+            if ($transferCompTime) {
+                $credits['conges_reliquat'] = floatval($elem->getHolidayCredit()) + floatval($elem->getHolidayCompTime());
+                $credits['comp_time'] = 0;
+            } else {
+                $credits['conges_reliquat'] = $elem->getHolidayCredit();
+                $credits['comp_time'] = $elem->getHolidayCompTime();
             }
+
+            $this->entityManager->getRepository(Holiday::class)->insert($elem->getId(), $credits, 'update', true);
         }
 
         // Modifie les crédits

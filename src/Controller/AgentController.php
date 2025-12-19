@@ -11,7 +11,7 @@ use App\Planno\Helper\HourHelper;
 use App\Planno\Ldif2Array;
 
 use App\Entity\Agent;
-
+use App\Entity\Holiday;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -359,7 +359,7 @@ class AgentController extends BaseController
             $recup = stripslashes($db->result[0]['recup']);
             $sites = html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $sites = $sites !== '' && $sites !== '0'?json_decode($sites, true):array();
-            $action = "modif";
+            $action = 'update';
             $titre = $nom." ".$prenom;
 
             // URL ICS
@@ -394,7 +394,7 @@ class AgentController extends BaseController
             $recup = null;
             $sites = array();
             $titre = "Ajout d'un agent";
-            $action = "ajout";
+            $action = 'add';
             if (!empty($_SESSION['perso_actif']) and $_SESSION['perso_actif'] != 'Supprim&eacute;') {
                 $actif = $_SESSION['perso_actif'];
             }// vérifie dans quel tableau on se trouve pour la valeur par défaut
@@ -871,7 +871,7 @@ class AgentController extends BaseController
         $droits = json_encode($droits);
 
         switch ($action) {
-          case "ajout":
+          case 'add':
             $db = new \db();
             $db->select2("personnel", array(array("name"=>"MAX(`id`)", "as"=>"id")));
             $id = $db->result[0]['id']+1;
@@ -994,7 +994,7 @@ class AgentController extends BaseController
 
             break;
 
-          case "modif":
+          case 'update':
             $update = array(
                 "nom"=>$nom,
                 "prenom"=>$prenom,
@@ -2006,10 +2006,7 @@ class AgentController extends BaseController
             );
         }
 
-        $c = new \conges();
-        $c->perso_id = $params['id'];
-        $c->CSRFToken = $params['CSRFToken'];
-        $c->maj($credits, $params['action']);
+        $this->entityManager->getRepository(Holiday::class)->insert((int) $params['id'], $credits, $params['action']);
 
         return $credits;
     }

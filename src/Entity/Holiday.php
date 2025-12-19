@@ -16,7 +16,7 @@ class Holiday
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $perso_id = null;
+    private ?int $perso_id = 0;
 
     #[ORM\Column]
     private ?\DateTime $debut = null;
@@ -25,22 +25,22 @@ class Holiday
     private ?\DateTime $fin = null;
 
     #[ORM\Column]
-    private ?int $halfday = null;
+    private ?int $halfday = 0;
 
     #[ORM\Column(length: 20)]
-    private ?string $start_halfday = null;
+    private ?string $start_halfday = '';
 
     #[ORM\Column(length: 20)]
-    private ?string $end_halfday = null;
+    private ?string $end_halfday = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $commentaires = null;
+    private ?string $commentaires = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $refus = null;
+    private ?string $refus = '';
 
     #[ORM\Column(length: 20)]
-    private ?string $heures = null;
+    private ?string $heures = '';
 
     #[ORM\Column(length: 20)]
     private ?string $debit = null;
@@ -49,67 +49,67 @@ class Holiday
     private ?\DateTime $saisie = null;
 
     #[ORM\Column]
-    private ?int $saisie_par = null;
+    private ?int $saisie_par = 0;
 
     #[ORM\Column]
-    private ?int $modif = null;
+    private ?int $modif = 0;
 
     #[ORM\Column]
     private ?\DateTime $modification = null;
 
     #[ORM\Column]
-    private ?int $valide_n1 = null;
+    private ?int $valide_n1 = 0;
 
     #[ORM\Column]
     private ?\DateTime $validation_n1 = null;
 
     #[ORM\Column]
-    private ?int $valide = null;
+    private ?int $valide = 0;
 
     #[ORM\Column]
     private ?\DateTime $validation = null;
 
     #[ORM\Column]
-    private ?float $solde_prec = null;
+    private ?float $solde_prec = 0;
 
     #[ORM\Column]
-    private ?float $solde_actuel = null;
+    private ?float $solde_actuel = 0;
 
     #[ORM\Column]
-    private ?float $recup_prec = null;
+    private ?float $recup_prec = 0;
 
     #[ORM\Column]
-    private ?float $recup_actuel = null;
+    private ?float $recup_actuel = 0;
 
     #[ORM\Column]
-    private ?float $reliquat_prec = null;
+    private ?float $reliquat_prec = 0;
 
     #[ORM\Column]
-    private ?float $reliquat_actuel = null;
+    private ?float $reliquat_actuel = 0;
 
     #[ORM\Column]
-    private ?float $anticipation_prec = null;
+    private ?float $anticipation_prec = 0;
 
     #[ORM\Column]
-    private ?float $anticipation_actuel = null;
+    private ?float $anticipation_actuel = 0;
 
     #[ORM\Column]
-    private ?int $supprime = null;
+    private ?int $supprime = 0;
 
     #[ORM\Column]
     private ?\DateTime $suppr_date = null;
 
     #[ORM\Column]
-    private ?int $information = null;
+    private ?int $information = 0;
 
     #[ORM\Column]
     private ?\DateTime $info_date = null;
 
     #[ORM\Column]
-    private ?int $regul_id = null;
+    private ?int $regul_id = 0;
 
     #[ORM\Column]
-    private ?int $origin_id = null;
+    private ?int $origin_id = 0;
 
     public function getId(): ?int
     {
@@ -412,6 +412,90 @@ class Holiday
     public function setActualAnticipation(?float $anticipation): static
     {
         $this->anticipation_actuel = $anticipation;
+
+        return $this;
+    }
+
+    public function getInfoDate(): ?\DateTime
+    {
+        return $this->info_date;
+    }
+
+    public function setInfoDate(?\DateTime $infoDate): static
+    {
+        $this->info_date = $infoDate;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->commentaires;
+    }
+
+    public function setComment(?string $comment): static
+    {
+        $this->commentaires = $comment;
+
+        return $this;
+    }
+
+    public function getRefus(): ?string
+    {
+        return $this->refus;
+    }
+
+    public function setRefus(?string $refus): static
+    {
+        $this->refus = $refus;
+
+        return $this;
+    }
+
+    public function getChangeDate(): ?\DateTime
+    {
+        return $this->modification;
+    }
+
+    public function setChangeDate(?\DateTime $changeDate): static
+    {
+        $this->modification = $changeDate;
+
+        return $this;
+    }
+
+    public function getDeleteDate(): ?\DateTime
+    {
+        return $this->suppr_date;
+    }
+
+    public function setDeleteDate(?\DateTime $deleteDate): static
+    {
+        $this->suppr_date = $deleteDate;
+
+        return $this;
+    }
+
+    public function getRegulationId(): ?int
+    {
+        return $this->regul_id;
+    }
+
+    public function setRegulationId(?int $regulationId): static
+    {
+        $this->regul_id = $regulationId;
+
+        return $this;
+    }
+
+    public function getOriginId(): ?int
+    {
+        return $this->origin_id;
+    }
+
+    public function setOriginId(?int $originId): static
+    {
+        $this->origin_id = $originId;
 
         return $this;
     }
