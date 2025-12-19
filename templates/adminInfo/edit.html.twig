@@ -3,14 +3,6 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-    <link rel="StyleSheet" href="{{ asset('vendor/emoji-lib/css/emoji.css') }}" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <style>
-        .tableauFiches .emoji-menu-tabs td {
-            padding: 0 0 10px 10px;
-        }
-    </style>
-
     <div id="content-admin">
         <h3>Messages d'information</h3>
 
@@ -43,9 +35,7 @@
                 <tr>
                     <td><label>Texte</label></td>
                     <td>
-                    <p class="emoji-picker-container">
-                        <textarea name="text" rows="3" class="ui-widget-content ui-corner-all" data-emojiable="true" data-emoji-input="unicode">{{ text }}</textarea>
-                    </p>
+                    <textarea name="text" rows="3" class="ui-widget-content ui-corner-all emoji-picker-textarea" data-emojiable="true" data-emoji-input="unicode">{{ text }}</textarea>
                     </td>
                 </tr>
 
@@ -66,13 +56,5 @@
             </form>
         </div>
     </div>
-
-    <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/config.min.js') }}"></script>
-    <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/util.min.js') }}"></script>
-    <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/jquery.emojiarea.min.js') }}"></script>
-    <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/emoji-picker.min.js') }}"></script>
-    <script>
-    window.EMOJI_ASSETS_PATH = "{{ asset('vendor/emoji-lib/img/') }}";
-    </script>
-    <script type="text/JavaScript" src="{{ asset('js/emoji.js') }}"></script>
+    <script type="text/JavaScript" src="{{ asset('js/script.js') }}"></script>
 {% endblock %}

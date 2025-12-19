@@ -897,6 +897,19 @@ $(function(){
 
   // Infobulles
   $(document).tooltip();
+
+  $('.emoji-picker-textarea').each(function() {
+    $(this).wrap('<p class="emoji-picker-container"></p>');
+  });
+  
+  // Initializes and creates emoji set from sprite sheet
+  window.emojiPicker = new EmojiPicker({
+      emojiable_selector: '[data-emojiable=true]',
+      assetsPath: url('vendor/emoji-lib/img/'),
+      popupButtonClasses: 'fa fa-smile-o'
+  });
+
+  window.emojiPicker.discover();
 });
 
 
