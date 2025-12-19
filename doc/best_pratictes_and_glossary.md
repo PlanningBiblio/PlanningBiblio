@@ -40,6 +40,7 @@
 | day | jour |
 | debit | debit |
 | delete | supprime | type int (userId) |
+| deleteDate | suppr_date |
 | deletion | supprime | for Agents, type int, values 0, 1, 2 |
 | departure | depart |
 | employeeNumber | matricule |
@@ -85,7 +86,7 @@
 | number | numero |
 | numberOfWeeks | nb_semaine | For WorkingHours |
 | password | password |
-| originId | id_origin |
+| originId | id_origin or origin_id|
 | otherReason | motif_autre |
 | position | poste |
 | previousAnticipation | anticipation_prec |
@@ -97,6 +98,7 @@
 | quotaSP | quota_sp | For Position |
 | rank | rang |
 | recoveryMenu | recup |
+| regulationId | recul_id |
 | service | service |
 | reason | motif |
 | requestDate | demande |

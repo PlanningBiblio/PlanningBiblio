@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Agent;
+use App\Entity\Holiday;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -52,22 +53,16 @@ class HolidayResetCompTimeCommand extends Command
 
         $CSRFToken = CSRFToken();
 
-        $p = new \personnel();
-        $p->supprime = array(0,1);
-        $p->fetch();
-        if ($p->elements) {
-            foreach ($p->elements as $elem) {
-                $credits=array();
-                $credits['comp_time'] = 0;
-                $credits['conges_credit'] = $elem['conges_credit'];
-                $credits['conges_anticipation'] = $elem['conges_anticipation'];
-                $credits['conges_reliquat'] = $elem['conges_reliquat'];
+        $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);
+        foreach ($agents as $elem) {
+            $credits=array();
+            $credits['comp_time'] = 0;
+            $credits['conges_credit'] = $elem->getHolidayCredit();
+            $credits['conges_anticipation'] = $elem->getHolidayAnticipation();
+            $credits['conges_reliquat'] = $elem->getHolidayRemainder();
 
-                $c = new \conges();
-                $c->perso_id=$elem['id'];
-                $c->CSRFToken = $CSRFToken;
-                $c->maj($credits, 'modif', true);
-            }
+            $repos = $this->entityManager->getRepository(Holiday::class);
+            $repos->insert($elem->getId(), $credits, 'modif', true);
         }
 
         // Modifie les crédits
