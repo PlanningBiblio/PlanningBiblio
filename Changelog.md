@@ -1,5 +1,15 @@
 # Changelog Planno
 
+## Version 25.11.10 (2025-12-19)
+
+### Plumbing
+
+- MT51446: Simplify the CSRFToken function #1277
+- MT51442: Move personnel::updateEDTSamedi to SaturdayWorkingHourRepo #1278
+- MT50832: Absence import CSV and ICS, use entity manager #1284
+- MT50832: WorkingHour Daily Command, use entity manager #1285
+- MT51570: CircleCi: use a custom docker image #1287
+
 ## Version 25.11.09 (2025-12-12)
 
 ### Plumbing
