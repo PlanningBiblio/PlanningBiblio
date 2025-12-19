@@ -109,19 +109,19 @@ class Agent
     private ?bool $check_ms_graph = false;
 
     #[ORM\Column]
-    private ?float $conges_credit = null;
+    private ?float $conges_credit = 0;
 
     #[ORM\Column]
-    private ?float $conges_reliquat = null;
+    private ?float $conges_reliquat = 0;
 
     #[ORM\Column]
-    private ?float $conges_anticipation = null;
+    private ?float $conges_anticipation = 0;
 
     #[ORM\Column]
-    private ?float $comp_time = null;
+    private ?float $comp_time = 0;
 
     #[ORM\Column]
-    private ?float $conges_annuel = null;
+    private ?float $conges_annuel = 0;
 
     /**
      * @var Collection<int, Manager>
