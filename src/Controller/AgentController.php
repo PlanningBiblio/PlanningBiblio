@@ -181,6 +181,18 @@ class AgentController extends BaseController
     #[Route(path: '/agent/password', name: 'agent.password', methods: ['GET'])]
     public function password(Request $request)
     {
+        $canChangePassword = true;
+
+        if ($_SESSION['oups']['Auth-Mode'] == 'CAS'
+            or ($this->config('Auth-Mode') == 'LDAP' and $perso_id != 1))
+        {
+            $canChangePassword = false;
+        }
+
+        $this->templateParams([
+            'canChangePassword' => $canChangePassword,
+        ]);
+
         return $this->output('/agents/password.html.twig');
     }
 
