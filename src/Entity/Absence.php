@@ -86,6 +86,11 @@ class Absence
         return $this->id;
     }
 
+    public function getReason(): ?string
+    {
+        return $this->motif;
+    }
+
     public function getStart(): ?\DateTime
     {
         return $this->debut;
