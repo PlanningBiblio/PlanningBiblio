@@ -13,7 +13,7 @@ executors:
         type: string
         default: '10.11'
     docker:
-      - image: jeromecombes/planno-circleci-php:<< parameters.php >>
+      - image: jeromecombes/planno-circleci-php:<< parameters.php >>-chrome
       - image: cimg/mariadb:<< parameters.mariadb >>
         environment:
           MYSQL_ROOT_PASSWORD: rootplb
@@ -53,7 +53,7 @@ jobs:
 
       # run tests with phpunit or codecept
       - run: echo 'xdebug.mode=coverage' | sudo tee -a /etc/php.d/circleci.ini
-      - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
+      - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php
       - run: bash <(curl -s https://codecov.io/bash)
 
 workflows:
