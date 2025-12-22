@@ -1,5 +1,10 @@
 # Changelog Planno
 
+## Version 25.11.11 (2025-12-22)
+
+- Revert MT51570: CircleCi: use a custom docker image #1287
+- MT50356: Allow to use phpstan and rector on the codebase#1289
+
 ## Version 25.11.10 (2025-12-19)
 
 ### Plumbing
