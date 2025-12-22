@@ -45,7 +45,7 @@ class DataPurger
         $this->entityManager = $entityManager;
     }
 
-    public function purge() {
+    public function purge(): void {
         $GLOBALS['entityManager'] = $this->entityManager;
         $this->logMessage("Start purging $this->delay years old data");
 
@@ -121,7 +121,7 @@ class DataPurger
         $this->logMessage("End purging old data");
     }
 
-    private function simplePurge($class, $field, $operator, $value) {
+    private function simplePurge($class, $field, $operator, $value): void {
         $builder = $this->entityManager->createQueryBuilder();
         $builder->delete()
                 ->from($class, 'a')
@@ -131,7 +131,7 @@ class DataPurger
         $this->logMessage("Purging $results $class");
     }
 
-    private function logMessage($message) {
+    private function logMessage($message): void {
         $this->log($message, "DataPurger");
     }
 

@@ -10,23 +10,23 @@ Utilisée par les fichiers du dossier "postes"
 
 class postes
 {
-    public $CSRFToken = null;
-    public $id=null;
+    public $CSRFToken;
+    public $id;
     public $elements = array();
-    public $site=null;
+    public $site;
 
     public function __construct()
     {
     }
 
-    public function delete()
+    public function delete(): void
     {
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
         $db->update("postes", array("supprime"=>"SYSDATE"), array("id"=>$this->id));
     }
 
-    public function fetch($sort="nom", $name=null, $group=null)
+    public function fetch($sort="nom", $name=null, $group=null): void
     {
         // Floors
         $floors = array();

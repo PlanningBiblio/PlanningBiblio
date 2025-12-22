@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class ModelTest extends TestCase
 {
-    public function testIsWeek() {
+    public function testIsWeek(): void {
         $builder = new FixtureBuilder();
         $builder->delete(Model::class);
         $model1 = $builder->build(Model::class, array('nom' => 'bu info', 'jour' => 7));

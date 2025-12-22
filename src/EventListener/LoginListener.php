@@ -18,7 +18,7 @@ class LoginListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $route = $event->getRequest()->getPathInfo();
         $route = ltrim($route, '/');

@@ -45,11 +45,7 @@ class FrameworkController extends BaseController
 
         if($tableaux){
             foreach ($tableaux as &$elem) {
-                if (array_key_exists($elem['tableau'], $tabAffect)) {
-                    $utilisation=dateFr($tabAffect[$elem['tableau']]);
-                } else {
-                    $utilisation="Jamais";
-                }
+                $utilisation = array_key_exists($elem['tableau'], $tabAffect) ? dateFr($tabAffect[$elem['tableau']]) : "Jamais";
                 $elem['tabAffect'] = $utilisation;
 
                 if ($nbSites > 1){
@@ -60,11 +56,7 @@ class FrameworkController extends BaseController
         // Récupération de tableaux supprimés dans l'année
         if (!empty($tableauxSupprimes)) {
             foreach ($tableauxSupprimes as &$elem) {
-                if (array_key_exists($elem['tableau'], $tabAffect)) {
-                    $utilisation=dateFr($tabAffect[$elem['tableau']]);
-                } else {
-                    $utilisation="Jamais";
-                }
+                $utilisation = array_key_exists($elem['tableau'], $tabAffect) ? dateFr($tabAffect[$elem['tableau']]) : "Jamais";
                 $elem['tabAffect'] = $utilisation;
             }
         }
@@ -88,8 +80,8 @@ class FrameworkController extends BaseController
             foreach ($lignes as &$elem) {
                 $db2 = new \db();
                 $db2->select("pl_poste_lignes", "*", "poste='{$elem['id']}' AND type='ligne'");
-                $delete = $db2->result ? false : true;
-                $elem['delete'] = $delete == true ? true : false;
+                $delete = !(bool) $db2->result;
+                $elem['delete'] = $delete == true;
             }
         }
 
@@ -108,7 +100,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework/info', name: 'framework.save_table_info', methods: ['POST'])]
-    public function saveInfo(Request $request, Session $session){
+    public function saveInfo(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $post = $request->request->all();
         $id = $post["id"];
         $CSRFToken = $post["CSRFToken"];
@@ -145,7 +137,7 @@ class FrameworkController extends BaseController
             $t->id = $id;
             $t->CSRFToken = $CSRFToken;
 
-            $not_used = $t->is_used() ? false : true;
+            $not_used = !(bool) $t->is_used();
             if ($not_used) {
                 $t->setNumbers($nombre);
             }
@@ -343,7 +335,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework', name: 'framework.save_table', methods: ['POST'])]
-    public function saveTable (Request $request, Session $session){
+    public function saveTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableauNumero = $post['numero'];
@@ -405,7 +397,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: 'framework-table/save-line', name: 'framework.save_table_line', methods: ['POST'])]
-    public function saveTableLine(Request $request, Session $session){
+    public function saveTableLine(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $form_post = $request->request->all();
         $CSRFToken = $form_post['CSRFToken'];
         $tableauNumero = $form_post['id'];
@@ -485,7 +477,7 @@ class FrameworkController extends BaseController
     }
 
      #[Route(path: '/framework', name: 'framework.delete_table', methods: ['DELETE'])]
-    public function deleteTable (Request $request, Session $session){
+    public function deleteTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableau = $post['tableau'];
@@ -511,7 +503,7 @@ class FrameworkController extends BaseController
     }
 
      #[Route(path: '/framework-batch_delete', name: 'framework.delete_selected_tables', methods: ['GET'])]
-    public function deleteSelectedTables (Request $request, Session $session){
+    public function deleteSelectedTables (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $CSRFToken = $request->get("CSRFToken");
         $ids = $request->get("ids");
         $dbprefix = $GLOBALS['dbprefix'];
@@ -531,7 +523,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework/restore_table', name: 'framework.restore_table', methods: ['POST'])]
-    public function restoreTable (Request $request, Session $session) {
+    public function restoreTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse {
         $CSRFToken = $request->get("CSRFToken");
         $id = $request->get("id");
         $name = $request->get("name");
@@ -690,7 +682,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-group', name: 'framework.save_group', methods: ['POST'])]
-    public function saveGroup (Request $request, Session $session){
+    public function saveGroup (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         unset($post['CSRFToken']);
@@ -704,7 +696,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-group', name: 'framework.delete_group', methods: ['DELETE'])]
-    public function deleteGroup (Request $request, Session $session){
+    public function deleteGroup (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $CSRFToken =  $request->request->get("CSRFToken");
         $id = $request->request->get("id");
         
@@ -749,7 +741,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-line', name: 'framework.save_line', methods: ['POST'])]
-    public function saveLine (Request $request, Session $session){
+    public function saveLine (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $post = $request->request->all();
         $id = $post['id'];
         $nom = $post['nom'];
@@ -788,7 +780,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-line', name: 'framework.delete_line', methods: ['DELETE'])]
-    public function deleteLine (Request $request, Session $session){
+    public function deleteLine (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $post = $request->request->all();
         $id = $post['id'];
         $CSRFToken = $post['CSRFToken'];
@@ -801,7 +793,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework/copy', name: 'framework.copy_table', methods: ['POST'])]
-    public function copyTable (Request $request, Session $session){
+    public function copyTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
 
         // Initilisation des variables
         $CSRFToken = $request->get('CSRFToken');

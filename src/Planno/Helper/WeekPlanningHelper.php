@@ -18,7 +18,7 @@ class WeekPlanningHelper extends BaseHelper
         parent::__construct();
     }
 
-    public function NumberWorkingDays()
+    public function NumberWorkingDays(): int
     {
         $workings_days = 0;
         foreach ($this->week_planning as $day) {
@@ -32,7 +32,7 @@ class WeekPlanningHelper extends BaseHelper
         return $workings_days;
     }
 
-    public function isWorkingDay(\DateTime $date) {
+    public function isWorkingDay(\DateTime $date): bool {
         $day_index = $date->format('N') - 1;
 
         if (!isset($this->week_planning[$day_index])) {
@@ -41,12 +41,7 @@ class WeekPlanningHelper extends BaseHelper
 
         $day_planning = $this->week_planning[$day_index];
         $day = new DayPlanningHelper($day_planning);
-
-        if ($day->IsWorked()) {
-            return true;
-        }
-
-        return false;
+        return (bool) $day->IsWorked();
     }
 
     public function getTimes($date, $agent = null, $planning = null )

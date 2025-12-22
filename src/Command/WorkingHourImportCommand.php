@@ -235,11 +235,7 @@ class WorkingHourImportCommand extends Command
         $insert = array();
         foreach ($tab as $elem) {
             if (!in_array($elem[":cle"], $cles_db)) {
-                if ($elem[':debut'] <= date('Y-m-d') and $elem[':fin'] >= date('Y-m-d')) {
-                    $elem[':actuel'] = "1";
-                } else {
-                    $elem[':actuel'] = "0";
-                }
+                $elem[':actuel'] = ($elem[':debut'] <= date('Y-m-d') and $elem[':fin'] >= date('Y-m-d')) ? "1" : "0";
                 $insert[]=$elem;
             }
         }

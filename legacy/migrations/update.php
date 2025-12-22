@@ -1244,7 +1244,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $db = new db();
     $db->sanitize_string = true;
     $db->select2('plugins', '*', array('nom' => 'conges'));
-    $plugin_conges = $db->result ? true : false;
+    $plugin_conges = (bool) $db->result;
 
     // Plugin is installed yet.
     // So, updating access and menu elements.
@@ -3883,7 +3883,7 @@ if (!$cli) {
  * @param string $id : nom du champ ID (clé)
  * @param array $where : condition sql where : ex: array('type'=>'checkboxes')
  */
-function serializeToJson($table, $field, $id='id', $where=null, $CSRFToken)
+function serializeToJson($table, $field, $id='id', $where=null, $CSRFToken): void
 {
     // Transformation serialized  -> json
     $dbh = new dbh();

@@ -32,7 +32,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->entityManager->flush();
     }
 
-    public function test1()
+    public function test1(): void
     {
         /**
          * Absence validation disable
@@ -52,7 +52,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test2()
+    public function test2(): void
     {
         /**
          * Agent can not edit/delete its own absences (no right 6)
@@ -67,7 +67,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test3()
+    public function test3(): void
     {
         /**
          * Agent can edit/delete its own absences (right 6)
@@ -83,7 +83,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test4()
+    public function test4(): void
     {
         /**
          * Agent can not edit/delete its own absences (no right 6)
@@ -99,7 +99,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test5()
+    public function test5(): void
     {
         /**
          * Absence validation enable
@@ -118,7 +118,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test6()
+    public function test6(): void
     {
         /**
          * Agent can edit/delete its own absences (right 6)
@@ -137,7 +137,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test7()
+    public function test7(): void
     {
         /**
          * Agent can edit/delete its own absences (right 6)
@@ -168,7 +168,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test8()
+    public function test8(): void
     {
         /**
          * Agent can edit/delete its own absences (right 6)
@@ -185,7 +185,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test9()
+    public function test9(): void
     {
         /**
          * Agent can edit/delete its own absences (right 6)
@@ -205,7 +205,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test10()
+    public function test10(): void
     {
         /**
          * Agent can edit/delete its own absences (right 6)
@@ -237,7 +237,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test11()
+    public function test11(): void
     {
         /**
          * Absence validation enable
@@ -256,7 +256,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test12()
+    public function test12(): void
     {
         /**
          * Agent is admin level 1 (right 201)
@@ -275,7 +275,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test13()
+    public function test13(): void
     {
         /**
          * Agent is admin level 1 (right 201)
@@ -306,7 +306,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test14()
+    public function test14(): void
     {
         /**
          * Agent is admin level 2 (right 501)
@@ -322,7 +322,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test15()
+    public function test15(): void
     {
         /**
          * Agent is admin level 2 (right 501)
@@ -341,7 +341,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test16()
+    public function test16(): void
     {
         /**
          * Agent is admin level 2 (right 501)
@@ -373,7 +373,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result);
     }
 
-    public function test17()
+    public function test17(): void
     {
         /**
          * Absences-validation disabled
@@ -392,7 +392,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result, 1);
     }
 
-    public function test18()
+    public function test18(): void
     {
         /**
          * Absences-validation disabled
@@ -409,7 +409,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
         $this->createAndTest($acl, $nbAgent, $validations, $result, 1);
     }
 
-    public function test19()
+    public function test19(): void
     {
         /**
          * Absences-validation enabled
@@ -439,7 +439,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
 
 
 
-    private function createAndTest($acl, $nbAgents = 1, $validations = [1,1], $result = 'empty', $loggedInAgentId = 0)
+    private function createAndTest($acl, $nbAgents = 1, $validations = [1,1], $result = 'empty', $loggedInAgentId = 0): void
     {
         $acl = array_merge($acl, [99,100]);
         $agents = $this->agents;
