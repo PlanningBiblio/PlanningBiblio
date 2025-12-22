@@ -1,0 +1,20 @@
+{# absences/import.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('js/absence.js') }}"></script>
+{% endblock %}
+
+{% block page %}
+  <h3>Importer des absences au format CSV</h3>
+  {% if filename is defined %} 
+    <p>file {{ filename }} uploaded</p>
+  {% else %}
+    <form id="form" name='form' action='/absence/import' method='post' enctype='multipart/form-data'>
+      <input type="file" name="absencesCSV" id="absencesCSV" /><br /><br />
+      <input type="submit" />
+    </form>
+  {% endif %}
+ 
+{% endblock %}

@@ -21,6 +21,7 @@ require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 class AbsenceController extends BaseController
 {
     use \App\Traits\EntityValidationStatuses;
+    use \App\Traits\LoggerTrait;
 
     #[Route(path: '/absence', name: 'absence.index', methods: ['GET'])]
     public function index(Request $request)
@@ -170,6 +171,80 @@ class AbsenceController extends BaseController
         return $this->output('absences/index.html.twig');
     }
 
+    #[Route(path: '/absence/import', name: 'absence.select_file', methods: ['GET'])]
+    public function select_absences_file(Request $request)
+    {
+        $session = $request->getSession();
+        return $this->output('absences/import.html.twig');
+    }
+
+    #[Route(path: '/absence/import', name: 'absence.process_file', methods: ['POST'])]
+    public function process_absences_file(Request $request)
+    {
+        $program = "AbsenceImportCSV";
+        $session = $request->getSession();
+        $file    = $request->files->get('absencesCSV');
+
+        if (!empty($file)) {
+
+            $agent_match = $this->config('AbsImport-Agent');
+            $filename    = $file->getClientOriginalName();
+            $inF         = fopen($file->getPathname(), 'r');
+
+            # TODO: Better split
+            $start_regexes = explode('\n', $this->config('AbsImport-ConvertBegin'));
+            print_r($start_regexes, 1);
+
+            # Should this be hardcoded?
+            $structure = array('debut' => 5, 'fin' => 6);
+
+            $this->log("Importing absences from CSV using $filename: start, agents will be searched with $agent_match", $program);
+
+            $line = 0;
+            # Should we use League\Csv\Reader instead?
+            while ($tab = fgetcsv($inF, 1024, ';')) {
+                $line++;
+                $this->log("Processing line $line", $program);
+                $id = $tab[0];
+
+                if (!$id) {
+                    $this->log("Unable to get id on line $line", $program);
+                    continue;
+                }
+
+                // Regex start and end
+                foreach ($start_regexes as $regex) {
+                    $this->log("Trying regex $regex on " . $tab[$structure['debut']], $program);
+                } 
+                
+
+                // Find agent id based on first column
+                $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(array($agent_match => $id));
+                if (!$agent) {
+                    $this->log("Unable to get agent with $agent_match = $id on line $line", $program);
+                    continue;
+                }
+
+                $perso_id = $agent->id();
+                $this->log("Found agent $perso_id with $agent_match = $id on line $line", $program);
+
+                // Check if absence already exists (like exactly the same)
+
+                $insert = array(':perso_id' => $perso_id, ':debut' => $debut, ':fin' => $fin, ':motif' => $motif, ':commentaires' => $commentaires, ':demande' => $demande, ':valide' => $valide_n2, ':validation' => $validation_n2, ':valide_n1' => $valide_n1, ':validation_n1' => $validation_n1, ':cal_name' => 'hamac', ':ical_key' => $uid, ':uid' => $uid);
+
+                $dbi->execute($insert);
+
+            }
+            $this->log("Importing absences from CSV using $filename: end", $program);
+
+                $this->templateParams(array(
+                    "filename"           => $filename,
+                ));
+        }
+        return $this->output('absences/import.html.twig');
+    }
+ 
+ 
     #[Route(path: '/absence/add', name: 'absence.add', methods: ['GET'])]
     public function add(Request $request)
     {
