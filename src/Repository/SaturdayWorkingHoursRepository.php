@@ -14,7 +14,7 @@ class SaturdayWorkingHoursRepository extends EntityRepository
         self::insert($workingHours, $user);
     }
 
-    private function deleteBetweenWeeks($start, $end, $user)
+    private function deleteBetweenWeeks($start, $end, $user): void
     {
         $builder = $this->getEntityManager()->createQueryBuilder();
 
@@ -30,7 +30,7 @@ class SaturdayWorkingHoursRepository extends EntityRepository
         $query->execute();
     }
 
-    private function insert(array $workingHours, int $user)
+    private function insert(array $workingHours, int $user): void
     {
         $entityManager = $this->getEntityManager();
 

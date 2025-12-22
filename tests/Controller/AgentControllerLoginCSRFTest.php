@@ -16,7 +16,7 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    public function testLoginChangeWithFakeCSRF()
+    public function testLoginChangeWithFakeCSRF(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $builder = new FixtureBuilder();
@@ -39,7 +39,7 @@ class AgentControllerLoginCSRFTest extends PLBWebTestCase
         $this->assertEquals('login_1', $agent->getLogin());
     }
 
-    public function testLoginChangeWithOkCSRF()
+    public function testLoginChangeWithOkCSRF(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $builder = new FixtureBuilder();

@@ -7,7 +7,7 @@ use App\Planno\Helper\HourHelper;
 
 class HourHelperStartEndFromRequestTest extends TestCase
 {
-    public function testEmptyHours()
+    public function testEmptyHours(): void
     {
         $request = new Request(array('hre_debut' => '', 'hre_fin' => '', 'allday' => ''));
 
@@ -17,7 +17,7 @@ class HourHelperStartEndFromRequestTest extends TestCase
         $this->assertEquals('23:59:59', $end);
     }
 
-    public function testEmptyEndHour()
+    public function testEmptyEndHour(): void
     {
         $request = new Request(array('hre_debut' => '10:30:00', 'hre_fin' => '', 'allday' => ''));
 
@@ -27,7 +27,7 @@ class HourHelperStartEndFromRequestTest extends TestCase
         $this->assertEquals('23:59:59', $end);
     }
 
-    public function testEmptyStartHour()
+    public function testEmptyStartHour(): void
     {
         $request = new Request(array('hre_debut' => '', 'hre_fin' => '15:30:00', 'allday' => ''));
 
@@ -37,7 +37,7 @@ class HourHelperStartEndFromRequestTest extends TestCase
         $this->assertEquals('15:30:00', $end);
     }
 
-    public function testAllday()
+    public function testAllday(): void
     {
         $request = new Request(array('hre_debut' => '09:00:00', 'hre_fin' => '15:00:00', 'allday' => 'on'));
 
@@ -47,7 +47,7 @@ class HourHelperStartEndFromRequestTest extends TestCase
         $this->assertEquals('23:59:59', $end);
     }
 
-    public function testHiHour()
+    public function testHiHour(): void
     {
         $request = new Request(array('hre_debut' => '09:30', 'hre_fin' => '15:00', 'allday' => ''));
 

@@ -9,7 +9,7 @@ use App\Entity\WorkingHour;
 class WorkingHourRepository extends EntityRepository
 {
 
-    public function changeCurrent()
+    public function changeCurrent(): void
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->update(WorkingHour::class, 'w')

@@ -27,7 +27,7 @@ class SaturdayWorkingHoursRepositoryTest extends TestCase
         $this->expiredDate = (clone $this->date)->modify('-10 days');
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $builder = new FixtureBuilder();
         $builder->delete(SaturdayWorkingHours::class);

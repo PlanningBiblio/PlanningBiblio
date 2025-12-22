@@ -9,23 +9,23 @@ Page appelée par les pages du dossier activites
 
 class activites
 {
-    public $id=null;
+    public $id;
     public $elements=array();
-    public $deleted=null;
-    public $CSRFToken = null;
+    public $deleted;
+    public $CSRFToken;
 
     public function __construct()
     {
     }
 
-    public function delete()
+    public function delete(): void
     {
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
         $db->update("activites", array("supprime"=>"SYSDATE"), array("id"=>$this->id));
     }
 
-    public function fetch()
+    public function fetch(): void
     {
         $activites=array();
         $db=new db();

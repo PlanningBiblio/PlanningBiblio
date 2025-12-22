@@ -83,7 +83,7 @@ class AbsenceImportICSCommandTest extends PLBWebTestCase
         $this->check(3, 'ICS Server 3');
     }
 
-    private function check($serverNumber, $test)
+    private function check($serverNumber, $test): void
     {
         $ICSCheck = [0,0,0];
         $ICSCheck[$serverNumber -1] = 1;

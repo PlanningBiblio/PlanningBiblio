@@ -39,7 +39,7 @@ class AgentRepositoryTest extends TestCase
         $this->assertEquals(count($repo), 2);
     }
 
-    public function testGetSitesForAgents(){
+    public function testGetSitesForAgents(): void{
         global $entityManager;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
