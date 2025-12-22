@@ -21,6 +21,7 @@ require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 class AbsenceController extends BaseController
 {
     use \App\Traits\EntityValidationStatuses;
+    use \App\Traits\LoggerTrait;
 
     #[Route(path: '/absence', name: 'absence.index', methods: ['GET'])]
     public function index(Request $request)
@@ -170,6 +171,176 @@ class AbsenceController extends BaseController
         return $this->output('absences/index.html.twig');
     }
 
+    #[Route(path: '/absence/import', name: 'absence.select_file', methods: ['GET'])]
+    public function select_absences_file(Request $request)
+    {
+        $session = $request->getSession();
+        return $this->output('absences/import.html.twig');
+    }
+
+    #[Route(path: '/absence/import', name: 'absence.process_file', methods: ['POST'])]
+    public function process_absences_file(Request $request)
+    {
+        $program        = "AbsenceImportCSV";
+        $session        = $request->getSession();
+        $file           = $request->files->get('absencesCSV');
+        $loggedin_id    = $session->get('loginId');
+        $this->dbprefix = $GLOBALS['dbprefix'];
+
+        if (!empty($file)) {
+
+            $agent_match = $this->config('AbsImport-Agent');
+            $filename    = $file->getClientOriginalName();
+            $inF         = fopen($file->getPathname(), 'r');
+
+            $start_regexes = explode("\n", $this->config('AbsImport-ConvertBegin'));
+            $end_regexes   = explode("\n", $this->config('AbsImport-ConvertEnd'));
+
+            # Should this be hardcoded?
+            $structure = array('debut' => 5, 'fin' => 6);
+
+            $this->log("Importing absences from CSV using $filename: start, agents will be searched with $agent_match", $program);
+
+            $dbi = new \dbh();
+            //$dbi->CSRFToken = $CSRFToken;
+            $dbi->prepare("INSERT INTO `{' . $this->dbprefix . '}absences` (`perso_id`, `debut`, `fin`, `motif`, `commentaires`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `cal_name`, `ical_key`)
+        VALUES (:perso_id, :debut, :fin, :motif, :commentaires, :demande, :valide, :validation, :valide_n1, :validation_n1, :cal_name, :ical_key);");
+
+
+            $line = 0;
+            # Should we use League\Csv\Reader instead?
+            while ($tab = fgetcsv($inF, 1024, ';')) {
+                $line++;
+                if ($line == 1) {
+                    $this->log("$line: Skipping header line", $program);
+                    continue;
+                }
+                $this->log("$line: Processing line", $program);
+                $id = $tab[0];
+
+                if (!$id) {
+                    $this->log("$line: Unable to get id", $program);
+                    continue;
+                }
+
+
+                //TODO: Refacto?
+
+                // Regex start
+                $regex_number = 0;
+                $sql_debut = '';
+
+                //TODO: Handle when no regex are configured: use whole field
+                foreach ($start_regexes as $regex) {
+                    $regex_number++;
+                    $value = $tab[$structure['debut']];
+  #                  $this->log("Trying regex " . $regex_number . " on " . $value, $program);
+  #                  error_log("Trying regex $regex_number");
+                    if (preg_match($regex, $value, $capture)) {
+  #                      error_log("$value matched regex $regex_number");
+  #                      $this->log("$value matched regex $regex_number", $program);
+                        error_log(print_r($capture, 1));
+                        $csv_date = $capture[1];
+                        $date = \DateTime::createFromFormat("d/m/Y", $csv_date);
+                        $sql_date = date_format($date, 'Y-m-d');
+                        if ($capture[2] && $capture[2] == 'après-midi') {
+                            $hour = '13:00:00';
+                        } else {
+                            $hour = '09:00:00';
+                        }
+                        $sql_debut = $sql_date . " " . $hour;
+                        error_log("SQL DATE " . $sql_date . " " . $hour);
+                        $this->log("$line: Start date $value converted to $sql_debut with regex $regex_number", $program);
+                        break;
+                    }
+                } 
+
+                if (!$sql_debut) {
+                    $this->log("$line: Unable to get start date hour for value $value", $program);
+                    continue;
+                }
+
+                // Regex end
+                $regex_number = 0;
+                $sql_fin = '';
+                foreach ($end_regexes as $regex) {
+                    $regex_number++;
+                    $value = $tab[$structure['fin']];
+#                    $this->log("Trying regex " . $regex_number . " on " . $value, $program);
+ #                   error_log("Trying regex $regex_number");
+                    if (preg_match($regex, $value, $capture)) {
+  #                      error_log("$value matched regex $regex_number");
+  #                      $this->log("$value matched regex $regex_number", $program);
+                        error_log(print_r($capture, 1));
+                        $csv_date = $capture[1];
+                        $date = \DateTime::createFromFormat("d/m/Y", $csv_date);
+                        $sql_date = date_format($date, 'Y-m-d');
+                        if ($capture[2] && $capture[2] == 'après-midi') {
+                            $hour = '20:00:00';
+                        } else {
+                            $hour = '13:00:00';
+                        }
+                        $sql_fin = $sql_date . " " . $hour;
+                        error_log("SQL DATE " . $sql_date . " " . $hour);
+                        $this->log("$line: End date $value converted to $sql_fin with regex $regex_number", $program);
+                        break;
+                    }
+                } 
+    
+                if (!$sql_fin) {
+                    $this->log("$line: Unable to get end date hour for value $value", $program);
+                    continue;
+                }
+
+                // TODO: Move me before regex checks
+                // Find agent id based on first column
+                $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(array($agent_match => $id));
+                if (!$agent) {
+                    $this->log("$line: Unable to get agent with $agent_match = $id", $program);
+                    continue;
+                }
+
+                $perso_id  = $agent->getId();
+                $firstname = $agent->getFirstname();
+                $lastname  = $agent->getLastName();
+                $this->log("$line: Found agent $perso_id ($firstname $lastname) with $agent_match = $id", $program);
+
+
+                // Check if absence already exists (like exactly the same)
+
+                // DEBUG
+                // break;
+
+                // TODO: Replace $program with ?
+                $now = date('Y-m-d H:i:s');
+                $insert = array(
+                    ':perso_id'      => $perso_id, 
+                    ':debut'         => $sql_debut, 
+                    ':fin'           => $sql_fin, 
+                    ':motif'         => $program, 
+                    ':commentaires'  => $program,
+                    ':demande'       => $now, 
+                    ':valide'        => $loggedin_id,
+                    ':validation'    => $now, 
+                    ':valide_n1'     => $loggedin_id, 
+                    ':validation_n1' => $now, 
+                    ':cal_name'      => $program, 
+                    ':ical_key'      => $program, 
+                );
+
+                $dbi->execute($insert);
+
+            }
+            $this->log("Importing absences from CSV using $filename: end", $program);
+
+                $this->templateParams(array(
+                    "filename"           => $filename,
+                ));
+        }
+        return $this->output('absences/import.html.twig');
+    }
+ 
+ 
     #[Route(path: '/absence/add', name: 'absence.add', methods: ['GET'])]
     public function add(Request $request)
     {
