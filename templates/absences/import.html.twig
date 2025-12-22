@@ -1,0 +1,52 @@
+{# absences/import.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('js/absence.js') }}"></script>
+{% endblock %}
+
+{% block page %}
+  {% if filename is defined %} 
+    <h3>Importer des absences au format CSV: Résultats</h3>
+    <label for="maxLevel">Niveau de journalisation:</label>
+    <select id="maxLevel">
+      <option value="4">Débogage</option>
+      <option value="3" selected="selected">Information</option>
+      <option value="2">Avertissement</option>
+      <option value="1">Erreur</option>
+    </select>
+    <br /><br />
+    <table id='tableAbsencesImportResult'>
+        <thead>
+            <th>Ligne</th>
+            <th>Niveau</th>
+            <th>Type</th>
+            <th>Message</th>
+        </thead>
+        <tbody>
+          {% for log in importLog %}
+            <tr>
+                <td>{{ log.line }}</td>
+                <td>{{ log.type }}</td>
+                <td>
+                    {% if log.type == 1 %}<div class="red">Erreur</div>
+                    {% elseif log.type == 2 %}<div class="orange">Avertissement</div>
+                    {% elseif log.type == 3 %}<div class="green">Information</div>
+                    {% elseif log.type == 4 %}Débogage
+                    {% endif %}
+                </td>
+                <td>{{ log.message }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  {% else %}
+    <h3>Importer des absences au format CSV</h3>
+    <form id="form" name='form' action='/absence/import' method='post' enctype='multipart/form-data'>
+      <input type="file" name="absencesCSV" id="absencesCSV" /><br /><br />
+      <input type="submit" />
+    </form>
+  {% endif %}
+
+{% endblock %}

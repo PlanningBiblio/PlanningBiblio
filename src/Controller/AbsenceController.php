@@ -9,6 +9,7 @@ use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 
 use App\Planno\Helper\HourHelper;
+use App\Planno\Helper\AbsenceImportCSVHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -21,6 +22,7 @@ require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 class AbsenceController extends BaseController
 {
     use \App\Traits\EntityValidationStatuses;
+    use \App\Traits\LoggerTrait;
 
     private $admin;
     private $adminN2;
@@ -174,6 +176,42 @@ class AbsenceController extends BaseController
 
         return $this->output('absences/index.html.twig');
     }
+
+    #[Route(path: '/absence/import', name: 'absence.select_file', methods: ['GET'])]
+    public function select_absences_file(Request $request)
+    {
+        if (!$this->config('AbsImport-CSV')) {
+            return $this->output('access-denied.html.twig');
+        }
+        $session = $request->getSession();
+        return $this->output('absences/import.html.twig');
+    }
+
+    #[Route(path: '/absence/import', name: 'absence.process_file', methods: ['POST'])]
+    public function process_absences_file(Request $request)
+    {
+        if (!$this->config('AbsImport-CSV')) {
+            return $this->output('access-denied.html.twig');
+        }
+
+        $session     = $request->getSession();
+        $file        = $request->files->get('absencesCSV');
+        $loggedin_id = $session->get('loginId');
+
+        if (!empty($file)) {
+
+            $filename = $file->getClientOriginalName();
+            $helper   = new AbsenceImportCSVHelper();
+            $results  = $helper->import($file, $loggedin_id);
+
+            $this->templateParams(array(
+                "filename"  => $filename,
+                "importLog" => $results,
+            ));
+        }
+        return $this->output('absences/import.html.twig');
+    }
+
 
     #[Route(path: '/absence/add', name: 'absence.add', methods: ['GET'])]
     public function add(Request $request)

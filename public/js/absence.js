@@ -22,6 +22,27 @@ $(function() {
       $('#recurrence-info').show();
       $('#recurrence-checkbox').attr('checked','checked');
     }
+
+    // Filtrer les résultats d'un import CSV par niveau de log
+    var table = $('#tableAbsencesImportResult').DataTable({
+            "language" : { "url" : jsFileLocation+"/dataTables.french.lang.json" },
+            "iDisplayLength": 25,
+            columnDefs: [
+                { target: 1, visible: false }
+            ]
+        }
+    );
+
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        var max = $('#maxLevel').val();
+        if (!max) return true;
+        return data[1] <= max;
+      });
+
+    $('#maxLevel').on('change', function() {
+        table.draw();
+    });
+
   });
 
   // Paramétrage de la boite de dialogue permettant la modification des motifs
