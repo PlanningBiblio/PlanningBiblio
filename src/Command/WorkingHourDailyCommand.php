@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Workinghour;
+use App\Entity\WorkingHour;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -28,7 +28,7 @@ class WorkingHourDailyCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $this->entityManager->getRepository(Workinghour::class)->changeCurrent();
+        $this->entityManager->getRepository(WorkingHour::class)->changeCurrent();
 
         $this->entityManager->flush();
 
