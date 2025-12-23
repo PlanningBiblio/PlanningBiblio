@@ -10,6 +10,8 @@ use Tests\PLBWebTestCase;
 class AbsenceControllerDeleteTest extends PLBWebTestCase
 {
 
+    private $agents;
+
     protected function setUp(): void
     {
         parent::setUp();

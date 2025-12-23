@@ -22,6 +22,11 @@ class AbsenceController extends BaseController
 {
     use \App\Traits\EntityValidationStatuses;
 
+    private $admin;
+    private $adminN2;
+    private $dbprefix;
+    private $droits;
+
     #[Route(path: '/absence', name: 'absence.index', methods: ['GET'])]
     public function index(Request $request)
     {

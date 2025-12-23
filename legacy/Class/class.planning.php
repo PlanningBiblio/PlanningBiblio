@@ -16,6 +16,7 @@ class planning
 {
     public $CSRFToken;
     public $date;
+    public $comments;
     public $site=1;
     public $categorieA=false;
     public $elements=array();
