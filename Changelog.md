@@ -1,5 +1,17 @@
 # Changelog Planno
 
+## Version 25.11.12 (2025-12-23)
+
+### Fixes
+
+- MT51516: Fix the access to the /agent/password route #1288
+- MT50832: Fix a typo in WorkingHourDailyCommand (entity Workinghour --> WorkingHour)
+
+### Plumbing
+
+- MT50832: Planning Control Command, use entityMananger #1286
+- MT51570: CircleCi: use a custom docker image. Use Google Chrome instead of Firefox #1290
+
 ## Version 25.11.11 (2025-12-22)
 
 - Revert MT51570: CircleCi: use a custom docker image #1287
