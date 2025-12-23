@@ -18,7 +18,7 @@ require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 class ICalendarController extends BaseController
 {
     #[Route(path: 'ical', name: 'ical.index', methods: ['GET'])]
-    public function index(Request $request, Session $session){
+    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
 
         $module = 'Ical export';
 

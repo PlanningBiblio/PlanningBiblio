@@ -1108,7 +1108,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/change-own-password', name: 'ajax.changeownpassword', methods: ['POST'])]
-    public function changeOwnPassword(Request $request)
+    public function changeOwnPassword(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();

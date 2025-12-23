@@ -670,13 +670,13 @@ class Agent
     public function isAbsentOn($from, $to): bool
     {
         $a = new \absences();
-        return (bool) $a->check($this->id, $from, $to, true);
+        return $a->check($this->id, $from, $to, true);
     }
 
     public function isOnVacationOn($from, $to): bool
     {
         $c = new \conges();
-        return (bool) $c->check($this->id, $from, $to, true);
+        return $c->check($this->id, $from, $to, true);
     }
 
     public function getWorkingHoursOn($date)

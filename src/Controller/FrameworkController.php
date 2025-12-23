@@ -137,7 +137,7 @@ class FrameworkController extends BaseController
             $t->id = $id;
             $t->CSRFToken = $CSRFToken;
 
-            $not_used = !(bool) $t->is_used();
+            $not_used = !$t->is_used();
             if ($not_used) {
                 $t->setNumbers($nombre);
             }

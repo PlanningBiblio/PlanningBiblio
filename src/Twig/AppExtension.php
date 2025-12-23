@@ -52,7 +52,7 @@ class AppExtension extends AbstractExtension
         return dateAlpha($date);
     }
 
-    public function dateFr($date)
+    public function dateFr($date): ?string
     {
         return dateFr($date, true);
     }
@@ -71,7 +71,7 @@ class AppExtension extends AbstractExtension
         return '';
     }
 
-    public function hourFromHis($hours)
+    public function hourFromHis($hours): string
     {
         if ($hours) {
             return heure3($hours);

@@ -81,7 +81,7 @@ class datePl
         $this->semaine3 = $this->weekId($this->nb_semaine);
     }
 
-    private function weekId($nb_semaine) {
+    private function weekId($nb_semaine): ?int {
 
         if ($nb_semaine == 1) {
             return 1;

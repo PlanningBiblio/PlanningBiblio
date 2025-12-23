@@ -2118,7 +2118,7 @@ class PlanningController extends BaseController
         return $hiddenTables;
     }
 
-    private function getHolidays($date, $site = null)
+    private function getHolidays($date, $site = null): array
     {
         if ($this->config('Conges-Enable')) {
             $c = new \conges();
