@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.10.10 (2025-12-23)
+
+### Fixes
+
+- MT51516: Fix the access to the /agent/password route #1288
+
 ## Version 25.10.09 (2025-12-12)
 
 ### Enhancement
