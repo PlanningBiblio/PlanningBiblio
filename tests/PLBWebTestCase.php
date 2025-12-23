@@ -204,6 +204,7 @@ class PLBWebTestCase extends PantherTestCase
         $c->setValues('');
         $c->setTechnical(0);
         $c->setOrder(0);
+
         $this->entityManager->persist($c);
     }
 }
