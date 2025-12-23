@@ -16,7 +16,7 @@ class PLBWebTestCase extends PantherTestCase
     protected $client;
     protected $CSRFToken;
     protected $entityManager;
-    
+
     protected function setParam($name, $value)
     {
         $GLOBALS['config'][$name] = $value;

@@ -98,7 +98,7 @@ class WorkingHourExportCommand extends Command
         $end = date('Y-m-d', strtotime("+$days_after days"));
 
         while ($current < $end) {
-            
+
             // Recheche le jour de la semaine (lundi (0) à dimanche (6)) et l'offest (décalage si semaine paire/impaire ou toute autre rotation)
             $d=new \datePl($current);
 
@@ -173,7 +173,6 @@ class WorkingHourExportCommand extends Command
 
                 $list[]=array_merge(array($current, $agent_id, $heures_supp), $temps);
             }
-
 
             $current = date('Y-m-d', strtotime($current." + 1 day"));
         }
