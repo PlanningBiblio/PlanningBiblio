@@ -2,11 +2,14 @@
 
 namespace App\Command;
 
+use App\Entity\Agent;
 use App\Entity\Config;
+use App\Entity\WorkingHour;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -42,14 +45,15 @@ class WorkingHourExportCommand extends Command
             include __DIR__ . '/../../custom_options.php';
         }
 
-        $CSVFile = $config['PlanningHebdo-ExportFile'] ?? '/tmp/export-planno-edt.csv';
+        $tmpDir = sys_get_temp_dir();
+
+        $CSVFile = $config['PlanningHebdo-ExportFile'] ?? $tmpDir . '/plannoWorkingHourExport.csv';
         $days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;
         $days_after = $config['PlanningHebdo-ExportDaysAfter'] ?? 60;
         $agentIdentifier = $config['PlanningHebdo-ExportAgentId'] ?? 'matricule';
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
-        $tmp_dir=sys_get_temp_dir();
-        $lockFile = $tmp_dir . '/plannoWorkingHourExport.lock';
+        $lockFile = $tmpDir . '/plannoWorkingHourExport.lock';
 
         if (file_exists($lockFile)) {
             $fileTime = filemtime($lockFile);
@@ -70,19 +74,15 @@ class WorkingHourExportCommand extends Command
         $inF=fopen($lockFile, "w");
 
         // On recherche tout le personnel actif
-        $p= new \personnel();
-        $p->supprime = array(0);
-        $p->fetch();
+        $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0]);
 
-        if (empty($p->elements)) {
+        if (empty($agents)) {
             $message = 'No agent was found';
             $this->log($message, 'WorkingHourExport');
             $io->warning($message);
 
             return Command::SUCCESS;
         }
-
-        $agents = $p->elements;
 
         // $list sera un tableau contenant pour chaque date et pour chaque agent, les heures de présence
         // format array(array('id_agent', 'date', 'indicateur_SP', 'debut1', 'fin1', 'debut2', 'fin2', 'debut3', 'fin3'))
@@ -108,71 +108,74 @@ class WorkingHourExportCommand extends Command
                 $jour += ($d->semaine3 - 1) * 7;
             }
 
+            $agentIds = [];
+            foreach ($agents as $agent) {
+                $agentIds[$agent->getId()] = match ($agentIdentifier) {
+                    'email' => $agent->getMail(),
+                    'login' => $agent->getLogin(),
+                    'matricule' => $agent->getEmployeeNumber(),
+                };
+            }
+
             // Recherche les heures de présence valides ce jour pour tous les agents
-            $p=new \planningHebdo();
-            $p->debut=$current;
-            $p->fin=$current;
-            $p->valide=true;
-            $p->fetch();
+            $workinghours = $this->entityManager->getRepository(WorkingHour::class)->get($current, $current);
 
-            if (!empty($p->elements)) {
-                foreach ($p->elements as $elem) {
+            foreach ($workinghours as $elem) {
 
-                    // Récupération de l'dentifiant de l'agent (ex : login, adresse email ou ID Harpege renseigné dans le champ "matricule")
-                    // Si l'identifiant n'est pas renseigné dans Planno (ex : champ matricule vide), nous n'importons pas l'agent (donc continue) (Demande initiale de la société Bodet Software)
-                    if (empty($agents[$elem["perso_id"]][$agentIdentifier])) {
-                        continue;
-                    }
-
-                    $agent_id = $agents[$elem["perso_id"]][$agentIdentifier];
-
-                    // Mise en forme du tableau temps
-                    /** Le tableau $elem["temps"][$jour] est constitué comme suit :
-                     * 0 => début période 1,                                           *
-                     * 1 => fin période 1,
-                     * 2 => début période 2,
-                     * 5 => fin période 2 si pause2 activée, sinon null,
-                     * 6 => début période 3 si pause 2, sinon null,
-                     * 3 => fin de journée (peut être fin de période 1, 2 ou 3)
-                     */
-                    $temps = array();
-
-                    if (isset($elem["temps"][$jour])) {
-
-                        // Première période : matinée : index 0 (début) et 1 (fin)
-                        if (!empty($elem["temps"][$jour][0]) and !empty($elem["temps"][$jour][1])) {
-                            $temps[] = substr($elem["temps"][$jour][0], 0, 5);
-                            $temps[] = substr($elem["temps"][$jour][1], 0, 5);
-                        }
-                        // Deuxième période : après-midi : index 2 (début) et 3 (fin)
-                        // Seulement s'il n'y a pas de 3ème période (voir cas suivant)
-                        if (!empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][3]) and empty($elem["temps"][$jour][5])) {
-                            $temps[] = substr($elem["temps"][$jour][2], 0, 5);
-                            $temps[] = substr($elem["temps"][$jour][3], 0, 5);
-                        }
-                        // Si 2 pauses sont enregistrées, les index 5 et 6 viennent s'intercaler entre les index 2 et 3. Les périodes sont donc composées des index 2 (début1) et 5 (fin1) et 6 (début2) et 3 (fin2)
-                        if (!empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][5])) {
-                            $temps[] = substr($elem["temps"][$jour][2], 0, 5);
-                            $temps[] = substr($elem["temps"][$jour][5], 0, 5);
-                            $temps[] = substr($elem["temps"][$jour][6], 0, 5);
-                            $temps[] = substr($elem["temps"][$jour][3], 0, 5);
-                        }
-                        // Journée complète : heures enregistrées sans pause entre les index 0 et 3
-                        if (!empty($elem["temps"][$jour][0]) and empty($elem["temps"][$jour][2]) and empty($elem["temps"][$jour][5]) and !empty($elem["temps"][$jour][3])) {
-                            $temps[] = substr($elem["temps"][$jour][0], 0, 5);
-                            $temps[] = substr($elem["temps"][$jour][3], 0, 5);
-                        }
-                        // Journée complète : heures enregistrées sans pause entre les index 0 et 5
-                        if (!empty($elem["temps"][$jour][0]) and empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][5]) and empty($elem["temps"][$jour][3])) {
-                            $temps[] = substr($elem["temps"][$jour][0], 0, 5);
-                            $temps[] = substr($elem["temps"][$jour][5], 0, 5);
-                        }
-                    }
-
-                    $heures_supp = null ;
-
-                    $list[]=array_merge(array($current, $agent_id, $heures_supp), $temps);
+                // Récupération de l'dentifiant de l'agent (ex : login, adresse email ou ID Harpege renseigné dans le champ "matricule")
+                // Si l'identifiant n'est pas renseigné dans Planno (ex : champ matricule vide), nous n'importons pas l'agent (donc continue) (Demande initiale de la société Bodet Software)
+                if (empty($agentIds[$elem->getUser()])) {
+                    continue;
                 }
+
+                $agentId = $agentIds[$elem->getUser()];
+
+                // Mise en forme du tableau temps
+                /** Le tableau $elem->getWorkingHours()[$jour] est constitué comme suit :
+                 * 0 => début période 1,                                           *
+                 * 1 => fin période 1,
+                 * 2 => début période 2,
+                 * 5 => fin période 2 si pause2 activée, sinon null,
+                 * 6 => début période 3 si pause 2, sinon null,
+                 * 3 => fin de journée (peut être fin de période 1, 2 ou 3)
+                 */
+                $temps = array();
+
+                if (isset($elem->getWorkingHours()[$jour])) {
+
+                    // Première période : matinée : index 0 (début) et 1 (fin)
+                    if (!empty($elem->getWorkingHours()[$jour][0]) and !empty($elem->getWorkingHours()[$jour][1])) {
+                        $temps[] = substr($elem->getWorkingHours()[$jour][0], 0, 5);
+                        $temps[] = substr($elem->getWorkingHours()[$jour][1], 0, 5);
+                    }
+                    // Deuxième période : après-midi : index 2 (début) et 3 (fin)
+                    // Seulement s'il n'y a pas de 3ème période (voir cas suivant)
+                    if (!empty($elem->getWorkingHours()[$jour][2]) and !empty($elem->getWorkingHours()[$jour][3]) and empty($elem->getWorkingHours()[$jour][5])) {
+                        $temps[] = substr($elem->getWorkingHours()[$jour][2], 0, 5);
+                        $temps[] = substr($elem->getWorkingHours()[$jour][3], 0, 5);
+                    }
+                    // Si 2 pauses sont enregistrées, les index 5 et 6 viennent s'intercaler entre les index 2 et 3. Les périodes sont donc composées des index 2 (début1) et 5 (fin1) et 6 (début2) et 3 (fin2)
+                    if (!empty($elem->getWorkingHours()[$jour][2]) and !empty($elem->getWorkingHours()[$jour][5])) {
+                        $temps[] = substr($elem->getWorkingHours()[$jour][2], 0, 5);
+                        $temps[] = substr($elem->getWorkingHours()[$jour][5], 0, 5);
+                        $temps[] = substr($elem->getWorkingHours()[$jour][6], 0, 5);
+                        $temps[] = substr($elem->getWorkingHours()[$jour][3], 0, 5);
+                    }
+                    // Journée complète : heures enregistrées sans pause entre les index 0 et 3
+                    if (!empty($elem->getWorkingHours()[$jour][0]) and empty($elem->getWorkingHours()[$jour][2]) and empty($elem->getWorkingHours()[$jour][5]) and !empty($elem->getWorkingHours()[$jour][3])) {
+                        $temps[] = substr($elem->getWorkingHours()[$jour][0], 0, 5);
+                        $temps[] = substr($elem->getWorkingHours()[$jour][3], 0, 5);
+                    }
+                    // Journée complète : heures enregistrées sans pause entre les index 0 et 5
+                    if (!empty($elem->getWorkingHours()[$jour][0]) and empty($elem->getWorkingHours()[$jour][2]) and !empty($elem->getWorkingHours()[$jour][5]) and empty($elem->getWorkingHours()[$jour][3])) {
+                        $temps[] = substr($elem->getWorkingHours()[$jour][0], 0, 5);
+                        $temps[] = substr($elem->getWorkingHours()[$jour][5], 0, 5);
+                    }
+                }
+
+                $heures_supp = null ;
+
+                $list[] = array_merge(array($current, $agentId, $heures_supp), $temps);
             }
 
             $current = date('Y-m-d', strtotime($current." + 1 day"));
