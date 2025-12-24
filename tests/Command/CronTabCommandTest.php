@@ -17,15 +17,19 @@ class CronTabCommandTest extends PLBWebTestCase
         $dateStr = (new \DateTime())->format('d/m/Y');
 
         $crawler = $this->client->request('GET', '/absence/add');
-        $form = $crawler->selectButton('Valider')->form(['start' => '19/12/2025']);
-        $token = $crawler->filter('input[name="debut"]')->attr($dateStr);
+        $crawler->filter('input[name="debut"]')->sendKeys($dateStr);
+        $crawler->filter('input[name="fin"]')->sendKeys($dateStr);
 
-        // Load a model
+        // recurrence check
         $recurrence = $crawler->filter('#recurrence-checkbox');
         $this->assertTrue($recurrence->count() == 1, 'Récurrence check');
         $recurrence->click();
         $crawler = $this->client->refreshCrawler();
 
+        // click enregistre
+
+        //
+        
 
     }
 }
