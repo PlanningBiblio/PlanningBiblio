@@ -11,12 +11,13 @@ class CronTabCommandTest extends PLBWebTestCase
     {
         $this->setUpPantherClient();
 
-        $agent = $this->builder->build(Agent::class);
+        $agent = $this->entityManager->getRepository(Agent::class)->find(1);
         $this->login($agent);
 
         $dateStr = (new \DateTime())->format('d/m/Y');
 
         $crawler = $this->client->request('GET', '/absence/add');
+        dump($crawler->html());
         $crawler->filter('input[name="debut"]')->sendKeys($dateStr);
         $crawler->filter('input[name="fin"]')->sendKeys($dateStr);
 
