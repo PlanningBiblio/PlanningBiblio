@@ -12,6 +12,26 @@ use Tests\PLBWebTestCase;
 
 class WorkingHourExportCommandTest extends PLBWebTestCase
 {
+    private string $lockFile;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->builder->delete(Agent::class);
+
+        $this->builder->build(Agent::class, array(
+            'login' => 'alice', 'mail' => 'alice@example.com', 'nom' => 'Doe', 'prenom' => 'Alice',
+            'supprime' => 0, 'matricule' => '0000000ff040'
+        ));
+
+        $this->lockFile = sys_get_temp_dir() . '/plannoWorkingHourExport.lock';
+        if (file_exists($this->lockFile)) {
+            @unlink($this->lockFile);
+        }
+
+    }
+
     public function testWorkingHourExportCommand(): void
     {
         $this->setParam('PlanningHebdo-ExportFile', '/tmp/test-export.csv');
@@ -23,17 +43,16 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
 
         $this->entityManager->clear();
 
-        $alice = $this->builder->build(Agent::class, array(
-            'login' => 'alice', 'mail' => 'alice@example.com', 'nom' => 'Doe', 'prenom' => 'Alice',
-            'supprime' => 0, 'matricule' => '0000000ff040'
-        ));
+        $alice = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alice']);
 
-        $this->builder->build(WorkingHour::class, array(
-            'perso_id' => $alice->getId(), 'temps' => '[["09:00:00","","","19:00:00","1"],["09:00:00","","","19:00:00","1"],["09:00:00","","","19:00:00","1"],["09:00:00","","","19:00:00","1"],["09:00:00","","","19:00:00","1"],["09:00:00","","","19:00:00","1"],["","","","",""]]', 
-            'actuel' => '1'
-        ));
-        // $this->entityManager->persist($workinghour);
-        // $this->entityManager->flush();
+       $this->builder->build(WorkingHour::class, [
+            'perso_id' => $alice->getId(),
+            'temps' => '[["09:00:00","","","19:00:00","1"], ...]',
+            'actuel' => 1,
+            'valide' => true,
+            'debut' => new \DateTime('today'),
+            'fin' => new \DateTime('today'),
+        ]);
         $this->entityManager->clear();
 
         $this->execute();

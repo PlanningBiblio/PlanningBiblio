@@ -115,17 +115,28 @@ class WorkingHourExportCommand extends Command
                 $jour += ($d->semaine3 - 1) * 7;
             }
 
+            $agentsMap = [];
+            foreach ($agents as $agent) {
+                if ($agentIdentifier === 'login') {
+                    $agentsMap[$agent->getId()]['login'] = $agent->getLogin();
+                } elseif ($agentIdentifier === 'email' || $agentIdentifier === 'mail') {
+                    $agentsMap[$agent->getId()]['mail'] = $agent->getMail();
+                } elseif ($agentIdentifier === 'matricule') {
+                    $agentsMap[$agent->getId()]['matricule'] = $agent->getEmployeeNumber();
+                }
+            }
+
             // Recherche les heures de présence valides ce jour pour tous les agents
             $workinghours = $this->entityManager->getRepository(WorkingHour::class)->findBy(['debut' => new \DateTime($current), 'fin' => new \DateTime($current), 'valide' => true]);
             foreach ($workinghours as $elem) {
 
                 // Récupération de l'dentifiant de l'agent (ex : login, adresse email ou ID Harpege renseigné dans le champ "matricule")
                 // Si l'identifiant n'est pas renseigné dans Planno (ex : champ matricule vide), nous n'importons pas l'agent (donc continue) (Demande initiale de la société Bodet Software)
-                if (empty($agents[$elem->getUser()][$agentIdentifier])) {
+                if (empty($agentsMap[$elem->getUser()][$agentIdentifier])) {
                     continue;
                 }
 
-                $agent_id = $agents[$elem->getUser()][$agentIdentifier];
+                $agent_id = $agentsMap[$elem->getUser()][$agentIdentifier];
 
                 // Mise en forme du tableau temps
                 /** Le tableau $elem->getWorkingHours()[$jour] est constitué comme suit :
