@@ -467,4 +467,38 @@ class AgentRepository extends EntityRepository
         $builder->update(Agent::class, 'a')->set('a.conges_reliquat', 0);
         $builder->getQuery()->execute();
     }
+
+    public function updateAsDeletedByDepartDate(): int
+    {
+        $qb = $this->createQueryBuilder('p');
+
+        return $qb
+            ->update()
+            ->set('p.supprime', ':supprime')
+            ->set('p.actif', ':actif')
+            ->where('p.depart < CURRENT_DATE()')
+            ->andWhere('p.depart IS NOT NULL')
+            ->andWhere('p.actif NOT LIKE :actifLike')
+            ->setParameter('supprime', 1)
+            ->setParameter('actif', 'Supprimé')
+            ->setParameter('actifLike', 'Supprimé')
+            ->getQuery()
+            ->execute();
+    }
+
+    public function findNamesByActif(string $actif): array
+    {
+        $supprimeValues = str_contains($actif, 'Supprim') ? [1] : [0];
+
+        $qb = $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('p.supprime IN (:supprime)')
+            ->setParameter('supprime', $supprimeValues)
+            ->andWhere('p.actif LIKE :actif')
+            ->setParameter('actif', $actif);
+
+        return $qb->getQuery()->getArrayResult();
+    }// wait for test
+
+
 }

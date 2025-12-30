@@ -85,6 +85,7 @@
 | number | numero |
 | numberOfWeeks | nb_semaine | For WorkingHours |
 | password | password |
+| order | ordre |
 | originId | id_origin |
 | otherReason | motif_autre |
 | position | poste |
