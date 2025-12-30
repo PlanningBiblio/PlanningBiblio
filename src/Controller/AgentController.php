@@ -11,7 +11,9 @@ use App\Planno\Helper\HourHelper;
 use App\Planno\Ldif2Array;
 
 use App\Entity\Agent;
-
+use App\Entity\Access;
+use App\Entity\SelectStatuts;
+use App\Entity\SelectServices;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -47,25 +49,20 @@ class AgentController extends BaseController
 
         //        Suppression des agents dont la date de départ est passée        //
         $tab = array(0);
-        $db = new \db();
-        $db->CSRFToken = $GLOBALS['CSRFSession'];
-        $db->update('personnel', array('supprime'=>'1', 'actif'=>'Supprim&eacute;'), "`depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
+        $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();
 
-
-        $p = new \personnel();
-        $p->supprime = strstr($actif, "Supprim") ? array(1) : array(0);
-        $p->fetch("nom,prenom", $actif);
-        $agentsTab = $p->elements;
+        $agentsTab = $this->entityManager->getRepository(Agent::class)->findNamesByActif($actif);
 
         $nbSites = $this->config('Multisites-nombre');
 
         $agents = array();
         foreach ($agentsTab as $agent) {
             $elem = [];
+            var_dump($agent);
             $id = $agent['id'];
 
-            $arrivee = dateFr($agent['arrivee']);
-            $depart = dateFr($agent['depart']);
+            $arrivee = $agent['arrivee'];
+            $depart = $agent['depart'];
             $last_login = date_time($agent['last_login']);
             $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
             $heures = heure4($heures);
@@ -103,21 +100,12 @@ class AgentController extends BaseController
             $agents[]= $elem;
         }
 
-        $db = new \db();
-        $db->select2("select_statuts", null, null, "order by rang");
-        $statuts = $db->result;
+        $statuts = $this->entityManager->getRepository(SelectStatuts::class)->findAll();
 
         $contrats = array("Titulaire","Contractuel");
 
         // Liste des services
-        $services = array();
-        $db = new \db();
-        $db->select2("select_services", null, null, "ORDER BY `rang`");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $services[]=$elem;
-            }
-        }
+        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
 
         $hours = array();
         for ($i = 1 ; $i < 40; $i++) {
@@ -215,19 +203,15 @@ class AgentController extends BaseController
         $droits = $GLOBALS['droits'];
         $admin = in_array(21, $droits);
 
-        $db_groupes = new \db();
-        $db_groupes->select2("acces", array("groupe_id", "groupe", "categorie", "ordre"), "groupe_id not in (99,100)", "group by groupe");
-
+        $db_groupes = $this->entityManager->getRepository(Access::class)->findGroupesAcces();
         // Tous les droits d'accés
         $groupes = array();
-        if ($db_groupes->result) {
-            foreach ($db_groupes->result as $elem) {
-                if (empty($elem['categorie'])) {
-                    $elem['categorie'] = 'Divers';
-                    $elem['ordre'] = '200';
-                }
-                $groupes[$elem['groupe_id']] = $elem;
+        foreach ($db_groupes as $elem) {
+            if (empty($elem['categorie'])) {
+                $elem['categorie'] = 'Divers';
+                $elem['ordre'] = '200';
             }
+            $groupes[$elem['groupe_id']] = $elem;
         }
 
         uasort($groupes, 'cmp_ordre');

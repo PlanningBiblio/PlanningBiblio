@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\AccessRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: AccessRepository::class)]
 #[ORM\Table(name: 'acces')]
 class Access
 {
@@ -42,13 +43,6 @@ class Access
         return $this->groupe_id;
     }
 
-    public function setName(?string $name): static
-    {
-        $this->nom = $name;
-
-        return $this;
-    }
-
     public function setGroupId(?int $groupId): static
     {
         $this->groupe_id = $groupId;
@@ -56,9 +50,50 @@ class Access
         return $this;
     }
 
+    public function getName(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setName(?string $name): static
+    {
+        $this->nom = $name;
+
+        return $this;
+    }
+
+    public function getGroup(): ?string
+    {
+        return $this->groupe;
+    }
+
     public function setGroup(?string $group): static
     {
         $this->groupe = $group;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->categorie;
+    }
+
+    public function setCategory(?string $category): static
+    {
+        $this->categorie = $category;
+
+        return $this;
+    }
+
+    public function getOrder(): ?int
+    {
+        return $this->ordre;
+    }
+
+    public function setOrder(?int $order): static
+    {
+        $this->ordre = $order;
 
         return $this;
     }
