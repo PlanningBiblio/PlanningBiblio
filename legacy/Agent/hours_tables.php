@@ -7,6 +7,7 @@ $config = $GLOBALS['config'];
 $temps = $GLOBALS['temps'];
 $breaktimes = $GLOBALS['breaktimes'];
 $hours_tab = '';
+$jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
 if ($config['PlanningHebdo']) {
     $holiday_helper = new HolidayHelper(array("perso_id" => $id));

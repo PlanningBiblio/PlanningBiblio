@@ -57,7 +57,7 @@ class SkillController extends BaseController
 
         if ($result){
             foreach ($result as $elem){
-                $tab[] = html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                $tab[] = $elem['postes'];
             }
         }
 
@@ -75,7 +75,7 @@ class SkillController extends BaseController
         $agents = $this->entityManager->getRepository(Agent::class)->findAll();
         foreach ($activites as $skill) {
             foreach ($agents as $agent) {
-                if (in_array($skill->getId(), $agent->skills())) {
+                if (in_array($skill->getId(), $agent->getSkills())) {
                     $activites_utilisees[] = $skill->getId();
                     continue 2;
                 }

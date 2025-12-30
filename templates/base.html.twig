@@ -6,7 +6,7 @@
     <title>Planno</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="robots" content="noindex,nofollow" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+    <link rel="stylesheet" href="{{ asset('vendor/GoogleApis/poppins.css?family=Poppins') }}">
     <script type="text/JavaScript" src="{{ asset('vendor/js/jquery-1.11.1.min.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('vendor/js/jquery.timepicker.min.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('js/planno-timepicker.js') }}"></script>
@@ -31,7 +31,7 @@
     <link rel='StyleSheet' href='{{ asset("themes/default/jquery.timepicker.min.css") }}' type='text/css' media='all'/>
     <!-- emoji -->
     <link rel="StyleSheet" href="{{ asset('vendor/emoji-lib/css/emoji.css') }}" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="{{ asset('vendor/font-awesome.min.css') }}" />
     <link rel='StyleSheet' href='{{ asset("themes/default/default.css") }}' type='text/css' media='all'/>
     <link rel='StyleSheet' href='{{ asset("themes/default/print.css") }}' type='text/css' media='print'/>
     {% if theme != 'default' %}

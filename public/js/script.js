@@ -470,11 +470,6 @@ function information(message,type,top,time){
   timeoutJSInfo=window.setTimeout("$('#JSInformation').remove()",time);
 }
 
-function modif_mdp(){
-  document.form.action.value="mdp";
-  document.form.submit();
-}
-
 function removeAccents(strAccents){
   strAccents = strAccents.split('');
   strAccentsOut = new Array();
@@ -499,7 +494,10 @@ function removeAccents(strAccents){
  * @param int id : ID de l'agent
  * @param string nom : Prénom et Nom de l'agent (pour affichage de la confirmation
  */
-function resetICSURL(id, CSRFToken, nom){
+function resetICSURL(id, nom)
+{
+  var _token = $('input[name=_token]').val();
+
   if(nom == undefined){
     var res = confirm("Etes vous sûr(e) de vouloir réinitialiser les URL de vos agendas ICS ?");
   } else {
@@ -511,7 +509,7 @@ function resetICSURL(id, CSRFToken, nom){
       url: url('agent/ics/reset-url'),
       type: "post",
       dataType: "json",
-      data: {id: id, CSRFToken: CSRFToken},
+      data: {id: id, _token: _token},
       success: function(result){
         $("#urlIcs").html("<a href='"+result.url+"'>"+result.url+"</a>");
         $("#urlIcsWithAbsences").html("<a href='"+result.url+"&absences=1'>"+result.url+"&absences=1</a>");

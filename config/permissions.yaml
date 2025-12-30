@@ -88,7 +88,9 @@
 "agent.password":
     - 100
 "agent.save":
-    - 4
+    - 21
+"agent.send_password":
+    - 21
 "agent.update_list":
     - 100
 "ajax.agentsbysites":

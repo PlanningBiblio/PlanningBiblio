@@ -737,11 +737,6 @@ function cmp_nom_prenom_debut_fin($a, $b): int
     return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
-function cmp_ordre($a, $b): int
-{
-    return ($a['ordre'] > $b['ordre']) ? 1 : -1;
-}
-
 function cmp_perso_debut_fin($a, $b): int
 {
     if ($a['perso_id'] == $b['perso_id']) {
@@ -796,22 +791,6 @@ function CSRFToken()
     $_SESSION['oups']['CSRFToken'] = $CSRFToken;
 
     return $CSRFToken;
-}
-
-function date_time($date): ?string
-{
-    if ($date=="0000-00-00 00:00:00") {
-        return null;
-    } else {
-        $a=substr($date, 0, 4);
-        $m=substr($date, 5, 2);
-        $j=substr($date, 8, 2);
-        $h=substr($date, 11, 2);
-        $min=substr($date, 14, 2);
-        $today=date("d/m/Y");
-        $date = $today == "$j/$m/$a" ? "$h:$min" : "$j/$m/$a $h:$min";
-        return $date;
-    }
 }
 
 function dateAlpha($date, $day=true, $year=true)

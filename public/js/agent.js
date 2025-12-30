@@ -118,11 +118,13 @@ function agent_list() {
 }
 
 function deleteAgent() {
-  var agentId = $('#agentId').val();
   var date = $('#delete-date').val();
-  var CSRFToken = $('#CSRFSession').val();
 
-  var data = {id: agentId, CSRFToken: CSRFToken};
+  var data = {
+    _token: $('input[name=_token]').val(),
+    id: $('#agentId').val(),
+  };
+
   if ($('#permanentDelete').val() == 0) {
     data.date = date;
   }
@@ -222,7 +224,7 @@ function select_add(select_dispo,select_attrib,hidden_attrib,width){	// Attribut
   
   document.getElementById("attrib_div").innerHTML=attrib_aff;
   document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value=tab_attrib.toString();
+  document.getElementById(hidden_attrib).value = JSON.stringify(tab_attrib);
 }
 
 function select_drop(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
@@ -265,7 +267,7 @@ function select_drop(select_dispo,select_attrib,hidden_attrib,width){	// Attribu
   
   document.getElementById("attrib_div").innerHTML=attrib_aff;
   document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value=tab_attrib.toString();
+  document.getElementById(hidden_attrib).value = JSON.stringify(tab_attrib);
 }
 
 function select_add_all(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
@@ -283,7 +285,7 @@ function select_add_all(select_dispo,select_attrib,hidden_attrib,width){	// Attr
   
   document.getElementById("attrib_div").innerHTML=attrib_aff;
   document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value=tab_attrib.toString();
+  document.getElementById(hidden_attrib).value = JSON.stringify(tab_attrib);
 }
 
 function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
@@ -298,7 +300,7 @@ function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Att
   
   document.getElementById("attrib_div").innerHTML=attrib_aff;
   document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value='';
+  document.getElementById(hidden_attrib).value = '[]';
 }
 // Fin Select Multpiles
 
@@ -331,6 +333,24 @@ function sendICSURL(){
   $( "#ics-url-recipient" ).text(mail);
   $( "#ics-url-text" ).val(message);
   $( "#ics-url-form" ).dialog( 'open' );
+}
+
+function sendPassword() {
+  $.ajax({
+    url: url('agent/send-password'),
+    type: 'post',
+    dataType: 'json',
+    data: {
+      _token: $('input[name=_token]').val(),
+      id: $('input[name=id]').val(),
+    },
+    success: function(result) {
+      CJInfo(result[0], result[1]);
+    },
+    error: function() {
+      CJInfo('Une errreur est survenue lors de l\'envoi du mot de passe', 'error');
+    }
+  });
 }
 
 // Contrôle des champs lors de la validation
