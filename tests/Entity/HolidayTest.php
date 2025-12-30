@@ -52,7 +52,7 @@ class HolidayTest extends KernelTestCase
         $holiday->setPreviousAnticipation(5.5);
         $holiday->setActualAnticipation(1.2);
         $holiday->setComment('comment text');
-        $holiday->setRefus('refus text');
+        $holiday->setRefusal('refus text');
         $holiday->setRegulationId(125);
         $holiday->setOriginId(122);
 
@@ -97,7 +97,7 @@ class HolidayTest extends KernelTestCase
         $this->assertEquals(5.5, $holiday->getPreviousAnticipation());
         $this->assertEquals(1.2, $holiday->getActualAnticipation());
         $this->assertEquals('comment text', $holiday->getComment());
-        $this->assertEquals('refus text', $holiday->getRefus());
+        $this->assertEquals('refus text', $holiday->getRefusal());
         $this->assertEquals(125, $holiday->getRegulationId());
         $this->assertEquals(122, $holiday->getOriginId());
     }

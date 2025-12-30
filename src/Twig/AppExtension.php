@@ -2,11 +2,11 @@
 
 namespace App\Twig;
 
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
-
-use App\Planno\Helper\HolidayHelper;
 
 include_once(__DIR__ . '/../../legacy/Common/function.php');
 include_once(__DIR__ . '/../../legacy/Common/feries.php');
@@ -25,11 +25,15 @@ class AppExtension extends AbstractExtension
         return [
             new TwigFilter('datefull', [$this, 'dateFull'], ['is_safe' => ['html']]),
             new TwigFilter('datefr', [$this, 'dateFr']),
+            new TwigFilter('dateOrNull', [$this, 'dateOrNull']),
+            new TwigFilter('dateOrTime', [$this, 'dateOrTime']),
             new TwigFilter('digit', [$this, 'digit']),
             new TwigFilter('hours', [$this, 'hours']),
             new TwigFilter('hour_from_his', [$this, 'hourFromHis']),
             new TwigFilter('hoursToDays', [$this, 'hoursToDays']),
             new TwigFilter('raw_black_listed', [$this, 'htmlFilter'], ['is_safe' => ['html']]),
+            new TwigFilter('sites', [$this, 'sites']),
+            new TwigFilter('time', [$this, 'time']),
         ];
     }
 
@@ -55,6 +59,31 @@ class AppExtension extends AbstractExtension
     public function dateFr($date): ?string
     {
         return dateFr($date, true);
+    }
+
+    public function dateOrNull($date, $format): ?string
+    {
+        if (empty($date)) {
+            return null;
+        }
+
+        return $date->format($format);
+    }
+
+    public function dateOrTime($date, $format): ?string
+    {
+        if (empty($date)) {
+            return null;
+        }
+
+        $now = new \DateTime();
+        $today = \DateTime::createFromFormat('Y-m-d H:i:s', $now->format('Y-m-d 00:00:00'));
+
+        if ($date >= $today) {
+            $format = substr($format, strpos($format, ' '));
+        }
+
+        return $date->format($format);
     }
 
     public function digit($number, $digits): string
@@ -210,4 +239,30 @@ class AppExtension extends AbstractExtension
         return nb30($start, $end);
     }
 
+    public function sites($sites): string
+    {
+        if (!is_array($sites)) {
+            return '';
+        }
+
+        $config = $GLOBALS['config'];
+
+        $displayedSites = [];
+        foreach ($sites as $site) {
+            $displayedSites[] = $config['Multisites-site' . $site];
+        }
+
+        return implode(', ', $displayedSites);
+    }
+
+    public function time($time): string
+    {
+        if (is_numeric($time)) {
+            $hourHelper = new HourHelper();
+            $time = $hourHelper->decimalToHoursMinutes($time);
+            return $time['as_string'];
+        }
+
+        return $time;
+    }
 }

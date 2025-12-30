@@ -4,24 +4,24 @@
   <tr valign='top'>
     <td style='width:400px'>Nom :</td>
     <td>
-      <input type='text' value='{{ nom }}' name='nom' id='nom' style='width:400px' />
+      <input type='text' value='{{ agent.lastName }}' name='nom' id='nom' style='width:400px' />
     </td>
   </tr>
 
   <tr>
     <td>Prénom :</td>
     <td>
-      <input type='text' value='{{ prenom }}' name='prenom' id='prenom' style='width:400px' />
+      <input type='text' value='{{ agent.firstName }}' name='prenom' id='prenom' style='width:400px' />
     </td>
   </tr>
 
   <tr>
     <td>E-mail :
-      <a href='mailto:{{ mail }}'>{{ mail }}</a>
+      <a href='mailto:{{ agent.mail }}'>{{ agent.mail }}</a>
     </td>
 
     <td>
-      <input type='text' value='{{ mail }}' name='mail' id='mail' style='width:400px' />
+      <input type='text' value='{{ agent.mail }}' name='mail' id='mail' style='width:400px' />
     </td>
   </tr>
 
@@ -32,10 +32,10 @@
         <select name='statut' id='statut' style='width:405px'>
           <option value=''>Aucun</option>
             {%for elem in statuts %}
-              {% if elem.valeur == statut %}
-                <option selected="selected" value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
+              {% if elem.value == agent.status %}
+                <option selected="selected" value="{{ elem.value }}">{{ elem.value }}</option>
               {% else %}
-                <option value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
+                <option value="{{ elem.value }}">{{ elem.value }}</option>
               {% endif %}
             {% endfor %}
         </select>
@@ -49,7 +49,7 @@
         <select name='categorie' id='categorie' style='width:405px'>
           <option value=''>Aucun</option>
           {%for elem in contrats %}
-            {% if elem == categorie %}
+            {% if elem == agent.category %}
               <option selected="selected" value='{{ elem }}'>{{ elem }}</option>
             {% else %}
               <option value='{{ elem }}'>{{ elem }}</option>
@@ -65,10 +65,10 @@
         <select name='service' id='service' style='width:405px'>
           <option value=''>Aucun</option>
           {%for elem in services %}
-            {% if elem.valeur == service %}
-              <option selected="selected" value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
+            {% if elem.value == agent.service %}
+              <option selected="selected" value='{{ elem.value }}'>{{ elem.value }}</option>
             {% else %}
-              <option value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
+              <option value='{{ elem.value }}'>{{ elem.value }}</option>
             {% endif %}
           {% endfor %}
         </select>
@@ -83,7 +83,7 @@
       <select name='heuresHebdo' style='width:405px'  title='Choisissez un nombre d&apos;heures ou un pourcentage. Si vous Choisissez un pourcentage, le nombre d&apos;heures sera calculé à partir des plannings de présence'>
         <option value='0'>&nbsp;</option>
         {% for i in 1..100 %}
-          {% if i ~ '%' == heures_hebdo and '%' in heures_hebdo %}
+          {% if i ~ '%' == agent.weeklyServiceHours and '%' in agent.weeklyServiceHours %}
             <option selected="selected" value='{{ i }}%'>{{ i }}%</option>
           {% else %}
             <option value='{{ i }}%'>{{ i }}%</option>
@@ -91,7 +91,7 @@
         {% endfor %}
 
         {% for time in times %}
-          {% if time[0] == heures_hebdo and '%' not in heures_hebdo %}
+          {% if time[0] == agent.weeklyServiceHours and '%' not in agent.weeklyServiceHours %}
             <option selected="selected" value='{{ time[0] }}'>{{ time[1] }}</option>
           {% else %}
             <option value='{{ time[0] }}'>{{ time[1] }}</option>
@@ -107,7 +107,7 @@
       <select name='heuresTravail' style='width:405px'>
         <option value='0'>&nbsp;</option>
         {% for time in times %}
-          {% if time[0] == heures_travail %}
+          {% if time[0] == agent.weeklyWorkingHours %}
             <option selected="selected" value='{{ time[0] }}'>{{ time[1] }}</option>
           {% else %}
             <option value='{{ time[0] }}'>{{ time[1] }}</option>
@@ -133,24 +133,24 @@
           <option value='Inactif'>Administratif</option>
         {% endif %}
 
-        {% if actif == 'Supprim&eacute;' %}
-          <option selected="selected" value="Supprim&eacute;">Supprim&eacute;</option>
+        {% if actif == 'Supprimé' %}
+          <option selected="selected" value="Supprimé">Supprimé</option>
         {% else %}
-          <option value="Supprim&eacute;" style="display:none;">Supprim&eacute;</option>
+          <option value="Supprimé" style="display:none;">Supprimé</option>
         {% endif %}
       </select>
     </td>
   </tr>
 
-  {% if multi_site %}
+  {% if config('Multisites-nombre') > 1 %}
     <tr style='vertical-align:top;'>
       <td>Sites :</td>
       <td>
-        {% for s in sites_select %}
+        {% for s in sitesSelect %}
           {% if s.checked %}
-            <input type='checkbox' name='sites[]' value='{{ s.id }}' checked="checked" >{{ s.name | raw }}<br/>
+            <input type='checkbox' name='sites[]' value='{{ s.id }}' checked="checked" >{{ s.name }}<br/>
           {% else %}
-            <input type='checkbox' name='sites[]' value='{{ s.id }}'>{{ s.name | raw }}<br/>
+            <input type='checkbox' name='sites[]' value='{{ s.id }}'>{{ s.name }}<br/>
           {% endif %}
         {% endfor %}
       </td>
@@ -160,52 +160,52 @@
   <tr>
     <td>Date d'arrivée</td>
     <td>
-      <input type="text" value="{{ arrivee }}" name="arrivee" style="width:400px" class="datepicker"/>
+      <input type="text" value="{{ agent.arrival | dateOrNull('d/m/Y') }}" name="arrivee" style="width:400px" class="datepicker"/>
     </td>
   </tr>
 
   <tr>
     <td>Date de départ</td>
     <td>
-      <input type="text" value="{{ depart }}" name="depart" style="width:400px" class="datepicker"/>
+      <input type="text" value="{{ agent.departure | dateOrNull('d/m/Y') }}" name="depart" style="width:400px" class="datepicker"/>
     </td>
   </tr>
 
   {% if not config('Planook') %}
     <tr>
       <td>Matricule :</td>
-      <td><input type='text' value='{{ matricule }}' name='matricule' style='width:400px' /></td>
+      <td><input type='text' value='{{ agent.employeeNumber }}' name='matricule' style='width:400px' /></td>
     </tr>
 
     <tr>
       <td>E-mails des responsables :
-        {% for r in mailsResponsables %}
-          <br/><a href='mailto:{{ r|trim }}' style='margin-left:30px;'>{{ r|trim }}</a>
+        {% for mail in mailsResponsables %}
+          <br/><a href='mailto:{{ mail }}' style='margin-left:30px;'>{{ mail }}</a>
         {% endfor %}
       </td>
       <td>
-        <textarea name='mailsResponsables' style='width:400px' cols='10' rows='4'>{{ mailsResp_joined }}</textarea>
+        <textarea name='mailsResponsables' style='width:400px' cols='10' rows='4'>{{ agent.managersMails }}</textarea>
       </td>
     </tr>
 
     <tr style='vertical-align:top;'>
       <td>Informations :</td>
       <td>
-        <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ informations|raw }}</textarea>
+        <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ agent.information }}</textarea>
       </td>
     </tr>
 
-    {% if recup_agent > 1 %}
+    {% if config('Recup-Agent') > 0 %}
       <tr style='vertical-align:top;'>
         <td>Récupération :</td>
         <td>
-          {% if recup_agent == 1 %}
-            <textarea name='recup' style='width:400px' cols='10' rows='4'>{{ recup }}</textarea>
-          {% elseif recup_agent == 2 %}
+          {% if config('Recup-Agent') == 1 %}
+            <textarea name='recup' style='width:400px' cols='10' rows='4'>{{ agent.recoveryMenu }}</textarea>
+          {% elseif config('Recup-Agent') == 2 %}
             <select name='recup' style='width:400px'>
               <option value=''>&nbsp;</option>
               {% for elem in recupAgents %}
-                {% if elem == recup %}
+                {% if elem == agent.recoveryMenu %}
                   <option selected="selected" value='{{ elem }}' $selected>{{ elem }}</option>
                 {% else %}
                   <option value='{{ elem }}' $selected>{{ elem }}</option>
@@ -221,18 +221,18 @@
   {% if id %}
     <tr>
       <td>Login :</td>
-      <td><span id="login">{{ login }}</span> <a id="change-login-link" href="javascript:void(0)" style="color:#29495C">Changer le login</a></td>
+      <td><span id="login">{{ agent.login }}</span> <a id="change-login-link" href="javascript:void(0)" style="color:#29495C">Changer le login</a></td>
     </tr>
 
     <tr>
       <td colspan='2'>
-        <a href='javascript:modif_mdp();'>Envoyer un nouveau mot de passe</a>
+        <a href="javascript:sendPassword();">Envoyer un nouveau mot de passe</a>
       </td>
     </tr>
 
   {% endif %}
 
-  {% if not demo %}
+  {% if not config('demo') %}
     <div id="reset-login-form" title="Réinitialisation du login" class='noprint' style='display:none;'>
       <form>
         <div>

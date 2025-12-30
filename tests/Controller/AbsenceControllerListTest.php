@@ -89,19 +89,19 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
         $dailleboust = $this->builder->build(Agent::class, array(
             'login' => 'dailleboust', 'nom' => 'Ailleboust', 'prenom' => 'Denis',
-            'sites' => '', 'droits' => array(99,100)
+            'sites' => [], 'droits' => array(99,100)
         ));
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'sites' => '["1","2"]', 'droits' => array(99,100)
+            'sites' => ["1","2"], 'droits' => array(99,100)
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'sites' => '["1"]', 'droits' => array(99,100)
+            'sites' => ["1"], 'droits' => array(99,100)
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["2"]', 'droits' => array(202,502,99,100)
+            'sites' => ["2"], 'droits' => array(202,502,99,100)
         ));
 
         $this->createAbsenceFor($dailleboust, 2);
@@ -137,19 +137,19 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
         $dailleboust = $this->builder->build(Agent::class, array(
             'login' => 'dailleboust', 'nom' => 'Ailleboust', 'prenom' => 'Denis',
-            'sites' => '', 'droits' => array(99,100)
+            'sites' => [], 'droits' => array(99,100)
         ));
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'sites' => '["1","2"]', 'droits' => array(99,100)
+            'sites' => ["1","2"], 'droits' => array(99,100)
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'sites' => '["1"]', 'droits' => array(99,100)
+            'sites' => ["1"], 'droits' => array(99,100)
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["2"]', 'droits' => array(202,502,99,100)
+            'sites' => ["2"], 'droits' => array(202,502,99,100)
         ));
 
         $this->createAbsenceFor($dailleboust, 2);

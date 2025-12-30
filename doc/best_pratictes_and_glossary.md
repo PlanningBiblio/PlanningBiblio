@@ -86,6 +86,7 @@
 | number | numero |
 | numberOfWeeks | nb_semaine | For WorkingHours |
 | password | password |
+| order | ordre |
 | originId | id_origin or origin_id|
 | otherReason | motif_autre |
 | position | poste |
@@ -101,9 +102,10 @@
 | regulationId | regul_id |
 | service | service |
 | reason | motif |
+| refusal | refus | For Holiday |
+| replace | remplace |
 | requestDate | demande |
 | rRule| rrule |
-| replace | remplace |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |
@@ -123,6 +125,15 @@
 | week | semaine |
 | weeklyWorkingHours | heures_travail | For Agent |
 | workingHours | temps |
+
+## Repositories
+
+| Old | New | Comment |
+| conges::fetchCredit | Agent::fetchCredits |
+| conges::maj | Holiday::insert |
+| personnel::delete | Agent::delete |
+| personnel::fecth | Agent::get |
+| planninghebdo::fetch | WorkingHours::get |
 
 ## Migrations
 
