@@ -30,4 +30,30 @@ class PlanningPositionRepository extends EntityRepository
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
+
+    public function updateDeletionByUserId(int $persoId)
+    {
+        $qb = $this->createQueryBuilder('p');
+
+        return $qb
+            ->update()
+            ->set('p.supprime', 0)
+            ->where('p.perso_id = :persoId')
+            ->setParameter('persoId', $persoId)
+            ->getQuery()
+            ->execute();
+    }
+
+    public function deleteAfterDate(int $userId, string $departure)
+    {
+        return $this->createQueryBuilder('p')
+            ->update()
+            ->set('p.supprime', 1)
+            ->where('p.perso_id = :perso_id')
+            ->andWhere('p.date > :date')
+            ->setParameter('perso_id', $userId)
+            ->setParameter('date', $departure)
+            ->getQuery()
+            ->execute();
+    }
 }

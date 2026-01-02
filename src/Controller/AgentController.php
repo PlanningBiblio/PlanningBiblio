@@ -12,6 +12,8 @@ use App\Planno\Ldif2Array;
 
 use App\Entity\Agent;
 use App\Entity\Access;
+use App\Entity\PlanningPosition;
+use App\Entity\SelectCategories;
 use App\Entity\SelectStatuts;
 use App\Entity\SelectServices;
 use Symfony\Component\HttpFoundation\Request;
@@ -245,41 +247,15 @@ class AgentController extends BaseController
 
         uasort($groupes_sites, 'cmp_ordre');
 
-
-        $db = new \db();
-        $db->select2("select_statuts", null, null, "order by rang");
-        $statuts = $db->result;
-        $db = new \db();
-        $db->select2("select_categories", null, null, "order by rang");
-        $categories = $db->result;
-        $db = new \db();
-        $db->select2("personnel", "statut", null, "group by statut");
-        $statuts_utilises = array();
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $statuts_utilises[] = $elem['statut'];
-            }
-        }
+        $statuts = $this->entityManager->getRepository(SelectStatuts::class)->findAll();
+        $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
+        $statuts_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctStatuts();
 
         // Liste des services
-        $services = array();
-        $db = new \db();
-        $db->select2("select_services", null, null, "ORDER BY `rang`");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $services[] = $elem;
-            }
-        }
+        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
 
         // Liste des services utilisés
-        $services_utilises = array();
-        $db = new \db();
-        $db->select2('personnel', 'service', null, "GROUP BY `service`");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $services_utilises[] = $elem['service'];
-            }
-        }
+        $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();
 
         $acces = array();
         $postes_attribues = array();
@@ -287,23 +263,7 @@ class AgentController extends BaseController
         // récupération des infos de l'agent en cas de modif
         $ics = null;
         if ($id) {
-            $db = new \db();
-            $db->select2("personnel", "*", array("id"=>$id));
-            $actif = $db->result[0]['actif'];
-            $nom = $db->result[0]['nom'];
-            $prenom = $db->result[0]['prenom'];
-            $mail = $db->result[0]['mail'];
-            $statut = $db->result[0]['statut'];
-            $categorie = $db->result[0]['categorie'];
-            $check_hamac = $db->result[0]['check_hamac'];
-            $mSGraphCheck = $db->result[0]['check_ms_graph'];
-            $check_ics = $agent->getIcsCheck();
-            $service = $db->result[0]['service'];
-            $heuresHebdo = $db->result[0]['heures_hebdo'];
-            $heuresTravail = $db->result[0]['heures_travail'];
-            $arrivee = dateFr($db->result[0]['arrivee']);
-            $depart = dateFr($db->result[0]['depart']);
-            $login = $db->result[0]['login'];
+            $agent = $this->entityManager->getRepository(Agent::class)->find($id);
             $breaktimes = array();
             if ($this->config('PlanningHebdo')) {
                 $p = new \planningHebdo();
@@ -319,7 +279,7 @@ class AgentController extends BaseController
                     $temps = array();
                 }
             } else {
-                $temps = json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $temps = json_decode(html_entity_decode($agent['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                 if (!is_array($temps)) {
                     $temps = array();
                 }
@@ -330,21 +290,19 @@ class AgentController extends BaseController
                     ? gmdate('H:i', floor($breaktimes[$index] * 3600)) : '';
             }
 
-            $postes_attribues = json_decode(html_entity_decode($db->result[0]['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $postes_attribues = json_decode(html_entity_decode($agent->getSkills(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             if (is_array($postes_attribues)) {
                 sort($postes_attribues);
             }
-            $acces = json_decode(html_entity_decode($db->result[0]['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-            $matricule = $db->result[0]['matricule'];
-            $url_ics = $db->result[0]['url_ics'];
-            $mailsResponsables = explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
+            $acces = json_decode(html_entity_decode($agent->getACL(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $mailsResponsables = explode(";", html_entity_decode($agent->getMailResponsables(), ENT_QUOTES|ENT_IGNORE, "UTF-8"));
             // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=implode("; ",$mailsResponsables);)
-            $informations = stripslashes($db->result[0]['informations']);
-            $recup = stripslashes($db->result[0]['recup']);
-            $sites = html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $informations = stripslashes($agent->getInformation());
+            $recup = stripslashes($agent->getRecoveryMenu());
+            $sites = html_entity_decode($agent->getSites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $sites = $sites !== '' && $sites !== '0'?json_decode($sites, true):array();
             $action = "modif";
-            $titre = $nom." ".$prenom;
+            $titre = $agent->getLastname()." ".$agent->getFirstname();
 
             // URL ICS
             if ($this->config('ICS-Export')) {
@@ -354,29 +312,6 @@ class AgentController extends BaseController
             }
         } else {// pas d'id, donc ajout d'un agent
             $id = null;
-            $nom = null;
-            $prenom = null;
-            $mail = null;
-            $statut = null;
-            $categorie = null;
-            $check_hamac = 0;
-            $mSGraphCheck = 0;
-            $check_ics = $agent->getIcsCheck();
-            $service = null;
-            $heuresHebdo = null;
-            $heuresTravail = null;
-            $arrivee = null;
-            $depart = null;
-            $login = null;
-            $temps = null;
-            $postes_attribues = array();
-            $access = array();
-            $matricule = null;
-            $url_ics = null;
-            $mailsResponsables = array();
-            $informations = null;
-            $recup = null;
-            $sites = array();
             $titre = "Ajout d'un agent";
             $action = "ajout";
             if (!empty($_SESSION['perso_actif']) and $_SESSION['perso_actif'] != 'Supprim&eacute;') {
@@ -441,30 +376,17 @@ class AgentController extends BaseController
             'ICS_Server3'       => $this->config('ICS-Server3'),
             'ICS_Code'          => $this->config('ICS-Code'),
             'MSGraphConfig'     => !empty($this->config('MSGraph-ClientID')),
-            'MSGraphCheck'      => $mSGraphCheck,
             'ics'               => $ics,
             'CSRFSession'       => $CSRFSession,
             'action'            => $action,
             'id'                => $id,
-            'nom'               => $nom,
-            'prenom'            => $prenom,
-            'mail'              => $mail,
             'statuts'           => $statuts,
-            'statut'            => $statut,
             'statuts_utilises'  => $statuts_utilises,
             'categories'        => $categories,
-            'login'             => $login,
             'contrats'          => $contrats,
-            'categorie'         => $categorie,
             'services'          => $services,
             'services_utilises' => $services_utilises,
-            'service'           => $service,
-            'heures_hebdo'      => $heuresHebdo,
-            'heures_travail'    => $heuresTravail,
             'actif'             => $actif,
-            'arrivee'           => $arrivee,
-            'depart'            => $depart,
-            'matricule'         => $matricule,
             'mailsResponsables' => $mailsResponsables,
             'mailsResp_joined'  => implode("; ", $mailsResponsables),
             'informations'      => $informations,
@@ -508,13 +430,13 @@ class AgentController extends BaseController
             $this->templateParams(array( 'times' => $times ));
 
         } else {
-            $heuresHebdo_label = $heuresHebdo;
-            if (!stripos($heuresHebdo, "%")) {
+            $heuresHebdo_label = $agent->getWeeklyServiceHours();
+            if (!stripos($agent->getWeeklyServiceHours(), "%")) {
                 $heuresHebdo_label .= " heures";
             }
             $this->templateParams(array(
                 'heuresHebdo_label'   => $heuresHebdo_label,
-                'heuresTravail_label' => $heuresTravail . " heures",
+                'heuresTravail_label' => $agent->getWeeklyWorkingHours() . " heures",
             ));
         }
 
@@ -856,9 +778,7 @@ class AgentController extends BaseController
 
         switch ($action) {
           case "ajout":
-            $db = new \db();
-            $db->select2("personnel", array(array("name"=>"MAX(`id`)", "as"=>"id")));
-            $id = $db->result[0]['id']+1;
+            $id = $this->entityManager->getRepository(Agent::class)->findMaxId() + 1;
 
             $login = $this->login($prenom, $nom, $mail);
 
@@ -891,39 +811,42 @@ class AgentController extends BaseController
             }
 
             // Enregistrement des infos dans la base de données
-            $insert = array(
-                "nom"=>$nom,
-                "prenom"=>$prenom,
-                "mail"=>$mail,
-                "statut"=>$statut,
-                "categorie"=>$categorie,
-                "service"=>$service,
-                "heures_hebdo"=>$heuresHebdo,
-                "heures_travail"=>$heuresTravail,
-                "arrivee"=>$arrivee,
-                "depart"=>$depart,
-                "login"=>$login,
-                "password"=>$mdp_crypt,
-                "actif"=>$actif,
-                "droits"=>$droits,
-                "postes"=>$postes,
-                "temps"=>$temps,
-                "informations"=>$informations,
-                "recup"=>$recup,
-                "sites"=>$sites,
-                "mails_responsables"=>$mailsResponsables,
-                "matricule"=>$matricule,
-                "url_ics"=>$url_ics,
-                "check_ics"=>$check_ics,
-                "check_hamac"=>$check_hamac,
-                'check_ms_graph' => $mSGraphCheck,
-            );
-            $holidays = $this->save_holidays($params);
-            $insert = array_merge($insert, $holidays);
+            $agentInsert = new Agent();
+            $agentInsert->setLastname($nom);
+            $agentInsert->setFirstname($prenom);
+            $agentInsert->setMail($mail);
+            $agentInsert->setStatus($statut);
+            $agentInsert->setCategory($categorie);
+            $agentInsert->setService($service);
+            $agentInsert->setWeeklyServiceHours($heuresHebdo);
+            $agentInsert->setWeeklyWorkingHours($heuresTravail);
+            $agentInsert->setArrival($arrivee);
+            $agentInsert->setDeparture($depart);
+            $agentInsert->setLogin($login);
+            $agentInsert->setPassword($mdp_crypt);
+            $agentInsert->setActive($actif);
+            $agentInsert->setACL($droits);
+            $agentInsert->setSkills($postes);
+            $agentInsert->setWorkingHours($temps);
+            $agentInsert->setInformation($informations);
+            $agentInsert->setRecoveryMenu($recup);
+            $agentInsert->setSites($sites);
+            $agentInsert->setManagersMails($mailsResponsables);
+            $agentInsert->setEmployeeNumber($matricule);
+            $agentInsert->setIcsUrl($url_ics);
+            $agentInsert->setIcsCheck($check_ics);
+            $agentInsert->setHamacCheck($check_hamac);
+            $agentInsert->setMsGraphCheck($mSGraphCheck);
 
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert("personnel", $insert);
+            $holidays = $this->save_holidays($params);
+            $agentInsert->setHolidayCompTime($holidays['comp_time']);
+            $agentInsert->setHolidayAnnualCredit($holidays['conges_annuel']);
+            $agentInsert->setHolidayAnticipation($holidays['conges_anticipation']);
+            $agentInsert->setHolidayCredit($holidays['conges_credit']);
+            $agentInsert->setHolidayRemainder($holidays['conges_reliquat']);
+
+            $this->entityManager->persist($agentInsert);
+            $this->entityManager->flush();
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
             if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
@@ -946,9 +869,7 @@ class AgentController extends BaseController
 
             $mdp=gen_trivial_password();
             $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
-            $db = new \db();
-            $db->select2("personnel", "login", array("id"=>$id));
-            $login = $db->result[0]['login'];
+            $login = $this->entityManager->getRepository(Agent::class)->find($id)->getLogin();
 
             // Envoi du mail
             $message = "Votre mot de passe Planno a été modifié";
@@ -971,50 +892,49 @@ class AgentController extends BaseController
                 $msgType = "success";
             }
 
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update("personnel", array("password"=>$mdp_crypt), array("id"=>$id));
+            $this->entityManager->getRepository(Agent::class)->find($id)->setPassword($mdp_crypt);
+            $this->entityManager->flush();
             return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
 
             break;
 
           case "modif":
-            $update = array(
-                "nom"=>$nom,
-                "prenom"=>$prenom,
-                "mail"=>$mail,
-                "statut"=>$statut,
-                "categorie"=>$categorie,
-                "service"=>$service,
-                "heures_hebdo"=>$heuresHebdo,
-                "heures_travail"=>$heuresTravail,
-                "actif"=>$actif,
-                "droits"=>$droits,
-                "arrivee"=>$arrivee,
-                "depart"=>$depart,
-                "postes"=>$postes,
-                "informations"=>$informations,
-                "recup"=>$recup,
-                "sites"=>$sites,
-                "mails_responsables"=>$mailsResponsables,
-                "matricule"=>$matricule,
-                "url_ics"=>$url_ics,
-                "check_ics"=>$check_ics,
-                "check_hamac"=>$check_hamac,
-                'check_ms_graph' => $mSGraphCheck,
-            );
+            $agentUpdate = $this->entityManager->getRepository(Agent::class)->find($id);
+            $agentUpdate->setLastname($nom);
+            $agentUpdate->setFirstname($prenom);
+            $agentUpdate->setMail($mail);
+            $agentUpdate->setStatus($statut);
+            $agentUpdate->setCategory($categorie);
+            $agentUpdate->setService($service);
+            $agentUpdate->setWeeklyServiceHours($heuresHebdo);
+            $agentUpdate->setWeeklyWorkingHours($heuresTravail);
+            $agentUpdate->setArrival($arrivee);
+            $agentUpdate->setDeparture($depart);
+            $agentUpdate->setLogin($login);
+            $agentUpdate->setPassword($mdp_crypt);
+            $agentUpdate->setActive($actif);
+            $agentUpdate->setACL($droits);
+            $agentUpdate->setSkills($postes);
+            $agentUpdate->setWorkingHours($temps);
+            $agentUpdate->setInformation($informations);
+            $agentUpdate->setRecoveryMenu($recup);
+            $agentUpdate->setSites($sites);
+            $agentUpdate->setManagersMails($mailsResponsables);
+            $agentUpdate->setEmployeeNumber($matricule);
+            $agentUpdate->setIcsUrl($url_ics);
+            $agentUpdate->setIcsCheck($check_ics);
+            $agentUpdate->setHamacCheck($check_hamac);
+            $agentUpdate->setMsGraphCheck($mSGraphCheck);
             // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
             if (!strstr($actif, "Supprim")) {
-                $update["supprime"]="0";
+                $agentUpdate->setDeletion("0");
                 // Si l'agent était supprimé et qu'on le réintégre, on change sa date de départ
                 // pour qu'il ne soit pas supprimé de la liste des agents actifs
-                $db = new \db();
-                $db->select2("personnel", "*", array("id" => $id));
-                if (strstr($db->result[0]['actif'], "Supprim") and $db->result[0]['depart'] <= date("Y-m-d")) {
-                    $update["depart"] = "0000-00-00";
+                if (strstr($agentUpdate->getActive(), "Supprim") and $agentUpdate->getDeparture() <= date("Y-m-d")) {
+                    $agentUpdate->setDeparture("0000-00-00");
                 }
             } else {
-                $update["actif"] = "Supprim&eacute;";
+                $agentUpdate->setActive("Supprimé;");
             }
 
             // Mise à jour de l'emploi du temps si modifié à partir de la fiche de l'agent
@@ -1023,23 +943,20 @@ class AgentController extends BaseController
             }
 
             $holidays = $this->save_holidays($params);
-            $update = array_merge($update, $holidays);
+            $agentUpdate->setHolidayCompTime($holidays['comp_time']);
+            $agentUpdate->setHolidayAnnualCredit($holidays['conges_annuel']);
+            $agentUpdate->setHolidayAnticipation($holidays['conges_anticipation']);
+            $agentUpdate->setHolidayCredit($holidays['conges_credit']);
+            $agentUpdate->setHolidayRemainder($holidays['conges_reliquat']);
 
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update("personnel", $update, array("id" => $id));
+            $this->entityManager->persist($agentUpdate);
+            $this->entityManager->flush();
 
             // Mise à jour de la table pl_poste en cas de modification de la date de départ
-            $db = new \db();        // On met supprime=0 partout pour cet agent
-            $db->CSRFToken = $CSRFToken;
-            $db->update("pl_poste", array("supprime" => "0"), array("perso_id" => $id));
+            $this->entityManager->getRepository(PlanningPosition::class)->updateDeletionByUserId($id);
             if ($depart != "0000-00-00" and $depart != "") {
                 // Si une date de départ est précisée, on met supprime=1 au dela de cette date
-                $db = new \db();
-                $id = $db->escapeString($id);
-                $depart = $db->escapeString($depart);
-                $dbprefix = $this->config('dbprefix');
-                $db->query("UPDATE `{$dbprefix}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
+                $this->entityManager->getRepository(PlanningPosition::class)->deleteAfterDate($id, $depart);
             }
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
@@ -1899,9 +1816,7 @@ class AgentController extends BaseController
 
         $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->update('personnel', array('code_ics' => null), array('id' => $id));
+        $this->entityManager->getRepository(Agent::class)->find($id)->setICSCode(null);
 
         $p = new \personnel();
         $p->CSRFToken = $CSRFToken;
