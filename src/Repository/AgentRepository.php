@@ -500,5 +500,29 @@ class AgentRepository extends EntityRepository
         return $qb->getQuery()->getArrayResult();
     }// wait for test
 
+    public function findDistinctStatuts(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.statut')
+            ->groupBy('p.statut')
+            ->getQuery()
+            ->getScalarResult();
+    }
 
+    public function findDistinctServices(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.service')
+            ->groupBy('p.service')
+            ->getQuery()
+            ->getScalarResult();
+    }
+
+    public function findMaxId(): ?int
+    {
+        return $this->createQueryBuilder('p')
+            ->select('MAX(p.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
