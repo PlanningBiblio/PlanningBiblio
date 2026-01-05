@@ -223,7 +223,7 @@
               <tr>
                 <td style='padding-top:20px;'>&nbsp;</td>
                 <td style='padding-top:20px;'>
-                  <a href="javascript:resetICSURL('{{ id }}', '{{ CSRFSession }}', '{{ prenom }} {{ nom }}');">
+                  <a href="javascript:resetICSURL('{{ id }}', '{{ CSRFSession }}', '{{ agent.firstName }} {{ agent.lastName }}');">
                     Réinitialiser les URL des agendas Planno
                   </a>
                 </td>
@@ -233,7 +233,7 @@
                 <td>&nbsp;</td>
                 <td>
                   <a href='javascript:sendICSURL();'>
-                    Envoyer les URL à l'agent par e-mail ({{ mail }})
+                    Envoyer les URL à l'agent par e-mail ({{ agent.mail }})
                   </a>
                 </td>
               </tr>
@@ -246,9 +246,9 @@
               </td>
               <td>
                 {% if can_manage_agent %}
-                  <input type="checkbox" value="1" id="MSGraph" name="MSGraph" {% if MSGraphCheck %} checked="checked" {% endif %} />
+                  <input type="checkbox" value="1" id="MSGraph" name="MSGraph" {% if agent.msGraphCheck %} checked="checked" {% endif %} />
                 {% else %}
-                  {% if MSGraphCheck %}
+                  {% if agent.msGraphCheck %}
                     <span class="agent-acces-checked2 green bold">Oui</span>
                   {% else %}
                     <span class="agent-acces-checked2 red">Non</span>
@@ -291,18 +291,18 @@
             {% for elem in statuts %}
               <li class='ui-state-default' id='li_{{ elem.id }}'>
                 <span class='pl-icon pl-icon-arrowupdown'></span>
-                <font id='valeur_{{ elem.id }}'>{{ elem.valeur | raw }}</font>
+                <font id='valeur_{{ elem.id }}'>{{ elem.value | raw }}</font>
                 <select id='categorie_{{ elem.id }}' class='select-popup'>
                   <option value='0'>&nbsp;</option>
                   {% for elem2 in categories %}
-                    {% if elem2.id == elem.categorie %}
-                      <option value='{{ elem2.id }}' selected="selected">{{ elem2.valeur | raw }}</option>
+                    {% if elem2.id == elem.category %}
+                      <option value='{{ elem2.id }}' selected="selected">{{ elem2.value | raw }}</option>
                     {% else %}
-                      <option value='{{ elem2.id }}'>{{ elem2.valeur | raw }}</option>
+                      <option value='{{ elem2.id }}'>{{ elem2.value | raw }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>
-                {% if elem.valeur not in statuts_utilises %}
+                {% if elem.value not in statuts_utilises %}
                   <span class='pl-icon pl-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>
@@ -327,8 +327,8 @@
             {% for elem in services %}
               <li class='ui-state-default' id='li_{{ elem.id }}'>
                 <span class='pl-icon pl-icon-arrowupdown'></span>
-                <font id='valeur_{{ elem.id }}'>{{ elem.valeur | raw }}</font>
-                {% if elem.valeur not in services_utilises %}
+                <font id='valeur_{{ elem.id }}'>{{ elem.value | raw }}</font>
+                {% if elem.value not in services_utilises %}
                   <span class='pl-icon pl-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>

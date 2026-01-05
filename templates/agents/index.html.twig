@@ -208,7 +208,7 @@
                 <div id='dispo_div'>
                   <select id='postes_dispo' name='postes_dispo' style='width:300px;' size='20' multiple='multiple'>
                     {% for sk in skills %}
-                      <option value='{{ sk.id }}'>{{ sk.nom | raw }}</option>
+                      <option value='{{ sk.id }}'>{{ sk.name | raw }}</option>
                     {% endfor %}
                   </select>
                 </div>

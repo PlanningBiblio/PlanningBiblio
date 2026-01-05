@@ -4,14 +4,14 @@
   <tr valign='top'>
     <td style='width:400px'>Nom :</td>
     <td>
-      <span id='nom'>{{ nom }}</span>
+      <span id='nom'>{{ agent.lastName }}</span>
     </td>
   </tr>
 
   <tr>
     <td>Prénom :</td>
     <td>
-      <span id='prenom'>{{ prenom }}</span>
+      <span id='prenom'>{{ agent.firstName }}</span>
     </td>
   </tr>
 
@@ -19,24 +19,24 @@
     <td>E-mail :</td>
 
     <td>
-      <a href='mailto:{{ mail }}'><span id='mail'>{{ mail }}</span></a>
+      <a href='mailto:{{ agent.mail }}'><span id='mail'>{{ agent.mail }}</span></a>
     </td>
   </tr>
 
   {% if not config('Planook') %}
     <tr>
       <td>Statut :</td>
-      <td style='white-space:nowrap'>{{ statut | striptags | raw }}</td>
+      <td style='white-space:nowrap'>{{ agent.status | striptags | raw }}</td>
     </tr>
 
     <tr>
       <td>Contrat :</td>
-      <td>{{ categorie }}</td>
+      <td>{{ agent.category }}</td>
     </tr>
 
     <tr>
       <td>Service de rattachement:</td>
-      <td style='white-space:nowrap'>{{ service | striptags | raw }}</td>
+      <td style='white-space:nowrap'>{{ agent.service | striptags | raw }}</td>
     </tr>
 
     <tr>
@@ -81,18 +81,18 @@
 
   <tr>
     <td>Date d'arrivée</td>
-    <td>{{ arrivee }}</td>
+    <td>{{ agent.arrival|date('Y-m-d') }}</td>
   </tr>
 
   <tr>
     <td>Date de départ</td>
-    <td>{{ depart }}</td>
+    <td>{{ agent.departure|date('Y-m-d') }}</td>
   </tr>
 
   {% if not config('Planook') %}
     <tr>
       <td>Matricule :</td>
-      <td>{{ matricule }}</td>
+      <td>{{ agent.employeeNumber }}</td>
     </tr>
 
     <tr>
@@ -120,7 +120,7 @@
   {% if id %}
     <tr>
       <td>Login :</td>
-      <td>{{ login }}</td>
+      <td>{{ agent.login }}</td>
     </tr>
   {% endif %}
 </table>
