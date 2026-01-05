@@ -20,6 +20,7 @@ use App\Entity\RecurringAbsence;
 use App\Entity\SaturdayWorkingHours;
 use App\Entity\WorkingHour;
 use App\Entity\Config;
+use App\Planno\Helper\HourHelper;
 
 class AgentRepository extends EntityRepository
 {
@@ -477,7 +478,7 @@ class AgentRepository extends EntityRepository
             ->set('p.supprime', ':supprime')
             ->set('p.actif', ':actif')
             ->where('p.depart < CURRENT_DATE()')
-            ->andWhere('p.depart IS NOT NULL')
+            ->andWhere("p.depart <> '0000-00-00'")
             ->andWhere('p.actif NOT LIKE :actifLike')
             ->setParameter('supprime', 1)
             ->setParameter('actif', 'Supprimé')
@@ -489,7 +490,6 @@ class AgentRepository extends EntityRepository
     public function findNamesByActif(string $actif): array
     {
         $supprimeValues = str_contains($actif, 'Supprim') ? [1] : [0];
-
         $qb = $this->createQueryBuilder('p')
             ->select('p')
             ->where('p.supprime IN (:supprime)')
@@ -524,5 +524,89 @@ class AgentRepository extends EntityRepository
             ->select('MAX(p.id)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function getICSURL($id): string
+    {
+        $url = "/ical?id=$id";
+        if ($GLOBALS['config']['ICS-Code']) {
+            // $code = $this->getICSCode($id);
+            $agent = $this->find($id);
+            $code = $agent->getICSCode();
+            if (!$code) {
+                $code = md5(time().rand(100, 999));
+                $agent->setICSCode($code);
+                $this->getEntityManager()->persist($agent);
+                $this->getEntityManager()->flush();
+            }
+            $url .= "&amp;code=$code";
+        }
+        return $url;
+    }
+
+    public function fetchCredit(?int $userId): array
+    {
+        if (!$userId) {
+            return [
+                "annuel" => null,
+                "anticipation" => null,
+                "credit" => null,
+                "recup" => null,
+                "reliquat" => null,
+                "annuelHeures" => null,
+                "anticipationHeures" => null,
+                "creditHeures" => null,
+                "recupHeures" => null,
+                "reliquatHeures" => null,
+                "annuelMinutes" => null,
+                "anticipationMinutes" => null,
+                "creditMinutes" => null,
+                "recupMinutes" => null,
+                "reliquatMinutes" => null,
+            ];
+        }
+
+        $agent = $this->find($userId);
+
+        $decimal_annuel       = $agent->getHolidayAnnualCredit();
+        $decimal_anticipation = $agent->getHolidayAnticipation();
+        $decimal_credit       = $agent->getHolidayCredit();
+        $decimal_comp_time    = $agent->getHolidayCompTime();
+        $decimal_reliquat     = $agent->getHolidayRemainder();
+
+        $annuel       = HourHelper::decimalToHoursMinutes($decimal_annuel);
+        $anticipation = HourHelper::decimalToHoursMinutes($decimal_anticipation);
+        $credit       = HourHelper::decimalToHoursMinutes($decimal_credit);
+        $comp_time    = HourHelper::decimalToHoursMinutes($decimal_comp_time);
+        $reliquat     = HourHelper::decimalToHoursMinutes($decimal_reliquat);
+        
+        return [
+            "annuel"              => $decimal_annuel,
+            "annuelHeures"        => $annuel['hours'],
+            "annuelMinutes"       => $annuel['minutes'],
+            "anticipation"        => $decimal_anticipation,
+            "anticipationHeures"  => $anticipation['hours'],
+            "anticipationMinutes" => $anticipation['minutes'],
+            "credit"              => $decimal_credit,
+            "creditHeures"        => $credit['hours'],
+            "creditMinutes"       => $credit['minutes'],
+            "recup"               => $decimal_comp_time,
+            "recupHeures"         => $comp_time['hours'],
+            "recupMinutes"        => $comp_time['minutes'],
+            "reliquat"            => $decimal_reliquat,
+            "reliquatHeures"      => $reliquat['hours'],
+            "reliquatMinutes"     => $reliquat['minutes']
+        ];
+    }
+
+    public function findAllLoginsNotDeleted(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->select('a.login')
+            ->where('a.supprime != :deleted')
+            ->setParameter('deleted', 2)
+            ->orderBy('a.login', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
     }
 }

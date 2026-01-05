@@ -16,6 +16,8 @@ use App\Entity\PlanningPosition;
 use App\Entity\SelectCategories;
 use App\Entity\SelectStatuts;
 use App\Entity\SelectServices;
+use App\Entity\Skill;
+use App\Entity\WorkingHour;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -54,18 +56,15 @@ class AgentController extends BaseController
         $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();
 
         $agentsTab = $this->entityManager->getRepository(Agent::class)->findNamesByActif($actif);
-
+        // dd($agentsTab);// wait for test
         $nbSites = $this->config('Multisites-nombre');
-
         $agents = array();
         foreach ($agentsTab as $agent) {
             $elem = [];
-            var_dump($agent);
             $id = $agent['id'];
-
-            $arrivee = $agent['arrivee'];
-            $depart = $agent['depart'];
-            $last_login = date_time($agent['last_login']);
+            $arrivee = dateFr($agent['arrivee']->format('Y') > 1900 ? $agent['arrivee']->format('Y-m-d'):'0000-00-00');
+            $depart = dateFr($agent['depart']->format('Y') > 1900 ? $agent['depart']->format('Y-m-d'):'0000-00-00');
+            $last_login = date_time($agent['last_login'] && $agent['last_login']->format('Y') > 1900 ? $agent['last_login']->format('Y-m-d H:i:s'):'0000-00-00 00:00:00');
             $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
             $heures = heure4($heures);
             if (is_numeric($heures)) {
@@ -73,12 +72,11 @@ class AgentController extends BaseController
             }
             $agent['service'] = str_replace("`", "'", $agent['service']);
 
-            $sites = $agent['sites'];
-
+            $sites = json_decode($agent['sites'], true);
             if ($nbSites > 1) {
                 $tmp = array();
-                if (!empty($agent['sites'])) {
-                    foreach ($agent['sites'] as $site) {
+                if (!empty($sites)) {
+                    foreach ($sites as $site) {
                         if ($site) {
                             $tmp[] = $this->config("Multisites-site{$site}");
                         }
@@ -138,13 +136,11 @@ class AgentController extends BaseController
         }
 
         // Toutes les activités
-        $a = new \activites();
-        $a->fetch();
-        $activites = $a->elements;
+        $activites = $this->entityManager->getRepository(Skill::class)->findAll();
 
         $postes_completNoms = array();
         foreach ($activites as $elem) {
-            $postes_completNoms[] = array($elem['nom'],$elem['id']);
+            $postes_completNoms[] = array($elem->getName(),$elem->getId());
         }
         $postes_completNoms_json = json_encode($postes_completNoms);
 
@@ -266,20 +262,11 @@ class AgentController extends BaseController
             $agent = $this->entityManager->getRepository(Agent::class)->find($id);
             $breaktimes = array();
             if ($this->config('PlanningHebdo')) {
-                $p = new \planningHebdo();
-                $p->perso_id = $id;
-                $p->debut = date("Y-m-d");
-                $p->fin = date("Y-m-d");
-                $p->valide = true;
-                $p->fetch();
-                if (!empty($p->elements)) {
-                    $temps = $p->elements[0]['temps'];
-                    $breaktimes = $p->elements[0]['breaktime'] ?? array();
-                } else {
-                    $temps = array();
-                }
+                $workingHour = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $id, 'debut' => date("Y-m-d"), 'fin' => date("Y-m-d"), 'valide' => true]);
+                $temps = $workingHour->getWorkingHours();
+                $breaktimes = $workingHour->getBreaktime() ?? array();
             } else {
-                $temps = json_decode(html_entity_decode($agent['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $temps = json_decode(html_entity_decode($agent->getWorkingHours(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                 if (!is_array($temps)) {
                     $temps = array();
                 }
@@ -306,14 +293,16 @@ class AgentController extends BaseController
 
             // URL ICS
             if ($this->config('ICS-Export')) {
-                $p = new \personnel();
-                $p->CSRFToken = $CSRFSession;
-                $ics = $p->getICSURL($id);
+                $ics = $this->entityManager->getRepository(Agent::class)->getICSURL($id);
             }
         } else {// pas d'id, donc ajout d'un agent
             $id = null;
             $titre = "Ajout d'un agent";
             $action = "ajout";
+            $mailsResponsables = [];
+            $informations = "";
+            $recup = "";
+            $sites = array();
             if (!empty($_SESSION['perso_actif']) and $_SESSION['perso_actif'] != 'Supprim&eacute;') {
                 $actif = $_SESSION['perso_actif'];
             }// vérifie dans quel tableau on se trouve pour la valeur par défaut
@@ -324,16 +313,14 @@ class AgentController extends BaseController
 
         //        --------------        Début listes des activités        ---------------------//
         // Toutes les activités
-        $a = new \activites();
-        $a->fetch();
-        $activites = $a->elements;
+        $activites = $this->entityManager->getRepository(Skill::class)->findAll();
 
         $postes_complet = array();
         $postes_completNoms = array();
 
         foreach ($activites as $elem) {
-            $postes_completNoms[] = array($elem['nom'],$elem['id']);
-            $postes_complet[] = $elem['id'];
+            $postes_completNoms[] = array($elem->getName(),$elem->getId());
+            $postes_complet[] = $elem->getId();
         }
 
         // les activités non attribuées (disponibles)
@@ -362,6 +349,7 @@ class AgentController extends BaseController
         $postes_dispo = $this->postesNoms($postes_dispo, $postes_completNoms);
 
         $this->templateParams(array(
+            'agent'            => $agent,
             'demo'              => empty($this->config('demo')) ? 0 : 1,
             'can_manage_agent'  => in_array(21, $droits) ? 1 : 0,
             'titre'             => $titre,
@@ -588,10 +576,7 @@ class AgentController extends BaseController
         }
 
         if ($this->config('Conges-Enable')) {
-            $c = new \conges();
-            $c->perso_id = $id;
-            $c->fetchCredit();
-            $conges = $c->elements;
+            $conges = $this->entityManager->getRepository(Agent::class)->fetchCredit($id);
             $holiday_helper = new HolidayHelper();
 
             $annuelHeures  = $conges['annuelHeures']  ?? 0;
@@ -690,9 +675,9 @@ class AgentController extends BaseController
     {
 
         $params = $request->request->all();
-
-        $arrivee = $request->get('arrivee');
-        $depart = $request->get('depart');
+        // dd($params);
+        $arrivee = new \DateTime($request->get('arrivee'));
+        $depart = new \DateTime($request->get('depart'));
         $CSRFToken = $request->get('CSRFToken');
         $heuresHebdo = $request->get('heuresHebdo');
         $heuresTravail = $request->get('heuresTravail');
@@ -706,7 +691,7 @@ class AgentController extends BaseController
         $check_ics1 = !empty($params['check_ics1']) ? 1 : 0;
         $check_ics2 = !empty($params['check_ics2']) ? 1 : 0;
         $check_ics3 = !empty($params['check_ics3']) ? 1 : 0;
-        $check_ics = "[$check_ics1,$check_ics2,$check_ics3]";
+        $check_ics = [$check_ics1,$check_ics2,$check_ics3];
         $droits = array_key_exists("droits", $params) ? $params['droits'] : null;
         $categorie = isset($params['categorie']) ? trim($params['categorie']) : null;
         $informations = isset($params['informations']) ? trim($params['informations']) : null;
@@ -716,7 +701,7 @@ class AgentController extends BaseController
         $nom = trim($params['nom']);
         $postes = $params['postes'] ?? null;
         $prenom = trim($params['prenom']);
-        $recup = isset($params['recup']) ? trim($params['recup']) : null;
+        $recup = isset($params['recup']) ? trim($params['recup']) : '';
         $service = $params['service'] ?? null;
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
         $statut = $params['statut'] ?? null;
@@ -748,11 +733,8 @@ class AgentController extends BaseController
 
         $droits = $droits ? $droits : array();
         $postes = $postes ? json_encode(explode(",", $postes)) : '[]';
-        $sites = $sites ? json_encode($sites) : null;
-        $temps = $temps ? json_encode($temps) : null;
-
-        $arrivee = dateSQL($arrivee);
-        $depart = dateSQL($depart);
+        $sites = $sites ? json_encode($sites) : '';
+        $temps = $temps ? json_encode($temps) : '';
 
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
@@ -774,7 +756,6 @@ class AgentController extends BaseController
         if ($id == 1) {        // Ajoute config. avancée à l'utilisateur admin.
             $droits[] = 20;
         }
-        $droits = json_encode($droits);
 
         switch ($action) {
           case "ajout":
@@ -1203,12 +1184,9 @@ class AgentController extends BaseController
 
             // Search existing agents.
             $agents_existants = array();
-            $db = new \db();
-            $db->query("SELECT `login` FROM `{$GLOBALS['dbprefix']}personnel` WHERE `supprime`<>'2' ORDER BY `login`;");
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $agents_existants[] = $elem['login'];
-                }
+            $login = $this->entityManager->getRepository(Agent::class)->findAllLoginsNotDeleted();
+            foreach ($login as $elem) {
+                $agents_existants[] = $elem['login'];
             }
 
             // Remove existing agents from LDAP results.
@@ -1852,7 +1830,13 @@ class AgentController extends BaseController
     private function save_holidays($params)
     {
         if (!$this->config('Conges-Enable')) {
-            return array();
+            return array(
+                'conges_annuel'       => 0,
+                'conges_anticipation' => 0,
+                'conges_credit'       => 0,
+                'conges_reliquat'     => 0,
+                'comp_time'           => 0,
+            );;
         }
 
         $available_keys = ['comp_time'];
