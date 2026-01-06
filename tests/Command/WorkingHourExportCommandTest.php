@@ -2,12 +2,11 @@
 
 namespace App\Tests\Command;
 
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Output\OutputInterface;
-use App\Entity\WorkingHour;
 use App\Entity\Agent;
-use App\Entity\Config;
+use App\Entity\WorkingHour;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Console\Output\OutputInterface;
 use Tests\PLBWebTestCase;
 
 class WorkingHourExportCommandTest extends PLBWebTestCase
@@ -73,7 +72,6 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
-            '--not-really' => true
         ]);
 
         $commandTester->assertCommandIsSuccessful();

@@ -33,12 +33,6 @@ class WorkingHourExportCommand extends Command
 
     protected function configure(): void
     {
-        $this->addOption(
-            'not-really',
-            null,
-            InputOption::VALUE_NONE,
-            'for testing'
-        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -47,11 +41,9 @@ class WorkingHourExportCommand extends Command
 
         $config = $this->entityManager->getRepository(Config::class)->getAll();
 
-        if (!$input->getOption('not-really')) {
-            if (file_exists(__DIR__ . '/../../custom_options.php')) {
-                include __DIR__ . '/../../custom_options.php';
-            }
-        } else {}
+        if (file_exists(__DIR__ . '/../../custom_options.php')) {
+            include __DIR__ . '/../../custom_options.php';
+        }
 
         $CSVFile = $config['PlanningHebdo-ExportFile'] ?? '/tmp/export-planno-edt.csv';
         $days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;
@@ -115,14 +107,14 @@ class WorkingHourExportCommand extends Command
                 $jour += ($d->semaine3 - 1) * 7;
             }
 
-            $agentsMap = [];
+            $agentsRepos = [];
             foreach ($agents as $agent) {
                 if ($agentIdentifier === 'login') {
-                    $agentsMap[$agent->getId()]['login'] = $agent->getLogin();
+                    $agentsRepos[$agent->getId()]['login'] = $agent->getLogin();
                 } elseif ($agentIdentifier === 'email' || $agentIdentifier === 'mail') {
-                    $agentsMap[$agent->getId()]['mail'] = $agent->getMail();
+                    $agentsRepos[$agent->getId()]['mail'] = $agent->getMail();
                 } elseif ($agentIdentifier === 'matricule') {
-                    $agentsMap[$agent->getId()]['matricule'] = $agent->getEmployeeNumber();
+                    $agentsRepos[$agent->getId()]['matricule'] = $agent->getEmployeeNumber();
                 }
             }
 
@@ -132,11 +124,11 @@ class WorkingHourExportCommand extends Command
 
                 // Récupération de l'dentifiant de l'agent (ex : login, adresse email ou ID Harpege renseigné dans le champ "matricule")
                 // Si l'identifiant n'est pas renseigné dans Planno (ex : champ matricule vide), nous n'importons pas l'agent (donc continue) (Demande initiale de la société Bodet Software)
-                if (empty($agentsMap[$elem->getUser()][$agentIdentifier])) {
+                if (empty($agentsRepos[$elem->getUser()][$agentIdentifier])) {
                     continue;
                 }
 
-                $agent_id = $agentsMap[$elem->getUser()][$agentIdentifier];
+                $agent_id = $agentsRepos[$elem->getUser()][$agentIdentifier];
 
                 // Mise en forme du tableau temps
                 /** Le tableau $elem->getWorkingHours()[$jour] est constitué comme suit :
