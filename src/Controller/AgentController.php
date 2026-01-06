@@ -56,15 +56,15 @@ class AgentController extends BaseController
         $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();
 
         $agentsTab = $this->entityManager->getRepository(Agent::class)->findNamesByActif($actif);
-        // dd($agentsTab);// wait for test
+
         $nbSites = $this->config('Multisites-nombre');
         $agents = array();
         foreach ($agentsTab as $agent) {
             $elem = [];
             $id = $agent['id'];
-            $arrivee = dateFr($agent['arrivee']->format('Y') > 1900 ? $agent['arrivee']->format('Y-m-d'):'0000-00-00');
-            $depart = dateFr($agent['depart']->format('Y') > 1900 ? $agent['depart']->format('Y-m-d'):'0000-00-00');
-            $last_login = date_time($agent['last_login'] && $agent['last_login']->format('Y') > 1900 ? $agent['last_login']->format('Y-m-d H:i:s'):'0000-00-00 00:00:00');
+            $arrivee = dateFr($agent['arrivee'] ? $agent['arrivee']->format('Y-m-d') : '');
+            $depart = dateFr($agent['depart'] ? $agent['depart']->format('Y-m-d') : '');
+            $last_login = date_time($agent['last_login'] ? $agent['last_login']->format('Y-m-d H:i:s') : '0000-00-00 00:00:00');
             $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
             $heures = heure4($heures);
             if (is_numeric($heures)) {
@@ -201,10 +201,10 @@ class AgentController extends BaseController
         $droits = $GLOBALS['droits'];
         $admin = in_array(21, $droits);
 
-        $db_groupes = $this->entityManager->getRepository(Access::class)->findGroupesAcces();
+        $groupesAcces = $this->entityManager->getRepository(Access::class)->findGroupesAcces();
         // Tous les droits d'accés
         $groupes = array();
-        foreach ($db_groupes as $elem) {
+        foreach ($groupesAcces as $elem) {
             if (empty($elem['categorie'])) {
                 $elem['categorie'] = 'Divers';
                 $elem['ordre'] = '200';
@@ -260,11 +260,13 @@ class AgentController extends BaseController
         $ics = null;
         if ($id) {
             $agent = $this->entityManager->getRepository(Agent::class)->find($id);
+            $arrivee = $agent->getArrival() ? $agent->getArrival()->format('Y-m-d') : '';
+            $depart = $agent->getDeparture() ? $agent->getDeparture()->format('Y-m-d') : '';
             $breaktimes = array();
             if ($this->config('PlanningHebdo')) {
-                $workingHour = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $id, 'debut' => date("Y-m-d"), 'fin' => date("Y-m-d"), 'valide' => true]);
-                $temps = $workingHour->getWorkingHours();
-                $breaktimes = $workingHour->getBreaktime() ?? array();
+                $workingHour = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $id, 'debut' => new \DateTime(), 'fin' => new \DateTime(), 'valide' => true]);
+                $temps = $workingHour ? $workingHour->getWorkingHours() : array();
+                $breaktimes = $workingHour ? $workingHour->getBreaktime() : array();
             } else {
                 $temps = json_decode(html_entity_decode($agent->getWorkingHours(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                 if (!is_array($temps)) {
@@ -281,9 +283,9 @@ class AgentController extends BaseController
             if (is_array($postes_attribues)) {
                 sort($postes_attribues);
             }
-            $acces = json_decode(html_entity_decode($agent->getACL(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-            $mailsResponsables = explode(";", html_entity_decode($agent->getMailResponsables(), ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-            // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=implode("; ",$mailsResponsables);)
+            $acces = $agent->getACL();
+            $managersMails = explode(";", html_entity_decode($agent->getManagersMails(), ENT_QUOTES|ENT_IGNORE, "UTF-8"));
+            // $managersMails : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($managersMails=implode("; ",$managersMails);)
             $informations = stripslashes($agent->getInformation());
             $recup = stripslashes($agent->getRecoveryMenu());
             $sites = html_entity_decode($agent->getSites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8');
@@ -299,7 +301,9 @@ class AgentController extends BaseController
             $id = null;
             $titre = "Ajout d'un agent";
             $action = "ajout";
-            $mailsResponsables = [];
+            $arrivee = '';
+            $depart = '';
+            $managersMails = [];
             $informations = "";
             $recup = "";
             $sites = array();
@@ -350,6 +354,8 @@ class AgentController extends BaseController
 
         $this->templateParams(array(
             'agent'            => $agent,
+            'arrival'          => $arrivee,
+            'departure'        => $depart,
             'demo'              => empty($this->config('demo')) ? 0 : 1,
             'can_manage_agent'  => in_array(21, $droits) ? 1 : 0,
             'titre'             => $titre,
@@ -375,8 +381,8 @@ class AgentController extends BaseController
             'services'          => $services,
             'services_utilises' => $services_utilises,
             'actif'             => $actif,
-            'mailsResponsables' => $mailsResponsables,
-            'mailsResp_joined'  => implode("; ", $mailsResponsables),
+            'mailsResponsables' => $managersMails,
+            'mailsResp_joined'  => implode("; ", $managersMails),
             'informations'      => $informations,
             'informations_str'  => str_replace("\n", "<br/>", strval($informations)),
             'recup'             => $recup,
@@ -675,9 +681,8 @@ class AgentController extends BaseController
     {
 
         $params = $request->request->all();
-        // dd($params);
-        $arrivee = new \DateTime($request->get('arrivee'));
-        $depart = new \DateTime($request->get('depart'));
+        $arrivee = $request->get('arrivee') ? new \DateTime($request->get('arrivee')) : null;
+        $depart = $request->get('depart') ? new \DateTime($request->get('depart')) : null;
         $CSRFToken = $request->get('CSRFToken');
         $heuresHebdo = $request->get('heuresHebdo');
         $heuresTravail = $request->get('heuresTravail');
@@ -695,7 +700,7 @@ class AgentController extends BaseController
         $droits = array_key_exists("droits", $params) ? $params['droits'] : null;
         $categorie = isset($params['categorie']) ? trim($params['categorie']) : null;
         $informations = isset($params['informations']) ? trim($params['informations']) : null;
-        $mailsResponsables = isset($params['mailsResponsables']) ? trim(str_replace(array("\n", " "), '', $params['mailsResponsables'])) : null;
+        $managersMails = isset($params['mailsResponsables']) ? trim(str_replace(array("\n", " "), '', $params['mailsResponsables'])) : null;
         $matricule = isset($params['matricule']) ? trim($params['matricule']) : null;
         $url_ics = isset($params['url_ics']) ? trim($params['url_ics']) : null;
         $nom = trim($params['nom']);
@@ -812,7 +817,7 @@ class AgentController extends BaseController
             $agentInsert->setInformation($informations);
             $agentInsert->setRecoveryMenu($recup);
             $agentInsert->setSites($sites);
-            $agentInsert->setManagersMails($mailsResponsables);
+            $agentInsert->setManagersMails($managersMails);
             $agentInsert->setEmployeeNumber($matricule);
             $agentInsert->setIcsUrl($url_ics);
             $agentInsert->setIcsCheck($check_ics);
@@ -889,18 +894,15 @@ class AgentController extends BaseController
             $agentUpdate->setService($service);
             $agentUpdate->setWeeklyServiceHours($heuresHebdo);
             $agentUpdate->setWeeklyWorkingHours($heuresTravail);
-            $agentUpdate->setArrival($arrivee);
-            $agentUpdate->setDeparture($depart);
-            $agentUpdate->setLogin($login);
-            $agentUpdate->setPassword($mdp_crypt);
             $agentUpdate->setActive($actif);
             $agentUpdate->setACL($droits);
+            $agentUpdate->setArrival($arrivee);
+            $agentUpdate->setDeparture($depart);
             $agentUpdate->setSkills($postes);
-            $agentUpdate->setWorkingHours($temps);
             $agentUpdate->setInformation($informations);
             $agentUpdate->setRecoveryMenu($recup);
             $agentUpdate->setSites($sites);
-            $agentUpdate->setManagersMails($mailsResponsables);
+            $agentUpdate->setManagersMails($managersMails);
             $agentUpdate->setEmployeeNumber($matricule);
             $agentUpdate->setIcsUrl($url_ics);
             $agentUpdate->setIcsCheck($check_ics);
@@ -937,7 +939,7 @@ class AgentController extends BaseController
             $this->entityManager->getRepository(PlanningPosition::class)->updateDeletionByUserId($id);
             if ($depart != "0000-00-00" and $depart != "") {
                 // Si une date de départ est précisée, on met supprime=1 au dela de cette date
-                $this->entityManager->getRepository(PlanningPosition::class)->deleteAfterDate($id, $depart);
+                $this->entityManager->getRepository(PlanningPosition::class)->deleteAfterDate($id, $depart->format('Y-m-d'));
             }
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
@@ -1296,13 +1298,6 @@ class AgentController extends BaseController
             $ldapbind=ldap_bind($ldapconn, $this->config('LDAP-RDN'), decrypt($this->config('LDAP-Password')));
         }
 
-        // Préparation de la requête pour insérer les données dans la base de données
-        $req = "INSERT INTO `{$GLOBALS['dbprefix']}personnel` (`login`,`nom`,`prenom`,`mail`,`matricule`,`password`,`droits`,`arrivee`,`postes`,`actif`,`commentaires`) ";
-        $req .= "VALUES (:login, :nom, :prenom, :mail, :matricule, :password, :droits, :arrivee, :postes, :actif, :commentaires);";
-        $db = new \dbh();
-        $db->CSRFToken = $CSRFToken;
-        $db->prepare($req);
-
         // Recuperation des infos LDAP et insertion dans la base de données
         if ($ldapbind) {
             foreach ($uids as $uid) {
@@ -1329,27 +1324,24 @@ class AgentController extends BaseController
                             : strval($infos[0][$this->config('LDAP-Matricule')]);
                     }
 
-                    $values = array(
-                        ':login'        => $login,
-                        ':nom'          => $nom,
-                        ':prenom'       => $prenom,
-                        ':mail'         => $mail,
-                        ':matricule'    => $matricule,
-                        ':password'     => $password,
-                        ':droits'       => $droits,
-                        ':arrivee'      => $date,
-                        ':postes'       => $postes,
-                        ':actif'        => $actif,
-                        ':commentaires' => $commentaires
-                    );
-
-                    // Execution de la requête (insertion dans la base de données)
-                    $db->execute($values);
-                    if ($db->error) {
-                        $erreurs=true;
-                    }
+                    $agentInsert = new Agent();
+                    $agentInsert->setLogin($login);
+                    $agentInsert->setLastname($nom);
+                    $agentInsert->setFirstname($prenom);
+                    $agentInsert->setMail($mail);
+                    $agentInsert->setEmployeeNumber($matricule);
+                    $agentInsert->setPassword($password);
+                    $agentInsert->setACL($droits);
+                    $agentInsert->setArrival($date);
+                    $agentInsert->setSkills($postes);
+                    $agentInsert->setActive($actif);
+                    $agentInsert->setInformation($commentaires);
+                    $this->entityManager->persist($agentInsert);
                 }
             }
+
+            $this->entityManager->flush();
+
         }
 
         if ($erreurs) {
@@ -1423,36 +1415,25 @@ class AgentController extends BaseController
             );
         }
 
-        // Préparation de la requête pour insérer les données dans la base de données
-        $req = "INSERT INTO `{$GLOBALS['dbprefix']}personnel` (`login`,`nom`,`prenom`,`mail`,`matricule`,`password`,`droits`,`arrivee`,`postes`,`actif`,`commentaires`) ";
-        $req .= "VALUES (:login, :nom, :prenom, :mail, :matricule, :password, :droits, :arrivee, :postes, :actif, :commentaires);";
-        $db = new \dbh();
-        $db->CSRFToken = $CSRFToken;
-        $db->prepare($req);
-
         $results = $this->ldif_search($uids);
 
         foreach ($results as $elem) {
-            $values = array(
-                ':login'        => $elem['login'],
-                ':nom'          => $elem['sn'],
-                ':prenom'       => $elem['givenname'],
-                ':mail'         => $elem['mail'],
-                ':matricule'    => $elem['matricule'],
-                ':arrivee'      => date('Y-m-d H:i:s'),
-                ':password'     => 'LDIF import, the password is not stored',
-                ':droits'       => '[99,100]',
-                ':postes'       => '[]',
-                ':actif'        => 'Actif',
-                ':commentaires' => 'Importation LDIF ' . date('Y-m-d H:i:s'),
-            );
-
-            // Execution de la requête (insertion dans la base de données)
-            $db->execute($values);
-            if ($db->error) {
-                $erreurs=true;
-            }
+            $agentInsert = new Agent();
+            $agentInsert->setLogin($elem['login']);
+            $agentInsert->setLastname($elem['sn']);
+            $agentInsert->setFirstname($elem['givenname']);
+            $agentInsert->setMail($elem['mail']);
+            $agentInsert->setEmployeeNumber($elem['matricule']);
+            $agentInsert->setPassword('LDIF import, the password is not stored');
+            $agentInsert->setACL([99,100]);
+            $agentInsert->setArrival(new \DateTime());
+            $agentInsert->setSkills('[]');
+            $agentInsert->setActive('Actif');
+            $agentInsert->setInformation('Importation LDIF ' . date('Y-m-d H:i:s'));
+            $this->entityManager->persist($agentInsert);
         }
+
+        $this->entityManager->flush();
 
         if ($erreurs) {
             $session->getFlashBag()->add('error', "Il y a eu des erreurs pendant l'importation.#BR#Veuillez vérifier la liste des agents");
@@ -1574,14 +1555,16 @@ class AgentController extends BaseController
         } elseif ($date !== null) {
             $date = dateSQL($date);
             // Mise à jour de la table personnel
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update("personnel", array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date), array("id"=>$id));
+            $agentUpdate = $this->entityManager->getRepository(Agent::class)->find($id);
+            $agentUpdate->setDeletion(1);
+            $agentUpdate->setActive("Supprimé");
+            $agentUpdate->setDeparture(new \DateTime($date));
 
             // Mise à jour de la table pl_poste
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "$id", 'date' =>">$date"));
+            $p = $this->entityManager->getRepository(Agent::class)->find($id);
 
             // Mise à jour de la table responsables
             $db = new \db();
