@@ -17,6 +17,20 @@ class PLBWebTestCase extends PantherTestCase
     protected $CSRFToken;
     protected $entityManager;
 
+    private function addConfig($name, $value) {
+        $c = new Config();
+        $c->setName($name);
+        $c->setValue($value);
+        $c->setType('text');
+        $c->setComment('');
+        $c->setCategory('test');
+        $c->setValues('');
+        $c->setTechnical(0);
+        $c->setOrder(0);
+
+        $this->entityManager->persist($c);
+    }
+
     protected function setData($dataSet = 'default')
     {
         $config = $GLOBALS['config'];
@@ -192,19 +206,5 @@ class PLBWebTestCase extends PantherTestCase
     {
         include __DIR__ . '/bootstrap.php';
         sleep(1);
-    }
-
-    protected function addConfig($name, $value) {
-        $c = new Config();
-        $c->setName($name);
-        $c->setValue($value);
-        $c->setType('text');
-        $c->setComment('');
-        $c->setCategory('test');
-        $c->setValues('');
-        $c->setTechnical(0);
-        $c->setOrder(0);
-
-        $this->entityManager->persist($c);
     }
 }

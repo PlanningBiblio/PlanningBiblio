@@ -107,28 +107,27 @@ class WorkingHourExportCommand extends Command
                 $jour += ($d->semaine3 - 1) * 7;
             }
 
-            $agentsRepos = [];
+            $agentIds = [];
             foreach ($agents as $agent) {
-                if ($agentIdentifier === 'login') {
-                    $agentsRepos[$agent->getId()]['login'] = $agent->getLogin();
-                } elseif ($agentIdentifier === 'email' || $agentIdentifier === 'mail') {
-                    $agentsRepos[$agent->getId()]['mail'] = $agent->getMail();
-                } elseif ($agentIdentifier === 'matricule') {
-                    $agentsRepos[$agent->getId()]['matricule'] = $agent->getEmployeeNumber();
-                }
+                $agentIds[$agent->getId()] = match ($agentIdentifier) {
+                    'email' => $agent->getMail(),
+                    'login' => $agent->getLogin(),
+                    'matricule' => $agent->getEmployeeNumber(),
+                };
             }
 
             // Recherche les heures de présence valides ce jour pour tous les agents
-            $workinghours = $this->entityManager->getRepository(WorkingHour::class)->findBy(['debut' => new \DateTime($current), 'fin' => new \DateTime($current), 'valide' => true]);
+            $workinghours = $this->entityManager->getRepository(WorkingHour::class)->get($current, $current);
+
             foreach ($workinghours as $elem) {
 
                 // Récupération de l'dentifiant de l'agent (ex : login, adresse email ou ID Harpege renseigné dans le champ "matricule")
                 // Si l'identifiant n'est pas renseigné dans Planno (ex : champ matricule vide), nous n'importons pas l'agent (donc continue) (Demande initiale de la société Bodet Software)
-                if (empty($agentsRepos[$elem->getUser()][$agentIdentifier])) {
+                if (empty($agentIds[$elem->getUser()])) {
                     continue;
                 }
 
-                $agent_id = $agentsRepos[$elem->getUser()][$agentIdentifier];
+                $agentId = $agentIds[$elem->getUser()];
 
                 // Mise en forme du tableau temps
                 /** Le tableau $elem->getWorkingHours()[$jour] est constitué comme suit :
@@ -175,9 +174,8 @@ class WorkingHourExportCommand extends Command
 
                 $heures_supp = null ;
 
-                $list[]=array_merge(array($current, $agent_id, $heures_supp), $temps);
+                $list[] = array_merge(array($current, $agentId, $heures_supp), $temps);
             }
-
 
             $current = date('Y-m-d', strtotime($current." + 1 day"));
         }

@@ -46,7 +46,6 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
 
        $this->builder->build(WorkingHour::class, [
             'perso_id' => $alice->getId(),
-            'temps' => '[["09:00:00","","","19:00:00","1"], ...]',
             'actuel' => 1,
             'valide' => true,
             'debut' => new \DateTime('today'),
