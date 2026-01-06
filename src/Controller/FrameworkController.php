@@ -350,14 +350,12 @@ class FrameworkController extends BaseController
 
         $framework = new Framework();
         $framework->id = $tableauNumero;
+
         if ($framework->is_used()) {
-            return $this->redirectToRoute('framework.edit_table',
-                array(
-                    'id' => $tableauNumero,
-                    'cfg-type' => 0,
-                    'msg' => 'Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.',
-                    'msgType' => 'error'
-                ));
+            $error = 'Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.';
+            $session->getFlashBag()->add('error', $error);
+
+            return $this->redirectToRoute('framework.edit_table', ['id' => $tableauNumero, 'cfg-type' => 0]);
         }
 
         if (isset($post['action'])) {
@@ -366,7 +364,6 @@ class FrameworkController extends BaseController
             $db->delete("pl_poste_horaires", array("numero"=>$tableauNumero));
 
             $keys = array_keys($post);
-
             foreach ($keys as $key) {
                 if ($key != "page" and $key != "action" and $key != "numero") {
                     $tmp = explode("_", $key);				// debut_1_22
@@ -392,15 +389,16 @@ class FrameworkController extends BaseController
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->insert("pl_poste_horaires", $values);
+
             if (!$db->error) {
-                $msg = "Les horaires ont été modifiés avec succès";
-                $msgType = "success";
+                $notice = 'Les horaires ont été modifiés avec succès';
+                $session->getFlashBag()->add('notice', $notice);
             } else {
-                $msg = "Une erreur est survenue lors de l'enregistrement des horaires";
-                $msgType = "error";
+                $error = 'Une erreur est survenue lors de l\'enregistrement des horaires';
+                $session->getFlashBag()->add('error', $error);
             }
 
-            return $this->redirectToRoute('framework.edit_table', array("id" => $tableauNumero, "cfg-type"=> $post['cfg-type'], "msg" => $msg, "msgType" => $msgType));
+            return $this->redirectToRoute('framework.edit_table', ['id' => $tableauNumero, 'cfg-type' => $post['cfg-type']]);
         }
     }
 

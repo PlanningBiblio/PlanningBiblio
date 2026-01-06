@@ -4,8 +4,13 @@
 {% block specificjs %}
   <script type='text/JavaScript' src='{{ asset("js/plb/framework.js") }}'></script>
   <script type='text/JavaScript'>
-    // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
     $("document").ready(function(){
+
+      if($('#tabs').attr('data-active') == 1) {
+        $('.tableaux-valide').attr('href', 'javascript:document.form2.submit();');
+      }
+
+      // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
       $(".tab_select").each(function(){
         var myClass=$(this).find(":selected").attr("class");
         $(this).removeClass();
@@ -14,6 +19,7 @@
         $(this).closest("td").removeClass();
         $(this).closest("td").addClass(myClass);
       });
+
       // Change la classe du select et du td lorsque l'on change d'option dans les listes des postes
       $(".tab_select").change(function(){
         var myClass=$(this).find(":selected").attr("class");
