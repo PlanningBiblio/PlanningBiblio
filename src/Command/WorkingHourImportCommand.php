@@ -12,9 +12,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
-require_once __DIR__ . '/../../legacy/Common/function.php';
-
 #[AsCommand(
     name: 'app:workinghour:import',
     description: 'Import working hours from a CSV file',
@@ -41,11 +38,9 @@ class WorkingHourImportCommand extends Command
         $config = $this->entityManager->getRepository(Config::class)->getAll();
         $agentIdentifier = $config['PlanningHebdo-ImportAgentId'] ?? 'login';
 
-        $CSRFToken = CSRFToken();
-
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
-        $tmp_dir=sys_get_temp_dir();
-        $lockFile=$tmp_dir."/plannoCSV.lock";
+        $tmp_dir = sys_get_temp_dir();
+        $lockFile = $tmp_dir . '/plannoCSV.lock';
 
         if (file_exists($lockFile)) {
             $fileTime = filemtime($lockFile);
@@ -61,8 +56,9 @@ class WorkingHourImportCommand extends Command
                 return Command::SUCCESS;
             }
         }
+
         // On créé le fichier .lock
-        $inF=fopen($lockFile, "w");
+        $inF = fopen($lockFile, 'w');
 
         // On recherche tout le personnel actif
         $agentRepo = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0]);
@@ -92,28 +88,28 @@ class WorkingHourImportCommand extends Command
         $lines = file($CSVFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         // On place les éléments du fichiers dans le tableau $temps
-        $temps = array();
+        $temps = [];
 
         // Pour chaque ligne
         foreach ($lines as $line) {
-            $cells=explode(";", $line);
+            $cells = explode(';', $line);
             // Pour chaque cellule
             for ($i=0; $i<count($cells); $i++) {
                 $cells[$i] = trim($cells[$i]);
 
                 // Mise en form de la date
-                if ($i==1) {
-                    $cells[$i] = date("Y-m-d", strtotime($cells[$i]));
+                if ($i == 1) {
+                    $cells[$i] = date('Y-m-d', strtotime($cells[$i]));
                 }
 
                 // Mise en forme des heures
                 if ($i>1) {
                     if (isset($cells[$i]) and $cells[$i]) {
                         // supprime les h et les : de façon à traiter tous les formats de de la même façon (formats acceptés : 0000, 00h00, 00:00, 000, 0h00, 0:00)
-                        $cells[$i] = str_replace(array("h",":"), '', $cells[$i]);
+                        $cells[$i] = str_replace(['h', ':'], '', $cells[$i]);
                         $min = substr($cells[$i], -2);
-                        $hre = sprintf("%02s", substr($cells[$i], 0, -2));
-                        $cells[$i] = $hre.":$min:00";
+                        $hre = sprintf('%02s', substr($cells[$i], 0, -2));
+                        $cells[$i] = "$hre:$min:00";
                     } else {
                         $cells[$i] = "00:00:00";
                     }
@@ -122,28 +118,28 @@ class WorkingHourImportCommand extends Command
 
             // Si les horaires de l'après midi ne sont pas renseignés, on initialise les variables pour éviter les erreurs PHP
             if (!isset($cells[4])) {
-                $cells[4]=null;
-                $cells[5]=null;
+                $cells[4] = null;
+                $cells[5] = null;
             }
 
             // Si les horaires de la 2eme pause ne sont pas renseignés, on initialise les variables pour éviter les erreurs PHP
             if (!isset($cells[6])) {
-                $cells[6]=null;
-                $cells[7]=null;
+                $cells[6] = null;
+                $cells[7] = null;
             }
 
             // Si les heures de l'après-midi sont nulles (mises à 00:00:00 en lignes 103), on leurs affecte la valeur "null".
             // (Attention, l'affectation systèmatique de la valeur null en ligne 103 est problèmatique)
-            if ($cells[4] == "00:00:00" and $cells[5] == "00:00:00") {
-                $cells[4]=null;
-                $cells[5]=null;
+            if ($cells[4] == '00:00:00' and $cells[5] == '00:00:00') {
+                $cells[4] = null;
+                $cells[5] = null;
             }
 
             // Si les heures de la 2eme pause sont nulles (mises à 00:00:00 en lignes 103), on leurs affecte la valeur "null".
             // (Attention, l'affectation systèmatique de la valeur null en ligne 103 est problèmatique)
-            if ($cells[6] == "00:00:00" and $cells[7] == "00:00:00") {
-                $cells[6]=null;
-                $cells[7]=null;
+            if ($cells[6] == '00:00:00' and $cells[7] == '00:00:00') {
+                $cells[6] = null;
+                $cells[7] = null;
             }
 
             // Si l'agent mentionné dans le fichier n'existe pas dans le tableau $agents, on passe
@@ -175,39 +171,39 @@ class WorkingHourImportCommand extends Command
             }
 
             // Identification de la semaine, premier jour et dernier jour (regroupement pasr semaine)
-            $lundi = date('N', strtotime($cells[1])) == 1 ? $cells[1] : date("Y-m-d", strtotime(date("Y-m-d", strtotime($cells[1]))." last Monday"));
-            $dimanche = date('N', strtotime($cells[1])) == 7 ? $cells[1] : date("Y-m-d", strtotime(date("Y-m-d", strtotime($cells[1]))." next Sunday"));
+            $lundi = date('N', strtotime($cells[1])) == 1 ? $cells[1] : date('Y-m-d', strtotime(date('Y-m-d', strtotime($cells[1])) . ' last Monday'));
+            $dimanche = date('N', strtotime($cells[1])) == 7 ? $cells[1] : date('Y-m-d', strtotime(date('Y-m-d', strtotime($cells[1])) . ' next Sunday'));
 
             // Création d'un tableau par agent
             if (!array_key_exists($perso_id, $temps)) {
-                $temps[$perso_id]=array("perso_id"=> $perso_id);
+                $temps[$perso_id] = ['perso_id' => $perso_id];
             }
 
             // Chaque tableau "agent" contient un tableau par semaine
             // Création des tableaux "semaines" avec date de début (lundi), date de fin (dimanche) et emploi du temps
             if (!array_key_exists($lundi, $temps[$perso_id])) {
-                $temps[$perso_id][$lundi]['debut']=$lundi;
-                $temps[$perso_id][$lundi]['fin']=$dimanche;
-                $temps[$perso_id][$lundi]['temps']=array();
+                $temps[$perso_id][$lundi]['debut'] = $lundi;
+                $temps[$perso_id][$lundi]['fin'] = $dimanche;
+                $temps[$perso_id][$lundi]['temps'] = [];
             }
 
             // Mise en forme du champ "temps"
             // Le champ "temps" contient un tableau contenant les emplois du temps de chaque jour : index ($jour) de 0 à 6 (du lundi au dimanche)
-            $jour=date("N", strtotime($cells[1])) -1;
+            $jour = date('N', strtotime($cells[1])) -1;
             $temps[$perso_id][$lundi]['temps'][$jour] = array($cells[2],$cells[3],$cells[4],$cells[5],$site,$cells[6],$cells[7]);
 
             // Clé identifiant les infos de la ligne (pour comparaison avec la DB)
             // La clé est composée de l'id de l'agent et du md5 du tableau de sa semaine, tableau comprenant le debut, la fin et l'emploi du temps.
-            $cle = $perso_id.'-'.md5(json_encode($temps[$perso_id][$lundi]));
+            $cle = $perso_id . '-' . md5(json_encode($temps[$perso_id][$lundi]));
             $temps[$perso_id][$lundi]['cle'] = $cle;
         }
 
         // $cles : tableau contenant les clés des éléments du fichiers pour comparaison avec la base de données
-        $cles = array();
+        $cles = [];
 
         // On reprend tous les éléments du tableau $temps finalisé et on prépare les données pour l'insertion dans la base de données (tableau $tab);
         // $tab : tableau contenant les éléments à importer
-        $tab = array();
+        $tab = [];
 
         foreach ($temps as $perso) {
             foreach ($perso as $semaine) {
@@ -225,10 +221,10 @@ class WorkingHourImportCommand extends Command
         }
 
         // $cles_db : tableau contenant les clé des éléments de la base de données pour comparaison avec le fichier
-        $cles_db = array();
+        $cles_db = [];
 
         // Recherche des éléments déjà importés
-        $tab_db=array();
+        $tab_db = [];
 
         $workingHours = $this->entityManager->getRepository(Workinghour::class)->findBy(['cle' => 0]);
         foreach ($workingHours as $wh) {
@@ -237,7 +233,7 @@ class WorkingHourImportCommand extends Command
         }
 
         // Insertion des nouvelles valeurs ou valeurs modifiées
-        $insert = array();
+        $insert = [];
         foreach ($tab as $elem) {
             if (!in_array($elem['cle'], $cles_db)) {
                 $elem['actuel'] = ($elem['debut'] <= date('Y-m-d') and $elem['fin'] >= date('Y-m-d')) ? 1 : 0;
@@ -273,7 +269,7 @@ class WorkingHourImportCommand extends Command
         }
 
         // Suppression des valeurs supprimées ou modifiées
-        $delete = array();
+        $delete = [];
         foreach ($cles_db as $elem) {
             if (!in_array($elem, $cles)) {
                 $delete[] = ['cle' => $elem];
