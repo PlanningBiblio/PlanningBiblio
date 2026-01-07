@@ -900,6 +900,8 @@ $(function(){
 
   $('.emoji-picker-textarea').each(function() {
     $(this).wrap('<p class="emoji-picker-container"></p>');
+    $(this).attr('data-emojiable="true"');
+    $(this).attr('data-emoji-input="unicode"');
   });
   
   // Initializes and creates emoji set from sprite sheet
