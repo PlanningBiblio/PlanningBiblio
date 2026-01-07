@@ -1612,12 +1612,8 @@ class AgentController extends BaseController
             }
         }
 
-        $list = implode(',', $tab);
-
         if ($session->get('perso_actif')=="Supprimé") {
-            $p=new \personnel();
-            $p->CSRFToken = $CSRFToken;
-            $p->delete($list);
+            $this->entityManager->getRepository(Agent::class)->delete($tab);
         } else {
             // TODO : demander la date de suppression en popup
             // Date de suppression
