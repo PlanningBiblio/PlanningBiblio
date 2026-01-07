@@ -25,9 +25,15 @@ class WorkingHourSettingController extends BaseController
 
         $sites = [];
 
-        if ($this->config['PlanningHebdo-resetCycles'] > 1) {
+        if ($this->config['PlanningHebdo-resetCycles'] > 1 and $this->config['Multisites-nombre'] > 1) {
             foreach ($cycles as $cycle) {
-                $sites[$cycle->getId()] = json_encode($cycle->getSites());
+                $mySites = [];
+                foreach ($cycle->getSites() as $site) {
+                    $mySites[] = $this->config['Multisites-site' . $site];
+                }
+                $mySites = implode(', ', $mySites);
+
+                $sites[$cycle->getId()] = $mySites;
             }
         }
 
@@ -38,7 +44,7 @@ class WorkingHourSettingController extends BaseController
             'start' => $start,
         ]);
 
-        return $this->output('/workinghour/settings/index.html.twig');
+        return $this->output('/workinghourSettings/index.html.twig');
     }
 
     #[Route(path: '/workinghour/settings/{id<\d+>}', name: 'workinghour.settings.edit', methods: ['GET'])]
@@ -54,11 +60,24 @@ class WorkingHourSettingController extends BaseController
             $cycle = new WorkingHourCycle();
         }
 
+        // Reset site by site if PlanningHebdo-resetCycles == 2
+        $sites = [];
+
+        if ($this->config['PlanningHebdo-resetCycles'] > 1 and $this->config['Multisites-nombre'] > 1) {
+            for ($i = 1; $i < $this->config['Multisites-nombre'] + 1; $i++) {
+                $sites[] = [
+                    'id' => $i,
+                    'name' => $this->config['Multisites-site' . $i],
+                ];
+            }
+        }
+
         $this->templateParams([
             'cycle' => $cycle,
+            'sites' => $sites,
         ]);
 
-        return $this->output('/workinghour/settings/edit.html.twig');
+        return $this->output('/workinghourSettings/edit.html.twig');
     }
 
     #[Route(path: '/workinghour/settings', name: 'workinghour.settings.save', methods: ['POST'])]
@@ -74,6 +93,7 @@ class WorkingHourSettingController extends BaseController
 
         $id = $request->get('id');
         $date = $request->get('date');
+        $sites = $request->get('sites', []);
         $week = $request->get('week');
 
         $date = \DateTime::createFromFormat('d/m/Y', $date);
@@ -89,6 +109,7 @@ class WorkingHourSettingController extends BaseController
         }
 
         $cycle->setDate($date);
+        $cycle->setSites($sites);
         $cycle->setWeek($week);
         $this->entityManager->persist($cycle);
         $this->entityManager->flush();
