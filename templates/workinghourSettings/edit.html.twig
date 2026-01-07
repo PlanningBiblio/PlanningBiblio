@@ -40,6 +40,22 @@
             </td>
           </tr>
 
+          {% if sites is not empty %}
+            <tr>
+              <td><strong>La réinitialisation s'applique aux sites ...</strong></td>
+              <td>
+                <ul>
+                  {% for site in sites %}
+                    <li>
+                      <input type="checkbox" name="sites[]" id="site{{ site.id }}" value="{{ site.id }}" {% if site.id in cycle.sites %} checked="checked" {% endif %} />
+                      <label for="site{{ site.id }}">{{ site.name }}</label>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </td>
+            </tr>
+          {% endif %}
+
           <tr>
             <td colspan="2" style="text-align:center;">
               <a href="{{ path('workinghour.settings') }}" class="ui-button ui-button-type2" style="margin-left:30px;">Annuler</a>

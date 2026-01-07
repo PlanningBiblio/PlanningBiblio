@@ -58,7 +58,7 @@ class WorkingHourCycle
         return $this->sites;
     }
 
-    public function setSite(array $sites): static
+    public function setSites(array $sites): static
     {
         $this->sites = $sites;
 
