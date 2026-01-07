@@ -17,17 +17,13 @@ class PLBWebTestCase extends PantherTestCase
     protected $CSRFToken;
     protected $entityManager;
 
+    /**
+     * The addConfig function allows you to test additional parameters that are usually found in the custom_options.php file
+     */
     private function addConfig($name, $value) {
         $c = new Config();
         $c->setName($name);
         $c->setValue($value);
-        $c->setType('text');
-        $c->setComment('');
-        $c->setCategory('test');
-        $c->setValues('');
-        $c->setTechnical(0);
-        $c->setOrder(0);
-
         $this->entityManager->persist($c);
     }
 

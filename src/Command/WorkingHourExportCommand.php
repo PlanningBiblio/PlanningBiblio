@@ -45,14 +45,15 @@ class WorkingHourExportCommand extends Command
             include __DIR__ . '/../../custom_options.php';
         }
 
-        $CSVFile = $config['PlanningHebdo-ExportFile'] ?? '/tmp/export-planno-edt.csv';
+        $tmpDir = sys_get_temp_dir();
+
+        $CSVFile = $config['PlanningHebdo-ExportFile'] ?? $tmpDir . '/export-planno-edt.csv';
         $days_before = $config['PlanningHebdo-ExportDaysBefore'] ?? 15;
         $days_after = $config['PlanningHebdo-ExportDaysAfter'] ?? 60;
         $agentIdentifier = $config['PlanningHebdo-ExportAgentId'] ?? 'matricule';
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
-        $tmp_dir=sys_get_temp_dir();
-        $lockFile = $tmp_dir . '/plannoWorkingHourExport.lock';
+        $lockFile = $tmpDir . '/plannoWorkingHourExport.lock';
 
         if (file_exists($lockFile)) {
             $fileTime = filemtime($lockFile);

@@ -28,14 +28,15 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
         if (file_exists($this->lockFile)) {
             @unlink($this->lockFile);
         }
-
     }
 
     public function testWorkingHourExportCommand(): void
     {
-        $this->setParam('PlanningHebdo-ExportFile', '/tmp/test-export.csv');
-        $this->setParam('PlanningHebdo-ExportDaysBefore', '1');
-        $this->setParam('PlanningHebdo-ExportDaysAfter', '1');
+        $file = sys_get_temp_dir() . '/PlannoTestWorkingHourExport.csv';
+
+        $this->setParam('PlanningHebdo-ExportFile', $file);
+        $this->setParam('PlanningHebdo-ExportDaysBefore', 5);
+        $this->setParam('PlanningHebdo-ExportDaysAfter', 10);
         $this->setParam('PlanningHebdo-ExportAgentId', 'matricule');
         $this->setParam('EDTSamedi',1);
         $this->setParam('PlanningHebdo',1);
@@ -44,21 +45,29 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
 
         $alice = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alice']);
 
-       $this->builder->build(WorkingHour::class, [
+        $this->builder->build(WorkingHour::class, [
             'perso_id' => $alice->getId(),
             'actuel' => 1,
             'valide' => true,
-            'debut' => new \DateTime('today'),
-            'fin' => new \DateTime('today'),
+            'debut' => new \DateTime('1 month ago'),
+            'fin' => new \DateTime('+ 1 year'),
+            'temps' => [
+                0 => ['', '', '', '', 0],
+                1 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+                2 => ['09:00:00', '13:00:00', '', '', 1],
+                3 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+                4 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+                5 => ['09:00:00', '13:00:00', '', '', 1],
+            ]
         ]);
         $this->entityManager->clear();
 
         $this->execute();
 
-        $this->assertFileExists('/tmp/test-export.csv');
-        $contents = file_get_contents('/tmp/test-export.csv');
+        $this->assertFileExists($file);
+        $contents = file_get_contents($file);
         $this->assertStringContainsString('0000000ff040', $contents);
-        
+
         $this->restore();
     }
 
