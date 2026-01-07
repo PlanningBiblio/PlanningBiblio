@@ -609,4 +609,97 @@ class AgentRepository extends EntityRepository
             ->getQuery()
             ->getArrayResult();
     }
+
+    public function delete($list): void
+    {
+        // Suppresion des informations de la table personnel
+        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->update(Agent::class, 'a')
+            ->set('a.supprime', ':supprime')
+            ->set('a.login', "CONCAT('deleted_', a.id)")
+            ->set('a.nom', "CONCAT('Agent_', a.id)")
+            ->set('a.prenom', ':null')
+            ->set('a.mail', ':null')
+            ->set('a.password', ':null')
+            ->set('a.arrivee', ':null')
+            ->set('a.depart', ':null')
+            ->set('a.postes', ':null')
+            ->set('a.droits', ':null')
+            ->set('a.commentaires', ':comment')
+            ->set('a.last_login', ':null')
+            ->set('a.temps', ':null')
+            ->set('a.informations', ':null')
+            ->set('a.recup', ':null')
+            ->set('a.heures_travail', ':null')
+            ->set('a.heures_hebdo', ':null')
+            ->set('a.sites', ':null')
+            ->set('a.mails_responsables', ':null')
+            ->set('a.matricule', ':null')
+            ->set('a.code_ics', ':null')
+            ->set('a.url_ics', ':null')
+            ->set('a.check_ics', ':null')
+            ->set('a.check_hamac', ':null')
+            ->set('a.conges_credit', ':null')
+            ->set('a.conges_reliquat', ':null')
+            ->set('a.conges_anticipation', ':null')
+            ->set('a.conges_annuel', ':null')
+            ->set('a.comp_time', ':null')
+            ->setParameter('supprime', 2)
+            ->setParameter('null', null)
+            ->setParameter('comment', "Suppression définitive le ".date("d/m/Y"))
+            ->where('a.id IN (:ids)')
+            ->setParameter('ids', $list)
+            ->getQuery()
+            ->execute();
+
+        // Suppression des informations sur les absences
+        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->update(Absence::class, 'a')
+            ->set('a.commentaires', ':null')
+            ->set('a.motif_autre', ':null')
+            ->where('a.perso_id IN (:ids)')
+            ->setParameter('null', null)
+            ->setParameter('ids', $list)
+            ->getQuery()
+            ->execute();
+
+        // Suppression des informations sur les congés
+        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->update(Holiday::class, 'h')
+            ->set('h.commentaires', ':null')
+            ->set('h.refus', ':null')
+            ->set('h.heures', ':null')
+            ->set('h.solde_prec', ':null')
+            ->set('h.solde_actuel', ':null')
+            ->set('h.recup_prec', ':null')
+            ->set('h.recup_actuel', ':null')
+            ->set('h.reliquat_prec', ':null')
+            ->set('h.reliquat_actuel', ':null')
+            ->set('h.anticipation_prec', ':null')
+            ->set('h.anticipation_actuel', ':null')
+            ->where('h.perso_id IN (:ids)')
+            ->setParameter('null', null)
+            ->setParameter('ids', $list)
+            ->getQuery()
+            ->execute();
+
+        // Suppresion des informations sur les récupérations
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->delete(OverTime::class, 'o')
+            ->where('o.perso_id IN (:ids)')
+            ->setParameter('ids', $list)
+            ->getQuery()
+            ->execute();
+
+        // Suppression des informations sur les heures de présence
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->delete(WorkingHour::class, 'w')
+            ->where('w.perso_id IN (:ids)')
+            ->setParameter('ids', $list)
+            ->getQuery()
+            ->execute();
+    }
 }
