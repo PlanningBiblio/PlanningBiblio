@@ -68,6 +68,41 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
         $contents = file_get_contents($file);
         $this->assertStringContainsString('0000000ff040', $contents);
 
+
+        // Tests the content
+        $date = new \DateTime('next monday');
+        $nextMonday = $date->format('Y-m-d');
+        $date->modify('+1 day');
+        $nextTuesday = $date->format('Y-m-d');
+
+        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        foreach ($lines as $line) {
+            $cells = explode(',', $line);
+
+            if ($cells[0] == $nextMonday and $cells[1] == '0000000ff040') {
+                // faire les vérification ici
+                echo "\nNext Monday\n";
+                var_dump($cells);
+                // Add Assert $cells[2] is empty
+                // Add asser $cells 3,4,5,6 does not exist
+
+            }
+
+            if ($cells[0] == $nextTuesday and $cells[1] == '0000000ff040') {
+                // faire les vérification ici
+                echo "\nNext Tuesday\n";
+                var_dump($cells);
+                // Add Assert $cells[2] is empty
+                // Add assert $cells 3,4,5,6 exists
+                // Add assert $cells[3] = '09:00'
+                // Add assert $cells[4] = '12:00'
+                // Add assert $cells[5] = '13:00'
+                // Add assert $cells[6] = '17:00'
+
+            }
+        }
+
         $this->restore();
     }
 
