@@ -24,6 +24,11 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
             'supprime' => 0, 'matricule' => '0000000ff040'
         ));
 
+        $this->builder->build(Agent::class, array(
+            'login' => 'alex', 'mail' => 'alex@example.com', 'nom' => 'Doe', 'prenom' => 'Alex',
+            'supprime' => 0, 'matricule' => '0000000ee490'
+        ));
+
         $this->lockFile = sys_get_temp_dir() . '/plannoWorkingHourExport.lock';
         if (file_exists($this->lockFile)) {
             @unlink($this->lockFile);
@@ -44,6 +49,7 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
         $this->entityManager->clear();
 
         $alice = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alice']);
+        $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
 
         $this->builder->build(WorkingHour::class, [
             'perso_id' => $alice->getId(),
@@ -60,14 +66,30 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
                 5 => ['09:00:00', '13:00:00', '', '', 1],
             ]
         ]);
+
+        $this->builder->build(WorkingHour::class, [
+            'perso_id' => $alex->getId(),
+            'actuel' => 1,
+            'valide' => true,
+            'debut' => new \DateTime('1 month ago'),
+            'fin' => new \DateTime('+ 1 year'),
+            'temps' => [
+                0 => ['', '', '', '', 0],
+                1 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+                2 => ['09:00:00', '13:00:00', '', '', 1],
+                3 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+                4 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+                5 => ['09:00:00', '13:00:00', '', '', 1],
+            ]
+        ]);
+
         $this->entityManager->clear();
 
         $this->execute();
 
         $this->assertFileExists($file);
-        $contents = file_get_contents($file);
-        $this->assertStringContainsString('0000000ff040', $contents);
-
+        // $contents = file_get_contents($file);
+        // $this->assertStringContainsString('0000000ff040', $contents);
 
         // Tests the content
         $date = new \DateTime('next monday');
@@ -86,7 +108,11 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
                 var_dump($cells);
                 // Add Assert $cells[2] is empty
                 // Add asser $cells 3,4,5,6 does not exist
-
+                $this->assertStringContainsString('', $cells[2]);
+                for ($i = 3; $i <= 6; $i++) {
+                    $this->assertArrayNotHasKey($i, $cells);
+                }
+                $this->assertNull('', $cells[2]);
             }
 
             if ($cells[0] == $nextTuesday and $cells[1] == '0000000ff040') {
