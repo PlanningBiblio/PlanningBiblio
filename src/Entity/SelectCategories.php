@@ -14,10 +14,10 @@ class SelectCategories
     private ?int $id = null;
 
      #[ORM\Column]
-    protected ?string $valeur = '';
+    private ?string $valeur = '';
 
     #[ORM\Column]
-    protected ?int $rang = 0;
+    private ?int $rang = 0;
 
     public function getId(): ?int
     {
