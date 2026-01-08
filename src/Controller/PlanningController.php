@@ -2294,11 +2294,12 @@ class PlanningController extends BaseController
         $weekView = $view == 'week';
         $_SESSION['week'] = $weekView;
 
-        $this->setDates($request);
-        $date = $this->date;
-
+        // IMPORTANT : keep setSite before setDates, because $session->get('site') is used in the datePl class
         $this->setSite($request);
         $site = $this->site;
+
+        $this->setDates($request);
+        $date = $this->date;
 
         $this->getLockData();
 

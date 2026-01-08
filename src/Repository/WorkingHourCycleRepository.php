@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Config;
 use App\Entity\WorkingHourCycle;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -40,6 +41,13 @@ class WorkingHourCycleRepository extends EntityRepository
     */
     public function findFirstWeek($date, $site): ?string
     {
+        $entityManager = $this->getEntityManager();
+        $configResetCycles = $entityManager->getRepository(Config::class)->findOneBy(['nom' => 'PlanningHebdo-resetCycles'])->getValue();
+
+        if ($configResetCycles == 0) {
+            return null;
+        }
+
         $results = $this->createQueryBuilder('w')
             ->andWhere('w.date <= :date')
             ->setParameter('date', $date)
@@ -49,7 +57,10 @@ class WorkingHourCycleRepository extends EntityRepository
         ;
 
         foreach ($results as $elem) {
-            if (in_array($site, $elem->getSites()) or empty($elem->getSites())) {
+            if (in_array($site, $elem->getSites())
+                or empty($elem->getSites())
+                or $configResetCycles == 1
+            ) {
                 $result = $elem;
                 break;
             }

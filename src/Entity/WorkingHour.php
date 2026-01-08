@@ -58,7 +58,7 @@ class WorkingHour
     private ?int $remplace = 0;
 
     #[ORM\Column]
-    private ?string $cle = '';
+    private ?string $cle = null;
 
     #[ORM\Column]
     private ?int $exception = 0;
@@ -103,6 +103,7 @@ class WorkingHour
     public function setKey(?string $key): static
     {
         $this->cle = $key;
+
         return $this;
     }
 
