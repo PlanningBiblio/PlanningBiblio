@@ -14,13 +14,13 @@ class SelectServices
     private ?int $id = null;
 
      #[ORM\Column]
-    protected ?string $valeur = '';
+    private ?string $valeur = '';
 
     #[ORM\Column]
-    protected ?int $rang = 0;
+    private ?int $rang = 0;
 
     #[ORM\Column]
-    protected ?string $couleur = '';
+    private ?string $couleur = '';
 
     public function getId(): ?int
     {

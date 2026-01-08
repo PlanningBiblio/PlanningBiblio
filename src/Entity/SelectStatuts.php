@@ -14,16 +14,16 @@ class SelectStatuts
     private ?int $id = null;
 
     #[ORM\Column]
-    protected ?string $valeur = '';
+    private ?string $valeur = '';
 
     #[ORM\Column]
-    protected ?int $rang = 0;
+    private ?int $rang = 0;
 
     #[ORM\Column]
-    protected ?string $couleur = '';
+    private ?string $couleur = '';
 
     #[ORM\Column]
-    protected ?int $categorie = 0;
+    private ?int $categorie = 0;
 
     public function getId(): ?int
     {
