@@ -1,3 +1,7 @@
+*** Version 25.04.16   (2026-01-09)    ***
+- Fixes
+MT51618: Fix the saving of frameworks containing many cells #1293
+
 *** Version 25.04.15   (2025-12-23)    ***
 - Fixes
 MT51516: Fix the access to the /agent/password route #1288
