@@ -63,7 +63,7 @@ class AgentController extends BaseController
             $elem = [];
             $id = $agent['id'];
             $arrivee = dateFr($agent['arrivee'] ? $agent['arrivee']->format('Y-m-d') : '');
-            $depart = dateFr($agent['depart'] ? $agent['depart']->format('Y-m-d') : '');
+            $depart = dateFr($agent['depart'] ? $agent['depart']->format('Y-m-d') : '');//add TU for verifier les champs (ge zi li de shujv ,tester quand c'est null,changer, et verifier again)
             $last_login = date_time($agent['last_login'] ? $agent['last_login']->format('Y-m-d H:i:s') : '0000-00-00 00:00:00');
             $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
             $heures = heure4($heures);
@@ -260,8 +260,8 @@ class AgentController extends BaseController
         $ics = null;
         if ($id) {
             $agent = $this->entityManager->getRepository(Agent::class)->find($id);
-            $arrivee = $agent->getArrival() ? $agent->getArrival()->format('Y-m-d') : '';
-            $depart = $agent->getDeparture() ? $agent->getDeparture()->format('Y-m-d') : '';
+            $arrivee = $agent->getArrival() ? $agent->getArrival()->format('d/m/Y') : '';
+            $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';/////
             $breaktimes = array();
             if ($this->config('PlanningHebdo')) {
                 $workingHour = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $id, 'debut' => new \DateTime(), 'fin' => new \DateTime(), 'valide' => true]);
@@ -458,7 +458,7 @@ class AgentController extends BaseController
             $hamac_pattern = !empty($this->config('Hamac-motif')) ? $this->config('Hamac-motif') : 'Hamac';
             $this->templateParams(array(
                 'hamac_pattern'     => $hamac_pattern,
-                'check_hamac'       => !empty($check_hamac) ? 1 : 0,
+                'check_hamac'       => $agent->isHamacCheck(),
             ));
         }
 
@@ -466,7 +466,7 @@ class AgentController extends BaseController
             $ics_pattern = !empty($this->config('ICS-Pattern1')) ? $this->config('ICS-Pattern1') : 'Serveur ICS N°1';
             $this->templateParams(array(
                 'ics_pattern'     => $ics_pattern,
-                'check_ics'       => !empty($check_ics[0]) ? 1 : 0,
+                'check_ics'       => !empty($agent->getIcsCheck()[0]) ? 1 : 0,
             ));
         }
 
@@ -474,7 +474,7 @@ class AgentController extends BaseController
             $ics_pattern = !empty($this->config('ICS-Pattern2')) ? $this->config('ICS-Pattern2') : 'Serveur ICS N°2';
             $this->templateParams(array(
                 'ics_pattern2'     => $ics_pattern,
-                'check_ics2'       => !empty($check_ics[1]) ? 1 : 0,
+                'check_ics2'       => !empty($agent->getIcsCheck()[1]) ? 1 : 0,
             ));
         }
 
@@ -483,8 +483,8 @@ class AgentController extends BaseController
             $ics_pattern = !empty($this->config('ICS-Pattern3')) ? $this->config('ICS-Pattern3') : 'Serveur ICS N°3';
             $this->templateParams(array(
                 'ics_pattern3'     => $ics_pattern,
-                'check_ics3'       => !empty($check_ics[2]) ? 1 : 0,
-                'url_ics'          => $url_ics,
+                'check_ics3'       => !empty($agent->getIcsCheck()[2]) ? 1 : 0,
+                'url_ics'          => $agent->getIcsUrl(),
             ));
         }
 
@@ -681,8 +681,8 @@ class AgentController extends BaseController
     {
 
         $params = $request->request->all();
-        $arrivee = $request->get('arrivee') ? new \DateTime($request->get('arrivee')) : null;
-        $depart = $request->get('depart') ? new \DateTime($request->get('depart')) : null;
+        $arrivee = $request->get('arrivee') ? \DateTime::createFromFormat('d/m/Y', $request->get('arrivee')) : null;
+        $depart = $request->get('depart') ? \DateTime::createFromFormat('d/m/Y', $request->get('depart')) : null;
         $CSRFToken = $request->get('CSRFToken');
         $heuresHebdo = $request->get('heuresHebdo');
         $heuresTravail = $request->get('heuresTravail');
@@ -1564,7 +1564,7 @@ class AgentController extends BaseController
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "$id", 'date' =>">$date"));
-            $p = $this->entityManager->getRepository(Agent::class)->find($id);
+            $p = $this->entityManager->getRepository(PlanningPosition::class)->find($id);
 
             // Mise à jour de la table responsables
             $db = new \db();
