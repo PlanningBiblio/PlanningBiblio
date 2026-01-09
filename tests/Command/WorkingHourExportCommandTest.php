@@ -58,12 +58,12 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
             'debut' => new \DateTime('1 month ago'),
             'fin' => new \DateTime('+ 1 year'),
             'temps' => [
-                0 => ['', '', '', '', 0],
-                1 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
-                2 => ['09:00:00', '13:00:00', '', '', 1],
-                3 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
-                4 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
-                5 => ['09:00:00', '13:00:00', '', '', 1],
+                0 => ['', '', '', '', 0],// Monday
+                1 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],// Tuesday
+                2 => ['09:00:00', '13:00:00', '', '', 1],// Wednesday
+                3 => ['10:00:00', '12:00:00', '13:00:00', '17:00:00', 1],// Thursday
+                4 => ['10:35', '12:35', '13:00:00', '17:00:00', 1],// Friday
+                5 => ['09:00:00', '13:00:00', '', '', 1],// Saturday
             ]
         ]);
 
@@ -74,12 +74,12 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
             'debut' => new \DateTime('1 month ago'),
             'fin' => new \DateTime('+ 1 year'),
             'temps' => [
-                0 => ['', '', '', '', 0],
-                1 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
-                2 => ['09:00:00', '13:00:00', '', '', 1],
-                3 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
-                4 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
-                5 => ['09:00:00', '13:00:00', '', '', 1],
+                0 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],// Monday
+                1 => ['', '', '', '', 0],// Tuesday
+                2 => ['09:00:00', '13:00:00', '', '', 1],// Wednesday
+                3 => ['10:00:00', '12:00:00', '13:00:00', '17:00:00', 1],// Thursday
+                4 => ['10:00:00', '12:00:00', '13:00:00', '17:00:00', 1],// Friday
+                5 => ['13:35', '17:35', '', '', 1],// Saturday
             ]
         ]);
 
@@ -88,14 +88,20 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
         $this->execute();
 
         $this->assertFileExists($file);
-        // $contents = file_get_contents($file);
-        // $this->assertStringContainsString('0000000ff040', $contents);
 
         // Tests the content
         $date = new \DateTime('next monday');
         $nextMonday = $date->format('Y-m-d');
         $date->modify('+1 day');
-        $nextTuesday = $date->format('Y-m-d');
+        $nextTuesday = $date->format('Y-m-d');        
+        $date->modify('+1 day');
+        $nextWednesday = $date->format('Y-m-d');
+        $date->modify('+1 day');
+        $nextThursday = $date->format('Y-m-d');
+        $date->modify('+1 day');
+        $nextFriday = $date->format('Y-m-d');
+        $date->modify('+1 day');
+        $nextSaturday = $date->format('Y-m-d');
 
         $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
@@ -104,28 +110,111 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
 
             if ($cells[0] == $nextMonday and $cells[1] == '0000000ff040') {
                 // faire les vérification ici
-                echo "\nNext Monday\n";
-                var_dump($cells);
-                // Add Assert $cells[2] is empty
-                // Add asser $cells 3,4,5,6 does not exist
-                $this->assertStringContainsString('', $cells[2]);
-                for ($i = 3; $i <= 6; $i++) {
+                echo "\nAlice Next Monday\n";
+                $this->assertEmpty($cells[2]);
+                for ($i = 3; $i <= 7; $i++) {
                     $this->assertArrayNotHasKey($i, $cells);
                 }
-                $this->assertNull('', $cells[2]);
             }
 
             if ($cells[0] == $nextTuesday and $cells[1] == '0000000ff040') {
-                // faire les vérification ici
-                echo "\nNext Tuesday\n";
-                var_dump($cells);
-                // Add Assert $cells[2] is empty
-                // Add assert $cells 3,4,5,6 exists
-                // Add assert $cells[3] = '09:00'
-                // Add assert $cells[4] = '12:00'
-                // Add assert $cells[5] = '13:00'
-                // Add assert $cells[6] = '17:00'
+                echo "\nAlice Next Tuesday\n";
+                $this->assertEmpty($cells[2]);
+                $this->assertEquals('09:00', $cells[3]);
+                $this->assertEquals('12:00', $cells[4]);
+                $this->assertEquals('13:00', $cells[5]);
+                $this->assertEquals('17:00', $cells[6]);
+            }
 
+            if ($cells[0] == $nextWednesday and $cells[1] == '0000000ff040') {
+                echo "\nAlice Next Wednesday\n";
+                $this->assertEmpty($cells[2]);
+                $this->assertEquals('09:00', $cells[3]);
+                $this->assertEquals('13:00', $cells[4]);
+                $this->assertArrayNotHasKey(5, $cells);
+                $this->assertArrayNotHasKey(6, $cells);
+            }
+
+            if ($cells[0] == $nextThursday and $cells[1] == '0000000ff040') {
+                echo "\nAlice Next Thursday\n";
+                $this->assertEmpty($cells[2]);
+                $this->assertEquals('10:00', $cells[3]);
+                $this->assertEquals('12:00', $cells[4]);
+                $this->assertEquals('13:00', $cells[5]);
+                $this->assertEquals('17:00', $cells[6]);
+            }
+
+            if ($cells[0] == $nextFriday and $cells[1] == '0000000ff040') {
+                echo "\nAlice Next Friday\n";
+                $this->assertEmpty($cells[2]);
+                $this->assertEquals('10:35', $cells[3]);
+                $this->assertEquals('12:35', $cells[4]);
+                $this->assertEquals('13:00', $cells[5]);
+                $this->assertEquals('17:00', $cells[6]);
+            }
+
+            if ($cells[0] == $nextSaturday and $cells[1] == '0000000ff040') {
+                echo "\nAlice Next Saturday\n";
+                $this->assertEmpty($cells[2]);
+                $this->assertEquals('09:00', $cells[3]);
+                $this->assertEquals('13:00', $cells[4]);
+                $this->assertArrayNotHasKey(5, $cells);
+                $this->assertArrayNotHasKey(6, $cells);
+            }
+
+            // Check for the second person
+            if ($cells[0] == $nextMonday and $cells[1] == '0000000ee490') {
+                // faire les vérification ici
+                echo "\nAlex Next Monday\n";
+                $this->assertEmpty($cells[2]);
+                $this->assertEquals('09:00', $cells[3]);
+                $this->assertEquals('12:00', $cells[4]);
+                $this->assertEquals('13:00', $cells[5]);
+                $this->assertEquals('17:00', $cells[6]);
+            }
+
+            if ($cells[0] == $nextTuesday and $cells[1] == '0000000ee490') {
+                echo "\nAlex Next Tuesday\n";
+                $this->assertEmpty($cells[2]);
+                for ($i = 3; $i <= 6; $i++) {
+                    $this->assertArrayNotHasKey($i, $cells);
+                }
+            }
+
+            if ($cells[0] == $nextWednesday and $cells[1] == '0000000ee490') {
+                echo "\nAlex Next Wednesday\n";
+                $this->assertEmpty($cells[2]);
+                $this->assertEquals('09:00', $cells[3]);
+                $this->assertEquals('13:00', $cells[4]);
+                $this->assertArrayNotHasKey(5, $cells);
+                $this->assertArrayNotHasKey(6, $cells);
+            }
+
+            if ($cells[0] == $nextThursday and $cells[1] == '0000000ee490') {
+                echo "\nAlex Next Thursday\n";
+                $this->assertEmpty($cells[2]);
+                $this->assertEquals('10:00', $cells[3]);
+                $this->assertEquals('12:00', $cells[4]);
+                $this->assertEquals('13:00', $cells[5]);
+                $this->assertEquals('17:00', $cells[6]);
+            }
+
+            if ($cells[0] == $nextFriday and $cells[1] == '0000000ee490') {
+                echo "\nAlex Next Friday\n";
+                $this->assertEmpty($cells[2]);
+                $this->assertEquals('10:00', $cells[3]);
+                $this->assertEquals('12:00', $cells[4]);
+                $this->assertEquals('13:00', $cells[5]);
+                $this->assertEquals('17:00', $cells[6]);
+            }
+
+            if ($cells[0] == $nextSaturday and $cells[1] == '0000000ee490') {
+                echo "\nAlex Next Saturday\n";
+                $this->assertEmpty($cells[2]);
+                $this->assertEquals('13:35', $cells[3]);
+                $this->assertEquals('17:35', $cells[4]);
+                $this->assertArrayNotHasKey(5, $cells);
+                $this->assertArrayNotHasKey(6, $cells);
             }
         }
 
