@@ -49,22 +49,22 @@ class Holiday
     private ?\DateTime $saisie = null;
 
     #[ORM\Column]
-    private ?int $saisie_par = null;
+    private ?int $saisie_par = 0;
 
     #[ORM\Column]
-    private ?int $modif = null;
+    private ?int $modif = 0;
 
     #[ORM\Column]
     private ?\DateTime $modification = null;
 
     #[ORM\Column]
-    private ?int $valide_n1 = null;
+    private ?int $valide_n1 = 0;
 
     #[ORM\Column]
     private ?\DateTime $validation_n1 = null;
 
     #[ORM\Column]
-    private ?int $valide = null;
+    private ?int $valide = 0;
 
     #[ORM\Column]
     private ?\DateTime $validation = null;
@@ -94,13 +94,13 @@ class Holiday
     private ?float $anticipation_actuel = null;
 
     #[ORM\Column]
-    private ?int $supprime = null;
+    private ?int $supprime = 0;
 
     #[ORM\Column]
     private ?\DateTime $suppr_date = null;
 
     #[ORM\Column]
-    private ?int $information = null;
+    private ?int $information = 0;
 
     #[ORM\Column]
     private ?\DateTime $info_date = null;
