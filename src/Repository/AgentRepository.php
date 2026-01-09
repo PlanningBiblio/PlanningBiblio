@@ -487,9 +487,28 @@ class AgentRepository extends EntityRepository
             ->execute();
     }
 
+    public function updateAsDeletedAndDepartTodayById($ids): int
+    {
+        $qb = $this->createQueryBuilder('p');
+
+        return $qb
+            ->update()
+            ->set('p.supprime', 1)
+            ->set('p.actif', ':actif')
+            ->set('p.depart', ':today')
+            ->where('p.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->setParameter('actif', 'Supprimé')
+            ->setParameter('today', date('Y-m-d'))
+            ->getQuery()
+            ->execute();
+    }
+
     public function findNamesByActif(string $actif): array
     {
         $supprimeValues = str_contains($actif, 'Supprim') ? [1] : [0];
+        $actif = str_contains($actif, 'Supprim') ? 'Supprim&eacute;' : $actif;
+        
         $qb = $this->createQueryBuilder('p')
             ->select('p')
             ->where('p.supprime IN (:supprime)')
@@ -498,7 +517,7 @@ class AgentRepository extends EntityRepository
             ->setParameter('actif', $actif);
 
         return $qb->getQuery()->getArrayResult();
-    }// wait for test
+    }
 
     public function findDistinctStatuts(): array
     {
@@ -530,7 +549,6 @@ class AgentRepository extends EntityRepository
     {
         $url = "/ical?id=$id";
         if ($GLOBALS['config']['ICS-Code']) {
-            // $code = $this->getICSCode($id);
             $agent = $this->find($id);
             $code = $agent->getICSCode();
             if (!$code) {

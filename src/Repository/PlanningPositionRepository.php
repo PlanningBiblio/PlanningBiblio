@@ -44,28 +44,30 @@ class PlanningPositionRepository extends EntityRepository
             ->execute();
     }
 
-    public function deleteAfterDate(int $userId, string $departure)
+    public function updateAsDeleteAfterDate($userIds, string $date)
+    {
+        $userIds = is_array($userIds) ? $userIds : [$userIds];
+
+        return $this->createQueryBuilder('p')
+            ->update()
+            ->set('p.supprime', 1)
+            ->where('p.perso_id IN (:perso_ids)')
+            ->andWhere('p.date > :date')
+            ->setParameter('perso_ids', $userIds)
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->execute();
+    }
+
+    public function updateDeletionByIdAndDate(int $userId, string $date)
     {
         return $this->createQueryBuilder('p')
             ->update()
             ->set('p.supprime', 1)
             ->where('p.perso_id = :perso_id')
-            ->andWhere('p.date > :date')
+            ->andWhere('p.date = :date')
             ->setParameter('perso_id', $userId)
-            ->setParameter('date', $departure)
-            ->getQuery()
-            ->execute();
-    }
-
-    public function updateDeletionByIdAndDate(int $userId, string $departure)
-    {
-        return $this->createQueryBuilder('p')
-            ->update()
-            ->set('p.supprime', 0)
-            ->where('p.perso_id = :perso_id')
-            ->andWhere('p.date > :date')
-            ->setParameter('perso_id', $userId)
-            ->setParameter('date', $departure)
+            ->setParameter('date', $date)
             ->getQuery()
             ->execute();
     }

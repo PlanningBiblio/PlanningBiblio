@@ -52,7 +52,7 @@ class Agent
     private ?string $actif = 'Actif';
 
     #[ORM\Column]
-    private ?array $droits = [];// bu yong decode encode le 
+    private ?array $droits = [];
 
     #[ORM\Column]
     private ?string $login = '';
@@ -97,7 +97,7 @@ class Agent
     private ?string $code_ics = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $url_ics = '';//
+    private ?string $url_ics = '';
 
     #[ORM\Column]
     private ?array $check_ics = [0,0,0];

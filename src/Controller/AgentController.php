@@ -12,6 +12,8 @@ use App\Planno\Ldif2Array;
 
 use App\Entity\Agent;
 use App\Entity\Access;
+use App\Entity\Holiday;
+use App\Entity\Manager;
 use App\Entity\PlanningPosition;
 use App\Entity\SelectCategories;
 use App\Entity\SelectStatuts;
@@ -261,7 +263,7 @@ class AgentController extends BaseController
         if ($id) {
             $agent = $this->entityManager->getRepository(Agent::class)->find($id);
             $arrivee = $agent->getArrival() ? $agent->getArrival()->format('d/m/Y') : '';
-            $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';/////
+            $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';
             $breaktimes = array();
             if ($this->config('PlanningHebdo')) {
                 $workingHour = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $id, 'debut' => new \DateTime(), 'fin' => new \DateTime(), 'valide' => true]);
@@ -939,7 +941,7 @@ class AgentController extends BaseController
             $this->entityManager->getRepository(PlanningPosition::class)->updateDeletionByUserId($id);
             if ($depart != "0000-00-00" and $depart != "") {
                 // Si une date de départ est précisée, on met supprime=1 au dela de cette date
-                $this->entityManager->getRepository(PlanningPosition::class)->deleteAfterDate($id, $depart->format('Y-m-d'));
+                $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteAfterDate($id, $depart->format('Y-m-d'));
             }
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
@@ -1252,9 +1254,9 @@ class AgentController extends BaseController
     {
         $CSRFToken = $request->get('CSRFToken');
         $actif = 'Actif';
-        $date = date("Y-m-d H:i:s");
-        $commentaires = "Importation LDAP $date";
-        $droits = json_encode(array(99, 100));
+        $date = new \DateTime();
+        $commentaires = "Importation LDAP " . $date->format('Y-m-d');
+        $droits =array(99, 100);
         $password = "password_bidon_pas_importé_depuis_ldap";
         $postes = json_encode(array());
         $erreurs = false;
@@ -1561,27 +1563,20 @@ class AgentController extends BaseController
             $agentUpdate->setDeparture(new \DateTime($date));
 
             // Mise à jour de la table pl_poste
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "$id", 'date' =>">$date"));
-            $p = $this->entityManager->getRepository(PlanningPosition::class)->find($id);
+            $this->entityManager->getRepository(PlanningPosition::class)->updateDeletionByIdAndDate($id, $date);
 
             // Mise à jour de la table responsables
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete("responsables", array('responsable' => $id));
-
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete("responsables", array('perso_id' => $id));
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($id);
 
             return $this->json("level 1 delete OK");
 
         // If the date parameter is not given : deletion level 2
         } else {
-            $p = new \personnel();
-            $p->CSRFToken = $CSRFToken;
-            $p->delete($id);
+            $agentDelete = $this->entityManager->getRepository(Manager::class)->find($id);
+            $this->entityManager->remove($agentDelete);
+
+            $this->entityManager->flush();
+
             return $this->json("permanent delete OK");
         }
     }
@@ -1620,22 +1615,13 @@ class AgentController extends BaseController
             $date = date('Y-m-d');
 
             // Mise à jour de la table personnel
-            $db=new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update("personnel", array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date), array("id"=>"IN$list"));
+            $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($list);
 
             // Mise à jour de la table pl_poste
-            $db=new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "IN$list", 'date' =>">$date"));
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteAfterDate($list, $date);
 
             // Mise à jour de la table responsables
-            $db=new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete("responsables", array('responsable' => "IN$list"));
-            $db=new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete("responsables", array('perso_id' => "IN$list"));
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($list);
         }
 
         $return = ["ok"];
@@ -1773,11 +1759,12 @@ class AgentController extends BaseController
 
         $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 
-        $this->entityManager->getRepository(Agent::class)->find($id)->setICSCode(null);
+        $agent = $this->entityManager->getRepository(Agent::class)->find($id);
+        $agent->setICSCode(null);
+        $this->entityManager->persist($agent);
+        $this->entityManager->flush();
 
-        $p = new \personnel();
-        $p->CSRFToken = $CSRFToken;
-        $url = $p->getICSURL($id);
+        $url = $this->entityManager->getRepository(Agent::class)->getICSURL($id);
         $url = html_entity_decode($url, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
         return new Response(json_encode(array('url' => $this->config('URL') . $url)));
@@ -1791,16 +1778,15 @@ class AgentController extends BaseController
     #[Route(path: '/agent/update-list', name: 'agent.update_list', methods: ['GET'])]
     public function updateAgentList(Request $request): \Symfony\Component\HttpFoundation\Response
     {
-        $p=new \personnel();
         if ($request->get('deleted')=="yes") {
-            $p->supprime=array(0,1);
+            $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);
+        } else {
+            $agents = $this->entityManager->getRepository(Agent::class)->findAll();
         }
-        $p->fetch();
-        $p->elements;
 
         $tab=array();
-        foreach ($p->elements as $elem) {
-            $tab[]=array("id"=>$elem['id'],"nom"=>$elem['nom'],"prenom"=>$elem['prenom']);
+        foreach ($agents as $agent) {
+            $tab[]=array("id"=>$agent->getId(),"nom"=>$agent->getNom(),"prenom"=>$agent->getPrenom());
         }
 
         return new Response(json_encode($tab));
@@ -1868,10 +1854,7 @@ class AgentController extends BaseController
             );
         }
 
-        $c = new \conges();
-        $c->perso_id = $params['id'];
-        $c->CSRFToken = $params['CSRFToken'];
-        $c->maj($credits, $params['action']);
+        $this->entityManager->getRepository(Holiday::class)->insert($params['id'], $credits, $params['action']);
 
         return $credits;
     }
