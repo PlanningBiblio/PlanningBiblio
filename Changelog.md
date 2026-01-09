@@ -1,5 +1,20 @@
 # Changelog Planno
 
+## Version 25.11.13 (2026-01-09)
+
+### Enhancement
+
+- MT50253: Add an emoji picker #1294
+
+### Fixes
+
+- MT51618: Fix the saving of frameworks containing many cells #1293
+
+### Plumbing
+
+- MT50382: WorkingHourExportCommand, use EntityManager #1291
+- MT50382: WorkingHourExportCommand, use EntityManager #1295
+
 ## Version 25.11.12 (2025-12-23)
 
 ### Fixes
