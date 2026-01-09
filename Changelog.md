@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.10.11 (2026-01-09)
+
+### Fixes
+
+- MT51618: Fix the saving of frameworks containing many cells #1293
+
 ## Version 25.10.10 (2025-12-23)
 
 ### Fixes
