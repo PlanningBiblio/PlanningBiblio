@@ -56,4 +56,17 @@ class PlanningPositionRepository extends EntityRepository
             ->getQuery()
             ->execute();
     }
+
+    public function updateDeletionByIdAndDate(int $userId, string $departure)
+    {
+        return $this->createQueryBuilder('p')
+            ->update()
+            ->set('p.supprime', 0)
+            ->where('p.perso_id = :perso_id')
+            ->andWhere('p.date > :date')
+            ->setParameter('perso_id', $userId)
+            ->setParameter('date', $departure)
+            ->getQuery()
+            ->execute();
+    }
 }
