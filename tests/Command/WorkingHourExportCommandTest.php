@@ -76,10 +76,10 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
             'temps' => [
                 0 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1], // Monday
                 1 => ['', '', '', '', 0], // Tuesday
-                2 => ['09:00:00', '13:00:00', '', '', 1], // Wednesday
+                2 => ['09:00:00', '', '', '13:00:00', 1], // Wednesday, from 9 to 13 using the 1st and the 4th slots
                 3 => ['10:00:00', '12:00:00', '13:00:00', '17:00:00', 1], // Thursday
                 4 => ['10:00:00', '12:00:00', '13:00:00', '20:00:00', 1, '17:00:00', '18:00:00'], // Friday
-                5 => ['13:35', '17:35', '', '', 1], // Saturday
+                5 => ['13:35', '', '', '', 1, '17:35', ''], // Saturday, from 13:35 to 17:35 using the 1st and the 5th slots
             ]
         ]);
 
