@@ -12,8 +12,8 @@
 
 ### Plumbing
 
-- MT50382: WorkingHourExportCommand, use EntityManager #1291
-- MT50382: WorkingHourExportCommand, use EntityManager #1295
+- MT50832: WorkingHourExportCommand, use EntityManager #1291
+- MT50832: WorkingHourExportCommand, use EntityManager #1295
 
 ## Version 25.11.12 (2025-12-23)
 
