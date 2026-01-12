@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Agent;
+use App\Entity\Holiday;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -63,10 +64,7 @@ class HolidayResetCompTimeCommand extends Command
                 $credits['conges_anticipation'] = $elem['conges_anticipation'];
                 $credits['conges_reliquat'] = $elem['conges_reliquat'];
 
-                $c = new \conges();
-                $c->perso_id=$elem['id'];
-                $c->CSRFToken = $CSRFToken;
-                $c->maj($credits, 'modif', true);
+                $this->entityManager->getRepository(Holiday::class)->insert($elem['id'], $credits, 'update', true);
             }
         }
 
