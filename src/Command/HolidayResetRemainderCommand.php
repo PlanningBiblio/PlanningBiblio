@@ -60,7 +60,7 @@ class HolidayResetRemainderCommand extends Command
             $credits['conges_anticipation'] = $elem->getHolidayAnticipation();
             $credits['conges_reliquat'] = 0;
 
-            $this->entityManager->getRepository(Holiday::class)->insert($elem['id'], $credits, 'update', true);
+            $this->entityManager->getRepository(Holiday::class)->insert($elem->getId(), $credits, 'update', true);
         }
 
         // Modifie les crédits
