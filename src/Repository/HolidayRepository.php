@@ -77,10 +77,10 @@ class HolidayRepository extends EntityRepository
             $holiday->setPreviousCompTime($old['comp_time']);
             $holiday->setPreviousRemainder($old['conges_reliquat']);
             $holiday->setPreviousAnticipation($old['conges_anticipation']);
-            $holiday->setActualCredit($credits['conges_credit']);
-            $holiday->setActualCompTime($credits['comp_time']);
-            $holiday->setActualRemainder($credits['conges_reliquat']);
-            $holiday->setActualAnticipation($credits['conges_anticipation']);
+            $holiday->setActualCredit((float)$credits['conges_credit']);
+            $holiday->setActualCompTime((float)$credits['comp_time']);
+            $holiday->setActualRemainder((float)$credits['conges_reliquat']);
+            $holiday->setActualAnticipation((float)$credits['conges_anticipation']);
             $holiday->setInfo($cron?999999999:$session->get('loginId'));//check the base de données
             $holiday->setInfoDate((new \DateTime()));
 

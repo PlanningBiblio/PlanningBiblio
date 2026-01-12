@@ -780,7 +780,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent', name: 'agent.save', methods: ['POST'])]
-    public function save(Request $request, $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
 
         $params = $request->request->all();
@@ -934,7 +934,7 @@ class AgentController extends BaseController
                 "check_hamac"=>$check_hamac,
                 'check_ms_graph' => $mSGraphCheck,
             );
-            $holidays = $this->save_holidays($params, $session);
+            $holidays = $this->save_holidays($params, $request->getSession());
             $insert = array_merge($insert, $holidays);
 
             $db = new \db();
@@ -1038,7 +1038,7 @@ class AgentController extends BaseController
                 $update["temps"] = $temps;
             }
 
-            $holidays = $this->save_holidays($params, $session);
+            $holidays = $this->save_holidays($params, $request->getSession());
             $update = array_merge($update, $holidays);
 
             $db = new \db();
