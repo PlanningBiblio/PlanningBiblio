@@ -69,8 +69,7 @@ class HolidayResetCreditsCommand extends Command
                 $credits['comp_time'] = $elem->getHolidayCompTime();
             }
 
-            $repos = $this->entityManager->getRepository(Holiday::class);
-            $repos->insert($elem->getId(), $credits, 'modif', true);
+            $this->entityManager->getRepository(Holiday::class)->insert($elem['id'], $credits, 'update', true);
         }
 
         // Modifie les crédits
