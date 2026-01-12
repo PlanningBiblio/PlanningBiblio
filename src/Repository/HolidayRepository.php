@@ -35,6 +35,15 @@ class HolidayRepository extends EntityRepository
         return $results;
     }
 
+    /**
+    * @method insert
+    * @param int $userId
+    * @param array $credits
+    * @param string $modif
+    * @param bool $cron
+    * @param int $origin_id. Holiday id that generated this regularization.
+    * Les crédits obtenus à des dates supérieures sont déduits
+    */
     public function insert($userId, $credits, $action = 'update', $cron = false, $originId = 0, ?Session $session = null)
     {
         $entityManager = $this->getEntityManager();
@@ -65,7 +74,7 @@ class HolidayRepository extends EntityRepository
                 $holiday->setStart($holiday->getStart());
                 $holiday->setEnd($holiday->getEnd());
                 $holiday->setHours($old['comp_time'] - $credits['comp_time']);
-                $holiday->setOriginId($originId);            
+                $holiday->setOriginId($originId);
             } else {
                 $holiday = new Holiday();
                 $holiday->setStart(null);
@@ -81,7 +90,7 @@ class HolidayRepository extends EntityRepository
             $holiday->setActualCompTime((float)$credits['comp_time']);
             $holiday->setActualRemainder((float)$credits['conges_reliquat']);
             $holiday->setActualAnticipation((float)$credits['conges_anticipation']);
-            $holiday->setInfo($cron?999999999:$session->get('loginId'));//check the base de données
+            $holiday->setInfo($cron?999999999:$session->get('loginId'));
             $holiday->setInfoDate((new \DateTime()));
 
             $entityManager->persist($holiday);
