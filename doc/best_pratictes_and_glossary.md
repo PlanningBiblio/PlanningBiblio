@@ -98,7 +98,7 @@
 | quotaSP | quota_sp | For Position |
 | rank | rang |
 | recoveryMenu | recup |
-| regulationId | recul_id |
+| regulationId | regul_id |
 | service | service |
 | reason | motif |
 | requestDate | demande |

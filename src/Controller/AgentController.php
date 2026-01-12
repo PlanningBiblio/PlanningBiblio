@@ -11,7 +11,7 @@ use App\Planno\Helper\HourHelper;
 use App\Planno\Ldif2Array;
 
 use App\Entity\Agent;
-
+use App\Entity\Holiday;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -780,7 +780,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent', name: 'agent.save', methods: ['POST'])]
-    public function save(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request, $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
 
         $params = $request->request->all();
@@ -934,7 +934,7 @@ class AgentController extends BaseController
                 "check_hamac"=>$check_hamac,
                 'check_ms_graph' => $mSGraphCheck,
             );
-            $holidays = $this->save_holidays($params);
+            $holidays = $this->save_holidays($params, $session);
             $insert = array_merge($insert, $holidays);
 
             $db = new \db();
@@ -1038,7 +1038,7 @@ class AgentController extends BaseController
                 $update["temps"] = $temps;
             }
 
-            $holidays = $this->save_holidays($params);
+            $holidays = $this->save_holidays($params, $session);
             $update = array_merge($update, $holidays);
 
             $db = new \db();
@@ -1950,7 +1950,7 @@ class AgentController extends BaseController
         return new Response(json_encode($tab));
     }
 
-    private function save_holidays($params)
+    private function save_holidays($params ,$session)
     {
         if (!$this->config('Conges-Enable')) {
             return array();
@@ -2006,10 +2006,7 @@ class AgentController extends BaseController
             );
         }
 
-        $c = new \conges();
-        $c->perso_id = $params['id'];
-        $c->CSRFToken = $params['CSRFToken'];
-        $c->maj($credits, $params['action']);
+        $this->entityManager->getRepository(Holiday::class)->insert($params['id'], $credits, $params['action'] == 'modif' ? 'update' : $params['action'], $session);
 
         return $credits;
     }
