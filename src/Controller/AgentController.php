@@ -270,7 +270,7 @@ class AgentController extends BaseController
                 $temps = $workingHour ? $workingHour->getWorkingHours() : array();
                 $breaktimes = $workingHour ? $workingHour->getBreaktime() : array();
             } else {
-                $temps = json_decode(html_entity_decode($agent->getWorkingHours(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $temps = $agent->getWorkingHours();
                 if (!is_array($temps)) {
                     $temps = array();
                 }
@@ -712,7 +712,7 @@ class AgentController extends BaseController
         $service = $params['service'] ?? null;
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
         $statut = $params['statut'] ?? null;
-        $temps = array_key_exists("temps", $params) ? $params['temps'] : null;
+        $temps = array_key_exists("temps", $params) ? json_decode($params['temps']) : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
         $eDTSamedi = array_key_exists("EDTSamedi", $params) ? $params['EDTSamedi'] : null;
@@ -741,7 +741,7 @@ class AgentController extends BaseController
         $droits = $droits ? $droits : array();
         $postes = $postes ? json_encode(explode(",", $postes)) : '[]';
         $sites = $sites ? json_encode($sites) : '';
-        $temps = $temps ? json_encode($temps) : '';
+        $temps = $temps ?? array();
 
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
@@ -797,7 +797,7 @@ class AgentController extends BaseController
                     $msgType = "error";
                 }
             }
-
+            
             // Enregistrement des infos dans la base de données
             $agentInsert = new Agent();
             $agentInsert->setLastname($nom);
