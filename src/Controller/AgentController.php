@@ -826,7 +826,7 @@ class AgentController extends BaseController
             $agentInsert->setHamacCheck($check_hamac);
             $agentInsert->setMsGraphCheck($mSGraphCheck);
 
-            $holidays = $this->save_holidays($params);
+            $holidays = $this->save_holidays($params, $request->getSession());
             $agentInsert->setHolidayCompTime($holidays['comp_time']);
             $agentInsert->setHolidayAnnualCredit($holidays['conges_annuel']);
             $agentInsert->setHolidayAnticipation($holidays['conges_anticipation']);
@@ -927,7 +927,7 @@ class AgentController extends BaseController
                 $update["temps"] = $temps;
             }
 
-            $holidays = $this->save_holidays($params);
+            $holidays = $this->save_holidays($params, $request->getSession());
             $agentUpdate->setHolidayCompTime($holidays['comp_time']);
             $agentUpdate->setHolidayAnnualCredit($holidays['conges_annuel']);
             $agentUpdate->setHolidayAnticipation($holidays['conges_anticipation']);
@@ -1792,7 +1792,7 @@ class AgentController extends BaseController
         return new Response(json_encode($tab));
     }
 
-    private function save_holidays($params)
+    private function save_holidays($params, $session)
     {
         if (!$this->config('Conges-Enable')) {
             return array(
@@ -1854,8 +1854,8 @@ class AgentController extends BaseController
             );
         }
 
-        $this->entityManager->getRepository(Holiday::class)->insert($params['id'], $credits, $params['action']);
-
+        $this->entityManager->getRepository(Holiday::class)->insert($params['id'], $credits, $params['action'] == 'modif' ? 'update' : $params['action'], $session);
+        
         return $credits;
     }
 
