@@ -65,7 +65,7 @@ class AgentController extends BaseController
             $elem = [];
             $id = $agent['id'];
             $arrivee = dateFr($agent['arrivee'] ? $agent['arrivee']->format('Y-m-d') : '');
-            $depart = dateFr($agent['depart'] ? $agent['depart']->format('Y-m-d') : '');//add TU for verifier les champs (ge zi li de shujv ,tester quand c'est null,changer, et verifier again)
+            $depart = dateFr($agent['depart'] ? $agent['depart']->format('Y-m-d') : '');//add TU for verifier les champs (ge zi li de shujv ,tester quand c'est null,changer, et verifier again)TODO
             $last_login = date_time($agent['last_login'] ? $agent['last_login']->format('Y-m-d H:i:s') : '0000-00-00 00:00:00');
             $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
             $heures = heure4($heures);
@@ -686,8 +686,8 @@ class AgentController extends BaseController
         $arrivee = $request->get('arrivee') ? \DateTime::createFromFormat('d/m/Y', $request->get('arrivee')) : null;
         $depart = $request->get('depart') ? \DateTime::createFromFormat('d/m/Y', $request->get('depart')) : null;
         $CSRFToken = $request->get('CSRFToken');
-        $heuresHebdo = $request->get('heuresHebdo');
-        $heuresTravail = $request->get('heuresTravail');
+        $heuresHebdo = $request->get('heuresHebdo') ?? '';
+        $heuresTravail = $request->get('heuresTravail') ?? 0;
         $id = $request->get('id');
         $mail = $request->get('mail');
 

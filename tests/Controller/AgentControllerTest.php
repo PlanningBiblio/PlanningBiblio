@@ -50,7 +50,7 @@ class AgentControllerTest extends PLBWebTestCase
                 'arrivee' => $start,
                 'depart' => $end,
                 'postes' => '',
-                'action' => 'ajout',
+                'action' => 'add',
                 'actif' => 1,
                 'commentaires' => '',
                 'last_login' => '',
