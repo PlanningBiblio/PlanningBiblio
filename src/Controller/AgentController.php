@@ -360,7 +360,7 @@ class AgentController extends BaseController
             $recup = stripslashes($db->result[0]['recup']);
             $sites = html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $sites = $sites !== '' && $sites !== '0'?json_decode($sites, true):array();
-            $action = "modif";
+            $action = "update";
             $titre = $nom." ".$prenom;
 
             // URL ICS
@@ -395,7 +395,7 @@ class AgentController extends BaseController
             $recup = null;
             $sites = array();
             $titre = "Ajout d'un agent";
-            $action = "ajout";
+            $action = "add";
             if (!empty($_SESSION['perso_actif']) and $_SESSION['perso_actif'] != 'Supprim&eacute;') {
                 $actif = $_SESSION['perso_actif'];
             }// vérifie dans quel tableau on se trouve pour la valeur par défaut
@@ -872,7 +872,7 @@ class AgentController extends BaseController
         $droits = json_encode($droits);
 
         switch ($action) {
-          case "ajout":
+          case "add":
             $db = new \db();
             $db->select2("personnel", array(array("name"=>"MAX(`id`)", "as"=>"id")));
             $id = $db->result[0]['id']+1;
@@ -935,7 +935,7 @@ class AgentController extends BaseController
                 "check_hamac"=>$check_hamac,
                 'check_ms_graph' => $mSGraphCheck,
             );
-            $holidays = $this->save_holidays($params, $request->getSession());
+            $holidays = $this->save_holidays($params);
             $insert = array_merge($insert, $holidays);
 
             $db = new \db();
@@ -995,7 +995,7 @@ class AgentController extends BaseController
 
             break;
 
-          case "modif":
+          case "update":
             $update = array(
                 "nom"=>$nom,
                 "prenom"=>$prenom,
@@ -1039,7 +1039,7 @@ class AgentController extends BaseController
                 $update["temps"] = $temps;
             }
 
-            $holidays = $this->save_holidays($params, $request->getSession());
+            $holidays = $this->save_holidays($params);
             $update = array_merge($update, $holidays);
 
             $db = new \db();
@@ -1951,7 +1951,7 @@ class AgentController extends BaseController
         return new Response(json_encode($tab));
     }
 
-    private function save_holidays($params, $session)
+    private function save_holidays($params)
     {
         if (!$this->config('Conges-Enable')) {
             return array();
@@ -2007,8 +2007,8 @@ class AgentController extends BaseController
             );
         }
 
-        $this->entityManager->getRepository(Holiday::class)->insert($params['id'], $credits, $params['action'] == 'modif' ? 'update' : $params['action'], $session);
-
+        $this->entityManager->getRepository(Holiday::class)->insert($params['id'], $credits, $params['action']);
+        
         return $credits;
     }
 

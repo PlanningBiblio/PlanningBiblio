@@ -958,61 +958,6 @@ class conges
         $this->responsables=$responsables;
     }
 
-    /**
-    * @method maj
-    * @param array $credits
-    * @param string $modif
-    * @param bool $cron
-    * @param int $origin_id. Holiday id that generated this regularization.
-    * Les crédits obtenus à des dates supérieures sont déduits
-    */
-    public function maj($credits, $action="modif", $cron=false, $origin_id = 0)
-    {
-        // Ajoute une ligne faisant apparaître la mise à jour des crédits dans le tableau Congés
-        if ($action=="modif") {
-            $db=new db();
-            $db->select("personnel", "*", "id='{$this->perso_id}'");
-            $old=array("conges_credit"=>$db->result[0]['conges_credit'], "comp_time"=>$db->result[0]['comp_time'],
-    "conges_reliquat"=>$db->result[0]['conges_reliquat'], "conges_anticipation"=>$db->result[0]['conges_anticipation']);
-        } else {
-            $old=array("conges_credit"=>0, "comp_time"=>0, "conges_reliquat"=>0, "conges_anticipation"=>0);
-        }
-
-        unset($credits["conges_annuel"]);
-        if ($credits!=$old) {
-            $insert=array();
-            $insert["perso_id"]=$this->perso_id;
-            $insert["debut"]=date("Y-m-d 00:00:00");
-            $insert["fin"]=date("Y-m-d 00:00:00");
-            $insert["solde_prec"]=$old['conges_credit'];
-            $insert["recup_prec"]=$old['comp_time'];
-            $insert["reliquat_prec"]=$old['conges_reliquat'];
-            $insert["anticipation_prec"]=$old['conges_anticipation'];
-            $insert["solde_actuel"]=$credits['conges_credit'];
-            $insert["recup_actuel"]=$credits['comp_time'];
-            $insert["reliquat_actuel"]=$credits['conges_reliquat'];
-            $insert["anticipation_actuel"]=$credits['conges_anticipation'];
-            $insert["information"]=$cron?999999999:$_SESSION['login_id'];
-            $insert["info_date"]=date("Y-m-d H:i:s");
-
-            if ($origin_id) {
-                $db = new db();
-                $db->select('conges', 'debut, fin', "id=$origin_id");
-                if ($db->result) {
-                    $insert['debut'] = $db->result[0]['debut'];
-                    $insert['fin'] = $db->result[0]['fin'];
-                }
-                $insert["heures"] = $old['comp_time'] - $credits['comp_time'];
-                $insert['origin_id'] = $origin_id;
-            }
-
-            $db=new db();
-            $db->CSRFToken = $this->CSRFToken;
-            $inserted_id = $db->insert("conges", $insert);
-            return $inserted_id;
-        }
-    }
-
     public function update($data): void
     {
         $data['debit']=isset($data['debit'])?$data['debit']:"credit";
