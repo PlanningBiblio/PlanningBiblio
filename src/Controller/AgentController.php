@@ -292,7 +292,7 @@ class AgentController extends BaseController
             $recup = stripslashes($agent->getRecoveryMenu());
             $sites = html_entity_decode($agent->getSites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $sites = $sites !== '' && $sites !== '0'?json_decode($sites, true):array();
-            $action = "modif";
+            $action = 'update';
             $titre = $agent->getLastname()." ".$agent->getFirstname();
 
             // URL ICS
@@ -302,7 +302,7 @@ class AgentController extends BaseController
         } else {// pas d'id, donc ajout d'un agent
             $id = null;
             $titre = "Ajout d'un agent";
-            $action = "ajout";
+            $action = 'add';
             $arrivee = '';
             $depart = '';
             $managersMails = [];
@@ -765,7 +765,7 @@ class AgentController extends BaseController
         }
 
         switch ($action) {
-          case "ajout":
+          case 'add':
             $id = $this->entityManager->getRepository(Agent::class)->findMaxId() + 1;
 
             $login = $this->login($prenom, $nom, $mail);
@@ -886,7 +886,7 @@ class AgentController extends BaseController
 
             break;
 
-          case "modif":
+          case 'update':
             $agentUpdate = $this->entityManager->getRepository(Agent::class)->find($id);
             $agentUpdate->setLastname($nom);
             $agentUpdate->setFirstname($prenom);
@@ -1854,8 +1854,8 @@ class AgentController extends BaseController
             );
         }
 
-        $this->entityManager->getRepository(Holiday::class)->insert($params['id'], $credits, $params['action'] == 'modif' ? 'update' : $params['action'], $session);
-        
+        $this->entityManager->getRepository(Holiday::class)->insert($params['id'], $credits, $params['action']);
+
         return $credits;
     }
 
