@@ -2008,6 +2008,7 @@ class AgentController extends BaseController
         }
 
         $this->entityManager->getRepository(Holiday::class)->insert($params['id'], $credits, $params['action']);
+
         return $credits;
     }
 
