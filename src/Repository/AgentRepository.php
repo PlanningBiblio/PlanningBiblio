@@ -469,6 +469,15 @@ class AgentRepository extends EntityRepository
         $builder->getQuery()->execute();
     }
 
+    /**
+     * Marks agents as deleted when their departure date is in the past.
+     *
+     * It sets agents as deleted both in column "supprime(=1)" and "actif(='Supprim&eacute;')" if:
+     *  - the departure date is before today,
+     *  - the departure date is not equal to '0000-00-00',
+     *  - the agent is not already marked as deleted.
+     * 
+     */
     public function updateAsDeletedByDepartDate(): int
     {
         $qb = $this->createQueryBuilder('p');
@@ -504,6 +513,14 @@ class AgentRepository extends EntityRepository
             ->execute();
     }
 
+    /**
+     * Find agents filtered by their active status.
+     *
+     * This method returns agents whose "actif" value matches the given status
+     *
+     * @param string $actif Active status to filter on
+     * @return array List of matching agents
+     */
     public function findNamesByActif(string $actif): array
     {
         $supprimeValues = str_contains($actif, 'Supprim') ? [1] : [0];

@@ -20,6 +20,7 @@ use App\Entity\SelectStatuts;
 use App\Entity\SelectServices;
 use App\Entity\Skill;
 use App\Entity\WorkingHour;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -55,9 +56,9 @@ class AgentController extends BaseController
 
         //        Suppression des agents dont la date de départ est passée        //
         $tab = array(0);
-        $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();
+        $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();// Mark agents as deleted when their depart date is past today
 
-        $agentsTab = $this->entityManager->getRepository(Agent::class)->findNamesByActif($actif);
+        $agentsTab = $this->entityManager->getRepository(Agent::class)->findNamesByActif($actif);// Find agents filtered by their active status(by column actif and supprime),returns array
 
         $nbSites = $this->config('Multisites-nombre');
         $agents = array();
