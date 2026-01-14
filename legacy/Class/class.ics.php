@@ -177,9 +177,6 @@ class CJICS
 
         if ($this->logs) {
             logs("Agent #$perso_id : Purge $calName, Table: $table, src: $src", "ICS", $CSRFToken);
-        }
-
-        if ($this->logs) {
             $db = new db();
             $db->select2($table, 'id', array('cal_name' => $calName, 'perso_id' => $perso_id));
             $nb = $db->nb;

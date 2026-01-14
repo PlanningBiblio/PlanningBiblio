@@ -20,7 +20,7 @@ class PLBWebTestCase extends PantherTestCase
     /**
      * The addConfig function allows you to test additional parameters that are usually found in the custom_options.php file
      */
-    private function addConfig($name, $value) {
+    private function addConfig($name, $value): void {
         $c = new Config();
         $c->setName($name);
         $c->setValue($value);

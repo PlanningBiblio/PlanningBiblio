@@ -7,6 +7,10 @@
     - 100
 "absence.edit":
     - 100
+"absence.select_file":
+    - 100
+"absence.process_file":
+    - 100
 "absence.index":
     - 100
 "absence.save":
