@@ -496,8 +496,18 @@ class AgentRepository extends EntityRepository
             ->execute();
     }
 
+    /**
+     * Marks the given agents as deleted and sets their departure date to today.
+     *
+     * This method updates agents identified by their IDs by setting the deletion
+     * flag, updating their status, and assigning today's date as the departure date.
+     *
+     * @param array|int $ids Agent ID or list of agent IDs
+     * @return int Number of affected rows
+     */
     public function updateAsDeletedAndDepartTodayById($ids): int
     {
+        $ids = is_array($ids) ? $ids : [$ids];
         $qb = $this->createQueryBuilder('p');
 
         return $qb
@@ -536,6 +546,14 @@ class AgentRepository extends EntityRepository
         return $qb->getQuery()->getArrayResult();
     }
 
+    /**
+     * Find the list of distinct agent statuses.
+     *
+     * This method returns all unique values of the "statut" field
+     * from the personnel records.
+     *
+     * @return array List of distinct statuses
+     */
     public function findDistinctStatuts(): array
     {
         return $this->createQueryBuilder('p')
@@ -545,6 +563,14 @@ class AgentRepository extends EntityRepository
             ->getScalarResult();
     }
 
+    /**
+     * Find the list of distinct agent services.
+     *
+     * This method returns all unique values of the "service" field
+     * from the personnel records.
+     *
+     * @return array List of distinct services
+     */
     public function findDistinctServices(): array
     {
         return $this->createQueryBuilder('p')
@@ -554,6 +580,14 @@ class AgentRepository extends EntityRepository
             ->getScalarResult();
     }
 
+    /**
+     * Find the maximum agent ID.
+     *
+     * This method returns the highest identifier value
+     * from the personnel records.
+     *
+     * @return int|null Maximum agent ID
+     */
     public function findMaxId(): ?int
     {
         return $this->createQueryBuilder('p')
@@ -562,6 +596,12 @@ class AgentRepository extends EntityRepository
             ->getSingleScalarResult();
     }
 
+    /**
+     * getICSURL
+     * Retourne l'URL ICS de l'agent.
+     * @param int $id : id de l'agent
+     * @return string $url
+     */
     public function getICSURL($id): string
     {
         $url = "/ical?id=$id";
@@ -736,5 +776,184 @@ class AgentRepository extends EntityRepository
             ->setParameter('ids', $list)
             ->getQuery()
             ->execute();
+    }
+
+    /**
+     * Finds agents with their responsible information.
+     *
+     * @param array  $filters Filter conditions
+     * @param string $orderBy Order clause
+     * @return array Agents with responsible data
+     */
+    public function findAgentsWithResponsables(array $filters = [], string $orderBy = 'nom'): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select(
+                'a.id',
+                'a.nom',
+                'a.prenom',
+                'a.mail',
+                'a.mailsResponsables',
+                'a.statut',
+                'a.categorie',
+                'a.service',
+                'a.actif',
+                'a.droits',
+                'a.sites',
+                'a.checkIcs',
+                'a.checkHamac',
+                'r.responsable',
+                'r.notificationLevel1',
+                'r.notificationLevel2'
+            )
+            ->leftJoin('a.responsables', 'r');
+
+        foreach ($filters as $field => $value) {
+            $qb
+                ->andWhere("a.$field = :$field")
+                ->setParameter($field, $value);
+        }
+
+        $qb->orderBy($orderBy);
+
+        return $qb
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function fetch($tri="nom", $actif=null, $name=null, $supprime = null)
+    {
+        $filters = array('id' => '<> 2');
+
+        // Filtre selon le champ actif (administratif, service public)
+        $actif = htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        if ($actif !== '' && $actif !== '0') {
+            $filters['actif'] = $actif;
+        }
+
+        // Filtre selon le champ supprime
+        if($supprime){
+            $supprime=implode(',', $supprime);
+            $filters['supprime'] = "IN{$supprime}";
+        }
+
+        $responsablesParAgent = false;
+        if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
+            $responsablesParAgent = true;
+
+            $qb = $this->createQueryBuilder('a')
+                ->select(
+                    'a.id',
+                    'a.nom',
+                    'a.prenom',
+                    'a.mail',
+                    'a.mailsResponsables',
+                    'a.statut',
+                    'a.categorie',
+                    'a.service',
+                    'a.actif',
+                    'a.droits',
+                    'a.sites',
+                    'a.checkIcs',
+                    'a.checkHamac',
+                    'r.responsable',
+                    'r.notificationLevel1',
+                    'r.notificationLevel2'
+                )
+                ->leftJoin('a.responsables', 'r');
+
+            foreach ($filters as $field => $value) {
+                $qb
+                    ->andWhere("a.$field = :$field")
+                    ->setParameter($field, $value);
+            }
+
+            $qb->orderBy($tri);
+
+            $all = $qb
+                ->getQuery()
+                ->getArrayResult();
+        } else {
+            $qb = $this->createQueryBuilder('p')
+                ->select('p');
+
+            // Apply filters (legacy $filter)
+            foreach ($filters as $field => $value) {
+                $qb
+                    ->andWhere("p.$field = :$field")
+                    ->setParameter($field, $value);
+            }
+
+            $qb->orderBy($tri);
+
+            $all = $qb
+                ->getQuery()
+                ->getArrayResult();
+        }
+
+        // Si pas de résultat, on quitte
+        if (empty($all)) {
+            return false;
+        }
+
+        //	By default $result=$all
+        $result=array();
+        foreach ($all as $elem) {
+            if (empty($result[$elem['id']])) {
+                $result[$elem['id']]=$elem;
+                $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $result[$elem['id']]['mails_responsables'] = explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+
+                // Contrôle des calendriers ICS distants : Oui/Non ?
+                $check_ics = json_decode($result[$elem['id']]['check_ics']);
+                $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
+                $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
+                $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
+        
+                if ($responsablesParAgent) {
+                    // Ajout des responsables et notifications
+                    $result[$elem['id']]['responsables'] = array(array(
+                        'responsable' => $elem['responsable'],
+                        'notification_level1' => $elem['notification_level1'],
+                        'notification_level2' => $elem['notification_level2']
+                    ));
+          
+                    unset($result[$elem['id']]['responsable']);
+                    unset($result[$elem['id']]['notification_level1']);
+                }
+            } elseif ($responsablesParAgent) {
+                // Ajout des responsables et notifications
+                $result[$elem['id']]['responsables'][] = array(
+                    'responsable' => $elem['responsable'],
+                    'notification_level1' => $elem['notification_level1'],
+                    'notification_level2' => $elem['notification_level2']
+                );
+            }
+        }
+
+        //	If name, keep only matching results
+        if ($name) {
+            $result=array();
+            foreach ($all as $elem) {
+                if (pl_stristr($elem['nom'], $name) or pl_stristr($elem['prenom'], $name)) {
+                    $result[$elem['id']]=$elem;
+                    $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                    $result[$elem['id']]['mails_responsables'] = explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+
+                    // Contrôle des calendriers ICS distants : Oui/Non ?
+                    $check_ics = json_decode($result[$elem['id']]['check_ics']);
+                    $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
+                    $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
+                    $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
+                }
+            }
+        }
+  
+        //	Suppression de l'utilisateur "Tout le monde"
+        if (!$GLOBALS['config']['toutlemonde']) {
+            unset($result[2]);
+        }
+
+        return $result;
     }
 }

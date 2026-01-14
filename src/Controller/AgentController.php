@@ -204,7 +204,7 @@ class AgentController extends BaseController
         $droits = $GLOBALS['droits'];
         $admin = in_array(21, $droits);
 
-        $groupesAcces = $this->entityManager->getRepository(Access::class)->findGroupesAcces();
+        $groupesAcces = $this->entityManager->getRepository(Access::class)->findGroupesAcces();// Find access filtered by group id("groupe_id" value donesn't equal 99 or 100).
         // Tous les droits d'accés
         $groupes = array();
         foreach ($groupesAcces as $elem) {
@@ -248,13 +248,13 @@ class AgentController extends BaseController
 
         $statuts = $this->entityManager->getRepository(SelectStatuts::class)->findAll();
         $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
-        $statuts_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctStatuts();
+        $statuts_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctStatuts();// Find the list of distinct agent statuses.
 
         // Liste des services
         $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
 
         // Liste des services utilisés
-        $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();
+        $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();// Find the list of distinct agent services.
 
         $acces = array();
         $postes_attribues = array();
@@ -262,12 +262,12 @@ class AgentController extends BaseController
         // récupération des infos de l'agent en cas de modif
         $ics = null;
         if ($id) {
-            $agent = $this->entityManager->getRepository(Agent::class)->find($id);
             $arrivee = $agent->getArrival() ? $agent->getArrival()->format('d/m/Y') : '';
             $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';
             $breaktimes = array();
             if ($this->config('PlanningHebdo')) {
-                $workingHour = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $id, 'debut' => new \DateTime(), 'fin' => new \DateTime(), 'valide' => true]);
+                $workingHour = $this->entityManager->getRepository(WorkingHour::class)->fetch(['perso_id' => $id, 'debut' => new \DateTime(date('Y-m-d') . ' 00:00:00'), 'fin' => new \DateTime(date('Y-m-d') . ' 00:00:00'), 'valide' => true]);
+
                 $temps = $workingHour ? $workingHour->getWorkingHours() : array();
                 $breaktimes = $workingHour ? $workingHour->getBreaktime() : array();
             } else {
@@ -767,7 +767,7 @@ class AgentController extends BaseController
 
         switch ($action) {
           case 'add':
-            $id = $this->entityManager->getRepository(Agent::class)->findMaxId() + 1;
+            $id = $this->entityManager->getRepository(Agent::class)->findMaxId() + 1;// Find the maximum agent ID.
 
             $login = $this->login($prenom, $nom, $mail);
 
@@ -1616,7 +1616,7 @@ class AgentController extends BaseController
             $date = date('Y-m-d');
 
             // Mise à jour de la table personnel
-            $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($list);
+            $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($list);// Marks the given agents as deleted and sets their departure date to today.
 
             // Mise à jour de la table pl_poste
             $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteAfterDate($list, $date);
