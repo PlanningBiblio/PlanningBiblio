@@ -41,8 +41,8 @@ class HolidayRepositoryTest extends TestCase
 
     public function testInsertWithUpdateWithoutOriginId(): void
     {
-        $repo = $this->entityManager->getRepository(Holiday::class);
         $amy = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'amy']);
+        $repo = $this->entityManager->getRepository(Holiday::class);
         $originHolidayId = $repo->findOneBy(['perso_id' => 10])->getId();
 
         $credits = array(
@@ -52,7 +52,7 @@ class HolidayRepositoryTest extends TestCase
             'comp_time' => 10,
         );
 
-        $repo->insert($amy->getId(), $credits,  'update',true);
+        $repo->insert($amy->getId(), $credits, 'update', true);
 
         $holiday = $repo->findOneBy(['perso_id' => $amy->getId()]);
         $originHoliday = $repo->find($originHolidayId);
@@ -73,8 +73,8 @@ class HolidayRepositoryTest extends TestCase
 
     public function testInsertWithOriginId(): void
     {
-        $repo = $this->entityManager->getRepository(Holiday::class);
         $amy = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'amy']);
+        $repo = $this->entityManager->getRepository(Holiday::class);
         $originHolidayId = $repo->findOneBy(['perso_id' => 10])->getId();
 
         $credits = array(
@@ -86,7 +86,7 @@ class HolidayRepositoryTest extends TestCase
 
         $repo->insert($amy->getId(), $credits,  'update',true, $originHolidayId);
 
-         $holiday = $repo->findOneBy(['perso_id' => $amy->getId()]);
+        $holiday = $repo->findOneBy(['perso_id' => $amy->getId()]);
         $originHoliday = $repo->find($originHolidayId);
 
         $this->assertEquals($originHoliday->getStart(), $holiday->getStart());

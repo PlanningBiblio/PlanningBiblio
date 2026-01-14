@@ -39,9 +39,9 @@ class HolidayRepository extends EntityRepository
     * @method insert
     * @param int $userId
     * @param array $credits
-    * @param string $modif
+    * @param string $action
     * @param bool $cron
-    * @param int $origin_id. Holiday id that generated this regularization.
+    * @param int $originId. Holiday id that generated this regularization.
     * Les crédits obtenus à des dates supérieures sont déduits
     */
     public function insert($userId, $credits, $action = 'update', $cron = false, $originId = 0)
@@ -55,17 +55,17 @@ class HolidayRepository extends EntityRepository
         if ($action == 'update') {
             $agent = $entityManager->getRepository(Agent::class)->find($userId);
             $old = array(
-                'conges_credit'=>$agent->getHolidayCredit(),
-                'comp_time'=>$agent->getHolidayCompTime(),
-                'conges_reliquat'=>$agent->getHolidayRemainder(),
-                'conges_anticipation'=>$agent->getHolidayAnticipation()
+                'conges_credit' => $agent->getHolidayCredit(),
+                'comp_time' => $agent->getHolidayCompTime(),
+                'conges_reliquat' => $agent->getHolidayRemainder(),
+                'conges_anticipation' => $agent->getHolidayAnticipation(),
             );
         } else {
             $old = array(
-                'conges_credit'=>0,
-                'comp_time'=>0,
-                'conges_reliquat'=>0,
-                'conges_anticipation'=>0
+                'conges_credit' => 0,
+                'comp_time' => 0,
+                'conges_reliquat' => 0,
+                'conges_anticipation' => 0,
             );
         }
 
