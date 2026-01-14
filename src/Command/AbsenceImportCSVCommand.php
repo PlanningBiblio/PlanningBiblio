@@ -89,12 +89,9 @@ class AbsenceImportCSVCommand extends Command
         $inF = fopen($lockFile, 'w');
         fclose($inF);
 
-        if ($debug) {
-            $this->log('Lock file ' . $lockFile . ' created', 'AbsenceImportCSV');
-        }
-
         // On recherche tout le personnel actif
         if ($debug) {
+            $this->log('Lock file ' . $lockFile . ' created', 'AbsenceImportCSV');
             $this->log('On recherche tout le personnel actif', 'AbsenceImportCSV');
         }
 
@@ -139,12 +136,9 @@ class AbsenceImportCSVCommand extends Command
 
         $ids_list = implode(',', $perso_ids);
 
-        if ($debug) {
-            $this->log('$ids_list = ' . $ids_list, 'AbsenceImportCSV');
-        }
-
         // Recherche de toutes les absences déjà importées depuis Hamac
         if ($debug) {
+            $this->log('$ids_list = ' . $ids_list, 'AbsenceImportCSV');
             $this->log('Recherche de toutes les absences déjà importées depuis Hamac', 'AbsenceImportCSV');
         }
 
