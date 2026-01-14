@@ -22,7 +22,7 @@ class AbsenceImportCSVHelper extends BaseHelper
         parent::__construct();
     }
 
-    private function checkRegexes($config_option) {
+    private function checkRegexes($config_option): string {
         $regexes = $this->config($config_option);
         if (trim($regexes) == '') {
             return "$config_option est vide";
@@ -36,7 +36,7 @@ class AbsenceImportCSVHelper extends BaseHelper
         return '';
     }
 
-    public function import($file, $loggedin_id)
+    public function import($file, $loggedin_id): array
     {
         $agent_match = $this->config('AbsImport-Agent');
         $filename    = $file->getClientOriginalName();
@@ -93,11 +93,7 @@ class AbsenceImportCSVHelper extends BaseHelper
                         $csv_date = $capture[1];
                         $date = \DateTime::createFromFormat($date_format, $csv_date);
                         $sql_date = date_format($date, 'Y-m-d');
-                        if (array_key_exists(2, $capture) && $capture[2] == 'après-midi') {
-                            $hour = '13:00:00';
-                        } else {
-                            $hour = '09:00:00';
-                        }
+                        $hour = array_key_exists(2, $capture) && $capture[2] == 'après-midi' ? '13:00:00' : '09:00:00';
                         $sql_debut = $sql_date . " " . $hour;
                         $msg = "La date de début $value a été convertie en $sql_debut en utilisant l'expression régulière $regex_number";
                         $this->importLog($line,$msg, self::DEBUG);
@@ -110,7 +106,7 @@ class AbsenceImportCSVHelper extends BaseHelper
                 continue;
             }
 
-            if (!$sql_debut) {
+            if ($sql_debut === '' || $sql_debut === '0') {
                 $msg = "Impossible de définir une date de début à partir de la valeur $value";
                 $this->importLog($line,$msg, self::ERROR);
                 continue;
@@ -129,11 +125,7 @@ class AbsenceImportCSVHelper extends BaseHelper
                         $csv_date = $capture[1];
                         $date = \DateTime::createFromFormat($date_format, $csv_date);
                         $sql_date = date_format($date, 'Y-m-d');
-                        if (array_key_exists(2, $capture) && $capture[2] == 'matin') {
-                            $hour = '13:00:00';
-                        } else {
-                            $hour = '20:00:00';
-                        }
+                        $hour = array_key_exists(2, $capture) && $capture[2] == 'matin' ? '13:00:00' : '20:00:00';
                         $sql_fin = $sql_date . " " . $hour;
                         $msg = "La date de fin $value a été convertie en $sql_fin en utilisant l'expression régulière $regex_number";
                         $this->importLog($line,$msg, self::DEBUG);
@@ -146,7 +138,7 @@ class AbsenceImportCSVHelper extends BaseHelper
                 continue;
             }
 
-            if (!$sql_fin) {
+            if ($sql_fin === '' || $sql_fin === '0') {
                 $msg = "Impossible de définir une date de fin à partir de la valeur $value";
                 $this->importLog($line,$msg, self::ERROR);
                 continue;
@@ -216,7 +208,7 @@ class AbsenceImportCSVHelper extends BaseHelper
         return $this->importResults;
     }
 
-    private function importLog($line, $message, $type)
+    private function importLog($line, $message, $type): void
     {
         $this->log("$line, $type: $message", $this->program);
         $logline = array('line' => $line, 'message' => $message, 'type' => $type);

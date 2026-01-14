@@ -16,7 +16,7 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $this->builder->delete(Absence::class);
     }
 
-    public function testImport() {
+    public function testImport(): void {
         $entityManager = $GLOBALS['entityManager'];
         $GLOBALS['config']['AbsImport-Reason']        = 'Test reason';
         $GLOBALS['config']['AbsImport-Agent']         = 'matricule';
@@ -40,7 +40,7 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
 
         # New absence, agent found by matricule
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
-        $this->assertEquals(sizeof($absences), 1, "One absence has been added");
+        $this->assertEquals(count($absences), 1, "One absence has been added");
         $absence = $absences[0];
 
         $this->assertEquals($absence->getReason(), 'Test reason', "Absence reason is set according to AbsImport-Reason");
@@ -49,11 +49,11 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
 
         # New import, absence already exists
         $results  = $helper->import($uploadedFile, $loggedin_id);
-        $this->assertEquals(sizeof($absences), 1, "Absence not added when it already exists");
+        $this->assertEquals(count($absences), 1, "Absence not added when it already exists");
         $this->assertStringStartsWith("L'absence pour Ex Ample existe déjà", $results[5]['message'], "Log message: absence not added when it already exist");
 
         # agent not found by matricule
-        $this->assertEquals(sizeof($absences), 1, "Absence not added when agent it not found");
+        $this->assertEquals(count($absences), 1, "Absence not added when agent it not found");
         $this->assertEquals($results[8]['message'], 'Impossible de trouver un agent qui a 25 pour matricule', "Agent not found by matricule");
 
         # Empty start regex
@@ -62,7 +62,7 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
-        $this->assertEquals(sizeof($absences), 0, "absence has not been added when AbsImport-ConvertBegin is empty");
+        $this->assertEquals(count($absences), 0, "absence has not been added when AbsImport-ConvertBegin is empty");
         $this->assertEquals($results[2]['message'], 'AbsImport-ConvertBegin est vide', "Log message: AbsImport-ConvertBegin is empty");
 
         # Empty end regex
@@ -71,7 +71,7 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
-        $this->assertEquals(sizeof($absences), 0, "absence has not been added when AbsImport-ConvertEnd is empty");
+        $this->assertEquals(count($absences), 0, "absence has not been added when AbsImport-ConvertEnd is empty");
         $this->assertEquals($results[3]['message'], 'AbsImport-ConvertEnd est vide', "Log message: AbsImport-ConvertEnd is empty");
 
         # Invalid start regex
@@ -80,7 +80,7 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
-        $this->assertEquals(sizeof($absences), 0, "absence has not been added when AbsImport-ConvertBegin is invalid ");
+        $this->assertEquals(count($absences), 0, "absence has not been added when AbsImport-ConvertBegin is invalid ");
         $this->assertEquals($results[2]['message'], "I'm an invalid start regex n'est pas une expression régulière valide dans l'option de configuration AbsImport-ConvertBegin", "Log message: AbsImport-ConvertBegin is invalid");
 
         # Invalid end regex
@@ -89,7 +89,7 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
-        $this->assertEquals(sizeof($absences), 0, "absence has not been added when AbsImport-ConvertEnd is invalid ");
+        $this->assertEquals(count($absences), 0, "absence has not been added when AbsImport-ConvertEnd is invalid ");
         $this->assertEquals($results[3]['message'], "I'm an invalid end regex n'est pas une expression régulière valide dans l'option de configuration AbsImport-ConvertEnd", "Log message: AbsImport-ConvertEnd is invalid");
 
         $helper   = new AbsenceImportCSVHelper();
@@ -103,11 +103,11 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
-        $this->assertEquals(sizeof($absences), 1, "One absence has been added");
+        $this->assertEquals(count($absences), 1, "One absence has been added");
         $absence = $absences[0];
 
         # agent not found by login
-        $this->assertEquals(sizeof($absences), 1, "Absence not added when agent it not found");
+        $this->assertEquals(count($absences), 1, "Absence not added when agent it not found");
         $this->assertEquals($results[8]['message'], 'Impossible de trouver un agent qui a notalogin pour login', "Agent not found by login");
 
         $uploadedFile = $this->setUploadedFile('AbsenceImportCSVHelperTest-mail.csv');
@@ -118,10 +118,10 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
-        $this->assertEquals(sizeof($absences), 1, "One absence has been added");
+        $this->assertEquals(count($absences), 1, "One absence has been added");
 
         # agent not found by login
-        $this->assertEquals(sizeof($absences), 1, "Absence not added when agent is not found");
+        $this->assertEquals(count($absences), 1, "Absence not added when agent is not found");
         $this->assertEquals($results[8]['message'], 'Impossible de trouver un agent qui a does.not.exist@example.com pour mail', "Agent not found by email");
 
         $this->builder->delete(Absence::class);
@@ -131,7 +131,7 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
-        $this->assertEquals(sizeof($absences), 3, "Three absences have been added");
+        $this->assertEquals(count($absences), 3, "Three absences have been added");
         $absence = $absences[0];
 
         # Start morning
@@ -157,7 +157,7 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $this->assertEquals($absence->getEnd(),  \DateTime::createFromFormat('Y-m-d H:i:s', '2025-04-05 20:00:00'), "start date was successfully transformed");
     }
 
-    private function setUploadedFile($filename) {
+    private function setUploadedFile($filename): \Symfony\Component\HttpFoundation\File\UploadedFile {
         $local_file = __DIR__ . '/' . $filename;
         return new Symfony\Component\HttpFoundation\File\UploadedFile(
             $local_file,
