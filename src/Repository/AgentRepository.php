@@ -800,10 +800,16 @@ class AgentRepository extends EntityRepository
             ->getArrayResult();
     }
 
-    public function get($orderBy = 'nom', $actif = null, $name = null)
+    public function get($orderBy = 'nom', $actif = 'Actif', $name = null)
     {
         $supprime = strstr($actif, "Supprim") ? array(1) : array(0);
-        $actif = htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $actif = strstr($actif, "Supprim") ? 'Supprim%' : $actif;
+
+        $fields = array_map('trim', explode(',', $orderBy));
+        $orders = [];
+        foreach ($fields as $field) 
+            $orders[] = 'a.' . $field;
+        $orderBy = implode(', ', $orders);
 
         if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
             $qb = $this->createQueryBuilder('a')
@@ -812,23 +818,22 @@ class AgentRepository extends EntityRepository
                     'a.nom',
                     'a.prenom',
                     'a.mail',
-                    'a.mailsResponsables',
+                    'a.mails_responsables',
                     'a.statut',
                     'a.categorie',
                     'a.service',
                     'a.actif',
                     'a.droits',
                     'a.sites',
-                    'a.checkIcs',
-                    'a.checkHamac',
-                    'r.responsable',
-                    'r.notificationLevel1',
-                    'r.notificationLevel2'
+                    'a.check_ics',
+                    'a.check_hamac',
+                    'r.notification_level1',
+                    'r.notification_level2'
                 )
-                ->leftJoin('a.responsables', 'r')
+                ->leftJoin('a.managed', 'r')
                 ->where("a.id <> 2")
                 ->andWhere("a.supprime IN (:supprime)")
-                ->andWhere("a.actif = :actif")
+                ->andWhere("a.actif LIKE :actif")
                 ->setParameter('actif', $actif)
                 ->setParameter('supprime', $supprime)
                 ->orderBy($orderBy);
@@ -837,11 +842,11 @@ class AgentRepository extends EntityRepository
                 ->getQuery()
                 ->getArrayResult();
         } else {
-            $qb = $this->createQueryBuilder('p')
-                ->select('p')
+            $qb = $this->createQueryBuilder('a')
+                ->select('a')
                 ->where("a.id <> 2")
                 ->andWhere("a.supprime IN (:supprime)")
-                ->andWhere("a.actif = :actif")
+                ->andWhere("a.actif LIKE :actif")
                 ->setParameter('actif', $actif)
                 ->setParameter('supprime', $supprime)
                 ->orderBy($orderBy);
@@ -851,11 +856,14 @@ class AgentRepository extends EntityRepository
                 ->getArrayResult();
         }
 
-        foreach($agents as $agent)
+        if ($name)
         {
-            if (pl_stristr($agent['nom'], $name) or pl_stristr($agent['prenom'], $name))
+            foreach($agents as $agent)
             {
-                return $agent;
+                if (pl_stristr($agent['prenom'], $name) or pl_stristr($agent['nom'], $name))
+                {
+                    return $agent;
+                }
             }
         }
 
