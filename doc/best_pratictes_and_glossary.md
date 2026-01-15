@@ -123,6 +123,13 @@
 | weeklyWorkingHours | heures_travail | For Agent |
 | workingHours | temps |
 
+## Repositories
+
+| Old | New | Comment |
+| conges::maj | Holiday::insert |
+| personnel::fecth | Agent::get |
+| planninghebdo::fetch | WorkingHours::get |
+
 ## Migrations
 
 > You should no longer use atomic_update and the maj.php file

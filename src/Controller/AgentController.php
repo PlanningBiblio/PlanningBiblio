@@ -58,7 +58,7 @@ class AgentController extends BaseController
         $tab = array(0);
         $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();// Mark agents as deleted when their depart date is past today
 
-        $agentsTab = $this->entityManager->getRepository(Agent::class)->findNamesByActif($actif);// Find agents filtered by their active status(by column actif and supprime),returns array
+        $agentsTab = $this->entityManager->getRepository(Agent::class)->get('nom,prenom', $actif, null);
 
         $nbSites = $this->config('Multisites-nombre');
         $agents = array();
@@ -266,10 +266,10 @@ class AgentController extends BaseController
             $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';
             $breaktimes = array();
             if ($this->config('PlanningHebdo')) {
-                $workingHour = $this->entityManager->getRepository(WorkingHour::class)->fetch(['perso_id' => $id, 'debut' => new \DateTime(date('Y-m-d') . ' 00:00:00'), 'fin' => new \DateTime(date('Y-m-d') . ' 00:00:00'), 'valide' => true]);
+                $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get(date('Y-m-d'), date('Y-m-d'), true, $id);
 
-                $temps = $workingHour ? $workingHour->getWorkingHours() : array();
-                $breaktimes = $workingHour ? $workingHour->getBreaktime() : array();
+                $temps = $workingHours ? $workingHours[0]->getWorkingHours() : array();
+                $breaktimes = $workingHours ? $workingHours[0]->getBreaktime() : array();
             } else {
                 $temps = $agent->getWorkingHours();
                 if (!is_array($temps)) {

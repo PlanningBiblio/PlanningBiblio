@@ -22,6 +22,8 @@ use App\Entity\WorkingHour;
 use App\Entity\Config;
 use App\Planno\Helper\HourHelper;
 
+require_once __DIR__ . '/../../legacy/Common/function.php';
+
 class AgentRepository extends EntityRepository
 {
     private $module = 'absence';
@@ -524,29 +526,6 @@ class AgentRepository extends EntityRepository
     }
 
     /**
-     * Find agents filtered by their active status.
-     *
-     * This method returns agents whose "actif" value matches the given status
-     *
-     * @param string $actif Active status to filter on
-     * @return array List of matching agents
-     */
-    public function findNamesByActif(string $actif): array
-    {
-        $supprimeValues = str_contains($actif, 'Supprim') ? [1] : [0];
-        $actif = str_contains($actif, 'Supprim') ? 'Supprim&eacute;' : $actif;
-        
-        $qb = $this->createQueryBuilder('p')
-            ->select('p')
-            ->where('p.supprime IN (:supprime)')
-            ->setParameter('supprime', $supprimeValues)
-            ->andWhere('p.actif LIKE :actif')
-            ->setParameter('actif', $actif);
-
-        return $qb->getQuery()->getArrayResult();
-    }
-
-    /**
      * Find the list of distinct agent statuses.
      *
      * This method returns all unique values of the "statut" field
@@ -821,26 +800,12 @@ class AgentRepository extends EntityRepository
             ->getArrayResult();
     }
 
-    public function fetch($tri="nom", $actif=null, $name=null, $supprime = null)
+    public function get($orderBy = 'nom', $actif = null, $name = null)
     {
-        $filters = array('id' => '<> 2');
-
-        // Filtre selon le champ actif (administratif, service public)
+        $supprime = strstr($actif, "Supprim") ? array(1) : array(0);
         $actif = htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
-        if ($actif !== '' && $actif !== '0') {
-            $filters['actif'] = $actif;
-        }
 
-        // Filtre selon le champ supprime
-        if($supprime){
-            $supprime=implode(',', $supprime);
-            $filters['supprime'] = "IN{$supprime}";
-        }
-
-        $responsablesParAgent = false;
         if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
-            $responsablesParAgent = true;
-
             $qb = $this->createQueryBuilder('a')
                 ->select(
                     'a.id',
@@ -860,100 +825,40 @@ class AgentRepository extends EntityRepository
                     'r.notificationLevel1',
                     'r.notificationLevel2'
                 )
-                ->leftJoin('a.responsables', 'r');
+                ->leftJoin('a.responsables', 'r')
+                ->where("a.id <> 2")
+                ->andWhere("a.supprime IN (:supprime)")
+                ->andWhere("a.actif = :actif")
+                ->setParameter('actif', $actif)
+                ->setParameter('supprime', $supprime)
+                ->orderBy($orderBy);
 
-            foreach ($filters as $field => $value) {
-                $qb
-                    ->andWhere("a.$field = :$field")
-                    ->setParameter($field, $value);
-            }
-
-            $qb->orderBy($tri);
-
-            $all = $qb
+            $agents = $qb
                 ->getQuery()
                 ->getArrayResult();
         } else {
             $qb = $this->createQueryBuilder('p')
-                ->select('p');
+                ->select('p')
+                ->where("a.id <> 2")
+                ->andWhere("a.supprime IN (:supprime)")
+                ->andWhere("a.actif = :actif")
+                ->setParameter('actif', $actif)
+                ->setParameter('supprime', $supprime)
+                ->orderBy($orderBy);
 
-            // Apply filters (legacy $filter)
-            foreach ($filters as $field => $value) {
-                $qb
-                    ->andWhere("p.$field = :$field")
-                    ->setParameter($field, $value);
-            }
-
-            $qb->orderBy($tri);
-
-            $all = $qb
+            $agents = $qb
                 ->getQuery()
                 ->getArrayResult();
         }
 
-        // Si pas de résultat, on quitte
-        if (empty($all)) {
-            return false;
-        }
-
-        //	By default $result=$all
-        $result=array();
-        foreach ($all as $elem) {
-            if (empty($result[$elem['id']])) {
-                $result[$elem['id']]=$elem;
-                $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                $result[$elem['id']]['mails_responsables'] = explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
-
-                // Contrôle des calendriers ICS distants : Oui/Non ?
-                $check_ics = json_decode($result[$elem['id']]['check_ics']);
-                $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
-                $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
-                $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
-        
-                if ($responsablesParAgent) {
-                    // Ajout des responsables et notifications
-                    $result[$elem['id']]['responsables'] = array(array(
-                        'responsable' => $elem['responsable'],
-                        'notification_level1' => $elem['notification_level1'],
-                        'notification_level2' => $elem['notification_level2']
-                    ));
-          
-                    unset($result[$elem['id']]['responsable']);
-                    unset($result[$elem['id']]['notification_level1']);
-                }
-            } elseif ($responsablesParAgent) {
-                // Ajout des responsables et notifications
-                $result[$elem['id']]['responsables'][] = array(
-                    'responsable' => $elem['responsable'],
-                    'notification_level1' => $elem['notification_level1'],
-                    'notification_level2' => $elem['notification_level2']
-                );
+        foreach($agents as $agent)
+        {
+            if (pl_stristr($agent['nom'], $name) or pl_stristr($agent['prenom'], $name))
+            {
+                return $agent;
             }
         }
 
-        //	If name, keep only matching results
-        if ($name) {
-            $result=array();
-            foreach ($all as $elem) {
-                if (pl_stristr($elem['nom'], $name) or pl_stristr($elem['prenom'], $name)) {
-                    $result[$elem['id']]=$elem;
-                    $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                    $result[$elem['id']]['mails_responsables'] = explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
-
-                    // Contrôle des calendriers ICS distants : Oui/Non ?
-                    $check_ics = json_decode($result[$elem['id']]['check_ics']);
-                    $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
-                    $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
-                    $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
-                }
-            }
-        }
-  
-        //	Suppression de l'utilisateur "Tout le monde"
-        if (!$GLOBALS['config']['toutlemonde']) {
-            unset($result[2]);
-        }
-
-        return $result;
+        return $agents;
     }
 }
