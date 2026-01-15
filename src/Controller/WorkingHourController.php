@@ -2,14 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Agent;
 use App\PlanningBiblio\Helper\HourHelper;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-
-use App\Entity\Agent;
 
 require_once(__DIR__. '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__. '/../../public/personnel/class.personnel.php');

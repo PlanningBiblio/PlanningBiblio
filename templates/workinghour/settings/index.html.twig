@@ -1,0 +1,53 @@
+{# workinghour/settings/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('js/workingHour.js') }}"></script>
+{% endblock %}
+
+{% block page %}
+  <div id="content-form">
+    <h3>Heures de présence - Paramètres</h3>
+    <div id="buttons">
+      <form name="form" method="get" action="{{ path('workinghour.settings') }}">
+        Début : <input type="text" name="start" class="datepicker" value="{{ start }}" style="margin-right:20px;" />
+        Fin : <input type="text" name="end" class="datepicker" value="{{ end }}" style="margin-right:20px;" />
+        <input type="submit" value="OK" class="ui-button" style="margin-right:20px;" />
+        <input type="button" value="Réinitialiser" onclick="location.href='{{ path('workinghour.settings') }}'" class="ui-button ui-button-type2" style="margin-right:20px;" />
+        <input type="button" value="Ajouter" onclick="location.href='{{ path('workinghour.settings.edit', {id: 0}) }}'" class="ui-button ui-button-type2" />
+      </form>
+    </div>
+
+    <table id="tableWorkingHourCycles" class="CJDataTable" data-sort='[[1, "asc"],[2]]'>
+      <thead>
+        <tr>
+          <th class="dataTableNoSort"></th>
+          <th class="dataTableDateFR">Date de début de cycle</th>
+          <th>Numéro de semaine au début du cycle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cycle in cycles %}
+          <tr>
+            <td>
+              <a href="{{ path('workinghour.settings.edit', {id: cycle.id}) }}">
+                <span class='pl-icon pl-icon-edit' title='Edit'></span>
+              </a>
+              <a href="javascript:workingHourSettingDelete({{ cycle.id }})">
+                <span class='pl-icon pl-icon-dropblack' title='Edit'></span>
+              </a>
+            <td>{{ cycle.date | date('d/m/Y') }}</td>
+            <td>{{ cycle.week }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <form id="delete-form" name="delete-form" method="post" action="{{ path('workinghour.settings.delete') }}" >
+      <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+      <input type="hidden" id="delete-id" name="id" />
+    </form>
+
+  </div>
+{% endblock %}
