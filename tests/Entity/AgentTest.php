@@ -8,24 +8,32 @@ use App\Entity\Position;
 use App\Entity\PlanningPosition;
 use App\Entity\WorkingHour;
 use App\Entity\Absence;
-
+use App\Entity\Manager;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Tests\FixtureBuilder;
-
-use PHPUnit\Framework\TestCase;
 
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
-class AgentTest extends TestCase
+class AgentTest extends KernelTestCase
 {
-    public function testAdd(): void {
-        global $entityManager;
-        $agent = $entityManager->find(Agent::class, 1);
+    private $entityManager;
+
+    protected function setUp(): void
+    {
+        $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
+    }
+
+    public function testAdd(): void
+    {
+        $agent = $this->entityManager->find(Agent::class, 1);
 
         $this->assertEquals('Administrateur', $agent->getLastname());
         $this->assertEquals('admin', $agent->getLogin());
     }
 
-    public function testCanAccess(): void {
+    public function testCanAccess(): void
+    {
 
         $access = new Access();
         $access->setGroupId(99);
@@ -42,8 +50,8 @@ class AgentTest extends TestCase
         $this->assertFalse($agent->can_access(array($access_bad)));
     }
 
-    public function testIsOnVacationOn(): void{
-        global $entityManager;
+    public function testIsOnVacationOn(): void
+    {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
@@ -66,8 +74,10 @@ class AgentTest extends TestCase
         $this->assertFalse($agent->isOnVacationOn('', ''));
     }
 
-    public function testIsBlockedOn(): void{
-        global $entityManager;
+    public function testIsBlockedOn(): void
+    {
+        $entityManager = $this->entityManager;
+
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
@@ -119,8 +129,8 @@ class AgentTest extends TestCase
         $this->assertFalse($agent2->isBlockedOn($date_ok->format('Y-m-d'), $start->format('H:i:s'), $end->format('H:i:s')));
     }
 
-    public function testGetWorkingHoursOn(): void{
-        global $entityManager;
+    public function testGetWorkingHoursOn(): void
+    {
         $GLOBALS['config']['PlanningHebdo'] = 0;
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -221,8 +231,8 @@ class AgentTest extends TestCase
         $this->assertNotEquals($agent3->getWorkingHoursOn($date3->format('Y-m-d'))['temps'][3][2], '12:30:00','check Working Hours of the agent with planningHebdo');
     }
 
-    public function testSkills(): void{
-        global $entityManager;
+    public function testSkills(): void
+    {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
@@ -242,8 +252,8 @@ class AgentTest extends TestCase
 
     }
 
-    public function test_get_planning_unit_mails(): void{
-        global $entityManager;
+    public function test_get_planning_unit_mails(): void
+    {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
@@ -294,9 +304,8 @@ class AgentTest extends TestCase
 
     }
 
-    public function testIsAbsentOn(): void{
-
-        global $entityManager;
+    public function testIsAbsentOn(): void
+    {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
@@ -324,8 +333,8 @@ class AgentTest extends TestCase
         $this->assertTrue($agent->isAbsentOn('2022-12-14', '2022-12-25'));
     }
 
-    public function test_get_manager_emails(): void{
-        global $entityManager;
+    public function test_get_manager_emails(): void
+    {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
@@ -337,5 +346,89 @@ class AgentTest extends TestCase
 
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'mails_responsables' => 'jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com'));
         $this->assertEquals($agent->get_manager_emails(), ['jcharles@mail.fr', 'jmarc@mail.fr', 'j.paul@mail.com']);
+    }
+
+    public function testAgentGetManagedAndGetManagers(): void
+    {
+        $entityManager = $this->entityManager;
+
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+        $builder->delete(Manager::class);
+
+        $manager1 = new Agent();
+        $manager1->setLogin('manager1');
+        $entityManager->persist($manager1);
+
+        $manager2 = new Agent();
+        $manager2->setLogin('manager2');
+        $entityManager->persist($manager2);
+
+        $agent = new Agent();
+        $agent->setLogin('myAgent');
+
+        // Tests getManaged and getManagers for a new agent before persist
+        $this->assertIsArray($agent->getManaged());
+        $this->assertEmpty($agent->getManaged());
+        $this->assertIsArray($agent->getManagers());
+        $this->assertEmpty($agent->getManagers());
+
+        $entityManager->persist($agent);
+        $entityManager->flush();
+
+        $id = $agent->getId();
+
+        $agent = $entityManager->getRepository(Agent::class)->find($id);
+
+        // Tests getManaged and getManagers for a new agent after persist
+        $this->assertIsArray($agent->getManaged());
+        $this->assertEmpty($agent->getManaged());
+        $this->assertIsArray($agent->getManagers());
+        $this->assertEmpty($agent->getManagers());
+
+        // Add managers
+        $manager = new Manager();
+        $manager->setUser($agent);
+        $manager->setManager($manager1);
+        $manager->setLevel1(1);
+        $manager->setLevel1Notification(1);
+        $manager->setLevel2(0);
+        $manager->setLevel2Notification(0);
+        $entityManager->persist($manager);
+
+        $manager = new Manager();
+        $manager->setUser($agent);
+        $manager->setManager($manager2);
+        $manager->setLevel1(0);
+        $manager->setLevel1Notification(0);
+        $manager->setLevel2(1);
+        $manager->setLevel2Notification(1);
+        $entityManager->persist($manager);
+
+        $entityManager->flush();
+        $entityManager->clear();
+
+        // Tests getManaged and getManagers for a agent after adding managers
+        $agent = $entityManager->getRepository(Agent::class)->find($id);
+
+        $this->assertIsArray($agent->getManaged());
+        $this->assertEmpty($agent->getManaged());
+        $this->assertIsArray($agent->getManagers());
+        $this->assertNotEmpty($agent->getManagers());
+
+        $manager1 = $agent->getManagers()[0]->getManager();
+        $manager2 = $agent->getManagers()[1]->getManager();
+        $this->assertEquals('manager1', $manager1->getLogin());
+        $this->assertEquals('manager2', $manager2->getLogin());
+
+        $manager1 = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'manager1']);
+
+        $this->assertIsArray($manager1->getManaged());
+        $this->assertNotEmpty($manager1->getManaged());
+        $this->assertIsArray($manager1->getManagers());
+        $this->assertEmpty($manager1->getManagers());
+
+        $managed = $manager1->getManaged()[0]->getUser();
+        $this->assertEquals('myAgent', $managed->getLogin());
     }
 }
