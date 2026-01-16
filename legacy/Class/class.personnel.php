@@ -67,6 +67,7 @@ class personnel
         $db->delete("planning_hebdo", "`perso_id` IN ($liste)");
     }
 
+    // Will be replaced by AgentRepository::get
     public function fetch($tri="nom", $actif=null, $name=null)
     {
         $filter = array('id' => '<> 2');

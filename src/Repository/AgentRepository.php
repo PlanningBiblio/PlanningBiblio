@@ -800,37 +800,23 @@ class AgentRepository extends EntityRepository
             ->getArrayResult();
     }
 
+    // Will be replaced by AgentRepository::get
     public function get($orderBy = 'nom', $actif = 'Actif', $name = null)
     {
         $supprime = strstr($actif, "Supprim") ? array(1) : array(0);
-        $actif = strstr($actif, "Supprim") ? 'Supprim%' : $actif;
+        $actif = strstr($actif, "Supprim") ? 'Supprim%' : $actif;//migration (update as deleted)
 
         $fields = array_map('trim', explode(',', $orderBy));
         $orders = [];
-        foreach ($fields as $field) 
+        foreach ($fields as $field)
             $orders[] = 'a.' . $field;
         $orderBy = implode(', ', $orders);
 
-        if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
+        $config = $this->getEntityManager()->getRepository(Config::class)->findBy(['nom' => 'Absences-notifications-agent-par-agent']);
+        if ($config) {
             $qb = $this->createQueryBuilder('a')
-                ->select(
-                    'a.id',
-                    'a.nom',
-                    'a.prenom',
-                    'a.mail',
-                    'a.mails_responsables',
-                    'a.statut',
-                    'a.categorie',
-                    'a.service',
-                    'a.actif',
-                    'a.droits',
-                    'a.sites',
-                    'a.check_ics',
-                    'a.check_hamac',
-                    'r.notification_level1',
-                    'r.notification_level2'
-                )
-                ->leftJoin('a.managed', 'r')
+                ->select('a')
+                ->leftJoin('a.managed', 'r')// C'est necessaire
                 ->where("a.id <> 2")
                 ->andWhere("a.supprime IN (:supprime)")
                 ->andWhere("a.actif LIKE :actif")
@@ -840,7 +826,7 @@ class AgentRepository extends EntityRepository
 
             $agents = $qb
                 ->getQuery()
-                ->getArrayResult();
+                ->getResult();
         } else {
             $qb = $this->createQueryBuilder('a')
                 ->select('a')
@@ -853,16 +839,16 @@ class AgentRepository extends EntityRepository
 
             $agents = $qb
                 ->getQuery()
-                ->getArrayResult();
+                ->getResult();
         }
 
         if ($name)
         {
             foreach($agents as $agent)
             {
-                if (pl_stristr($agent['prenom'], $name) or pl_stristr($agent['nom'], $name))
+                if (pl_stristr($agent->getFirstname(), $name) or pl_stristr($agent->getLastname(), $name))
                 {
-                    return $agent;
+                    return $agent;//sortir des entities
                 }
             }
         }
