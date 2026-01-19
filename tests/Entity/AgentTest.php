@@ -416,10 +416,14 @@ class AgentTest extends KernelTestCase
         $this->assertIsArray($agent->getManagers());
         $this->assertNotEmpty($agent->getManagers());
 
-        $manager1 = $agent->getManagers()[0]->getManager();
-        $manager2 = $agent->getManagers()[1]->getManager();
-        $this->assertEquals('manager1', $manager1->getLogin());
-        $this->assertEquals('manager2', $manager2->getLogin());
+        $logins = array_map(
+        fn($m) => $m->getManager()->getLogin(),
+            $agent->getManagers()
+        );
+
+        $this->assertContains('manager1', $logins);
+        $this->assertContains('manager2', $logins);
+        $this->assertCount(2, $logins);
 
         $manager1 = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'manager1']);
 
