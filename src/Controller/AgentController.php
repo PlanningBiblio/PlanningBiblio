@@ -939,11 +939,10 @@ class AgentController extends BaseController
             $this->entityManager->flush();
 
             // Mise à jour de la table pl_poste en cas de modification de la date de départ
-            $this->entityManager->getRepository(PlanningPosition::class)->updateDeletionByUserId($id);
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserId($id);// Updates the deletion flag for a given user.
             if ($depart != "0000-00-00" and $depart != "") {
                 // Si une date de départ est précisée, on met supprime=1 au dela de cette date
-                $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteAfterDate($id, $depart->format('Y-m-d'));
-            }
+                $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($id, $depart->format('Y-m-d'));// Updates users as deleted for a given user and after a given date.
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
             if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
@@ -1189,7 +1188,7 @@ class AgentController extends BaseController
 
             // Search existing agents.
             $agents_existants = array();
-            $login = $this->entityManager->getRepository(Agent::class)->findAllLoginsNotDeleted();
+            $login = $this->entityManager->getRepository(Agent::class)->findAllLoginsNotDeleted();// Finds all agent logins that are not deleted.
             foreach ($login as $elem) {
                 $agents_existants[] = $elem['login'];
             }
@@ -1564,10 +1563,10 @@ class AgentController extends BaseController
             $agentUpdate->setDeparture(new \DateTime($date));
 
             // Mise à jour de la table pl_poste
-            $this->entityManager->getRepository(PlanningPosition::class)->updateDeletionByIdAndDate($id, $date);
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserIdAndThatDate($id, $date);// Updates the deletion flag for a user on a given date.
 
             // Mise à jour de la table responsables
-            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($id);
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($id);// Deletes manager links by agent or responsible IDs.
 
             return $this->json("level 1 delete OK");
 
@@ -1619,10 +1618,10 @@ class AgentController extends BaseController
             $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($list);// Marks the given agents as deleted and sets their departure date to today.
 
             // Mise à jour de la table pl_poste
-            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteAfterDate($list, $date);
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($list, $date);// Updates users as deleted for a given user and after a given date.
 
             // Mise à jour de la table responsables
-            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($list);
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($list);// Deletes manager links by agent or responsible IDs.
         }
 
         $return = ["ok"];

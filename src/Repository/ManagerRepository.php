@@ -76,6 +76,15 @@ class ManagerRepository extends EntityRepository
         $entityManager->flush();
     }
 
+    /**
+     * Deletes manager links by agent or responsible IDs.
+     *
+     * This method removes manager records where the agent
+     * or the responsible matches the given IDs.
+     *
+     * @param array|int $ids Agent or responsible ID(s)
+     * @return void
+     */
     public function deleteByPersoOrResponsable($ids)
     {
         $ids = is_array($ids) ? $ids : [$ids];

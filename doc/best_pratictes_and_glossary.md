@@ -126,7 +126,9 @@
 ## Repositories
 
 | Old | New | Comment |
+| conges::fetchCredit | Agent::fetchCredit |
 | conges::maj | Holiday::insert |
+| personnel::delete | Agent::delete |
 | personnel::fecth | Agent::get |
 | planninghebdo::fetch | WorkingHours::get |
 

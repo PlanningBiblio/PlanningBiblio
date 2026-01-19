@@ -598,6 +598,7 @@ class AgentRepository extends EntityRepository
         return $url;
     }
 
+    // Replace conges::fetchCredit
     public function fetchCredit(?int $userId): array
     {
         if (!$userId) {
@@ -653,6 +654,14 @@ class AgentRepository extends EntityRepository
         ];
     }
 
+    /**
+     * Finds all agent logins that are not deleted.
+     *
+     * This method returns the list of agent logins
+     * whose deletion flag is different from the deleted value "2".
+     *
+     * @return array List of agent logins
+     */
     public function findAllLoginsNotDeleted(): array
     {
         return $this->createQueryBuilder('a')
@@ -664,6 +673,7 @@ class AgentRepository extends EntityRepository
             ->getArrayResult();
     }
 
+    // Will replance personnel::delete
     public function delete($list): void
     {
         // Suppresion des informations de la table personnel

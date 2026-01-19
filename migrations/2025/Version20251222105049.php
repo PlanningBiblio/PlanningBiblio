@@ -18,26 +18,26 @@ final class Version20251222105049 extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE debut debut DATETIME NULL DEFAULT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE fin fin DATETIME NULL DEFAULT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE saisie saisie TIMESTAMP NULL DEFAULT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE modification modification TIMESTAMP NULL DEFAULT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE validation_n1 validation_n1 TIMESTAMP NULL DEFAULT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE validation validation TIMESTAMP NULL DEFAULT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE suppr_date suppr_date TIMESTAMP NULL DEFAULT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `debut` `debut` DATETIME NULL DEFAULT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `fin` `fin` DATETIME NULL DEFAULT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `saisie` `saisie` TIMESTAMP NULL DEFAULT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `modification` `modification` TIMESTAMP NULL DEFAULT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `validation_n1` `validation_n1` TIMESTAMP NULL DEFAULT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `validation` `validation` TIMESTAMP NULL DEFAULT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `suppr_date` `suppr_date` TIMESTAMP NULL DEFAULT NULL;");
     }
 
     public function down(Schema $schema): void
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE debut debut DATETIME NOT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE fin fin DATETIME NOT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE saisie saisie TIMESTAMP NOT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE modification modification TIMESTAMP NOT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE validation_n1 validation_n1 TIMESTAMP NOT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE validation validation TIMESTAMP NOT NULL;");
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE suppr_date suppr_date TIMESTAMP NOT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `debut` `debut` DATETIME NOT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `fin` `fin` DATETIME NOT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `saisie` `saisie` TIMESTAMP NOT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `modification` `modification` TIMESTAMP NOT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `validation_n1` `validation_n1` TIMESTAMP NOT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `validation` `validation` TIMESTAMP NOT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `suppr_date` `suppr_date` TIMESTAMP NOT NULL;");
     }
 
     public function isTransactional(): bool

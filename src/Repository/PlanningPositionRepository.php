@@ -31,7 +31,16 @@ class PlanningPositionRepository extends EntityRepository
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function updateDeletionByUserId(int $persoId)
+    /**
+     * Updates the deletion flag for a given user.
+     *
+     * This method sets the deletion flag to active
+     * for the user identified by the given ID.
+     *
+     * @param int $userId User ID
+     * @return int Number of affected rows
+     */
+    public function updateAsDeletedByUserId(int $userId)
     {
         $qb = $this->createQueryBuilder('p');
 
@@ -39,12 +48,22 @@ class PlanningPositionRepository extends EntityRepository
             ->update()
             ->set('p.supprime', 0)
             ->where('p.perso_id = :persoId')
-            ->setParameter('persoId', $persoId)
+            ->setParameter('persoId', $userId)
             ->getQuery()
             ->execute();
     }
 
-    public function updateAsDeleteAfterDate($userIds, string $date)
+    /**
+     * Updates users as deleted for a given user and after a given date.
+     *
+     * This method sets the deletion flag for users
+     * whose date is after the given value.
+     *
+     * @param array|int $userIds User ID or list of user IDs
+     * @param string $date Date threshold
+     * @return int Number of affected rows
+     */
+    public function updateAsDeleteByUserIdAndAfterDate($userIds, string $date)
     {
         $userIds = is_array($userIds) ? $userIds : [$userIds];
 
@@ -59,7 +78,17 @@ class PlanningPositionRepository extends EntityRepository
             ->execute();
     }
 
-    public function updateDeletionByIdAndDate(int $userId, string $date)
+    /**
+     * Updates the deletion flag for a user on a given date.
+     *
+     * This method marks the user as deleted
+     * when the user ID and date match.
+     *
+     * @param int $userId User ID
+     * @param string $date Date value
+     * @return int Number of affected rows
+     */
+    public function updateAsDeletedByUserIdAndThatDate(int $userId, string $date)
     {
         return $this->createQueryBuilder('p')
             ->update()
