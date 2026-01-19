@@ -943,7 +943,7 @@ class AgentController extends BaseController
             if ($depart != "0000-00-00" and $depart != "") {
                 // Si une date de départ est précisée, on met supprime=1 au dela de cette date
                 $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($id, $depart->format('Y-m-d'));// Updates users as deleted for a given user and after a given date.
-
+            }
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
             if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
                 $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
