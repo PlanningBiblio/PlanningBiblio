@@ -801,7 +801,7 @@ class AgentRepository extends EntityRepository
     }
 
     // Will replace personnel::fetch
-    public function get($orderBy = 'nom', $actif = 'Actif', $name = null)
+    public function get($orderBy = 'nom', $actif = null, $name = null)
     {
         $supprime = strstr($actif, "Supprim") ? array(1) : array(0);
         $actif = strstr($actif, "Supprim") ? 'Supprim%' : $actif;// TODO migration (update as deleted)
@@ -815,10 +815,15 @@ class AgentRepository extends EntityRepository
         $qb = $this->createQueryBuilder('a')
             ->select('a')
             ->where("a.id <> 2")
-            ->andWhere("a.supprime IN (:supprime)")
-            ->andWhere("a.actif LIKE :actif")
-            ->setParameter('actif', $actif)
-            ->setParameter('supprime', $supprime)
+            ->andWhere("a.supprime IN (:supprime)");
+        
+        if (!empty($actif))
+        {
+            $qb ->andWhere("a.actif LIKE :actif")
+                ->setParameter('actif', $actif);
+        }
+
+        $qb ->setParameter('supprime', $supprime)
             ->orderBy($orderBy);
 
         $agents = $qb

@@ -86,7 +86,7 @@ class AgentRepositoryTest extends PLBWebTestCase
         $this->assertSame('Mike', $agentsSupprime1[0]->getLogin());
         $this->assertSame('Eric', $agentsSupprime1[1]->getLogin());
 
-        $agentsActif = $repo->get();
+        $agentsActif = $repo->get('nom', 'Actif');
         $this->assertCount(1, $agentsActif);
         $this->assertSame('Leo', $agentsActif[0]->getLogin());
     }

@@ -64,18 +64,18 @@ class AgentController extends BaseController
         $agents = array();
         foreach ($agentsTab as $agent) {
             $elem = [];
-            $id = $agent['id'];
-            $arrivee = dateFr($agent['arrivee'] ? $agent['arrivee']->format('Y-m-d') : '');
-            $depart = dateFr($agent['depart'] ? $agent['depart']->format('Y-m-d') : '');//add TU for verifier les champs (ge zi li de shujv ,tester quand c'est null,changer, et verifier again)TODO
-            $last_login = date_time($agent['last_login'] ? $agent['last_login']->format('Y-m-d H:i:s') : '0000-00-00 00:00:00');
-            $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
+            $id = $agent->getId();
+            $arrivee = dateFr($agent->getArrival() ? $agent->getArrival()->format('Y-m-d') : '');
+            $depart = dateFr($agent->getDeparture() ? $agent->getDeparture()->format('Y-m-d') : '');
+            $last_login = date_time($agent->getLastLogin() ? $agent->getLastLogin()->format('Y-m-d H:i:s') : '0000-00-00 00:00:00');
+            $heures = $agent->getWeeklyServiceHours() ? $agent->getWeeklyServiceHours() : null;
             $heures = heure4($heures);
             if (is_numeric($heures)) {
                 $heures.= "h00";
             }
-            $agent['service'] = str_replace("`", "'", $agent['service']);
+            $service = str_replace("`", "'", $agent->getService());
 
-            $sites = json_decode($agent['sites'], true);
+            $sites = json_decode($agent->getSites(), true);
             if ($nbSites > 1) {
                 $tmp = array();
                 if (!empty($sites)) {
@@ -90,12 +90,12 @@ class AgentController extends BaseController
 
             $elem = array(
                 'id' => $id,
-                'name' => $agent['nom'],
-                'surname' => $agent['prenom'],
+                'name' => $agent->getLastname(),
+                'surname' => $agent->getFirstname(),
                 'departure' => $depart,
                 'arrival' => $arrivee,
-                'status' => $agent['statut'],
-                'service' => $agent['service'],
+                'status' => $agent->getStatus(),
+                'service' => $service,
                 'hours' => $heures,
                 'last_login' => $last_login,
                 'sites' => $sites,
@@ -269,7 +269,7 @@ class AgentController extends BaseController
                 $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get(date('Y-m-d'), date('Y-m-d'), true, $id);
 
                 $temps = $workingHours ? $workingHours[0]->getWorkingHours() : array();
-                $breaktimes = $workingHours ? $workingHours[0]->getBreaktime() : array();
+                $breaktimes = $workingHours && $workingHours[0]->getBreaktime() ? $workingHours[0]->getBreaktime() : array();
             } else {
                 $temps = $agent->getWorkingHours();
                 if (!is_array($temps)) {
@@ -1782,7 +1782,7 @@ class AgentController extends BaseController
         if ($request->get('deleted')=="yes") {
             $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);
         } else {
-            $agents = $this->entityManager->getRepository(Agent::class)->findAll();
+            $agents = $this->entityManager->getRepository(Agent::class)->get();
         }
 
         $tab=array();
