@@ -800,11 +800,11 @@ class AgentRepository extends EntityRepository
             ->getArrayResult();
     }
 
-    // Will be replaced by AgentRepository::get
+    // Will replace personnel::fetch
     public function get($orderBy = 'nom', $actif = 'Actif', $name = null)
     {
         $supprime = strstr($actif, "Supprim") ? array(1) : array(0);
-        $actif = strstr($actif, "Supprim") ? 'Supprim%' : $actif;//migration (update as deleted)
+        $actif = strstr($actif, "Supprim") ? 'Supprim%' : $actif;// TODO migration (update as deleted)
 
         $fields = array_map('trim', explode(',', $orderBy));
         $orders = [];
@@ -812,35 +812,18 @@ class AgentRepository extends EntityRepository
             $orders[] = 'a.' . $field;
         $orderBy = implode(', ', $orders);
 
-        $config = $this->getEntityManager()->getRepository(Config::class)->findBy(['nom' => 'Absences-notifications-agent-par-agent']);
-        if ($config) {
-            $qb = $this->createQueryBuilder('a')
-                ->select('a')
-                ->leftJoin('a.managed', 'r')// C'est necessaire
-                ->where("a.id <> 2")
-                ->andWhere("a.supprime IN (:supprime)")
-                ->andWhere("a.actif LIKE :actif")
-                ->setParameter('actif', $actif)
-                ->setParameter('supprime', $supprime)
-                ->orderBy($orderBy);
+        $qb = $this->createQueryBuilder('a')
+            ->select('a')
+            ->where("a.id <> 2")
+            ->andWhere("a.supprime IN (:supprime)")
+            ->andWhere("a.actif LIKE :actif")
+            ->setParameter('actif', $actif)
+            ->setParameter('supprime', $supprime)
+            ->orderBy($orderBy);
 
-            $agents = $qb
-                ->getQuery()
-                ->getResult();
-        } else {
-            $qb = $this->createQueryBuilder('a')
-                ->select('a')
-                ->where("a.id <> 2")
-                ->andWhere("a.supprime IN (:supprime)")
-                ->andWhere("a.actif LIKE :actif")
-                ->setParameter('actif', $actif)
-                ->setParameter('supprime', $supprime)
-                ->orderBy($orderBy);
-
-            $agents = $qb
-                ->getQuery()
-                ->getResult();
-        }
+        $agents = $qb
+            ->getQuery()
+            ->getResult();
 
         if ($name)
         {
@@ -848,11 +831,11 @@ class AgentRepository extends EntityRepository
             {
                 if (pl_stristr($agent->getFirstname(), $name) or pl_stristr($agent->getLastname(), $name))
                 {
-                    return $agent;//sortir des entities
+                    return $agent;
                 }
             }
+        } else {
+            return $agents;// sortir des entities
         }
-
-        return $agents;
     }
 }
