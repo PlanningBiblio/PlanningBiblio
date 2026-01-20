@@ -31,7 +31,7 @@ final class Version20251222105049 extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `debut` `debut` DATETIME NOT NULL;");
+        $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `debut` `debut` DATETIME NOT NULL;");// jia shang mo ren zhi
         $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `fin` `fin` DATETIME NOT NULL;");
         $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `saisie` `saisie` TIMESTAMP NOT NULL;");
         $this->addSql("ALTER TABLE {$dbprefix}conges CHANGE `modification` `modification` TIMESTAMP NOT NULL;");

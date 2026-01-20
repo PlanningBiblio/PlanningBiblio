@@ -73,7 +73,7 @@ class Agent
     private ?float $heures_travail = 0;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $sites = '';
+    private ?string $sites = ''; // gai cheng array
 
     #[ORM\Column]
     private ?array $temps = [];
@@ -465,7 +465,7 @@ class Agent
     
     public function getRecoveryMenu(): ?string
     {
-        return $this->recup;
+        return $this->recup;// recup de config kai le zhi hou mei you xian shi zai edit li. config shi Text(conges- recup_agent)
     }
 
     public function setRecoveryMenu(?string $recoveryMenu): static

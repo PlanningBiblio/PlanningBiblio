@@ -18,7 +18,7 @@ final class Version20260106103039 extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("UPDATE {$dbprefix}personnel SET arrivee = NULL WHERE arrivee IN ('0000-00-00', '-0001-11-30')");
+        $this->addSql("UPDATE {$dbprefix}personnel SET arrivee = NULL WHERE arrivee IN ('0000-00-00', '-0001-11-30')");// gai cheng geng jian dan de ban ben
         $this->addSql("UPDATE {$dbprefix}personnel SET depart = NULL WHERE depart IN ( '0000-00-00', '-0001-11-30')");
         $this->addSql("UPDATE {$dbprefix}personnel SET last_login = NULL WHERE last_login IN ( '0000-00-00 00:00:00', '-0001-11-30 00:00:00')");
     }

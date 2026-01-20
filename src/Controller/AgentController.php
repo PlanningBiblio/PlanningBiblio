@@ -203,11 +203,11 @@ class AgentController extends BaseController
         $actif = null;
         $droits = $GLOBALS['droits'];
         $admin = in_array(21, $droits);
-
+//zhe li gai cheng ying yu, kan pr li de comment
         $groupesAcces = $this->entityManager->getRepository(Access::class)->findGroupesAcces();// Find access filtered by group id("groupe_id" value donesn't equal 99 or 100).
         // Tous les droits d'accés
         $groupes = array();
-        foreach ($groupesAcces as $elem) {
+        foreach ($groupesAcces as $elem) {// zhe li ke yi zai findGroupesAcces zuo 
             if (empty($elem['categorie'])) {
                 $elem['categorie'] = 'Divers';
                 $elem['ordre'] = '200';
@@ -261,9 +261,17 @@ class AgentController extends BaseController
         $recupAgents = array("Prime","Temps");
         // récupération des infos de l'agent en cas de modif
         $ics = null;
+
+        $arrivee = $agent->getArrival() ? $agent->getArrival()->format('d/m/Y') : '';
+        $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';
+        $managersMails = $agent->getManagersMails() ? explode(';', html_entity_decode($agent->getManagersMails(), ENT_QUOTES|ENT_IGNORE, "UTF-8")) : [];
+        // $managersMails : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($managersMails=implode("; ",$managersMails);)
+        $informations = $agent->getInformation() ?? '';// stripslashes bu xv yao le. template ye yao gai, zhi jie cong object li huo de jiu hao le
+        $recup = $agent->getRecoveryMenu() ?? ''; 
+        $sites = html_entity_decode($agent->getSites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8');//zhe liang hang guan yu site de yao bei huan diao
+        $sites = $sites !== '' && $sites !== '0' ? json_decode($sites, true) : array();
+        
         if ($id) {
-            $arrivee = $agent->getArrival() ? $agent->getArrival()->format('d/m/Y') : '';
-            $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';
             $breaktimes = array();
             if ($this->config('PlanningHebdo')) {
                 $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get(date('Y-m-d'), date('Y-m-d'), true, $id);
@@ -287,12 +295,6 @@ class AgentController extends BaseController
                 sort($postes_attribues);
             }
             $acces = $agent->getACL();
-            $managersMails = explode(";", html_entity_decode($agent->getManagersMails(), ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-            // $managersMails : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($managersMails=implode("; ",$managersMails);)
-            $informations = stripslashes($agent->getInformation());
-            $recup = stripslashes($agent->getRecoveryMenu());
-            $sites = html_entity_decode($agent->getSites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-            $sites = $sites !== '' && $sites !== '0'?json_decode($sites, true):array();
             $action = 'update';
             $titre = $agent->getLastname()." ".$agent->getFirstname();
 
@@ -304,12 +306,6 @@ class AgentController extends BaseController
             $id = null;
             $titre = "Ajout d'un agent";
             $action = 'add';
-            $arrivee = '';
-            $depart = '';
-            $managersMails = [];
-            $informations = "";
-            $recup = "";
-            $sites = array();
             if (!empty($_SESSION['perso_actif']) and $_SESSION['perso_actif'] != 'Supprim&eacute;') {
                 $actif = $_SESSION['perso_actif'];
             }// vérifie dans quel tableau on se trouve pour la valeur par défaut
@@ -585,7 +581,7 @@ class AgentController extends BaseController
         }
 
         if ($this->config('Conges-Enable')) {
-            $conges = $this->entityManager->getRepository(Agent::class)->fetchCredit($id);
+            $conges = $this->entityManager->getRepository(Agent::class)->fetchCredits($id);//$agent->fetchCredit()
             $holiday_helper = new HolidayHelper();
 
             $annuelHeures  = $conges['annuelHeures']  ?? 0;
@@ -798,9 +794,9 @@ class AgentController extends BaseController
                     $msgType = "error";
                 }
             }
-            
+
             // Enregistrement des infos dans la base de données
-            $agentInsert = new Agent();
+            $agentInsert = new Agent();// zhe li ye ke yi jian hua
             $agentInsert->setLastname($nom);
             $agentInsert->setFirstname($prenom);
             $agentInsert->setMail($mail);
@@ -827,7 +823,7 @@ class AgentController extends BaseController
             $agentInsert->setHamacCheck($check_hamac);
             $agentInsert->setMsGraphCheck($mSGraphCheck);
 
-            $holidays = $this->save_holidays($params, $request->getSession());
+            $holidays = $this->save_holidays($params);
             $agentInsert->setHolidayCompTime($holidays['comp_time']);
             $agentInsert->setHolidayAnnualCredit($holidays['conges_annuel']);
             $agentInsert->setHolidayAnticipation($holidays['conges_anticipation']);
@@ -913,11 +909,11 @@ class AgentController extends BaseController
             $agentUpdate->setMsGraphCheck($mSGraphCheck);
             // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
             if (!strstr($actif, "Supprim")) {
-                $agentUpdate->setDeletion("0");
+                $agentUpdate->setDeletion(0);
                 // Si l'agent était supprimé et qu'on le réintégre, on change sa date de départ
                 // pour qu'il ne soit pas supprimé de la liste des agents actifs
                 if (strstr($agentUpdate->getActive(), "Supprim") and $agentUpdate->getDeparture() <= date("Y-m-d")) {
-                    $agentUpdate->setDeparture("0000-00-00");
+                    $agentUpdate->setDeparture();
                 }
             } else {
                 $agentUpdate->setActive("Supprimé;");
@@ -928,7 +924,7 @@ class AgentController extends BaseController
                 $update["temps"] = $temps;
             }
 
-            $holidays = $this->save_holidays($params, $request->getSession());
+            $holidays = $this->save_holidays($params);
             $agentUpdate->setHolidayCompTime($holidays['comp_time']);
             $agentUpdate->setHolidayAnnualCredit($holidays['conges_annuel']);
             $agentUpdate->setHolidayAnticipation($holidays['conges_anticipation']);
@@ -1562,6 +1558,8 @@ class AgentController extends BaseController
             $agentUpdate->setActive("Supprimé");
             $agentUpdate->setDeparture(new \DateTime($date));
 
+            $this->entityManager->flush();
+
             // Mise à jour de la table pl_poste
             $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserIdAndThatDate($id, $date);// Updates the deletion flag for a user on a given date.
 
@@ -1607,7 +1605,7 @@ class AgentController extends BaseController
             }
         }
 
-        if ($session->get('perso_actif')=="Supprimé") {
+        if (str_starts_with($session->get('perso_actif'), 'Supprim')) {
             $this->entityManager->getRepository(Agent::class)->delete($tab);
         } else {
             // TODO : demander la date de suppression en popup
@@ -1615,13 +1613,13 @@ class AgentController extends BaseController
             $date = date('Y-m-d');
 
             // Mise à jour de la table personnel
-            $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($list);// Marks the given agents as deleted and sets their departure date to today.
+            $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($tab);// Marks the given agents as deleted and sets their departure date to today.
 
             // Mise à jour de la table pl_poste
-            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($list, $date);// Updates users as deleted for a given user and after a given date.
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($tab, $date);// Updates users as deleted for a given user and after a given date.
 
             // Mise à jour de la table responsables
-            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($list);// Deletes manager links by agent or responsible IDs.
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($tab);// Deletes manager links by agent or responsible IDs.
         }
 
         $return = ["ok"];
@@ -1792,7 +1790,7 @@ class AgentController extends BaseController
         return new Response(json_encode($tab));
     }
 
-    private function save_holidays($params, $session)
+    private function save_holidays($params)
     {
         if (!$this->config('Conges-Enable')) {
             return array(

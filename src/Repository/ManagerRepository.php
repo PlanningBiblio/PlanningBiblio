@@ -90,7 +90,7 @@ class ManagerRepository extends EntityRepository
         $ids = is_array($ids) ? $ids : [$ids];
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->delete(Manager::class, 'm')
-            ->where('m.persoId IN (:id)')
+            ->where('m.perso_id IN (:id)')
             ->orWhere('m.responsable IN (:id)')
             ->setParameter('id', $ids)
             ->getQuery()

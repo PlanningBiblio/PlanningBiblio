@@ -493,7 +493,7 @@ class AgentRepository extends EntityRepository
             ->andWhere('p.actif NOT LIKE :actifLike')
             ->setParameter('supprime', 1)
             ->setParameter('actif', 'Supprimé')
-            ->setParameter('actifLike', 'Supprimé')
+            ->setParameter('actifLike', 'Supprim%')
             ->getQuery()
             ->execute();
     }
@@ -576,14 +576,14 @@ class AgentRepository extends EntityRepository
     }
 
     /**
-     * getICSURL
+     * getICSURL // gai ming zi 
      * Retourne l'URL ICS de l'agent.
      * @param int $id : id de l'agent
      * @return string $url
      */
-    public function getICSURL($id): string
+    public function getICSURL($id): string// gai ming zi 
     {
-        $url = "/ical?id=$id";
+        $url = "/ical?id=$id";// TODO
         if ($GLOBALS['config']['ICS-Code']) {
             $agent = $this->find($id);
             $code = $agent->getICSCode();
@@ -598,12 +598,12 @@ class AgentRepository extends EntityRepository
         return $url;
     }
 
-    // Replace conges::fetchCredit
-    public function fetchCredit(?int $userId): array
+    // Replace conges::fetchCredits
+    public function fetchCredits(?int $userId): array// ke yi jian hua , repository shi entity de kuo zhan ,zhi jie $this jiu ke yi . ke yi jian hua, entity zi ji jiu neng zuo zhe xie
     {
         if (!$userId) {
             return [
-                "annuel" => null,
+                "annuel" => null,//zhe xie he controller li de chong fu le, shan diao!
                 "anticipation" => null,
                 "credit" => null,
                 "recup" => null,
@@ -629,7 +629,7 @@ class AgentRepository extends EntityRepository
         $decimal_comp_time    = $agent->getHolidayCompTime();
         $decimal_reliquat     = $agent->getHolidayRemainder();
 
-        $annuel       = HourHelper::decimalToHoursMinutes($decimal_annuel);
+        $annuel       = HourHelper::decimalToHoursMinutes($decimal_annuel);// zhi you zhe ge shi you yong de. ke yi zai han shu wai mian zuo
         $anticipation = HourHelper::decimalToHoursMinutes($decimal_anticipation);
         $credit       = HourHelper::decimalToHoursMinutes($decimal_credit);
         $comp_time    = HourHelper::decimalToHoursMinutes($decimal_comp_time);
@@ -782,18 +782,18 @@ class AgentRepository extends EntityRepository
                 'a.nom',
                 'a.prenom',
                 'a.mail',
-                'a.mailsResponsables',
+                'a.mails_responsables',
                 'a.statut',
                 'a.categorie',
                 'a.service',
                 'a.actif',
                 'a.droits',
                 'a.sites',
-                'a.checkIcs',
-                'a.checkHamac',
+                'a.check_ics',
+                'a.check_hamac',
                 'r.responsable',
-                'r.notificationLevel1',
-                'r.notificationLevel2'
+                'r.notification_level1',
+                'r.notification_level2'
             )
             ->leftJoin('a.responsables', 'r');
 
