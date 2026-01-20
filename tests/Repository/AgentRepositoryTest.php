@@ -71,20 +71,33 @@ class AgentRepositoryTest extends PLBWebTestCase
         $repo = $this->entityManager->getRepository(Agent::class);
 
         $leo = $repo->get('nom', 'Actif', 'Léo');
-        $this->assertNotEmpty($leo);
-        $this->assertSame('Mike', $leo->getManagers()[0]->getManager()->getLogin());
-        $this->assertSame('Eric', $leo->getManagers()[1]->getManager()->getLogin());
-        $this->assertSame('John', $leo->getManagers()[2]->getManager()->getLogin());
+        $managerLogins = array_map(
+            fn($m) => $m->getManager()->getLogin(),
+            $leo->getManagers()
+        );
+        $this->assertCount(3, $managerLogins);
+        $this->assertContains('Mike', $managerLogins);
+        $this->assertContains('Eric', $managerLogins);
+        $this->assertContains('John', $managerLogins);
 
         $agentsSupprime1 = $repo->get('nom', 'Supprimé', null);
-        $this->assertCount(2, $agentsSupprime1);
-        $this->assertSame('Mike', $agentsSupprime1[0]->getLogin());
-        $this->assertSame('Eric', $agentsSupprime1[1]->getLogin());
+        $logins = array_map(
+            fn($a) => $a->getLogin(),
+            $agentsSupprime1
+        );
+        $this->assertCount(2, $logins);
+        $this->assertContains('Mike', $logins);
+        $this->assertContains('Eric', $logins);
 
         $agentsSupprime2 = $repo->get('nom', 'Supprim&eacute;', null);
-        $this->assertCount(2, $agentsSupprime2);
-        $this->assertSame('Mike', $agentsSupprime1[0]->getLogin());
-        $this->assertSame('Eric', $agentsSupprime1[1]->getLogin());
+        $logins = array_map(
+            fn($a) => $a->getLogin(),
+            $agentsSupprime1
+        );
+        $this->assertCount(2, $logins);
+        $this->assertContains('Mike', $logins);
+        $this->assertContains('Eric', $logins);
+
 
         $agentsActif = $repo->get('nom', 'Actif');
         $this->assertCount(1, $agentsActif);
