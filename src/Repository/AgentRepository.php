@@ -576,12 +576,12 @@ class AgentRepository extends EntityRepository
     }
 
     /**
-     * getICSURL // gai ming zi 
+     * getExportIcsURL
      * Retourne l'URL ICS de l'agent.
      * @param int $id : id de l'agent
      * @return string $url
      */
-    public function getICSURL($id): string// gai ming zi 
+    public function getExportIcsURL($id): string
     {
         $url = "/ical?id=$id";// TODO
         if ($GLOBALS['config']['ICS-Code']) {
@@ -603,21 +603,21 @@ class AgentRepository extends EntityRepository
     {
         if (!$userId) {
             return [
-                "annuel" => null,//zhe xie he controller li de chong fu le, shan diao!
-                "anticipation" => null,
-                "credit" => null,
-                "recup" => null,
-                "reliquat" => null,
-                "annuelHeures" => null,
-                "anticipationHeures" => null,
-                "creditHeures" => null,
-                "recupHeures" => null,
-                "reliquatHeures" => null,
-                "annuelMinutes" => null,
-                "anticipationMinutes" => null,
-                "creditMinutes" => null,
-                "recupMinutes" => null,
-                "reliquatMinutes" => null,
+                "annuel" => 0,
+                "anticipation" => 0,
+                "credit" => 0,
+                "recup" => 0,
+                "reliquat" => 0,
+                "annuelHeures" => 0,
+                "anticipationHeures" => 0,
+                "creditHeures" => 0,
+                "recupHeures" => 0,
+                "reliquatHeures" => 0,
+                "annuelMinutes" => 0,
+                "anticipationMinutes" => 0,
+                "creditMinutes" => 0,
+                "recupMinutes" => 0,
+                "reliquatMinutes" => 0,
             ];
         }
 
@@ -629,7 +629,7 @@ class AgentRepository extends EntityRepository
         $decimal_comp_time    = $agent->getHolidayCompTime();
         $decimal_reliquat     = $agent->getHolidayRemainder();
 
-        $annuel       = HourHelper::decimalToHoursMinutes($decimal_annuel);// zhi you zhe ge shi you yong de. ke yi zai han shu wai mian zuo
+        $annuel       = HourHelper::decimalToHoursMinutes($decimal_annuel);
         $anticipation = HourHelper::decimalToHoursMinutes($decimal_anticipation);
         $credit       = HourHelper::decimalToHoursMinutes($decimal_credit);
         $comp_time    = HourHelper::decimalToHoursMinutes($decimal_comp_time);

@@ -45,8 +45,8 @@ class Agent
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $depart = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $postes = '';
+    #[ORM\Column]
+    private ?array $postes = [];
 
     #[ORM\Column]
     private ?string $actif = 'Actif';
@@ -72,8 +72,8 @@ class Agent
     #[ORM\Column]
     private ?float $heures_travail = 0;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $sites = ''; // gai cheng array
+    #[ORM\Column]
+    private ?array $sites = [];
 
     #[ORM\Column]
     private ?array $temps = [];
@@ -356,24 +356,24 @@ class Agent
         return $this;
     }
 
-    public function getSites(): ?string
+    public function getSites(): ?array
     {
         return $this->sites;
     }
 
-    public function setSites(?string $sites): static
+    public function setSites(?array $sites): static
     {
         $this->sites = $sites;
 
         return $this;
     }
 
-    public function getSkills(): ?string
+    public function getSkills(): ?array
     {
         return $this->postes;
     }
 
-    public function setSkills(?string $skills): static
+    public function setSkills(?array $skills): static
     {
         $this->postes = $skills;
 
@@ -465,7 +465,7 @@ class Agent
     
     public function getRecoveryMenu(): ?string
     {
-        return $this->recup;// recup de config kai le zhi hou mei you xian shi zai edit li. config shi Text(conges- recup_agent)
+        return $this->recup;
     }
 
     public function setRecoveryMenu(?string $recoveryMenu): static
@@ -732,12 +732,6 @@ class Agent
         }
 
         return false;
-    }
-
-    public function skills(): array
-    {
-        $skills = json_decode($this->postes);
-        return is_array($skills) ? $skills : [];
     }
 
     /**

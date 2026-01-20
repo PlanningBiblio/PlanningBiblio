@@ -68,14 +68,13 @@ class AgentController extends BaseController
             $arrivee = dateFr($agent->getArrival() ? $agent->getArrival()->format('Y-m-d') : '');
             $depart = dateFr($agent->getDeparture() ? $agent->getDeparture()->format('Y-m-d') : '');
             $last_login = date_time($agent->getLastLogin() ? $agent->getLastLogin()->format('Y-m-d H:i:s') : '0000-00-00 00:00:00');
-            $heures = $agent->getWeeklyServiceHours() ? $agent->getWeeklyServiceHours() : null;
-            $heures = heure4($heures);
+            $heures = heure4($agent->getWeeklyServiceHours());
             if (is_numeric($heures)) {
                 $heures.= "h00";
             }
             $service = str_replace("`", "'", $agent->getService());
 
-            $sites = json_decode($agent->getSites(), true);
+            $sites = $agent->getSites();
             if ($nbSites > 1) {
                 $tmp = array();
                 if (!empty($sites)) {
@@ -204,14 +203,10 @@ class AgentController extends BaseController
         $droits = $GLOBALS['droits'];
         $admin = in_array(21, $droits);
 //zhe li gai cheng ying yu, kan pr li de comment
-        $groupesAcces = $this->entityManager->getRepository(Access::class)->findGroupesAcces();// Find access filtered by group id("groupe_id" value donesn't equal 99 or 100).
+        $accessGroups = $this->entityManager->getRepository(Access::class)->getAccessGroups();// Find access filtered by group id("groupe_id" value donesn't equal 99 or 100).
         // Tous les droits d'accés
         $groupes = array();
-        foreach ($groupesAcces as $elem) {// zhe li ke yi zai findGroupesAcces zuo 
-            if (empty($elem['categorie'])) {
-                $elem['categorie'] = 'Divers';
-                $elem['ordre'] = '200';
-            }
+        foreach ($accessGroups as $elem) {
             $groupes[$elem['groupe_id']] = $elem;
         }
 
@@ -256,7 +251,7 @@ class AgentController extends BaseController
         // Liste des services utilisés
         $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();// Find the list of distinct agent services.
 
-        $acces = array();
+        $acces = $agent->getACL();
         $postes_attribues = array();
         $recupAgents = array("Prime","Temps");
         // récupération des infos de l'agent en cas de modif
@@ -266,10 +261,7 @@ class AgentController extends BaseController
         $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';
         $managersMails = $agent->getManagersMails() ? explode(';', html_entity_decode($agent->getManagersMails(), ENT_QUOTES|ENT_IGNORE, "UTF-8")) : [];
         // $managersMails : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($managersMails=implode("; ",$managersMails);)
-        $informations = $agent->getInformation() ?? '';// stripslashes bu xv yao le. template ye yao gai, zhi jie cong object li huo de jiu hao le
-        $recup = $agent->getRecoveryMenu() ?? ''; 
-        $sites = html_entity_decode($agent->getSites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8');//zhe liang hang guan yu site de yao bei huan diao
-        $sites = $sites !== '' && $sites !== '0' ? json_decode($sites, true) : array();
+        $sites = $agent->getSites();
         
         if ($id) {
             $breaktimes = array();
@@ -290,17 +282,16 @@ class AgentController extends BaseController
                     ? gmdate('H:i', floor($breaktimes[$index] * 3600)) : '';
             }
 
-            $postes_attribues = json_decode(html_entity_decode($agent->getSkills(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $postes_attribues = $agent->getSkills();
             if (is_array($postes_attribues)) {
                 sort($postes_attribues);
             }
-            $acces = $agent->getACL();
             $action = 'update';
-            $titre = $agent->getLastname()." ".$agent->getFirstname();
+            $titre = $agent->getLastname().' '.$agent->getFirstname();
 
             // URL ICS
             if ($this->config('ICS-Export')) {
-                $ics = $this->entityManager->getRepository(Agent::class)->getICSURL($id);
+                $ics = $this->entityManager->getRepository(Agent::class)->getExportIcsURL($id);
             }
         } else {// pas d'id, donc ajout d'un agent
             $id = null;
@@ -322,7 +313,7 @@ class AgentController extends BaseController
         $postes_completNoms = array();
 
         foreach ($activites as $elem) {
-            $postes_completNoms[] = array($elem->getName(),$elem->getId());
+            $postes_completNoms[] = array($elem->getName(), $elem->getId());
             $postes_complet[] = $elem->getId();
         }
 
@@ -382,10 +373,8 @@ class AgentController extends BaseController
             'actif'             => $actif,
             'mailsResponsables' => $managersMails,
             'mailsResp_joined'  => implode("; ", $managersMails),
-            'informations'      => $informations,
-            'informations_str'  => str_replace("\n", "<br/>", strval($informations)),
-            'recup'             => $recup,
-            'recup_str'         => str_replace("\n", "<br/>", strval($recup)),
+            'informations_str'  => str_replace("\n", "<br/>", strval($agent->getInformation())),
+            'recup_str'         => str_replace("\n", "<br/>", strval($agent->getRecoveryMenu())),
             'recupAgents'       => $recupAgents,
             'postes'            => $postes,
             'postes_dispo'      => $postes_dispo,
@@ -457,7 +446,6 @@ class AgentController extends BaseController
             $hamac_pattern = !empty($this->config('Hamac-motif')) ? $this->config('Hamac-motif') : 'Hamac';
             $this->templateParams(array(
                 'hamac_pattern'     => $hamac_pattern,
-                'check_hamac'       => $agent->isHamacCheck(),
             ));
         }
 
@@ -483,7 +471,6 @@ class AgentController extends BaseController
             $this->templateParams(array(
                 'ics_pattern3'     => $ics_pattern,
                 'check_ics3'       => !empty($agent->getIcsCheck()[2]) ? 1 : 0,
-                'url_ics'          => $agent->getIcsUrl(),
             ));
         }
 
@@ -581,27 +568,27 @@ class AgentController extends BaseController
         }
 
         if ($this->config('Conges-Enable')) {
-            $conges = $this->entityManager->getRepository(Agent::class)->fetchCredits($id);//$agent->fetchCredit()
+            $conges = $this->entityManager->getRepository(Agent::class)->fetchCredits($id);
             $holiday_helper = new HolidayHelper();
 
-            $annuelHeures  = $conges['annuelHeures']  ?? 0;
-            $annuelMinutes = $conges['annuelMinutes'] ?? 0;
+            $annuelHeures  = $conges['annuelHeures'];
+            $annuelMinutes = $conges['annuelMinutes'];
             $annuelString  = '';
 
-            $creditHeures  = $conges['creditHeures']  ?? 0;
-            $creditMinutes = $conges['creditMinutes'] ?? 0;
+            $creditHeures  = $conges['creditHeures'];
+            $creditMinutes = $conges['creditMinutes'];
             $creditString  = '';
 
-            $reliquatHeures  = $conges['reliquatHeures']  ?? 0;
-            $reliquatMinutes = $conges['reliquatMinutes'] ?? 0;
+            $reliquatHeures  = $conges['reliquatHeures'];
+            $reliquatMinutes = $conges['reliquatMinutes'];
             $reliquatString  = '';
 
-            $anticipationHeures  = $conges['anticipationHeures']  ?? 0;
-            $anticipationMinutes = $conges['anticipationMinutes'] ?? 0;
+            $anticipationHeures  = $conges['anticipationHeures'];
+            $anticipationMinutes = $conges['anticipationMinutes'];
             $anticipationString  = '';
 
-            $recupHeures  = $conges['recupHeures']  ?? 0;
-            $recupMinutes = $conges['recupMinutes'] ?? 0;
+            $recupHeures  = $conges['recupHeures'];
+            $recupMinutes = $conges['recupMinutes'];
 
             if ($this->config('Conges-Mode') == 'jours' ) {
                 $event = new OnTransformLeaveHours($conges);
@@ -696,20 +683,20 @@ class AgentController extends BaseController
         $check_ics2 = !empty($params['check_ics2']) ? 1 : 0;
         $check_ics3 = !empty($params['check_ics3']) ? 1 : 0;
         $check_ics = [$check_ics1,$check_ics2,$check_ics3];
-        $droits = array_key_exists("droits", $params) ? $params['droits'] : null;
+        $droits = array_key_exists("droits", $params) ? $params['droits'] : [];
         $categorie = isset($params['categorie']) ? trim($params['categorie']) : null;
         $informations = isset($params['informations']) ? trim($params['informations']) : null;
         $managersMails = isset($params['mailsResponsables']) ? trim(str_replace(array("\n", " "), '', $params['mailsResponsables'])) : null;
         $matricule = isset($params['matricule']) ? trim($params['matricule']) : null;
         $url_ics = isset($params['url_ics']) ? trim($params['url_ics']) : null;
         $nom = trim($params['nom']);
-        $postes = $params['postes'] ?? null;
+        $postes = $params['postes'] ? explode(',', $params['postes']) : [];
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : '';
         $service = $params['service'] ?? null;
-        $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
+        $sites = array_key_exists("sites", $params) ? $params['sites'] : [];
         $statut = $params['statut'] ?? null;
-        $temps = array_key_exists("temps", $params) ? json_decode($params['temps']) : null;
+        $temps = array_key_exists("temps", $params) ? json_decode($params['temps']) : [];
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
         $eDTSamedi = array_key_exists("EDTSamedi", $params) ? $params['EDTSamedi'] : null;
@@ -734,11 +721,6 @@ class AgentController extends BaseController
                 }
             }
         }
-
-        $droits = $droits ? $droits : array();
-        $postes = $postes ? json_encode(explode(",", $postes)) : '[]';
-        $sites = $sites ? json_encode($sites) : '';
-        $temps = $temps ?? array();
 
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
@@ -807,8 +789,8 @@ class AgentController extends BaseController
             $agentInsert->setWeeklyWorkingHours($heuresTravail);
             $agentInsert->setArrival($arrivee);
             $agentInsert->setDeparture($depart);
-            $agentInsert->setLogin($login);
-            $agentInsert->setPassword($mdp_crypt);
+            $agentInsert->setLogin($login);//
+            $agentInsert->setPassword($mdp_crypt);//
             $agentInsert->setActive($actif);
             $agentInsert->setACL($droits);
             $agentInsert->setSkills($postes);
@@ -893,11 +875,12 @@ class AgentController extends BaseController
             $agentUpdate->setService($service);
             $agentUpdate->setWeeklyServiceHours($heuresHebdo);
             $agentUpdate->setWeeklyWorkingHours($heuresTravail);
-            $agentUpdate->setActive($actif);
-            $agentUpdate->setACL($droits);
             $agentUpdate->setArrival($arrivee);
             $agentUpdate->setDeparture($depart);
+            $agentUpdate->setActive($actif);
+            $agentUpdate->setACL($droits);
             $agentUpdate->setSkills($postes);
+            $agentUpdate->setWorkingHours($temps);
             $agentUpdate->setInformation($informations);
             $agentUpdate->setRecoveryMenu($recup);
             $agentUpdate->setSites($sites);
@@ -916,12 +899,7 @@ class AgentController extends BaseController
                     $agentUpdate->setDeparture();
                 }
             } else {
-                $agentUpdate->setActive("Supprimé;");
-            }
-
-            // Mise à jour de l'emploi du temps si modifié à partir de la fiche de l'agent
-            if ($temps) {
-                $update["temps"] = $temps;
+                $agentUpdate->setActive('Supprimé');
             }
 
             $holidays = $this->save_holidays($params);
@@ -1254,7 +1232,7 @@ class AgentController extends BaseController
         $commentaires = "Importation LDAP " . $date->format('Y-m-d');
         $droits =array(99, 100);
         $password = "password_bidon_pas_importé_depuis_ldap";
-        $postes = json_encode(array());
+        $postes = [];
         $erreurs = false;
 
         $post = $request->request->all();
@@ -1658,11 +1636,6 @@ class AgentController extends BaseController
 
         // Skills tab
         $postes = $request->get('postes');
-
-        if ($postes != '-1') {
-            $postes = explode(',', $postes);
-            $postes = json_encode($postes);
-        }
 
         // Update DB
         $agents = $this->entityManager->getRepository(Agent::class)->findById($list);

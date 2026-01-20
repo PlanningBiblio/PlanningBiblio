@@ -15,14 +15,23 @@ class AccessRepository extends EntityRepository
      * 
      * @return array List of matching access
      */
-    public function findGroupesAcces(): array
+    public function getAccessGroups(): array
     {
-        return $this->createQueryBuilder('a')
+        $result =  $this->createQueryBuilder('a')
             ->select('a.groupe_id, a.groupe, a.categorie, a.ordre')
             ->where('a.groupe_id NOT IN (:excluded)')
             ->setParameter('excluded', [99, 100])
             ->groupBy('a.groupe')
             ->getQuery()
             ->getArrayResult();
+
+        foreach ($result as $elem) { 
+            if (empty($elem['categorie'])) {
+                $elem['categorie'] = 'Divers';
+                $elem['ordre'] = '200';
+            }
+        }
+
+        return $result;
     }
 }

@@ -191,21 +191,21 @@
     <tr style='vertical-align:top;'>
       <td>Informations :</td>
       <td>
-        <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ informations|raw }}</textarea>
+        <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ agent.information }}</textarea>
       </td>
     </tr>
 
-    {% if recup_agent > 1 %}
+    {% if recup_agent > 0 %}
       <tr style='vertical-align:top;'>
         <td>Récupération :</td>
         <td>
           {% if recup_agent == 1 %}
-            <textarea name='recup' style='width:400px' cols='10' rows='4'>{{ recup }}</textarea>
+            <textarea name='recup' style='width:400px' cols='10' rows='4'>{{ agent.recoveryMenu }}</textarea>
           {% elseif recup_agent == 2 %}
             <select name='recup' style='width:400px'>
               <option value=''>&nbsp;</option>
               {% for elem in recupAgents %}
-                {% if elem == recup %}
+                {% if elem == agent.recoveryMenu %}
                   <option selected="selected" value='{{ elem }}' $selected>{{ elem }}</option>
                 {% else %}
                   <option value='{{ elem }}' $selected>{{ elem }}</option>

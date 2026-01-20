@@ -246,9 +246,9 @@ class AgentTest extends KernelTestCase
         $id2 = $skill2->getId();
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'postes' => json_encode(["$id1", "$id2"])));
 
-        $this->assertEquals($id1, $agent->skills()[0]);
-        $this->assertEquals($id2, $agent->skills()[1]);
-        $this->assertCount(2, $agent->skills());
+        $this->assertEquals($id1, $agent->getSkills()[0]);
+        $this->assertEquals($id2, $agent->getSkills()[1]);
+        $this->assertCount(2, $agent->getSkills());
 
     }
 

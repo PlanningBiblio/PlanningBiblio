@@ -127,13 +127,13 @@
               <td style='width:400px'>Synchronisation {{ hamac_pattern }} :</td>
               <td>
                 {% if can_manage_agent %}
-                  {% if check_hamac %}
+                  {% if agent.hamacCheck %}
                     <input type='checkbox' value='1' name='check_hamac' checked="checked"/>
                   {% else %}
                     <input type='checkbox' value='1' name='check_hamac'/>
                   {% endif %}
                 {% else %}
-                  {% if check_hamac %}
+                  {% if agent.hamacCheck %}
                     <span class="agent-acces-checked2 green bold">Oui</span>
                   {% else %}
                     <span class="agent-acces-checked2 red">Non</span>
@@ -195,14 +195,14 @@
                   {% else %}
                     <input type='checkbox' value='1' name='check_ics3'/>
                   {% endif %}
-                  <input type='text' value='{{ url_ics }}' name='url_ics' style='width:400px; margin-left:20px;'/>
+                  <input type='text' value='{{ agent.icsUrl }}' name='url_ics' style='width:400px; margin-left:20px;'/>
                 {% else %}
                   {% if check_ics3 %}
                     <span class='agent-acces-checked2 green bold'>Oui</span>
                   {% else %}
                     <span class='agent-acces-checked2 red'>Non</span>
                   {% endif %}
-                  <span style='margin-left:20px;'>{{ url_ics }}</span>
+                  <span style='margin-left:20px;'>{{ agent.icsUrl }}</span>
                 {% endif %}
               </td>
             </tr>
