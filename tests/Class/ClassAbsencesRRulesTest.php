@@ -20,7 +20,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $builder->delete(Agent::class);
         $agent= $builder->build(
             Agent::class,
-            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => json_encode(["1"]))
+            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => ["1"])
         );
 
         $_SESSION['oups']['CSRFToken'] = '00000';
@@ -103,7 +103,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $builder->delete(Agent::class);
         $agent= $builder->build(
             Agent::class,
-            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => json_encode(["1"]))
+            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => ["1"])
         );
 
         $_SESSION['oups']['CSRFToken'] = '00000';
@@ -170,7 +170,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $builder->delete(Agent::class);
         $agent= $builder->build(
             Agent::class,
-            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => json_encode(["1"]))
+            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => ["1"])
         );
 
         $_SESSION['oups']['CSRFToken'] = '00000';
@@ -238,7 +238,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $builder->delete(Agent::class);
         $agent= $builder->build(
             Agent::class,
-            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => json_encode(["1"]))
+            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => ["1"])
         );
 
         $_SESSION['oups']['CSRFToken'] = '00000';
@@ -298,7 +298,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $builder->delete(Agent::class);
         $agent= $builder->build(
             Agent::class,
-            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => json_encode(["1"]))
+            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => ["1"])
         );
 
         $_SESSION['oups']['CSRFToken'] = '00000';
@@ -358,7 +358,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $builder->delete(Agent::class);
         $agent= $builder->build(
             Agent::class,
-            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => json_encode(["1"]))
+            array( 'login' => 'akhalan', 'actif' => 'Actif', 'sites' => ["1"])
         );
 
         $_SESSION['oups']['CSRFToken'] = '00000';

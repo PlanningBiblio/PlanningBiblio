@@ -124,10 +124,10 @@ class AgentRepositoryTest extends PLBWebTestCase
         global $entityManager;
 
         $mike = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Mike']);
-        $mike->setSites('["1","2"]');
+        $mike->setSites(["1","2"]);
         $this->entityManager->persist($mike);
         $eric = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Eric']);
-        $eric->setSites('["1","3"]');
+        $eric->setSites(["1","3"]);
         $this->entityManager->persist($eric);
         $this->entityManager->flush();
         $this->entityManager->clear();
@@ -142,7 +142,7 @@ class AgentRepositoryTest extends PLBWebTestCase
         $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids);
         $this->assertEquals($sites, array('1', '2', '3'));
 
-        $agent3 = $this->createAgent(array('login' => 'Melvin', 'prenom' => 'Melvin', 'supprime' => 0, 'actif' => 'Actif', 'sites' => ''));
+        $agent3 = $this->createAgent(array('login' => 'Melvin', 'prenom' => 'Melvin', 'supprime' => 0, 'actif' => 'Actif', 'sites' => []));
         $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents(array($agent3->getId()));
         $this->assertEquals($sites, array());
 

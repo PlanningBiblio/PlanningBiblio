@@ -244,7 +244,7 @@ class AgentTest extends KernelTestCase
         $id1 = $skill1->getId();
         $skill2 = $builder->build(Skill::class, array('nom' => 'volley'));
         $id2 = $skill2->getId();
-        $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'postes' => json_encode(["$id1", "$id2"])));
+        $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'postes' => ["$id1", "$id2"]));
 
         $this->assertEquals($id1, $agent->getSkills()[0]);
         $this->assertEquals($id2, $agent->getSkills()[1]);
@@ -272,7 +272,7 @@ class AgentTest extends KernelTestCase
         $GLOBALS['config']['Multisites-nombre'] = 4;
         $GLOBALS['config']['Mail-Planning'] = '';
 
-        $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => json_encode(["1", "2", "3","4"])));
+        $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => ["1", "2", "3","4"]));
         $GLOBALS['config']['Multisites-site1-mail'] ='jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com';
         $GLOBALS['config']['Multisites-site2-mail'] ='jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com';
         $GLOBALS['config']['Multisites-site3-mail'] ='j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr';
@@ -289,7 +289,7 @@ class AgentTest extends KernelTestCase
             ]
         );
 
-        $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'sites' => json_encode(["1"])));
+        $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'sites' => ["1"]));
         $this->assertEquals(
             $agent3->get_planning_unit_mails(),
             [
@@ -299,7 +299,7 @@ class AgentTest extends KernelTestCase
             ]
         );
 
-        $agent4 = $builder->build(Agent::class, array('login' => 'ldavy', 'sites' => json_encode(["1","3"])));
+        $agent4 = $builder->build(Agent::class, array('login' => 'ldavy', 'sites' => ["1","3"]));
         $this->assertEquals($agent3->get_planning_unit_mails(),[0 => 'jmarc@mail.fr', 1 => 'jcharles@mail.fr', 2 => 'jdevoe@mail.com']);
 
     }

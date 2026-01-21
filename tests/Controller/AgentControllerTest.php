@@ -56,7 +56,7 @@ class AgentControllerTest extends PLBWebTestCase
                 'last_login' => '',
                 'heures_hebdo' => '',
                 'heures_travail' => '',
-                'sites' => json_encode(["2", "4"]),
+                'sites' => ["2", "4"],
                 'temps' => '',
                 'informations' => '',
                 'recup' => '',
@@ -96,7 +96,7 @@ class AgentControllerTest extends PLBWebTestCase
 
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["1"]', 'droits' => array(21,100,99,4)
+            'sites' => ["1"], 'droits' => array(21,100,99,4)
         ));
 
         $this->logInAgent($kboivin, $kboivin->getACL());
@@ -183,12 +183,12 @@ class AgentControllerTest extends PLBWebTestCase
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
-            'sites' => '["1"]', 'droits' => array(100,99)
+            'sites' => ["1"], 'droits' => array(100,99)
         ));
 
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["1"]', 'droits' => array(21,100,99,4)
+            'sites' => ["1"], 'droits' => array(21,100,99,4)
         ));
 
         $id = $jdupont->getId();
