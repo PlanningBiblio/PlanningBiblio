@@ -673,6 +673,7 @@ class AgentController extends BaseController
         $heuresHebdo = $request->get('heuresHebdo') ?? '';
         $heuresTravail = $request->get('heuresTravail') ?? 0;
         $id = $request->get('id');
+        $agent = $id ? $this->entityManager->getRepository(Agent::class)->find($id) : new Agent();
         $mail = $request->get('mail');
 
         $actif = htmlentities($params['actif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
@@ -700,7 +701,9 @@ class AgentController extends BaseController
         $service = $params['service'] ?? null;
         $sites = array_key_exists("sites", $params) ? $params['sites'] : [];
         $statut = $params['statut'] ?? null;
-        if (is_array($params['temps'])) {
+        if (!array_key_exists('temps', $params)) {
+            $temps = [];
+        } elseif (is_array($params['temps'])) {
             $temps = $params['temps'];
         } else {
             $temps = json_decode($params['temps'], true) ?? [];
@@ -786,42 +789,8 @@ class AgentController extends BaseController
             }
 
             // Enregistrement des infos dans la base de données
-            $agentInsert = new Agent();// zhe li ye ke yi jian hua
-            $agentInsert->setLastname($nom);
-            $agentInsert->setFirstname($prenom);
-            $agentInsert->setMail($mail);
-            $agentInsert->setStatus($statut);
-            $agentInsert->setCategory($categorie);
-            $agentInsert->setService($service);
-            $agentInsert->setWeeklyServiceHours($heuresHebdo);
-            $agentInsert->setWeeklyWorkingHours($heuresTravail);
-            $agentInsert->setArrival($arrivee);
-            $agentInsert->setDeparture($depart);
-            $agentInsert->setLogin($login);//
-            $agentInsert->setPassword($mdp_crypt);//
-            $agentInsert->setActive($actif);
-            $agentInsert->setACL($droits);
-            $agentInsert->setSkills($postes);
-            $agentInsert->setWorkingHours($temps);
-            $agentInsert->setInformation($informations);
-            $agentInsert->setRecoveryMenu($recup);
-            $agentInsert->setSites($sites);
-            $agentInsert->setManagersMails($managersMails);
-            $agentInsert->setEmployeeNumber($matricule);
-            $agentInsert->setIcsUrl($url_ics);
-            $agentInsert->setIcsCheck($check_ics);
-            $agentInsert->setHamacCheck($check_hamac);
-            $agentInsert->setMsGraphCheck($mSGraphCheck);
-
-            $holidays = $this->save_holidays($params);
-            $agentInsert->setHolidayCompTime($holidays['comp_time']);
-            $agentInsert->setHolidayAnnualCredit($holidays['conges_annuel']);
-            $agentInsert->setHolidayAnticipation($holidays['conges_anticipation']);
-            $agentInsert->setHolidayCredit($holidays['conges_credit']);
-            $agentInsert->setHolidayRemainder($holidays['conges_reliquat']);
-
-            $this->entityManager->persist($agentInsert);
-            $this->entityManager->flush();
+            $agent->setLogin($login);
+            $agent->setPassword($mdp_crypt);
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
             if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
@@ -829,7 +798,7 @@ class AgentController extends BaseController
                 $repo->update($eDTSamedi, $firstMonday, $lastMonday, $id);
             }
 
-            return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
+            // return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
 
             break;
 
@@ -838,13 +807,14 @@ class AgentController extends BaseController
             // Demo mode
             if (!empty($this->config('demo'))) {
                 $msg = "Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration";
-                return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => 'success'));
+                $msgType = "success";
+                // return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => 'success'));
                 break;
             }
 
             $mdp=gen_trivial_password();
             $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
-            $login = $this->entityManager->getRepository(Agent::class)->find($id)->getLogin();
+            $login = $agent->getLogin();
 
             // Envoi du mail
             $message = "Votre mot de passe Planno a été modifié";
@@ -867,58 +837,23 @@ class AgentController extends BaseController
                 $msgType = "success";
             }
 
-            $this->entityManager->getRepository(Agent::class)->find($id)->setPassword($mdp_crypt);
-            $this->entityManager->flush();
-            return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
+            $agent->setPassword($mdp_crypt);
+            // return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
 
             break;
 
           case 'update':
-            $agentUpdate = $this->entityManager->getRepository(Agent::class)->find($id);
-            $agentUpdate->setLastname($nom);
-            $agentUpdate->setFirstname($prenom);
-            $agentUpdate->setMail($mail);
-            $agentUpdate->setStatus($statut);
-            $agentUpdate->setCategory($categorie);
-            $agentUpdate->setService($service);
-            $agentUpdate->setWeeklyServiceHours($heuresHebdo);
-            $agentUpdate->setWeeklyWorkingHours($heuresTravail);
-            $agentUpdate->setArrival($arrivee);
-            $agentUpdate->setDeparture($depart);
-            $agentUpdate->setActive($actif);
-            $agentUpdate->setACL($droits);
-            $agentUpdate->setSkills($postes);
-            $agentUpdate->setWorkingHours($temps);
-            $agentUpdate->setInformation($informations);
-            $agentUpdate->setRecoveryMenu($recup);
-            $agentUpdate->setSites($sites);
-            $agentUpdate->setManagersMails($managersMails);
-            $agentUpdate->setEmployeeNumber($matricule);
-            $agentUpdate->setIcsUrl($url_ics);
-            $agentUpdate->setIcsCheck($check_ics);
-            $agentUpdate->setHamacCheck($check_hamac);
-            $agentUpdate->setMsGraphCheck($mSGraphCheck);
             // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
             if (!strstr($actif, "Supprim")) {
-                $agentUpdate->setDeletion(0);
+                $agent->setDeletion(0);
                 // Si l'agent était supprimé et qu'on le réintégre, on change sa date de départ
                 // pour qu'il ne soit pas supprimé de la liste des agents actifs
-                if (strstr($agentUpdate->getActive(), "Supprim") and $agentUpdate->getDeparture() <= date("Y-m-d")) {
-                    $agentUpdate->setDeparture();
+                if (strstr($agent->getActive(), "Supprim") and $agent->getDeparture() <= date("Y-m-d")) {
+                    $agent->setDeparture(null);
                 }
             } else {
-                $agentUpdate->setActive('Supprimé');
+                $agent->setActive('Supprimé');
             }
-
-            $holidays = $this->save_holidays($params);
-            $agentUpdate->setHolidayCompTime($holidays['comp_time']);
-            $agentUpdate->setHolidayAnnualCredit($holidays['conges_annuel']);
-            $agentUpdate->setHolidayAnticipation($holidays['conges_anticipation']);
-            $agentUpdate->setHolidayCredit($holidays['conges_credit']);
-            $agentUpdate->setHolidayRemainder($holidays['conges_reliquat']);
-
-            $this->entityManager->persist($agentUpdate);
-            $this->entityManager->flush();
 
             // Mise à jour de la table pl_poste en cas de modification de la date de départ
             $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserId($id);// Updates the deletion flag for a given user.
@@ -932,10 +867,52 @@ class AgentController extends BaseController
                 $repo->update($eDTSamedi, $firstMonday, $lastMonday, $id);
             }
 
-            return $this->redirectToRoute('agent.index');
+            $msg = null;
+            $msgType = null;
+            // return $this->redirectToRoute('agent.index');
 
             break;
         }
+
+        if ($action != 'mdp')
+        {
+            $agent->setLastname($nom);
+            $agent->setFirstname($prenom);
+            $agent->setMail($mail);
+            $agent->setStatus($statut);
+            $agent->setCategory($categorie);
+            $agent->setService($service);
+            $agent->setWeeklyServiceHours($heuresHebdo);
+            $agent->setWeeklyWorkingHours($heuresTravail);
+            $agent->setArrival($arrivee);
+            $agent->setDeparture($depart);
+            $agent->setActive($actif);
+            $agent->setACL($droits);
+            $agent->setSkills($postes);
+            $agent->setWorkingHours($temps);
+            $agent->setInformation($informations);
+            $agent->setRecoveryMenu($recup);
+            $agent->setSites($sites);
+            $agent->setManagersMails($managersMails);
+            $agent->setEmployeeNumber($matricule);
+            $agent->setIcsUrl($url_ics);
+            $agent->setIcsCheck($check_ics);
+            $agent->setHamacCheck($check_hamac);
+            $agent->setMsGraphCheck($mSGraphCheck);
+
+            $holidays = $this->save_holidays($params);
+            $agent->setHolidayCompTime($holidays['comp_time']);
+            $agent->setHolidayAnnualCredit($holidays['conges_annuel']);
+            $agent->setHolidayAnticipation($holidays['conges_anticipation']);
+            $agent->setHolidayCredit($holidays['conges_credit']);
+            $agent->setHolidayRemainder($holidays['conges_reliquat']);
+
+            $this->entityManager->persist($agent);
+        }
+        $this->entityManager->flush();
+        return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
+
+
     }
 
     private function changeAgentPassword(Request $request, $agent_id, $password): \Symfony\Component\HttpFoundation\Response {
