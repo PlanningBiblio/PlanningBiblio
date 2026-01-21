@@ -25,10 +25,10 @@ class AccessRepository extends EntityRepository
             ->getQuery()
             ->getArrayResult();
 
-        foreach ($result as $elem) { 
+        foreach ($result as $i => $elem) { 
             if (empty($elem['categorie'])) {
-                $elem['categorie'] = 'Divers';
-                $elem['ordre'] = '200';
+                $result[$i]['categorie'] = 'Divers';
+                $result[$i]['ordre'] = 200;
             }
         }
 
