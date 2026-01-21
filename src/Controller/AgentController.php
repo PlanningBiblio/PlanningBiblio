@@ -690,13 +690,21 @@ class AgentController extends BaseController
         $matricule = isset($params['matricule']) ? trim($params['matricule']) : null;
         $url_ics = isset($params['url_ics']) ? trim($params['url_ics']) : null;
         $nom = trim($params['nom']);
-        $postes = $params['postes'] ? explode(',', $params['postes']) : [];
+        if (is_array($params['postes'])) {
+            $postes = $params['postes'];
+        } else {
+            $postes = json_decode($params['postes'], true) ?? [];
+        }
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : '';
         $service = $params['service'] ?? null;
         $sites = array_key_exists("sites", $params) ? $params['sites'] : [];
         $statut = $params['statut'] ?? null;
-        $temps = array_key_exists("temps", $params) ? json_decode($params['temps']) : [];
+        if (is_array($params['temps'])) {
+            $temps = $params['temps'];
+        } else {
+            $temps = json_decode($params['temps'], true) ?? [];
+        }
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
         $eDTSamedi = array_key_exists("EDTSamedi", $params) ? $params['EDTSamedi'] : null;
@@ -1403,7 +1411,7 @@ class AgentController extends BaseController
             $agentInsert->setPassword('LDIF import, the password is not stored');
             $agentInsert->setACL([99,100]);
             $agentInsert->setArrival(new \DateTime());
-            $agentInsert->setSkills('[]');
+            $agentInsert->setSkills([]);
             $agentInsert->setActive('Actif');
             $agentInsert->setInformation('Importation LDIF ' . date('Y-m-d H:i:s'));
             $this->entityManager->persist($agentInsert);
