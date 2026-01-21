@@ -186,7 +186,7 @@ class AgentRepository extends EntityRepository
             $managed_sites = array();
 
             foreach ($loggedin->getManaged() as $m) {
-                $sites = json_decode($m->getUser()->getSites(), true) ?? array();
+                $sites = $m->getUser()->getSites();
                 $managed_sites = array_merge($managed_sites, $sites);
             }
 
@@ -298,7 +298,7 @@ class AgentRepository extends EntityRepository
             // will only check for agent sites
             if ($this->agent_id) {
                 $agent = $entityManager->find(Agent::class, $this->agent_id);
-                $sites = json_decode($agent->getSites()) ?? array();
+                $sites = $agent->getSites();
             }
         }
 
@@ -409,7 +409,7 @@ class AgentRepository extends EntityRepository
         $agents = $entityManager->getRepository(Agent::class)->findBy(array('id' => $agent_ids));
         $sites_array = array();
         foreach ($agents as $agent) {
-            $agent_sites = json_decode(html_entity_decode($agent->getSites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $agent_sites = $agent->getSites();
             if (is_array($agent_sites)) {
                 $sites_array = array_merge($sites_array, $agent_sites);
             }

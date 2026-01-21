@@ -640,7 +640,7 @@ class Agent
         }
 
         // Add mails defined by sites (Multisites-siteX-mail).
-        $sites = json_decode($this->sites);
+        $sites = $this->sites;
         if (is_array($sites)) {
             foreach ($sites as $site) {
                 $site_mail_config = "Multisites-site$site-mail";
@@ -761,7 +761,7 @@ class Agent
 
     public function inOneOfSites($sites): bool
     {
-        $agent_sites = json_decode($this->sites, true);
+        $agent_sites = $this->sites;
 
         if (!is_array($agent_sites)) {
             return false;

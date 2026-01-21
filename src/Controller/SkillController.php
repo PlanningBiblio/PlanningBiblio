@@ -57,7 +57,7 @@ class SkillController extends BaseController
 
         if ($result){
             foreach ($result as $elem){
-                $tab[] = html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                $tab[] = $elem['postes'];
             }
         }
 
