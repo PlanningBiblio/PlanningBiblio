@@ -85,6 +85,7 @@
 | number | numero |
 | numberOfWeeks | nb_semaine | For WorkingHours |
 | password | password |
+| order | ordre |
 | originId | id_origin |
 | otherReason | motif_autre |
 | position | poste |
@@ -121,6 +122,15 @@
 | week | semaine |
 | weeklyWorkingHours | heures_travail | For Agent |
 | workingHours | temps |
+
+## Repositories
+
+| Old | New | Comment |
+| conges::fetchCredit | Agent::fetchCredit |
+| conges::maj | Holiday::insert |
+| personnel::delete | Agent::delete |
+| personnel::fecth | Agent::get |
+| planninghebdo::fetch | WorkingHours::get |
 
 ## Migrations
 

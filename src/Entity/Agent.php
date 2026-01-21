@@ -45,8 +45,8 @@ class Agent
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $depart = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $postes = '';
+    #[ORM\Column]
+    private ?array $postes = [];
 
     #[ORM\Column]
     private ?string $actif = 'Actif';
@@ -72,8 +72,8 @@ class Agent
     #[ORM\Column]
     private ?float $heures_travail = 0;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $sites = '';
+    #[ORM\Column]
+    private ?array $sites = [];
 
     #[ORM\Column]
     private ?array $temps = [];
@@ -109,19 +109,19 @@ class Agent
     private ?bool $check_ms_graph = false;
 
     #[ORM\Column]
-    private ?float $conges_credit = null;
+    private ?float $conges_credit = 0;
 
     #[ORM\Column]
-    private ?float $conges_reliquat = null;
+    private ?float $conges_reliquat = 0;
 
     #[ORM\Column]
-    private ?float $conges_anticipation = null;
+    private ?float $conges_anticipation = 0;
 
     #[ORM\Column]
-    private ?float $comp_time = null;
+    private ?float $comp_time = 0;
 
     #[ORM\Column]
-    private ?float $conges_annuel = null;
+    private ?float $conges_annuel = 0;
 
     /**
      * @var Collection<int, Manager>
@@ -356,24 +356,24 @@ class Agent
         return $this;
     }
 
-    public function getSites(): ?string
+    public function getSites(): ?array
     {
         return $this->sites;
     }
 
-    public function setSites(?string $sites): static
+    public function setSites(?array $sites): static
     {
         $this->sites = $sites;
 
         return $this;
     }
 
-    public function getSkills(): ?string
+    public function getSkills(): ?array
     {
         return $this->postes;
     }
 
-    public function setSkills(?string $skills): static
+    public function setSkills(?array $skills): static
     {
         $this->postes = $skills;
 
@@ -640,7 +640,7 @@ class Agent
         }
 
         // Add mails defined by sites (Multisites-siteX-mail).
-        $sites = json_decode($this->sites);
+        $sites = $this->sites;
         if (is_array($sites)) {
             foreach ($sites as $site) {
                 $site_mail_config = "Multisites-site$site-mail";
@@ -734,12 +734,6 @@ class Agent
         return false;
     }
 
-    public function skills(): array
-    {
-        $skills = json_decode($this->postes);
-        return is_array($skills) ? $skills : [];
-    }
-
     /**
      * @return int[]
      */
@@ -767,7 +761,7 @@ class Agent
 
     public function inOneOfSites($sites): bool
     {
-        $agent_sites = json_decode($this->sites, true);
+        $agent_sites = $this->sites;
 
         if (!is_array($agent_sites)) {
             return false;

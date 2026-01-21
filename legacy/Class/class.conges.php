@@ -790,50 +790,6 @@ class conges
         $this->elements=$tab;
     }
 
-
-    public function fetchCredit(): void
-    {
-        if (!$this->perso_id) {
-            $this->elements=array("annuel"=>null,"anticipation"=>null,"credit"=>null,"recup"=>null,"reliquat"=>null,
-    "annuelHeures"=>null, "anticipationHeures"=>null, "creditHeures"=>null, "recupHeures"=>null, "reliquatHeures"=>null,
-    "annuelMinutes"=>null, "anticipationMinutes"=>null, "creditMinutes"=>null, "recupMinutes"=>null, "reliquatMinutes"=>null);
-        } else {
-            $db=new db();
-            $db->select("personnel", "conges_credit,conges_reliquat,conges_anticipation,comp_time,conges_annuel", "`id`='{$this->perso_id}'");
-            if ($db->result) {
-                $decimal_annuel       = $db->result[0]['conges_annuel']       ? $db->result[0]['conges_annuel']       : 0;
-                $decimal_anticipation = $db->result[0]['conges_anticipation'] ? $db->result[0]['conges_anticipation'] : 0;
-                $decimal_credit       = $db->result[0]['conges_credit']       ? $db->result[0]['conges_credit']       : 0;
-                $decimal_comp_time    = $db->result[0]['comp_time']           ? $db->result[0]['comp_time']           : 0;
-                $decimal_reliquat     = $db->result[0]['conges_reliquat']     ? $db->result[0]['conges_reliquat']     : 0;
-
-                $annuel       = HourHelper::decimalToHoursMinutes($decimal_annuel);
-                $anticipation = HourHelper::decimalToHoursMinutes($decimal_anticipation);
-                $credit       = HourHelper::decimalToHoursMinutes($decimal_credit);
-                $comp_time    = HourHelper::decimalToHoursMinutes($decimal_comp_time);
-                $reliquat     = HourHelper::decimalToHoursMinutes($decimal_reliquat);
-
-                $this->elements = array(
-                    "annuel"              => $decimal_annuel,
-                    "annuelHeures"        => $annuel['hours'],
-                    "annuelMinutes"       => $annuel['minutes'],
-                    "anticipation"        => $decimal_anticipation,
-                    "anticipationHeures"  => $anticipation['hours'],
-                    "anticipationMinutes" => $anticipation['minutes'],
-                    "credit"              => $decimal_credit,
-                    "creditHeures"        => $credit['hours'],
-                    "creditMinutes"       => $credit['minutes'],
-                    "recup"               => $decimal_comp_time,
-                    "recupHeures"         => $comp_time['hours'],
-                    "recupMinutes"        => $comp_time['minutes'],
-                    "reliquat"            => $decimal_reliquat,
-                    "reliquatHeures"      => $reliquat['hours'],
-                    "reliquatMinutes"     => $reliquat['minutes']
-                );
-            }
-        }
-    }
-
     public function getRecup(): void
     {
         $debut=$this->debut?$this->debut:date("Y-m-d", strtotime("-1 month", time()));

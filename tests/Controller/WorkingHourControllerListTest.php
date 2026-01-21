@@ -59,19 +59,19 @@ class WorkingHourControllerListTest extends PLBWebTestCase
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
-            'sites' => '', 'droits' => array(99,100)
+            'sites' => [], 'droits' => array(99,100)
         ));
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'sites' => '["1","2"]', 'droits' => array(99,100)
+            'sites' => ["1","2"], 'droits' => array(99,100)
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'sites' => '["1"]', 'droits' => array(99,100)
+            'sites' => ["1"], 'droits' => array(99,100)
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["2"]', 'droits' => array(3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,901,1001,1002,1101,1201,1301)
+            'sites' => ["2"], 'droits' => array(3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,901,1001,1002,1101,1201,1301)
         ));
 
         $this->createWorkingHoursFor($jdupont, 2);
@@ -127,19 +127,19 @@ class WorkingHourControllerListTest extends PLBWebTestCase
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
-            'sites' => '', 'droits' => array(99,100)
+            'sites' => [], 'droits' => array(99,100)
         ));
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'sites' => '["1","2"]', 'droits' => array(99,100)
+            'sites' => ["1","2"], 'droits' => array(99,100)
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'sites' => '["1"]', 'droits' => array(99,100)
+            'sites' => ["1"], 'droits' => array(99,100)
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["2"]', 'droits' => array(3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,901,1001,1002,1101,1201,1301)
+            'sites' => ["2"], 'droits' => array(3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,901,1001,1002,1101,1201,1301)
         ));
 
         $this->createWorkingHoursFor($jdupont, 2);

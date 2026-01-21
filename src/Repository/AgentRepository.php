@@ -20,6 +20,9 @@ use App\Entity\RecurringAbsence;
 use App\Entity\SaturdayWorkingHours;
 use App\Entity\WorkingHour;
 use App\Entity\Config;
+use App\Planno\Helper\HourHelper;
+
+require_once __DIR__ . '/../../legacy/Common/function.php';
 
 class AgentRepository extends EntityRepository
 {
@@ -183,7 +186,7 @@ class AgentRepository extends EntityRepository
             $managed_sites = array();
 
             foreach ($loggedin->getManaged() as $m) {
-                $sites = json_decode($m->getUser()->getSites(), true) ?? array();
+                $sites = $m->getUser()->getSites();
                 $managed_sites = array_merge($managed_sites, $sites);
             }
 
@@ -295,7 +298,7 @@ class AgentRepository extends EntityRepository
             // will only check for agent sites
             if ($this->agent_id) {
                 $agent = $entityManager->find(Agent::class, $this->agent_id);
-                $sites = json_decode($agent->getSites()) ?? array();
+                $sites = $agent->getSites();
             }
         }
 
@@ -406,7 +409,7 @@ class AgentRepository extends EntityRepository
         $agents = $entityManager->getRepository(Agent::class)->findBy(array('id' => $agent_ids));
         $sites_array = array();
         foreach ($agents as $agent) {
-            $agent_sites = json_decode(html_entity_decode($agent->getSites(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $agent_sites = $agent->getSites();
             if (is_array($agent_sites)) {
                 $sites_array = array_merge($sites_array, $agent_sites);
             }
@@ -466,5 +469,388 @@ class AgentRepository extends EntityRepository
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->update(Agent::class, 'a')->set('a.conges_reliquat', 0);
         $builder->getQuery()->execute();
+    }
+
+    /**
+     * Marks agents as deleted when their departure date is in the past.
+     *
+     * It sets agents as deleted both in column "supprime(=1)" and "actif(='Supprim&eacute;')" if:
+     *  - the departure date is before today,
+     *  - the departure date is not equal to '0000-00-00',
+     *  - the agent is not already marked as deleted.
+     * 
+     */
+    public function updateAsDeletedByDepartDate(): int
+    {
+        $qb = $this->createQueryBuilder('p');
+
+        return $qb
+            ->update()
+            ->set('p.supprime', ':supprime')
+            ->set('p.actif', ':actif')
+            ->where('p.depart < CURRENT_DATE()')
+            ->andWhere("p.depart <> '0000-00-00'")
+            ->andWhere('p.actif NOT LIKE :actifLike')
+            ->setParameter('supprime', 1)
+            ->setParameter('actif', 'Supprimé')
+            ->setParameter('actifLike', 'Supprim%')
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Marks the given agents as deleted and sets their departure date to today.
+     *
+     * This method updates agents identified by their IDs by setting the deletion
+     * flag, updating their status, and assigning today's date as the departure date.
+     *
+     * @param array|int $ids Agent ID or list of agent IDs
+     * @return int Number of affected rows
+     */
+    public function updateAsDeletedAndDepartTodayById($ids): int
+    {
+        $ids = is_array($ids) ? $ids : [$ids];
+        $qb = $this->createQueryBuilder('p');
+
+        return $qb
+            ->update()
+            ->set('p.supprime', 1)
+            ->set('p.actif', ':actif')
+            ->set('p.depart', ':today')
+            ->where('p.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->setParameter('actif', 'Supprimé')
+            ->setParameter('today', date('Y-m-d'))
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Find the list of distinct agent statuses.
+     *
+     * This method returns all unique values of the "statut" field
+     * from the personnel records.
+     *
+     * @return array List of distinct statuses
+     */
+    public function findDistinctStatuts(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.statut')
+            ->groupBy('p.statut')
+            ->getQuery()
+            ->getScalarResult();
+    }
+
+    /**
+     * Find the list of distinct agent services.
+     *
+     * This method returns all unique values of the "service" field
+     * from the personnel records.
+     *
+     * @return array List of distinct services
+     */
+    public function findDistinctServices(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.service')
+            ->groupBy('p.service')
+            ->getQuery()
+            ->getScalarResult();
+    }
+
+    /**
+     * Find the maximum agent ID.
+     *
+     * This method returns the highest identifier value
+     * from the personnel records.
+     *
+     * @return int|null Maximum agent ID
+     */
+    public function findMaxId(): ?int
+    {
+        return $this->createQueryBuilder('p')
+            ->select('MAX(p.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * getExportIcsURL
+     * Retourne l'URL ICS de l'agent.
+     * @param int $id : id de l'agent
+     * @return string $url
+     */
+    public function getExportIcsURL($id): string
+    {
+        $url = "/ical?id=$id";// TODO
+        if ($GLOBALS['config']['ICS-Code']) {
+            $agent = $this->find($id);
+            $code = $agent->getICSCode();
+            if (!$code) {
+                $code = md5(time().rand(100, 999));
+                $agent->setICSCode($code);
+                $this->getEntityManager()->persist($agent);
+                $this->getEntityManager()->flush();
+            }
+            $url .= "&amp;code=$code";
+        }
+        return $url;
+    }
+
+    // Replace conges::fetchCredits
+    public function fetchCredits(?int $userId): array// ke yi jian hua , repository shi entity de kuo zhan ,zhi jie $this jiu ke yi . ke yi jian hua, entity zi ji jiu neng zuo zhe xie
+    {
+        if (!$userId) {
+            return [
+                "annuel" => 0,
+                "anticipation" => 0,
+                "credit" => 0,
+                "recup" => 0,
+                "reliquat" => 0,
+                "annuelHeures" => 0,
+                "anticipationHeures" => 0,
+                "creditHeures" => 0,
+                "recupHeures" => 0,
+                "reliquatHeures" => 0,
+                "annuelMinutes" => 0,
+                "anticipationMinutes" => 0,
+                "creditMinutes" => 0,
+                "recupMinutes" => 0,
+                "reliquatMinutes" => 0,
+            ];
+        }
+
+        $agent = $this->find($userId);
+
+        $decimal_annuel       = $agent->getHolidayAnnualCredit();
+        $decimal_anticipation = $agent->getHolidayAnticipation();
+        $decimal_credit       = $agent->getHolidayCredit();
+        $decimal_comp_time    = $agent->getHolidayCompTime();
+        $decimal_reliquat     = $agent->getHolidayRemainder();
+
+        $annuel       = HourHelper::decimalToHoursMinutes($decimal_annuel);
+        $anticipation = HourHelper::decimalToHoursMinutes($decimal_anticipation);
+        $credit       = HourHelper::decimalToHoursMinutes($decimal_credit);
+        $comp_time    = HourHelper::decimalToHoursMinutes($decimal_comp_time);
+        $reliquat     = HourHelper::decimalToHoursMinutes($decimal_reliquat);
+        
+        return [
+            "annuel"              => $decimal_annuel,
+            "annuelHeures"        => $annuel['hours'],
+            "annuelMinutes"       => $annuel['minutes'],
+            "anticipation"        => $decimal_anticipation,
+            "anticipationHeures"  => $anticipation['hours'],
+            "anticipationMinutes" => $anticipation['minutes'],
+            "credit"              => $decimal_credit,
+            "creditHeures"        => $credit['hours'],
+            "creditMinutes"       => $credit['minutes'],
+            "recup"               => $decimal_comp_time,
+            "recupHeures"         => $comp_time['hours'],
+            "recupMinutes"        => $comp_time['minutes'],
+            "reliquat"            => $decimal_reliquat,
+            "reliquatHeures"      => $reliquat['hours'],
+            "reliquatMinutes"     => $reliquat['minutes']
+        ];
+    }
+
+    /**
+     * Finds all agent logins that are not deleted.
+     *
+     * This method returns the list of agent logins
+     * whose deletion flag is different from the deleted value "2".
+     *
+     * @return array List of agent logins
+     */
+    public function findAllLoginsNotDeleted(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->select('a.login')
+            ->where('a.supprime != :deleted')
+            ->setParameter('deleted', 2)
+            ->orderBy('a.login', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    // Will replance personnel::delete
+    public function delete($list): void
+    {
+        // Suppresion des informations de la table personnel
+        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->update(Agent::class, 'a')
+            ->set('a.supprime', ':supprime')
+            ->set('a.login', "CONCAT('deleted_', a.id)")
+            ->set('a.nom', "CONCAT('Agent_', a.id)")
+            ->set('a.prenom', ':null')
+            ->set('a.mail', ':null')
+            ->set('a.password', ':null')
+            ->set('a.arrivee', ':null')
+            ->set('a.depart', ':null')
+            ->set('a.postes', ':null')
+            ->set('a.droits', ':null')
+            ->set('a.commentaires', ':comment')
+            ->set('a.last_login', ':null')
+            ->set('a.temps', ':null')
+            ->set('a.informations', ':null')
+            ->set('a.recup', ':null')
+            ->set('a.heures_travail', ':null')
+            ->set('a.heures_hebdo', ':null')
+            ->set('a.sites', ':null')
+            ->set('a.mails_responsables', ':null')
+            ->set('a.matricule', ':null')
+            ->set('a.code_ics', ':null')
+            ->set('a.url_ics', ':null')
+            ->set('a.check_ics', ':null')
+            ->set('a.check_hamac', ':null')
+            ->set('a.conges_credit', ':null')
+            ->set('a.conges_reliquat', ':null')
+            ->set('a.conges_anticipation', ':null')
+            ->set('a.conges_annuel', ':null')
+            ->set('a.comp_time', ':null')
+            ->setParameter('supprime', 2)
+            ->setParameter('null', null)
+            ->setParameter('comment', "Suppression définitive le ".date("d/m/Y"))
+            ->where('a.id IN (:ids)')
+            ->setParameter('ids', $list)
+            ->getQuery()
+            ->execute();
+
+        // Suppression des informations sur les absences
+        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->update(Absence::class, 'a')
+            ->set('a.commentaires', ':null')
+            ->set('a.motif_autre', ':null')
+            ->where('a.perso_id IN (:ids)')
+            ->setParameter('null', null)
+            ->setParameter('ids', $list)
+            ->getQuery()
+            ->execute();
+
+        // Suppression des informations sur les congés
+        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->update(Holiday::class, 'h')
+            ->set('h.commentaires', ':null')
+            ->set('h.refus', ':null')
+            ->set('h.heures', ':null')
+            ->set('h.solde_prec', ':null')
+            ->set('h.solde_actuel', ':null')
+            ->set('h.recup_prec', ':null')
+            ->set('h.recup_actuel', ':null')
+            ->set('h.reliquat_prec', ':null')
+            ->set('h.reliquat_actuel', ':null')
+            ->set('h.anticipation_prec', ':null')
+            ->set('h.anticipation_actuel', ':null')
+            ->where('h.perso_id IN (:ids)')
+            ->setParameter('null', null)
+            ->setParameter('ids', $list)
+            ->getQuery()
+            ->execute();
+
+        // Suppresion des informations sur les récupérations
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->delete(OverTime::class, 'o')
+            ->where('o.perso_id IN (:ids)')
+            ->setParameter('ids', $list)
+            ->getQuery()
+            ->execute();
+
+        // Suppression des informations sur les heures de présence
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->delete(WorkingHour::class, 'w')
+            ->where('w.perso_id IN (:ids)')
+            ->setParameter('ids', $list)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Finds agents with their responsible information.
+     *
+     * @param array  $filters Filter conditions
+     * @param string $orderBy Order clause
+     * @return array Agents with responsible data
+     */
+    public function findAgentsWithResponsables(array $filters = [], string $orderBy = 'nom'): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select(
+                'a.id',
+                'a.nom',
+                'a.prenom',
+                'a.mail',
+                'a.mails_responsables',
+                'a.statut',
+                'a.categorie',
+                'a.service',
+                'a.actif',
+                'a.droits',
+                'a.sites',
+                'a.check_ics',
+                'a.check_hamac',
+                'r.responsable',
+                'r.notification_level1',
+                'r.notification_level2'
+            )
+            ->leftJoin('a.responsables', 'r');
+
+        foreach ($filters as $field => $value) {
+            $qb
+                ->andWhere("a.$field = :$field")
+                ->setParameter($field, $value);
+        }
+
+        $qb->orderBy($orderBy);
+
+        return $qb
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    // Will replace personnel::fetch
+    public function get($orderBy = 'nom', $actif = null, $name = null)
+    {
+        $supprime = strstr($actif, "Supprim") ? array(1) : array(0);
+        $actif = strstr($actif, "Supprim") ? 'Supprim%' : $actif;// TODO migration (update as deleted)
+
+        $fields = array_map('trim', explode(',', $orderBy));
+        $orders = [];
+        foreach ($fields as $field)
+            $orders[] = 'a.' . $field;
+        $orderBy = implode(', ', $orders);
+
+        $qb = $this->createQueryBuilder('a')
+            ->select('a')
+            ->where("a.id <> 2")
+            ->andWhere("a.supprime IN (:supprime)");
+        
+        if (!empty($actif))
+        {
+            $qb ->andWhere("a.actif LIKE :actif")
+                ->setParameter('actif', $actif);
+        }
+
+        $qb ->setParameter('supprime', $supprime)
+            ->orderBy($orderBy);
+
+        $agents = $qb
+            ->getQuery()
+            ->getResult();
+
+        if ($name)
+        {
+            foreach($agents as $agent)
+            {
+                if (pl_stristr($agent->getFirstname(), $name) or pl_stristr($agent->getLastname(), $name))
+                {
+                    return $agent;
+                }
+            }
+        } else {
+            return $agents;// sortir des entities
+        }
     }
 }
