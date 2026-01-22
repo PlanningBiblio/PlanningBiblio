@@ -239,7 +239,7 @@ class AuthorizationsController extends BaseController
 
             // If user's login doesn't exist,
             // show an unauthorized message
-            if (!$db->result) {
+            if (!$db->result or empty($login)) {
                 // Redirect to error page
                 return 'cas_unknown_user';
             }
