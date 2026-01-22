@@ -42,7 +42,10 @@ class OpenIDConnect
             );
 
             $oidc->addScope(['openid', 'email', 'profile']);
-            $oidc->setCertPath($this->ca_cert);
+            if (!empty($this->ca_cert)) {
+                $oidc->setCertPath($this->ca_cert);
+            }
+
             $oidc->authenticate();
 
             $session->set('oidcToken', $oidc->getIdToken());
@@ -82,7 +85,10 @@ class OpenIDConnect
                 $this->client_secret,
             );
 
-            $oidc->setCertPath($this->ca_cert);
+            if (!empty($this->ca_cert)) {
+                $oidc->setCertPath($this->ca_cert);
+            }
+
             $oidc->signOut($oidcToken, $this->config['URL'] . '/logout');
 
         } catch (Exception $e) {
