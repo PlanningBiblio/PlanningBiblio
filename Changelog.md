@@ -1,5 +1,15 @@
 # Changelog Planno
 
+## Version 25.11.14 (2026-01-23)
+
+### Security
+
+- MT51914: OIDC: prevent connection with empty login #1302
+
+### Plumbing
+
+- MT50832: Use EntityManager in Holiday Reset Commands #1299
+
 ## Version 25.11.13 (2026-01-09)
 
 ### Enhancement
