@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.10.12 (2026-01-23)
+
+### Security
+
+- MT51914: OIDC: prevent connection with empty login #1302
+
 ## Version 25.10.11 (2026-01-09)
 
 ### Fixes
