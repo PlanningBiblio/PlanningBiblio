@@ -11,7 +11,7 @@ final class Version20251218070159 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Set the DateTime fields nullable in the personnel table';
     }
 
     public function up(Schema $schema): void
