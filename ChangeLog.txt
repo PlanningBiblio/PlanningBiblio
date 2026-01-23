@@ -1,3 +1,7 @@
+*** Version 25.04.17   (2026-01-23)    ***
+- Security
+MT51914: OIDC: prevent connection with empty login #1302
+
 *** Version 25.04.16   (2026-01-09)    ***
 - Fixes
 MT51618: Fix the saving of frameworks containing many cells #1293
