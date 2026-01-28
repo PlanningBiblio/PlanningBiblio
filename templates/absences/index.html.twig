@@ -62,7 +62,7 @@
         <div class="col">
           <div class="ml-auto">
             <a href='{{ asset("absence/add") }}' class='ui-button ui-button-type2'>Ajouter</a>
-            {% if config('AbsImport-CSV') %}
+            {% if config('AbsImport-CSV') and can_import_abs_csv %}
               <a href='{{ asset("absence/import") }}' class='ui-button ui-button-type2'>Importer</a>
             {% endif %}
           </div>

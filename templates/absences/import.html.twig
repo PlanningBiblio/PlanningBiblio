@@ -17,7 +17,7 @@
       <option value="1">Erreur</option>
     </select>
     <br /><br />
-    <table id='tableAbsencesImportResult'>
+    <table id="tableAbsencesImportResult">
         <thead>
             <th>Ligne</th>
             <th>Niveau</th>
@@ -45,6 +45,7 @@
     <h3>Importer des absences au format CSV</h3>
     <form id="form" name='form' action='/absence/import' method='post' enctype='multipart/form-data'>
       <input type="file" name="absencesCSV" id="absencesCSV" /><br /><br />
+      <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
       <input type="submit" />
     </form>
   {% endif %}
