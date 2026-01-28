@@ -124,6 +124,7 @@ class AbsenceController extends BaseController
             'managed'               => $managed,
             'agents_deleted'        => $agents_supprimes,
             'can_manage_sup_doc'    => in_array(701, $droits) ? 1 : 0,
+            'can_import_abs_csv'    => in_array(1401, $droits) ? 1 : 0,
         ));
 
         $visibles_absences = array();
@@ -180,17 +181,24 @@ class AbsenceController extends BaseController
     #[Route(path: '/absence/import', name: 'absence.select_file', methods: ['GET'])]
     public function select_absences_file(Request $request)
     {
-        if (!$this->config('AbsImport-CSV')) {
+        $this->droits = $GLOBALS['droits'];
+        if (!$this->config('AbsImport-CSV') ||
+            !in_array(1401, $this->droits)
+        ) {
             return $this->output('access-denied.html.twig');
         }
-        $session = $request->getSession();
+
         return $this->output('absences/import.html.twig');
     }
 
     #[Route(path: '/absence/import', name: 'absence.process_file', methods: ['POST'])]
     public function process_absences_file(Request $request)
     {
-        if (!$this->config('AbsImport-CSV')) {
+        $this->droits = $GLOBALS['droits'];
+        if (!$this->csrf_protection($request) ||
+            !in_array(1401, $this->droits)    ||
+            !$this->config('AbsImport-CSV')
+        ) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -205,8 +213,8 @@ class AbsenceController extends BaseController
             $results  = $helper->import($file, $loggedin_id);
 
             $this->templateParams(array(
-                "filename"  => $filename,
-                "importLog" => $results,
+                'filename'  => $filename,
+                'importLog' => $results,
             ));
         }
         return $this->output('absences/import.html.twig');

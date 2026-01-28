@@ -41,8 +41,6 @@ class AbsenceImportCSVHelper extends BaseHelper
         $agent_match = $this->config('AbsImport-Agent');
         $filename    = $file->getClientOriginalName();
         $inF         = fopen($file->getPathname(), 'r');
-        $dbprefix    = $GLOBALS['dbprefix'];
-        $CSRFToken   = $GLOBALS['CSRFSession'];
 
         # Empty previous results
         $this->importResults = array();
@@ -53,12 +51,6 @@ class AbsenceImportCSVHelper extends BaseHelper
 
         $msg = "Début d'import des absences du fichier CSV '$filename': les agents sont cherchés via leur $agent_match";
         $this->importLog(0, $msg, self::INFO);
-
-        $dbi = new \dbh();
-        $dbi->CSRFToken = $CSRFToken;
-
-        $dbi->prepare("INSERT INTO `{$dbprefix}absences` (`perso_id`, `debut`, `fin`, `motif`, `commentaires`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `cal_name`, `ical_key`)
-    VALUES (:perso_id, :debut, :fin, :motif, :commentaires, :demande, :valide, :validation, :valide_n1, :validation_n1, :cal_name, :ical_key);");
 
         $line = 0;
         $imported = 0;
@@ -174,36 +166,32 @@ class AbsenceImportCSVHelper extends BaseHelper
                 continue;
             }
 
-            $now = date('Y-m-d H:i:s');
-            $insert = array(
-                ':perso_id'      => $perso_id,
-                ':debut'         => $sql_debut,
-                ':fin'           => $sql_fin,
-                ':motif'         => $this->config('AbsImport-Reason'),
-                ':commentaires'  => $this->program,
-                ':demande'       => $now,
-                ':valide'        => $loggedin_id,
-                ':validation'    => $now,
-                ':valide_n1'     => $loggedin_id,
-                ':validation_n1' => $now,
-                ':cal_name'      => '',
-                ':ical_key'      => '',
-            );
+            $now = new \DateTime();
+            $absi = new Absence();
+            $absi->setUserId($perso_id);
+            $absi->setStart(new \DateTime($sql_debut));
+            $absi->setEnd(new \DateTime($sql_fin));
+            $absi->setReason($this->config('AbsImport-Reason'));
+            $absi->setOtherReason('');
+            $absi->setOriginId(0);
+            $absi->setComment($this->program);
+            $absi->setRequestDate($now);
+            $absi->setValidLevel1($loggedin_id);
+            $absi->setValidLevel1Date($now);
+            $absi->setValidLevel2($loggedin_id);
+            $absi->setValidLevel2Date($now);
+            $absi->setCalName('');
+            $absi->setICalKey('');
+            $absi->setStatus('');
+            $this->entityManager->persist($absi);
 
-            $result = $dbi->execute($insert);
-            if ($dbi->error) {
-                $msg = "L'absence n'a pas pu être ajoutée: " . $dbi->error;
-                $this->importLog($line,$msg, self::ERROR);
-                continue;
-            } else {
-                $msg = "Absence ajoutée pour l'agent $perso_id ($firstname, $lastname)";
-                $this->importLog($line,$msg, self::INFO);
-            }
+            $msg = "Absence ajoutée pour l'agent $perso_id ($firstname, $lastname)";
+            $this->importLog($line,$msg, self::INFO);
             $imported++;
         }
+        $this->entityManager->flush();
         $msg = "Fin d'import des absences du fichier CSV '$filename': $line lines traitées, $imported absences importées.";
         $this->importLog($line+1 ,$msg, self::INFO);
-
 
         return $this->importResults;
     }
