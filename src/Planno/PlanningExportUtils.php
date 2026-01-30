@@ -22,11 +22,36 @@ class PlanningExportUtils
         $this->config = $entityManager->getRepository(Config::class)->getAll();
     }
 
+    /**
+     * The export function exports information from plannings, absences and holidays for external calendars, like ICS, MS Graph API and Google API.
+     * Input: 
+     * - $userIds, array of user ids, default []
+     * - $start, DateTime or null, default null. If given, we only search for events that begin after that date. 
+     * - $exportAbsences, boolean, default false. If given, we search events from the plannings AND from the absences.
+     * Output:
+     * - array of events with the following keys for each event:
+     * -- userId: Int
+     * -- start: DateTime
+     * -- end: DateTime
+     * -- summary: String
+     * -- description: String. Contains the absence's comment OR empty string for planning events
+     * -- status: String among 'CONFIRMED' and 'TENTATIVE'
+     * -- createdAt: DateTime or null. DateTime for absences, null for planning events
+     * -- lastModified: DateTime
+     * -- location: String. Format "<site's name> <floor>" for planning events, empty string for absences
+     * -- organizer: String. Format '<firstname> <lastname>:mailto:<e-mail>' for planning events, empty string for absences
+     * -- position: Int or null. Position id for planning events, null for absences
+     * -- site: Int or null. Site id for planning events, null for absences
+     * 
+     * TODO: Make this function works with several $userIds
+     * TODO: Use Doctrine instead of legacy classes (absences, conges, db, personnel, postes)
+     * TODO: Eventually, $userIds could be replaced with Agent Entities in input and output (if it helps).
+     */
     public function export($userIds = [], $start = null, $exportAbsences = false)
     {
 
         // Cas ICS
-        $id = $userIds[0];
+        $userId = $userIds[0];
 
         $planning_tmp = [];
         $db=new \db();
@@ -35,7 +60,7 @@ class PlanningExportUtils
             array("personnel","id"),
             array("date", "debut", "fin", "poste", 'site', 'absent', 'supprime'),
             array(),
-            array("perso_id"=>$id),
+            array("perso_id"=>$userId),
             array('supprime' => 0),
             ($start ? 'AND `date` > "' . $start->format('Y-m-d') .'" ' : '') . "ORDER BY `date` DESC, `debut` DESC, `fin` DESC"
         );
@@ -80,7 +105,7 @@ class PlanningExportUtils
             $a->documents = false;
             $a->fetch(
                 '`debut`,`fin`',
-                $id,
+                $userId,
                 ($start ? $start->format('Y-m-d') : '0000-00-00 00:00:00'),
                 date('Y-m-d', strtotime(date('Y-m-d').' + 2 years'))
             );
@@ -99,7 +124,7 @@ class PlanningExportUtils
         // Recherche des congés (si le module est activé)
         if ($this->config['Conges-Enable']) {
             $c = new \conges();
-            $c->perso_id = $id;
+            $c->perso_id = $userId;
             $c->debut = ($start ? $start->format('Y-m-d') : '0000-00-00 00:00:00');
             $c->fin = date('Y-m-d', strtotime(date('Y-m-d').' + 2 years'));
             $c->valide = true;
@@ -169,25 +194,36 @@ class PlanningExportUtils
 
             $tab[$key]['start'] = \DateTime::createFromFormat('Y-m-d H:i:s', $elem['date'] . ' ' .$elem['debut']);
             $tab[$key]['end'] = \DateTime::createFromFormat('Y-m-d H:i:s', $elem['date'] . ' ' .$elem['fin']);
-            $tab[$key]['floor'] = !empty($positions[$elem['poste']]['etage']) ? ' ' . $positions[$elem['poste']]['etage'] : null;
             $tab[$key]['lastModified'] = \DateTime::createFromFormat('Y-m-d H:i:s', $locks[$elem['date'].'_'.$elem['site']]['date']);
-            $tab[$key]['position'] = $positions[$elem['poste']]['nom'];
-            $tab[$key]['siteName'] = !empty($sites[$elem['site']]) ? $sites[$elem['site']] : null;
-            $tab[$key]['userId'] = $id;
+            $tab[$key]['summary'] = $positions[$elem['poste']]['nom'];
+            $tab[$key]['userId'] = $userId;
+            $tab[$key]['position'] = $elem['poste'];
+
+            $floor = !empty($positions[$elem['poste']]['etage']) ? ' ' . $positions[$elem['poste']]['etage'] : null;
+            $siteName = !empty($sites[$elem['site']]) ? $sites[$elem['site']] : null;
+            $tab[$key]['location'] = $siteName . $floor;
+
+            $tab[$key]['createdAt'] = null;
+            $tab[$key]['description'] = '';
+            $tab[$key]['status'] = 'CONFIRMED';
         }
 
         // Add absences
         if ($exportAbsences) {
             foreach ($absences as $elem) {
                 $tab[] = [
-                    'userId' => $id,
+                    'userId' => $userId,
                     'start' => \DateTime::createFromFormat('Y-m-d H:i:s', $elem['debut']),
                     'end' => \DateTime::createFromFormat('Y-m-d H:i:s', $elem['fin']),
-                    'reason' => isset($elem['motif']) ? $elem['motif'] : 'Congé Payé',
-                    'comment' => $elem['commentaires'],
+                    'summary' => isset($elem['motif']) ? $elem['motif'] : 'Congé Payé',
+                    'description' => $elem['commentaires'],
                     'status' => $elem['valide'] ? 'CONFIRMED' : 'TENTATIVE',
                     'createdAt' => isset($elem['demande']) ? \DateTime::createFromFormat('Y-m-d H:i:s', $elem['demande']) : null,
                     'lastModified' => \DateTime::createFromFormat('Y-m-d H:i:s', $elem['validation']),
+                    'organizer' => '',
+                    'location' => '',
+                    'position' => null,
+                    'site' => null,
                 ];
             }
         }
