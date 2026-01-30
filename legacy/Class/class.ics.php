@@ -57,14 +57,13 @@ class CJICS
     public static function createIcsEvent($params): array {
     
         /* 
-        For absences, params are $id, $start, $end, $reason, $comment, $status, $createdAt, $lastModified
-        For planning, params are $id, $start, $end, $position, $positionId, $site, $siteId, $floor, $organizer, $lastModified
+        For absences, params are $userId, $start, $end, $reason, $comment, $status, $createdAt, $lastModified
+        For planning, params are $userId, $start, $end, $position, $positionId, $site, $siteId, $floor, $organizer, $lastModified
         */
     
         extract($params);
     
         $description = $comment ?? '';
-        $createdAt = isset($createdAt) ? gmdate('Ymd\THis\Z', $createdAt) : null;
         $floor = $floor ?? null;
         $organizer = $organizer ?? null;
         $positionId = $positionId ?? null;
@@ -76,10 +75,18 @@ class CJICS
         $tz = date_default_timezone_get();
         $url = $_SERVER['SERVER_NAME'];
     
-        $start = date('Ymd\THis', $start);
-        $end = date('Ymd\THis', $end);
-        $lastModified = gmdate('Ymd\THis\Z', $lastModified);
-    
+        $start = $start->format('Ymd\THis');
+        $end = $end->format('Ymd\THis');
+        $lastModified->setTimezone(new DateTimeZone('UTC'));
+        $lastModified = $lastModified->format('Ymd\THis\Z');
+
+        if (isset($createdAt)) {
+            $createdAt->setTimezone(new DateTimeZone('UTC'));
+            $createdAt = $createdAt->format('Ymd\THis\Z');
+        } else {
+            $createdAt = null;
+        }
+
         // If the site is not provide, this is an absence
         $location = $siteId ? $site . $floor : null;
 
@@ -98,7 +105,7 @@ class CJICS
         $event = [];
     
         $event[] = "BEGIN:VEVENT";
-        $event[] = "UID:$id-$siteId-$positionId-$start-$end@$url";
+        $event[] = "UID:$userId-$siteId-$positionId-$start-$end@$url";
         $event[] = 'DTSTAMP:' . gmdate('Ymd\THis\Z');
         $event[] = "DTSTART;TZID=$tz:$start";
         $event[] = "DTEND;TZID=$tz:$end";

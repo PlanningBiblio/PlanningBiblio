@@ -59,7 +59,8 @@ class PlanningExportUtils
         // Recherche des plannings verrouillés pour exclure les plages concernant des plannings en attente
         $locks = [];
         $db = new \db();
-        $db->select2("pl_poste_verrou", null, array('verrou2'=>'1'), ($icsInterval ? "AND `date` > DATE_SUB(curdate(), INTERVAL $icsInterval DAY) " : ''));
+        $db->select2('pl_poste_verrou', null, ['verrou2'=>'1'], ($start ? 'AND `date` > "' . $start->format('Y-m-d') .'" ' : ''));
+        
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $locks[$elem['date'].'_'.$elem['site']] = array('date' => $elem['validation2'], 'agent' => $elem['perso2']);
@@ -80,7 +81,7 @@ class PlanningExportUtils
             $a->fetch(
                 '`debut`,`fin`',
                 $id,
-                ($icsInterval ? date('Y-m-d',strtotime(date('Y-m-d') . " - $icsInterval days")) : '0000-00-00 00:00:00'),
+                ($start ? $start->format('Y-m-d') : '0000-00-00 00:00:00'),
                 date('Y-m-d', strtotime(date('Y-m-d').' + 2 years'))
             );
 
@@ -99,7 +100,7 @@ class PlanningExportUtils
         if ($this->config['Conges-Enable']) {
             $c = new \conges();
             $c->perso_id = $id;
-            $c->debut = ($icsInterval ? date('Y-m-d',strtotime(date('Y-m-d') . " - $icsInterval days")) : '0000-00-00 00:00:00');
+            $c->debut = ($start ? $start->format('Y-m-d') : '0000-00-00 00:00:00');
             $c->fin = date('Y-m-d', strtotime(date('Y-m-d').' + 2 years'));
             $c->valide = true;
             $c->fetch();
@@ -166,12 +167,12 @@ class PlanningExportUtils
                 $tab[$key]['organizer'] = $organizer;
             }
 
-            $tab[$key]['end'] = strtotime($elem['date']." ".$elem['fin']);
+            $tab[$key]['start'] = \DateTime::createFromFormat('Y-m-d H:i:s', $elem['date'] . ' ' .$elem['debut']);
+            $tab[$key]['end'] = \DateTime::createFromFormat('Y-m-d H:i:s', $elem['date'] . ' ' .$elem['fin']);
             $tab[$key]['floor'] = !empty($positions[$elem['poste']]['etage']) ? ' ' . $positions[$elem['poste']]['etage'] : null;
-            $tab[$key]['lastModified'] = strtotime($locks[$elem['date'].'_'.$elem['site']]['date']);
+            $tab[$key]['lastModified'] = \DateTime::createFromFormat('Y-m-d H:i:s', $locks[$elem['date'].'_'.$elem['site']]['date']);
             $tab[$key]['position'] = $positions[$elem['poste']]['nom'];
             $tab[$key]['siteName'] = !empty($sites[$elem['site']]) ? $sites[$elem['site']] : null;
-            $tab[$key]['start'] = strtotime($elem['date']." ".$elem['debut']);
             $tab[$key]['userId'] = $id;
         }
 
@@ -180,13 +181,13 @@ class PlanningExportUtils
             foreach ($absences as $elem) {
                 $tab[] = [
                     'userId' => $id,
-                    'start' => strtotime($elem['debut']),
-                    'end' => strtotime($elem['fin']),
+                    'start' => \DateTime::createFromFormat('Y-m-d H:i:s', $elem['debut']),
+                    'end' => \DateTime::createFromFormat('Y-m-d H:i:s', $elem['fin']),
                     'reason' => isset($elem['motif']) ? $elem['motif'] : 'Congé Payé',
                     'comment' => $elem['commentaires'],
                     'status' => $elem['valide'] ? 'CONFIRMED' : 'TENTATIVE',
-                    'createdAt' => isset($elem['demande']) ? strtotime($elem['demande']) : null,
-                    'lastModified' => strtotime($elem['validation']),
+                    'createdAt' => isset($elem['demande']) ? \DateTime::createFromFormat('Y-m-d H:i:s', $elem['demande']) : null,
+                    'lastModified' => \DateTime::createFromFormat('Y-m-d H:i:s', $elem['validation']),
                 ];
             }
         }

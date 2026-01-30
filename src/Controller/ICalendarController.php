@@ -119,7 +119,7 @@ class ICalendarController extends BaseController
         // Complète le tableau $ical
         foreach ($data as $elem) {
             $params = [
-                'id' => $elem['userId'],
+                'userId' => $elem['userId'],
                 'start' => $elem['start'],
                 'end' => $elem['end'],
                 'site' => $elem['siteName'],
