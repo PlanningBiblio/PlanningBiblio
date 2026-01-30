@@ -118,24 +118,7 @@ class ICalendarController extends BaseController
 
         // Complète le tableau $ical
         foreach ($data as $elem) {
-            $params = [
-                'userId' => $elem['userId'],
-                'start' => $elem['start'],
-                'end' => $elem['end'],
-                'site' => $elem['siteName'],
-                'siteId' => $elem['site'],
-                'floor' => $elem['floor'],
-                'position' => $elem['position'],
-                'positionId' => $elem['poste'],
-                'organizer' => $elem['organizer'],
-                'lastModified' => $elem['lastModified'],
-                'createdAt' => $elem['createdAt'],
-                'reason' => $elem['reason'],
-                'comment' => $elem['comment'],
-                'status' => $elem['status'],
-            ];
-
-            $event = \CJICS::createIcsEvent($params);
+            $event = \CJICS::createIcsEvent($elem);
             $ical = array_merge($ical, $event);
         }
 
