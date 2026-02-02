@@ -202,7 +202,7 @@ class AgentController extends BaseController
         $actif = null;
         $droits = $GLOBALS['droits'];
         $admin = in_array(21, $droits);
-//zhe li gai cheng ying yu, kan pr li de comment
+
         $accessGroups = $this->entityManager->getRepository(Access::class)->getAccessGroups();// Find access filtered by group id("groupe_id" value donesn't equal 99 or 100).
         // Tous les droits d'accés
         $groupes = array();
@@ -798,8 +798,6 @@ class AgentController extends BaseController
                 $repo->update($eDTSamedi, $firstMonday, $lastMonday, $id);
             }
 
-            // return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
-
             break;
 
           case "mdp":
@@ -808,7 +806,6 @@ class AgentController extends BaseController
             if (!empty($this->config('demo'))) {
                 $msg = "Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration";
                 $msgType = "success";
-                // return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => 'success'));
                 break;
             }
 
@@ -838,7 +835,6 @@ class AgentController extends BaseController
             }
 
             $agent->setPassword($mdp_crypt);
-            // return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
 
             break;
 
@@ -869,7 +865,6 @@ class AgentController extends BaseController
 
             $msg = null;
             $msgType = null;
-            // return $this->redirectToRoute('agent.index');
 
             break;
         }

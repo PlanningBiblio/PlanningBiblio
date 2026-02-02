@@ -674,7 +674,7 @@ class AgentRepository extends EntityRepository
     }
 
     // Will replance personnel::delete
-    public function delete($list): void
+    public function delete($ids): void
     {
         // Suppresion des informations de la table personnel
         // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
@@ -683,27 +683,27 @@ class AgentRepository extends EntityRepository
             ->set('a.supprime', ':supprime')
             ->set('a.login', "CONCAT('deleted_', a.id)")
             ->set('a.nom', "CONCAT('Agent_', a.id)")
-            ->set('a.prenom', ':null')
-            ->set('a.mail', ':null')
-            ->set('a.password', ':null')
+            ->set('a.prenom', ':vide_string')
+            ->set('a.mail', ':vide_string')
             ->set('a.arrivee', ':null')
             ->set('a.depart', ':null')
-            ->set('a.postes', ':null')
-            ->set('a.droits', ':null')
+            ->set('a.postes', ':vide_array')
+            ->set('a.droits', ':vide_array')
+            ->set('a.password', ':vide_string')
             ->set('a.commentaires', ':comment')
             ->set('a.last_login', ':null')
-            ->set('a.temps', ':null')
-            ->set('a.informations', ':null')
-            ->set('a.recup', ':null')
-            ->set('a.heures_travail', ':null')
-            ->set('a.heures_hebdo', ':null')
-            ->set('a.sites', ':null')
-            ->set('a.mails_responsables', ':null')
+            ->set('a.temps', ':vide_array')
+            ->set('a.informations', ':vide_string')
+            ->set('a.recup', ':vide_string')
+            ->set('a.heures_travail', 0)
+            ->set('a.heures_hebdo', ':vide_string')
+            ->set('a.sites', ':vide_array')
+            ->set('a.mails_responsables', ':vide_string')
             ->set('a.matricule', ':null')
             ->set('a.code_ics', ':null')
             ->set('a.url_ics', ':null')
             ->set('a.check_ics', ':null')
-            ->set('a.check_hamac', ':null')
+            ->set('a.check_hamac', ':false')
             ->set('a.conges_credit', ':null')
             ->set('a.conges_reliquat', ':null')
             ->set('a.conges_anticipation', ':null')
@@ -711,9 +711,12 @@ class AgentRepository extends EntityRepository
             ->set('a.comp_time', ':null')
             ->setParameter('supprime', 2)
             ->setParameter('null', null)
+            ->setParameter('vide_array', '[]')
+            ->setParameter('vide_string', '')
+            ->setParameter('false', false)
             ->setParameter('comment', "Suppression définitive le ".date("d/m/Y"))
             ->where('a.id IN (:ids)')
-            ->setParameter('ids', $list)
+            ->setParameter('ids', $ids)
             ->getQuery()
             ->execute();
 
@@ -721,11 +724,11 @@ class AgentRepository extends EntityRepository
         // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->update(Absence::class, 'a')
-            ->set('a.commentaires', ':null')
-            ->set('a.motif_autre', ':null')
+            ->set('a.commentaires', ':vide_string')
+            ->set('a.motif_autre', ':vide_string')
             ->where('a.perso_id IN (:ids)')
-            ->setParameter('null', null)
-            ->setParameter('ids', $list)
+            ->setParameter('vide_string', '')
+            ->setParameter('ids', $ids)
             ->getQuery()
             ->execute();
 
@@ -746,7 +749,7 @@ class AgentRepository extends EntityRepository
             ->set('h.anticipation_actuel', ':null')
             ->where('h.perso_id IN (:ids)')
             ->setParameter('null', null)
-            ->setParameter('ids', $list)
+            ->setParameter('ids', $ids)
             ->getQuery()
             ->execute();
 
@@ -754,7 +757,7 @@ class AgentRepository extends EntityRepository
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->delete(OverTime::class, 'o')
             ->where('o.perso_id IN (:ids)')
-            ->setParameter('ids', $list)
+            ->setParameter('ids', $ids)
             ->getQuery()
             ->execute();
 
@@ -762,52 +765,9 @@ class AgentRepository extends EntityRepository
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->delete(WorkingHour::class, 'w')
             ->where('w.perso_id IN (:ids)')
-            ->setParameter('ids', $list)
+            ->setParameter('ids', $ids)
             ->getQuery()
             ->execute();
-    }
-
-    /**
-     * Finds agents with their responsible information.
-     *
-     * @param array  $filters Filter conditions
-     * @param string $orderBy Order clause
-     * @return array Agents with responsible data
-     */
-    public function findAgentsWithResponsables(array $filters = [], string $orderBy = 'nom'): array
-    {
-        $qb = $this->createQueryBuilder('a')
-            ->select(
-                'a.id',
-                'a.nom',
-                'a.prenom',
-                'a.mail',
-                'a.mails_responsables',
-                'a.statut',
-                'a.categorie',
-                'a.service',
-                'a.actif',
-                'a.droits',
-                'a.sites',
-                'a.check_ics',
-                'a.check_hamac',
-                'r.responsable',
-                'r.notification_level1',
-                'r.notification_level2'
-            )
-            ->leftJoin('a.responsables', 'r');
-
-        foreach ($filters as $field => $value) {
-            $qb
-                ->andWhere("a.$field = :$field")
-                ->setParameter($field, $value);
-        }
-
-        $qb->orderBy($orderBy);
-
-        return $qb
-            ->getQuery()
-            ->getArrayResult();
     }
 
     // Will replace personnel::fetch

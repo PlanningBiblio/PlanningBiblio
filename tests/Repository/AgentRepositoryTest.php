@@ -2,8 +2,12 @@
 
 namespace App\Tests;
 
+use App\Entity\Absence;
 use App\Entity\Agent;
+use App\Entity\Holiday;
 use App\Entity\Manager;
+use App\Entity\OverTime;
+use App\Entity\WorkingHour;
 use PHPStan\Type\Php\GettypeFunctionReturnTypeExtension;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
@@ -146,5 +150,143 @@ class AgentRepositoryTest extends PLBWebTestCase
         $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents(array($agent3->getId()));
         $this->assertEquals($sites, array());
 
+    }
+
+    public function testUpdateAsDeletedAndDepartTodayById(): void
+    {
+
+        $leo = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Leo']);
+
+        $this->assertEquals(0, $leo->getDeletion());
+        $this->assertNull($leo->getDeparture());
+
+        $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($leo->getId());
+
+        $this->entityManager->clear();
+
+        $leo = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Leo']);
+        $this->assertEquals(1, $leo->getDeletion());
+        $this->assertEquals((new \DateTime())->format('Y-m-d'), $leo->getDeparture()->format('Y-m-d'));
+    }
+
+    public function testGetExportIcsURLWithExistingCode(): void
+    {
+        $this->setParam('ICS-Code', 1);
+
+        $leo = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Leo']);
+
+        $leo->setICSCode('existing_code_123');
+
+        $this->entityManager->persist($leo);
+        $this->entityManager->flush();
+
+        $id = $leo->getId();
+
+        $url = $this->entityManager->getRepository(Agent::class)->getExportIcsURL($id);
+
+        $this->assertEquals(
+            "/ical?id=$id&amp;code=existing_code_123",
+            $url
+        );
+    }
+
+    public function testGetExportIcsURLGeneratesCodeIfMissing(): void
+    {
+        $this->setParam('ICS-Code', 1);
+
+        $leo = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Leo']);
+    
+        $leo->setICSCode(null);
+
+        $this->entityManager->persist($leo);
+        $this->entityManager->flush();
+
+        $id = $leo->getId();
+
+        $url = $this->entityManager->getRepository(Agent::class)->getExportIcsURL($id);
+
+        $this->assertStringStartsWith(
+            "/ical?id=$id&amp;code=",
+            $url
+        );
+
+        $this->entityManager->clear();
+        $updatedAgent = $this->entityManager->getRepository(Agent::class)->find($id);
+
+        $this->assertNotNull($updatedAgent->getICSCode());
+        $this->assertNotEmpty($updatedAgent->getICSCode());
+    }
+
+    public function testFindAllLoginsNotDeleted(): void
+    {
+        $result = $this->entityManager->getRepository(Agent::class)->findAllLoginsNotDeleted();
+
+        $this->assertContains('Mike', array_column($result, 'login'));
+        $this->assertContains('Eric', array_column($result, 'login'));
+        $this->assertNotContains('john', array_column($result, 'login'));
+    }
+
+    public function testFetchCredits(): void
+    {
+        $userId = null;
+        $result = $this->entityManager->getRepository(Agent::class)->fetchCredits($userId);
+
+        foreach ($result as $key => $value) {
+            $this->assertSame(0, $value);
+        }
+    }
+
+    public function testDelete(): void
+    {
+        $builder = new FixtureBuilder();
+
+        $leo = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Leo']);
+        $leoId = $leo->getId();
+
+        $builder->build(
+            Absence::class,
+            array('perso_id' => $leoId, 'commentaires' => 'Test absence', 'groupe' => '')
+        );
+
+        $builder->build(
+            Holiday::class,
+            array('perso_id' => $leoId, 'commentaires' => 'Test holiday')
+        );
+
+        $builder->build(
+            OverTime::class,
+            array('perso_id' => $leoId)
+        );
+
+        $builder->build(
+            WorkingHour::class,
+            array('perso_id' => $leoId)
+        );
+
+        $absence = $this->entityManager->getRepository(Absence::class)->findOneBy(['perso_id' => $leoId]);
+        $holiday = $this->entityManager->getRepository(Holiday::class)->findOneBy(['perso_id' => $leoId]);
+        $overtime = $this->entityManager->getRepository(OverTime::class)->findOneBy(['perso_id' => $leoId]);
+        $workingHour = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $leoId]);
+
+        $this->assertEquals(0, $leo->getDeletion());
+        $this->assertNotEmpty($absence->getComment());
+        $this->assertNotEmpty($holiday->getComment());
+        $this->assertNotNull($overtime);
+        $this->assertNotNull($workingHour);
+
+        $this->entityManager->getRepository(Agent::class)->delete([$leoId]);
+
+        $this->entityManager->clear();
+
+        $deletedAgent = $this->entityManager->getRepository(Agent::class)->find($leoId);
+        $deleteAbsences = $this->entityManager->getRepository(Absence::class)->findOneBy(['perso_id' => $leoId]);
+        $deleteHolidays = $this->entityManager->getRepository(Holiday::class)->findOneBy(['perso_id' => $leoId]);
+        $deleteOvertimes = $this->entityManager->getRepository(OverTime::class)->findOneBy(['perso_id' => $leoId]);
+        $deleteWorkingHours = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $leoId]);
+        $this->assertEquals(2, $deletedAgent->getDeletion());
+        $this->assertEmpty($deleteAbsences->getComment());
+        $this->assertEmpty($deleteHolidays->getComment());
+        $this->assertNull($deleteOvertimes);
+        $this->assertNull($deleteWorkingHours);
     }
 }
