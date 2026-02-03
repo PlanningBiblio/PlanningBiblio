@@ -14,6 +14,9 @@ class HolidayRepositoryTest extends PLBWebTestCase
 {
    public function testInsertCreatesHolidayWhenCreditsChange()
    {
+        $builder = new FixtureBuilder();
+        $builder->delete(Holiday::class);
+        
         $holidayRepo = $this->entityManager->getRepository(Holiday::class);
     
         $agent = new Agent();
