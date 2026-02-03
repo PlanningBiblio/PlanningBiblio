@@ -25,8 +25,8 @@ $(function() {
 
     // Filtrer les résultats d'un import CSV par niveau de log
     var table = $('#tableAbsencesImportResult').DataTable({
-            "language" : { 'url' : url('js/dataTables.french.lang.json') },
-            "iDisplayLength": 25,
+            'language' : { 'url' : url('js/dataTables.french.lang.json') },
+            'iDisplayLength': 25,
             columnDefs: [
                 { target: 1, visible: false }
             ]
