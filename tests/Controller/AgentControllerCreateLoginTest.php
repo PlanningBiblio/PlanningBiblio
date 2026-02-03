@@ -61,6 +61,7 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
             // Submit the form
             $button = $crawler->filter('.ui-tab-submit');
             $button->click();
+            $this->client->waitFor('#tableAgents');
 
             // Check the record
             $id = $this->entityManager->getRepository(Agent::class)->getMaxId();
