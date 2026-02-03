@@ -178,25 +178,20 @@ class AbsenceController extends BaseController
         return $this->output('absences/index.html.twig');
     }
 
-    #[Route(path: '/absence/import', name: 'absence.select_file', methods: ['GET'])]
+    #[Route(path: '/absence/import', name: 'absence.import.select_file', methods: ['GET'])]
     public function select_absences_file(Request $request)
     {
-        $this->droits = $GLOBALS['droits'];
-        if (!$this->config('AbsImport-CSV') ||
-            !in_array(1401, $this->droits)
-        ) {
+        if (!$this->config['AbsImport-CSV']) {
             return $this->output('access-denied.html.twig');
         }
 
         return $this->output('absences/import.html.twig');
     }
 
-    #[Route(path: '/absence/import', name: 'absence.process_file', methods: ['POST'])]
+    #[Route(path: '/absence/import', name: 'absence.import.process_file', methods: ['POST'])]
     public function process_absences_file(Request $request)
     {
-        $this->droits = $GLOBALS['droits'];
         if (!$this->csrf_protection($request) ||
-            !in_array(1401, $this->droits)    ||
             !$this->config('AbsImport-CSV')
         ) {
             return $this->output('access-denied.html.twig');
@@ -217,6 +212,7 @@ class AbsenceController extends BaseController
                 'importLog' => $results,
             ));
         }
+
         return $this->output('absences/import.html.twig');
     }
 

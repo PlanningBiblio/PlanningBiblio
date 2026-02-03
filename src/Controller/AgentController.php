@@ -621,6 +621,11 @@ class AgentController extends BaseController
                 continue;
             }
 
+            // N'affiche pas le droit d'importation des absences si la config AbsImport-CSV est désactivé
+            if (!$this->config['AbsImport-CSV'] and $elem['groupe_id'] == 1401 ) {
+                continue;
+            }
+
             // With Planook configuration, some rights are not displayed
             if ($this->config('Planook') and in_array($elem['groupe_id'], $planook_excluded_rights)) {
                 continue;

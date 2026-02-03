@@ -8,9 +8,9 @@ use App\Entity\Agent;
 
 class AbsenceImportCSVHelper extends BaseHelper
 {
-
     use \App\Traits\LoggerTrait;
-    private string $program = "AbsenceImportCSV";
+ 
+    private string $program = 'AbsenceImportCSV';
     private array $importResults = array();
     private const ERROR   = 1;
     private const WARNING = 2;
@@ -23,7 +23,7 @@ class AbsenceImportCSVHelper extends BaseHelper
     }
 
     private function checkRegexes($config_option): string {
-        $regexes = $this->config($config_option);
+        $regexes = $this->config[$config_option];
         if (trim($regexes) == '') {
             return "$config_option est vide";
         }
@@ -38,7 +38,7 @@ class AbsenceImportCSVHelper extends BaseHelper
 
     public function import($file, $loggedin_id): array
     {
-        $agent_match = $this->config('AbsImport-Agent');
+        $agent_match = $this->config['AbsImport-Agent'];
         $filename    = $file->getClientOriginalName();
         $inF         = fopen($file->getPathname(), 'r');
 
@@ -47,9 +47,9 @@ class AbsenceImportCSVHelper extends BaseHelper
 
         # Should this be hardcoded?
         $structure   = array('debut' => 5, 'fin' => 6);
-        $date_format = "d/m/Y";
+        $date_format = 'd/m/Y';
 
-        $msg = "Début d'import des absences du fichier CSV '$filename': les agents sont cherchés via leur $agent_match";
+        $msg = "Début d'import des absences du fichier CSV \"$filename\": les agents sont cherchés via leur $agent_match";
         $this->importLog(0, $msg, self::INFO);
 
         $line = 0;
@@ -77,7 +77,7 @@ class AbsenceImportCSVHelper extends BaseHelper
 
             $regex_error = $this->checkRegexes('AbsImport-ConvertBegin');
             if ($regex_error == '') {
-                $start_regexes = explode("\n", $this->config('AbsImport-ConvertBegin'));
+                $start_regexes = explode("\n", $this->config['AbsImport-ConvertBegin']);
                 foreach ($start_regexes as $regex) {
                     $regex_number++;
                     $value = $tab[$structure['debut']];
@@ -109,7 +109,7 @@ class AbsenceImportCSVHelper extends BaseHelper
             $sql_fin = '';
             $regex_error = $this->checkRegexes('AbsImport-ConvertEnd');
             if ($regex_error == '') {
-                $end_regexes   = explode("\n", $this->config('AbsImport-ConvertEnd'));
+                $end_regexes   = explode("\n", $this->config['AbsImport-ConvertEnd']);
                 foreach ($end_regexes as $regex) {
                     $regex_number++;
                     $value = $tab[$structure['fin']];
@@ -157,7 +157,7 @@ class AbsenceImportCSVHelper extends BaseHelper
                     'perso_id' => $perso_id,
                     'debut'    => new \DateTime($sql_debut),
                     'fin'      => new \DateTime($sql_fin),
-                    'motif'    => $this->config('AbsImport-Reason'),
+                    'motif'    => $this->config['AbsImport-Reason'],
                 ]
             );
             if ($absence_already_exists) {
@@ -167,23 +167,23 @@ class AbsenceImportCSVHelper extends BaseHelper
             }
 
             $now = new \DateTime();
-            $absi = new Absence();
-            $absi->setUserId($perso_id);
-            $absi->setStart(new \DateTime($sql_debut));
-            $absi->setEnd(new \DateTime($sql_fin));
-            $absi->setReason($this->config('AbsImport-Reason'));
-            $absi->setOtherReason('');
-            $absi->setOriginId(0);
-            $absi->setComment($this->program);
-            $absi->setRequestDate($now);
-            $absi->setValidLevel1($loggedin_id);
-            $absi->setValidLevel1Date($now);
-            $absi->setValidLevel2($loggedin_id);
-            $absi->setValidLevel2Date($now);
-            $absi->setCalName('');
-            $absi->setICalKey('');
-            $absi->setStatus('');
-            $this->entityManager->persist($absi);
+            $absence = new Absence();
+            $absence->setUserId($perso_id);
+            $absence->setStart(new \DateTime($sql_debut));
+            $absence->setEnd(new \DateTime($sql_fin));
+            $absence->setReason($this->config['AbsImport-Reason']);
+            $absence->setOtherReason('');
+            $absence->setOriginId(0);
+            $absence->setComment($this->program);
+            $absence->setRequestDate($now);
+            $absence->setValidLevel1($loggedin_id);
+            $absence->setValidLevel1Date($now);
+            $absence->setValidLevel2($loggedin_id);
+            $absence->setValidLevel2Date($now);
+            $absence->setCalName('');
+            $absence->setICalKey('');
+            $absence->setStatus('');
+            $this->entityManager->persist($absence);
 
             $msg = "Absence ajoutée pour l'agent $perso_id ($firstname, $lastname)";
             $this->importLog($line,$msg, self::INFO);
