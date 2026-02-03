@@ -51,7 +51,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         // Unknown id
         $response = $this->client->request('GET', "/ical", array("id" => 42));
         $content = json_decode($this->client->getResponse()->getContent());
-        $this->assertEquals($content->{'error'}, "id inconnu", 'Unknown agent ID');
+        $this->assertEquals($content->{'error'}, 'id inconnu (42)', 'Unknown agent ID');
 
         // Agent id provided
         $this->client->request('GET', "/ical", array("id" => $agent->getId()));
