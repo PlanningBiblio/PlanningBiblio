@@ -88,6 +88,7 @@ class PlanningControlCommandTest extends PLBWebTestCase
 
         $button = $crawler->filter('.ui-dialog-buttonpane button')->eq(1);
         $button->click();
+        $this->client->waitFor('#tableau');
         $crawler = $this->client->refreshCrawler();
 
         $this->testPlanningControlCommandPlanningNotValidated();

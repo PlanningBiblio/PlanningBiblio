@@ -40,6 +40,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         $crawler->filter('input[name=searchTerm]')->sendKeys('@');
         $button = $crawler->selectButton('Rechercher');
         $button->click();
+        $this->client->waitFor('#tableAgentImport');
         $crawler = $this->client->refreshCrawler();
 
         // Check the table header
@@ -83,6 +84,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         $result->eq(1)->click();
         $result->eq(2)->click();
         $crawler->selectButton('Importer')->click();
+        $this->client->waitFor('#tableAgentImport');
         $crawler = $this->client->refreshCrawler();
 
         // Check if there is only one person left in the table
