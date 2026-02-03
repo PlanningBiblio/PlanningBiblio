@@ -14,13 +14,9 @@
     });
   </script>
   <div id="content-admin">
-    {% if id is defined %}
-      <h3>Modification de l'absence</h3>
-    {% else %}
-      <h3>Ajouter une absence</h3>
-    {% endif %}
+    <h3>{title}</h3>
     <div class="content-div">
-      {% if not access %}
+      {% if id is defined and not access %}
           Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>
           <a href='{{ asset("absence") }}'>Retour à la liste des absences</a><br/><br/>
       {% else %}
@@ -29,24 +25,24 @@
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />
           <input type='hidden' id='admin' value='{{ admin }}' />
-          <input type='hidden' id='login_id' value='{{ loggedin_id }}' />{#zhushi chongfu#}
+          <input type='hidden' id='login_id' value='{{ loggedin_id }}' />
           <input type='hidden' name='groupe' id='groupe' value='{{ absence.groupe }}' />
           <input type='hidden' name='rrule' id='rrule' value='{{ absence.rrule }}' />
           <input type='hidden' name='recurrence-modif' id='recurrence-modif' value='' />
           <input type='hidden' name='absence_status' id='absence_status' value="{{ absence.status }}" />
 
           <table class='tableauFiches'>
-            {% if id is defined %}
-              {% for agent in agents %}{#zhushi edit xian ti jiao yi bo agent ming dan#}
-                <input type='hidden' name='perso_ids[]' value='{{ agent.perso_id}}' id='hidden{{ agent.perso_id}}' class='perso_ids_hidden'/>
-                <input type="hidden" id="agent_{{ agent.perso_id }}" value="{{ agent.nom }} {{ agent.prenom }} {% if agent.deleted > 0 %} (supprimé) {% endif %}" />
-              {% endfor %}
-            {% endif %}
-            {% if agent_preselection %}{#zhushi add cai you agent_preselection#}
-              <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/>
-            {% endif %}
+
+            {% for agent in agents %}
+              <input type='hidden' name='perso_ids[]' value='{{ agent.perso_id}}' id='hidden{{ agent.perso_id}}' class='perso_ids_hidden'/>
+              <input type="hidden" id="agent_{{ agent.perso_id }}" value="{{ agent.nom }} {{ agent.prenom }} {% if agent.deleted > 0 %} (supprimé) {% endif %}" />
+            {% endfor %}
 
             {% if agents_multiples %}
+              {% if agent_preselection %}
+                <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/>
+              {% endif %}
+
               <tr>
                 <td class="textAlignRight"><label>Agent(s)</label></td>
                 <td colspan='2'>
@@ -73,11 +69,12 @@
                 <td>
                   <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
                     <option value='0' selected='selected'>-- Ajoutez un agent --</option>
-                    {% if config('Absences-tous') %}
+                    {% if absences_tous %}
                       <option value='tous'>Tous les agents</option>
                     {% endif %}
+
                     {% for a in agents_tous %}
-                      {% if (a.id in absence.perso_id) or (a.id == loggedin_id and agent_preselection) %}
+                      {% if (a.id in absence.perso_id) or (a.id == loggedin_id and agent_preselection) %}{# maybe here can be simplified by controller #}
                         <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">{{ a.lastname }} {{ a.firstname }}</option>
                       {% else %}
                         <option value='{{ a.id }}' id='option{{ a.id }}'>{{ a.lastname }} {{ a.firstname }}</option>
@@ -87,10 +84,10 @@
                 </td>
               </tr>
             {% else %}
-              {% if id is defined %}
+              <td class="textAlignRight"><label>Agent</label></td>
+              {% if id is defined %}{# maybe here can be simplified by controller,migrate loggedin_id and absence.perso_id #}
                 {% if agents | length > 1 %}
                   <tr>
-                    <td class="textAlignRight"><label>Agents</label></td>
                     <td>
                       <ul>
                         {% for a in agents %}
@@ -101,12 +98,10 @@
                   </tr>
                 {% else %}
                   <tr>
-                    <td class="textAlignRight"><label>Agent</label></td>
                     <td>{{ absence.nom }} {{ absence.prenom }}</td>
                   </tr>
                 {% endif %}
               {% else %}
-              {#zhushi chongfu#}
                 <input type='hidden' name='perso_id' value='{{ loggedin_id }}' class='perso_ids_hidden' />
                 {{ loggedin_name }} {{ loggedin_firstname }}
               {% endif %}
@@ -115,11 +110,7 @@
               <tr>
                 <td class="textAlignRight"><label>Journée(s) entière(s)</label></td>
                 <td>
-                  {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-                    <input type='checkbox' name='allday' checked="checked" onclick='all_day();'/>
-                  {% else %}
-                    <input type='checkbox' name='allday' {% if fullday_checked %} checked="checked" {% endif %} onclick='all_day();'/>
-                  {% endif %}
+                  <input type='checkbox' name='allday' {{ fullday_checked ? 'checked="checked"' : '' }} onclick='all_day();'/>
                 </td>
               </tr>
               <tr>
@@ -128,11 +119,7 @@
                   <input type='text' name='debut' value='{{ debut }}' style='width:100%;' class='datepicker {{ id is defined ? '' : 'recurrence-start' }}' id='absence-start'/>
                 </td>
               </tr>
-                {% if (hre_debut == '00:00:00' and hre_fin == '23:59:59') or fullday_checked %}
-                  <tr id='hre_debut' style="display:none;">
-                {% else %}
-                  <tr id='hre_debut'>
-                {% endif %}
+                <tr id='hre_debut' {{ fullday_checked ? 'style="display:none;"' : '' }}>
                 <td class="textAlignRight">
                   <label>Heure de début</label>
                 </td>
@@ -149,13 +136,7 @@
                   <input type='text' name='fin' value='{{ fin }}' style='width:100%;' class='datepicker'/>
                 </td>
               </tr>
-                {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-                  <tr id='hre_fin' style="display:none;" data-hr="{{ hre_fin }}">
-                {% elseif fullday_checked%}
-                  <tr id='hre_fin' style='display:none;' >
-                {% else %}
-                  <tr id='hre_fin'>
-                {% endif %}
+                <tr id='hre_fin' {% if fullday_checked %} style="display:none;" data-hr="{{ hre_fin }}" {% endif %}>
                   <td class="textAlignRight"><label>Heure de fin</label></td>
                   <td>
                     <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
@@ -168,10 +149,10 @@
                   <label>Récurrence</label>
                 </td>
                 <td style='padding-bottom:30px;'>
-                  <input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1' {% if id is defined %} disabled='disabled' {% endif %} />
+                  <input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1' {{ id is defined ? 'disabled="disabled"' : '' }} />
                   <span id='recurrence-info' style='display:none;'>
                     <span id='recurrence-summary'>&nbsp;</span>
-                    <a href='#' id='recurrence-link' style='margin-left:10px; {% if id is defined %}display:none;{% endif %}'>Modifier</a>
+                    <a href='#' id='recurrence-link' style='margin-left:10px; {{ id is defined ? 'display:none;' : '' }}'>Modifier</a>
                   </span>
                   <input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />
                 </td>
@@ -185,24 +166,16 @@
                     <option value=''></option>
                       {% for r in reasons %}
                         {% if r.type == 2 %}
-                          {% if r.valeur == absence.motif %}
-                            <option value="{{ r.valeur }}" class="padding20" selected="selected">
-                          {% else %}
-                          <option value="{{ r.valeur }}" class="padding20">
-                          {% endif %}
+                          <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="padding20" {{ r.valeur == absence.motif ? 'selected="selected"' : '' }}>
                             &nbsp;&nbsp;&nbsp;{{ r.valeur }}
                           </option>
                         {% else %}
                           {% if r.type == 1 %}
-                            <option value="{{ r.valeur }}" class="bold" disabled="disabled">
+                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" disabled="disabled">
                               {{ r.valeur }}
                             </option>
                           {% else %}
-                            {% if r.valeur == absence.motif %}
-                              <option value="{{ r.valeur }}" class="bold" selected="selected">
-                            {% else %}
-                            <option value="{{ r.valeur }}" class="bold">
-                            {% endif %}
+                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" {{ r.valeur == absence.motif ? 'selected="selected"' : '' }}>
                               {{ r.valeur }}
                             </option>
                           {% endif %}
@@ -214,11 +187,7 @@
                   {% endif %}
                 </td>
               </tr>
-              {% if display_autre %}
-                <tr id='tr_motif_autre'>
-              {% else %}
-                <tr style="display:none;" id='tr_motif_autre'>
-              {% endif %}
+                <tr {{ display_autre ? 'style="display:none;"' : '' }} id='tr_motif_autre'>
                 <td class="textAlignRight"><label>Motif (autre)</label></td>
                 <td>
                   <input type='text' name='motif_autre' style='width:100%;' value='{{ absence.motif_autre }}' class='ui-widget-content ui-corner-all'/>
@@ -246,7 +215,7 @@
               {% endif %}
 
                 <tr style='vertical-align:top;'>
-                  <td class="textAlignRight"><label>{% if id is defined %} Documents attachés {% else %} Attacher un document {% endif %}</label></td>
+                  <td class="textAlignRight"><label>{{ id is defined ? 'Documents attachés' : 'Attacher un document' }}</label></td>
                   {% if id is defined %}
                     <td>
                       <ul id='documentsList'>
@@ -273,9 +242,9 @@
                     </tr>
                 {% endif %}
 
-              {% if config('Absences-validation') %}
+              {% if absences_validation %}
                 <tr id="validation-line">
-                  <td class="textAlignRight"><label>{% if id is defined %} Validation {% else %} État {% endif %}</label></td>
+                  <td class="textAlignRight"><label>{{ id is defined ? 'Validation' : 'État' }}</label></td>
                   <td id="validation-statuses"></td>
                 </tr>
               {% endif %}
@@ -291,19 +260,15 @@
 
               <tr>
                 <td colspan='2' style='text-align:Right;'><br/>
-                  {% if id is defined %}
                     {% if absence.editable %}
-                      <input type='button' class='ui-button ui-button-type3' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/>
+                      {% if id is defined %}
+                        <input type='button' class='ui-button ui-button-type3' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/>
+                      {% endif %}
                       <input type='button' class='ui-button ui-button-type2' value='Annuler' onclick="annuler(1);"/>
                       <input type='submit' class='ui-button' value='Valider'/>
                     {% else %}
-                      <a href='{{ asset("absence") }}' class='ui-button'>Retour</a>
+                        <a href='{{ asset("absence") }}' class='ui-button'>Retour</a>
                     {% endif %}
-                  {% else %}{#zhushi zhe li hai neng gai?#}
-                    <input type='button' class='ui-button ui-button-type2' value='Annuler' onclick="document.location.href='{{asset('absence')}}';" />
-                    &nbsp;&nbsp;
-                    <input type='submit' class='ui-button' value='Valider' />
-                  {% endif %}
                 </td>
               </tr>
           </table>
@@ -325,9 +290,9 @@
           </div>
         {% else %}
           <div class="red info-align">
-            {% if abences_infos %}
+            {% if absences_infos %}
               <b>Informations congés / absences :</b><br/>
-              {% for a in abences_infos %}
+              {% for a in absences_infos %}
                 Du {{ a.debut_fr }} au {{ a.fin_fr }} : {{ a.texte }}<br/>
               {% endfor %}
             {% endif %}

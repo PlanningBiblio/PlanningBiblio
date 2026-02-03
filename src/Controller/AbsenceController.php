@@ -216,7 +216,7 @@ class AbsenceController extends BaseController
         $absence =array(
             'commentaires'          => '',
             'demande'               => '',
-            'editable'              => '',
+            'editable'              => 1,
             'groupe'                => '',
             'motif'                 => '',
             'motif_autre'           => '',
@@ -230,30 +230,36 @@ class AbsenceController extends BaseController
             'status'                => '',
         );
 
+        $agents = [];
+
         $this->templateParams(array(
-            'abences_infos'         => $this->absenceInfos(),
+            'absence'               => $absence,
+            'absences_infos'         => $this->absenceInfos(),
+            'absences_tous'         => $this->config('Absences-tous'),
+            'absences_validation'   => $this->config('Absences-validation'),
             'access'                => $acces,
             'admin'                 => $this->admin || $this->adminN2,
             'adminN1'               => $this->admin ? 1 : 0,
             'adminN2'               => $this->adminN2 ? 1 : 0,
-            'agent_preselection'    => $agent_preselection,
-            'agents_tous'           => $managed,
+            'agents'                => $agents,
             'agents_multiples'      => $this->agents_multiples,
+            'agents_tous'           => $managed,
+            'agent_preselection'    => $agent_preselection,
             'CSRFToken'             => $GLOBALS['CSRFSession'],
+            'debut'                 => '',
+            'display_autre'         => 0,
+            'documents'             => [],
+            'fin'                   => '',
             'fullday_checked'       => $this->config('Absences-journeeEntiere'),
+            'loggedin_firstname'    => $_SESSION['login_prenom'],
             'loggedin_id'           => $session->get('loginId'),
             'loggedin_name'         => $_SESSION['login_nom'],
-            'loggedin_firstname'    => $_SESSION['login_prenom'],
-            'reason_types'          => $this->reasonTypes(),
             'reasons'               => $this->availablesReasons(),
+            'reason_types'          => $this->reasonTypes(),
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
-            //TEST TODO
             'hre_debut'             => '',
             'hre_fin'               => '',
-            'debut'                 => '',
-            'fin'                   => '',
-            'display_autre'         => '',
-            'absence'               => $absence,
+            'title'                 => 'Ajouter une absence',
         ));
 
         return $this->output('absences/edit.html.twig');
@@ -446,31 +452,39 @@ class AbsenceController extends BaseController
 
         $display_autre = in_array(strtolower($absence['motif']), array("autre","other")) ? 1 : 0;
 
+        if ($hre_debut == '00:00:00' and $hre_fin == '23:59:59') {
+            $fullday_checked = 1;
+        } else {
+            $fullday_checked = 0;
+        }
+
         $this->templateParams(array(
-            'id'                    => $id,
+            'absence'               => $absence,
+            'absences_infos'         => '',
+            'absences_tous'         => $this->config('Absences-tous'),
+            'absences_validation'   => $this->config('Absences-validation'),
             'access'                => $acces,
-            //'absences_tous'         => $this->config('Absences-tous'),
-            //'absences_validation'   => $this->config('Absences-validation'),
             'admin'                 => $admin ? 1 : 0,
             'adminN2'               => $adminN2 ? 1 : 0,
-            //TEST TODO
-            'agent_preselection'    =>'',
-            'agents_multiples'      => $agents_multiples,
             'agents'                => $agents,
+            'agents_multiples'      => $agents_multiples,
             'agents_tous'           => $managed,
-            'absence'               => $absence,
+            'agent_preselection'    => 0,
+            'CSRFToken'             => $GLOBALS['CSRFSession'],
             'debut'                 => $debut,
+            'display_autre'         => $display_autre,
+            'fullday_checked'       => $fullday_checked,
             'fin'                   => $fin,
             'hre_debut'             => $hre_debut,
             'hre_fin'               => $hre_fin,
-            'CSRFToken'             => $GLOBALS['CSRFSession'],
+            'id'                    => $id,
+            'loggedin_firstname'    => $_SESSION['login_prenom'],
             'loggedin_id'           => $session->get('loginId'),
             'loggedin_name'         => $_SESSION['login_nom'],
-            'loggedin_firstname'    => $_SESSION['login_prenom'],
             'reasons'               => $this->availablesReasons(),
             'reason_types'          => $this->reasonTypes(),
-            'display_autre'         => $display_autre,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
+            'title'                 => 'Modification de l\'absence',
         ));
 
         $this->templateParams(array('documents' => $this->getDocuments($a)));
