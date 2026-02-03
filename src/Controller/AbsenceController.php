@@ -210,7 +210,6 @@ class AbsenceController extends BaseController
             $agent_preselection = 1;
         }
 
-        //TEST TODO
         $acces = true;
 
         $absence =array(
