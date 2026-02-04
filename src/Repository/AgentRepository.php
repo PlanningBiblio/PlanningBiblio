@@ -598,8 +598,7 @@ class AgentRepository extends EntityRepository
         return $url;
     }
 
-    // Replace conges::fetchCredits
-    public function fetchCredits(?int $userId): array// ke yi jian hua , repository shi entity de kuo zhan ,zhi jie $this jiu ke yi . ke yi jian hua, entity zi ji jiu neng zuo zhe xie
+    public function fetchCredits(?int $userId): array
     {
         if (!$userId) {
             return [

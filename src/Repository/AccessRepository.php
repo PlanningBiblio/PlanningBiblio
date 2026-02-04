@@ -19,8 +19,7 @@ class AccessRepository extends EntityRepository
     {
         $result =  $this->createQueryBuilder('a')
             ->select('a.groupe_id, a.groupe, a.categorie, a.ordre')
-            ->where('a.groupe_id NOT IN (:excluded)')
-            ->setParameter('excluded', [99, 100])
+            ->where('a.groupe_id NOT IN (99, 100)')
             ->groupBy('a.groupe')
             ->getQuery()
             ->getArrayResult();

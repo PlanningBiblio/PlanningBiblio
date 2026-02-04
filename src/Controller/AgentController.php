@@ -56,8 +56,9 @@ class AgentController extends BaseController
 
         //        Suppression des agents dont la date de départ est passée        //
         $tab = array(0);
-        $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();// Mark agents as deleted when their depart date is past today
 
+        // Mark agents as deleted when their depart date is past today
+        $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();
         $agentsTab = $this->entityManager->getRepository(Agent::class)->get('nom,prenom', $actif, null);
 
         $nbSites = $this->config('Multisites-nombre');
@@ -65,23 +66,22 @@ class AgentController extends BaseController
         foreach ($agentsTab as $agent) {
             $elem = [];
             $id = $agent->getId();
-            $arrivee = dateFr($agent->getArrival() ? $agent->getArrival()->format('Y-m-d') : '');
-            $depart = dateFr($agent->getDeparture() ? $agent->getDeparture()->format('Y-m-d') : '');
-            $last_login = date_time($agent->getLastLogin() ? $agent->getLastLogin()->format('Y-m-d H:i:s') : '0000-00-00 00:00:00');
+            $arrivee = $agent->getArrival() ? $agent->getArrival()->format('d/m/Y') : '';
+            $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';
+            $last_login = $agent->getLastLogin() ? $agent->getLastLogin()->format('d/m/Y H:i') : '';
             $heures = heure4($agent->getWeeklyServiceHours());
             if (is_numeric($heures)) {
                 $heures.= "h00";
             }
+            // TODO: Check if it's still necessary
             $service = str_replace("`", "'", $agent->getService());
 
             $sites = $agent->getSites();
             if ($nbSites > 1) {
                 $tmp = array();
-                if (!empty($sites)) {
-                    foreach ($sites as $site) {
-                        if ($site) {
-                            $tmp[] = $this->config("Multisites-site{$site}");
-                        }
+                foreach ($sites as $site) {
+                    if ($site) {
+                        $tmp[] = $this->config("Multisites-site{$site}");
                     }
                 }
                 $sites = !empty($tmp)?implode(", ", $tmp):null;
@@ -142,7 +142,7 @@ class AgentController extends BaseController
 
         $postes_completNoms = array();
         foreach ($activites as $elem) {
-            $postes_completNoms[] = array($elem->getName(),$elem->getId());
+            $postes_completNoms[] = array($elem->getName(), $elem->getId());
         }
         $postes_completNoms_json = json_encode($postes_completNoms);
 
@@ -203,7 +203,8 @@ class AgentController extends BaseController
         $droits = $GLOBALS['droits'];
         $admin = in_array(21, $droits);
 
-        $accessGroups = $this->entityManager->getRepository(Access::class)->getAccessGroups();// Find access filtered by group id("groupe_id" value donesn't equal 99 or 100).
+        // Find access filtered by group id ("groupe_id" value doesn't equal 99 or 100).
+        $accessGroups = $this->entityManager->getRepository(Access::class)->getAccessGroups();
         // Tous les droits d'accés
         $groupes = array();
         foreach ($accessGroups as $elem) {
@@ -269,7 +270,9 @@ class AgentController extends BaseController
                 $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get(date('Y-m-d'), date('Y-m-d'), true, $id);
 
                 $temps = $workingHours ? $workingHours[0]->getWorkingHours() : array();
-                $breaktimes = $workingHours && $workingHours[0]->getBreaktime() ? $workingHours[0]->getBreaktime() : array();
+                // $breaktimes = $workingHours && $workingHours[0]->getBreaktime() ? $workingHours[0]->getBreaktime() : array();
+                $breaktimes = $workingHours ? $workingHours[0]->getBreaktime() : array();
+                dd($workingHours[0]->getBreaktime());
             } else {
                 $temps = $agent->getWorkingHours();
                 if (!is_array($temps)) {
@@ -320,15 +323,16 @@ class AgentController extends BaseController
         // les activités non attribuées (disponibles)
         $postes_dispo = array();
         if ($postes_attribues) {
-            $postes = implode(",", $postes_attribues);    //    activités attribuées séparées par des virgules (valeur transmise à valid.php)
+            $postes = $postes_attribues;    //    activités attribuées séparées par des virgules (valeur transmise à valid.php)
             foreach ($postes_complet as $elem) {
                 if (!in_array($elem, $postes_attribues)) {
                     $postes_dispo[] = $elem;
                 }
             }
+            $postes = json_encode($postes_attribues);
         } else {
             //activités attribuées séparées par des virgules (valeur transmise à valid.php)
-            $postes = "";
+            $postes = '';
             $postes_dispo = $postes_complet;
         }
 
@@ -693,8 +697,13 @@ class AgentController extends BaseController
         $nom = trim($params['nom']);
         if (is_array($params['postes'])) {
             $postes = $params['postes'];
+        } elseif (is_string($params['postes'])) {
+            $postes = explode(',', "1,2,4,3,5,7,6,8,10,11,12,9");
         } else {
             $postes = json_decode($params['postes'], true) ?? [];
+            if (!is_array($postes)) {
+                $postes = [$postes];
+            }
         }
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : '';
