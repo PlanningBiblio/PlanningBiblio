@@ -47,56 +47,44 @@ class planning
     // Recherche les agents de catégorie A en fin de service
     public function finDeService()
     {
+        global $entityManager;
+        $conn = $entityManager->getConnection();
+
         $date=$this->date;
         $site=$this->site;
 
         // Sélection du tableau utilisé
-        $db=new db();
-        $db->select("pl_poste_tab_affect", "tableau", "date='$date' AND site='$site'");
-        $tableau=$db->result[0]["tableau"];
+        $tableau = $conn->fetchOne('SELECT tableau FROM pl_poste_tab_affect WHERE date = ? AND site = ?', [$date, $site]);
 
         // Sélection de l'heure de fin
-        $db=new db();
-        $db->select("pl_poste_horaires", "MAX(fin) AS maxFin", "numero='$tableau'");
-        $fin=$db->result[0]["maxFin"];
+        $fin = $conn->fetchOne('SELECT MAX(fin) FROM pl_poste_horaires WHERE numero = ?', [$tableau]);
 
         // Sélection des agents en fin de service
-        $perso_ids=array();
-        $db=new db();
-        $db->select("pl_poste", "perso_id", "fin='$fin' and site='$site' and `date`='$date' and supprime='0' and absent='0'");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $perso_ids[]=$elem['perso_id'];
-            }
-        }
+        $perso_ids = $conn->fetchFirstColumn(
+            'SELECT perso_id FROM pl_poste WHERE fin = ? AND site = ? AND date = ? AND supprime = ? AND absent = ?',
+            [$fin, $site, $date, '0', '0']
+        );
         if (empty($perso_ids)) {
             return false;
         }
-        $perso_ids=implode(",", $perso_ids);
 
         // Sélection des statuts des agents en fin de service
-        $statuts=array();
-        $db=new db();
-        $db->select("personnel", "statut", "id IN ($perso_ids)");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                if (in_array($elem['statut'], $statuts)) {
-                    continue;
-                }
-                $statuts[]=$elem['statut'];
-            }
-        }
+        $statuts = $conn->fetchFirstColumn(
+            'SELECT DISTINCT statut FROM personnel WHERE id IN (?)',
+            [$perso_ids],
+            [\Doctrine\DBAL\ArrayParameterType::INTEGER]
+        );
         if (empty($statuts)) {
             return false;
         }
-        $statuts=implode("','", $statuts);
 
         // Recherche des statuts de catégorie A parmis les statuts fournis
-        $db=new db();
-        $db->select("select_statuts", "*", "valeur IN ('$statuts') AND categorie='1'");
-        if ($db->result) {
-            $this->categorieA=true;
-        }
+        $categoryAStatusCount = $conn->fetchOne(
+            'SELECT COUNT(*) FROM select_statuts WHERE valeur IN (?) AND categorie = ?',
+            [$statuts, '1'],
+            [\Doctrine\DBAL\ArrayParameterType::STRING]
+        );
+        $this->categorieA = $categoryAStatusCount > 0;
     }
 
     // Affiche la liste des agents dans le menudiv
