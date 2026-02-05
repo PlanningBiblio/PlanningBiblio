@@ -29,4 +29,52 @@ class IPBlocker
     {
         return $this->id;
     }
+
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
+
+    public function setIp(?string $ip): static
+    {
+        $this->ip = $ip;
+
+        return $this;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function setLogin(?string $login): static
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getTimestamp(): ?\DateTime
+    {
+        return $this->timestamp;
+    }
+
+    public function setTimestamp(?\DateTime $timestamp): static
+    {
+        $this->timestamp = $timestamp;
+
+        return $this;
+    }
 }

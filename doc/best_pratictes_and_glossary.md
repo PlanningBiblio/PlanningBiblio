@@ -35,7 +35,7 @@
 | category | categorie |
 | change | modification or modif | type int (userId) |
 | changeDate | modification | type DateTime |
-| comment | texte or commentaires |
+| comment | texte or commentaires or commentaire |
 | current | actuel |
 | day | jour |
 | debit | debit |
@@ -81,6 +81,7 @@
 | manager | responsable |
 | managersMails | mails_responsables |
 | mandatory | obligatoire |
+| message | message |
 | modelId | model_id |
 | msGraphCheck | check_ms_graph |
 | number | numero |
@@ -98,18 +99,21 @@
 | quotaSP | quota_sp | For Position |
 | rank | rang |
 | recoveryMenu | recup |
+| refusal | refus |
 | regulationId | regul_id |
-| service | service |
 | reason | motif |
+| recipients | destinataires |
 | requestDate | demande |
 | rRule| rrule |
 | replace | remplace |
+| service | service |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |
 | start | debut |
 | statistics | statistiques |
 | status | etat, statut |
+| subject | sujet |
 | table | tableau |
 | teleworking | teleworking |
 | user | agent |

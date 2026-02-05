@@ -237,4 +237,40 @@ class OverTime
 
         return $this;
     }
+
+    public function getStatus(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->etat = $status;
+
+        return $this;
+    }
+
+    public function getModification(): ?\DateTime
+    {
+        return $this->modification;
+    }
+
+    public function setModification(?\DateTime $modification): static
+    {
+        $this->modification = $modification;
+
+        return $this;
+    }
+
+    public function getRefusal(): ?string
+    {
+        return $this->refus;
+    }
+
+    public function setRefusal(?string $refusal): static
+    {
+        $this->refus = $refusal;
+
+        return $this;
+    }
 }

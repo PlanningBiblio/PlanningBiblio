@@ -66,4 +66,16 @@ class HolidayInfo
 
         return $this;
     }
+
+    public function getEntryDate(): ?\DateTime
+    {
+        return $this->saisie;
+    }
+
+    public function setEntryDate(?\DateTime $entryDate): static
+    {
+        $this->saisie = $entryDate;
+
+        return $this;
+    }
 }

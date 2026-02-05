@@ -51,4 +51,16 @@ class Log
 
         return $this;
     }
+
+    public function getTimestamp(): ?\DateTime
+    {
+        return $this->timestamp;
+    }
+
+    public function setTimestamp(?\DateTime $timestamp): static
+    {
+        $this->timestamp = $timestamp;
+
+        return $this;
+    }
 }
