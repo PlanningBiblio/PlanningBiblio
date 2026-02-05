@@ -143,4 +143,16 @@ class PlanningPosition
 
         return $this;
     }
+
+    public function setSite(?int $site): static
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    public function getSite(): ?int
+    {
+        return $this->site;
+    }
 }
