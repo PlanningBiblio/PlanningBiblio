@@ -272,7 +272,6 @@ class AgentController extends BaseController
                 $temps = $workingHours ? $workingHours[0]->getWorkingHours() : array();
                 // $breaktimes = $workingHours && $workingHours[0]->getBreaktime() ? $workingHours[0]->getBreaktime() : array();
                 $breaktimes = $workingHours ? $workingHours[0]->getBreaktime() : array();
-                dd($workingHours[0]->getBreaktime());
             } else {
                 $temps = $agent->getWorkingHours();
                 if (!is_array($temps)) {
@@ -698,7 +697,7 @@ class AgentController extends BaseController
         if (is_array($params['postes'])) {
             $postes = $params['postes'];
         } elseif (is_string($params['postes'])) {
-            $postes = explode(',', "1,2,4,3,5,7,6,8,10,11,12,9");
+            $postes = explode(',', $params['postes']);
         } else {
             $postes = json_decode($params['postes'], true) ?? [];
             if (!is_array($postes)) {
