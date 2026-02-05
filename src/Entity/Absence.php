@@ -15,8 +15,9 @@ class Absence
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $perso_id = null;
+    #[ORM\ManyToOne(targetEntity: Agent::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Agent $user = null;
 
     #[ORM\Column]
     private ?\DateTime $debut = null;
@@ -290,14 +291,14 @@ class Absence
         return $this;
     }
 
-    public function getUserId(): ?int
+    public function getUser(): ?Agent
     {
-        return $this->perso_id;
+        return $this->user;
     }
 
-    public function setUserId(?int $user): static
+    public function setUser(?Agent $user): static
     {
-        $this->perso_id = $user;
+        $this->user = $user;
 
         return $this;
     }
