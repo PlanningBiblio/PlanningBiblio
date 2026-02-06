@@ -2,11 +2,11 @@
 
 namespace App\Twig;
 
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
-
-use App\Planno\Helper\HolidayHelper;
 
 include_once(__DIR__ . '/../../legacy/Common/function.php');
 include_once(__DIR__ . '/../../legacy/Common/feries.php');
@@ -33,6 +33,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('hoursToDays', [$this, 'hoursToDays']),
             new TwigFilter('raw_black_listed', [$this, 'htmlFilter'], ['is_safe' => ['html']]),
             new TwigFilter('sites', [$this, 'sites']),
+            new TwigFilter('time', [$this, 'time']),
         ];
     }
 
@@ -254,4 +255,14 @@ class AppExtension extends AbstractExtension
         return implode(', ', $displayedSites);
     }
 
+    public function time($time): string
+    {
+        if (is_numeric($time)) {
+            $hourHelper = new HourHelper();
+            $time = $hourHelper->decimalToHoursMinutes($time);
+            return $time['as_string'];
+        }
+
+        return $time;
+    }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Planno\Helper\HourHelper;
 use App\Repository\AgentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -393,14 +392,8 @@ class Agent
         return $this;
     }
 
-    public function getWeeklyServiceHours($formated = false): ?string
+    public function getWeeklyServiceHours(): ?string
     {
-        if ($formated and is_numeric($this->heures_hebdo)) {
-            $hourHelper = new HourHelper();
-            $time = $hourHelper->decimalToHoursMinutes($this->heures_hebdo);
-            return $time['as_string'];
-        }
-
         return $this->heures_hebdo;
     }
 

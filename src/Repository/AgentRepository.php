@@ -583,18 +583,23 @@ class AgentRepository extends EntityRepository
      */
     public function getExportIcsURL($id): string
     {
-        $url = "/ical?id=$id";// TODO
-        if ($GLOBALS['config']['ICS-Code']) {
+        $entityManager = $this->getEntityManager();
+        $config = $entityManager->getRepository(Config::class)->findOneBy(['nom' => 'ICS-Code']);
+        $url = "/ical?id=$id";
+
+        if ($config->getValue()) {
             $agent = $this->find($id);
             $code = $agent->getICSCode();
             if (!$code) {
                 $code = md5(time().rand(100, 999));
                 $agent->setICSCode($code);
-                $this->getEntityManager()->persist($agent);
-                $this->getEntityManager()->flush();
+                $entityManager->persist($agent);
+                $entityManager->flush();
             }
+
             $url .= "&amp;code=$code";
         }
+
         return $url;
     }
 

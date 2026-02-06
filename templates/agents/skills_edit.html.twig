@@ -21,7 +21,7 @@
     </td>
 
     <td>
-      <b>Activités attribu&eacute;es</b><br/>
+      <b>Activités attribuées</b><br/>
       <div id='attrib_div'>
         <select id='postes_attribues' name='postes_attribues' style='width:300px;' size='20' multiple='multiple'>
           {% for elem in postes_attribues %}
@@ -29,7 +29,7 @@
           {% endfor %}
         </select>
       </div>
-      <input type='hidden' name='postes' id='postes' value="{{ postes }}"/>
+      <input type='hidden' name='postes' id='postes' value="{{ agent.skills | json_encode }}"/>
     </td>
   </tr>
 </table>

@@ -179,12 +179,12 @@
 
     <tr>
       <td>E-mails des responsables :
-        {% for r in mailsResponsables %}
-          <br/><a href='mailto:{{ r|trim }}' style='margin-left:30px;'>{{ r|trim }}</a>
+        {% for mail in mailsResponsables %}
+          <br/><a href='mailto:{{ mail }}' style='margin-left:30px;'>{{ mail }}</a>
         {% endfor %}
       </td>
       <td>
-        <textarea name='mailsResponsables' style='width:400px' cols='10' rows='4'>{{ mailsResp_joined }}</textarea>
+        <textarea name='mailsResponsables' style='width:400px' cols='10' rows='4'>{{ agent.managersMails }}</textarea>
       </td>
     </tr>
 
@@ -232,7 +232,7 @@
 
   {% endif %}
 
-  {% if not demo %}
+  {% if not config('demo') %}
     <div id="reset-login-form" title="Réinitialisation du login" class='noprint' style='display:none;'>
       <form>
         <div>

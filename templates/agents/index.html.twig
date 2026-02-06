@@ -79,7 +79,7 @@
           </td>
           <td>{{ a.lastname | raw }}</td>
           <td>{{ a.firstname | raw}} </td>
-          <td>{{ a.weeklyServiceHours }}</td>
+          <td>{{ a.weeklyServiceHours | time }}</td>
           {% if not config('Planook') %}
             <td>{{ a.status | raw }}</td>
             <td>{{ a.service | raw }}</td>
@@ -255,6 +255,6 @@
 {% endblock %}
 
 {% block specificjs %}
-    <script type='text/JavaScript'> var complet = JSON.parse('{{ positionsCompleteNames | e('js') }}'); </script>
+    <script type='text/JavaScript'> var complet = JSON.parse('{{ skillsAllWithName | e('js') }}'); </script>
     <script type="text/JavaScript" src="{{ asset('js/agent.js') }}"></script>
 {% endblock %}

@@ -88,29 +88,29 @@ class AgentController extends BaseController
         }
 
         // Skills for bulk modification
-        $postes_completNoms = array();
+        $skillsAllWithName = [];
         foreach ($activites as $elem) {
-            $postes_completNoms[] = array($elem->getName(), $elem->getId());
+            $skillsAllWithName[] = [$elem->getName(), $elem->getId()];
         }
-        $postes_completNoms_json = json_encode($postes_completNoms);
 
+        // Get all agents
         $agents = $this->entityManager->getRepository(Agent::class)->get('nom', $active);
 
-        $this->templateParams(array(
-            'agents'                 => $agents,
-            'active'                 => $active,
-            'contracts'              => $contrats,
-            'hours'                  => $hours,
-            'lang'                   => $lang,
-            'ldapBouton'             => $ldapBouton,
-            'ldifBouton'             => $ldifBouton,
-            'loginId'                => $session->get('loginId'),
-            'positionsCompleteNames' => $postes_completNoms_json,
-            'rights21'               => in_array(21, $droits),
-            'services'               => $services,
-            'skills'                 => $activites,
-            'status'                 => $statuts
-        ));
+        $this->templateParams([
+            'active'            => $active,
+            'agents'            => $agents,
+            'contracts'         => $contrats,
+            'hours'             => $hours,
+            'lang'              => $lang,
+            'ldapBouton'        => $ldapBouton,
+            'ldifBouton'        => $ldifBouton,
+            'loginId'           => $session->get('loginId'),
+            'rights21'          => in_array(21, $droits),
+            'services'          => $services,
+            'skills'            => $activites,
+            'skillsAllWithName' => json_encode($skillsAllWithName),
+            'status'            => $statuts
+        ]);
 
         return $this->output('/agents/index.html.twig');
     }
@@ -144,10 +144,12 @@ class AgentController extends BaseController
         $CSRFSession = $GLOBALS['CSRFSession'];
         $lang = $GLOBALS['lang'];
         $currentTab = '';
+
+        // The followings globals are used in legacy/Agent/hours_tables.php
         global $temps;
         global $breaktimes;
 
-        $actif = null;
+        $actif = $agent->getActive();
         $droits = $GLOBALS['droits'];
 
         // Find access filtered by group id ("groupe_id" value doesn't equal 99 or 100).
@@ -203,13 +205,13 @@ class AgentController extends BaseController
         $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();
 
         $acces = $agent->getACL();
-        $postes_attribues = array();
-        $recupAgents = array("Prime","Temps");
+        $recupAgents = ['Prime', 'Temps'];
         // récupération des infos de l'agent en cas de modif
         $ics = null;
 
-        $managersMails = $agent->getManagersMails() ? explode(';', html_entity_decode($agent->getManagersMails(), ENT_QUOTES|ENT_IGNORE, "UTF-8")) : [];
-        // $managersMails : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($managersMails=implode("; ",$managersMails);)
+        $managersMails = $agent->getManagersMails() ? explode(';', $agent->getManagersMails()) : [];
+        $managersMails = array_map('trim', $managersMails);
+
         $sites = $agent->getSites();
         
         if ($id) {
@@ -217,27 +219,20 @@ class AgentController extends BaseController
             if ($this->config('PlanningHebdo')) {
                 $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get(date('Y-m-d'), date('Y-m-d'), true, $id);
 
-                $temps = $workingHours ? $workingHours[0]->getWorkingHours() : array();
-                // $breaktimes = $workingHours && $workingHours[0]->getBreaktime() ? $workingHours[0]->getBreaktime() : array();
-                $breaktimes = $workingHours ? $workingHours[0]->getBreaktime() : array();
+                $temps = $workingHours ? $workingHours[0]->getWorkingHours() : [];
+                $breaktimes = $workingHours ? $workingHours[0]->getBreaktime() : [];
             } else {
                 $temps = $agent->getWorkingHours();
-                if (!is_array($temps)) {
-                    $temps = array();
-                }
             }
+
             // Decimal breaktime to time (H:i).
             foreach ($breaktimes as $index => $time) {
                 $breaktimes[$index] = $breaktimes[$index]
                     ? gmdate('H:i', floor($breaktimes[$index] * 3600)) : '';
             }
 
-            $postes_attribues = $agent->getSkills();
-            if (is_array($postes_attribues)) {
-                sort($postes_attribues);
-            }
             $action = 'update';
-            $titre = $agent->getLastname() . ' ' . $agent->getFirstname();
+            $title = $agent->getLastname() . ' ' . $agent->getFirstname();
 
             // URL ICS
             if ($this->config('ICS-Export')) {
@@ -245,7 +240,7 @@ class AgentController extends BaseController
             }
         } else {// pas d'id, donc ajout d'un agent
             $id = null;
-            $titre = "Ajout d'un agent";
+            $title = "Ajout d'un agent";
             $action = 'add';
 
             // vérifie dans quel tableau on se trouve pour la valeur par défaut
@@ -254,51 +249,31 @@ class AgentController extends BaseController
             }
         }
 
-        $contrats = array("Titulaire","Contractuel");
+        $contrats = ['Titulaire', 'Contractuel'];
 
         //        --------------        Début listes des activités        ---------------------//
         // Toutes les activités
-        $activites = $this->entityManager->getRepository(Skill::class)->findAll();
+        $skillsAll = [];
+        $skillsAllWithName = [];
 
-        $postes_complet = array();
-        $postes_completNoms = array();
+        $skills = $this->entityManager->getRepository(Skill::class)->findAll();
 
-        foreach ($activites as $elem) {
-            $postes_completNoms[] = array($elem->getName(), $elem->getId());
-            $postes_complet[] = $elem->getId();
+        foreach ($skills as $elem) {
+            $skillsAllWithName[] = [$elem->getName(), $elem->getId()];
+            $skillsAll[] = $elem->getId();
         }
 
-        // les activités non attribuées (disponibles)
-        $postes_dispo = array();
-        if ($postes_attribues) {
-            $postes = $postes_attribues;    //    activités attribuées séparées par des virgules (valeur transmise à valid.php)
-            foreach ($postes_complet as $elem) {
-                if (!in_array($elem, $postes_attribues)) {
-                    $postes_dispo[] = $elem;
-                }
-            }
-            $postes = json_encode($postes_attribues);
-        } else {
-            //activités attribuées séparées par des virgules (valeur transmise à valid.php)
-            $postes = '';
-            $postes_dispo = $postes_complet;
-        }
+        // les activités attribuées et disponibles
+        $skillsAssigned = $agent->getSkills();
+        $skillsAvailable = array_diff($skillsAll, $skillsAssigned);
 
-        // traduction en JavaScript du tableau postes_completNoms
-        // pour les fonctions seltect_add* et select_drop
-        $postes_completNoms_json = json_encode($postes_completNoms);
-        $this->templateParams(array(
-            'postes_completNoms_json' => $postes_completNoms_json
-        ));
-
-        $postes_attribues = $this->postesNoms($postes_attribues, $postes_completNoms);
-        $postes_dispo = $this->postesNoms($postes_dispo, $postes_completNoms);
+        $skillsAssigned = $this->postesNoms($skillsAssigned, $skillsAllWithName);
+        $skillsAvailable = $this->postesNoms($skillsAvailable, $skillsAllWithName);
 
         $this->templateParams(array(
-            'agent'            => $agent,
-            'demo'              => empty($this->config('demo')) ? 0 : 1,
-            'can_manage_agent'  => in_array(21, $droits) ? 1 : 0,
-            'titre'             => $titre,
+            'agent'             => $agent,
+            'can_manage_agent'  => in_array(21, $droits),
+            'title'             => $title,
             'conges_enabled'    => $this->config('Conges-Enable'),
             'conges_mode'       => $this->config('Conges-Mode'),
             'multi_site'        => $this->config('Multisites-nombre') > 1 ? 1 : 0,
@@ -322,13 +297,12 @@ class AgentController extends BaseController
             'services_utilises' => $services_utilises,
             'actif'             => $actif,
             'mailsResponsables' => $managersMails,
-            'mailsResp_joined'  => implode("; ", $managersMails),
             'informations_str'  => str_replace("\n", "<br/>", strval($agent->getInformation())),
             'recup_str'         => str_replace("\n", "<br/>", strval($agent->getRecoveryMenu())),
             'recupAgents'       => $recupAgents,
-            'postes'            => $postes,
-            'postes_dispo'      => $postes_dispo,
-            'postes_attribues'  => $postes_attribues,
+            'postes_dispo'      => $skillsAvailable,
+            'postes_attribues'  => $skillsAssigned,
+            'postes_completNoms_json' => json_encode($skillsAllWithName),
         ));
 
         $this->templateParams(array(
@@ -373,20 +347,16 @@ class AgentController extends BaseController
         }
 
         // Multi-sites
-        if ($this->config('Multisites-nombre') > 1) {
-            $sites_select = array();
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                $site_select = array(
+        if ($this->config['Multisites-nombre'] > 1) {
+            $sites_select = [];
+            for ($i = 1; $i <= $this->config['Multisites-nombre']; $i++) {
+                $sites_select[] = [
                     'id' => $i,
                     'name' => $this->config("Multisites-site$i"),
-                    'checked' => 0
-                );
-                if ( in_array($i, $sites) ) {
-                    $site_select['checked'] = 1;
-                }
-                $sites_select[] = $site_select;
+                    'checked' => in_array($i, $sites) ? 1 : 0,
+                ];
             }
-            $this->templateParams(array( 'sites_select' => $sites_select ));
+            $this->templateParams(['sites_select' => $sites_select]);
         }
 
         include(__DIR__ . '/../../legacy/Agent/hours_tables.php');
@@ -620,8 +590,8 @@ class AgentController extends BaseController
         $arrivee = $request->get('arrivee') ? \DateTime::createFromFormat('d/m/Y', $request->get('arrivee')) : null;
         $depart = $request->get('depart') ? \DateTime::createFromFormat('d/m/Y', $request->get('depart')) : null;
         $CSRFToken = $request->get('CSRFToken');
-        $heuresHebdo = $request->get('heuresHebdo') ?? '';
-        $heuresTravail = $request->get('heuresTravail') ?? 0;
+        $heuresHebdo = $request->get('heuresHebdo', '');
+        $heuresTravail = $request->get('heuresTravail', 0);
         $id = $request->get('id');
         $agent = $id ? $this->entityManager->getRepository(Agent::class)->find($id) : new Agent();
         $mail = $request->get('mail');
@@ -641,28 +611,14 @@ class AgentController extends BaseController
         $matricule = isset($params['matricule']) ? trim($params['matricule']) : null;
         $url_ics = isset($params['url_ics']) ? trim($params['url_ics']) : null;
         $nom = trim($params['nom']);
-        if (is_array($params['postes'])) {
-            $postes = $params['postes'];
-        } elseif (is_string($params['postes'])) {
-            $postes = explode(',', $params['postes']);
-        } else {
-            $postes = json_decode($params['postes'], true) ?? [];
-            if (!is_array($postes)) {
-                $postes = [$postes];
-            }
-        }
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : '';
         $service = $params['service'] ?? null;
         $sites = array_key_exists("sites", $params) ? $params['sites'] : [];
         $statut = $params['statut'] ?? null;
-        if (!array_key_exists('temps', $params)) {
-            $temps = [];
-        } elseif (is_array($params['temps'])) {
-            $temps = $params['temps'];
-        } else {
-            $temps = json_decode($params['temps'], true) ?? [];
-        }
+
+        $postes = json_decode($params['postes']);
+        $temps = !empty($params['temps']) ? $params['temps'] : [];
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
         $eDTSamedi = array_key_exists("EDTSamedi", $params) ? $params['EDTSamedi'] : null;

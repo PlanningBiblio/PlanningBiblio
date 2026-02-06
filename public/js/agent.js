@@ -222,7 +222,7 @@ function select_add(select_dispo,select_attrib,hidden_attrib,width){	// Attribut
   
   document.getElementById("attrib_div").innerHTML=attrib_aff;
   document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value=tab_attrib.toString();
+  document.getElementById(hidden_attrib).value = JSON.stringify(tab_attrib);
 }
 
 function select_drop(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
@@ -265,7 +265,7 @@ function select_drop(select_dispo,select_attrib,hidden_attrib,width){	// Attribu
   
   document.getElementById("attrib_div").innerHTML=attrib_aff;
   document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value=tab_attrib.toString();
+  document.getElementById(hidden_attrib).value = JSON.stringify(tab_attrib);
 }
 
 function select_add_all(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
@@ -283,7 +283,7 @@ function select_add_all(select_dispo,select_attrib,hidden_attrib,width){	// Attr
   
   document.getElementById("attrib_div").innerHTML=attrib_aff;
   document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value=tab_attrib.toString();
+  document.getElementById(hidden_attrib).value = JSON.stringify(tab_attrib);
 }
 
 function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
@@ -298,7 +298,7 @@ function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Att
   
   document.getElementById("attrib_div").innerHTML=attrib_aff;
   document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value='';
+  document.getElementById(hidden_attrib).value = '[]';
 }
 // Fin Select Multpiles
 

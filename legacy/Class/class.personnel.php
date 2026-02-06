@@ -245,42 +245,6 @@ class personnel
             }
         }
     }
-  
-    /**
-     * getICSCode
-     * Retourne le code ICS de l'agent. Créé le code s'il n'existe pas
-     * Le code ICS est requis pour accéder au calendriers si ceux-ci sont protégés
-     * @param int $id : id de l'agent
-     * @return string $code : retourne le code ICS de l'agent
-     */
-    public function getICSCode($id)
-    {
-        $this->fetchById($id);
-        $code = $this->elements[0]['code_ics'];
-        if (!$code) {
-            $code = md5(time().rand(100, 999));
-            $db = new db();
-            $db->CSRFToken = $this->CSRFToken;
-            $db->update('personnel', array('code_ics'=>$code), array('id'=>$id));
-        }
-        return $code;
-    }
-  
-    /**
-     * getICSURL
-     * Retourne l'URL ICS de l'agent.
-     * @param int $id : id de l'agent
-     * @return string $url
-     */
-    public function getICSURL($id): string
-    {
-        $url = "/ical?id=$id";
-        if ($GLOBALS['config']['ICS-Code']) {
-            $code = $this->getICSCode($id);
-            $url .= "&amp;code=$code";
-        }
-        return $url;
-    }
 
     public function update_time()
     {
