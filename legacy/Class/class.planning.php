@@ -8,7 +8,11 @@ Utilisée par les fichiers du dossier "planning/poste"
 
 use App\Entity\Agent;
 use App\Entity\AbsenceReason;
+use App\Entity\PlanningPositionTabAffectation;
+use App\Entity\PlanningPositionHours;
+use App\Entity\PlanningPosition;
 use App\Entity\Position;
+use App\Entity\SelectStatus;
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 
@@ -53,52 +57,23 @@ class planning
         $date=$this->date;
         $site=$this->site;
 
-        // Sélection du tableau utilisé
-        $tableau = $conn->fetchOne('SELECT tableau FROM pl_poste_tab_affect WHERE date = ? AND site = ?', [$date, $site]);
+        $planningPositionRepository = $entityManager->getRepository(PlanningPosition::class);
+        $positions = $planningPositionRepository->getEndOfServicePositions($date, $site);
 
-        // Sélection de l'heure de fin
-        $fin = $conn->fetchOne('SELECT MAX(fin) FROM pl_poste_horaires WHERE numero = ?', [$tableau]);
-
-        // Sélection des agents en fin de service, en excluant les agents absents ou en congés
-        $perso_ids = $conn->fetchFirstColumn(
-            <<<'SQL'
-            SELECT perso_id FROM pl_poste
-            WHERE fin = ? AND site = ? AND date = ? AND supprime = ? AND absent = ?
-              AND NOT EXISTS (
-                SELECT * FROM absences
-                WHERE absences.perso_id = pl_poste.perso_id
-                  AND absences.valide = 1
-                  AND pl_poste.fin BETWEEN absences.debut AND absences.fin
-              )
-              AND NOT EXISTS (
-                SELECT * FROM conges
-                WHERE conges.perso_id = pl_poste.perso_id
-                  AND conges.valide = 1
-                  AND pl_poste.fin BETWEEN conges.debut AND conges.fin
-              )
-            SQL,
-            [$fin, $site, $date, '0', '0']
-        );
+        $perso_ids = array_map(fn($p) => $p->getUser(), $positions);
         if (empty($perso_ids)) {
             return false;
         }
 
         // Sélection des statuts des agents en fin de service
-        $statuts = $conn->fetchFirstColumn(
-            'SELECT DISTINCT statut FROM personnel WHERE id IN (?)',
-            [$perso_ids],
-            [\Doctrine\DBAL\ArrayParameterType::INTEGER]
-        );
+        $statuts = $entityManager->getRepository(Agent::class)->getDistinctStatuses($perso_ids);
         if (empty($statuts)) {
             return false;
         }
 
         // Recherche des statuts de catégorie A parmis les statuts fournis
-        $categoryAStatusCount = $conn->fetchOne(
-            'SELECT COUNT(*) FROM select_statuts WHERE valeur IN (?) AND categorie = ?',
-            [$statuts, '1'],
-            [\Doctrine\DBAL\ArrayParameterType::STRING]
-        );
+        $selectStatusRepository = $entityManager->getRepository(SelectStatus::class);
+        $categoryAStatusCount = $selectStatusRepository->count(['valeur' => $statuts, 'categorie' => 1]);
         $this->categorieA = $categoryAStatusCount > 0;
     }
 
