@@ -1,5 +1,15 @@
 # Changelog Planno
 
+## Version 25.11.15 (2026-02-06)
+
+### Enhancement
+
+- MT48492: Import absences from CSV file #1300
+
+### Plumbing
+
+- MT52073: Fix e2e tests #1305
+
 ## Version 25.11.14 (2026-01-23)
 
 ### Security
