@@ -10,7 +10,7 @@
   <div id="content-form">
     <h3>Importer des absences au format CSV</h3>
     <div class="admin-div">
-      {% if filename is defined %} 
+      {% if filename is defined %}
         <p><strong>Résultats</strong></p>
         <label for="maxLevel">Niveau de journalisation :</label>
         <select id="maxLevel">
@@ -48,11 +48,25 @@
       </div>
     {% else %}
       <p><strong>Veuillez sélectionner un fichier CSV et cliquer sur "Envoyer".</strong></p>
-      <form id="form" name='form' action='/absence/import' method='post' enctype='multipart/form-data'>
-        <input type="file" name="absencesCSV" id="absencesCSV" /><br /><br />
-        <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
-        <input type="submit" class="ui-button" />
-      </form>
+      <p>Le fichier doit être un fichier au format CSV composé comme suit :
+      <ul>
+        <li>Une ligne d'entête, qui sera ignorée</li>
+        <li>Une ligne par absence</li>
+        <li>Les données doivent être séparées par un ;</li>
+        <li>Pour chaque absence (pour chaque ligne), les données attendues sont les suivantes :
+          <ul>
+            <li>1<sup>ère</sup> colonne : Un élément permettant d'identifier l'agent parmi son mail, son matricule ou son login (selon le paramètre choisi dans la configuration)</li>
+            <li>Les colonnes 2 à 5 sont ignorées</li>
+            <li>6<sup>ème</sup> colonne : La date de début, selon le format défini dans la configuration</li>
+            <li>7<sup>ème</sup> colonne : La date de fin, selon le format défini dans la configuration</li>
+          </ul>
+        </ul>
+      </p>
+        <form id="form" name="form" action="{{ asset('absence/import') }}" method="post" enctype="multipart/form-data" style="margin-top:30px;">
+          <input type="file" name="absencesCSV" id="absencesCSV" /><br/><br/>
+          <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
+          <input type="submit" class="ui-button" />
+        </form>
       </div>
     {% endif %}
   </div>

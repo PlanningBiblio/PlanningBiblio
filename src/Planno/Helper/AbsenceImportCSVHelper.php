@@ -10,7 +10,7 @@ class AbsenceImportCSVHelper extends BaseHelper
 {
     use \App\Traits\LoggerTrait;
  
-    private string $program = 'AbsenceImportCSV';
+    private string $program = 'Absence Import CSV';
     private array $importResults = array();
     private const ERROR   = 1;
     private const WARNING = 2;
