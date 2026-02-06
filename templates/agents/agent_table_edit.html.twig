@@ -160,14 +160,14 @@
   <tr>
     <td>Date d'arrivée</td>
     <td>
-      <input type="text" value="{{ arrival }}" name="arrivee" style="width:400px" class="datepicker"/>
+      <input type="text" value="{{ agent.arrival | dateOrNull('d/m/Y') }}" name="arrivee" style="width:400px" class="datepicker"/>
     </td>
   </tr>
 
   <tr>
     <td>Date de départ</td>
     <td>
-      <input type="text" value="{{ departure }}" name="depart" style="width:400px" class="datepicker"/>
+      <input type="text" value="{{ agent.departure | dateOrNull('d/m/Y') }}" name="depart" style="width:400px" class="datepicker"/>
     </td>
   </tr>
 

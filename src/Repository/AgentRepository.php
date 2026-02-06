@@ -602,21 +602,21 @@ class AgentRepository extends EntityRepository
     {
         if (!$userId) {
             return [
-                "annuel" => 0,
-                "anticipation" => 0,
-                "credit" => 0,
-                "recup" => 0,
-                "reliquat" => 0,
-                "annuelHeures" => 0,
-                "anticipationHeures" => 0,
-                "creditHeures" => 0,
-                "recupHeures" => 0,
-                "reliquatHeures" => 0,
-                "annuelMinutes" => 0,
-                "anticipationMinutes" => 0,
-                "creditMinutes" => 0,
-                "recupMinutes" => 0,
-                "reliquatMinutes" => 0,
+                'annuel' => 0,
+                'anticipation' => 0,
+                'credit' => 0,
+                'recup' => 0,
+                'reliquat' => 0,
+                'annuelHeures' => 0,
+                'anticipationHeures' => 0,
+                'creditHeures' => 0,
+                'recupHeures' => 0,
+                'reliquatHeures' => 0,
+                'annuelMinutes' => 0,
+                'anticipationMinutes' => 0,
+                'creditMinutes' => 0,
+                'recupMinutes' => 0,
+                'reliquatMinutes' => 0,
             ];
         }
 
@@ -635,21 +635,21 @@ class AgentRepository extends EntityRepository
         $reliquat     = HourHelper::decimalToHoursMinutes($decimal_reliquat);
         
         return [
-            "annuel"              => $decimal_annuel,
-            "annuelHeures"        => $annuel['hours'],
-            "annuelMinutes"       => $annuel['minutes'],
-            "anticipation"        => $decimal_anticipation,
-            "anticipationHeures"  => $anticipation['hours'],
-            "anticipationMinutes" => $anticipation['minutes'],
-            "credit"              => $decimal_credit,
-            "creditHeures"        => $credit['hours'],
-            "creditMinutes"       => $credit['minutes'],
-            "recup"               => $decimal_comp_time,
-            "recupHeures"         => $comp_time['hours'],
-            "recupMinutes"        => $comp_time['minutes'],
-            "reliquat"            => $decimal_reliquat,
-            "reliquatHeures"      => $reliquat['hours'],
-            "reliquatMinutes"     => $reliquat['minutes']
+            'annuel'              => $decimal_annuel,
+            'annuelHeures'        => $annuel['hours'],
+            'annuelMinutes'       => $annuel['minutes'],
+            'anticipation'        => $decimal_anticipation,
+            'anticipationHeures'  => $anticipation['hours'],
+            'anticipationMinutes' => $anticipation['minutes'],
+            'credit'              => $decimal_credit,
+            'creditHeures'        => $credit['hours'],
+            'creditMinutes'       => $credit['minutes'],
+            'recup'               => $decimal_comp_time,
+            'recupHeures'         => $comp_time['hours'],
+            'recupMinutes'        => $comp_time['minutes'],
+            'reliquat'            => $decimal_reliquat,
+            'reliquatHeures'      => $reliquat['hours'],
+            'reliquatMinutes'     => $reliquat['minutes']
         ];
     }
 

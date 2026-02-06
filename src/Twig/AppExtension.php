@@ -25,11 +25,14 @@ class AppExtension extends AbstractExtension
         return [
             new TwigFilter('datefull', [$this, 'dateFull'], ['is_safe' => ['html']]),
             new TwigFilter('datefr', [$this, 'dateFr']),
+            new TwigFilter('dateOrNull', [$this, 'dateOrNull']),
+            new TwigFilter('dateOrTime', [$this, 'dateOrTime']),
             new TwigFilter('digit', [$this, 'digit']),
             new TwigFilter('hours', [$this, 'hours']),
             new TwigFilter('hour_from_his', [$this, 'hourFromHis']),
             new TwigFilter('hoursToDays', [$this, 'hoursToDays']),
             new TwigFilter('raw_black_listed', [$this, 'htmlFilter'], ['is_safe' => ['html']]),
+            new TwigFilter('sites', [$this, 'sites']),
         ];
     }
 
@@ -55,6 +58,31 @@ class AppExtension extends AbstractExtension
     public function dateFr($date): ?string
     {
         return dateFr($date, true);
+    }
+
+    public function dateOrNull($date, $format): ?string
+    {
+        if (empty($date)) {
+            return null;
+        }
+
+        return $date->format($format);
+    }
+
+    public function dateOrTime($date, $format): ?string
+    {
+        if (empty($date)) {
+            return null;
+        }
+
+        $now = new \DateTime();
+        $today = \DateTime::createFromFormat('Y-m-d H:i:s', $now->format('Y-m-d 00:00:00'));
+
+        if ($date >= $today) {
+            $format = substr($format, strpos($format, ' '));
+        }
+
+        return $date->format($format);
     }
 
     public function digit($number, $digits): string
@@ -208,6 +236,22 @@ class AppExtension extends AbstractExtension
 
     public function colspan($start, $end) {
         return nb30($start, $end);
+    }
+
+    public function sites($sites): string
+    {
+        if (!is_array($sites)) {
+            return '';
+        }
+
+        $config = $GLOBALS['config'];
+
+        $displayedSites = [];
+        foreach ($sites as $site) {
+            $displayedSites[] = $config['Multisites-site' . $site];
+        }
+
+        return implode(', ', $displayedSites);
     }
 
 }

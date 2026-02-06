@@ -81,12 +81,12 @@
 
   <tr>
     <td>Date d'arrivée</td>
-    <td>{{ arrival }}</td>
+    <td>{{ agent.arrival | dateOrNull('d/m/Y') }}</td>
   </tr>
 
   <tr>
     <td>Date de départ</td>
-    <td>{{ departure }}</td>
+    <td>{{ agent.departure | dateOrNull('d/m/Y') }}</td>
   </tr>
 
   {% if not config('Planook') %}

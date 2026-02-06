@@ -4,7 +4,7 @@
 
 {% block page %}
   <form name='form2' action='{{ asset("agent") }}' method='get'>
-    <input type = 'hidden' value='{{ actif }}' />
+    <input type = 'hidden' value='{{ active }}' />
     <table style='margin-bottom:10px;'>
       <tr style='vertical-align:center;'>
         <td style='width:270px;'>
@@ -13,10 +13,10 @@
         <td>Voir les agents</td>
         <td style='width:150px;'>
           <select name="actif" id="showAgentSelect" onchange="document.form2.submit();"  class="ui-widget-content ui-corner-all">
-            <option value='Actif'{% if actif == 'Actif' %} selected='selected' {% endif %}>Service public</option>
-            <option value='Inactif' {% if actif == 'Inactif' %} selected='selected' {% endif %}>Administratif</option>
+            <option value='Actif'{% if active == 'Actif' %} selected='selected' {% endif %}>Service public</option>
+            <option value='Inactif' {% if active == 'Inactif' %} selected='selected' {% endif %}>Administratif</option>
             {% if rights21 %}
-              <option value='Supprimé' {% if actif == 'Supprimé' %} selected='selected' {% endif %}>Supprimé</option>
+              <option value='Supprimé' {% if active == 'Supprimé' %} selected='selected' {% endif %}>Supprimé</option>
             {% endif %}
           </select>
         </td>
@@ -52,7 +52,7 @@
           <th>Statut</th>
           <th>Service</th>
         {% endif %}
-        {% if nbSites > 1 %}
+        {% if config('Multisites-nombre') > 1 %}
           <th>Sites</th>
         {% endif %}
         <th class='dataTableDateFR'>Arrivée</th>
@@ -70,26 +70,26 @@
               <a href="{{ asset ('agent/')}}{{ a.id }}">
                 <span class='pl-icon pl-icon-edit' title='Modifier'></span>
               </a>
-              {% if rights21 and a.id != login_id and a.id > 1 %}
+              {% if rights21 and a.id != loginId and a.id > 1 %}
                 <a href='#' >
-                  <span class='pl-icon pl-icon-dropblack delete-agent' title='Supprimer' data-id="{{ a.id }}" data-name="{{ a.surname }} {{ a.name }}"></span>
+                  <span class='pl-icon pl-icon-dropblack delete-agent' title='Supprimer' data-id="{{ a.id }}" data-name="{{ a.firstname }} {{ a.lastname }}"></span>
                 </a>
               {% endif %}
             </div>
           </td>
-          <td>{{ a.name | raw }}</td>
-          <td>{{ a.surname | raw}} </td>
-          <td>{{ a.hours }}</td>
+          <td>{{ a.lastname | raw }}</td>
+          <td>{{ a.firstname | raw}} </td>
+          <td>{{ a.weeklyServiceHours }}</td>
           {% if not config('Planook') %}
             <td>{{ a.status | raw }}</td>
             <td>{{ a.service | raw }}</td>
           {% endif %}
-          {% if nbSites > 1 %}
-            <td>{{ a.sites | raw }}</td>
+          {% if config('Multisites-nombre') > 1 %}
+            <td>{{ a.sites | sites }}</td>
           {% endif %}
-          <td>{{ a.arrival }}</td>
-          <td>{{ a.departure }}</td>
-          <td>{{ a.last_login }}</td>
+          <td>{{ a.arrival | dateOrNull('d/m/Y') }}</td>
+          <td>{{ a.departure | dateOrNull('d/m/Y') }}</td>
+          <td>{{ a.lastLogin | dateOrTime('d/m/Y H:i') }}</td>
         </tr>
       {% endfor %}
     </tbody>
@@ -242,7 +242,7 @@
     </form>
   </div>
 
-  {% if actif != 'Supprimé' %}
+  {% if active != 'Supprimé' %}
     <div id="deleteStep2Dialog" style="display: none;">
       <h3>Suppression</h3>
       <form id="deleteStep2Form">

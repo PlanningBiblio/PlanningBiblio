@@ -3,23 +3,24 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Entity\SaturdayWorkingHours;
-use App\Planno\Event\OnTransformLeaveDays;
-use App\Planno\Event\OnTransformLeaveHours;
-use App\Planno\Helper\HolidayHelper;
-use App\Planno\Helper\HourHelper;
-use App\Planno\Ldif2Array;
 
-use App\Entity\Agent;
 use App\Entity\Access;
+use App\Entity\Agent;
 use App\Entity\Holiday;
 use App\Entity\Manager;
 use App\Entity\PlanningPosition;
+use App\Entity\SaturdayWorkingHours;
 use App\Entity\SelectCategories;
 use App\Entity\SelectStatuts;
 use App\Entity\SelectServices;
 use App\Entity\Skill;
 use App\Entity\WorkingHour;
+
+use App\Planno\Event\OnTransformLeaveDays;
+use App\Planno\Event\OnTransformLeaveHours;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
+use App\Planno\Ldif2Array;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -36,79 +37,28 @@ class AgentController extends BaseController
 {
 
     #[Route(path: '/agent', name: 'agent.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request, Session $session)
     {
-        $session = $request->getSession();
-
-        $actif = $request->get('actif');
+        $active = $request->get('actif');
         $lang = $GLOBALS['lang'];
         $droits = $GLOBALS['droits'];
-        $login_id = $session->get('loginId');
 
         $ldapBouton = ($this->config('LDAP-Host') and $this->config('LDAP-Suffix'));
         $ldifBouton = ($this->config('LDIF-File'));
 
-        if (!$actif) {
-            $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
-        }
-
-        $_SESSION['perso_actif'] = $actif;
-
-        //        Suppression des agents dont la date de départ est passée        //
-        $tab = array(0);
+        $active = $active ? $active : $session->get('AgentActive', 'Actif');
+        $session->set('AgentActive', $active);
 
         // Mark agents as deleted when their depart date is past today
         $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();
-        $agentsTab = $this->entityManager->getRepository(Agent::class)->get('nom,prenom', $actif, null);
 
-        $nbSites = $this->config('Multisites-nombre');
-        $agents = array();
-        foreach ($agentsTab as $agent) {
-            $elem = [];
-            $id = $agent->getId();
-            $arrivee = $agent->getArrival() ? $agent->getArrival()->format('d/m/Y') : '';
-            $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';
-            $last_login = $agent->getLastLogin() ? $agent->getLastLogin()->format('d/m/Y H:i') : '';
-            $heures = heure4($agent->getWeeklyServiceHours());
-            if (is_numeric($heures)) {
-                $heures.= "h00";
-            }
-            // TODO: Check if it's still necessary
-            $service = str_replace("`", "'", $agent->getService());
-
-            $sites = $agent->getSites();
-            if ($nbSites > 1) {
-                $tmp = array();
-                foreach ($sites as $site) {
-                    if ($site) {
-                        $tmp[] = $this->config("Multisites-site{$site}");
-                    }
-                }
-                $sites = !empty($tmp)?implode(", ", $tmp):null;
-            }
-
-            $elem = array(
-                'id' => $id,
-                'name' => $agent->getLastname(),
-                'surname' => $agent->getFirstname(),
-                'departure' => $depart,
-                'arrival' => $arrivee,
-                'status' => $agent->getStatus(),
-                'service' => $service,
-                'hours' => $heures,
-                'last_login' => $last_login,
-                'sites' => $sites,
-            );
-            $agents[]= $elem;
-        }
-
+        // List of activities, contracts, services and status for bulk modification
+        $activites = $this->entityManager->getRepository(Skill::class)->findAll();
+        $contrats = ['Titulaire', 'Contractuel'];
+        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
         $statuts = $this->entityManager->getRepository(SelectStatuts::class)->findAll();
 
-        $contrats = array("Titulaire","Contractuel");
-
-        // Liste des services
-        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
-
+        // Hours for bulk modification
         $hours = array();
         for ($i = 1 ; $i < 40; $i++) {
             if ($this->config('Granularite') == 5) {
@@ -137,32 +87,31 @@ class AgentController extends BaseController
             }
         }
 
-        // Toutes les activités
-        $activites = $this->entityManager->getRepository(Skill::class)->findAll();
-
+        // Skills for bulk modification
         $postes_completNoms = array();
         foreach ($activites as $elem) {
             $postes_completNoms[] = array($elem->getName(), $elem->getId());
         }
         $postes_completNoms_json = json_encode($postes_completNoms);
 
-        $this->templateParams(array(
-            "agents"                 => $agents,
-            "actif"                  => $actif,
-            "contracts"              => $contrats,
-            "hours"                  => $hours,
-            "lang"                   => $lang,
-            "ldapBouton"             => $ldapBouton,
-            "ldifBouton"             => $ldifBouton,
-            "login_id"               => $login_id,
-            "nbSites"                => $nbSites,
-            "positionsCompleteNames" => $postes_completNoms_json,
-            "rights21"               => in_array(21, $droits),
-            "services"               => $services,
-            "skills"                 => $activites,
-            "status"                 => $statuts
+        $agents = $this->entityManager->getRepository(Agent::class)->get('nom', $active);
 
+        $this->templateParams(array(
+            'agents'                 => $agents,
+            'active'                 => $active,
+            'contracts'              => $contrats,
+            'hours'                  => $hours,
+            'lang'                   => $lang,
+            'ldapBouton'             => $ldapBouton,
+            'ldifBouton'             => $ldifBouton,
+            'loginId'                => $session->get('loginId'),
+            'positionsCompleteNames' => $postes_completNoms_json,
+            'rights21'               => in_array(21, $droits),
+            'services'               => $services,
+            'skills'                 => $activites,
+            'status'                 => $statuts
         ));
+
         return $this->output('/agents/index.html.twig');
     }
 
@@ -186,12 +135,11 @@ class AgentController extends BaseController
 
     #[Route(path: '/agent/add', name: 'agent.add', methods: ['GET'])]
     #[Route(path: '/agent/{id<\d+>}', name: 'agent.edit', methods: ['GET'])]
-    public function edit(Request $request)
+    public function edit(Request $request, Session $session)
     {
         $id = $request->get('id');
 
         $agent = $id ? $this->entityManager->getRepository(Agent::class)->find($id) : new Agent();
-        // TODO : use $agent for edit and add. Default values will be set by App\Entity\Agent, therefore, we won't need to initialize them with "if ($id)" / "else" on line 296+
 
         $CSRFSession = $GLOBALS['CSRFSession'];
         $lang = $GLOBALS['lang'];
@@ -201,10 +149,10 @@ class AgentController extends BaseController
 
         $actif = null;
         $droits = $GLOBALS['droits'];
-        $admin = in_array(21, $droits);
 
         // Find access filtered by group id ("groupe_id" value doesn't equal 99 or 100).
         $accessGroups = $this->entityManager->getRepository(Access::class)->getAccessGroups();
+
         // Tous les droits d'accés
         $groupes = array();
         foreach ($accessGroups as $elem) {
@@ -244,13 +192,15 @@ class AgentController extends BaseController
 
         $statuts = $this->entityManager->getRepository(SelectStatuts::class)->findAll();
         $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
-        $statuts_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctStatuts();// Find the list of distinct agent statuses.
+        // Find the list of distinct agent statuses.
+        $statuts_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctStatuts();
 
         // Liste des services
         $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
 
         // Liste des services utilisés
-        $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();// Find the list of distinct agent services.
+        // Find the list of distinct agent services.
+        $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();
 
         $acces = $agent->getACL();
         $postes_attribues = array();
@@ -258,8 +208,6 @@ class AgentController extends BaseController
         // récupération des infos de l'agent en cas de modif
         $ics = null;
 
-        $arrivee = $agent->getArrival() ? $agent->getArrival()->format('d/m/Y') : '';
-        $depart = $agent->getDeparture() ? $agent->getDeparture()->format('d/m/Y') : '';
         $managersMails = $agent->getManagersMails() ? explode(';', html_entity_decode($agent->getManagersMails(), ENT_QUOTES|ENT_IGNORE, "UTF-8")) : [];
         // $managersMails : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($managersMails=implode("; ",$managersMails);)
         $sites = $agent->getSites();
@@ -289,7 +237,7 @@ class AgentController extends BaseController
                 sort($postes_attribues);
             }
             $action = 'update';
-            $titre = $agent->getLastname().' '.$agent->getFirstname();
+            $titre = $agent->getLastname() . ' ' . $agent->getFirstname();
 
             // URL ICS
             if ($this->config('ICS-Export')) {
@@ -299,12 +247,13 @@ class AgentController extends BaseController
             $id = null;
             $titre = "Ajout d'un agent";
             $action = 'add';
-            if (!empty($_SESSION['perso_actif']) and $_SESSION['perso_actif'] != 'Supprim&eacute;') {
-                $actif = $_SESSION['perso_actif'];
-            }// vérifie dans quel tableau on se trouve pour la valeur par défaut
+
+            // vérifie dans quel tableau on se trouve pour la valeur par défaut
+            if (!empty($session->get('AgentActive')) and $session->get('AgentActive') != 'Supprimé') {
+                $actif = $session->get('AgentActive');
+            }
         }
 
-        $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
         $contrats = array("Titulaire","Contractuel");
 
         //        --------------        Début listes des activités        ---------------------//
@@ -347,8 +296,6 @@ class AgentController extends BaseController
 
         $this->templateParams(array(
             'agent'            => $agent,
-            'arrival'          => $arrivee,
-            'departure'        => $depart,
             'demo'              => empty($this->config('demo')) ? 0 : 1,
             'can_manage_agent'  => in_array(21, $droits) ? 1 : 0,
             'titre'             => $titre,
@@ -1506,6 +1453,8 @@ class AgentController extends BaseController
     #[Route(path: '/agent', name: 'agent.delete', methods: ['DELETE'])]
     public function deleteAgent(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
+        // TODO: Add CSRF Protection
+
         // Initialisation des variables
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');
@@ -1536,12 +1485,11 @@ class AgentController extends BaseController
 
         // If the date parameter is not given : deletion level 2
         } else {
-            $agentDelete = $this->entityManager->getRepository(Manager::class)->find($id);
-            $this->entityManager->remove($agentDelete);
-
-            $this->entityManager->flush();
-
-            return $this->json("permanent delete OK");
+            $p = new \personnel();
+            $p->CSRFToken = $CSRFToken;
+            $p->delete($id);
+    
+            return $this->json('permanent delete OK');
         }
     }
 
@@ -1571,7 +1519,7 @@ class AgentController extends BaseController
             }
         }
 
-        if (str_starts_with($session->get('perso_actif'), 'Supprim')) {
+        if ($session->get('AgentActive') == 'Supprimé') {
             $this->entityManager->getRepository(Agent::class)->delete($tab);
         } else {
             // TODO : demander la date de suppression en popup
