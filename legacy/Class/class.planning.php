@@ -59,9 +59,24 @@ class planning
         // Sélection de l'heure de fin
         $fin = $conn->fetchOne('SELECT MAX(fin) FROM pl_poste_horaires WHERE numero = ?', [$tableau]);
 
-        // Sélection des agents en fin de service
+        // Sélection des agents en fin de service, en excluant les agents absents ou en congés
         $perso_ids = $conn->fetchFirstColumn(
-            'SELECT perso_id FROM pl_poste WHERE fin = ? AND site = ? AND date = ? AND supprime = ? AND absent = ?',
+            <<<'SQL'
+            SELECT perso_id FROM pl_poste
+            WHERE fin = ? AND site = ? AND date = ? AND supprime = ? AND absent = ?
+              AND NOT EXISTS (
+                SELECT * FROM absences
+                WHERE absences.perso_id = pl_poste.perso_id
+                  AND absences.valide = 1
+                  AND pl_poste.fin BETWEEN absences.debut AND absences.fin
+              )
+              AND NOT EXISTS (
+                SELECT * FROM conges
+                WHERE conges.perso_id = pl_poste.perso_id
+                  AND conges.valide = 1
+                  AND pl_poste.fin BETWEEN conges.debut AND conges.fin
+              )
+            SQL,
             [$fin, $site, $date, '0', '0']
         );
         if (empty($perso_ids)) {
