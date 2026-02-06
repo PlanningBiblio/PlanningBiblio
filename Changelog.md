@@ -1,5 +1,6 @@
 # Changelog Planno
 
+## Version 26.02.00 (2026-02-06)
 ## Version 25.11.15 (2026-02-06)
 
 ### Enhancement
