@@ -38,7 +38,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: sleep 1
+      - run: sleep 2
       - run: zcat data/planno_25.05.xx.sql.gz | mysql --host=127.0.0.1 --port=3306 -u plb --password=plb planningb
       - run: cp .circleci/.env.test.local .env.test.local
       - run: cp .circleci/.env.local .env.local
