@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\PlanningPositionHoursRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PlanningPositionHoursRepository::class)]
 #[ORM\Table(name: 'pl_poste_horaires')]
 class PlanningPositionHours
 {
@@ -29,5 +30,10 @@ class PlanningPositionHours
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEnd(): ?\DateTime
+    {
+        return $this->fin;
     }
 }
