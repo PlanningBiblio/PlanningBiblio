@@ -49,7 +49,7 @@ class AgentControllerTest extends PLBWebTestCase
                 'service' => 'zedcscq',
                 'arrivee' => $start,
                 'depart' => $end,
-                'postes' => '',
+                'postes' => '[]',
                 'action' => 'add',
                 'actif' => 1,
                 'commentaires' => '',

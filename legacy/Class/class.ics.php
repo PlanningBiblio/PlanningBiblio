@@ -268,6 +268,14 @@ class CJICS
         // Récupération de l'email de l'agent
         $p = new personnel();
         $p->fetchById($perso_id);
+
+        if (empty($p->elements[0])) {
+            if ($this->logs) {
+                logs("Agent #$perso_id : L'agent #$perso_id n'a pas été trouvé", "ICS", $CSRFToken);
+            }
+
+            return;
+        }
         $email = $p->elements[0]['mail'];
 
         // Ne garde que les événements confirmés et occupés et rempli le tableau $iCalKeys

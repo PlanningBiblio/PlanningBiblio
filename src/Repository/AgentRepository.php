@@ -560,22 +560,6 @@ class AgentRepository extends EntityRepository
     }
 
     /**
-     * Find the maximum agent ID.
-     *
-     * This method returns the highest identifier value
-     * from the personnel records.
-     *
-     * @return int|null Maximum agent ID
-     */
-    public function findMaxId(): ?int
-    {
-        return $this->createQueryBuilder('p')
-            ->select('MAX(p.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    /**
      * getExportIcsURL
      * Retourne l'URL ICS de l'agent.
      * @param int $id : id de l'agent

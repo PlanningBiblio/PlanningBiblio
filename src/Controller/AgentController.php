@@ -667,8 +667,6 @@ class AgentController extends BaseController
 
         switch ($action) {
           case 'add':
-            $id = $this->entityManager->getRepository(Agent::class)->findMaxId() + 1;// Find the maximum agent ID.
-
             $login = $this->login($prenom, $nom, $mail);
 
             // Demo mode
@@ -705,6 +703,9 @@ class AgentController extends BaseController
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
             if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
+                $this->entityManager->persist($agent);
+                $this->entityManager->flush();
+                $id = $agent->getId();
                 $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
                 $repo->update($eDTSamedi, $firstMonday, $lastMonday, $id);
             }
@@ -763,10 +764,12 @@ class AgentController extends BaseController
             }
 
             // Mise à jour de la table pl_poste en cas de modification de la date de départ
-            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserId($id);// Updates the deletion flag for a given user.
+            // Updates the deletion flag for a given user.
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserId($id);
             if ($depart != "0000-00-00" and $depart != "") {
                 // Si une date de départ est précisée, on met supprime=1 au dela de cette date
-                $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($id, $depart->format('Y-m-d'));// Updates users as deleted for a given user and after a given date.
+                // Updates users as deleted for a given user and after a given date.
+                $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($id, $depart->format('Y-m-d'));
             }
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
             if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
@@ -1053,7 +1056,8 @@ class AgentController extends BaseController
 
             // Search existing agents.
             $agents_existants = array();
-            $login = $this->entityManager->getRepository(Agent::class)->findAllLoginsNotDeleted();// Finds all agent logins that are not deleted.
+            // Finds all agent logins that are not deleted.
+            $login = $this->entityManager->getRepository(Agent::class)->findAllLoginsNotDeleted();
             foreach ($login as $elem) {
                 $agents_existants[] = $elem['login'];
             }
@@ -1120,7 +1124,7 @@ class AgentController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
         $actif = 'Actif';
         $date = new \DateTime();
-        $commentaires = "Importation LDAP " . $date->format('Y-m-d');
+        $commentaires = 'Importation LDAP ' . $date->format('Y-m-d H:i:s');
         $droits =array(99, 100);
         $password = "password_bidon_pas_importé_depuis_ldap";
         $postes = [];
@@ -1191,19 +1195,19 @@ class AgentController extends BaseController
                             : strval($infos[0][$this->config('LDAP-Matricule')]);
                     }
 
-                    $agentInsert = new Agent();
-                    $agentInsert->setLogin($login);
-                    $agentInsert->setLastname($nom);
-                    $agentInsert->setFirstname($prenom);
-                    $agentInsert->setMail($mail);
-                    $agentInsert->setEmployeeNumber($matricule);
-                    $agentInsert->setPassword($password);
-                    $agentInsert->setACL($droits);
-                    $agentInsert->setArrival($date);
-                    $agentInsert->setSkills($postes);
-                    $agentInsert->setActive($actif);
-                    $agentInsert->setInformation($commentaires);
-                    $this->entityManager->persist($agentInsert);
+                    $agent = new Agent();
+                    $agent->setLogin($login);
+                    $agent->setLastname($nom);
+                    $agent->setFirstname($prenom);
+                    $agent->setMail($mail);
+                    $agent->setEmployeeNumber($matricule);
+                    $agent->setPassword($password);
+                    $agent->setACL($droits);
+                    $agent->setArrival($date);
+                    $agent->setSkills($postes);
+                    $agent->setActive($actif);
+                    $agent->setInformation($commentaires);
+                    $this->entityManager->persist($agent);
                 }
             }
 
@@ -1285,19 +1289,19 @@ class AgentController extends BaseController
         $results = $this->ldif_search($uids);
 
         foreach ($results as $elem) {
-            $agentInsert = new Agent();
-            $agentInsert->setLogin($elem['login']);
-            $agentInsert->setLastname($elem['sn']);
-            $agentInsert->setFirstname($elem['givenname']);
-            $agentInsert->setMail($elem['mail']);
-            $agentInsert->setEmployeeNumber($elem['matricule']);
-            $agentInsert->setPassword('LDIF import, the password is not stored');
-            $agentInsert->setACL([99,100]);
-            $agentInsert->setArrival(new \DateTime());
-            $agentInsert->setSkills([]);
-            $agentInsert->setActive('Actif');
-            $agentInsert->setInformation('Importation LDIF ' . date('Y-m-d H:i:s'));
-            $this->entityManager->persist($agentInsert);
+            $agent = new Agent();
+            $agent->setLogin($elem['login']);
+            $agent->setLastname($elem['sn']);
+            $agent->setFirstname($elem['givenname']);
+            $agent->setMail($elem['mail']);
+            $agent->setEmployeeNumber($elem['matricule']);
+            $agent->setPassword('LDIF import, the password is not stored');
+            $agent->setACL([99,100]);
+            $agent->setArrival(new \DateTime());
+            $agent->setSkills([]);
+            $agent->setActive('Actif');
+            $agent->setInformation('Importation LDIF ' . date('Y-m-d H:i:s'));
+            $this->entityManager->persist($agent);
         }
 
         $this->entityManager->flush();
@@ -1424,18 +1428,20 @@ class AgentController extends BaseController
         } elseif ($date !== null) {
             $date = dateSQL($date);
             // Mise à jour de la table personnel
-            $agentUpdate = $this->entityManager->getRepository(Agent::class)->find($id);
-            $agentUpdate->setDeletion(1);
-            $agentUpdate->setActive("Supprimé");
-            $agentUpdate->setDeparture(new \DateTime($date));
+            $agent = $this->entityManager->getRepository(Agent::class)->find($id);
+            $agent->setDeletion(1);
+            $agent->setActive("Supprimé");
+            $agent->setDeparture(new \DateTime($date));
 
             $this->entityManager->flush();
 
             // Mise à jour de la table pl_poste
-            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserIdAndThatDate($id, $date);// Updates the deletion flag for a user on a given date.
+            // Updates the deletion flag for a user on a given date.
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserIdAndThatDate($id, $date);
 
             // Mise à jour de la table responsables
-            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($id);// Deletes manager links by agent or responsible IDs.
+            // Deletes manager links by agent or responsible IDs.
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($id);
 
             return $this->json("level 1 delete OK");
 
@@ -1483,13 +1489,16 @@ class AgentController extends BaseController
             $date = date('Y-m-d');
 
             // Mise à jour de la table personnel
-            $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($tab);// Marks the given agents as deleted and sets their departure date to today.
+            // Marks the given agents as deleted and sets their departure date to today.
+            $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($tab);
 
             // Mise à jour de la table pl_poste
-            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($tab, $date);// Updates users as deleted for a given user and after a given date.
+            // Updates users as deleted for a given user and after a given date.
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($tab, $date);
 
             // Mise à jour de la table responsables
-            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($tab);// Deletes manager links by agent or responsible IDs.
+            // Deletes manager links by agent or responsible IDs.
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($tab);
         }
 
         $return = ["ok"];
@@ -1641,15 +1650,16 @@ class AgentController extends BaseController
     #[Route(path: '/agent/update-list', name: 'agent.update_list', methods: ['GET'])]
     public function updateAgentList(Request $request): \Symfony\Component\HttpFoundation\Response
     {
-        if ($request->get('deleted')=="yes") {
+        if ($request->get('deleted') == 'yes') {
             $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);
         } else {
             $agents = $this->entityManager->getRepository(Agent::class)->get();
         }
 
-        $tab=array();
+        // TODO: voir si nous pouvons retourner directement $agents (ou json_encode($agents))
+        $tab =[];
         foreach ($agents as $agent) {
-            $tab[]=array("id"=>$agent->getId(),"nom"=>$agent->getNom(),"prenom"=>$agent->getPrenom());
+            $tab[] = ['id' => $agent->getId(), 'nom' => $agent->getNom(), 'prenom' => $agent->getPrenom()];
         }
 
         return new Response(json_encode($tab));
