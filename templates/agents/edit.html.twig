@@ -62,7 +62,13 @@
       });
     });
   </script>
-  <h3>{{ title }}</h3>
+  <h3>
+    {% if id %}
+      {{ agent.lastname }} {{ agent.firstname }}
+    {% else %}
+      Ajout d'un agent
+    {% endif %}
+  </h3>
 
   <div class='ui-tabs'>
     <ul>
@@ -78,7 +84,7 @@
         <li id="admin"><a href='#agendas'>Agendas et Synchronisation</a></li>
       {% endif %}
 
-      {% if conges_enabled %}
+      {% if config('Conges-Enable') %}
         <li id="admin"><a href='#conges'>Congés</a></li>
       {% endif %}
 
@@ -122,7 +128,7 @@
 
       <div id='agendas' style='margin-left:70px;display:none;padding-top:30px;'>
         <table style='width:90%;'>
-          {% if Hamac_csv %}
+          {% if config('Hamac-csv') %}
             <tr>
               <td style='width:400px'>Synchronisation {{ hamac_pattern }} :</td>
               <td>
@@ -143,7 +149,7 @@
             </tr>
           {% endif %}
 
-          {% if ICS_Server1 %}
+          {% if config('ICS-Server1') %}
             <tr>
               <td style='width:400px'>Synchronisation de l'agenda ICS {{ ics_pattern }} :</td>
               <td>
@@ -164,7 +170,7 @@
             </tr>
           {% endif %}
 
-          {% if ICS_Server2 %}
+          {% if config('ICS-Server2') %}
             <tr>
               <td style='width:400px'>Synchronisation de l'agenda ICS {{ ics_pattern2 }} :</td>
               <td>
@@ -185,7 +191,7 @@
             </tr>
           {% endif %}
 
-          {% if ICS_Server3 %}
+          {% if config('ICS-Server3') %}
             <tr>
               <td style='width:400px'>Synchronisation de l'agenda ICS {{ ics_pattern3 }} :</td>
               <td>
@@ -208,18 +214,18 @@
             </tr>
           {% endif %}
 
-          {% if id and ics %}
+          {% if id and exportIcsUrl %}
             <tr>
               <td style='padding-top: 20px;'>Agenda Planno des plages de service public</td>
-              <td style='padding-top: 20px;' id='urlIcs'><a href="{{ config('URL') }}{{ ics | raw }}">{{ config('URL') }}{{ ics | raw }}</a></td>
+              <td style='padding-top: 20px;' id='urlIcs'><a href="{{ config('URL') }}{{ exportIcsUrl }}">{{ config('URL') }}{{ exportIcsUrl }}</a></td>
             </tr>
 
             <tr>
               <td>Agenda Planno des plages de service public et des absences</td>
-              <td id='urlIcsWithAbsences'><a href="{{ config('URL') }}{{ ics | raw }}&absences=1">{{ config('URL') }}{{ ics | raw }}&absences=1</a></td>
+              <td id='urlIcsWithAbsences'><a href="{{ config('URL') }}{{ exportIcsUrl }}&absences=1">{{ config('URL') }}{{ exportIcsUrl }}&absences=1</a></td>
             </tr>
 
-            {% if ICS_Code %}
+            {% if config('ICS-Code') %}
               <tr>
                 <td style='padding-top:20px;'>&nbsp;</td>
                 <td style='padding-top:20px;'>
@@ -239,7 +245,7 @@
               </tr>
           {% endif %}
 
-          {% if MSGraphConfig %}
+          {% if config('MSGraph-ClientID') %}
             <tr>
               <td style="width:400px;">
                 <label for="MSGraph">Synchronisation de l'agenda Office 365 :</label>
@@ -267,8 +273,8 @@
         {% include 'agents/rights.html.twig' %}
       {% endif %}
 
-      {% if conges_enabled %}
-        {% if conges_mode == 'heures' %}
+      {% if config('Conges-Enable') %}
+        {% if config('Conges-Mode') == 'heures' %}
           {% include 'agents/holidays_hours.html.twig' %}
         {% else %}
           {% include 'agents/holidays.html.twig' %}

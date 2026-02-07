@@ -66,7 +66,7 @@
     </td>
   </tr>
 
-  {% if multi_site %}
+  {% if config('Multisites-nombre') > 1 %}
     <tr style='vertical-align:top;'>
       <td>Sites :</td>
       <td>
@@ -109,7 +109,7 @@
       <td>{{ informations_str }}</td>
     </tr>
 
-    {% if recup_agent > 1 %}
+    {% if config('Recup-Agent') > 1 %}
       <tr style='vertical-align:top;'>
         <td>Récupération :</td>
         <td>{{ recup_str }}</td>

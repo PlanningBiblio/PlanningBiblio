@@ -185,36 +185,24 @@ class AgentRepositoryTest extends PLBWebTestCase
         $url = $this->entityManager->getRepository(Agent::class)->getExportIcsURL($id);
 
         $this->assertEquals(
-            "/ical?id=$id&amp;code=existing_code_123",
+            "/ical?id=$id&code=existing_code_123",
             $url
         );
     }
 
-    public function testGetExportIcsURLGeneratesCodeIfMissing(): void
+    public function testNewAgentHasAnIcsCode(): void
     {
-        $this->setParam('ICS-Code', 1);
-
-        $leo = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Leo']);
-    
-        $leo->setICSCode(null);
-
+        $leo = new Agent();
+        $leo->setLogin(rand(100,999));
         $this->entityManager->persist($leo);
         $this->entityManager->flush();
 
         $id = $leo->getId();
-
         $url = $this->entityManager->getRepository(Agent::class)->getExportIcsURL($id);
+        $this->assertStringStartsWith("/ical?id=$id&code=", $url);
 
-        $this->assertStringStartsWith(
-            "/ical?id=$id&amp;code=",
-            $url
-        );
-
-        $this->entityManager->clear();
-        $updatedAgent = $this->entityManager->getRepository(Agent::class)->find($id);
-
-        $this->assertNotNull($updatedAgent->getICSCode());
-        $this->assertNotEmpty($updatedAgent->getICSCode());
+        $this->assertNotNull($leo->getICSCode());
+        $this->assertNotEmpty($leo->getICSCode());
     }
 
     public function testFindAllLoginsNotDeleted(): void

@@ -548,8 +548,9 @@ class Agent
     }
 
     public function __construct() {
-        $this->managers = new ArrayCollection();
+        $this->code_ics = md5(time().rand(100, 999));
         $this->managed = new ArrayCollection();
+        $this->managers = new ArrayCollection();
     }
 
     public function getManaged()

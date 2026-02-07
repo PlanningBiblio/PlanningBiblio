@@ -137,94 +137,31 @@ class AgentController extends BaseController
     #[Route(path: '/agent/{id<\d+>}', name: 'agent.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session)
     {
-        $id = $request->get('id');
-
-        $agent = $id ? $this->entityManager->getRepository(Agent::class)->find($id) : new Agent();
-
+        /**
+         * Global information
+         */
         $CSRFSession = $GLOBALS['CSRFSession'];
         $lang = $GLOBALS['lang'];
         $currentTab = '';
 
-        // The followings globals are used in legacy/Agent/hours_tables.php
-        global $temps;
-        global $breaktimes;
-
-        $actif = $agent->getActive();
         $droits = $GLOBALS['droits'];
 
-        // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé
-        // si PlanningHebdo est activé
+        // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
         if ($this->config('PlanningHebdo')) {
             $this->config('EDTSamedi', 0);
         }
+
+        // Contract and comp'time fields
+        $contrats = ['Titulaire', 'Contractuel'];
+        $recupAgents = ['Prime', 'Temps'];
 
         // Find access filtered by group id and dispatch groups by sites ("groupe_id" value doesn't equal 99 or 100).
         $accessAll = $this->entityManager->getRepository(Access::class)->getAccessGroups(
             $this->config['Multisites-nombre'],
         );
         extract($accessAll);
-        
-        $statuts = $this->entityManager->getRepository(SelectStatuts::class)->findAll();
-        $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
-        // Find the list of distinct agent statuses.
-        $statuts_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctStatuts();
 
-        // Liste des services
-        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
-
-        // Liste des services utilisés
-        // Find the list of distinct agent services.
-        $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();
-
-        $acces = $agent->getACL();
-        $recupAgents = ['Prime', 'Temps'];
-        // récupération des infos de l'agent en cas de modif
-        $ics = null;
-
-        $managersMails = $agent->getManagersMails() ? explode(';', $agent->getManagersMails()) : [];
-        $managersMails = array_map('trim', $managersMails);
-
-        $sites = $agent->getSites();
-        
-        if ($id) {
-            $breaktimes = array();
-            if ($this->config('PlanningHebdo')) {
-                $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get(date('Y-m-d'), date('Y-m-d'), true, $id);
-
-                $temps = $workingHours ? $workingHours[0]->getWorkingHours() : [];
-                $breaktimes = $workingHours ? $workingHours[0]->getBreaktime() : [];
-            } else {
-                $temps = $agent->getWorkingHours();
-            }
-
-            // Decimal breaktime to time (H:i).
-            foreach ($breaktimes as $index => $time) {
-                $breaktimes[$index] = $breaktimes[$index]
-                    ? gmdate('H:i', floor($breaktimes[$index] * 3600)) : '';
-            }
-
-            $action = 'update';
-            $title = $agent->getLastname() . ' ' . $agent->getFirstname();
-
-            // URL ICS
-            if ($this->config('ICS-Export')) {
-                $ics = $this->entityManager->getRepository(Agent::class)->getExportIcsURL($id);
-            }
-        } else {// pas d'id, donc ajout d'un agent
-            $id = null;
-            $title = "Ajout d'un agent";
-            $action = 'add';
-
-            // vérifie dans quel tableau on se trouve pour la valeur par défaut
-            if (!empty($session->get('AgentActive')) and $session->get('AgentActive') != 'Supprimé') {
-                $actif = $session->get('AgentActive');
-            }
-        }
-
-        $contrats = ['Titulaire', 'Contractuel'];
-
-        //        --------------        Début listes des activités        ---------------------//
-        // Toutes les activités
+        // Get all skills
         $skillsAll = [];
         $skillsAllWithName = [];
 
@@ -235,29 +172,77 @@ class AgentController extends BaseController
             $skillsAll[] = $elem->getId();
         }
 
-        // les activités attribuées et disponibles
+        // Get all categories, services and statuses
+        $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
+        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
+        $statuts = $this->entityManager->getRepository(SelectStatuts::class)->findAll();
+
+        // Find the lists of distinct agent services and statuses.
+        $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();
+        $statuts_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctStatuts();
+
+        /**
+         * Agent's information
+         */
+        // The followings globals are used in legacy/Agent/hours_tables.php
+        global $temps;
+        global $breaktimes;
+
+        $id = $request->get('id');
+        $agent = $id ? $this->entityManager->getRepository(Agent::class)->find($id) : new Agent();
+
+        $access = $agent->getACL();
+        $active = $agent->getActive();
+        $breaktimes = [];
+        $exportIcsUrl = null;
+        $managersMails = $agent->getManagersMails() ? explode(';', $agent->getManagersMails()) : [];
+        $managersMails = array_map('trim', $managersMails);
+        $sites = $agent->getSites();
+
+        // Skills assigned and available 
         $skillsAssigned = $agent->getSkills();
         $skillsAvailable = array_diff($skillsAll, $skillsAssigned);
 
         $skillsAssigned = $this->postesNoms($skillsAssigned, $skillsAllWithName);
         $skillsAvailable = $this->postesNoms($skillsAvailable, $skillsAllWithName);
 
-        $this->templateParams(array(
+        // Extra information available for existing agents
+        if ($id) {
+            $action = 'update';
+
+            // Working Hours
+            if ($this->config('PlanningHebdo')) {
+                $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get(date('Y-m-d'), date('Y-m-d'), true, $id);
+                $temps = $workingHours ? $workingHours[0]->getWorkingHours() : [];
+                $breaktimes = $workingHours ? $workingHours[0]->getBreaktime() : [];
+
+                // Decimal breaktime to time (H:i).
+                foreach ($breaktimes as &$time) {
+                    $time = $time ? HourHelper::decimalToHoursMinutes($time)['as_string'] : '';
+                }
+            } else {
+                $temps = $agent->getWorkingHours();
+            }
+
+            // URL ICS
+            if ($this->config('ICS-Export')) {
+                $exportIcsUrl = $this->entityManager->getRepository(Agent::class)->getExportIcsURL($id);
+            }
+        // Default information for new agents
+        } else {
+            $id = null;
+            $action = 'add';
+
+            // Set active value based on the displayed table (Service public vs Administratif)
+            if (!empty($session->get('AgentActive')) and $session->get('AgentActive') != 'Supprimé') {
+                $active = $session->get('AgentActive');
+            }
+        }
+
+        $this->templateParams([
             'agent'             => $agent,
             'can_manage_agent'  => in_array(21, $droits),
-            'title'             => $title,
-            'conges_enabled'    => $this->config('Conges-Enable'),
-            'conges_mode'       => $this->config('Conges-Mode'),
-            'multi_site'        => $this->config('Multisites-nombre') > 1 ? 1 : 0,
-            'nb_sites'          => $this->config('Multisites-nombre'),
-            'recup_agent'       => $this->config('Recup-Agent'),
-            'Hamac_csv'         => $this->config('Hamac-csv'),
-            'ICS_Server1'       => $this->config('ICS-Server1'),
-            'ICS_Server2'       => $this->config('ICS-Server2'),
-            'ICS_Server3'       => $this->config('ICS-Server3'),
-            'ICS_Code'          => $this->config('ICS-Code'),
-            'MSGraphConfig'     => !empty($this->config('MSGraph-ClientID')),
-            'ics'               => $ics,
+            'exportIcsUrl'      => $exportIcsUrl,
             'CSRFSession'       => $CSRFSession,
             'action'            => $action,
             'id'                => $id,
@@ -267,7 +252,7 @@ class AgentController extends BaseController
             'contrats'          => $contrats,
             'services'          => $services,
             'services_utilises' => $services_utilises,
-            'actif'             => $actif,
+            'actif'             => $active,
             'mailsResponsables' => $managersMails,
             'informations_str'  => str_replace("\n", "<br/>", strval($agent->getInformation())),
             'recup_str'         => str_replace("\n", "<br/>", strval($agent->getRecoveryMenu())),
@@ -275,7 +260,7 @@ class AgentController extends BaseController
             'postes_dispo'      => $skillsAvailable,
             'postes_attribues'  => $skillsAssigned,
             'postes_completNoms_json' => json_encode($skillsAllWithName),
-        ));
+        ]);
 
         $this->templateParams(array(
             'lang_send_ics_url_subject' => $lang['send_ics_url_subject'],
@@ -404,12 +389,11 @@ class AgentController extends BaseController
                 continue;
             }
 
-            if ( is_array($acces) ) {
-                $elem['checked'] = in_array($elem['groupe_id'], $acces);
-            }
+            $elem['checked'] = in_array($elem['groupe_id'], $access);
 
             $rights[ $elem['categorie'] ]['rights'][] = $elem;
         }
+
         $this->templateParams(array('rights' => $rights));
 
         // Affichage des droits d'accès dépendant des sites (si plusieurs sites)
@@ -443,10 +427,7 @@ class AgentController extends BaseController
                 for ($i = 1; $i < $this->config('Multisites-nombre') +1; $i++) {
                     $groupe_id = $elem['groupe_id'] - 1 + $i;
 
-                    $checked = false;
-                    if (is_array($acces)) {
-                        $checked = in_array($groupe_id, $acces);
-                    }
+                    $checked = in_array($groupe_id, $access);
 
                     $elem['sites'][] = array(
                         'groupe_id' => $groupe_id,
@@ -456,6 +437,7 @@ class AgentController extends BaseController
 
                 $rights_sites[ $elem['categorie'] ]['rights'][] = $elem;
             }
+
             $this->templateParams(array('rights_sites' => $rights_sites));
         }
 
@@ -1598,20 +1580,21 @@ class AgentController extends BaseController
     #[Route('/agent/ics/reset-url', name: 'agent.ics.reset_url', methods: ['POST'])]
     public function resetIcsUrl(Request $request): \Symfony\Component\HttpFoundation\Response
     {
-        $id = $request->get('id');
-        $CSRFToken = $request->get('CSRFToken');
+        // TODO: Add CSRF Protection
 
-        $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+        $id = $request->get('id');
+
+        $newCode = md5(time().rand(100, 999));
 
         $agent = $this->entityManager->getRepository(Agent::class)->find($id);
-        $agent->setICSCode(null);
+        $agent->setICSCode($newCode);
+
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
 
-        $url = $this->entityManager->getRepository(Agent::class)->getICSURL($id);
-        $url = html_entity_decode($url, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $url = $this->config['URL'] . '/ical?id=' . $id . '&code=' . $newCode;
 
-        return new Response(json_encode(array('url' => $this->config('URL') . $url)));
+        return new Response(json_encode(['url' => $url]));
     }
 
     /*

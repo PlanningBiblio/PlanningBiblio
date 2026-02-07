@@ -573,15 +573,7 @@ class AgentRepository extends EntityRepository
 
         if ($config->getValue()) {
             $agent = $this->find($id);
-            $code = $agent->getICSCode();
-            if (!$code) {
-                $code = md5(time().rand(100, 999));
-                $agent->setICSCode($code);
-                $entityManager->persist($agent);
-                $entityManager->flush();
-            }
-
-            $url .= "&amp;code=$code";
+            $url .= '&code=' . $agent->getICSCode();
         }
 
         return $url;

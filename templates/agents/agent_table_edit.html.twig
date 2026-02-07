@@ -142,7 +142,7 @@
     </td>
   </tr>
 
-  {% if multi_site %}
+  {% if config('Multisites-nombre') > 1 %}
     <tr style='vertical-align:top;'>
       <td>Sites :</td>
       <td>
@@ -195,13 +195,13 @@
       </td>
     </tr>
 
-    {% if recup_agent > 0 %}
+    {% if config('Recup-Agent') > 0 %}
       <tr style='vertical-align:top;'>
         <td>Récupération :</td>
         <td>
-          {% if recup_agent == 1 %}
+          {% if config('Recup-Agent') == 1 %}
             <textarea name='recup' style='width:400px' cols='10' rows='4'>{{ agent.recoveryMenu }}</textarea>
-          {% elseif recup_agent == 2 %}
+          {% elseif config('Recup-Agent') == 2 %}
             <select name='recup' style='width:400px'>
               <option value=''>&nbsp;</option>
               {% for elem in recupAgents %}
