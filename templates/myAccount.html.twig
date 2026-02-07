@@ -163,7 +163,7 @@
             </li>
           </ul>
           {% if config('ICS-Code') %}
-          <br/><a style="font-size: 15px;margin-top: 30px; color:#29495C;" href="javascript:resetICSURL({{ login.id }}, '{{ CSRFSession }}' );"> Réinitialiser les URL</a>
+          <br/><a style="font-size: 15px;margin-top: 30px; color:#29495C;" href="javascript:resetICSURL({{ login.id }});"> Réinitialiser les URL</a>
           {% endif %}
         </p>
       </div> <!-- Agendas ICS -->

@@ -29,53 +29,54 @@ class AgentControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, $agent->getACL());
 
-        $_SESSION['oups']['CSRFToken'] = '00000';
-
         $start = date('d/m/Y', strtotime(' -3 day'));
         $end = date('d/m/Y', strtotime(' +3 day'));
 
-        $this->client->request(
-            'POST',
-            '/agent',
-            array(
-                'nom' => 'Boivin',
-                'prenom' => 'Karel',
-                'CSRFToken' => "00000",
-                'login' => 'karel.boivin',
-                'droits' => array(100,99),
-                'mail' => 'kboivin@mail.fr',
-                'statut' => 'cbjncdk',
-                'categorie' => 'dadczz',
-                'service' => 'zedcscq',
-                'arrivee' => $start,
-                'depart' => $end,
-                'postes' => '[]',
-                'action' => 'add',
-                'actif' => 1,
-                'commentaires' => '',
-                'last_login' => '',
-                'heures_hebdo' => '',
-                'heures_travail' => '',
-                'sites' => ["2", "4"],
-                'temps' => '',
-                'informations' => '',
-                'recup' => '',
-                'supprime' => '',
-                'mailsResponsables' => '',
-                'matricule' => '',
-                'code_ics' => '',
-                'url_ics' => '',
-                'check_ics' => '',
-                'check_hamac' => '',
-                'conges_credit' => '',
-                'conges_reliquat' => '',
-                'conges_anticipation' => '',
-                'comp_time' => '',
-                'conges_annuel' => '',
-                'managers' => '',
-                'managed' => '',
-            )
-        );
+        // Get CSRFToken
+        $crawler = $this->client->request('GET', '/agent/add');
+        $extract_result = $crawler->filter('input#_token')->extract(array('value'));
+        $token = $extract_result[0];
+
+        $formData = [
+            '_token' => $token,
+            'nom' => 'Boivin',
+            'prenom' => 'Karel',
+            'login' => 'karel.boivin',
+            'droits' => array(100,99),
+            'mail' => 'kboivin@mail.fr',
+            'statut' => 'cbjncdk',
+            'categorie' => 'dadczz',
+            'service' => 'zedcscq',
+            'arrivee' => $start,
+            'depart' => $end,
+            'postes' => '[]',
+            'action' => 'add',
+            'actif' => 1,
+            'commentaires' => '',
+            'last_login' => '',
+            'heures_hebdo' => '',
+            'heures_travail' => '',
+            'sites' => [2, 4],
+            'temps' => '',
+            'informations' => '',
+            'recup' => '',
+            'supprime' => '',
+            'mailsResponsables' => '',
+            'matricule' => '',
+            'code_ics' => '',
+            'url_ics' => '',
+            'check_ics' => '',
+            'check_hamac' => '',
+            'conges_credit' => '',
+            'conges_reliquat' => '',
+            'conges_anticipation' => '',
+            'comp_time' => '',
+            'conges_annuel' => '',
+            'managers' => '',
+            'managed' => '',
+        ];
+
+        $this->client->request('POST', '/agent', $formData);
 
         $info = $entityManager->getRepository(Agent::class)->findOneBy(array('nom' => 'Boivin'));
 
@@ -85,6 +86,16 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEquals('kboivin@mail.fr', $info->getMail(), 'mail');
         $this->assertEquals($start, $info->getArrival()->format("d/m/Y"), 'arrivee');
         $this->assertEquals($end, $info->getDeparture()->format("d/m/Y"), 'depart');
+
+        // Test with wront CSRF Token
+        $formData['_token'] .= 'wrong token';
+        $formData['login'] = 'new.user';
+
+        $this->client->request('POST', '/agent', $formData);
+        $this->assertEquals($this->client->getResponse()->getStatusCode(), 302, 'Wrong CSRF Token returns 302');
+
+        $info = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'new.user']);
+        $this->assertNull($info, 'Wrong CSRF Token, Agent is not created');
     }
 
     public function testAddFormElement(): void {

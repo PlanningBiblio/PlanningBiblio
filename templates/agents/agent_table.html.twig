@@ -41,13 +41,13 @@
 
     <tr>
       <td>Heures de service public par semaine:</td>
-      <td>{{ heuresHebdo_label }}</td>
+      <td>{{  agent.weeklyServiceHours | time  }}</td>
     </tr>
   {% endif %}
 
   <tr>
     <td>Heures de travail par semaine:</td>
-    <td>{{ heuresTravail_label }}</td>
+    <td>{{  agent.weeklyWorkingHours | time  }}</td>
   </tr>
 
   <tr>
@@ -70,7 +70,7 @@
     <tr style='vertical-align:top;'>
       <td>Sites :</td>
       <td>
-        {% for s in sites_select %}
+        {% for s in sitesSelect %}
           {% if s.checked %}
           {{ s.name }}<br/>
           {% endif %}
@@ -106,13 +106,13 @@
 
     <tr style='vertical-align:top;'>
       <td>Informations :</td>
-      <td>{{ informations_str }}</td>
+      <td>{{ agent.information | nl2br }}</td>
     </tr>
 
-    {% if config('Recup-Agent') > 1 %}
+    {% if config('Recup-Agent') > 0 %}
       <tr style='vertical-align:top;'>
         <td>Récupération :</td>
-        <td>{{ recup_str }}</td>
+        <td>{{ agent.recoveryMenu | nl2br }}</td>
       </tr>
     {% endif %}
   {% endif %}

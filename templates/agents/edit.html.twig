@@ -80,7 +80,7 @@
 
       <li id="admin"><a href='#temps' id='personnel-a-li3'>Heures de présence</a></li>
 
-      {% if agendas_and_sync is defined %}
+      {% if showAgendasAndSync %}
         <li id="admin"><a href='#agendas'>Agendas et Synchronisation</a></li>
       {% endif %}
 
@@ -99,7 +99,7 @@
     </ul>
 
     <form method='post' action='{{ asset("agent") }}' name='form'>
-      <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+      <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
 
       <div id='main' style='margin-left:70px;padding-top:30px;'>
         <input type='hidden' value='{{ action }}' name='action' />
@@ -130,14 +130,10 @@
         <table style='width:90%;'>
           {% if config('Hamac-csv') %}
             <tr>
-              <td style='width:400px'>Synchronisation {{ hamac_pattern }} :</td>
+              <td style='width:400px'>Synchronisation {{ config('Hamac-motif') ?? 'Hamac' }} :</td>
               <td>
                 {% if can_manage_agent %}
-                  {% if agent.hamacCheck %}
-                    <input type='checkbox' value='1' name='check_hamac' checked="checked"/>
-                  {% else %}
-                    <input type='checkbox' value='1' name='check_hamac'/>
-                  {% endif %}
+                  <input type='checkbox' value='1' name='check_hamac' {% if agent.hamacCheck %} checked="checked" {% endif %}/>
                 {% else %}
                   {% if agent.hamacCheck %}
                     <span class="agent-acces-checked2 green bold">Oui</span>
@@ -151,16 +147,12 @@
 
           {% if config('ICS-Server1') %}
             <tr>
-              <td style='width:400px'>Synchronisation de l'agenda ICS {{ ics_pattern }} :</td>
+              <td style='width:400px'>Synchronisation de l'agenda ICS {{ config('ICS-Pattern1') ?? 'Serveur ICS N°1' }} :</td>
               <td>
                 {% if can_manage_agent %}
-                  {% if check_ics %}
-                    <input type='checkbox' value='1' name='check_ics1' checked="checked"/>
-                  {% else %}
-                    <input type='checkbox' value='1' name='check_ics1'/>
-                  {% endif %}
+                  <input type='checkbox' value='1' name='check_ics1' {% if agent.icsCheck[0] %} checked="checked" {% endif %}/>
                 {% else %}
-                  {% if check_ics %}
+                  {% if agent.icsCheck[0] %}
                     <span class='agent-acces-checked2 green bold'>Oui</span>
                   {% else %}
                     <span class='agent-acces-checked2 red'>Non</span>
@@ -172,16 +164,12 @@
 
           {% if config('ICS-Server2') %}
             <tr>
-              <td style='width:400px'>Synchronisation de l'agenda ICS {{ ics_pattern2 }} :</td>
+              <td style='width:400px'>Synchronisation de l'agenda ICS {{ config('ICS-Pattern2') ?? 'Serveur ICS N°2' }} :</td>
               <td>
                 {% if can_manage_agent %}
-                  {% if check_ics2 %}
-                    <input type='checkbox' value='1' name='check_ics2' checked="checked"/>
-                  {% else %}
-                    <input type='checkbox' value='1' name='check_ics2'/>
-                  {% endif %}
+                  <input type='checkbox' value='1' name='check_ics2' {% if agent.icsCheck[1] %} checked="checked" {% endif %}/>
                 {% else %}
-                  {% if check_ics2 %}
+                  {% if agent.icsCheck[1] %}
                     <span class='agent-acces-checked2 green bold'>Oui</span>
                   {% else %}
                     <span class='agent-acces-checked2 red'>Non</span>
@@ -193,17 +181,12 @@
 
           {% if config('ICS-Server3') %}
             <tr>
-              <td style='width:400px'>Synchronisation de l'agenda ICS {{ ics_pattern3 }} :</td>
+              <td style='width:400px'>Synchronisation de l'agenda ICS {{ config('ICS-Pattern3') ?? 'Serveur ICS N°3' }} :</td>
               <td>
                 {% if can_manage_agent %}
-                  {% if check_ics3 %}
-                    <input type='checkbox' value='1' name='check_ics3' checked="checked"/>
-                  {% else %}
-                    <input type='checkbox' value='1' name='check_ics3'/>
-                  {% endif %}
-                  <input type='text' value='{{ agent.icsUrl }}' name='url_ics' style='width:400px; margin-left:20px;'/>
+                  <input type='checkbox' value='1' name='check_ics3' {% if agent.icsCheck[2] %} checked="checked" {% endif %}/>
                 {% else %}
-                  {% if check_ics3 %}
+                  {% if agent.icsCheck[2] %}
                     <span class='agent-acces-checked2 green bold'>Oui</span>
                   {% else %}
                     <span class='agent-acces-checked2 red'>Non</span>
@@ -229,7 +212,7 @@
               <tr>
                 <td style='padding-top:20px;'>&nbsp;</td>
                 <td style='padding-top:20px;'>
-                  <a href="javascript:resetICSURL('{{ id }}', '{{ CSRFSession }}', '{{ agent.firstName }} {{ agent.lastName }}');">
+                  <a href="javascript:resetICSURL('{{ id }}', '{{ agent.firstName }} {{ agent.lastName }}');">
                     Réinitialiser les URL des agendas Planno
                   </a>
                 </td>
@@ -358,16 +341,14 @@
   </div>
 
   <script type='text/JavaScript'>
-    {% if edt_samedi %}
+    {% if config('EDTSamedi') %}
       $("#EDTTabs").tabs();
-      $("{{ current_tab }}").click();
     {% endif %}
-    {% for i in 0..nb_semaine %}
+    {% for i in 0..config('nb_semaine') %}
       $(".select{{ i }}").change(function(){calculHeures($(this),"","form","heures{{ i }}",{{ i }});});
       $("document").ready(function(){calculHeures($(this),"","form","heures{{ i }}",{{ i }});});
     {% endfor %}
   </script>
   <script type="text/JavaScript" src="{{ asset('js/agent.js') }}"></script>
 
-<!-- CONTINUER ICI -->
 {% endblock %}

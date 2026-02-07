@@ -142,13 +142,19 @@ class AgentController extends BaseController
          */
         $CSRFSession = $GLOBALS['CSRFSession'];
         $lang = $GLOBALS['lang'];
-        $currentTab = '';
-
         $droits = $GLOBALS['droits'];
 
         // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
         if ($this->config('PlanningHebdo')) {
             $this->config('EDTSamedi', 0);
+        }
+
+        $showAgendasAndSync = false;
+        if ($this->config('ICS-Server1') or $this->config('ICS-Server2')
+            or $this->config('ICS-Server3') or $this->config('ICS-Export')
+            or $this->config('Hamac-csv')
+            or !empty($this->config('MSGraph-ClientID'))) {
+            $showAgendasAndSync = true;
         }
 
         // Contract and comp'time fields
@@ -181,6 +187,25 @@ class AgentController extends BaseController
         $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();
         $statuts_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctStatuts();
 
+        // Table of times for hours dropdown menus
+        $times = [];
+        if (in_array(21, $droits)) {
+            $granularite = $this->config('Granularite') == 1 ? 5 : $this->config('Granularite');
+
+            $nb_interval = 60 / $granularite;
+            $end = 40;
+            for ($i = 1; $i < $end; $i++) {
+                $times[] = array($i, $i . 'h00');
+                $minute = 0;
+                for ($y = 1; $y < $nb_interval; $y++) {
+                    $minute = sprintf("%02d", $minute + $granularite);
+                    $decimal = round($minute / 60, 2);
+                    $times[] = array($i + $decimal, $i . "h$minute");
+                }
+            }
+            $times[] = array($end, $end . "h00");
+        }
+
         /**
          * Agent's information
          */
@@ -198,6 +223,18 @@ class AgentController extends BaseController
         $managersMails = $agent->getManagersMails() ? explode(';', $agent->getManagersMails()) : [];
         $managersMails = array_map('trim', $managersMails);
         $sites = $agent->getSites();
+
+        // Multi-sites
+        if ($this->config['Multisites-nombre'] > 1) {
+            $sitesSelect = [];
+            for ($i = 1; $i <= $this->config['Multisites-nombre']; $i++) {
+                $sitesSelect[] = [
+                    'id' => $i,
+                    'name' => $this->config("Multisites-site$i"),
+                    'checked' => in_array($i, $sites) ? 1 : 0,
+                ];
+            }
+        }
 
         // Skills assigned and available 
         $skillsAssigned = $agent->getSkills();
@@ -239,129 +276,15 @@ class AgentController extends BaseController
             }
         }
 
-        $this->templateParams([
-            'agent'             => $agent,
-            'can_manage_agent'  => in_array(21, $droits),
-            'exportIcsUrl'      => $exportIcsUrl,
-            'CSRFSession'       => $CSRFSession,
-            'action'            => $action,
-            'id'                => $id,
-            'statuts'           => $statuts,
-            'statuts_utilises'  => $statuts_utilises,
-            'categories'        => $categories,
-            'contrats'          => $contrats,
-            'services'          => $services,
-            'services_utilises' => $services_utilises,
-            'actif'             => $active,
-            'mailsResponsables' => $managersMails,
-            'informations_str'  => str_replace("\n", "<br/>", strval($agent->getInformation())),
-            'recup_str'         => str_replace("\n", "<br/>", strval($agent->getRecoveryMenu())),
-            'recupAgents'       => $recupAgents,
-            'postes_dispo'      => $skillsAvailable,
-            'postes_attribues'  => $skillsAssigned,
-            'postes_completNoms_json' => json_encode($skillsAllWithName),
-        ]);
-
-        $this->templateParams(array(
-            'lang_send_ics_url_subject' => $lang['send_ics_url_subject'],
-            'lang_send_ics_url_message' => $lang['send_ics_url_message'],
-        ));
-        if ($this->config('ICS-Server1') or $this->config('ICS-Server2')
-            or $this->config('ICS-Server3') or $this->config('ICS-Export')
-            or $this->config('Hamac-csv')
-            or !empty($this->config('MSGraph-ClientID'))) {
-            $this->templateParams(array( 'agendas_and_sync' => 1 ));
-        }
-
-        if (in_array(21, $droits)) {
-            $granularite = $this->config('Granularite') == 1
-                ? 5 : $this->config('Granularite');
-
-            $nb_interval = 60 / $granularite;
-            $end = 40;
-            $times = array();
-            for ($i = 1; $i < $end; $i++) {
-                $times[] = array($i, $i . 'h00');
-                $minute = 0;
-                for ($y = 1; $y < $nb_interval; $y++) {
-                    $minute = sprintf("%02d", $minute + $granularite);
-                    $decimal = round($minute / 60, 2);
-                    $times[] = array($i + $decimal, $i . "h$minute");
-                }
-            }
-            $times[] = array($end, $end . "h00");
-            $this->templateParams(array( 'times' => $times ));
-
-        } else {
-            $heuresHebdo_label = $agent->getWeeklyServiceHours();
-            if (!stripos($agent->getWeeklyServiceHours(), "%")) {
-                $heuresHebdo_label .= " heures";
-            }
-            $this->templateParams(array(
-                'heuresHebdo_label'   => $heuresHebdo_label,
-                'heuresTravail_label' => $agent->getWeeklyWorkingHours() . " heures",
-            ));
-        }
-
-        // Multi-sites
-        if ($this->config['Multisites-nombre'] > 1) {
-            $sites_select = [];
-            for ($i = 1; $i <= $this->config['Multisites-nombre']; $i++) {
-                $sites_select[] = [
-                    'id' => $i,
-                    'name' => $this->config("Multisites-site$i"),
-                    'checked' => in_array($i, $sites) ? 1 : 0,
-                ];
-            }
-            $this->templateParams(['sites_select' => $sites_select]);
-        }
-
+        // hours_tab is generated by legacy/Agent/hours_tables.php
         include(__DIR__ . '/../../legacy/Agent/hours_tables.php');
-        $this->templateParams(array( 'hours_tab' => $hours_tab ));
 
-        if ($this->config('Hamac-csv')) {
-            $hamac_pattern = !empty($this->config('Hamac-motif')) ? $this->config('Hamac-motif') : 'Hamac';
-            $this->templateParams(array(
-                'hamac_pattern'     => $hamac_pattern,
-            ));
-        }
 
-        if ($this->config('ICS-Server1')) {
-            $ics_pattern = !empty($this->config('ICS-Pattern1')) ? $this->config('ICS-Pattern1') : 'Serveur ICS N°1';
-            $this->templateParams(array(
-                'ics_pattern'     => $ics_pattern,
-                'check_ics'       => !empty($agent->getIcsCheck()[0]) ? 1 : 0,
-            ));
-        }
-
-        if ($this->config('ICS-Server2')) {
-            $ics_pattern = !empty($this->config('ICS-Pattern2')) ? $this->config('ICS-Pattern2') : 'Serveur ICS N°2';
-            $this->templateParams(array(
-                'ics_pattern2'     => $ics_pattern,
-                'check_ics2'       => !empty($agent->getIcsCheck()[1]) ? 1 : 0,
-            ));
-        }
-
-        // URL du flux ICS à importer
-        if ($this->config('ICS-Server3')) {
-            $ics_pattern = !empty($this->config('ICS-Pattern3')) ? $this->config('ICS-Pattern3') : 'Serveur ICS N°3';
-            $this->templateParams(array(
-                'ics_pattern3'     => $ics_pattern,
-                'check_ics3'       => !empty($agent->getIcsCheck()[2]) ? 1 : 0,
-            ));
-        }
-
-        // URL du fichier ICS Planno
-        if ($id and isset($ics)) {
-            if ($this->config('ICS-Code')) {
-            }
-        }
-
+        // ACL / Access / Rights
         // List of excluded rights with Planook configuration
         $planook_excluded_rights = array(6, 9, 701, 3, 17, 1301, 23, 1001, 901, 801);
 
-        $rights = array();
-
+        $rights = [];
         foreach ($accessGroups as $elem) {
             // N'affiche pas les droits d'accès à la configuration (réservée au compte admin)
             if ($elem['groupe_id'] == 20) {
@@ -393,8 +316,6 @@ class AgentController extends BaseController
 
             $rights[ $elem['categorie'] ]['rights'][] = $elem;
         }
-
-        $this->templateParams(array('rights' => $rights));
 
         // Affichage des droits d'accès dépendant des sites (si plusieurs sites)
         if ($this->config('Multisites-nombre') > 1) {
@@ -437,9 +358,35 @@ class AgentController extends BaseController
 
                 $rights_sites[ $elem['categorie'] ]['rights'][] = $elem;
             }
-
-            $this->templateParams(array('rights_sites' => $rights_sites));
         }
+
+        $this->templateParams([
+            'agent'                     => $agent,
+            'can_manage_agent'          => in_array(21, $droits),
+            'exportIcsUrl'              => $exportIcsUrl,
+            'action'                    => $action,
+            'id'                        => $id,
+            'statuts'                   => $statuts,
+            'statuts_utilises'          => $statuts_utilises,
+            'categories'                => $categories,
+            'contrats'                  => $contrats,
+            'services'                  => $services,
+            'services_utilises'         => $services_utilises,
+            'actif'                     => $active,
+            'mailsResponsables'         => $managersMails,
+            'recupAgents'               => $recupAgents,
+            'postes_dispo'              => $skillsAvailable,
+            'postes_attribues'          => $skillsAssigned,
+            'postes_completNoms_json'   => json_encode($skillsAllWithName),
+            'hours_tab'                 => $hours_tab,
+            'lang_send_ics_url_subject' => $lang['send_ics_url_subject'],
+            'lang_send_ics_url_message' => $lang['send_ics_url_message'],
+            'rights'                    => $rights,
+            'rights_sites'              => $rights_sites,
+            'sitesSelect'               => $sitesSelect,
+            'showAgendasAndSync'        => $showAgendasAndSync,
+            'times'                     => $times,
+        ]);
 
         if ($this->config('Conges-Enable')) {
             $conges = $this->entityManager->getRepository(Agent::class)->fetchCredits($id);
@@ -494,7 +441,7 @@ class AgentController extends BaseController
                 }
             }
 
-            $templateParams = array(
+            $templateParams = [
                 'annuel_heures'         => $annuelHeures,
                 'annuel_min'            => $annuelMinutes,
                 'annuel_string'         => $annuelString,
@@ -511,7 +458,7 @@ class AgentController extends BaseController
                 'recup_min'             => $recupMinutes,
                 'lang_comp_time'        => $lang['comp_time'],
                 'show_hours_to_days'    => $holiday_helper->showHoursToDays(),
-            );
+            ];
 
             if ($holiday_helper->showHoursToDays()) {
 
@@ -527,23 +474,19 @@ class AgentController extends BaseController
             $this->templateParams($templateParams);
         }
 
-        $this->templateParams(array(
-            'edt_samedi'    => $this->config('EDTSamedi'),
-            'current_tab'   => $currentTab,
-            'nb_semaine'    => $this->config('nb_semaine'),
-        ));
-
         return $this->output('agents/edit.html.twig');
     }
 
     #[Route(path: '/agent', name: 'agent.save', methods: ['POST'])]
     public function save(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
 
         $params = $request->request->all();
         $arrivee = $request->get('arrivee') ? \DateTime::createFromFormat('d/m/Y', $request->get('arrivee')) : null;
         $depart = $request->get('depart') ? \DateTime::createFromFormat('d/m/Y', $request->get('depart')) : null;
-        $CSRFToken = $request->get('CSRFToken');
         $heuresHebdo = $request->get('heuresHebdo', '');
         $heuresTravail = $request->get('heuresTravail', 0);
         $id = $request->get('id');
@@ -1580,10 +1523,14 @@ class AgentController extends BaseController
     #[Route('/agent/ics/reset-url', name: 'agent.ics.reset_url', methods: ['POST'])]
     public function resetIcsUrl(Request $request): \Symfony\Component\HttpFoundation\Response
     {
-        // TODO: Add CSRF Protection
+        if (!$this->csrf_protection($request)) {
+            $response = new Response();
+            $response->setContent('CSRF token error');
+            $response->setStatusCode(400);
+            return $response;
+        }
 
         $id = $request->get('id');
-
         $newCode = md5(time().rand(100, 999));
 
         $agent = $this->entityManager->getRepository(Agent::class)->find($id);

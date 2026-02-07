@@ -3,10 +3,9 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-
+use App\Entity\Agent;
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,7 +33,7 @@ class AccountController extends BaseController
         // URL ICS
         $ics = null;
         if ($this->config('ICS-Export')) {
-            $ics = $p->getICSURL($perso_id);
+            $ics = $this->entityManager->getRepository(Agent::class)->getExportIcsURL($perso_id);
         }
 
         // Crédits (congés, récupérations)
