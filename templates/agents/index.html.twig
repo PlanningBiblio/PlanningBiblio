@@ -77,12 +77,12 @@
               {% endif %}
             </div>
           </td>
-          <td>{{ a.lastname | raw }}</td>
-          <td>{{ a.firstname | raw}} </td>
+          <td>{{ a.lastname }}</td>
+          <td>{{ a.firstname }} </td>
           <td>{{ a.weeklyServiceHours | time }}</td>
           {% if not config('Planook') %}
-            <td>{{ a.status | raw }}</td>
-            <td>{{ a.service | raw }}</td>
+            <td>{{ a.status }}</td>
+            <td>{{ a.service }}</td>
           {% endif %}
           {% if config('Multisites-nombre') > 1 %}
             <td>{{ a.sites | sites }}</td>
@@ -123,7 +123,7 @@
                   <option value='-1'>{{ lang.do_not_change }}</option>
                   <option value=''>Aucun</option>
                   {% for s in status %}
-                    <option value='{{ s.value }}'>{{ s.value | raw }}</option>
+                    <option value='{{ s.value }}'>{{ s.value }}</option>
                   {% endfor %}
                 </select>
               </td>
@@ -151,7 +151,7 @@
                   <option value='-1'>{{ lang.do_not_change }}</option>
                   <option value=''>Aucun</option>
                   {% for se in services %}
-                    <option value='{{ se.value }}'>{{ se.value | raw }}</option>
+                    <option value='{{ se.value }}'>{{ se.value }}</option>
                   {% endfor %}
                 </select>
               </td>
@@ -208,7 +208,7 @@
                 <div id='dispo_div'>
                   <select id='postes_dispo' name='postes_dispo' style='width:300px;' size='20' multiple='multiple'>
                     {% for sk in skills %}
-                      <option value='{{ sk.id }}'>{{ sk.name | raw }}</option>
+                      <option value='{{ sk.id }}'>{{ sk.name }}</option>
                     {% endfor %}
                   </select>
                 </div>

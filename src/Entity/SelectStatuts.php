@@ -38,6 +38,7 @@ class SelectStatuts
     public function setValue(?string $value): static
     {
         $this->valeur = $value;
+
         return $this;
     }
 
@@ -49,6 +50,7 @@ class SelectStatuts
     public function setRank(?int $rank): static
     {
         $this->rang = $rank;
+
         return $this;
     }
 
@@ -60,6 +62,7 @@ class SelectStatuts
     public function setColor(?string $color): static
     {
         $this->couleur = $color;
+
         return $this;
     }
 
@@ -71,6 +74,7 @@ class SelectStatuts
     public function setCategory(?int $category): static
     {
         $this->categorie = $category;
+
         return $this;
     }
 }

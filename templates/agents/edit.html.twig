@@ -280,14 +280,14 @@
             {% for elem in statuts %}
               <li class='ui-state-default' id='li_{{ elem.id }}'>
                 <span class='pl-icon pl-icon-arrowupdown'></span>
-                <font id='valeur_{{ elem.id }}'>{{ elem.value | raw }}</font>
+                <font id='valeur_{{ elem.id }}'>{{ elem.value }}</font>
                 <select id='categorie_{{ elem.id }}' class='select-popup'>
                   <option value='0'>&nbsp;</option>
                   {% for elem2 in categories %}
                     {% if elem2.id == elem.category %}
-                      <option value='{{ elem2.id }}' selected="selected">{{ elem2.value | raw }}</option>
+                      <option value='{{ elem2.id }}' selected="selected">{{ elem2.value }}</option>
                     {% else %}
-                      <option value='{{ elem2.id }}'>{{ elem2.value | raw }}</option>
+                      <option value='{{ elem2.id }}'>{{ elem2.value }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>
@@ -316,7 +316,7 @@
             {% for elem in services %}
               <li class='ui-state-default' id='li_{{ elem.id }}'>
                 <span class='pl-icon pl-icon-arrowupdown'></span>
-                <font id='valeur_{{ elem.id }}'>{{ elem.value | raw }}</font>
+                <font id='valeur_{{ elem.id }}'>{{ elem.value }}</font>
                 {% if elem.value not in services_utilises %}
                   <span class='pl-icon pl-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}

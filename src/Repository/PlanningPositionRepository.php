@@ -47,8 +47,8 @@ class PlanningPositionRepository extends EntityRepository
         return $qb
             ->update()
             ->set('p.supprime', 0)
-            ->where('p.perso_id = :persoId')
-            ->setParameter('persoId', $userId)
+            ->where('p.perso_id = :userId')
+            ->setParameter('userId', $userId)
             ->getQuery()
             ->execute();
     }

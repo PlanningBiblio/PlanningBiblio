@@ -1,5 +1,9 @@
 <?php
 
+// TODO: FIXME: la modification en masse des activités ne fonctionne pas
+// TODO: FIXME: revoir la suppression des agents, j'ai restauré l'utilisation d'une fonction legacy car la suppression ne fonctionnait pas.
+// Voir les fonctions créées pas Xinying dans AgentRepository
+
 namespace App\Controller;
 
 use App\Controller\BaseController;
@@ -490,10 +494,9 @@ class AgentController extends BaseController
         $heuresHebdo = $request->get('heuresHebdo', '');
         $heuresTravail = $request->get('heuresTravail', 0);
         $id = $request->get('id');
-        $agent = $id ? $this->entityManager->getRepository(Agent::class)->find($id) : new Agent();
         $mail = $request->get('mail');
 
-        $actif = htmlentities($params['actif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $actif = $params['actif'];
         $action = $params['action'];
         $check_hamac = !empty($params['check_hamac']) ? 1 : 0;
         $mSGraphCheck = !empty($request->get('MSGraph')) ? 1 : 0;
@@ -562,16 +565,22 @@ class AgentController extends BaseController
             $droits[] = 20;
         }
 
+        // Get agent's information or create a new one
+        $agent = $id ? $this->entityManager->getRepository(Agent::class)->find($id) : new Agent();
+
         switch ($action) {
           case 'add':
             $login = $this->login($prenom, $nom, $mail);
+
+            $msg = 'L\'agent a été créé avec succés';
+            $msgType = 'notice';
 
             // Demo mode
             if (!empty($this->config('demo'))) {
                 $mdp_crypt = password_hash("password", PASSWORD_BCRYPT);
                 $msg = "Vous utilisez une version de démonstration : l'agent a été créé avec les identifiants $login / password";
                 $msg .= "#BR#Sur une version standard, les identifiants de l'agent lui auraient été envoyés par e-mail.";
-                $msgType = "success";
+                $msgType = 'notice';
             } else {
                 $mdp = gen_trivial_password();
                 $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
@@ -586,11 +595,10 @@ class AgentController extends BaseController
                 $notifier->send();
 
                 // Si erreur d'envoi de mail, affichage de l'erreur
-                $msg = null;
-                $msgType = null;
                 if ($notifier->getError()) {
+                    // TODO: FIXME: Ce message ne passe en en flash bag
                     $msg = $notifier->getError();
-                    $msgType = "error";
+                    $msgType = 'error';
                 }
             }
 
@@ -609,12 +617,13 @@ class AgentController extends BaseController
 
             break;
 
+            // TODO: créer une route dédié pour le case 'mdp'
           case "mdp":
 
             // Demo mode
             if (!empty($this->config('demo'))) {
                 $msg = "Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration";
-                $msgType = "success";
+                $msgType = 'notice';
                 break;
             }
 
@@ -633,14 +642,12 @@ class AgentController extends BaseController
             $m->send();
 
             // Si erreur d'envoi de mail, affichage de l'erreur
-            $msg = null;
-            $msgType = null;
             if ($m->error) {
                 $msg = $m->error_CJInfo;
-                $msgType = "error";
+                $msgType = 'error';
             } else {
                 $msg = "Le mot de passe a été modifié et envoyé par e-mail à l'agent";
-                $msgType = "success";
+                $msgType = 'notice';
             }
 
             $agent->setPassword($mdp_crypt);
@@ -648,13 +655,19 @@ class AgentController extends BaseController
             break;
 
           case 'update':
+
+            $msg = 'L\'agent a été modifié avec succés';
+            $msgType = 'notice';
+
             // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
-            if (!strstr($actif, "Supprim")) {
+            if ($actif != 'Supprimé') {
                 $agent->setDeletion(0);
                 // Si l'agent était supprimé et qu'on le réintégre, on change sa date de départ
                 // pour qu'il ne soit pas supprimé de la liste des agents actifs
-                if (strstr($agent->getActive(), "Supprim") and $agent->getDeparture() <= date("Y-m-d")) {
-                    $agent->setDeparture(null);
+                if ($agent->getActive() == 'Supprimé' and $agent->getDeparture()) {
+                    if ($agent->getDeparture()->format('Y-m-d') <= date('Y-m-d')) {
+                        $depart = null;
+                    }
                 }
             } else {
                 $agent->setActive('Supprimé');
@@ -662,6 +675,7 @@ class AgentController extends BaseController
 
             // Mise à jour de la table pl_poste en cas de modification de la date de départ
             // Updates the deletion flag for a given user.
+            // TODO: bien tester ces 2 fonctions et voir si nous pouvons les reunir en une seule, ou simplifier la logique.
             $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserId($id);
             if ($depart != "0000-00-00" and $depart != "") {
                 // Si une date de départ est précisée, on met supprime=1 au dela de cette date
@@ -673,9 +687,6 @@ class AgentController extends BaseController
                 $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
                 $repo->update($eDTSamedi, $firstMonday, $lastMonday, $id);
             }
-
-            $msg = null;
-            $msgType = null;
 
             break;
         }
@@ -715,10 +726,14 @@ class AgentController extends BaseController
 
             $this->entityManager->persist($agent);
         }
+
         $this->entityManager->flush();
-        return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
 
+        if (!empty($msg)) {
+            $this->addFlash($msgType, $msg);
+        }
 
+        return $this->redirectToRoute('agent.index');
     }
 
     private function changeAgentPassword(Request $request, $agent_id, $password): \Symfony\Component\HttpFoundation\Response {

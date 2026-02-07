@@ -100,9 +100,10 @@
 | recoveryMenu | recup |
 | service | service |
 | reason | motif |
+| refusal | refus | For Holiday |
+| replace | remplace |
 | requestDate | demande |
 | rRule| rrule |
-| replace | remplace |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |

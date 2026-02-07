@@ -440,14 +440,14 @@ class Holiday
         return $this;
     }
 
-    public function getRefus(): ?string
+    public function getRefusal(): ?string
     {
         return $this->refus;
     }
 
-    public function setRefus(?string $refus): static
+    public function setRefusal(?string $refusal): static
     {
-        $this->refus = $refus;
+        $this->refus = $refusal;
 
         return $this;
     }

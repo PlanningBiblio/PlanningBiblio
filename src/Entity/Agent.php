@@ -135,6 +135,13 @@ class Agent
     #[ORM\OneToMany(mappedBy: 'responsable', targetEntity: Manager::class, cascade: ['ALL'])]
     private Collection $managed;
 
+    public function __construct()
+    {
+        $this->code_ics = md5(time().rand(100, 999));
+        $this->managed = new ArrayCollection();
+        $this->managers = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -545,12 +552,6 @@ class Agent
         $this->url_ics = $icsUrl;
 
         return $this;
-    }
-
-    public function __construct() {
-        $this->code_ics = md5(time().rand(100, 999));
-        $this->managed = new ArrayCollection();
-        $this->managers = new ArrayCollection();
     }
 
     public function getManaged()

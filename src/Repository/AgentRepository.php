@@ -653,7 +653,7 @@ class AgentRepository extends EntityRepository
             ->getArrayResult();
     }
 
-    // Will replance personnel::delete
+    // Will replace personnel::delete
     public function delete($ids): void
     {
         // Suppresion des informations de la table personnel
@@ -753,23 +753,23 @@ class AgentRepository extends EntityRepository
     // Will replace personnel::fetch
     public function get($orderBy = 'nom', $actif = null, $name = null)
     {
-        $supprime = strstr($actif, "Supprim") ? array(1) : array(0);
-        $actif = strstr($actif, "Supprim") ? 'Supprim%' : $actif;// TODO migration (update as deleted)
+        $supprime = $actif == 'Supprimé' ? [1] : [0];
+        $actif = strstr($actif, 'Supprim') ? 'Supprim%' : $actif;
 
         $fields = array_map('trim', explode(',', $orderBy));
         $orders = [];
-        foreach ($fields as $field)
+        foreach ($fields as $field) {
             $orders[] = 'a.' . $field;
+        }
         $orderBy = implode(', ', $orders);
 
         $qb = $this->createQueryBuilder('a')
             ->select('a')
-            ->where("a.id <> 2")
-            ->andWhere("a.supprime IN (:supprime)");
+            ->where('a.id <> 2')
+            ->andWhere('a.supprime IN (:supprime)');
         
-        if (!empty($actif))
-        {
-            $qb ->andWhere("a.actif LIKE :actif")
+        if (!empty($actif)) {
+            $qb ->andWhere('a.actif LIKE :actif')
                 ->setParameter('actif', $actif);
         }
 
@@ -780,10 +780,8 @@ class AgentRepository extends EntityRepository
             ->getQuery()
             ->getResult();
 
-        if ($name)
-        {
-            foreach($agents as $agent)
-            {
+        if ($name) {
+            foreach($agents as $agent) {
                 if (pl_stristr($agent->getFirstname(), $name) or pl_stristr($agent->getLastname(), $name))
                 {
                     return $agent;

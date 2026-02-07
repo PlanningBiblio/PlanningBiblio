@@ -35,6 +35,7 @@ class SelectServices
     public function setValue(?string $value): static
     {
         $this->valeur = $value;
+
         return $this;
     }
 
@@ -46,6 +47,7 @@ class SelectServices
     public function setRank(?int $rank): static
     {
         $this->rang = $rank;
+
         return $this;
     }
 
@@ -57,6 +59,7 @@ class SelectServices
     public function setColor(?string $color): static
     {
         $this->couleur = $color;
+
         return $this;
     }
 }

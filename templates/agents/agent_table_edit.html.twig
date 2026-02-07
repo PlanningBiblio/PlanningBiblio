@@ -33,9 +33,9 @@
           <option value=''>Aucun</option>
             {%for elem in statuts %}
               {% if elem.value == agent.status %}
-                <option selected="selected" value="{{ elem.value | raw }}">{{ elem.value | raw }}</option>
+                <option selected="selected" value="{{ elem.value }}">{{ elem.value }}</option>
               {% else %}
-                <option value="{{ elem.value | raw }}">{{ elem.value | raw }}</option>
+                <option value="{{ elem.value }}">{{ elem.value }}</option>
               {% endif %}
             {% endfor %}
         </select>
@@ -66,9 +66,9 @@
           <option value=''>Aucun</option>
           {%for elem in services %}
             {% if elem.value == agent.service %}
-              <option selected="selected" value='{{ elem.value | raw }}'>{{ elem.value | raw }}</option>
+              <option selected="selected" value='{{ elem.value }}'>{{ elem.value }}</option>
             {% else %}
-              <option value='{{ elem.value | raw }}'>{{ elem.value | raw }}</option>
+              <option value='{{ elem.value }}'>{{ elem.value }}</option>
             {% endif %}
           {% endfor %}
         </select>
@@ -133,10 +133,10 @@
           <option value='Inactif'>Administratif</option>
         {% endif %}
 
-        {% if actif == 'Supprim&eacute;' %}
-          <option selected="selected" value="Supprim&eacute;">Supprim&eacute;</option>
+        {% if actif == 'Supprimé' %}
+          <option selected="selected" value="Supprimé">Supprimé</option>
         {% else %}
-          <option value="Supprim&eacute;" style="display:none;">Supprim&eacute;</option>
+          <option value="Supprimé" style="display:none;">Supprimé</option>
         {% endif %}
       </select>
     </td>
@@ -148,9 +148,9 @@
       <td>
         {% for s in sitesSelect %}
           {% if s.checked %}
-            <input type='checkbox' name='sites[]' value='{{ s.id }}' checked="checked" >{{ s.name | raw }}<br/>
+            <input type='checkbox' name='sites[]' value='{{ s.id }}' checked="checked" >{{ s.name }}<br/>
           {% else %}
-            <input type='checkbox' name='sites[]' value='{{ s.id }}'>{{ s.name | raw }}<br/>
+            <input type='checkbox' name='sites[]' value='{{ s.id }}'>{{ s.name }}<br/>
           {% endif %}
         {% endfor %}
       </td>
