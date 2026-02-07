@@ -737,11 +737,6 @@ function cmp_nom_prenom_debut_fin($a, $b): int
     return (strtolower($a['nom']) > strtolower($b['nom'])) ? 1 : -1;
 }
 
-function cmp_ordre($a, $b): int
-{
-    return ($a['ordre'] > $b['ordre']) ? 1 : -1;
-}
-
 function cmp_perso_debut_fin($a, $b): int
 {
     if ($a['perso_id'] == $b['perso_id']) {

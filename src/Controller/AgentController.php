@@ -152,46 +152,18 @@ class AgentController extends BaseController
         $actif = $agent->getActive();
         $droits = $GLOBALS['droits'];
 
-        // Find access filtered by group id ("groupe_id" value doesn't equal 99 or 100).
-        $accessGroups = $this->entityManager->getRepository(Access::class)->getAccessGroups();
-
-        // Tous les droits d'accés
-        $groupes = array();
-        foreach ($accessGroups as $elem) {
-            $groupes[$elem['groupe_id']] = $elem;
-        }
-
-        uasort($groupes, 'cmp_ordre');
-
         // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé
         // si PlanningHebdo est activé
         if ($this->config('PlanningHebdo')) {
             $this->config('EDTSamedi', 0);
         }
 
-        // Si multisites, les droits de gestion des absences,
-        // congés et modification planning dépendent des sites :
-        // on les places dans un autre tableau pour simplifier l'affichage
-        $groupes_sites = array();
-
-        if ($this->config('Multisites-nombre') > 1) {
-            for ($i = 2; $i <= 10; $i++) {
-
-                // Exception, groupe 701 = pas de gestion multisites (pour le moment)
-                if ($i == 7) {
-                    continue;
-                }
-
-                $groupe = ($i * 100) + 1 ;
-                if (array_key_exists($groupe, $groupes)) {
-                    $groupes_sites[] = $groupes[$groupe];
-                    unset($groupes[$groupe]);
-                }
-            }
-        }
-
-        uasort($groupes_sites, 'cmp_ordre');
-
+        // Find access filtered by group id and dispatch groups by sites ("groupe_id" value doesn't equal 99 or 100).
+        $accessAll = $this->entityManager->getRepository(Access::class)->getAccessGroups(
+            $this->config['Multisites-nombre'],
+        );
+        extract($accessAll);
+        
         $statuts = $this->entityManager->getRepository(SelectStatuts::class)->findAll();
         $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
         // Find the list of distinct agent statuses.
@@ -405,7 +377,7 @@ class AgentController extends BaseController
 
         $rights = array();
 
-        foreach ($groupes as $elem) {
+        foreach ($accessGroups as $elem) {
             // N'affiche pas les droits d'accès à la configuration (réservée au compte admin)
             if ($elem['groupe_id'] == 20) {
                 continue;
@@ -450,7 +422,7 @@ class AgentController extends BaseController
             $this->templateParams(array('sites_for_rights' => $sites_for_rights));
 
             $rights_sites = array();
-            foreach ($groupes_sites as $elem) {
+            foreach ($accessgroupsBySite as $elem) {
                 // N'affiche pas les droits de gérer les congés si le module n'est pas activé
                 if (!$this->config('Conges-Enable') and in_array($elem['groupe_id'], array(25, 401, 601))) {
                     continue;
