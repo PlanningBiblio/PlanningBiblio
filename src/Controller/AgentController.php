@@ -1,7 +1,6 @@
 <?php
 
 // TODO: FIXME: la modification en masse des activités ne fonctionne pas
-// TODO: FIXME: revoir la suppression des agents, j'ai restauré l'utilisation d'une fonction legacy car la suppression ne fonctionnait pas.
 // Voir les fonctions créées pas Xinying dans AgentRepository
 
 namespace App\Controller;
@@ -1359,10 +1358,8 @@ class AgentController extends BaseController
 
         // If the date parameter is not given : deletion level 2
         } else {
-            $p = new \personnel();
-            $p->CSRFToken = $CSRFToken;
-            $p->delete($id);
-    
+            $this->entityManager->getRepository(Agent::class)->delete($id);
+
             return $this->json('permanent delete OK');
         }
     }

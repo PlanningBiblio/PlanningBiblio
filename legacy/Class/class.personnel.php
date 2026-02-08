@@ -22,51 +22,6 @@ class personnel
 
     public $responsablesParAgent;
 
-    public function __construct()
-    {
-    }
-
-    public function delete($liste): void
-    {
-        // Suppresion des informations de la table personnel
-        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
-        $update=array("supprime" => "2", "login" => "CONCAT('deleted_',id)", "mail" => null, "arrivee" => null, "depart" => null, "postes" => null, "droits" => null, "password" => null,
-            "commentaires" => "Suppression définitive le ".date("d/m/Y"), "last_login" => null, "temps" => null, "informations" => null, "recup" => null, "heures_travail" => null,
-            "heures_hebdo" => null, "sites" => null, "mails_responsables" => null, "matricule" => null, "code_ics" => null, "url_ics" => null, "check_ics" => null, "check_hamac" => null,
-            "conges_credit" => null, "conges_reliquat" => null, "conges_anticipation" => null, "conges_annuel" => null, "comp_time" => null, "nom" => "CONCAT('Agent_',id)", "prenom" => null);
-
-        $db=new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->update("personnel", $update, "`id` IN ($liste)");
-
-        // Suppression des informations sur les absences
-        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
-        $update = array('commentaires' => null, 'motif_autre' => null);
-
-        $db=new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->update('absences', $update, "`perso_id` IN ($liste)");
-
-        // Suppression des informations sur les congés
-        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
-        $update = array('commentaires' => null, 'refus' => null, 'heures' => null, 'solde_prec' => null, 'solde_actuel' => null, 'recup_prec' => null,
-            'recup_actuel' => null, 'reliquat_prec' => null, 'reliquat_actuel' => null, 'anticipation_prec' => null, 'anticipation_actuel' => null);
-
-        $db=new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->update('conges', $update, "`perso_id` IN ($liste)");
-
-        // Suppresion des informations sur les récupérations
-        $db=new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->delete("recuperations", "`perso_id` IN ($liste)");
-
-        // Suppression des informations sur les heures de présence
-        $db=new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->delete("planning_hebdo", "`perso_id` IN ($liste)");
-    }
-
     // Will be replaced by AgentRepository::get
     public function fetch($tri="nom", $actif=null, $name=null)
     {

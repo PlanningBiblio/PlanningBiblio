@@ -654,49 +654,44 @@ class AgentRepository extends EntityRepository
     }
 
     // Will replace personnel::delete
-    public function delete($ids): void
+    public function delete($UserIds): void
     {
         // Suppresion des informations de la table personnel
         // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->update(Agent::class, 'a')
-            ->set('a.supprime', ':supprime')
+            ->set('a.supprime', 2)
             ->set('a.login', "CONCAT('deleted_', a.id)")
             ->set('a.nom', "CONCAT('Agent_', a.id)")
-            ->set('a.prenom', ':vide_string')
-            ->set('a.mail', ':vide_string')
-            ->set('a.arrivee', ':null')
-            ->set('a.depart', ':null')
-            ->set('a.postes', ':vide_array')
-            ->set('a.droits', ':vide_array')
-            ->set('a.password', ':vide_string')
+            ->set('a.prenom', "''")
+            ->set('a.mail', "''")
+            ->set('a.arrivee', 'NULL')
+            ->set('a.depart', 'NULL')
+            ->set('a.postes', "'[]'")
+            ->set('a.droits', "'[]'")
+            ->set('a.password', "''")
             ->set('a.commentaires', ':comment')
-            ->set('a.last_login', ':null')
-            ->set('a.temps', ':vide_array')
-            ->set('a.informations', ':vide_string')
-            ->set('a.recup', ':vide_string')
+            ->set('a.last_login', 'NULL')
+            ->set('a.temps', "'[]'")
+            ->set('a.informations', "''")
+            ->set('a.recup', "''")
             ->set('a.heures_travail', 0)
-            ->set('a.heures_hebdo', ':vide_string')
-            ->set('a.sites', ':vide_array')
-            ->set('a.mails_responsables', ':vide_string')
-            ->set('a.matricule', ':null')
-            ->set('a.code_ics', ':null')
-            ->set('a.url_ics', ':null')
-            ->set('a.check_ics', ':null')
-            ->set('a.check_hamac', ':false')
-            ->set('a.conges_credit', ':null')
-            ->set('a.conges_reliquat', ':null')
-            ->set('a.conges_anticipation', ':null')
-            ->set('a.conges_annuel', ':null')
-            ->set('a.comp_time', ':null')
-            ->setParameter('supprime', 2)
-            ->setParameter('null', null)
-            ->setParameter('vide_array', '[]')
-            ->setParameter('vide_string', '')
-            ->setParameter('false', false)
-            ->setParameter('comment', "Suppression définitive le ".date("d/m/Y"))
+            ->set('a.heures_hebdo', "''")
+            ->set('a.sites', "'[]'")
+            ->set('a.mails_responsables', "''")
+            ->set('a.matricule', 'NULL')
+            ->set('a.code_ics', 'NULL')
+            ->set('a.url_ics', 'NULL')
+            ->set('a.check_ics', 'NULL')
+            ->set('a.check_hamac', 0)
+            ->set('a.conges_credit', 'NULL')
+            ->set('a.conges_reliquat', 'NULL')
+            ->set('a.conges_anticipation', 'NULL')
+            ->set('a.conges_annuel', 'NULL')
+            ->set('a.comp_time', 'NULL')
             ->where('a.id IN (:ids)')
-            ->setParameter('ids', $ids)
+            ->setParameter('comment', 'Suppression définitive le ' . date("d/m/Y"))
+            ->setParameter('ids', $UserIds)
             ->getQuery()
             ->execute();
 
@@ -704,11 +699,10 @@ class AgentRepository extends EntityRepository
         // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->update(Absence::class, 'a')
-            ->set('a.commentaires', ':vide_string')
-            ->set('a.motif_autre', ':vide_string')
+            ->set('a.commentaires', "''")
+            ->set('a.motif_autre', "''")
             ->where('a.perso_id IN (:ids)')
-            ->setParameter('vide_string', '')
-            ->setParameter('ids', $ids)
+            ->setParameter('ids', $UserIds)
             ->getQuery()
             ->execute();
 
@@ -716,20 +710,19 @@ class AgentRepository extends EntityRepository
         // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->update(Holiday::class, 'h')
-            ->set('h.commentaires', ':null')
-            ->set('h.refus', ':null')
-            ->set('h.heures', ':null')
-            ->set('h.solde_prec', ':null')
-            ->set('h.solde_actuel', ':null')
-            ->set('h.recup_prec', ':null')
-            ->set('h.recup_actuel', ':null')
-            ->set('h.reliquat_prec', ':null')
-            ->set('h.reliquat_actuel', ':null')
-            ->set('h.anticipation_prec', ':null')
-            ->set('h.anticipation_actuel', ':null')
+            ->set('h.commentaires', 'NULL')
+            ->set('h.refus', 'NULL')
+            ->set('h.heures', 'NULL')
+            ->set('h.solde_prec', 'NULL')
+            ->set('h.solde_actuel', 'NULL')
+            ->set('h.recup_prec', 'NULL')
+            ->set('h.recup_actuel', 'NULL')
+            ->set('h.reliquat_prec', 'NULL')
+            ->set('h.reliquat_actuel', 'NULL')
+            ->set('h.anticipation_prec', 'NULL')
+            ->set('h.anticipation_actuel', 'NULL')
             ->where('h.perso_id IN (:ids)')
-            ->setParameter('null', null)
-            ->setParameter('ids', $ids)
+            ->setParameter('ids', $UserIds)
             ->getQuery()
             ->execute();
 
@@ -737,7 +730,7 @@ class AgentRepository extends EntityRepository
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->delete(OverTime::class, 'o')
             ->where('o.perso_id IN (:ids)')
-            ->setParameter('ids', $ids)
+            ->setParameter('ids', $UserIds)
             ->getQuery()
             ->execute();
 
@@ -745,12 +738,13 @@ class AgentRepository extends EntityRepository
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->delete(WorkingHour::class, 'w')
             ->where('w.perso_id IN (:ids)')
-            ->setParameter('ids', $ids)
+            ->setParameter('ids', $UserIds)
             ->getQuery()
             ->execute();
     }
 
     // Will replace personnel::fetch
+    // TODO: Check if getAgentsList can be use instead
     public function get($orderBy = 'nom', $actif = null, $name = null)
     {
         $supprime = $actif == 'Supprimé' ? [1] : [0];
