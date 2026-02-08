@@ -120,9 +120,8 @@ function agent_list() {
 function deleteAgent() {
   var agentId = $('#agentId').val();
   var date = $('#delete-date').val();
-  var CSRFToken = $('#CSRFSession').val();
+  var data = {id: agentId, _token: $('input[name=_token]').val()};
 
-  var data = {id: agentId, CSRFToken: CSRFToken};
   if ($('#permanentDelete').val() == 0) {
     data.date = date;
   }
@@ -331,6 +330,24 @@ function sendICSURL(){
   $( "#ics-url-recipient" ).text(mail);
   $( "#ics-url-text" ).val(message);
   $( "#ics-url-form" ).dialog( 'open' );
+}
+
+function sendPassword() {
+  $.ajax({
+    url: url('agent/send-password'),
+    type: 'post',
+    dataType: 'json',
+    data: {
+      _token: $('input[name=_token]').val(),
+      id: $('input[name=id]').val(),
+    },
+    success: function(result) {
+      CJInfo(result[0], result[1]);
+    },
+    error: function() {
+      CJInfo('Une errreur est survenue lors de l\'envoi du mot de passe', 'error');
+    }
+  });
 }
 
 // Contrôle des champs lors de la validation

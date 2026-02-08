@@ -614,43 +614,6 @@ class AgentController extends BaseController
 
             break;
 
-            // TODO: créer une route dédié pour le case 'mdp'
-          case "mdp":
-
-            // Demo mode
-            if (!empty($this->config('demo'))) {
-                $msg = "Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration";
-                $msgType = 'notice';
-                break;
-            }
-
-            $mdp=gen_trivial_password();
-            $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
-            $login = $agent->getLogin();
-
-            // Envoi du mail
-            $message = "Votre mot de passe Planno a été modifié";
-            $message.= "<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
-
-            $m = new \CJMail();
-            $m->subject = "Modification du mot de passe";
-            $m->message = $message;
-            $m->to = $mail;
-            $m->send();
-
-            // Si erreur d'envoi de mail, affichage de l'erreur
-            if ($m->error) {
-                $msg = $m->error_CJInfo;
-                $msgType = 'error';
-            } else {
-                $msg = "Le mot de passe a été modifié et envoyé par e-mail à l'agent";
-                $msgType = 'notice';
-            }
-
-            $agent->setPassword($mdp_crypt);
-
-            break;
-
           case 'update':
 
             $msg = 'L\'agent a été modifié avec succés';
@@ -688,42 +651,38 @@ class AgentController extends BaseController
             break;
         }
 
-        if ($action != 'mdp')
-        {
-            $agent->setLastname($nom);
-            $agent->setFirstname($prenom);
-            $agent->setMail($mail);
-            $agent->setStatus($statut);
-            $agent->setCategory($categorie);
-            $agent->setService($service);
-            $agent->setWeeklyServiceHours($heuresHebdo);
-            $agent->setWeeklyWorkingHours($heuresTravail);
-            $agent->setArrival($arrivee);
-            $agent->setDeparture($depart);
-            $agent->setActive($actif);
-            $agent->setACL($droits);
-            $agent->setSkills($postes);
-            $agent->setWorkingHours($temps);
-            $agent->setInformation($informations);
-            $agent->setRecoveryMenu($recup);
-            $agent->setSites($sites);
-            $agent->setManagersMails($managersMails);
-            $agent->setEmployeeNumber($matricule);
-            $agent->setIcsUrl($url_ics);
-            $agent->setIcsCheck($check_ics);
-            $agent->setHamacCheck($check_hamac);
-            $agent->setMsGraphCheck($mSGraphCheck);
+        $holidays = $this->save_holidays($params);
 
-            $holidays = $this->save_holidays($params);
-            $agent->setHolidayCompTime($holidays['comp_time']);
-            $agent->setHolidayAnnualCredit($holidays['conges_annuel']);
-            $agent->setHolidayAnticipation($holidays['conges_anticipation']);
-            $agent->setHolidayCredit($holidays['conges_credit']);
-            $agent->setHolidayRemainder($holidays['conges_reliquat']);
+        $agent->setLastname($nom);
+        $agent->setFirstname($prenom);
+        $agent->setMail($mail);
+        $agent->setStatus($statut);
+        $agent->setCategory($categorie);
+        $agent->setService($service);
+        $agent->setWeeklyServiceHours($heuresHebdo);
+        $agent->setWeeklyWorkingHours($heuresTravail);
+        $agent->setArrival($arrivee);
+        $agent->setDeparture($depart);
+        $agent->setActive($actif);
+        $agent->setACL($droits);
+        $agent->setSkills($postes);
+        $agent->setWorkingHours($temps);
+        $agent->setInformation($informations);
+        $agent->setRecoveryMenu($recup);
+        $agent->setSites($sites);
+        $agent->setManagersMails($managersMails);
+        $agent->setEmployeeNumber($matricule);
+        $agent->setIcsUrl($url_ics);
+        $agent->setIcsCheck($check_ics);
+        $agent->setHamacCheck($check_hamac);
+        $agent->setMsGraphCheck($mSGraphCheck);
+        $agent->setHolidayCompTime($holidays['comp_time']);
+        $agent->setHolidayAnnualCredit($holidays['conges_annuel']);
+        $agent->setHolidayAnticipation($holidays['conges_anticipation']);
+        $agent->setHolidayCredit($holidays['conges_credit']);
+        $agent->setHolidayRemainder($holidays['conges_reliquat']);
 
-            $this->entityManager->persist($agent);
-        }
-
+        $this->entityManager->persist($agent);
         $this->entityManager->flush();
 
         if (!empty($msg)) {
@@ -731,6 +690,58 @@ class AgentController extends BaseController
         }
 
         return $this->redirectToRoute('agent.index');
+    }
+
+    #[Route(path: '/agent/send-password', name: 'agent.send_password', methods: ['POST'])]
+    public function sendPassword(Request $request)
+    {
+        // CSRF Protection
+        if (!$this->csrf_protection($request)) {
+            $return = ['CSRF token error', 'error'];
+            $response = new Response();
+            $response->setContent(json_encode($return));
+            $response->setStatusCode(200);
+            return $response;
+        }
+
+        // Demo mode
+        if (!empty($this->config('demo'))) {
+            $return = ['Le mot de passe n\'a pas été modifié car vous utilisez une version de démonstration', 'error'];
+            $response = new Response();
+            $response->setContent(json_encode($return));
+            $response->setStatusCode(200);
+            return $response;
+        }
+
+        // Change and send the new password
+        $id = $request->get('id');
+        $password = gen_trivial_password();
+        $cryptedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+        $agent = $this->entityManager->getRepository(Agent::class)->find($id);
+        $agent->setPassword($cryptedPassword);
+        $this->entityManager->flush();
+
+        // Send the e-mail
+        $message = "Votre mot de passe Planno a été modifié";
+        $message.= "<ul><li>Login : {$agent->getLogin()}</li><li>Mot de passe : $password</li></ul>";
+
+        $m = new \CJMail();
+        $m->subject = "Modification du mot de passe";
+        $m->message = $message;
+        $m->to = $agent->getMail();;
+        $m->send();
+
+        if ($m->error) {
+            $return = [$m->error_CJInfo, 'error'];
+        } else {
+            $return = ['Le mot de passe a été modifié et envoyé par e-mail à l\'agent', 'success'];
+        }
+
+        $response = new Response();
+        $response->setContent(json_encode($return));
+        $response->setStatusCode(200);
+        return $response;
     }
 
     private function changeAgentPassword(Request $request, $agent_id, $password): \Symfony\Component\HttpFoundation\Response {
@@ -1322,11 +1333,12 @@ class AgentController extends BaseController
     #[Route(path: '/agent', name: 'agent.delete', methods: ['DELETE'])]
     public function deleteAgent(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
-        // TODO: Add CSRF Protection
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
 
         // Initialisation des variables
         $id = $request->get('id');
-        $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');
 
         // Disallow admin deletion

@@ -470,11 +470,6 @@ function information(message,type,top,time){
   timeoutJSInfo=window.setTimeout("$('#JSInformation').remove()",time);
 }
 
-function modif_mdp(){
-  document.form.action.value="mdp";
-  document.form.submit();
-}
-
 function removeAccents(strAccents){
   strAccents = strAccents.split('');
   strAccentsOut = new Array();
