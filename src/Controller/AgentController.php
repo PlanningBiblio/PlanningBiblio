@@ -1,7 +1,5 @@
 <?php
-
-// TODO: FIXME: la modification en masse des activités ne fonctionne pas
-// Voir les fonctions créées pas Xinying dans AgentRepository
+// TODO: Voir les fonctions créées pas Xinying dans AgentRepository
 
 namespace App\Controller;
 
@@ -1445,7 +1443,8 @@ class AgentController extends BaseController
         $statut = $request->get('statut');
 
         // Skills tab
-        $postes = $request->get('postes');
+        $skills = $request->get('postes');
+        $skills = $skills == '-1' ? '-1' : json_decode($skills);
 
         // Update DB
         $agents = $this->entityManager->getRepository(Agent::class)->findById($list);
@@ -1477,8 +1476,8 @@ class AgentController extends BaseController
             }
 
             // Skills tab
-            if ($postes != '-1') {
-                $agent->setSkills($postes);
+            if ($skills != '-1') {
+                $agent->setSkills($skills);
             }
 
             $this->entityManager->persist($agent);
