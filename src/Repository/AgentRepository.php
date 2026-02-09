@@ -476,7 +476,7 @@ class AgentRepository extends EntityRepository
      *
      * It sets agents as deleted both in column "supprime(=1)" and "actif(='Supprim&eacute;')" if:
      *  - the departure date is before today,
-     *  - the departure date is not equal to '0000-00-00',
+     *  - the departure date is not null,
      *  - the agent is not already marked as deleted.
      * 
      */
@@ -489,7 +489,7 @@ class AgentRepository extends EntityRepository
             ->set('p.supprime', ':supprime')
             ->set('p.actif', ':actif')
             ->where('p.depart < CURRENT_DATE()')
-            ->andWhere("p.depart <> '0000-00-00'")
+            ->andWhere("p.depart IS NOT NULL")
             ->andWhere('p.actif NOT LIKE :actifLike')
             ->setParameter('supprime', 1)
             ->setParameter('actif', 'Supprimé')

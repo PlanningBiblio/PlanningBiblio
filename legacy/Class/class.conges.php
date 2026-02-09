@@ -635,7 +635,7 @@ class conges
                     continue;
                 }
                 if (!array_key_exists("validation", $tab[$elem['perso_id']])) {
-                    $tab[$elem['perso_id']]['validation']="0000-00-00 00:00:00";
+                    $tab[$elem['perso_id']]['validation'] = null;
                 }
                 if (!array_key_exists("maj2", $tab[$elem['perso_id']]) and $elem['info_date']>$tab[$elem['perso_id']]['validation']) {
                     $tab[$elem['perso_id']]['conge_restant']=$elem['solde_actuel'];
