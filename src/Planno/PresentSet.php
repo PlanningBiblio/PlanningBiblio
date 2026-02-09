@@ -32,7 +32,7 @@ class PresentSet
         $semaine3 = $date_planning->semaine3;
         $absents = $this->absents;
 
-        $this->db->select("personnel", "*", "`actif` LIKE 'Actif' AND (`depart` >= $date OR `depart` = '0000-00-00')", "ORDER BY `nom`,`prenom`");
+        $this->db->select("personnel", "*", "`actif` LIKE 'Actif' AND (`depart` >= $date OR `depart` IS NULL)", "ORDER BY `nom`,`prenom`");
 
         if ($config['PlanningHebdo']) {
             $tempsPlanningHebdo = self::getPlanningHebdo($date);
