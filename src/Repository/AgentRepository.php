@@ -584,51 +584,51 @@ class AgentRepository extends EntityRepository
         if (!$userId) {
             return [
                 'annuel' => 0,
-                'anticipation' => 0,
-                'credit' => 0,
-                'recup' => 0,
-                'reliquat' => 0,
                 'annuelHeures' => 0,
-                'anticipationHeures' => 0,
-                'creditHeures' => 0,
-                'recupHeures' => 0,
-                'reliquatHeures' => 0,
                 'annuelMinutes' => 0,
+                'anticipation' => 0,
+                'anticipationHeures' => 0,
                 'anticipationMinutes' => 0,
+                'credit' => 0,
+                'creditHeures' => 0,
                 'creditMinutes' => 0,
+                'recup' => 0,
+                'recupHeures' => 0,
                 'recupMinutes' => 0,
+                'reliquat' => 0,
+                'reliquatHeures' => 0,
                 'reliquatMinutes' => 0,
             ];
         }
 
         $agent = $this->find($userId);
 
-        $decimal_annuel       = $agent->getHolidayAnnualCredit();
-        $decimal_anticipation = $agent->getHolidayAnticipation();
-        $decimal_credit       = $agent->getHolidayCredit();
-        $decimal_comp_time    = $agent->getHolidayCompTime();
-        $decimal_reliquat     = $agent->getHolidayRemainder();
+        $decimalAnnuel       = $agent->getHolidayAnnualCredit();
+        $decimalAnticipation = $agent->getHolidayAnticipation();
+        $decimalCredit       = $agent->getHolidayCredit();
+        $decimalCompTime     = $agent->getHolidayCompTime();
+        $decimalReliquat     = $agent->getHolidayRemainder();
 
-        $annuel       = HourHelper::decimalToHoursMinutes($decimal_annuel);
-        $anticipation = HourHelper::decimalToHoursMinutes($decimal_anticipation);
-        $credit       = HourHelper::decimalToHoursMinutes($decimal_credit);
-        $comp_time    = HourHelper::decimalToHoursMinutes($decimal_comp_time);
-        $reliquat     = HourHelper::decimalToHoursMinutes($decimal_reliquat);
+        $annuel       = HourHelper::decimalToHoursMinutes($decimalAnnuel);
+        $anticipation = HourHelper::decimalToHoursMinutes($decimalAnticipation);
+        $credit       = HourHelper::decimalToHoursMinutes($decimalCredit);
+        $compTime    = HourHelper::decimalToHoursMinutes($decimalCompTime);
+        $reliquat     = HourHelper::decimalToHoursMinutes($decimalReliquat);
         
         return [
-            'annuel'              => $decimal_annuel,
+            'annuel'              => $decimalAnnuel,
             'annuelHeures'        => $annuel['hours'],
             'annuelMinutes'       => $annuel['minutes'],
-            'anticipation'        => $decimal_anticipation,
+            'anticipation'        => $decimalAnticipation,
             'anticipationHeures'  => $anticipation['hours'],
             'anticipationMinutes' => $anticipation['minutes'],
-            'credit'              => $decimal_credit,
+            'credit'              => $decimalCredit,
             'creditHeures'        => $credit['hours'],
             'creditMinutes'       => $credit['minutes'],
-            'recup'               => $decimal_comp_time,
-            'recupHeures'         => $comp_time['hours'],
-            'recupMinutes'        => $comp_time['minutes'],
-            'reliquat'            => $decimal_reliquat,
+            'recup'               => $decimalCompTime,
+            'recupHeures'         => $compTime['hours'],
+            'recupMinutes'        => $compTime['minutes'],
+            'reliquat'            => $decimalReliquat,
             'reliquatHeures'      => $reliquat['hours'],
             'reliquatMinutes'     => $reliquat['minutes']
         ];

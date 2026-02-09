@@ -118,9 +118,12 @@ function agent_list() {
 }
 
 function deleteAgent() {
-  var agentId = $('#agentId').val();
   var date = $('#delete-date').val();
-  var data = {id: agentId, _token: $('input[name=_token]').val()};
+
+  var data = {
+    _token: $('input[name=_token]').val(),
+    id: $('#agentId').val(),
+  };
 
   if ($('#permanentDelete').val() == 0) {
     data.date = date;
