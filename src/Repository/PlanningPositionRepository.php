@@ -63,6 +63,8 @@ class PlanningPositionRepository extends EntityRepository
      * @param string $date Date threshold
      * @return int Number of affected rows
      */
+    // TODO: In AgentController::save, the former action set supprime = 0 for all lines for concerned Agents before setting 1 after the date.
+    // Check if it's still necesarry, have tests with deletion date changements
     public function updateAsDeleteByUserIdAndAfterDate($userIds, string $date)
     {
         $userIds = is_array($userIds) ? $userIds : [$userIds];
@@ -88,6 +90,10 @@ class PlanningPositionRepository extends EntityRepository
      * @param string $date Date value
      * @return int Number of affected rows
      */
+    // TODO: FIXME: The former query was
+    // $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "$id", 'date' =>">$date"));
+    // Difference >$date (former) =$date (new) 
+    // Check if we can keep only one method (merge with updateAsDeleteByUserIdAndAfterDate)
     public function updateAsDeletedByUserIdAndThatDate(int $userId, string $date)
     {
         return $this->createQueryBuilder('p')

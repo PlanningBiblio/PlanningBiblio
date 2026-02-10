@@ -82,17 +82,16 @@ class ManagerRepository extends EntityRepository
      * This method removes manager records where the agent
      * or the responsible matches the given IDs.
      *
-     * @param array|int $ids Agent or responsible ID(s)
+     * @param array $userIds, array of agent or responsible IDs
      * @return void
      */
-    public function deleteByPersoOrResponsable($ids)
+    public function deleteByPersoOrResponsable($userIds)
     {
-        $ids = is_array($ids) ? $ids : [$ids];
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->delete(Manager::class, 'm')
             ->where('m.perso_id IN (:id)')
             ->orWhere('m.responsable IN (:id)')
-            ->setParameter('id', $ids)
+            ->setParameter('id', $userIds)
             ->getQuery()
             ->execute();
     }

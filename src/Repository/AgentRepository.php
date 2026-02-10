@@ -371,13 +371,11 @@ class AgentRepository extends EntityRepository
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->select('a')
                 ->from(Agent::class, 'a')
-                ->andWhere('a.id != :all')
-                ->addOrderBy('a.nom', 'ASC')
-                ->setParameter('all', 2);
+                ->andWhere('a.id != 2')
+                ->addOrderBy('a.nom', 'ASC');
 
         if (!$deleted) {
-            $builder->andWhere('a.supprime = :deleted')
-                    ->setParameter('deleted', '0');
+            $builder->andWhere('a.supprime = 0');
         }
 
         $agents = $builder->getQuery()->getResult();
@@ -512,11 +510,10 @@ class AgentRepository extends EntityRepository
         return $qb
             ->update()
             ->set('p.supprime', 1)
-            ->set('p.actif', ':actif')
+            ->set('p.actif', "'Supprimé'")
             ->set('p.depart', ':today')
             ->where('p.id IN (:ids)')
             ->setParameter('ids', $ids)
-            ->setParameter('actif', 'Supprimé')
             ->setParameter('today', date('Y-m-d'))
             ->getQuery()
             ->execute();
@@ -643,8 +640,7 @@ class AgentRepository extends EntityRepository
     {
         return $this->createQueryBuilder('a')
             ->select('a.login')
-            ->where('a.supprime != :deleted')
-            ->setParameter('deleted', 2)
+            ->where('a.supprime != 2')
             ->orderBy('a.login', 'ASC')
             ->getQuery()
             ->getArrayResult();
@@ -741,12 +737,15 @@ class AgentRepository extends EntityRepository
     }
 
     // Will replace personnel::fetch
-    // TODO: Check if getAgentsList can be use instead
+    // TODO: Check if getAgentsList can be use instead (E.g. : if we can add $actif filter and $name filter (or if we don't need $name anymore)
     public function get($orderBy = 'nom', $actif = null, $name = null)
     {
+        // TODO: Try: $supprime = $actif == 'Supprimé' ? 1 : 0;
         $supprime = $actif == 'Supprimé' ? [1] : [0];
+        // TODO: Try without the following line
         $actif = strstr($actif, 'Supprim') ? 'Supprim%' : $actif;
 
+        // TODO: Check if it's still necessary
         $fields = array_map('trim', explode(',', $orderBy));
         $orders = [];
         foreach ($fields as $field) {
@@ -757,13 +756,16 @@ class AgentRepository extends EntityRepository
         $qb = $this->createQueryBuilder('a')
             ->select('a')
             ->where('a.id <> 2')
+            // TODO: Try: ->andWhere('a.supprime = :supprime');
             ->andWhere('a.supprime IN (:supprime)');
-        
+
         if (!empty($actif)) {
+            // TODO: selon la modification de la ligne 747 : Try $qb ->andWhere('a.actif = :actif')
             $qb ->andWhere('a.actif LIKE :actif')
                 ->setParameter('actif', $actif);
         }
 
+        // TODO: Check if it's still necessary
         $qb ->setParameter('supprime', $supprime)
             ->orderBy($orderBy);
 
@@ -771,6 +773,8 @@ class AgentRepository extends EntityRepository
             ->getQuery()
             ->getResult();
 
+        // TODO: Check if it's still necessary
+        // If we need to keep it, check if we can to the folowwing in an SQL Query
         if ($name) {
             foreach($agents as $agent) {
                 if (pl_stristr($agent->getFirstname(), $name) or pl_stristr($agent->getLastname(), $name))
@@ -779,7 +783,8 @@ class AgentRepository extends EntityRepository
                 }
             }
         } else {
-            return $agents;// sortir des entities
+            // TODO: Note Xinying: sortir des entities
+            return $agents;
         }
     }
 }

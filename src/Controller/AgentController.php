@@ -1362,7 +1362,7 @@ class AgentController extends BaseController
 
             // Mise à jour de la table responsables
             // Deletes manager links by agent or responsible IDs.
-            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($id);
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable([$id]);
 
             return $this->json("level 1 delete OK");
 
