@@ -57,6 +57,7 @@
 | halfDayEnd | end_halfday |
 | halfDayStart | start_halfday |
 | hamacCheck | check_hamac |
+| hiddenTables | hidden_tables |
 | holidayAnticipation | conges_anticipation |
 | holidayCompTime | comp_time |
 | holidayCredit | conges_credit |
@@ -99,11 +100,11 @@
 | rank | rang |
 | recoveryMenu | recup |
 | regulationId | regul_id |
-| service | service |
 | reason | motif |
 | requestDate | demande |
 | rRule| rrule |
 | replace | remplace |
+| service | service |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |
