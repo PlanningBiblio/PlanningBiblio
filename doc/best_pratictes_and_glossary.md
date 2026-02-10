@@ -81,6 +81,7 @@
 | manager | responsable |
 | managersMails | mails_responsables |
 | mandatory | obligatoire |
+| message | message |
 | modelId | model_id |
 | msGraphCheck | check_ms_graph |
 | number | numero |
@@ -99,19 +100,22 @@
 | rank | rang |
 | recoveryMenu | recup |
 | regulationId | regul_id |
-| service | service |
+| recipients | destinataires |
 | reason | motif |
 | requestDate | demande |
 | rRule| rrule |
 | replace | remplace |
+| service | service |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |
 | start | debut |
 | statistics | statistiques |
 | status | etat, statut |
+| subject | sujet |
 | table | tableau |
 | teleworking | teleworking |
+| timestamp | timestamp |
 | user | agent |
 | userId | perso_id or agent_id or agentId |
 | validLevel1 | valide_n1 |
