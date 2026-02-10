@@ -22,8 +22,6 @@ use App\Entity\WorkingHour;
 use App\Entity\Config;
 use App\Planno\Helper\HourHelper;
 
-require_once __DIR__ . '/../../legacy/Common/function.php';
-
 class AgentRepository extends EntityRepository
 {
     private $module = 'absence';
@@ -738,53 +736,33 @@ class AgentRepository extends EntityRepository
 
     // Will replace personnel::fetch
     // TODO: Check if getAgentsList can be use instead (E.g. : if we can add $actif filter and $name filter (or if we don't need $name anymore)
-    public function get($orderBy = 'nom', $actif = null, $name = null)
+    public function get($actif = null, $name = null)
     {
         // TODO: Try: $supprime = $actif == 'Supprimé' ? 1 : 0;
-        $supprime = $actif == 'Supprimé' ? [1] : [0];
-        // TODO: Try without the following line
-        $actif = strstr($actif, 'Supprim') ? 'Supprim%' : $actif;
-
-        // TODO: Check if it's still necessary
-        $fields = array_map('trim', explode(',', $orderBy));
-        $orders = [];
-        foreach ($fields as $field) {
-            $orders[] = 'a.' . $field;
-        }
-        $orderBy = implode(', ', $orders);
+        $supprime = $actif == 'Supprimé' ? 1 : 0;
 
         $qb = $this->createQueryBuilder('a')
             ->select('a')
             ->where('a.id <> 2')
             // TODO: Try: ->andWhere('a.supprime = :supprime');
-            ->andWhere('a.supprime IN (:supprime)');
+            ->andWhere('a.supprime IN (:supprime)')
+            ->setParameter('supprime', $supprime);
 
-        if (!empty($actif)) {
-            // TODO: selon la modification de la ligne 747 : Try $qb ->andWhere('a.actif = :actif')
-            $qb ->andWhere('a.actif LIKE :actif')
+        if ($actif != null) {
+            $qb ->andWhere('a.actif = :actif')
                 ->setParameter('actif', $actif);
         }
 
-        // TODO: Check if it's still necessary
-        $qb ->setParameter('supprime', $supprime)
-            ->orderBy($orderBy);
+        if($name) {
+            $qb ->andWhere('a.nom LIKE :name OR a.prenom LIKE :name')
+                ->setParameter('name', '%' . $name . '%');
+        }
 
         $agents = $qb
+            ->orderBy('a.nom, a.prenom')
             ->getQuery()
             ->getResult();
 
-        // TODO: Check if it's still necessary
-        // If we need to keep it, check if we can to the folowwing in an SQL Query
-        if ($name) {
-            foreach($agents as $agent) {
-                if (pl_stristr($agent->getFirstname(), $name) or pl_stristr($agent->getLastname(), $name))
-                {
-                    return $agent;
-                }
-            }
-        } else {
-            // TODO: Note Xinying: sortir des entities
-            return $agents;
-        }
+        return $agents;
     }
 }

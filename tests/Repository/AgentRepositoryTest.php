@@ -26,7 +26,7 @@ class AgentRepositoryTest extends PLBWebTestCase
         $builder->delete(Manager::class);
 
         $mike = $this->createAgent(array('login' => 'Mike', 'prenom' => 'Mike', 'supprime' => 1, 'actif' => 'Supprimé'));
-        $eric = $this->createAgent(array('login' => 'Eric', 'prenom' => 'Eric', 'supprime' => 1, 'actif' => 'Supprim&eacute;'));
+        $eric = $this->createAgent(array('login' => 'Eric', 'prenom' => 'Eric', 'supprime' => 1, 'actif' => 'Supprimé'));
         $john = $this->createAgent(array('login' => 'John', 'prenom' => 'John', 'supprime' => 2, 'actif' => 'Actif'));
         $leo = $this->createAgent(array('login' => 'Leo', 'prenom' => 'Léo', 'supprime' => 0, 'actif' => 'Actif'));
 
@@ -74,17 +74,17 @@ class AgentRepositoryTest extends PLBWebTestCase
     {
         $repo = $this->entityManager->getRepository(Agent::class);
 
-        $leo = $repo->get('nom', 'Actif', 'Léo');
+        $leo = $repo->get('Actif', 'Léo');
         $managerLogins = array_map(
             fn($m) => $m->getManager()->getLogin(),
-            $leo->getManagers()
+            $leo[0]->getManagers()
         );
         $this->assertCount(3, $managerLogins);
         $this->assertContains('Mike', $managerLogins);
         $this->assertContains('Eric', $managerLogins);
         $this->assertContains('John', $managerLogins);
 
-        $agentsSupprime1 = $repo->get('nom', 'Supprimé', null);
+        $agentsSupprime1 = $repo->get( 'Supprimé', null);
         $logins = array_map(
             fn($a) => $a->getLogin(),
             $agentsSupprime1
@@ -93,17 +93,7 @@ class AgentRepositoryTest extends PLBWebTestCase
         $this->assertContains('Mike', $logins);
         $this->assertContains('Eric', $logins);
 
-        $agentsSupprime2 = $repo->get('nom', 'Supprim&eacute;', null);
-        $logins = array_map(
-            fn($a) => $a->getLogin(),
-            $agentsSupprime1
-        );
-        $this->assertCount(2, $logins);
-        $this->assertContains('Mike', $logins);
-        $this->assertContains('Eric', $logins);
-
-
-        $agentsActif = $repo->get('nom', 'Actif');
+        $agentsActif = $repo->get('Actif');
         $this->assertCount(1, $agentsActif);
         $this->assertSame('Leo', $agentsActif[0]->getLogin());
     }

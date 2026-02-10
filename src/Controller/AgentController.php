@@ -95,7 +95,7 @@ class AgentController extends BaseController
         }
 
         // Get all agents
-        $agents = $this->entityManager->getRepository(Agent::class)->get('nom', $active);
+        $agents = $this->entityManager->getRepository(Agent::class)->get($active);
 
         $this->templateParams([
             'active'            => $active,
@@ -634,14 +634,8 @@ class AgentController extends BaseController
             }
 
             // Mise à jour de la table pl_poste en cas de modification de la date de départ
-            // Updates the deletion flag for a given user.
-            // TODO: bien tester ces 2 fonctions et voir si nous pouvons les reunir en une seule, ou simplifier la logique.
-            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserId($id);
-            if ($depart != "0000-00-00" and $depart != "") {
-                // Si une date de départ est précisée, on met supprime=1 au dela de cette date
-                // Updates users as deleted for a given user and after a given date.
-                $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($id, $depart->format('Y-m-d'));
-            }
+            // Updates users as deleted for a given user and after a given date.
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($id, $depart);
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
             if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
                 $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
@@ -1331,7 +1325,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent', name: 'agent.delete', methods: ['DELETE'])]
-    public function deleteAgent(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
+    public function deleteAgent(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -1358,7 +1352,7 @@ class AgentController extends BaseController
 
             // Mise à jour de la table pl_poste
             // Updates the deletion flag for a user on a given date.
-            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeletedByUserIdAndThatDate($id, $date);
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($id, $date);
 
             // Mise à jour de la table responsables
             // Deletes manager links by agent or responsible IDs.

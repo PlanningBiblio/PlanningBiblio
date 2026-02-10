@@ -32,28 +32,6 @@ class PlanningPositionRepository extends EntityRepository
     }
 
     /**
-     * Updates the deletion flag for a given user.
-     *
-     * This method sets the deletion flag to active
-     * for the user identified by the given ID.
-     *
-     * @param int $userId User ID
-     * @return int Number of affected rows
-     */
-    public function updateAsDeletedByUserId(int $userId)
-    {
-        $qb = $this->createQueryBuilder('p');
-
-        return $qb
-            ->update()
-            ->set('p.supprime', 0)
-            ->where('p.perso_id = :userId')
-            ->setParameter('userId', $userId)
-            ->getQuery()
-            ->execute();
-    }
-
-    /**
      * Updates users as deleted for a given user and after a given date.
      *
      * This method sets the deletion flag for users
@@ -65,45 +43,28 @@ class PlanningPositionRepository extends EntityRepository
      */
     // TODO: In AgentController::save, the former action set supprime = 0 for all lines for concerned Agents before setting 1 after the date.
     // Check if it's still necesarry, have tests with deletion date changements
-    public function updateAsDeleteByUserIdAndAfterDate($userIds, string $date)
+    public function updateAsDeleteByUserIdAndAfterDate($userIds, $date): void
     {
         $userIds = is_array($userIds) ? $userIds : [$userIds];
 
-        return $this->createQueryBuilder('p')
+        $this->createQueryBuilder('p')
             ->update()
-            ->set('p.supprime', 1)
+            ->set('p.supprime', 0)
             ->where('p.perso_id IN (:perso_ids)')
-            ->andWhere('p.date > :date')
             ->setParameter('perso_ids', $userIds)
-            ->setParameter('date', $date)
             ->getQuery()
             ->execute();
-    }
 
-    /**
-     * Updates the deletion flag for a user on a given date.
-     *
-     * This method marks the user as deleted
-     * when the user ID and date match.
-     *
-     * @param int $userId User ID
-     * @param string $date Date value
-     * @return int Number of affected rows
-     */
-    // TODO: FIXME: The former query was
-    // $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "$id", 'date' =>">$date"));
-    // Difference >$date (former) =$date (new) 
-    // Check if we can keep only one method (merge with updateAsDeleteByUserIdAndAfterDate)
-    public function updateAsDeletedByUserIdAndThatDate(int $userId, string $date)
-    {
-        return $this->createQueryBuilder('p')
-            ->update()
-            ->set('p.supprime', 1)
-            ->where('p.perso_id = :perso_id')
-            ->andWhere('p.date = :date')
-            ->setParameter('perso_id', $userId)
-            ->setParameter('date', $date)
-            ->getQuery()
-            ->execute();
+        if ($date != null) {
+            $this->createQueryBuilder('p')
+                ->update()
+                ->set('p.supprime', 1)
+                ->where('p.perso_id IN (:perso_ids)')
+                ->andWhere('p.date > :date')
+                ->setParameter('perso_ids', $userIds)
+                ->setParameter('date', $date)
+                ->getQuery()
+                ->execute();
+        }
     }
 }
