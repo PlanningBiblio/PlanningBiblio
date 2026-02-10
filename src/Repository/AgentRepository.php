@@ -486,14 +486,11 @@ class AgentRepository extends EntityRepository
 
         return $qb
             ->update()
-            ->set('p.supprime', ':supprime')
-            ->set('p.actif', ':actif')
+            ->set('p.supprime', 1)
+            ->set('p.actif', "'Supprimé'")
             ->where('p.depart < CURRENT_DATE()')
             ->andWhere("p.depart IS NOT NULL")
-            ->andWhere('p.actif NOT LIKE :actifLike')
-            ->setParameter('supprime', 1)
-            ->setParameter('actif', 'Supprimé')
-            ->setParameter('actifLike', 'Supprim%')
+            ->andWhere("p.actif NOT LIKE 'Supprim%'")
             ->getQuery()
             ->execute();
     }
