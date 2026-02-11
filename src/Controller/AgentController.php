@@ -692,7 +692,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent/send-password', name: 'agent.send_password', methods: ['POST'])]
-    public function sendPassword(Request $request)
+    public function sendPassword(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         // CSRF Protection
         if (!$this->csrf_protection($request)) {

@@ -42,7 +42,7 @@ class HolidayRepositoryTest extends TestCase
         )); 
     }
 
-    public function testInsertCreatesHolidayWhenCreditsChange()
+    public function testInsertCreatesHolidayWhenCreditsChange(): void
     {
         $builder = new FixtureBuilder();
         $builder->delete(Holiday::class);

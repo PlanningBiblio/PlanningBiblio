@@ -56,7 +56,7 @@ class AgentRepositoryTest extends PLBWebTestCase
         $this->entityManager->clear();
     }
 
-    private function createAgent(array $agentInfo)
+    private function createAgent(array $agentInfo): \App\Entity\Agent
     {
         $agent = new Agent();
         $agent->setLogin($agentInfo['login']);
@@ -209,7 +209,7 @@ class AgentRepositoryTest extends PLBWebTestCase
         $userId = null;
         $result = $this->entityManager->getRepository(Agent::class)->fetchCredits($userId);
 
-        foreach ($result as $key => $value) {
+        foreach ($result as $value) {
             $this->assertSame(0, $value);
         }
     }

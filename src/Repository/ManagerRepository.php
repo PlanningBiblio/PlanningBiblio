@@ -83,9 +83,8 @@ class ManagerRepository extends EntityRepository
      * or the responsible matches the given IDs.
      *
      * @param array $userIds, array of agent or responsible IDs
-     * @return void
      */
-    public function deleteByPersoOrResponsable($userIds)
+    public function deleteByPersoOrResponsable($userIds): void
     {
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->delete(Manager::class, 'm')
