@@ -33,9 +33,6 @@ class Absence
     #[ORM\Column(type: Types::TEXT)]
     private ?string $commentaires = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $etat = null;
-
     #[ORM\Column]
     private ?\DateTime $demande = null;
 
@@ -52,13 +49,13 @@ class Absence
     private ?\DateTime $validation_n1 = null;
 
     #[ORM\Column]
-    private ?int $pj1 = null;
+    private ?bool $pj1 = false;
 
     #[ORM\Column]
-    private ?int $pj2 = null;
+    private ?bool $pj2 = false;
 
     #[ORM\Column]
-    private ?int $so = null;
+    private ?bool $so = false;
 
     #[ORM\Column]
     private ?string $groupe = null;
@@ -81,36 +78,36 @@ class Absence
     #[ORM\Column]
     private ?int $id_origin = null;
 
-    public function getAttachment1(): ?int
+    public function isAttachment1(): ?bool
     {
         return $this->pj1;
     }
 
-    public function setAttachment1(?int $attachment1): static
+    public function setAttachment1(?bool $attachment1): static
     {
         $this->pj1 = $attachment1;
 
         return $this;
     }
 
-    public function getAttachment2(): ?int
+    public function isAttachment2(): ?bool
     {
         return $this->pj2;
     }
 
-    public function setAttachment2(?int $attachment2): static
+    public function setAttachment2(?bool $attachment2): static
     {
         $this->pj2 = $attachment2;
 
         return $this;
     }
 
-    public function getAttachmentNA(): ?int
+    public function isAttachmentNA(): ?bool
     {
         return $this->so;
     }
 
-    public function setAttachmentNA(?int $attachmentNA): static
+    public function setAttachmentNA(?bool $attachmentNA): static
     {
         $this->so = $attachmentNA;
 
@@ -262,18 +259,6 @@ class Absence
     public function setStart(?\DateTime $start): static
     {
         $this->debut = $start;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->etat;
-    }
-
-    public function setStatus(?string $status): static
-    {
-        $this->etat = $status;
 
         return $this;
     }

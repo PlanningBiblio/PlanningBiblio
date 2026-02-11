@@ -317,7 +317,6 @@ class AbsenceImportCSVCommand extends Command
                 $absi->setReason($motif);
                 $absi->setRequestDate($requestDate);
                 $absi->setStart($start);
-                $absi->setStatus('');
                 $absi->setValidLevel1($validLevel1);
                 $absi->setValidLevel1Date($validLevel1Date);
                 $absi->setValidLevel2($validLevel2);
@@ -362,7 +361,6 @@ class AbsenceImportCSVCommand extends Command
                 $absu->setReason('');
                 $absu->setRequestDate($requestDate);
                 $absu->setStart($start);
-                $absu->setStatus('');
                 $absu->setValidLevel1($validLevel1);
                 $absu->setValidLevel1Date($validLevel1Date);
                 $absu->setValidLevel2($validLevel2);

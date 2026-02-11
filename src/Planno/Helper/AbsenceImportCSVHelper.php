@@ -182,7 +182,6 @@ class AbsenceImportCSVHelper extends BaseHelper
             $absence->setValidLevel2Date($now);
             $absence->setCalName('');
             $absence->setICalKey('');
-            $absence->setStatus('');
             $this->entityManager->persist($absence);
 
             $msg = "Absence ajoutée pour l'agent $perso_id ($firstname, $lastname)";
