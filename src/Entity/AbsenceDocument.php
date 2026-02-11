@@ -17,10 +17,10 @@ class AbsenceDocument
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $absence_id = null;
+    private ?int $absence_id = 0;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $filename = null;
+    private ?string $filename = '';
 
     #[ORM\Column]
     private ?\DateTime $date = null;
@@ -66,7 +66,8 @@ class AbsenceDocument
         return $this;
     }
 
-    public function deleteFile(): void {
+    public function deleteFile(): void
+    {
         if (!$this->absence_id || !$this->filename || !$this->id) return;
 
         unlink($this->upload_dir() . $this->absence_id . '/' . $this->id . '/' . $this->filename);
