@@ -54,6 +54,8 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
     public function testContextMenuAgentsDispo(): void
     {
+        global $entityManager;
+
         $GLOBALS['config']['PlanningHebdo-Agents'] = 0;
         $GLOBALS['config']['toutlemonde'] = 0;
         $GLOBALS['config']['PlanningHebdo'] = 1;
@@ -104,6 +106,59 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'droits' => [99, 100, 301],
         ));
 
+        $jdoe = new Agent();
+        $jdoe->setLogin('jdoe');
+        $jdoe->setLastname('Doe');
+        $jdoe->setFirstname('John');
+        $jdoe->setSkills([$id]);
+        $jdoe->setService('Pôle Public');
+        $jdoe->setSites([1]);
+        $jdoe->setACL([99, 100, 301]);
+        $entityManager->persist($jdoe);
+
+        $mgeorges = new Agent();
+        $mgeorges->setLogin('mgeorges');
+        $mgeorges->setLastname('Georges');
+        $mgeorges->setFirstname('Marie');
+        $mgeorges->setSkills([$id]);
+        $mgeorges->setService('Pôle Public');
+        $mgeorges->setSites([1]);
+        $mgeorges->setACL([99, 100, 301]);
+        $mgeorges->setArrival(\DateTime::createFromFormat('Y-m-d', '2022-11-02'));
+        $entityManager->persist($mgeorges);
+
+        $emartin = new Agent();
+        $emartin->setLogin('emartin');
+        $emartin->setLastname('Martin');
+        $emartin->setFirstname('Eric');
+        $emartin->setSkills([$id]);
+        $emartin->setService('Pôle Public');
+        $emartin->setSites([1]);
+        $emartin->setDeparture(\DateTime::createFromFormat('Y-m-d', '2022-10-31'));
+        $entityManager->persist($emartin);
+
+        $jmarc = new Agent();
+        $jmarc->setLogin('jmarc');
+        $jmarc->setLastname('Marc');
+        $jmarc->setFirstname('Jeremy');
+        $jmarc->setSkills([$id]);
+        $jmarc->setService('Pôle Public');
+        $jmarc->setSites([1]);
+        $jmarc->setDeparture(\DateTime::createFromFormat('Y-m-d', '2022-11-01'));
+        $entityManager->persist($jmarc);
+
+        $bmarley = new Agent();
+        $bmarley->setLogin('bmarley');
+        $bmarley->setLastname('Marley');
+        $bmarley->setFirstname('Bob');
+        $bmarley->setSkills([$id]);
+        $bmarley->setService('Pôle Public');
+        $bmarley->setSites([1]);
+        $bmarley->setArrival(\DateTime::createFromFormat('Y-m-d', '2022-11-01'));
+        $entityManager->persist($bmarley);
+
+        $entityManager->flush();
+
         $this->logInAgent($kboivin, $kboivin->getACL());
         // Create WeekPlanning
         $builder->delete(WorkingHour::class);
@@ -112,6 +167,11 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $this->createWeekPlanningFor($abreton);
         $this->createWeekPlanningFor($kboivin);
         $this->createWeekPlanningFor($jdupont);
+        $this->createWeekPlanningFor($jdoe);
+        $this->createWeekPlanningFor($mgeorges);
+        $this->createWeekPlanningFor($emartin);
+        $this->createWeekPlanningFor($jmarc);
+        $this->createWeekPlanningFor($bmarley);
 
         // Create Absence
         $builder->delete(Absence::class);
@@ -135,34 +195,26 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $result = explode('["callback":protected]', $response);
 
-        $this->assertStringContainsString('"position_name":"' . $post->getName() . '"', $result[0]);
-
-        $this->assertStringContainsString('"position_id":"' . $post->getId() . '"', $result[0]);
-
-        $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
-
-        $this->assertStringContainsString('"start":"08:00:00"', $result[0]);
-
-        $this->assertStringContainsString('"end":"19:30:00"', $result[0]);
-
-        $this->assertStringContainsString('"site":"1"', $result[0]);
-
-        $this->assertStringContainsString('"group_tab_hide":0', $result[0]);
-
-        $this->assertStringContainsString('"nb_agents":0', $result[0]);
-
-        $this->assertStringContainsString('"max_agents":"4"', $result[0]);
-
-        $this->assertStringContainsString('"agent_id":"' . $abreton->getId() . '"', $result[0]);
-
-        $this->assertStringContainsString('"agent_name":"' . $abreton->getLastname() . '"', $result[0]);
-
-        $this->assertStringContainsString('"name_title":"' . $kboivin->getLastname() . ' ' . $kboivin->getFirstname() . '"', $result[0]);
-
-        $this->assertStringContainsString('"name_title":"' . $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname() . '"', $result[0]);
-
+        $this->assertStringContainsString('"position_name":"' . $post->getName() . '"', $result[0], 'Position name');
+        $this->assertStringContainsString('"position_id":"' . $post->getId() . '"', $result[0], 'Position ID');
+        $this->assertStringContainsString('"date":"2022-11-01"', $result[0], 'Date is 2022-11-01');
+        $this->assertStringContainsString('"start":"08:00:00"', $result[0], 'Start is 08:00:00');
+        $this->assertStringContainsString('"end":"19:30:00"', $result[0], 'End is 19:30:00');
+        $this->assertStringContainsString('"site":"1"', $result[0], 'Site number is 1');
+        $this->assertStringContainsString('"group_tab_hide":0', $result[0], 'GroupTaHide:0');
+        $this->assertStringContainsString('"nb_agents":0', $result[0], 'nb_agents:0');
+        $this->assertStringContainsString('"max_agents":"4"', $result[0], 'max_agents:4');
+        $this->assertStringContainsString('"agent_id":"' . $abreton->getId() . '"', $result[0], 'agent_id contains abreton.id');
+        $this->assertStringContainsString('"agent_name":"' . $abreton->getLastname() . '"', $result[0], 'agent_name contains abreton.lastname');
+        $this->assertStringContainsString('"name_title":"' . $kboivin->getLastname() . ' ' . $kboivin->getFirstname() . '"', $result[0], 'name_title contains kboivin info');
+        $this->assertStringContainsString('"name_title":"' . $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname() . '"', $result[0], 'name_title contains jdevoe info');
         // Check if the absent agent is in not in the context menu
-        $this->assertStringNotContainsString('"name_title":"' . $jdupont->getLastname() . ' ' . $jdupont->getFirstname() . '"', $result[0]);
+        $this->assertStringNotContainsString('"name_title":"' . $jdupont->getLastname() . ' ' . $jdupont->getFirstname() . '"', $result[0], 'name_title not contains jdupont because absent');
+        $this->assertStringContainsString('"name_title":"' . $jdoe->getLastname() . ' ' . $jdoe->getFirstname() . '"', $result[0], 'name_title contains jdoe info');
+        $this->assertStringNotContainsString('"name_title":"' . $mgeorges->getLastname() . ' ' . $mgeorges->getFirstname() . '"', $result[0], 'name_title not contains mgeorges info because not arrived');
+        $this->assertStringNotContainsString('"name_title":"' . $emartin->getLastname() . ' ' . $emartin->getFirstname() . '"', $result[0], 'name_title not contains emartin info because he leaved');
+        $this->assertStringContainsString('"name_title":"' . $jmarc->getLastname() . ' ' . $jmarc->getFirstname() . '"', $result[0], 'name_title contains jmarc info');
+        $this->assertStringContainsString('"name_title":"' . $bmarley->getLastname() . ' ' . $bmarley->getFirstname() . '"', $result[0], 'name_title contains bmarley info');
     }
 
 

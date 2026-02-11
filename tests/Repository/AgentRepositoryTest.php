@@ -150,7 +150,7 @@ class AgentRepositoryTest extends PLBWebTestCase
         $this->assertEquals(0, $leo->getDeletion());
         $this->assertNull($leo->getDeparture());
 
-        $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($leo->getId());
+        $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById([$leo->getId()]);
 
         $this->entityManager->clear();
 

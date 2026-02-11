@@ -37,7 +37,7 @@ class PlanningPositionRepository extends EntityRepository
      * This method sets the deletion flag for users
      * whose date is after the given value.
      *
-     * @param array|int $userIds User ID or list of user IDs
+     * @param array $userIds, array of user IDs
      * @param string $date Date threshold
      * @return int Number of affected rows
      */
@@ -45,8 +45,6 @@ class PlanningPositionRepository extends EntityRepository
     // Check if it's still necesarry, have tests with deletion date changements
     public function updateAsDeleteByUserIdAndAfterDate($userIds, $date): void
     {
-        $userIds = is_array($userIds) ? $userIds : [$userIds];
-
         $this->createQueryBuilder('p')
             ->update()
             ->set('p.supprime', 0)

@@ -635,7 +635,7 @@ class AgentController extends BaseController
 
             // Mise à jour de la table pl_poste en cas de modification de la date de départ
             // Updates users as deleted for a given user and after a given date.
-            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($id, $depart);
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate([$id], $depart);
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
             if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
                 $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
@@ -1325,10 +1325,13 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent', name: 'agent.delete', methods: ['DELETE'])]
-    public function deleteAgent(Request $request, Session $session)
+    public function deleteAgent(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
         if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
+            $response = new Response();
+            $response->setContent('CSRF token error');
+            $response->setStatusCode(400);
+            return $response;
         }
 
         // Initialisation des variables
@@ -1337,7 +1340,7 @@ class AgentController extends BaseController
 
         // Disallow admin deletion
         if ($id == 1) {
-            return $this->json("error");
+            return $this->json('error');
 
         // If the date parameter is given, even if empty : deletion level 1
         } elseif ($date !== null) {
@@ -1345,20 +1348,20 @@ class AgentController extends BaseController
             // Mise à jour de la table personnel
             $agent = $this->entityManager->getRepository(Agent::class)->find($id);
             $agent->setDeletion(1);
-            $agent->setActive("Supprimé");
+            $agent->setActive('Supprimé');
             $agent->setDeparture(new \DateTime($date));
 
             $this->entityManager->flush();
 
             // Mise à jour de la table pl_poste
             // Updates the deletion flag for a user on a given date.
-            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($id, $date);
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate([$id], $date);
 
             // Mise à jour de la table responsables
             // Deletes manager links by agent or responsible IDs.
             $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable([$id]);
 
-            return $this->json("level 1 delete OK");
+            return $this->json('level 1 delete OK');
 
         // If the date parameter is not given : deletion level 2
         } else {

@@ -474,7 +474,6 @@ class AgentRepository extends EntityRepository
      *  - the departure date is before today,
      *  - the departure date is not null,
      *  - the agent is not already marked as deleted.
-     * 
      */
     public function updateAsDeletedByDepartDate(): int
     {
@@ -497,12 +496,11 @@ class AgentRepository extends EntityRepository
      * This method updates agents identified by their IDs by setting the deletion
      * flag, updating their status, and assigning today's date as the departure date.
      *
-     * @param array|int $ids Agent ID or list of agent IDs
+     * @param array $userIds, array of agent IDs
      * @return int Number of affected rows
      */
-    public function updateAsDeletedAndDepartTodayById($ids): int
+    public function updateAsDeletedAndDepartTodayById($userIds): int
     {
-        $ids = is_array($ids) ? $ids : [$ids];
         $qb = $this->createQueryBuilder('p');
 
         return $qb
@@ -511,7 +509,7 @@ class AgentRepository extends EntityRepository
             ->set('p.actif', "'Supprimé'")
             ->set('p.depart', ':today')
             ->where('p.id IN (:ids)')
-            ->setParameter('ids', $ids)
+            ->setParameter('ids', $userIds)
             ->setParameter('today', date('Y-m-d'))
             ->getQuery()
             ->execute();
@@ -734,12 +732,13 @@ class AgentRepository extends EntityRepository
             ->execute();
     }
 
-    // Will replace personnel::fetch
+    // Will replace personnel::fetch (we don't need to change the order anymore, so the var "$tri" is removed)
     // TODO: Check if getAgentsList can be use instead (E.g. : if we can add $actif filter and $name filter (or if we don't need $name anymore)
     public function get($actif = null, $name = null)
     {
         // TODO: Try: $supprime = $actif == 'Supprimé' ? 1 : 0;
-        $supprime = $actif == 'Supprimé' ? 1 : 0;
+        // We keep an array for the "supprime" filter to prevent futur use.
+        $supprime = $actif == 'Supprimé' ? [1] : [0];
 
         $qb = $this->createQueryBuilder('a')
             ->select('a')
