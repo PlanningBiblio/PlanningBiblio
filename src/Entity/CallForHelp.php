@@ -23,10 +23,10 @@ class CallForHelp
     #[ORM\Column]
     private ?\DateTime $date = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTime $debut = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTime $fin = null;
 
     #[ORM\Column(type: Types::TEXT)]
