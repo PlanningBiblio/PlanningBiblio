@@ -9,7 +9,6 @@ $tables = array (
         'fields' => array(
             'cal_name',
             'commentaires',
-            'etat',
             'groupe',
             'ical_key',
             'motif',
