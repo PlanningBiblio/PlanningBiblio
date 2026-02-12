@@ -20,15 +20,15 @@ class HiddenTables
     #[ORM\Column]
     private ?int $tableau = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $hidden_tables = null;
+    #[ORM\Column]
+    private ?array $hidden_tables = [];
 
-    public function getHiddenTables(): ?string
+    public function getHiddenTables(): ?array
     {
         return $this->hidden_tables;
     }
 
-    public function setHiddenTables(?string $hiddenTables): static
+    public function setHiddenTables(?array $hiddenTables): static
     {
         $this->hidden_tables = $hiddenTables;
 

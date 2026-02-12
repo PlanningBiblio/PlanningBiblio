@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
+use App\Entity\HiddenTables;
 use App\Entity\Model;
 use App\Entity\PlanningPositionHistory;
 use App\Entity\PlanningPositionLock;
@@ -840,13 +841,7 @@ class PlanningController extends BaseController
         $tableId = $request->get('tableId');
         $tableId = filter_var($tableId, FILTER_SANITIZE_NUMBER_INT);
 
-        $return = [];
-    
-        $db = new \db();
-        $db->select2('hidden_tables', '*', ['perso_id' => $perso_id, 'tableau' => $tableId]);
-        if ($db->result) {
-            $return = html_entity_decode($db->result[0]['hidden_tables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-        }
+        $return = $this->entityManager->getRepository(HiddenTables::class)->findBy(['perso_id' => $perso_id, 'tableau' => $tableId]);
 
         return new Response(json_encode($return));
     }
@@ -862,19 +857,26 @@ class PlanningController extends BaseController
         }
 
         $perso_id = $session->get('loginId');
-        $CSRFToken = $request->get('CSRFToken');
-        $hiddenTables = $request->get('hiddenTables');
+        $hiddenTables = $request->get('hiddenTables') ?? [];
         $tableId = $request->get('tableId');
 
         $tableId = filter_var($tableId, FILTER_SANITIZE_NUMBER_INT);
 
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete('hidden_tables', ['perso_id' => $perso_id, 'tableau' => $tableId]);
+        $hiddenTablesToBeDeleted = $this->entityManager->getRepository(HiddenTables::class)->findBy(['perso_id' => $perso_id, 'tableau' => $tableId]);
+        foreach ($hiddenTablesToBeDeleted as $elem)
+        {
+            $this->entityManager->remove($elem);
+        }
 
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->insert('hidden_tables', ['perso_id' => $perso_id, 'tableau' => $tableId, 'hidden_tables' => $hiddenTables]);
+        $this->entityManager->flush();
+
+        $hiddenTable = new HiddenTables();
+        $hiddenTable->setUserId($perso_id);
+        $hiddenTable->setTable($tableId);
+        $hiddenTable->setHiddenTables($hiddenTables);
+
+        $this->entityManager->persist($hiddenTable); 
+        $this->entityManager->flush();
         $return = [];
 
         return new Response(json_encode($return));
@@ -2100,15 +2102,12 @@ class PlanningController extends BaseController
     {
         $session = $request->getSession();
 
-        $hiddenTables = array();
-        $db = new \db();
-        $db->select2('hidden_tables', '*', array(
-            'perso_id' => $session->get('loginId'),
-            'tableau' => $tab
-        ));
-
-        if ($db->result) {
-            $hiddenTables = json_decode(html_entity_decode($db->result[0]['hidden_tables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+        $hiddenTablesEntity = $this->entityManager->getRepository(HiddenTables::class)->findOneBy(['perso_id' => $session->get('loginId'), 'tableau' => $tab]);
+        
+        if($hiddenTablesEntity) {
+            $hiddenTables = $hiddenTablesEntity->getHiddenTables();
+        } else {
+            $hiddenTables = [];
         }
 
         return $hiddenTables;

@@ -16,7 +16,7 @@ class HiddenTablesTest extends KernelTestCase
         $entity
             ->setUserId(10)
             ->setTable(3)
-            ->setHiddenTables('planning,stats,export');
+            ->setHiddenTables([1,2,3]);
 
         $entityManager->persist($entity);
         $entityManager->flush();
@@ -31,6 +31,6 @@ class HiddenTablesTest extends KernelTestCase
 
         $this->assertSame(10, $entity->getUserId());
         $this->assertSame(3, $entity->getTable());
-        $this->assertSame('planning,stats,export', $entity->getHiddenTables());
+        $this->assertSame([1,2,3], $entity->getHiddenTables());
     }
 }
