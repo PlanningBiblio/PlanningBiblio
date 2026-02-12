@@ -90,7 +90,7 @@ class ClassAbsencesTest extends PLBWebTestCase
         $ar->setValue($workflow_b_reason);
         $ar->setRank(1);
         $ar->setType(1);
-        $ar->setTeleworking(0);
+        $ar->setTeleworking(false);
         $ar->setNotificationWorkflow('B');
         $this->entityManager->persist($ar);
 

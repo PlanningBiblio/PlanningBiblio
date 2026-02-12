@@ -1552,7 +1552,7 @@ class PlanningController extends BaseController
                         // Skip teleworking absences if the position is compatible with
                         if ($this->positions[$poste]['teleworking']) {
                             $reason = $this->absenceReasons->findOneBy(array('valeur' => $absence['motif']));
-                            if (!empty($reason) and $reason->getTeleworking() == 1) {
+                            if (!empty($reason) and $reason->isTeleworking()) {
                                 continue;
                             }
                         }
