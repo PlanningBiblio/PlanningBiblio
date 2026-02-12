@@ -44,8 +44,8 @@ class CallForHelpTest extends KernelTestCase
         $this->assertEquals(1, $entity->getSite());
         $this->assertEquals(2, $entity->getPosition());
         $this->assertEquals($date->format('Y-m-d'), $entity->getDate()->format('Y-m-d'));
-        $this->assertEquals($start->format('Y-m-d'), $entity->getStart()->format('Y-m-d'));
-        $this->assertEquals($end->format('Y-m-d'), $entity->getEnd()->format('Y-m-d'));
+        $this->assertEquals($start->format('H:i:s'), $entity->getStart()->format('H:i:s'));
+        $this->assertEquals($end->format('H:i:s'), $entity->getEnd()->format('H:i:s'));
         $this->assertEquals('test@example.com', $entity->getRecipients());
         $this->assertEquals('Test subject', $entity->getSubject());
         $this->assertEquals('Test message', $entity->getMessage());
