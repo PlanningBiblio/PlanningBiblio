@@ -1,7 +1,7 @@
 <?php
 
 use App\Entity\Agent;
-use App\Entity\Absence;
+use App\Entity\HiddenTables;
 use App\Entity\PlanningPositionLock;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionTabAffectation;
@@ -61,5 +61,59 @@ class PlanningControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/');
         $result = $crawler->filter('.decalage-gauche p');
         $this->assertEquals("Le planning du $today n'est pas validé !", $result->text('Node does not exist', false), 'test index with no lock planning');
+    }
+
+    public function testAjaxGetHiddenTables()
+    {
+        $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdoenv']);
+        $rights = $this->entityManager->getRepository(Agent::class)->find(1)->getACL();
+        $this->logInAgent($agent, $rights);
+        $crawler = $this->client->request('GET', '/planning/hidden-tables',['tableId' => null]);
+        $result = $crawler->filter('body')->text();
+        $this->assertEquals('[]', $result, 'test ajax get hidden tables');// test with no hidden tables 
+
+        $hiddenTables = new HiddenTables();
+        $hiddenTables->setUserId($agent->getId());
+        $hiddenTables->setTable(1);
+        $hiddenTables->setHiddenTables([2, 3]);
+        $this->entityManager->persist($hiddenTables);
+        $this->entityManager->flush();
+
+        $crawler = $this->client->request('GET', '/planning/hidden-tables',['tableId' => 1]);
+        $result = $crawler->filter('body')->text();
+        $this->assertEquals('[2,3]', $result, 'test ajax get hidden tables with hidden tables');
+
+        $this->testSetHiddenTables();
+    }
+
+    private function testSetHiddenTables()
+    {
+        $this->client->request('POST', '/planning/hidden-tables', [
+            'tableId' => 1,
+            'hiddenTables' => [0, 1],
+            '_token' => 'test_token',
+            'CSRFToken' => 'test_token'
+        ]);
+
+        $response = $this->client->getResponse();
+
+        $this->assertResponseIsSuccessful();
+
+        $this->assertJson($response->getContent());
+
+        $this->entityManager->clear();
+
+        $results = $this->entityManager
+            ->getRepository(HiddenTables::class)
+            ->findBy(['perso_id' => 999, 'tableau' => 1]);
+
+        $this->assertCount(1, $results);
+
+        $this->assertSame([0, 1], $results[0]->getHiddenTables());
+    }
+
+    private function testGetHiddenTables()
+    {
+        
     }
 }

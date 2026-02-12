@@ -841,7 +841,9 @@ class PlanningController extends BaseController
         $tableId = $request->get('tableId');
         $tableId = filter_var($tableId, FILTER_SANITIZE_NUMBER_INT);
 
-        $return = $this->entityManager->getRepository(HiddenTables::class)->findBy(['perso_id' => $perso_id, 'tableau' => $tableId]);
+        $return = $this->entityManager->getRepository(HiddenTables::class)->findOneBy(['perso_id' => $perso_id, 'tableau' => $tableId]);
+
+        $return = $return ? $return->getHiddenTables() : [];
 
         return new Response(json_encode($return));
     }
@@ -850,7 +852,7 @@ class PlanningController extends BaseController
      * Permet l'enregistrement des préférences sur les tableaux cachés
      */
     #[Route(path: '/planning/hidden-tables', name: 'planning.hidden_tables.set', methods: ['POST'])]
-    public function setHiddenTables(Request $request, Session $session)
+    public function setHiddenTables(Request $request, Session $session)//
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -2098,7 +2100,7 @@ class PlanningController extends BaseController
         return array($tabs, $debut, $fin);
     }
 
-    private function getHiddenTables($request, $tab)
+    private function getHiddenTables($request, $tab)//
     {
         $session = $request->getSession();
 
