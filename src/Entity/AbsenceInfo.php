@@ -21,7 +21,7 @@ class AbsenceInfo
     private ?\DateTime $fin = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $texte = null;
+    private ?string $texte = '';
 
     public function getId(): ?int
     {
