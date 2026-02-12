@@ -138,7 +138,7 @@ class PositionControllerTest extends PLBWebTestCase
         $position->setFloor('Mezzanine');
         $position->setActivities(['communication','inscription']);
         $position->setStatistics(0);
-        $position->setTeleworking(1);
+        $position->setTeleworking(true);
         $position->setBlocking(0);
         $position->setCategories([]);
 
@@ -242,7 +242,7 @@ class PositionControllerTest extends PLBWebTestCase
         $position->setFloor('Mezzanine');
         $position->setActivities(['communication','inscription']);
         $position->setStatistics(1);
-        $position->setTeleworking(1);
+        $position->setTeleworking(true);
         $position->setBlocking(0);
         $position->setCategories([]);
 

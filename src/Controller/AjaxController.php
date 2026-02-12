@@ -133,9 +133,17 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/edit-absence-reasons', name: 'ajax.editabsencereasons', methods: ['POST'])]
-    public function editAbsenceReasons(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function editAbsenceReasons(Request $request): Response
     {
-        $CSRFToken = $request->get('CSRFToken');
+        // CSRF Protection
+        if (!$this->csrf_protection($request)) {
+            $return = ['CSRF token error', 'error'];
+            $response = new Response();
+            $response->setContent(json_encode($return));
+            $response->setStatusCode(200);
+            return $response;
+        }
+
         $data = $request->get('data');
 
         $reasons = $this->entityManager->getRepository(AbsenceReason::class)->findAll();
@@ -157,12 +165,15 @@ class AjaxController extends BaseController
         }
         $this->entityManager->flush();
 
-        return $this->json($data);
+        $response = new Response();
+        $response->setContent(json_encode($data));
+        $response->setStatusCode(200);
+        return $response;
     }
 
 
     #[Route(path: '/ajax/holiday-absence-control', name: 'ajax.holiday.absence.control', methods: ['GET'])]
-    public function holidayAbsenceControl(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function holidayAbsenceControl(Request $request): Response
     {
       $session = $request->getSession();
 

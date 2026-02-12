@@ -16,79 +16,79 @@ class AbsenceReason
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $valeur = null;
+    private string $valeur = '';
 
     #[ORM\Column]
-    private ?int $rang = null;
+    private int $rang = 0;
 
     #[ORM\Column]
-    private ?int $type = null;
+    private int $type = 0;
 
     #[ORM\Column(length: 255)]
-    private ?string $notification_workflow = null;
+    private string $notification_workflow = 'A';
 
     #[ORM\Column]
-    private ?int $teleworking = null;
+    private bool $teleworking = false;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNotificationWorkflow(): ?string
+    public function getNotificationWorkflow(): string
     {
         return $this->notification_workflow;
     }
 
-    public function setNotificationWorkflow(?string $notificationWorkflow): static
+    public function setNotificationWorkflow(string $notificationWorkflow): static
     {
         $this->notification_workflow = $notificationWorkflow;
 
         return $this;
     }
 
-    public function getRank(): ?int
+    public function getRank(): int
     {
         return $this->rang;
     }
 
-    public function setRank(?int $rang): static
+    public function setRank(int $rang): static
     {
         $this->rang = $rang;
 
         return $this;
     }
 
-    public function getTeleworking(): ?int
+    public function isTeleworking(): bool
     {
         return $this->teleworking;
     }
 
-    public function setTeleworking(?int $teleworking): static
+    public function setTeleworking(bool $teleworking): static
     {
-        $this->teleworking= $teleworking;
+        $this->teleworking = $teleworking;
 
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): int
     {
         return $this->type;
     }
 
-    public function setType(?string $type): static
+    public function setType(int $type): static
     {
         $this->type = $type;
 
         return $this;
     }
 
-    public function getValue(): ?string
+    public function getValue(): string
     {
         return $this->valeur;
     }
 
-    public function setValue(?string $valeur): static
+    public function setValue(string $valeur): static
     {
         $this->valeur = $valeur;
 

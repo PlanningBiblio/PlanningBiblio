@@ -74,12 +74,20 @@ $(function() {
       ));
     });
 
-        // Transmet le tableau à la page de validation ajax
-	$.ajax({
+  // Transmet le tableau à la page de validation ajax
+  var _token = $('input[name=_token]').val();
+  console.log(_token);
+
+  $.ajax({
 	  url: url('ajax/edit-absence-reasons'),
-	  type: "post",
-          dataType: "json",
-	  data: {data: tab, menu:"abs", option: "type", CSRFToken: $('#CSRFSession').val()},
+	  type: 'post',
+          dataType: 'json',
+	  data: {
+      _token: _token,
+      data: tab,
+      menu:'abs',
+      option: 'type',
+    },
 	  success: function(){
             var current_val = $('#motif').val();
             $('#motif').empty();
