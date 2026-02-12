@@ -306,7 +306,7 @@ class AbsenceImportCSVCommand extends Command
                 if ($debug) {
                     $this->log("Si l'absence n'est pas dans la base de données, on l'importe", 'AbsenceImportCSV');
                 }
-
+                $agent = $this->entityManager->getRepository(Agent::class)->find($perso_id);
                 $absi = new Absence();
                 $absi->setCalName('hamac');
                 $absi->setComment($comment);
@@ -322,7 +322,7 @@ class AbsenceImportCSVCommand extends Command
                 $absi->setValidLevel1Date($validLevel1Date);
                 $absi->setValidLevel2($validLevel2);
                 $absi->setValidLevel2Date($validLevel2Date);
-                $absi->setUserId($perso_id);
+                $absi->setUser($agent);
                 $absi->setUid($uid);
                 $this->entityManager->persist($absi);
 
