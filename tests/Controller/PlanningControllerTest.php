@@ -88,11 +88,16 @@ class PlanningControllerTest extends PLBWebTestCase
 
     private function testSetHiddenTables()
     {
+        $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdoenv']);
+
+        $crawler = $this->client->request('GET', '/');
+        $token = $crawler->filter('input[name="_token"]')->attr('value');
+
         $this->client->request('POST', '/planning/hidden-tables', [
             'tableId' => 1,
             'hiddenTables' => [0, 1],
-            '_token' => 'test_token',
-            'CSRFToken' => 'test_token'
+            '_token' => $token,
+            'CSRFToken' => $token
         ]);
 
         $response = $this->client->getResponse();
@@ -105,7 +110,7 @@ class PlanningControllerTest extends PLBWebTestCase
 
         $results = $this->entityManager
             ->getRepository(HiddenTables::class)
-            ->findBy(['perso_id' => 999, 'tableau' => 1]);
+            ->findBy(['perso_id' => $agent->getId(), 'tableau' => 1]);
 
         $this->assertCount(1, $results);
 

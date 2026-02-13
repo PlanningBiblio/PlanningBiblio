@@ -1219,7 +1219,7 @@ function afficheTableauxDiv(){
   var tab=new Array();
   var hiddenTables=new Array();
   $(".tr_horaires .td_postes:hidden").each(function(){
-    var tabId = parseInt($(this).attr("data-id"));
+    var tabId=$(this).attr("data-id");
     var tabTitle=$(this).attr("data-title");
     var exist = false;
     for(i in hiddenTables){
@@ -1239,6 +1239,7 @@ function afficheTableauxDiv(){
   
   // Enregistre la liste des tableaux cachés dans la base de données
   var tableId=$("#tableau").attr("data-tableId");
+  hiddenTables=JSON.stringify(hiddenTables);
   var _token = $('input[name=_token]').val();
 
   $.ajax({
