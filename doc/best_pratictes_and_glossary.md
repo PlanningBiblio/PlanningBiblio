@@ -35,6 +35,7 @@
 | category | categorie |
 | change | modification or modif | type int (userId) |
 | changeDate | modification | type DateTime |
+| column | colonne |
 | comment | texte or commentaires |
 | current | actuel |
 | day | jour |
