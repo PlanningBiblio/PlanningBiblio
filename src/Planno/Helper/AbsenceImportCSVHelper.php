@@ -60,14 +60,14 @@ class AbsenceImportCSVHelper extends BaseHelper
             $line++;
             if ($line == 1) {
                 $msg = "La ligne d'en-tête est ignorée";
-                $this->importLog($line,$msg, self::INFO);
+                $this->importLog($line, $msg, self::INFO);
                 continue;
             }
             $id = $tab[0];
 
             if (!$id) {
                 $msg = "Impossible de récupérer l'identifiant de l'usager";
-                $this->importLog($line,$msg, self::ERROR);
+                $this->importLog($line, $msg, self::ERROR);
                 continue;
             }
 
@@ -88,19 +88,19 @@ class AbsenceImportCSVHelper extends BaseHelper
                         $hour = array_key_exists(2, $capture) && $capture[2] == 'après-midi' ? '13:00:00' : '09:00:00';
                         $sql_debut = $sql_date . " " . $hour;
                         $msg = "La date de début $value a été convertie en $sql_debut en utilisant l'expression régulière $regex_number";
-                        $this->importLog($line,$msg, self::DEBUG);
+                        $this->importLog($line, $msg, self::DEBUG);
                         break;
                     }
                 }
             } else {
                 $msg = $regex_error;
-                $this->importLog($line,$msg, self::ERROR);
+                $this->importLog($line, $msg, self::ERROR);
                 continue;
             }
 
             if ($sql_debut === '' || $sql_debut === '0') {
                 $msg = "Impossible de définir une date de début à partir de la valeur $value";
-                $this->importLog($line,$msg, self::ERROR);
+                $this->importLog($line, $msg, self::ERROR);
                 continue;
             }
 
@@ -120,19 +120,19 @@ class AbsenceImportCSVHelper extends BaseHelper
                         $hour = array_key_exists(2, $capture) && $capture[2] == 'matin' ? '13:00:00' : '20:00:00';
                         $sql_fin = $sql_date . " " . $hour;
                         $msg = "La date de fin $value a été convertie en $sql_fin en utilisant l'expression régulière $regex_number";
-                        $this->importLog($line,$msg, self::DEBUG);
+                        $this->importLog($line, $msg, self::DEBUG);
                         break;
                     }
                 }
             } else {
                 $msg = $regex_error;
-                $this->importLog($line,$msg, self::ERROR);
+                $this->importLog($line, $msg, self::ERROR);
                 continue;
             }
 
             if ($sql_fin === '' || $sql_fin === '0') {
                 $msg = "Impossible de définir une date de fin à partir de la valeur $value";
-                $this->importLog($line,$msg, self::ERROR);
+                $this->importLog($line, $msg, self::ERROR);
                 continue;
             }
 
@@ -140,7 +140,7 @@ class AbsenceImportCSVHelper extends BaseHelper
             $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(array($agent_match => $id));
             if (!$agent) {
                 $msg = "Impossible de trouver un agent qui a $id pour $agent_match";
-                $this->importLog($line,$msg, self::ERROR);
+                $this->importLog($line, $msg, self::ERROR);
                 continue;
             }
 
@@ -148,7 +148,7 @@ class AbsenceImportCSVHelper extends BaseHelper
             $firstname = $agent->getFirstname();
             $lastname  = $agent->getLastName();
             $msg = "Agent avec $id pour $agent_match trouvé: agent $perso_id ($firstname $lastname)";
-            $this->importLog($line,$msg, self::DEBUG);
+            $this->importLog($line, $msg, self::DEBUG);
 
 
             // Check if absence already exists
@@ -162,7 +162,7 @@ class AbsenceImportCSVHelper extends BaseHelper
             );
             if ($absence_already_exists) {
                 $msg = "L'absence pour $firstname $lastname existe déjà (absence " . $absence_already_exists->getId() . ")";
-                $this->importLog($line,$msg, self::WARNING);
+                $this->importLog($line, $msg, self::WARNING);
                 continue;
             }
 
@@ -174,7 +174,7 @@ class AbsenceImportCSVHelper extends BaseHelper
             $absence->setReason($this->config['AbsImport-Reason']);
             $absence->setOtherReason('');
             $absence->setOriginId(0);
-            $absence->setComment($this->program);
+            $absence->setComment($this->config['AbsImport-Comment'] ?? $this->program);
             $absence->setRequestDate($now);
             $absence->setValidLevel1($loggedin_id);
             $absence->setValidLevel1Date($now);
@@ -186,7 +186,7 @@ class AbsenceImportCSVHelper extends BaseHelper
             $this->entityManager->persist($absence);
 
             $msg = "Absence ajoutée pour l'agent $perso_id ($firstname, $lastname)";
-            $this->importLog($line,$msg, self::INFO);
+            $this->importLog($line, $msg, self::INFO);
             $imported++;
         }
         $this->entityManager->flush();
@@ -199,6 +199,11 @@ class AbsenceImportCSVHelper extends BaseHelper
     private function importLog($line, $message, $type): void
     {
         $this->log("$line, $type: $message", $this->program);
+
+        // Add a link to exsisting absences
+        $url = $this->config['URL'];
+        $message = preg_replace('/\(absence (\d+)\)/', '(<a href="' . $url . '/absence/$1" target="_blank">absence $1</a>)', $message);
+
         $logline = array('line' => $line, 'message' => $message, 'type' => $type);
         $this->importResults[] = $logline;
     }

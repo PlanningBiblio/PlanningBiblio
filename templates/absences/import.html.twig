@@ -39,7 +39,7 @@
                   {% elseif log.type == 4 %}Débogage
                   {% endif %}
                 </td>
-                <td>{{ log.message }}</td>
+                <td>{{ log.message | striptags('<a>') | raw }}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -65,7 +65,7 @@
         <form id="form" name="form" action="{{ asset('absence/import') }}" method="post" enctype="multipart/form-data" style="margin-top:30px;">
           <input type="file" name="absencesCSV" id="absencesCSV" /><br/><br/>
           <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
-          <input type="submit" class="ui-button" />
+          <input type="submit" class="ui-button" value="Envoyer" />
         </form>
       </div>
     {% endif %}
