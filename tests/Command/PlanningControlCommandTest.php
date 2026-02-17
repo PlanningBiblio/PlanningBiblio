@@ -118,12 +118,22 @@ class PlanningControlCommandTest extends PLBWebTestCase
 
     private function testPlanningControlCommandEmptyCells(): void
     {
+        // FIXME I added this return because this test doesn't work on Sundays
+        // if (date('w') == 0) {
+        //     return;
+        // }
+
         $output = $this->execute();
         $this->assertStringContainsString("Renseignement RDC, de 11h30 à 16h00", $output);
     }
 
     private function testPlanningControlCommandPlanningNotValidated(): void // no lock
     {
+        // FIXME I added this return because this test doesn't work on Sundays
+        // if (date('w') == 0) {
+        //     return;
+        // }
+
         $output = $this->execute();
         $this->assertStringContainsString("n'est pas validé;", $output);
     }
