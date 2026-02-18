@@ -888,14 +888,29 @@ function dateFr($date, $heure=null): ?string
     }
 }
 
+// Converts a Y-m-d (SQL) date to a d/m/Y (fr) date
+// If a fr date is provided, it is returned as is.
 function dateFr3($date)
 {
-    return preg_replace("/([0-9]{4})-([0-9]{2})-([0-9]{2})/", "$3/$2/$1", $date);
+    if (preg_match("/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/", $date)) {
+        return $date;
+    }
+    $count = 0;
+    $result = preg_replace("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", "$3/$2/$1", $date, -1, $count);
+    return $count !== 0 ? $result : '';
 }
 
+// Converts a d/m/Y (fr) date to a Y-m-d (SQL) date
+// If a SQL date is provided, it is returned as is.
 function dateSQL($date)
 {
-    return preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $date);
+    if (preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $date)) {
+        return $date;
+    }
+    $count = 0;
+    $result = preg_replace("/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/", "$3-$2-$1", $date, -1, $count);
+    return $count !== 0 ? $result : '';
+
 }
 
 function decode($n)
