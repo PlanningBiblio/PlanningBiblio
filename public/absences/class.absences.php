@@ -90,7 +90,7 @@ class absences
   
     /** @function add()
      * Enregistre une nouvelle absence dans la base de données, créé les fichiers ICS pour les absences récurrentes (appel de la methode ics_add_event), envoie les notifications
-     * @params : tous les éléments nécessaires à la création d'une absence
+     * @params : tous les éléments nécessaires à la création d'une absence. Les dates de debut et de fin sont attendues au format d/m/Y
      * @return : message d'erreur ou de succès de l'enregistrement et de l'envoi des notifications
      */
     public function add()
