@@ -1454,25 +1454,55 @@ div.presents-absents {
   background-color:#FFD700;
 }
 
-.fg-toolbar {
-    color: inherit;
-    min-height: 40px;
-}
-
-.dataTables_wrapper .dataTables_length select {
+div.dt-container div.dt-layout-row {
   background-color: #29495C;
-}
-
-.dataTables_wrapper .dataTables_paginate .fg-button {
-  border: 1px solid #FFFFFF;
+  color: #FFFFFF;
   padding: 5px;
+  margin: 0px;
+  flex-flow: row wrap;
 }
 
-.dataTables_wrapper input,
-.dataTables_wrapper label,
-.dataTables_wrapper select,
-.CJDataTable label {
-    color: #FFFFFF
+div.dt-container div.dt-layout-row:first-child {
+  border-top-left-radius : 4px;
+  border-top-right-radius : 4px;
+}
+
+div.dt-container div.dt-layout-row:nth-child(3) {
+  border-bottom-right-radius : 4px;
+  border-bottom-left-radius : 4px;
+}
+
+div.dt-container div.dt-layout-row label {
+  color: #FFFFFF;
+}
+
+div.dt-container div.dt-layout-row.dt-layout-table {
+  color: #29495C;
+  padding:0%;
+}
+
+div.dt-container .dt-paging .dt-paging-button.disabled,
+div.dt-container .dt-paging .dt-paging-button.current,
+div.dt-container .dt-paging .dt-paging-button.current:hover,
+div.dt-container .dt-paging .dt-paging-button.disabled:hover,
+div.dt-container .dt-paging .dt-paging-button.disabled:active {
+  cursor: default;
+  color: #748895 !important;
+  border: 1px solid #748895;
+  box-shadow: none;
+}
+
+div.dt-container .dt-paging .dt-paging-button,
+div.dt-container .dt-paging .dt-paging-button:active {
+  border: 1px solid #FFFFFF;
+  box-shadow: none;
+}
+
+div.dt-container .dt-paging .dt-paging-button:hover {
+  color: #29495C !important;
+  border: 1px solid #FFFFFF;
+  background: none;
+  background-color: #FFFFFF;
 }
 
 table.dataTable thead tr>.dtfc-fixed-left, table.dataTable thead tr>.dtfc-fixed-right, table.dataTable tfoot tr>.dtfc-fixed-left, table.dataTable tfoot tr>.dtfc-fixed-right {
@@ -1491,12 +1521,20 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
     margin-bottom: 5px;
 }
 
-.ellipsis{
-  color:#FFF;
+div.dt-buttons button.dt-button {
+  background: none;
+  background-color: #F0F0F0;
+  border: solid 1px #29495C;
 }
 
-.dataTables_wrapper .dataTables_info{
-  color: #fff;
+div.dt-buttons button.dt-button.buttons-html5:hover,
+div.dt-buttons button.dt-button.buttons-print:hover {
+  background-color: #29495C;
+  color: #F0F0F0;
+}
+
+.ellipsis{
+  color:#FFF;
 }
 
 /*	JQuery-UI Accordion	*/
@@ -1665,7 +1703,7 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
   min-width: 105px;
 }
 
-.ui-button.fg-button{
+.ui-button {
   min-width: 40px;
 }
 
