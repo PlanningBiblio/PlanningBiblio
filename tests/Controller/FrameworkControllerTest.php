@@ -94,7 +94,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//a[@href="/framework/add"]');
         $this->assertStringContainsString("Nouveau tableau", $result->text());
 
-        $result = $crawler->filterXPath('//div[@id="table-list_wrapper"]/div/div[@class="dataTables_length"]/label');
+        $result = $crawler->filterXPath('//div[@id="table-list_wrapper"]/div/div/div[@class="dt-length"]/label');
         $this->assertStringContainsString("Afficher",$result->text());
         $this->assertStringContainsString("10",$result->text());
         $this->assertStringContainsString("25",$result->text());
@@ -103,7 +103,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("100",$result->text());
         $this->assertStringContainsString("All",$result->text());
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-listes"]/form/div/div[@class="dt-buttons ui-buttonset"]/button');
+        $result = $crawler->filterXPath('//div[@id="table-list_wrapper"]/div[@class="dt-buttons"]/button');
         $this->assertEquals($result->eq(0)->text(),"Copier");
         $this->assertEquals($result->eq(1)->text(),"Excel");
         $this->assertEquals($result->eq(2)->text(),"CSV");
@@ -158,7 +158,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/p/input');
         $this->assertEquals($result->attr('value'),"Nouvelle ligne");
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/div[@id="table-separations_wrapper"]/div/div[@class="dataTables_length"]/label');
+        $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/div[@id="table-separations_wrapper"]/div/div/div[@class="dt-length"]/label');
         $this->assertStringContainsString("Afficher",$result->text());
         $this->assertStringContainsString("10",$result->text());
         $this->assertStringContainsString("25",$result->text());
@@ -167,7 +167,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("100",$result->text());
         $this->assertStringContainsString("All",$result->text());
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/div[@id="table-separations_wrapper"]/div[@class="dt-buttons ui-buttonset"]/button');
+        $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/div[@id="table-separations_wrapper"]/div[@class="dt-buttons"]/button');
         $this->assertEquals($result->eq(0)->text(),"Copier");
         $this->assertEquals($result->eq(1)->text(),"Excel");
         $this->assertEquals($result->eq(2)->text(),"CSV");
@@ -250,7 +250,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/p/input');
         $this->assertEquals($result->attr('value'),"Nouveau groupe");
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/div[@id="table-groups_wrapper"]/div/div[@class="dataTables_length"]/label');
+        $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/div[@id="table-groups_wrapper"]/div/div/div[@class="dt-length"]/label');
         $this->assertStringContainsString("Afficher",$result->text());
         $this->assertStringContainsString("10",$result->text());
         $this->assertStringContainsString("25",$result->text());
@@ -259,7 +259,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("100",$result->text());
         $this->assertStringContainsString("All",$result->text());
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/div[@id="table-groups_wrapper"]/div[@class="dt-buttons ui-buttonset"]/button');
+        $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/div[@id="table-groups_wrapper"]/div[@class="dt-buttons"]/button');
         $this->assertEquals($result->eq(0)->text(),"Copier");
         $this->assertEquals($result->eq(1)->text(),"Excel");
         $this->assertEquals($result->eq(2)->text(),"CSV");
