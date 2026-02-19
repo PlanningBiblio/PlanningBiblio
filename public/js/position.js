@@ -54,8 +54,8 @@ $(function() {
             $('#etages-sortable li').each(function() {
               var id = $(this).attr('id').replace('li_', '');
               var val = $('#valeur_' + id).text();
-              var selected = (id == current_val) ? 'selected="selected"' : '';
-              var option = '<option value="' + id + '" ' + selected + '>' + val + '</option>';
+              var selected = id == current_val;
+              var option = new Option(val, id, selected, selected);
               $('#etage').append(option);
             });
 
@@ -178,8 +178,8 @@ $(function() {
             $('#groups-sortable li').each(function() {
               var id=$(this).attr('id').replace('li_', '');
               var val = $('#valeur_' + id).text();
-              var selected = (id == current_val) ? 'selected="selected"' : '';
-              var option = '<option value="' + id + '" ' + selected + '>' + val + '</option>';
+              var selected = id == current_val;
+              var option = new Option(val, id, selected, selected);
               $('#groupe').append(option);
             });
             $('#add-group-form').dialog('close');
