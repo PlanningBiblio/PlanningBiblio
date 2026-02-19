@@ -309,16 +309,14 @@ $(function() {
             $('#statut').empty();
             $('#statut').append("<option value=''>Aucun</option>");
 
-            $("#statuts-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $(this).find("#valeur_"+id).text();
-              if( val == current_val){
-                var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
-              } else {
-                var option = "<option value='"+val+"'>"+val+"</option>";
-              }
+            $('#statuts-sortable li').each(function() {
+              var id = $(this).attr('id').replace('li_','');
+              var val = $(this).find('#valeur_' + id).text();
+              var selected = val == current_val;
+              var option = new Option(val, val, selected, selected);
               $('#statut').append(option);
             });
+
             $("#add-statut-form").dialog( "close" );
             $('#statut').effect("highlight",null,2000);
 	  },
@@ -419,16 +417,14 @@ $(function() {
             $('#service').empty();
             $('#service').append("<option value=''>Aucun</option>");
 
-            $("#services-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $(this).find("#valeur_"+id).text();
-              if( val == current_val){
-                var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
-              } else {
-                var option = "<option value='"+val+"'>"+val+"</option>";
-              }
+            $('#services-sortable li').each(function() {
+              var id = $(this).attr('id').replace('li_', '');
+              var val = $(this).find('#valeur_' + id).text();
+              var selected = val == current_val;
+              var option = new Option(val, val, selected, selected);
               $('#service').append(option);
             });
+
             $("#add-service-form").dialog( "close" );
             $('#service').effect("highlight",null,2000);
 	  },

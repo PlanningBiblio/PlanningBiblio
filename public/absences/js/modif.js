@@ -76,12 +76,14 @@ $(function() {
               var val = $("#valeur_"+id).text();
               var type = $("#type_"+id+" option:selected").val();
 
-              var disabled = (type == 1) ? "disabled='disabled'" : "";
-              var padding = (type == 2) ? "&nbsp;&nbsp;&nbsp;" : "" ;
-              var selected = (val == current_val) ? "selected='selected'" : "";
+              var nbsp = "\xa0";
+              var padding = type == 2 ? nbsp.repeat(3) : "" ;
+              var text = padding + val;
+              var selected = val == current_val;
 
-              var option = "<option value=\""+val+"\" "+selected+" "+disabled+">"+padding+""+val+"</option>";
-              
+              var option = new Option(text, val, selected, selected);
+              option.disabled = type == 1;
+
               $('#motif').append(option);
             });
             $("#add-motif-form").dialog( "close" );
