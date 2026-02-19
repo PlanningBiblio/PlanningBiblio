@@ -48,13 +48,14 @@ $(function() {
             $('#etage').empty();
             $('#etage').append("<option value=''>&nbsp;</option>");
 
-            $("#etages-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $("#valeur_"+id).text();
-              var selected = (id == current_val) ? "selected='selected'" : "";
-              var option = "<option value='"+id+"' "+selected+">"+val+"</option>";
+            $('#etages-sortable li').each(function() {
+              var id = $(this).attr('id').replace('li_', '');
+              var val = $('#valeur_' + id).text();
+              var selected = id == current_val;
+              var option = new Option(val, id, selected, selected);
               $('#etage').append(option);
             });
+
             $("#add-etage-form").dialog( "close" );
             $('#etage').effect("highlight",null,2000);
       },
@@ -159,15 +160,16 @@ $(function() {
       success: function(){
             var current_val = $('#groupe').val();
             $('#groupe').empty();
-            $('#groupe').append("<option value=''>&nbsp;</option>");
-
-            $("#groups-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $("#valeur_"+id).text();
-              var selected = (id == current_val) ? "selected='selected'" : "";
-              var option = "<option value='"+id+"' "+selected+">"+val+"</option>";
+            $('#groupe').append('<option value=""></option>');
+            
+            $('#groups-sortable li').each(function() {
+              var id=$(this).attr('id').replace('li_', '');
+              var val = $('#valeur_' + id).text();
+              var selected = id == current_val;
+              var option = new Option(val, id, selected, selected);
               $('#groupe').append(option);
             });
+
             $("#add-group-form").dialog( "close" );
             $('#groupe').effect("highlight",null,2000);
 
