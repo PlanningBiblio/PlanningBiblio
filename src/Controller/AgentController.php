@@ -692,7 +692,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent/send-password', name: 'agent.send_password', methods: ['POST'])]
-    public function sendPassword(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function sendPassword(Request $request): Response
     {
         // CSRF Protection
         if (!$this->csrf_protection($request)) {
@@ -743,8 +743,8 @@ class AgentController extends BaseController
         return $response;
     }
 
-    private function changeAgentPassword(Request $request, $agent_id, $password): \Symfony\Component\HttpFoundation\Response {
-
+    private function changeAgentPassword(Request $request, $agent_id, $password): Response
+    {
         $agent = $this->entityManager->find(Agent::class, $agent_id);
 
         $response = new Response();
@@ -781,7 +781,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/change-own-password', name: 'ajax.changeownpassword', methods: ['POST'])]
-    public function changeOwnPassword(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function changeOwnPassword(Request $request): Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();
@@ -807,7 +807,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/check-password', name: 'ajax.checkpassword', methods: ['GET'])]
-    public function check_password(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function check_password(Request $request): Response
     {
         $password = $request->get('password');
         $response = new Response();
@@ -845,7 +845,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/is-current-password', name: 'ajax.iscurrentpassword', methods: ['GET'])]
-    public function isCurrentPassword(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function isCurrentPassword(Request $request): Response
     {
         $session = $request->getSession();
 
@@ -1546,7 +1546,7 @@ class AgentController extends BaseController
     }
 
     #[Route('/agent/ics/reset-url', name: 'agent.ics.reset_url', methods: ['POST'])]
-    public function resetIcsUrl(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function resetIcsUrl(Request $request): Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();
@@ -1575,7 +1575,7 @@ class AgentController extends BaseController
      * Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.php
      */
     #[Route(path: '/agent/update-list', name: 'agent.update_list', methods: ['GET'])]
-    public function updateAgentList(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function updateAgentList(Request $request): Response
     {
         if ($request->get('deleted') == 'yes') {
             $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);
