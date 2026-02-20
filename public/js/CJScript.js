@@ -6,6 +6,8 @@ Fichier : CJScript.js
 @author Jérôme Combes <jerome@planningbiblio.fr>
 */
 
+ DataTable.type('date', 'className', 'dt-left');
+
 function CJDataTableHideRow(selector){
   // (.hide mieux que .remove car si .remove, la ligne réapparait lors de l'utilisation des tris
   $(selector).hide();
