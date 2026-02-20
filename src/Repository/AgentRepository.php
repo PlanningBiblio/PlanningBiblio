@@ -764,4 +764,19 @@ class AgentRepository extends EntityRepository
 
         return $agents;
     }
+
+    public function getDistinctStatuses(array $agent_ids = null)
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        $qb->select('DISTINCT a.statut');
+        if ($agent_ids) {
+            $qb->where('a.id IN(:ids)');
+            $qb->setParameter('ids', $agent_ids, \Doctrine\DBAL\ArrayParameterType::INTEGER);
+        }
+
+        $query = $qb->getQuery();
+
+        return $query->getSingleColumnResult();
+    }
 }
