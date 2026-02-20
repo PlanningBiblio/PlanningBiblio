@@ -103,7 +103,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("100",$result->text());
         $this->assertStringContainsString("All",$result->text());
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-listes"]/form/div/div[@class="dt-buttons ui-buttonset"]/button');
+        $result = $crawler->filterXPath('//div[@id="table-list_wrapper"]/div[@class="dt-buttons"]/button');
         $this->assertEquals($result->eq(0)->text(),"Copier");
         $this->assertEquals($result->eq(1)->text(),"Excel");
         $this->assertEquals($result->eq(2)->text(),"CSV");
@@ -167,7 +167,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("100",$result->text());
         $this->assertStringContainsString("All",$result->text());
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/div[@id="table-separations_wrapper"]/div[@class="dt-buttons ui-buttonset"]/button');
+        $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/div[@id="table-separations_wrapper"]/div[@class="dt-buttons"]/button');
         $this->assertEquals($result->eq(0)->text(),"Copier");
         $this->assertEquals($result->eq(1)->text(),"Excel");
         $this->assertEquals($result->eq(2)->text(),"CSV");
@@ -259,7 +259,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("100",$result->text());
         $this->assertStringContainsString("All",$result->text());
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/div[@id="table-groups_wrapper"]/div[@class="dt-buttons ui-buttonset"]/button');
+        $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/div[@id="table-groups_wrapper"]/div[@class="dt-buttons"]/button');
         $this->assertEquals($result->eq(0)->text(),"Copier");
         $this->assertEquals($result->eq(1)->text(),"Excel");
         $this->assertEquals($result->eq(2)->text(),"CSV");
