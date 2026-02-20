@@ -353,6 +353,9 @@ class absences
     * @param date string, date de début au format YYYY-MM-DD
     * Calcule les heures d'absences des agents pour la semaine définie par $date ($date = une date de la semaine)
     * Utilisée par planning::menudivAfficheAgent pour ajuster le nombre d'heure de SP à effectuer en fonction des absences
+    *
+    * @return int[] Associative array. Keys are agent ids. Values are the total
+    *               number of absence hours for each agent
     */
     public function calculHeuresAbsences($date): array
     {
@@ -471,8 +474,8 @@ class absences
                     }
       
                     $a=new absences();
-                    $a->debut=$value['debut'];
-                    $a->fin=$value['fin'];
+                    $a->debut = max($value['debut'], "$j1 00:00:00");
+                    $a->fin = min($value['fin'], "$j7 23:59:59");
                     $a->perso_id=$perso_id;
                     $a->edt=$edt;
                     $a->ignoreFermeture=true;
