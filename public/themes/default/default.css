@@ -1454,17 +1454,18 @@ div.presents-absents {
   background-color:#FFD700;
 }
 
-.dt-layout-row{
+div.dt-container div.dt-layout-row{
   background-color: #29495C;
   color: #FFFFFF;
   padding: 5px;
+  margin: 0px;
 }
 
-.dt-layout-row label{
+div.dt-container div.dt-layout-row label{
     color: #FFFFFF;
 }
 
-.dt-layout-table{
+div.dt-container div.dt-layout-row.dt-layout-table{
   color: #29495C;
   padding:0%;
 }
