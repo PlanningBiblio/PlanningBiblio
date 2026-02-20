@@ -1454,18 +1454,18 @@ div.presents-absents {
   background-color:#FFD700;
 }
 
-div.dt-container div.dt-layout-row{
+div.dt-container div.dt-layout-row {
   background-color: #29495C;
   color: #FFFFFF;
   padding: 5px;
   margin: 0px;
 }
 
-div.dt-container div.dt-layout-row label{
-    color: #FFFFFF;
+div.dt-container div.dt-layout-row label {
+  color: #FFFFFF;
 }
 
-div.dt-container div.dt-layout-row.dt-layout-table{
+div.dt-container div.dt-layout-row.dt-layout-table {
   color: #29495C;
   padding:0%;
 }
@@ -1511,7 +1511,7 @@ div.dt-buttons button.dt-button {
   border: solid 1px #29495C;
 }
 
-div.dt-buttons button.dt-button.buttons-html5:hover, div.dt-buttons button.dt-button.buttons-print:hover{
+div.dt-buttons button.dt-button.buttons-html5:hover, div.dt-buttons button.dt-button.buttons-print:hover {
   background-color: #29495C;
   color: #F0F0F0;
 }
@@ -1686,7 +1686,7 @@ div.dt-buttons button.dt-button.buttons-html5:hover, div.dt-buttons button.dt-bu
   min-width: 105px;
 }
 
-.ui-button{
+.ui-button {
   min-width: 40px;
 }
 
