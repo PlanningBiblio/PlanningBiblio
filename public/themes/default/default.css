@@ -1505,6 +1505,17 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
     margin-bottom: 5px;
 }
 
+div.dt-buttons button.dt-button {
+  background: none;
+  background-color: #F0F0F0;
+  border: solid 1px #29495C;
+}
+
+div.dt-buttons button.dt-button.buttons-html5:hover, div.dt-buttons button.dt-button.buttons-print:hover{
+  background-color: #29495C;
+  color: #F0F0F0;
+}
+
 .ellipsis{
   color:#FFF;
 }

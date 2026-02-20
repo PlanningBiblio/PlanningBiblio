@@ -268,7 +268,7 @@ $(function(){
       "buttons": true,
       "language" : { "url" : jsFileLocation+"/dataTables.french.lang.json" },
       "initComplete": function () {
-        $('.fg-toolbar:last').after(CJDataTable.buttons().container());
+        $('.dt-layout-row:last').after(CJDataTable.buttons().container());
       },
 
       // On refait le zebra, à chaque fois que le tableau est redessiné.
