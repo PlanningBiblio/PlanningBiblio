@@ -1454,9 +1454,38 @@ div.presents-absents {
   background-color:#FFD700;
 }
 
-.fg-toolbar {
-    color: inherit;
-    min-height: 40px;
+.dt-layout-row{
+  background-color: #29495C;
+  color: #FFFFFF;
+  padding: 5px;
+}
+
+.dt-layout-row label{
+    color: #FFFFFF;
+}
+
+.dt-layout-table{
+  color: #29495C;
+  padding:0%;
+}
+
+div.dt-container .dt-paging .dt-paging-button.disabled, div.dt-container .dt-paging .dt-paging-button.current, div.dt-container .dt-paging .dt-paging-button.current:hover,div.dt-container .dt-paging .dt-paging-button.disabled:hover, div.dt-container .dt-paging .dt-paging-button.disabled:active {
+  cursor: default;
+  color: #748895 !important;
+  border: 1px solid #748895;
+  box-shadow: none;
+}
+
+div.dt-container .dt-paging .dt-paging-button, div.dt-container .dt-paging .dt-paging-button:active {
+  border: 1px solid #FFFFFF;
+  box-shadow: none;
+}
+
+div.dt-container .dt-paging .dt-paging-button:hover {
+  color: #29495C !important;
+  border: 1px solid #FFFFFF;
+  background: none;
+  background-color: #FFFFFF;
 }
 
 table.dataTable thead tr>.dtfc-fixed-left, table.dataTable thead tr>.dtfc-fixed-right, table.dataTable tfoot tr>.dtfc-fixed-left, table.dataTable tfoot tr>.dtfc-fixed-right {
@@ -1645,7 +1674,7 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
   min-width: 105px;
 }
 
-.ui-button.fg-button{
+.ui-button{
   min-width: 40px;
 }
 
