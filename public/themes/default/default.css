@@ -1459,22 +1459,6 @@ div.presents-absents {
     min-height: 40px;
 }
 
-.dataTables_wrapper .dataTables_length select {
-  background-color: #29495C;
-}
-
-.dataTables_wrapper .dataTables_paginate .fg-button {
-  border: 1px solid #FFFFFF;
-  padding: 5px;
-}
-
-.dataTables_wrapper input,
-.dataTables_wrapper label,
-.dataTables_wrapper select,
-.CJDataTable label {
-    color: #FFFFFF
-}
-
 table.dataTable thead tr>.dtfc-fixed-left, table.dataTable thead tr>.dtfc-fixed-right, table.dataTable tfoot tr>.dtfc-fixed-left, table.dataTable tfoot tr>.dtfc-fixed-right {
   background-color: #466578;
 }
@@ -1493,10 +1477,6 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
 
 .ellipsis{
   color:#FFF;
-}
-
-.dataTables_wrapper .dataTables_info{
-  color: #fff;
 }
 
 /*	JQuery-UI Accordion	*/
