@@ -1,5 +1,20 @@
 # Changelog Planno
 
+## Version 25.11.16 (2026-02-20)
+
+### Enhancement
+
+- MT48492: Import absences from CSV file. Add link to already imported absences + custom comment #1329
+
+### Plumbing
+
+- MT50832: Use Doctrine in AgentController #1312
+- Add unit tests for Entity/Absence #1313
+- Add unit tests for Entity/AbsenceBlock #1314
+- Add unit tests for Entity/AbsenceDocument #1315
+- Add unit tests for Entity/AbsenceInfo #1316
+- Add unit tests for Entity/AbsenceReason #1317
+
 ## Version 25.11.15 (2026-02-06)
 
 ### Enhancement
