@@ -1459,6 +1459,7 @@ div.dt-container div.dt-layout-row {
   color: #FFFFFF;
   padding: 5px;
   margin: 0px;
+  flex-flow: row wrap;
 }
 
 div.dt-container div.dt-layout-row:first-child{
