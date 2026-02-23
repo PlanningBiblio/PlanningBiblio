@@ -901,7 +901,7 @@ $(function(){
     window.emojiPicker = new EmojiPicker({
         emojiable_selector: '[data-emojiable=true]',
         assetsPath: url('vendor/emoji-lib/img/'),
-        popupButtonClasses: 'fa fa-smile-o'
+        popupButtonClasses: 'bi bi-emoji-smile'
     });
 
     window.emojiPicker.discover();
