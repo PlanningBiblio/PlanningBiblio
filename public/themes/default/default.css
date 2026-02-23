@@ -1462,16 +1462,15 @@ div.dt-container div.dt-layout-row {
   flex-flow: row wrap;
 }
 
-div.dt-container div.dt-layout-row:first-child{
+div.dt-container div.dt-layout-row:first-child {
   border-top-left-radius : 4px;
   border-top-right-radius : 4px;
 }
 
-div.dt-container div.dt-layout-row:nth-child(3){
+div.dt-container div.dt-layout-row:nth-child(3) {
   border-bottom-right-radius : 4px;
   border-bottom-left-radius : 4px;
 }
-
 
 div.dt-container div.dt-layout-row label {
   color: #FFFFFF;
@@ -1482,14 +1481,19 @@ div.dt-container div.dt-layout-row.dt-layout-table {
   padding:0%;
 }
 
-div.dt-container .dt-paging .dt-paging-button.disabled, div.dt-container .dt-paging .dt-paging-button.current, div.dt-container .dt-paging .dt-paging-button.current:hover,div.dt-container .dt-paging .dt-paging-button.disabled:hover, div.dt-container .dt-paging .dt-paging-button.disabled:active {
+div.dt-container .dt-paging .dt-paging-button.disabled,
+div.dt-container .dt-paging .dt-paging-button.current,
+div.dt-container .dt-paging .dt-paging-button.current:hover,
+div.dt-container .dt-paging .dt-paging-button.disabled:hover,
+div.dt-container .dt-paging .dt-paging-button.disabled:active {
   cursor: default;
   color: #748895 !important;
   border: 1px solid #748895;
   box-shadow: none;
 }
 
-div.dt-container .dt-paging .dt-paging-button, div.dt-container .dt-paging .dt-paging-button:active {
+div.dt-container .dt-paging .dt-paging-button,
+div.dt-container .dt-paging .dt-paging-button:active {
   border: 1px solid #FFFFFF;
   box-shadow: none;
 }
@@ -1523,7 +1527,8 @@ div.dt-buttons button.dt-button {
   border: solid 1px #29495C;
 }
 
-div.dt-buttons button.dt-button.buttons-html5:hover, div.dt-buttons button.dt-button.buttons-print:hover {
+div.dt-buttons button.dt-button.buttons-html5:hover,
+div.dt-buttons button.dt-button.buttons-print:hover {
   background-color: #29495C;
   color: #F0F0F0;
 }
