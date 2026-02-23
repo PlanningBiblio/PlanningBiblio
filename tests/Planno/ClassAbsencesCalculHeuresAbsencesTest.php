@@ -16,9 +16,8 @@ class ClassAbsencesCalculHeuresAbsencesTest extends TestCase
     public function setUp(): void
     {
         global $entityManager;
-        $conn = $entityManager->getConnection();
 
-        $timetables = [
+        $workingHours = [
             ["09:00:00","","","17:00:00"],
             ["09:00:00","","","17:00:00"],
             ["09:00:00","","","17:00:00"],
@@ -29,16 +28,18 @@ class ClassAbsencesCalculHeuresAbsencesTest extends TestCase
 
         $builder = new FixtureBuilder();
         $this->agent = $builder->build(Agent::class, [
-            'temps' => $timetables,
+            'temps' => $workingHours,
         ]);
-        $this->workingHour = $builder->build(WorkingHour::class, [
-            'perso_id' => $this->agent->getId(),
-            'debut' => new DateTime('2026-01-01'),
-            'fin' => new DateTime('2026-12-31'),
-            'temps' => $timetables,
-            'breaktime' => [1,1,1,1,1,1],
-            'valide' => 1,
-        ]);
+        $this->workingHour = new WorkingHour;
+        $this->workingHour
+             ->setUser($this->agent->getId())
+             ->setStart(new DateTime('2026-01-01'))
+             ->setEnd(new DateTime('2026-12-31'))
+             ->setWorkingHours($workingHours)
+             ->setBreaktime([1,1,1,1,1,1])
+             ->setValidLevel2(1);
+        $entityManager->persist($this->workingHour);
+        $entityManager->flush();
 
         $GLOBALS['config']['PlanningHebdo'] = true;
     }
@@ -46,7 +47,6 @@ class ClassAbsencesCalculHeuresAbsencesTest extends TestCase
     public function tearDown(): void
     {
         global $entityManager;
-        $conn = $entityManager->getConnection();
 
         $entityManager->remove($this->workingHour);
         $entityManager->remove($this->agent);
