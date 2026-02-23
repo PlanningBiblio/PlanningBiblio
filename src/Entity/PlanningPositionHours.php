@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\PlanningPositionHoursRepository;
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -16,10 +17,10 @@ class PlanningPositionHours
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTime $debut = null;
+    private ?DateTime $debut = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTime $fin = null;
+    private ?DateTime $fin = null;
 
     #[ORM\Column]
     private ?int $tableau = null;
@@ -32,8 +33,51 @@ class PlanningPositionHours
         return $this->id;
     }
 
-    public function getEnd(): ?\DateTime
+    public function setStart(DateTime $start): static
+    {
+        $this->debut = $start;
+
+        return $this;
+    }
+
+    public function getStart(): ?DateTime
+    {
+        return $this->debut;
+    }
+
+    public function setEnd(DateTime $end): static
+    {
+        $this->fin = $end;
+
+        return $this;
+    }
+
+    public function getEnd(): ?DateTime
     {
         return $this->fin;
+    }
+
+    public function setTable(int $table): static
+    {
+        $this->tableau = $table;
+
+        return $this;
+    }
+
+    public function getTable(): ?int
+    {
+        return $this->tableau;
+    }
+
+    public function setNumber(int $number): static
+    {
+        $this->numero = $number;
+
+        return $this;
+    }
+
+    public function getNumber(): ?int
+    {
+        return $this->numero;
     }
 }

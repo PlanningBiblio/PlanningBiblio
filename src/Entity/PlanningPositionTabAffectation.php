@@ -40,24 +40,24 @@ class PlanningPositionTabAffectation
         return $this;
     }
     
-    public function getTable(): ?string
+    public function getTable(): ?int
     {
         return $this->tableau;
     }
 
-    public function setTable(?string $tableau): static
+    public function setTable(?int $tableau): static
     {
-        $this->tableau = $table;
+        $this->tableau = $tableau;
 
         return $this;
     }
     
-    public function getSite(): ?string
+    public function getSite(): ?int
     {
         return $this->site;
     }
 
-    public function setSite(?string $site): static
+    public function setSite(?int $site): static
     {
         $this->site = $site;
 

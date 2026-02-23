@@ -52,7 +52,6 @@ class planning
     public function finDeService()
     {
         global $entityManager;
-        $conn = $entityManager->getConnection();
 
         $date=$this->date;
         $site=$this->site;
