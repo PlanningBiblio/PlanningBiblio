@@ -16,16 +16,16 @@ class SelectStatus
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $valeur = null;
+    private ?string $valeur = '';
 
     #[ORM\Column]
-    private ?int $rang = null;
+    private ?int $rang = 0;
 
     #[ORM\Column(length: 7)]
-    private ?string $couleur = null;
+    private ?string $couleur = '';
 
     #[ORM\Column]
-    private ?int $categorie = null;
+    private ?int $categorie = 0;
 
     public function getId(): ?int
     {
