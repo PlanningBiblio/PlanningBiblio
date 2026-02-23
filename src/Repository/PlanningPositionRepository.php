@@ -104,7 +104,8 @@ class PlanningPositionRepository extends EntityRepository
             ->from(Absence::class, 'a')
             ->where('a.perso_id = p.perso_id')
             ->andWhere('a.valide > 0')
-            ->andWhere('p.fin BETWEEN a.debut AND a.fin');
+            ->andWhere('a.debut < p.fin')
+            ->andWhere('a.fin > p.debut');
         $qb->andWhere($qb->expr()->not($qb->expr()->exists($absenceSubQb->getDql())));
 
         $holidaySubQb = $em->createQueryBuilder()
@@ -112,7 +113,8 @@ class PlanningPositionRepository extends EntityRepository
             ->from(Holiday::class, 'h')
             ->where('h.perso_id = p.perso_id')
             ->andWhere('h.valide > 0')
-            ->andWhere('p.fin BETWEEN h.debut AND h.fin');
+            ->andWhere('h.debut < p.fin')
+            ->andWhere('h.fin > p.debut');
         $qb->andWhere($qb->expr()->not($qb->expr()->exists($holidaySubQb->getDql())));
 
         $query = $qb->getQuery();
