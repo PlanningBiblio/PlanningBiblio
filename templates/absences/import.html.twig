@@ -44,7 +44,7 @@
             {% endfor %}
           </tbody>
         </table>
-        <a href="{{ asset('absence') }}" class="ui-button" style="margin-top:20px;">Retour</a>
+        <a href="{{ asset('absence') }}" class="btn btn-primary rounded-1" style="margin-top:20px;">Retour</a>
       </div>
     {% else %}
       <p><strong>Veuillez sélectionner un fichier CSV et cliquer sur "Envoyer".</strong></p>
@@ -65,7 +65,7 @@
         <form id="form" name="form" action="{{ asset('absence/import') }}" method="post" enctype="multipart/form-data" style="margin-top:30px;">
           <input type="file" name="absencesCSV" id="absencesCSV" /><br/><br/>
           <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
-          <input type="submit" class="ui-button" value="Envoyer" />
+          <input type="submit" class="btn btn-primary rounded-1" value="Envoyer" />
         </form>
       </div>
     {% endif %}

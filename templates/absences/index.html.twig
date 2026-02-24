@@ -52,18 +52,18 @@
         {% endif %}
 
         <div class="col">
-          <input type='submit' value='Rechercher' class='ui-button ui-button-type1' style='margin-right:20px;' />
+          <input type="submit" value="Rechercher" class="btn btn-primary rounded-1" style="margin-right:20px;" />
         </div>
 
         <div class="col-3">
-          <input type='button' value='Réinitialiser' onclick="absences_reinit();"  class='ui-button ui-button-type2' />
+          <input type="button" value="Réinitialiser" onclick="absences_reinit();"  class="btn btn-secondary rounded-1" />
         </div>
 
         <div class="col">
           <div class="ml-auto">
-            <a href='{{ asset("absence/add") }}' class='ui-button ui-button-type2'>Ajouter</a>
+            <a href='{{ asset("absence/add") }}' class="btn btn-secondary rounded-1">Ajouter</a>
             {% if config('AbsImport-CSV') and can_import_abs_csv %}
-              <a href='{{ asset("absence/import") }}' class='ui-button ui-button-type2'>Importer</a>
+              <a href='{{ asset("absence/import") }}' class="btn btn-secondary rounded-1">Importer</a>
             {% endif %}
           </div>
         </div>

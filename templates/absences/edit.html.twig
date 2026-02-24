@@ -288,9 +288,9 @@
               <tr>
                 <td colspan='2'><br/>
                   {% if absence.editable %}
-                    <input type='button' class='ui-button ui-button-type3' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/> 
-                    <input type='button' class='ui-button ui-button-type2' value='Annuler' onclick="annuler(1);"/> 
-                    <input type='submit' class='ui-button' value='Valider'/>
+                    <input type="button" class="btn btn-danger rounded-1" value="Supprimer" id="absence-bouton-supprimer" data-id='{{ id }}'/> 
+                    <input type="button" class="btn btn-secondary rounded-1" value="Annuler" onclick="annuler(1);"/> 
+                    <input type="submit" class="btn btn-primary rounded-1" value="Valider"/>
                   {% else %}
                     <a href='{{ asset("absence") }}' class='ui-button'>Retour</a>
                   {% endif %}

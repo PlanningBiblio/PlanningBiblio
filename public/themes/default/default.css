@@ -1699,6 +1699,57 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 }
 
 /*Buttons START*/
+
+.btn.btn-primary {
+  background-color: #FFD700 ;
+  border: 1px solid #FFD700;
+  color: #29495C
+}
+
+.btn.btn-primary:hover, .btn.btn-primary:focus, .btn.btn-primary:active {
+  background-color: #d5ba2B ;
+  border:  1px solid #d5ba2B;
+  color: #29495C;
+  box-shadow: none;
+}
+
+.btn.btn-secondary {
+  background-color: #fff;
+  border:  1px solid #29495C;
+  color: #29495C ;
+}
+
+.btn.btn-secondary:hover, .btn.btn-secondary:focus, .btn.btn-secondary:active {
+  background-color: #29495C ;
+  border:  1px solid #29495C;
+  color: #fff ;
+  box-shadow: none;
+  }
+
+.btn.btn-danger{
+  background-color: #fff ;
+  border:  1px solid #cd1b19;
+  color: #cd1b19 ;
+}
+
+.btn.btn-danger:hover, .btn.btn-danger:focus, .btn.btn-danger:active {
+  background-color: #cd1b19 ;
+  border:  1px solid #cd1b19;
+  color: #fff ;
+  box-shadow: none;
+}
+
+.btn {
+  min-width: 40px;
+  font-family: Poppins;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.btn-icon {
+  display: contents;
+}
+
 .ui-button{
   min-width: 105px;
 }
