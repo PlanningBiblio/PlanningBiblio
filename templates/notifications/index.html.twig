@@ -7,30 +7,30 @@
 {% endblock %}
 
 {% block page %}
-  <form name='form2' action="{{ asset('notification') }}" method='get'>
-    <table style='margin-bottom:10px;'>
-      <tr style='vertical-align:center;'>
-        <td style='width:370px;'>
-          <h3 style='margin:0;'>Validations des absences et notifications</h3>
+  <form name="form2" action="{{ asset('notification') }}" method="get">
+    <table style="margin-bottom:10px;">
+      <tr style="vertical-align:center;">
+        <td style="width:370px;">
+          <h3 style="margin:0;">Validations des absences et notifications</h3>
         </td>
         <td>
           Voir les agents
         </td>
-        <td style='width:150px;'>
-          <select name='actif' onchange='document.form2.submit();' class='ui-widget-content ui-corner-all'>
-            <option value='Actif' {{ actif == 'Actif' ? "selected='selected'" : "" }} >Service public</option>
-            <option value='Inactif' {{ actif == 'Inactif' ? "selected='selected'" : "" }}>Administratif</option>
+        <td style="width:150px;">
+          <select name="actif" onchange="document.form2.submit();" class="ui-widget-content ui-corner-all">
+            <option value="Actif" {{ actif == 'Actif' ? "selected='selected'" : "" }} >Service public</option>
+            <option value="Inactif" {{ actif == 'Inactif' ? "selected='selected'" : "" }}>Administratif</option>
           </select>
         </td>
       </tr>
     </table>
   </form>
   <form name="form" method="post" action="{{ asset('notification') }}" onsubmit="return confirm('Etes vous sûr de vouloir supprimer les agents sélectionnés ?');">
-    <table id='tableAgents' class='CJDataTable' data-sort='[[1, "asc"],[2, "asc"]]'>
+    <table id="tableAgents" class="CJDataTable" data-sort='[[1, "asc"],[2, "asc"]]'>
       <thead>
         <tr>
-          <th class='dataTableNoSort aLeft' >
-            <input type='checkbox' class='CJCheckAll'/>
+          <th class="dataTableNoSort aLeft" >
+            <input type="checkbox" class="CJCheckAll"/>
           </th>
           <th>Nom</th>
           <th>Prénom</th>
@@ -46,9 +46,9 @@
       <tbody>
         {% for agent in agents %}
           <tr>
-            <td style='white-space:nowrap;'>
-              <input type='checkbox' name='chk{{loop.index0}}' value="{{ agent.id }}" class='checkboxes'/>
-              <span class='pl-icon pl-icon-edit pointer' title='Modifier' data-id="{{ agent.id }}"></span>
+            <td style="white-space:nowrap;">
+              <input type="checkbox" name="chk{{loop.index0}}" value="{{ agent.id }}" class="checkboxes"/>
+              <span class="pl-icon pl-icon-edit pointer" title="Modifier" data-id="{{ agent.id }}"></span>
             </td>
             <td>{{ agent.nom }}</td>
             <td>{{ agent.prenom }}</td>
@@ -93,15 +93,15 @@
         {% endfor %}
       </tbody>
     </table>
-    <input type='hidden' name='CSRFToken' id='CSRFToken' value="{{ CSRFToken }}" />
-    <input type='button' value='Modifier la sélection' class='ui-button' id='update-button' />
+    <input type="hidden" name="CSRFToken" id="CSRFToken" value="{{ CSRFToken }}" />
+    <input type="button" value="Modifier la sélection" class="btn btn-primary" id="update-button" />
   </form>
 
-  <div id="update-form" title="Validations / Notifications" class='noprint' style='display:none;'>
-    <p class="validateTips" style='text-align:justify;'>Choisissez les responsables qui ont le droit de valider les absences et congés des agents sélectionnés.<br/>Cochez la case s'ils doivent être notifiés lors de l'enregistrement d'une nouvelle absence ou demande de congés.</p>
+  <div id="update-form" title="Validations / Notifications" class="noprint" style="display:none;">
+    <p class="validateTips" style="text-align:justify;">Choisissez les responsables qui ont le droit de valider les absences et congés des agents sélectionnés.<br/>Cochez la case s'ils doivent être notifiés lors de l'enregistrement d'une nouvelle absence ou demande de congés.</p>
     <form>
-      <table class='table-validation-notification'>
-        <thead style='text-align: left;'>
+      <table class="table-validation-notification">
+        <thead style="text-align: left;">
           <tr>
             <th colspan="2" class="border-right"><center>Validation niveau 1</center></th>
             <th colspan="2"><center>Validation niveau 2</center></th>
@@ -117,27 +117,27 @@
           {% for i in 0..8 %}
             <tr>
               <td>
-                <select name='responsable-{{i}}' id='responsable-{{i}}' class='responsablesl1' data-id='{{i}}'>
-                  <option value=''>&nbsp;</option>
+                <select name="responsable-{{i}}" id="responsable-{{i}}" class="responsablesl1" data-id="{{i}}">
+                  <option value="">&nbsp;</option>
                   {% for agent in manager_level1 %}
                       <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
                   {% endfor %}
                 </select>
               </td>
               <td class="border-right">
-                <input type='checkbox' name='notification-{{i}}' id='notification-{{i}}' class='notificationsl1' data-id='{{i}}'/>
+                <input type="checkbox" name="notification-{{i}}" id="notification-{{i}}" class="notificationsl1" data-id="{{i}}"/>
               </td>
 
               <td>
-                <select name='responsablel2-{{i}}' id='responsablel2-{{i}}' class='responsablesl2' data-id='{{i}}'>
-                  <option value=''>&nbsp;</option>
+                <select name="responsablel2-{{i}}" id="responsablel2-{{i}}" class="responsablesl2" data-id="{{i}}">
+                  <option value="">&nbsp;</option>
                   {% for agent in manager_level2 %}
                       <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
                   {% endfor %}
                 </select>
               </td>
               <td>
-                <input type='checkbox' name='notificationl2-{{i}}' id='notificationl2-{{i}}' class='notificationsl2' data-id='{{i}}'/>
+                <input type="checkbox" name="notificationl2-{{i}}" id="notificationl2-{{i}}" class="notificationsl2" data-id="{{i}}"/>
               </td>
             </tr>
           {% endfor %}

@@ -3,7 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <script type='text/JavaScript'>
+  <script type="text/JavaScript">
     <!--
     complet = JSON.parse('{{ postes_completNoms_json | e('js') }}');
     -->
@@ -58,7 +58,7 @@
         $('#login-empty').hide();
         $('#login-identic').hide();
         $('#new_login').val('');
-        $("#reset-login-form").dialog( "open" );
+        $('#reset-login-form').dialog( 'open' );
       });
     });
   </script>
@@ -70,40 +70,40 @@
     {% endif %}
   </h3>
 
-  <div class='ui-tabs'>
+  <div class="ui-tabs">
     <ul>
-      <li id="admin"><a href='#main'>Infos générales</a></li>
+      <li id="admin"><a href="#main">Infos générales</a></li>
 
       {% if not config('Planook') %}
-        <li id="admin"><a href='#qualif'>Activités</a></li>
+        <li id="admin"><a href="#qualif">Activités</a></li>
       {% endif %}
 
-      <li id="admin"><a href='#temps' id='personnel-a-li3'>Heures de présence</a></li>
+      <li id="admin"><a href="#temps" id="personnel-a-li3">Heures de présence</a></li>
 
       {% if showAgendasAndSync %}
-        <li id="admin"><a href='#agendas'>Agendas et Synchronisation</a></li>
+        <li id="admin"><a href="#agendas">Agendas et Synchronisation</a></li>
       {% endif %}
 
       {% if config('Conges-Enable') %}
-        <li id="admin"><a href='#conges'>Congés</a></li>
+        <li id="admin"><a href="#conges">Congés</a></li>
       {% endif %}
 
-      <li id="admin"><a href='#access'>Droits d'accès</a></li>
+      <li id="admin"><a href="#access">Droits d'accès</a></li>
 
       {% if can_manage_agent %}
-        <li id="admin" class='ui-tab-cancel'><a href='{{ asset("agent") }}'>Annuler</a></li>
-        <li id="admin" class='ui-tab-submit'><a id="post_form_agent" href="">Valider</a></li>
+        <li id="admin" class="ui-tab-cancel"><a href="{{ asset('agent') }}">Annuler</a></li>
+        <li id="admin" class="ui-tab-submit"><a id="post_form_agent" href="">Valider</a></li>
       {% else %}
-        <li id="admin" class='ui-tab-cancel'><a href='{{ asset("agent") }}'>Fermer</a></li>
+        <li id="admin" class="ui-tab-cancel"><a href="{{ asset('agent') }}">Fermer</a></li>
       {% endif %}
     </ul>
 
-    <form method='post' action='{{ asset("agent") }}' name='form'>
+    <form method="post" action="{{ asset('agent') }}" name="form">
       <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
 
-      <div id='main' style='margin-left:70px;padding-top:30px;'>
-        <input type='hidden' value='{{ action }}' name='action' />
-        <input type='hidden' value='{{ id }}' name='id' />
+      <div id="main" style="margin-left:70px;padding-top:30px;">
+        <input type="hidden" value="{{ action }}" name="action" />
+        <input type="hidden" value="{{ id }}" name="id" />
 
         {% if can_manage_agent %}
           {% include 'agents/agent_table_edit.html.twig' %}
@@ -113,7 +113,7 @@
       </div>
 
       {% if not config('Planook') %}
-        <div id='qualif' style='margin-left:70px;display:none;padding-top:30px;'>
+        <div id="qualif" style="margin-left:70px;display:none;padding-top:30px;">
           {% if can_manage_agent %}
             {% include 'agents/skills_edit.html.twig' %}
           {% else %}
@@ -122,19 +122,19 @@
         </div>
       {% endif %}
 
-      <div id='temps' style='display:none;padding-top:30px;'>
+      <div id="temps" style="display:none;padding-top:30px;">
         {# raw is needed because hours_tab contains html (see hours_tables.php) #}
         {{ hours_tab | raw }}
       </div>
 
-      <div id='agendas' style='margin-left:70px;display:none;padding-top:30px;'>
-        <table style='width:90%;'>
+      <div id="agendas" style="margin-left:70px;display:none;padding-top:30px;">
+        <table style="width:90%;">
           {% if config('Hamac-csv') %}
             <tr>
-              <td style='width:400px'>Synchronisation {{ config('Hamac-motif') ?? 'Hamac' }} :</td>
+              <td style="width:400px">Synchronisation {{ config('Hamac-motif') ?? 'Hamac' }} :</td>
               <td>
                 {% if can_manage_agent %}
-                  <input type='checkbox' value='1' name='check_hamac' {% if agent.hamacCheck %} checked="checked" {% endif %}/>
+                  <input type="checkbox" value="1" name="check_hamac" {% if agent.hamacCheck %} checked="checked" {% endif %}/>
                 {% else %}
                   {% if agent.hamacCheck %}
                     <span class="agent-acces-checked2 green bold">Oui</span>
@@ -148,15 +148,15 @@
 
           {% if config('ICS-Server1') %}
             <tr>
-              <td style='width:400px'>Synchronisation de l'agenda ICS {{ config('ICS-Pattern1') ?? 'Serveur ICS N°1' }} :</td>
+              <td style="width:400px">Synchronisation de l"agenda ICS {{ config('ICS-Pattern1') ?? 'Serveur ICS N°1' }} :</td>
               <td>
                 {% if can_manage_agent %}
-                  <input type='checkbox' value='1' name='check_ics1' {% if agent.icsCheck[0] %} checked="checked" {% endif %}/>
+                  <input type="checkbox" value="1" name="check_ics1" {% if agent.icsCheck[0] %} checked="checked" {% endif %}/>
                 {% else %}
                   {% if agent.icsCheck[0] %}
-                    <span class='agent-acces-checked2 green bold'>Oui</span>
+                    <span class="agent-acces-checked2 green bold">Oui</span>
                   {% else %}
-                    <span class='agent-acces-checked2 red'>Non</span>
+                    <span class="agent-acces-checked2 red">Non</span>
                   {% endif %}
                 {% endif %}
               </td>
@@ -165,15 +165,15 @@
 
           {% if config('ICS-Server2') %}
             <tr>
-              <td style='width:400px'>Synchronisation de l'agenda ICS {{ config('ICS-Pattern2') ?? 'Serveur ICS N°2' }} :</td>
+              <td style="width:400px">Synchronisation de l'agenda ICS {{ config('ICS-Pattern2') ?? 'Serveur ICS N°2' }} :</td>
               <td>
                 {% if can_manage_agent %}
-                  <input type='checkbox' value='1' name='check_ics2' {% if agent.icsCheck[1] %} checked="checked" {% endif %}/>
+                  <input type="checkbox" value="1" name="check_ics2" {% if agent.icsCheck[1] %} checked="checked" {% endif %}/>
                 {% else %}
                   {% if agent.icsCheck[1] %}
-                    <span class='agent-acces-checked2 green bold'>Oui</span>
+                    <span class="agent-acces-checked2 green bold">Oui</span>
                   {% else %}
-                    <span class='agent-acces-checked2 red'>Non</span>
+                    <span class="agent-acces-checked2 red">Non</span>
                   {% endif %}
                 {% endif %}
               </td>
@@ -182,18 +182,18 @@
 
           {% if config('ICS-Server3') %}
             <tr>
-              <td style='width:400px'>Synchronisation de l'agenda ICS {{ config('ICS-Pattern3') ?? 'Serveur ICS N°3' }} :</td>
+              <td style="width:400px">Synchronisation de l'agenda ICS {{ config('ICS-Pattern3') ?? 'Serveur ICS N°3' }} :</td>
               <td>
                 {% if can_manage_agent %}
-                  <input type='checkbox' value='1' name='check_ics3' {% if agent.icsCheck[2] %} checked="checked" {% endif %}/>
+                  <input type="checkbox" value="1" name="check_ics3" {% if agent.icsCheck[2] %} checked="checked" {% endif %}/>
                   <input type="text" value="{{ agent.icsUrl }}" name="url_ics" style="width:400px; margin-left:20px;" />
                 {% else %}
                   {% if agent.icsCheck[2] %}
-                    <span class='agent-acces-checked2 green bold'>Oui</span>
+                    <span class="agent-acces-checked2 green bold">Oui</span>
                   {% else %}
-                    <span class='agent-acces-checked2 red'>Non</span>
+                    <span class="agent-acces-checked2 red">Non</span>
                   {% endif %}
-                  <span style='margin-left:20px;'>{{ agent.icsUrl }}</span>
+                  <span style="margin-left:20px;">{{ agent.icsUrl }}</span>
                 {% endif %}
               </td>
             </tr>
@@ -201,19 +201,19 @@
 
           {% if id and exportIcsUrl %}
             <tr>
-              <td style='padding-top: 20px;'>Agenda Planno des plages de service public</td>
-              <td style='padding-top: 20px;' id='urlIcs'><a href="{{ config('URL') }}{{ exportIcsUrl }}">{{ config('URL') }}{{ exportIcsUrl }}</a></td>
+              <td style="padding-top: 20px;">Agenda Planno des plages de service public</td>
+              <td style="padding-top: 20px;" id="urlIcs"><a href="{{ config('URL') }}{{ exportIcsUrl }}">{{ config('URL') }}{{ exportIcsUrl }}</a></td>
             </tr>
 
             <tr>
               <td>Agenda Planno des plages de service public et des absences</td>
-              <td id='urlIcsWithAbsences'><a href="{{ config('URL') }}{{ exportIcsUrl }}&absences=1">{{ config('URL') }}{{ exportIcsUrl }}&absences=1</a></td>
+              <td id="urlIcsWithAbsences"><a href="{{ config('URL') }}{{ exportIcsUrl }}&absences=1">{{ config('URL') }}{{ exportIcsUrl }}&absences=1</a></td>
             </tr>
 
             {% if config('ICS-Code') %}
               <tr>
-                <td style='padding-top:20px;'>&nbsp;</td>
-                <td style='padding-top:20px;'>
+                <td style="padding-top:20px;">&nbsp;</td>
+                <td style="padding-top:20px;">
                   <a href="javascript:resetICSURL('{{ id }}', '{{ agent.firstName }} {{ agent.lastName }}');">
                     Réinitialiser les URL des agendas Planno
                   </a>
@@ -223,7 +223,7 @@
               <tr>
                 <td>&nbsp;</td>
                 <td>
-                  <a href='javascript:sendICSURL();'>
+                  <a href="javascript:sendICSURL();">
                     Envoyer les URL à l'agent par e-mail ({{ agent.mail }})
                   </a>
                 </td>
@@ -268,33 +268,33 @@
     </form>
   </div>
 
-  <div id="add-statut-form" title="Liste des statuts" class='noprint'>
-    <p class="validateTips">Ajoutez, supprimez des statuts. Modifiez leur catégorie. Modifiez l'ordre des statuts dans les menus déroulant.</p>
+  <div id="add-statut-form" title="Liste des statuts" class="noprint">
+    <p class="validateTips">Ajoutez, supprimez des statuts. Modifiez leur catégorie. <br> Modifiez l'ordre des statuts dans les menus déroulant.</p>
     <form>
       <p>
-        <input type='text' id='add-statut-text' style='width:300px;'/>
-        <input type='button' id='add-statut-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
+        <input type="text" id="add-statut-text" style="width:300px;"/>
+        <input type="button" id="add-statut-button2" class="btn btn-primary" value="Ajouter" style="margin-left:15px;"/>
       </p>
 
       <fieldset>
         <ul id="statuts-sortable">
           {% if statuts is iterable %}
             {% for elem in statuts %}
-              <li class='ui-state-default' id='li_{{ elem.id }}'>
-                <span class='pl-icon pl-icon-arrowupdown'></span>
-                <font id='valeur_{{ elem.id }}'>{{ elem.value }}</font>
-                <select id='categorie_{{ elem.id }}' class='select-popup'>
-                  <option value='0'>&nbsp;</option>
+              <li class="ui-state-default" id="li_{{ elem.id }}">
+                <span class="pl-icon pl-icon-arrowupdown"></span>
+                <font id="valeur_{{ elem.id }}">{{ elem.value }}</font>
+                <select id="categorie_{{ elem.id }}" class="select-popup">
+                  <option value="0">&nbsp;</option>
                   {% for elem2 in categories %}
                     {% if elem2.id == elem.category %}
-                      <option value='{{ elem2.id }}' selected="selected">{{ elem2.value }}</option>
+                      <option value="{{ elem2.id }}" selected="selected">{{ elem2.value }}</option>
                     {% else %}
-                      <option value='{{ elem2.id }}'>{{ elem2.value }}</option>
+                      <option value="{{ elem2.id }}">{{ elem2.value }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>
                 {% if elem.value not in statuts_utilises %}
-                  <span class='pl-icon pl-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
+                  <span class="pl-icon pl-icon-trash" style="position:absolute;left: 500px;cursor:pointer;" onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>
             {% endfor %}
@@ -304,23 +304,23 @@
     </form>
   </div>
 
-  <div id="add-service-form" title="Liste des services" class='noprint' style='display:none;' >
+  <div id="add-service-form" title="Liste des services" class="noprint" style="display:none;" >
     <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des services dans le menu déroulant.</p>
     <form>
       <p>
-        <input type='text' id='add-service-text' style='width:300px;'/>
-        <input type='button' id='add-service-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
+        <input type="text" id="add-service-text" style="width:300px;"/>
+        <input type="button" id="add-service-button2" class="btn btn-primary" value="Ajouter" style="margin-left:15px;"/>
       </p>
 
       <fieldset>
         <ul id="services-sortable">
           {% if services is iterable %}
             {% for elem in services %}
-              <li class='ui-state-default' id='li_{{ elem.id }}'>
-                <span class='pl-icon pl-icon-arrowupdown'></span>
-                <font id='valeur_{{ elem.id }}'>{{ elem.value }}</font>
+              <li class="ui-state-default" id="li_{{ elem.id }}">
+                <span class="pl-icon pl-icon-arrowupdown"></span>
+                <font id="valeur_{{ elem.id }}">{{ elem.value }}</font>
                 {% if elem.value not in services_utilises %}
-                  <span class='pl-icon pl-icon-trash' style='position:absolute;left: 500px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
+                  <span class="pl-icon pl-icon-trash" style="position:absolute;left: 500px;cursor:pointer;" onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>
             {% endfor %}
@@ -330,19 +330,19 @@
     </form>
   </div>
 
-  <div id="ics-url-form" title="Envoi des URL des agendas Planno" class='noprint' style='display:none;'>
+  <div id="ics-url-form" title="Envoi des URL des agendas Planno" class="noprint" style="display:none;">
     <p class="validateTips">Envoyez à l'agent les URL de ses agendas Planno.</p>
     <form>
       <strong>Destinataire</strong><br/>
-      <span id='ics-url-recipient'>&nbsp;</span><br/><br/>
-      <label for='ics-url-subject'>Sujet</label><br/>
-      <input type='text' id='ics-url-subject' name='ics-url-subject' value='{{ lang_send_ics_url_subject }}'/><br/><br/>
-      <label for='ics-url-text'>Message</label><br/>
-      <textarea id='ics-url-text' name='ics-url-text'>{{ lang_send_ics_url_message }}</textarea>
+      <span id="ics-url-recipient">&nbsp;</span><br/><br/>
+      <label for="ics-url-subject">Sujet</label><br/>
+      <input type="text" id="ics-url-subject" name="ics-url-subject" value="{{ lang_send_ics_url_subject }}"/><br/><br/>
+      <label for="ics-url-text">Message</label><br/>
+      <textarea id="ics-url-text" name="ics-url-text">{{ lang_send_ics_url_message }}</textarea>
     </form>
   </div>
 
-  <script type='text/JavaScript'>
+  <script type="text/JavaScript">
     {% if config('EDTSamedi') %}
       $("#EDTTabs").tabs();
     {% endif %}

@@ -3,45 +3,45 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <form name='form2' action='{{ asset("agent") }}' method='get'>
-    <input type = 'hidden' value='{{ active }}' />
-    <table style='margin-bottom:10px;'>
-      <tr style='vertical-align:center;'>
-        <td style='width:270px;'>
-          <h3 style='margin:0;'>Liste des agents</h3>
+  <form name="form2" action="{{ asset('agent') }}" method="get">
+    <input type = "hidden" value="{{ active }}" />
+    <table style="margin-bottom:10px;">
+      <tr style="vertical-align:center;">
+        <td style="width:270px;">
+          <h3 style="margin:0;">Liste des agents</h3>
         </td>
         <td>Voir les agents</td>
-        <td style='width:150px;'>
+        <td style="width:150px;">
           <select name="actif" id="showAgentSelect" onchange="document.form2.submit();"  class="ui-widget-content ui-corner-all">
-            <option value='Actif'{% if active == 'Actif' %} selected='selected' {% endif %}>Service public</option>
-            <option value='Inactif' {% if active == 'Inactif' %} selected='selected' {% endif %}>Administratif</option>
+            <option value="Actif"{% if active == 'Actif' %} selected="selected" {% endif %}>Service public</option>
+            <option value="Inactif" {% if active == 'Inactif' %} selected="selected" {% endif %}>Administratif</option>
             {% if rights21 %}
-              <option value='Supprimé' {% if active == 'Supprimé' %} selected='selected' {% endif %}>Supprimé</option>
+              <option value="Supprimé" {% if active == 'Supprimé' %} selected="selected" {% endif %}>Supprimé</option>
             {% endif %}
           </select>
         </td>
-        <td style='width:80px;'></td>
+        <td style="width:80px;"></td>
         <td>
           {% if rights21 %}
-          <input type='button' value='Ajouter' onclick="location.href='{{ asset('agent/add') }}';" class='ui-button'/>
+          <input type="button" value="Ajouter" onclick='location.href="{{ asset('agent/add') }}";' class="btn btn-primary"/>
             {% if ldapBouton %}
-              <input type='button' value='Import LDAP' onclick='location.href="{{ asset('agent/ldap') }}";' class='ui-button ui-button-type2' style='margin-left:21px;'/>
+              <input type="button" value="Import LDAP" onclick='location.href="{{ asset('agent/ldap') }}";' class="btn btn-secondary" style="margin-left:21px;"/>
             {% endif %}
             {% if ldifBouton %}
-              <input type='button' value='Import LDIF' onclick='location.href="{{ asset('agent/ldif') }}";' class='ui-button ui-button-type2' style='margin-left:21px;'/>
+              <input type="button" value="Import LDIF" onclick='location.href="{{ asset('agent/ldif') }}";' class="btn-secondary" style="margin-left:21px;"/>
             {% endif %}
           {% endif %}
         </td>
       </tr>
     </table>
   </form>
-  <table id='tableAgents' class='CJDataTable' data-sort='[[1,"asc"],[2,"asc"]]'>
+  <table id="tableAgents" class="CJDataTable" data-sort='[[1,"asc"],[2,"asc"]]'>
     <thead>
       <tr>
-        <th class='dataTableNoSort aLeft'>
+        <th class="dataTableNoSort aLeft">
           <div class="icon-div">
             {% if rights21 %}
-              <input type='checkbox' class='CJCheckAll'/>
+              <input type="checkbox" class="CJCheckAll"/>
             {% endif %}
           </div>
         </th>
@@ -55,24 +55,24 @@
         {% if config('Multisites-nombre') > 1 %}
           <th>Sites</th>
         {% endif %}
-        <th class='dataTableDateFR'>Arrivée</th>
-        <th class='dataTableDateFR'>Départ</th>
-        <th class='dataTableDateFR'>Accès</th>
+        <th class="dataTableDateFR">Arrivée</th>
+        <th class="dataTableDateFR">Départ</th>
+        <th class="dataTableDateFR">Accès</th>
     </thead>
     <tbody>
       {% for a in agents %}
         <tr>
-          <td style='white-space:nowrap;'>
+          <td style="white-space:nowrap;">
             <div class="icon-div">
               {% if rights21 %}
-              <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ a.id }}' class='checkbox' />
+              <input type="checkbox" name="chk{{ loop.index0 }}" value="{{ a.id }}" class="checkbox" />
               {% endif %}
               <a href="{{ asset ('agent/')}}{{ a.id }}">
-                <span class='pl-icon pl-icon-edit' title='Modifier'></span>
+                <span class="pl-icon pl-icon-edit" title="Modifier"></span>
               </a>
               {% if rights21 and a.id != loginId and a.id > 1 %}
-                <a href='#' >
-                  <span class='pl-icon pl-icon-dropblack delete-agent' title='Supprimer' data-id="{{ a.id }}" data-name="{{ a.firstname }} {{ a.lastname }}"></span>
+                <a href="#" >
+                  <span class="pl-icon pl-icon-dropblack delete-agent" title="Supprimer" data-id="{{ a.id }}" data-name="{{ a.firstname }} {{ a.lastname }}"></span>
                 </a>
               {% endif %}
             </div>
@@ -95,47 +95,47 @@
     </tbody>
   </table>
   {% if rights21 %}
-    <select name='action' id='action' style='width:200px;'>
-      <option value=''></option>
+    <select name="action" id="action" style="width:200px;">
+      <option value=""></option>
       {% if not config('Planook') %}
-        <option value='edit'>Modifier la sélection</option>
+        <option value="edit">Modifier la sélection</option>
       {% endif %}
-      <option value='delete'>Supprimer la sélection</option>
+      <option value="delete">Supprimer la sélection</option>
     </select>
-    <input type='button' value='Valider' class='ui-button' style='margin-left:20px;' onclick='agent_list()'/>
+    <input type="button" value="Valider" class="btn btn-primary" style="margin-left:20px;" onclick="agent_list()"/>
   {% endif %}
-  <div id="dialog-form" title='{{ lang.edit_selected_users }}' class='noprint' style='display:none;'>
+  <div id="dialog-form" title="{{ lang.edit_selected_users }}" class="noprint" style="display:none;">
     <p class="validateTips"></p>
     <form>
-      <div class='ui-tabs'>
+      <div class="ui-tabs">
         <ul>
-            <li><a href='#main'>Infos générales</a></li>
-            <li><a href='#qualif'>Activités</a></li>
+            <li><a href="#main">Infos générales</a></li>
+            <li><a href="#qualif">Activités</a></li>
         </ul>
-        <div id='main' style='margin-left:70px;padding-top:30px;'>
-          <table class='tableauFiches'>
+        <div id="main" style="margin-left:70px;padding-top:30px;">
+          <table class="tableauFiches">
             <tr>
               <td>
                 <label for="statut">Statut</label>
               </td>
               <td>
-                <select name='statut' id='statut' style='text-align:center;'>
-                  <option value='-1'>{{ lang.do_not_change }}</option>
-                  <option value=''>Aucun</option>
+                <select name="statut" id="statut" style="text-align:center;">
+                  <option value="-1">{{ lang.do_not_change }}</option>
+                  <option value="">Aucun</option>
                   {% for s in status %}
-                    <option value='{{ s.value }}'>{{ s.value }}</option>
+                    <option value="{{ s.value }}">{{ s.value }}</option>
                   {% endfor %}
                 </select>
               </td>
             <tr>
             <tr>
               <td>
-                <label for='contrat'>Contrat</label>
+                <label for="contrat">Contrat</label>
               </td>
               <td>
-                <select name='contrat' id='contrat' style='text-align:center;'>
-                  <option value='-1'>{{ lang.do_not_change }}</option>
-                  <option value=''>Aucun</option>
+                <select name="contrat" id="contrat" style="text-align:center;">
+                  <option value="-1">{{ lang.do_not_change }}</option>
+                  <option value="">Aucun</option>
                   {% for c in contracts %}
                     <option value={{c}}>{{ c }}</option>
                   {% endfor %}
@@ -144,14 +144,14 @@
             </tr>
             <tr>
               <td>
-                <label for='service'>Service de rattachement</label>
+                <label for="service">Service de rattachement</label>
               </td>
-              <td style='white-space:nowrap'>
-                <select name='service' id='service' style='text-align:center;'>
-                  <option value='-1'>{{ lang.do_not_change }}</option>
-                  <option value=''>Aucun</option>
+              <td style="white-space:nowrap">
+                <select name="service" id="service" style="text-align:center;">
+                  <option value="-1">{{ lang.do_not_change }}</option>
+                  <option value="">Aucun</option>
                   {% for se in services %}
-                    <option value='{{ se.value }}'>{{ se.value }}</option>
+                    <option value="{{ se.value }}">{{ se.value }}</option>
                   {% endfor %}
                 </select>
               </td>
@@ -161,68 +161,68 @@
                 <label for="heures_hebdo">Heures de service public</label>
               </td>
               <td>
-                <select id='heures_hebdo' name='heures_hebdo' style='text-align:center;'>
-                  <option value='-1'>{{ lang.do_not_change }}</option>
-                  <option value='0'>&nbsp;</option>
+                <select id="heures_hebdo" name="heures_hebdo" style="text-align:center;">
+                  <option value="-1">{{ lang.do_not_change }}</option>
+                  <option value="0">&nbsp;</option>
                   {% for i in 1..101%}
-                    <option value='{{ i }}%'>{{ i }}%</option>
+                    <option value="{{ i }}%">{{ i }}%</option>
                   {% endfor %}
                   {% for h in hours %}
-                    <option value='{{ h[0] }}'>{{ h[1] }}</option>
+                    <option value="{{ h[0] }}">{{ h[1] }}</option>
                   {% endfor %}
                 </select>
               </td>
             </tr>
             <tr>
               <td>
-                <label for='heures_travail'>Heures de travail par semaine</label>
+                <label for="heures_travail">Heures de travail par semaine</label>
               </td>
               <td>
-                <select name='heures_travail' id='heures_travail' style='text-align:center;'>
-                  <option value='-1'>{{ lang.do_not_change }}</option>
-                  <option value='0'>&nbsp;</option>
+                <select name="heures_travail" id="heures_travail" style="text-align:center;">
+                  <option value="-1">{{ lang.do_not_change }}</option>
+                  <option value="0">&nbsp;</option>
                   {% for h in hours %}
-                    <option value='{{ h[0] }}'>{{ h[1] }}</option>
+                    <option value="{{ h[0] }}">{{ h[1] }}</option>
                   {% endfor %}
                 </select>
               </td>
             </tr>
             <tr>
-                <td><label for='actif'>Service public / Administratif</label></td>
+                <td><label for="actif">Service public / Administratif</label></td>
                 <td>
-                    <select name='actif' id='actif' style='text-align:center;'>
-                      <option value='-1'>{{ lang.do_not_change }}</option>
-                        <option value='Actif'>Service public</option>
-                        <option value='Inactif'>Administratif</option>
+                    <select name="actif" id="actif" style="text-align:center;">
+                      <option value="-1">{{ lang.do_not_change }}</option>
+                        <option value="Actif">Service public</option>
+                        <option value="Inactif">Administratif</option>
                     </select>
                 </td>
             </tr>
           </table>
         </div> <!-- main -->
-        <div id='qualif' style='margin-left:70px;padding-top:30px;'>
-          <input type='hidden' name='postes' id='postes' value='-1'/>
-          <table style='width:90%;'>
-            <tr style='vertical-align:top;'>
+        <div id="qualif" style="margin-left:70px;padding-top:30px;">
+          <input type="hidden" name="postes" id="postes" value="-1"/>
+          <table style="width:90%;">
+            <tr style="vertical-align:top;">
               <td>
                 <b>Activités disponibles</b><br/>
-                <div id='dispo_div'>
-                  <select id='postes_dispo' name='postes_dispo' style='width:300px;' size='20' multiple='multiple'>
+                <div id="dispo_div">
+                  <select id="postes_dispo" name="postes_dispo" style="width:300px;" size="20" multiple="multiple">
                     {% for sk in skills %}
-                      <option value='{{ sk.id }}'>{{ sk.name }}</option>
+                      <option value="{{ sk.id }}">{{ sk.name }}</option>
                     {% endfor %}
                   </select>
                 </div>
               </td>
-              <td style='text-align:center;padding-top:100px;'>
-                <input type='button' style='width:200px' value='Attribuer >>' onclick='select_add("postes_dispo","postes_attribues","postes",300);' class='ui-button ui-button-type2'/><br/><br/>
-                <input type='button' style='width:200px' value='Attribuer Tout >>' onclick='select_add_all("postes_dispo","postes_attribues","postes",300);' class='ui-button ui-button-type2'/><br/><br/>
-                <input type='button' style='width:200px' value='<< Supprimer' onclick='select_drop("postes_dispo","postes_attribues","postes",300);' class='ui-button ui-button-type3'/><br/><br/>
-                <input type='button' style='width:200px' value='<< Supprimer Tout' onclick='select_drop_all("postes_dispo","postes_attribues","postes",300);' class='ui-button ui-button-type3'/><br/><br/>
+              <td style="text-align:center;padding-top:100px;">
+                <input type="button" style="width:200px" value="Attribuer >>" onclick="select_add('postes_dispo','postes_attribues','postes',300);" class="btn btn-secondary"/><br/><br/>
+                <input type="button" style="width:200px" value="Attribuer Tout >>" onclick="select_add_all('postes_dispo','postes_attribues','postes',300);" class="btn btn-secondary"/><br/><br/>
+                <input type="button" style="width:200px" value="<< Supprimer" onclick="select_drop('postes_dispo','postes_attribues','postes',300);" class="btn btn-danger"/><br/><br/>
+                <input type="button" style="width:200px" value="<< Supprimer Tout" onclick="select_drop_all('postes_dispo','postes_attribues','postes',300);" class="btn btn-danger"/><br/><br/>
               </td>
               <td>
                 <b>Activités attribuées</b><br/>
-                <div id='attrib_div'>
-                  <select id='postes_attribues' name='postes_attribues' style='width:300px;' size='20' multiple='multiple'>
+                <div id="attrib_div">
+                  <select id="postes_attribues" name="postes_attribues" style="width:300px;" size="20" multiple="multiple">
                   </select>
                 </div>
               </td>
@@ -242,7 +242,7 @@
     </form>
   </div>
 
-  {% if active != 'Supprimé' %}
+  {% if active != "Supprimé" %}
     <div id="deleteStep2Dialog" style="display: none;">
       <h3>Suppression</h3>
       <form id="deleteStep2Form">
@@ -255,6 +255,6 @@
 {% endblock %}
 
 {% block specificjs %}
-    <script type='text/JavaScript'> var complet = JSON.parse('{{ skillsAllWithName | e('js') }}'); </script>
+    <script type="text/JavaScript"> var complet = JSON.parse('{{ skillsAllWithName | e('js') }}'); </script>
     <script type="text/JavaScript" src="{{ asset('js/agent.js') }}"></script>
 {% endblock %}

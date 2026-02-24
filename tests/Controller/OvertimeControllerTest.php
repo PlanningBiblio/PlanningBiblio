@@ -75,10 +75,10 @@ class OvertimeControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h4[@class="noprint"]');
         $this->assertEquals('Liste des demandes d\'heures supplémentaires', $result->text('Node does not exist', false), 'h4 is Liste des demandes de récupération');
 
-        $result = $crawler->filterXPath('//input[@class="ui-button"]');
+        $result = $crawler->filterXPath('//input[@class="btn btn-secondary"]');
         $this->assertEquals('Rechercher', $result->attr("value"),'input value is Rechercher');
 
-        $result = $crawler->filterXPath('//input[@class="ui-button ui-button-type2"]');
+        $result = $crawler->filterXPath('//input[@class="btn btn-secondary"][2]');
         $this->assertEquals('Réinitialiser', $result->attr("value"),'input value is Réinitialiser');
 
         $result = $crawler->filterXPath('//th');
