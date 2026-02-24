@@ -4,6 +4,7 @@ namespace App\Twig;
 
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -46,6 +47,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('config', [$this, 'getConfig']),
             new TwigFunction('siteName', [$this, 'siteName']),
             new TwigFunction('userCan', [$this, 'userCan']),
+            new TwigFunction('itemIsActive', [$this, 'itemIsActive']),
             new TwigFunction('menuIsActive', [$this, 'menuIsActive']),
             new TwigFunction('colspan', [$this, 'colspan']),
         ];
@@ -166,29 +168,64 @@ class AppExtension extends AbstractExtension
         return $config[$key];
     }
 
+    public function itemIsActive($itemUrl, $requestedUrl, $session): bool
+    {
+        $config = $GLOBALS['config'];
+        $url = $config['URL'] . '/' . $itemUrl;
+        $site = $session->get('site');
+
+        // Handle Planning's menu
+
+        // If URL ends with a date or /week check site 
+        if (preg_match('/(.+)(\/[0-9]{4}((-[0-9]{2}){2})|\/week)/', $requestedUrl)){
+            return $url === ($config['URL'] . '/' . $site);
+        }
+
+        // If URL ends with site number
+            if (preg_match('/(.+)(\/[0-9]{1})/', $requestedUrl, $match) and $match[1]===$config['URL']){
+            return $url === $requestedUrl;
+        }
+
+        // if URL empty
+        if ($requestedUrl===($config['URL'] . '/')){
+            return $url === ($config['URL'] . '/' . $site);
+        }
+
+        // Specific case for /absence/add
+        if (preg_match('/absence\/add/', $requestedUrl)){
+            return $url === $requestedUrl;
+        }
+
+        // Find the level-up URL for all routes ending in 'add' or in any number for edit
+        if (preg_match('/(.+?)(-.+)?\/add/', $requestedUrl, $match) or preg_match('/(.+?)(-.+)?(\/[0-9]+)/', $requestedUrl, $match)){
+            return $url === $match[1];
+        }
+
+        // Find the origin URL without the route parameters     
+        if (preg_match('/^([^?]*)/', $requestedUrl, $match)){
+            return $url === $match[0];
+        }
+
+    }
+
     public function menuIsActive($menu, $requested_url): bool
     {
         $config = $GLOBALS['config'];
 
         // Handle Planning's menu
         if (empty($menu)) {
-            $uri = substr($requested_url, strlen($config['URL']));
 
-            if ($uri == '/') {
-                return true;
-            }
+            (preg_match('/^([^?]*)/', $requested_url, $match));
+            $uri = substr($match[0], strlen($config['URL']));
 
-            if (preg_match('/^\/(\/d{4}-\d{2}-\d{2})/', $uri)) {
-                return true;
-            }
-            return (bool) preg_match('/^\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri);
+            return (bool) preg_match('/(\/[0-9]{4}((-[0-9]{2}){2})|\/week|\/detached|\A\/$|\A\/[0-9]{1,2}$)/', $uri);
         }
 
         if(strpos($requested_url, "{$config['URL']}/$menu") !== false){
             return true;
         }
 
-        // Handle specfic admin menu
+        // Handle specific admin menu
         if ($menu == 'admin') {
             $admin_pages = array(
                 'skill', 'agent', 'position',
@@ -210,12 +247,6 @@ class AppExtension extends AbstractExtension
                 return true;
             }
             if (strpos($requested_url, 'overtime') !== false) {
-                return true;
-            }
-        }
-
-        if ($menu == 'index') {
-            if (strpos($requested_url, 'week') !== false) {
                 return true;
             }
         }
