@@ -2532,6 +2532,17 @@ table.dataTable th{
 }
 
 /* Emoji */
+
+.emoji-wysiwyg-editor {
+  border : 1px solid #456578;
+  border-radius: 4px;
+}
+
+.bi.bi-emoji-smile {
+  color: #456578;
+  z-index: 1;
+}
+
 .tableauFiches .emoji-menu-tabs td {
   padding: 0 0 10px 10px;
 }
