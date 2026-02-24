@@ -5,24 +5,24 @@
 {% block page %}
 
   <form name="form" action="#">
-    <table style='margin:20px 0;'>
-      <tr valign='top'>
-        <td style='width:270px'>
-          <h3 style='margin-top:0px;'>Liste des postes</h3>
+    <table style="margin:20px 0;">
+      <tr valign="top">
+        <td style="width:270px">
+          <h3 style="margin-top:0px;">Liste des postes</h3>
         </td>
         <td>
-          <input type="button" value="Ajouter" id="ajouter" onclick="location.href='{{asset('position/add')}}'" class='ui-button'/>
+          <input type="button" value="Ajouter" id="ajouter" onclick="location.href='{{asset('position/add')}}'" class="btn btn-primary"/>
         </td>
       </tr>
     </table>
   </form>
 
-  <script type='text/JavaScript'>document.form.groupe.value='{{groupe}}';</script>
+  <script type="text/JavaScript">document.form.groupe.value="{{groupe}}";</script>
 
-  <table id='tablePostes' class='CJDataTable' data-sort='[[1, "asc"],[2, "asc"]]'>
+  <table id="tablePostes" class="CJDataTable" data-sort='[[1, "asc"],[2, "asc"]]'>
     <thead>
       <tr>
-        <th class='dataTableNoSort'>&nbsp;</th>
+        <th class="dataTableNoSort">&nbsp;</th>
         <th>Nom du poste</th>
           {% if multisite > 1 %}
             <th>Site</th>
@@ -40,30 +40,30 @@
     <tbody>
       {% for j in positions %}
         <tr>
-          <td style='white-space:nowrap;'>
+          <td style="white-space:nowrap;">
             <div class="icon-div">
-              <a href='{{ asset("position/") }}{{ j.id }}'>
-                <span class='pl-icon pl-icon-edit' title='Modifier' ></span>
+              <a href="{{ asset('position/') }}{{ j.id }}">
+                <span class="pl-icon pl-icon-edit" title="Modifier" ></span>
               </a>
               {% if j.id in usedPositions == false %}
                 &nbsp;
-                <a href='#'>
-                  <span id='{{ j.id }}' class='pl-icon pl-icon-dropblack' title='Supprimer' onclick="confirmDel(this.id)"></span>
+                <a href="#">
+                  <span id="{{ j.id }}" class="pl-icon pl-icon-dropblack" title="Supprimer" onclick="confirmDel(this.id)"></span>
                   <script>
                     function confirmDel(id){
-                      if (window.confirm("Voulez-vous vraiment supprimer ce poste ?")){
+                      if (window.confirm('Voulez-vous vraiment supprimer ce poste ?')){
                         CSRFToken = $('#CSRFSession').val();
                         $.ajax({
                           url : '{{ asset("position") }}',
                           type : 'DELETE',
                           data : {id: id, CSRFToken: CSRFToken},
                           success: function(response){
-                            if (response == "Ok"){
+                            if (response == 'Ok'){
                               window.location.reload('/position');
                             }
                           },
                           error: function(){
-                            CJInfo("Une erreur est survenue lors de la suppression","error")
+                            CJInfo('Une erreur est survenue lors de la suppression','error')
                           }
                         });
                       }
@@ -80,7 +80,7 @@
           {% endif %}
           <td>{{j.etage}}</td>
           {% if not config('Planook') %}
-            <td title='{{j.activites}}' size='100'>{{ j.activitesAffichees }}</td>
+            <td title="{{j.activites}}" size="100">{{ j.activitesAffichees }}</td>
             <td>{{j.groupe}}</td>
             <td>{{j.obligatoire}}</td>
             <td>{{j.bloquant ? "Oui" : "Non"}}</td>

@@ -4,88 +4,88 @@
 
 {% block page %}
   {% if conges_recuperation == 1 and show_recovery %}
-    <h3 class='noprint'>Liste des récupérations</h3>
+    <h3 class="noprint">Liste des récupérations</h3>
   {% else %}
-    <h3 class='noprint'>Liste des congés</h3>
+    <h3 class="noprint">Liste des congés</h3>
   {% endif %}
-  <h3 class='print_only'>
+  <h3 class="print_only">
     Liste des congés de {{ agent_name }}, année {{ from_year }}-{{ to_year }}.
   </h3>
 
-  <form name='form' method='get' action='{{ asset("holiday/index") }}' class='noprint'>
+  <form name="form" method="get" action="{{ asset('holiday/index') }}" class="noprint">
     <div class="container top-buttons">
       <div class="row">
         <div class="col">
           Année: 
-          <select name='annee'>
+          <select name="annee">
             {% for y in years %}
               {% if from_year == y[0] %}
-                <option value='{{ y[0] }}' selected="selected">{{ y[1] }}</option>
+                <option value="{{ y[0] }}" selected="selected">{{ y[1] }}</option>
               {% else %}
-                <option value='{{ y[0] }}'>{{ y[1] }}</option>
+                <option value="{{ y[0] }}">{{ y[1] }}</option>
               {% endif %}
             {% endfor %}
           </select>
         </div>
         <div class="col">
           Congés: 
-          <select name='congesAffiches'>
-            <option value='tous'>Tous</option>
+          <select name="congesAffiches">
+            <option value="tous">Tous</option>
             {% if forthcoming %}
-              <option value='aVenir' selected="selected">A venir</option>
+              <option value="aVenir" selected="selected">A venir</option>
             {% else %}
-              <option value='aVenir'>A venir</option>
+              <option value="aVenir">A venir</option>
             {% endif %}
           </select>
         </div>
 
         {% if admin %}
-          <div class="col" style='text-align:left;'>
-            <span style='padding:5px;'>Agents :
-              <select name='perso_id' id='perso_id'>
+          <div class="col" style="text-align:left;">
+            <span style="padding:5px;">Agents :
+              <select name="perso_id" id="perso_id">
                 {% if perso_id == 0 %}
-                  <option value='0' selected="selected">Tous</option>
+                  <option value="0" selected="selected">Tous</option>
                 {% else %}
-                  <option value='0'>Tous</option>
+                  <option value="0">Tous</option>
                 {% endif %}
                 {% for a in managed %}
                   {% if a.id == perso_id %}
-                    <option value='{{ a.id }}' selected="selected">{{ a.lastname }} {{ a.firstname }}</option>
+                    <option value="{{ a.id }}" selected="selected">{{ a.lastname }} {{ a.firstname }}</option>
                   {% else %}
-                    <option value='{{ a.id }}'>{{ a.lastname }} {{ a.firstname }}</option>
+                    <option value="{{ a.id }}">{{ a.lastname }} {{ a.firstname }}</option>
                   {% endif %}
                 {% endfor %}
               </select>
             </span>
 
             <br/>
-            <span style='padding:5px;'>Agents supprimés : 
+            <span style="padding:5px;">Agents supprimés : 
               {% if deleted_agents %}
-                <input type='checkbox' checked="checked" name='supprimes' onclick="updateAgentsList(this, 'perso_id');"/>
+                <input type="checkbox" checked="checked" name="supprimes" onclick="updateAgentsList(this, 'perso_id');"/>
               {% else %}
-                <input type='checkbox' name='supprimes' onclick="updateAgentsList(this, 'perso_id');"/>
+                <input type="checkbox" name="supprimes" onclick="updateAgentsList(this, 'perso_id');"/>
               {% endif %}
             </span>
           </div>
         {% endif %}
 
         <div class="col">
-          <input type='submit' value='Rechercher' id='button-OK' class='ui-button'/>
+          <input type="submit" value="Rechercher" id="button-OK" class="btn btn-secondary"/>
         </div>
         <div class="col-3">
           {% if show_recovery %}
-            <a href='{{ asset("holiday/index") }}?recup=1&reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
+            <a href="{{ asset('holiday/index') }}?recup=1&reset=on" class="btn btn-secondary" >Réinitialiser</a>
           {% else %}
-            <a href='{{ asset("holiday/index") }}?reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
+            <a href="{{ asset('holiday/index') }}?reset=on" class="btn btn-secondary" >Réinitialiser</a>
           {% endif %}
         </div>
         <div class="col">
           <div class="ml-auto">
-            <a href='{{ asset(addlink) }}' class='ui-button ui-button-type2'>Ajouter</a>
+            <a href="{{ asset(addlink) }}" class="btn btn-primary">Ajouter</a>
           </div>
         </div>
         {% if show_recovery %}
-          <input type='hidden' name='recup' value='1'/>
+          <input type="hidden" name="recup" value="1"/>
         {% endif %}
       </div>
     </div>
@@ -98,32 +98,32 @@
   {% endif %}
     <thead>
       <tr>
-        <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
+        <th rowspan="2" class="dataTableNoSort">&nbsp;</th>
         <th rowspan="2">Début</th>
         <th rowspan="2">Fin</th>
         {% if admin %}
-          <th rowspan='2'>Nom</th>
+          <th rowspan="2">Nom</th>
         {% endif %}
-        <th colspan='2' class='ui-state-default'>Validation</th>
+        <th colspan="2" class="ui-state-default">Validation</th>
         {% if conges_mode == 'jours' and not show_recovery %}
-          <th rowspan='2'>Jours</th>
+          <th rowspan="2">Jours</th>
         {% else %}
-          <th rowspan='2' class='dataTableHeureFR'>Heures</th>
+          <th rowspan="2" class="dataTableHeureFR">Heures</th>
         {% endif %}
 
         {% if balance %}
-          <th rowspan='2' class='dataTableHeureFR'>Crédits</th>
-          <th rowspan='2' class='dataTableHeureFR'>Reliquat</th>
+          <th rowspan="2" class="dataTableHeureFR">Crédits</th>
+          <th rowspan="2" class="dataTableHeureFR">Reliquat</th>
         {% endif %}
 
         {% if recovery %}
-          <th rowspan='2' class='dataTableHeureFR'>Récupérations</th>
+          <th rowspan="2" class="dataTableHeureFR">Récupérations</th>
         {% endif %}
 
         {% if balance %}
-          <th rowspan='2' class='dataTableHeureFR'>Solde Débiteur</th>
+          <th rowspan="2" class="dataTableHeureFR">Solde Débiteur</th>
         {% endif %}
-          <th rowspan='2' class='information'>Informations</th>
+          <th rowspan="2" class="information">Informations</th>
       </tr>
       <tr>
         <th>État</th>
@@ -137,8 +137,8 @@
             {% if c.supprime or c.information %}
               &nbsp;
             {% else %}
-              <a href='{{ asset("holiday/edit/") }}{{ c.id }}'/>
-                <span class='pl-icon pl-icon-edit' title='Voir'></span>
+              <a href="{{ asset('holiday/edit/') }}{{ c.id }}"/>
+                <span class="pl-icon pl-icon-edit" title="Voir"></span>
               </a>
             {% endif %}
           </td>
@@ -156,7 +156,7 @@
             <td style="font-weight: bold;">{{ c.status }}</td>
           {% endif %}
           <td data-order="{{ c.statusDate }}">{{ c.statusDate | datefr }}</td>
-          <td class='aRight'>{{ c.hours }}{% if show_hours_to_days %}<br />{{ c.days }}j{% endif %}</td>
+          <td class="aRight">{{ c.hours }}{% if show_hours_to_days %}<br />{{ c.days }}j{% endif %}</td>
 
           {% if balance %}
             {% if c.valide or c.information %}

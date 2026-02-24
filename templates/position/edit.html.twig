@@ -7,7 +7,7 @@
 {% endblock %}
 {% block page %}
   <div id="content-form">
-    {% if id is defined %}
+    {% if id is defined and id is not null %}
       <h3>Modification du poste</h3>
     {% else %}
       <h3>Ajout d'un poste</h3>
@@ -159,9 +159,9 @@
           <tr>
             <td colspan='2' style='text-align:center;'><br/><br/>
               <input type='hidden' value={{id}} name='id'/>
-              <a href='{{ asset("position") }}'class='ui-button ui-button-type2'>Annuler</a>
+              <a href='{{ asset("position") }}' role="button" class='btn btn-secondary'>Annuler</a>
                   &nbsp;&nbsp;&nbsp;
-              <input type='submit' value='Valider' class='ui-button'/>
+              <input type='submit' role="button"  value='Valider' class='btn btn-primary'/>
             </td>
           </tr>
           <tr>
@@ -177,7 +177,7 @@
         <form>
           <p>
             <input type='text' id='add-etage-text' style='width:300px;'/>
-            <input type='button' id='add-etage-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
+            <input type='button' id='add-etage-button2' class='btn btn-primary' value='Ajouter' style='margin-left:15px;'/>
           </p>
           <fieldset>
             <ul id="etages-sortable">
@@ -203,7 +203,7 @@
         <form>
           <p>
             <input type='text' id='add-group-text' style='width:300px;'/>
-            <input type='button' id='add-group-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
+            <input type='button' id='add-group-button2' class='btn btn-primary' value='Ajouter' style='margin-left:15px;'/>
           </p>
           <fieldset>
             <ul id="groups-sortable">

@@ -3,28 +3,28 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <div id='content-form'>
+  <div id="content-form">
     <h3>Informations sur les congés</h3>
-    <div class='admin-div'>
+    <div class="admin-div">
       {% if id !=0 %}
         <h4>Modification des informations sur les congés</h4>
       {% else %}
         <h4>Ajout d'une information</h4>
       {% endif %}
-      <form id="form" method='post' action="{{ asset('holiday-info') }}" name='form' onsubmit='return verif_form("debut=date1;fin=date2;texte");'>
-        <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}"/>
-        <input type='hidden' name='id' value="{{ id }}"/>
-        <table class='tableauFiches'>
+      <form id="form" method="post" action="{{ asset('holiday-info') }}" name="form" onsubmit="return verif_form('debut=date1;fin=date2;texte');">
+        <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}"/>
+        <input type="hidden" name="id" value="{{ id }}"/>
+        <table class="tableauFiches">
           <tr>
             <td><label>Date de début : </label></td>
             <td>
-              <input type='text' name='debut' value="{{ debut }}" style="width:100%;" class='datepicker' />
+              <input type="text" name="debut" value="{{ debut }}" style="width:100%;" class="datepicker" />
             </td>
           </tr>
           <tr>
             <td><label>Date de fin : </label></td>
             <td>
-              <input type='text' name='fin' value="{{ fin }}" style="width:100%;" class='datepicker'/>
+              <input type="text" name="fin" value="{{ fin }}" style="width:100%;" class="datepicker"/>
             </td>
           </tr>
           <tr>
@@ -37,16 +37,16 @@
             <td>&nbsp;</td>
           </tr>
           <tr>
-            <td colspan='2' style='text-align:center;'>
-              <a href="{{ asset('holiday-info') }}" class="ui-button ui-button-type2 ui-widget ui-button-type1 ui-corner-all ui-button-text-only" style="margin-left:30px;" role="button">
-                <span class="ui-button-text">Annuler</span>
+            <td colspan="2" style="text-align:center;">
+              <a href="{{ asset('holiday-info') }}" class="btn btn-secondary" style="margin-left:30px;" role="button">
+                <span>Annuler</span>
               </a>
               {% if id != 0 %}
-                <a href="javascript:deleteAdminInfo({{ id }});" class="ui-button ui-button-type3 ui-widget ui-button-type1 ui-corner-all ui-button-text-only" style="margin-left:30px;" role="button">
-                  <span class="ui-button-text">Supprimer</span>
+                <a href="javascript:deleteAdminInfo({{ id }});" class="btn btn-danger" style="margin-left:30px;" role="button">
+                  <span>Supprimer</span>
                 </a>
               {% endif %}
-              <input type='submit' value='Valider' class='ui-button ui-button-type1 ui-corner-all'/>
+              <input role="button" type="submit" value="Valider" class="btn btn-primary"/>
             </td>
           </tr>
         </table>
