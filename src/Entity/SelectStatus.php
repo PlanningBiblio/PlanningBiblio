@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\SelectStatusRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SelectStatusRepository::class)]
@@ -15,67 +14,67 @@ class SelectStatus
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $valeur = '';
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $valeur = '';
 
     #[ORM\Column]
-    private ?int $rang = 0;
+    private int $rang = 0;
 
-    #[ORM\Column(length: 7)]
-    private ?string $couleur = '';
+    #[ORM\Column(type: 'string', length: 7)]
+    private string $couleur = '';
 
     #[ORM\Column]
-    private ?int $categorie = 0;
+    private int $categorie = 0;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getValeur(): ?string
+    public function getValue(): string
     {
         return $this->valeur;
     }
 
-    public function setValeur(string $valeur): static
+    public function setValue(string $value): static
     {
-        $this->valeur = $valeur;
+        $this->valeur = $value;
 
         return $this;
     }
 
-    public function getRang(): ?int
+    public function getRank(): int
     {
         return $this->rang;
     }
 
-    public function setRang(int $rang): static
+    public function setRank(int $rank): static
     {
-        $this->rang = $rang;
+        $this->rang = $rank;
 
         return $this;
     }
 
-    public function getCouleur(): ?string
+    public function getColor(): string
     {
         return $this->couleur;
     }
 
-    public function setCouleur(string $couleur): static
+    public function setColor(string $color): static
     {
-        $this->couleur = $couleur;
+        $this->couleur = $color;
 
         return $this;
     }
 
-    public function getCategorie(): ?int
+    public function getCategory(): int
     {
         return $this->categorie;
     }
 
-    public function setCategorie(int $categorie): static
+    public function setCategory(int $category): static
     {
-        $this->categorie = $categorie;
+        $this->categorie = $category;
 
         return $this;
     }

@@ -45,9 +45,9 @@ class PlanningPositionTabAffectation
         return $this->tableau;
     }
 
-    public function setTable(?int $tableau): static
+    public function setTable(?int $table): static
     {
-        $this->tableau = $tableau;
+        $this->tableau = $table;
 
         return $this;
     }

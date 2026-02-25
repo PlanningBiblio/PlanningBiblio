@@ -25,10 +25,8 @@ class ClassPlanningEndOfServiceTest extends TestCase
         global $entityManager;
 
         $selectStatus = new SelectStatus;
-        $selectStatus->setValeur('Catégorie A');
-        $selectStatus->setCouleur('');
-        $selectStatus->setCategorie(1);
-        $selectStatus->setRang(0);
+        $selectStatus->setValue('Catégorie A');
+        $selectStatus->setCategory(1);
         $entityManager->persist($selectStatus);
         $entityManager->flush();
         $this->selectStatus = $selectStatus;
