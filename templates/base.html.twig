@@ -16,7 +16,7 @@
     <script type="text/JavaScript" src="{{ asset('js/CJScript.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('js/datePickerFr.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('js/dataTables.sort.js') }}"></script>
-    <script type="text/JavaScript" src="{{ asset('vendor/bootstrap-5.3.8-dist/js/bootstrap.js') }}"></script>
+    <script type="text/JavaScript" src="{{ asset('vendor/bootstrap-5.3.8-dist/js/bootstrap.min.js') }}"></script>
     <!-- emoji -->
     <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/config.min.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/util.min.js') }}"></script>
@@ -25,9 +25,8 @@
     <script type="text/JavaScript" src="{{ asset('js/script.js') }}"></script>
     {% block specificjs %}{% endblock %}
 
-    <link rel="StyleSheet" href="{{ asset('vendor/bootstrap-5.3.8-dist/css/bootstrap.css') }}" type="text/css" media="all"/>
+    <link rel="StyleSheet" href="{{ asset('vendor/bootstrap-5.3.8-dist/css/bootstrap.min.css') }}" type="text/css" media="all"/>
     <link rel="stylesheet" href="{{ asset('vendor/bootstrap-icons-1.13.1/font/bootstrap-icons.min.css') }}">
-    <link rel="StyleSheet" href="{{ asset('vendor/bootstrap-5.3.8-dist/css/bootstrap.css') }}" type="text/css" media="all"/>
     <link rel="StyleSheet" href="{{ asset('vendor/DataTables/datatables.min.css') }}" type="text/css" media="all"/>
     <link rel='StyleSheet' href='{{ asset("themes/" ~ themeJQuery ~ "/jquery-ui.min.css") }}' type='text/css' media='all'/>
     <link rel='StyleSheet' href='{{ asset("themes/default/jquery.timepicker.min.css") }}' type='text/css' media='all'/>
