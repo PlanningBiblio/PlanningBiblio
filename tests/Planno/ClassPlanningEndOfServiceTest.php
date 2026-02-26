@@ -145,6 +145,8 @@ class ClassPlanningEndOfServiceTest extends TestCase
                 'perso_id' => $this->agent->getId(),
                 'debut' => (new \DateTime())->sub(new \DateInterval('P2D')),
                 'fin' => (new \DateTime())->add(new \DateInterval('P2D')),
+                'information' => 0,
+                'supprime' => 0,
                 'valide' => 1,
                 'groupe' => '',
             ]
