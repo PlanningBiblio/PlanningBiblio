@@ -8,7 +8,11 @@ Utilisée par les fichiers du dossier "planning/poste"
 
 use App\Entity\Agent;
 use App\Entity\AbsenceReason;
+use App\Entity\PlanningPositionTabAffectation;
+use App\Entity\PlanningPositionHours;
+use App\Entity\PlanningPosition;
 use App\Entity\Position;
+use App\Entity\SelectStatus;
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 
@@ -47,56 +51,29 @@ class planning
     // Recherche les agents de catégorie A en fin de service
     public function finDeService()
     {
+        global $entityManager;
+
         $date=$this->date;
         $site=$this->site;
 
-        // Sélection du tableau utilisé
-        $db=new db();
-        $db->select("pl_poste_tab_affect", "tableau", "date='$date' AND site='$site'");
-        $tableau=$db->result[0]["tableau"];
+        $planningPositionRepository = $entityManager->getRepository(PlanningPosition::class);
+        $positions = $planningPositionRepository->getEndOfServicePositions($date, $site);
 
-        // Sélection de l'heure de fin
-        $db=new db();
-        $db->select("pl_poste_horaires", "MAX(fin) AS maxFin", "numero='$tableau'");
-        $fin=$db->result[0]["maxFin"];
-
-        // Sélection des agents en fin de service
-        $perso_ids=array();
-        $db=new db();
-        $db->select("pl_poste", "perso_id", "fin='$fin' and site='$site' and `date`='$date' and supprime='0' and absent='0'");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $perso_ids[]=$elem['perso_id'];
-            }
-        }
+        $perso_ids = array_map(fn($p) => $p->getUser(), $positions);
         if (empty($perso_ids)) {
             return false;
         }
-        $perso_ids=implode(",", $perso_ids);
 
         // Sélection des statuts des agents en fin de service
-        $statuts=array();
-        $db=new db();
-        $db->select("personnel", "statut", "id IN ($perso_ids)");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                if (in_array($elem['statut'], $statuts)) {
-                    continue;
-                }
-                $statuts[]=$elem['statut'];
-            }
-        }
+        $statuts = $entityManager->getRepository(Agent::class)->getDistinctStatuses($perso_ids);
         if (empty($statuts)) {
             return false;
         }
-        $statuts=implode("','", $statuts);
 
         // Recherche des statuts de catégorie A parmis les statuts fournis
-        $db=new db();
-        $db->select("select_statuts", "*", "valeur IN ('$statuts') AND categorie='1'");
-        if ($db->result) {
-            $this->categorieA=true;
-        }
+        $selectStatusRepository = $entityManager->getRepository(SelectStatus::class);
+        $categoryAStatusCount = $selectStatusRepository->count(['valeur' => $statuts, 'categorie' => 1]);
+        $this->categorieA = $categoryAStatusCount > 0;
     }
 
     // Affiche la liste des agents dans le menudiv

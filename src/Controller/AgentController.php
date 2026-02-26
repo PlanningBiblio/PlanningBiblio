@@ -12,7 +12,7 @@ use App\Entity\Manager;
 use App\Entity\PlanningPosition;
 use App\Entity\SaturdayWorkingHours;
 use App\Entity\SelectCategories;
-use App\Entity\SelectStatuts;
+use App\Entity\SelectStatus;
 use App\Entity\SelectServices;
 use App\Entity\Skill;
 use App\Entity\WorkingHour;
@@ -57,7 +57,7 @@ class AgentController extends BaseController
         $activites = $this->entityManager->getRepository(Skill::class)->findAll();
         $contrats = ['Titulaire', 'Contractuel'];
         $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
-        $statuts = $this->entityManager->getRepository(SelectStatuts::class)->findAll();
+        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findAll();
 
         // Hours for bulk modification
         $hours = array();
@@ -182,7 +182,7 @@ class AgentController extends BaseController
         // Get all categories, services and statuses
         $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
         $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
-        $statuts = $this->entityManager->getRepository(SelectStatuts::class)->findAll();
+        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findAll();
 
         // Find the lists of distinct agent services and statuses.
         $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();

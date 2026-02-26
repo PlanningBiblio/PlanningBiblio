@@ -2,7 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\Absence;
+use App\Entity\Holiday;
 use App\Entity\PlanningPosition;
+use App\Entity\PlanningPositionHours;
+use App\Entity\PlanningPositionTabAffectation;
+use DateTime;
 use Doctrine\ORM\EntityRepository;
 
 class PlanningPositionRepository extends EntityRepository
@@ -64,5 +69,58 @@ class PlanningPositionRepository extends EntityRepository
                 ->getQuery()
                 ->execute();
         }
+    }
+
+    public function getEndOfServicePositions(string $date, string $site = '1')
+    {
+        $em = $this->getEntityManager();
+
+        $date_dt = DateTime::createFromFormat('Y-m-d', $date);
+
+        // Sélection du tableau utilisé
+        $table = $em->getRepository(PlanningPositionTabAffectation::class)
+            ->findOneBy(['date' => $date_dt, 'site' => $site])
+            ->getTable();
+
+        // Sélection de l'heure de fin
+        $end = $em->getRepository(PlanningPositionHours::class)
+            ->getTableLast($table)
+            ->getEnd()
+            ->format('H:i:s');
+
+        $qb = $this->createQueryBuilder('p');
+        $qb->where('p.fin = :fin');
+        $qb->andWhere('p.site = :site');
+        $qb->andWhere('p.date = :date');
+        $qb->andWhere('p.supprime = 0');
+        $qb->andWhere('p.absent = 0');
+
+        $qb->setParameter('fin', $end);
+        $qb->setParameter('site', $site);
+        $qb->setParameter('date', $date);
+
+        $absenceSubQb = $em->createQueryBuilder()
+            ->select('a')
+            ->from(Absence::class, 'a')
+            ->where('a.perso_id = p.perso_id')
+            ->andWhere('a.valide > 0')
+            ->andWhere('a.debut < ' . $qb->expr()->concat('p.date', $qb->expr()->literal(' '), 'p.fin'))
+            ->andWhere('a.fin > ' . $qb->expr()->concat('p.date', $qb->expr()->literal(' '), 'p.debut'));
+        $qb->andWhere($qb->expr()->not($qb->expr()->exists($absenceSubQb->getDql())));
+
+        $holidaySubQb = $em->createQueryBuilder()
+            ->select('h')
+            ->from(Holiday::class, 'h')
+            ->where('h.perso_id = p.perso_id')
+            ->andWhere('h.valide > 0')
+            ->andWhere('h.information = 0')
+            ->andWhere('h.supprime = 0')
+            ->andWhere('h.debut < ' . $qb->expr()->concat('p.date', $qb->expr()->literal(' '), 'p.fin'))
+            ->andWhere('h.fin > ' . $qb->expr()->concat('p.date', $qb->expr()->literal(' '), 'p.debut'));
+        $qb->andWhere($qb->expr()->not($qb->expr()->exists($holidaySubQb->getDql())));
+
+        $query = $qb->getQuery();
+
+        return $query->getResult();
     }
 }
