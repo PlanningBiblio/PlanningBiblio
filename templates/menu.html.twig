@@ -1,5 +1,5 @@
 {# menu.html.twig #}
-  <nav id="mainMenu" class="navigation navbar navbar-expand-lg">
+  <nav id="mainMenu" class="navbar navbar-expand-lg">
      <div class="container-fluid">
       <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <div class="logo-thumbnail"></div>
@@ -14,7 +14,7 @@
         {% for entry in menu_entries %}
           {% if menu_js[entry.key]["items"] %}
           <li class="nav-item dropdown menu_li">
-            <a href="{{ asset(entry.url) }}" role="button" class="nav-link dropdown-toggle ejsmenu2 {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %}"  {% if menuIsActive(entry.url, app.request.uri) %} aria-current="page" {% endif %}  data-bs-toggle="dropdown" aria-expanded="false">{{ entry.title|raw}}</a>
+            <a href="{{ asset(entry.url) }}" role="button" class="nav-link dropdown-toggle {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %}"  {% if menuIsActive(entry.url, app.request.uri) %} aria-current="page" {% endif %}  data-bs-toggle="dropdown" aria-expanded="false">{{ entry.title|raw}}</a>
             <ul class="dropdown-menu">
 
               {% for item in menu_js[entry.key]["items"] %}
@@ -24,7 +24,7 @@
           </li>
           {% else %}
           <li class="nav-item menu_li">
-            <a href="{{ asset(entry.url) }}" role="button" class="nav-link ejsmenu2 {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %}" {% if menuIsActive(entry.url, app.request.uri) %} aria-current="page" {% endif %}>{{ entry.title|raw}}</a>
+            <a href="{{ asset(entry.url) }}" role="button" class="nav-link {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %}" {% if menuIsActive(entry.url, app.request.uri) %} aria-current="page" {% endif %}>{{ entry.title|raw}}</a>
           </li>
           {% endif %}
         {% endfor %} 
@@ -54,7 +54,7 @@
         <ul colspan="2" style="text-align:right;" class="menu_ul navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item dropdown menu_li">
           {% if planninghebdo or ics_export %}
-            <a href="{{ asset('myaccount') }}" class="ejsmenu2">Mon Compte</a>
+            <a href="{{ asset('myaccount') }}" class="nav-item">Mon Compte</a>
           {% elseif config('Auth-Mode') == 'SQL' %}
             <a href="{{ asset('agent/password') }}" class="myAccountLink">Changer de mot de passe</a>
           {% endif %}
@@ -64,5 +64,7 @@
           </li>
         </ul>
       </div>
+      
+    </div>
     </div>
   </nav>
