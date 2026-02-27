@@ -85,7 +85,7 @@ h4{
 }
 
 #auth, #auth input {
-  color:#29485C;
+  color:#29495C;
 }
 
 #auth-logo{
@@ -468,7 +468,9 @@ li .agent-acces-checked2{
 }
 
 /* Menu Bootstrap */
-
+.navbar {
+  background-color: white;
+}
 
 @media (min-width: 992px) {
   .dropdown {
@@ -485,11 +487,37 @@ li .agent-acces-checked2{
 }
 
 .nav-link {
+  color: #29495C;
   font-weight: bold;
   font-size: 13pt;
   padding: 5px;
   border-bottom: 5px solid transparent;
 }
+
+li.nav-item a.nav-link.active, li.nav-item a.nav-link.active:hover {
+  color: #FFD700 ;
+  border-bottom: 5px solid #FFD700;
+}
+
+.nav-link:hover, .nav-link.dropdown-toggle.show {
+  color: #29495C;
+  border-bottom: 5px solid #29495C;
+}
+
+ul.dropdown-menu a.dropdown-item {
+  color: #29495C;
+}
+
+a.dropdown-item:hover {
+  background-color: #FFD700 ;
+}
+
+ul.dropdown-menu a.dropdown-item.active , a.dropdown-item.active:hover {
+  background-color: white ;
+  color: #FFD700;
+}
+
+
 
 .ejsmenu2{
   padding : 5px;
@@ -1896,14 +1924,14 @@ table.dataTable th{
   border: 2px solid #FFF;
   background: #FFF;
   font-weight: bold;
-  color: #29485C;
+  color: #29495C;
 }
 
 #admin .ui-state-hover, .ui-widget-header .ui-state-hover{
   border: 2px solid #FFF;
   background: #FFF;
   font-weight: bold;
-  color: #29485C;
+  color: #29495C;
 }
 
 .ui-widget-header .ui-state-hover a {
