@@ -12,13 +12,17 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
         {% for entry in menu_entries %}
+          {% set menuActive = (menuIsActive(entry.url, app.request.uri)) ? true : false %}
           {% if menu_js[entry.key]["items"] %}
           <li class="nav-item dropdown menu_li">
-            <a href="{{ asset(entry.url) }}" role="button" class="nav-link dropdown-toggle {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %}"  {% if menuIsActive(entry.url, app.request.uri) %} aria-current="page" {% endif %}  data-bs-toggle="dropdown" aria-expanded="false">{{ entry.title|raw}}</a>
+            <a href="{{ asset(entry.url) }}" role="button" class="nav-link dropdown-toggle {% if menuActive %} active {% endif %}"  {% if menuActive %} aria-current="page" {% endif %}  data-bs-toggle="dropdown" aria-expanded="false">{{ entry.title|raw}}</a>
             <ul class="dropdown-menu">
 
               {% for item in menu_js[entry.key]["items"] %}
-              <li><a class="dropdown-item {% if menuIsActive(item.url, app.request.uri) %} active {% endif %}" {% if menuIsActive(item.url, app.request.uri) %} aria-current="true" {% endif %} href="{{ asset(item.url) }}">{{ item.title|raw}}</a></li>
+              {% set url = config('URL') ~ "/" ~ item.url %}
+              {% set itemActive = (app.request.uri is same as(url)) ? true : false %}
+
+              <li><a class="dropdown-item {% if itemActive %} active {% endif %}" {% if itemActive %} aria-current="true" {% endif %} href="{{ asset(item.url) }}">{{ item.title|raw}}</a></li>
               {% endfor %} 
             </ul>
           </li>
