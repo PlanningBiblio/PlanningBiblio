@@ -1,83 +1,74 @@
 {# menu.html.twig #}
-  <nav id="mainMenu" class="navigation navbar navbar-expand-custom">
-    <script type="text/JavaScript">
-      <!--
-      zlien = new Array;
-      {% for menu in menu_js %}
-        zlien[{{ menu.key }}] = new Array;
-        {% set i = 0 %}
-        {% for item in menu.items %}
-            {% set i = i + 1 %}
-            zlien['{{ item.key }}'][{{ i }}] = "<a href='{{ asset(item.url) }}' class='ejsmenu'>{{ item.title|raw }}</a>";
-        {% endfor %}
-      {% endfor %}
-
-      function pop(msg,li){
-        $(".menu_table").remove();
-        posTop = li.offset().top + li.height() + 2;
-        posLeft = li.offset().left+li.width() / 2-85;
-        var content ="<table cellspacing='0' border='0' class='menu_table' style='top:"+posTop+"px; left:"+posLeft+"px;'>";
-        for(i in msg){
-          content += "<tr><td class='menu_td2' >" + msg[i] + "</td></tr>";
-        }
-        content += "</td></tr></table>";
-        $("body").append(content);
-      }
-
-      $(document).click(function(){
-        $(".menu_table").remove();
-      });
-      -->
-    </script>
-
-    <div class='container-fluid'>
-      <button class='navbar-toggler ms-auto' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
-        <div class='logo-thumbnail'></div>
+  <nav id="mainMenu" class="navbar navbar-expand-lg">
+     <div class="container-fluid">
+      <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="logo-thumbnail"></div>
       </button>
       <a class="navbar-brand collapse navbar-collapse" href="{{ asset('') }}">
-        <div id='logo'></div>
+        <div id="logo"></div>
       </a>
-      <div class='collapse navbar-collapse text-right' id='navbarSupportedContent'>
-      <ul class='menu_ul navbar-nav me-auto mb-2 mb-lg-0'>
+
+      <div class="collapse navbar-collapse text-end" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
         {% for entry in menu_entries %}
-            <li onmousemove='pop(zlien[{{ entry.key }}],$(this))' class='av-item dropdown menu_li'>
-            <a href='{{ asset(entry.url) }}' class='ejsmenu2 {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %} dropdown-toggle'>{{ entry.title|raw}}</a></li>
-        {% endfor %}
+          {% set menuActive = (menuIsActive(entry.url, app.request.uri)) ? true : false %}
+          {% if menu_js[entry.key]["items"] %}
+          <li class="nav-item dropdown menu_li">
+            <a href="{{ asset(entry.url) }}" role="button" class="nav-link dropdown-toggle {% if menuActive %} active {% endif %}"  {% if menuActive %} aria-current="page" {% endif %}  data-bs-toggle="dropdown" aria-expanded="false">{{ entry.title|raw}}</a>
+            <ul class="dropdown-menu">
+
+              {% for item in menu_js[entry.key]["items"] %}
+              {% set url = config('URL') ~ "/" ~ item.url %}
+              {% set itemActive = (app.request.uri is same as(url)) ? true : false %}
+
+              <li><a class="dropdown-item {% if itemActive %} active {% endif %}" {% if itemActive %} aria-current="true" {% endif %} href="{{ asset(item.url) }}">{{ item.title|raw}}</a></li>
+              {% endfor %} 
+            </ul>
+          </li>
+          {% else %}
+          <li class="nav-item menu_li">
+            <a href="{{ asset(entry.url) }}" role="button" class="nav-link {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %}" {% if menuIsActive(entry.url, app.request.uri) %} aria-current="page" {% endif %}>{{ entry.title|raw}}</a>
+          </li>
+          {% endif %}
+        {% endfor %} 
       </ul>
 
-      <div id='accountDiv'>
+      <div id="accountDiv">
         <div id="username">
           {{ user_firstname }} {{ user_surname }}
         </div>
 
         <div id="logoutIcon">
-          <a href='{{ asset("logout") }}' title='Déconnexion'>
-            <span class='pl-icon pl-icon-logout'></span>
+          <a href="{{ asset('logout') }}" title="Déconnexion">
+            <span class="pl-icon pl-icon-logout"></span>
           </a>
         </div>
           
-        <div id='myAccountDiv'>
+        <div id="myAccountDiv">
           {% if planninghebdo or ics_export %}
-            <a href='{{ asset("myaccount") }}' class='myAccountLink'>Mon Compte</a>
+            <a href="{{ asset('myaccount') }}" class="myAccountLink">Mon Compte</a>
           {% elseif config('Auth-Mode') == 'SQL' %}
-            <a href='{{ asset("agent/password") }}' class='myAccountLink'>Changer de mot de passe</a>
+            <a href="{{ asset('agent/password') }}" class="myAccountLink">Changer de mot de passe</a>
           {% endif %}
         </div>
       </div>
 
-      <div id='accountDivReverse'>
-        <ul colspan='2' style='text-align:right;' class='menu_ul navbar-nav me-auto mb-2 mb-lg-0'>
-          <li class='av-item dropdown menu_li'>
+      <div id="accountDivReverse">
+        <ul colspan="2" style="text-align:right;" class="menu_ul navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown menu_li">
           {% if planninghebdo or ics_export %}
-            <a href='{{ asset("myaccount") }}' class='ejsmenu2'>Mon Compte</a>
+            <a href="{{ asset('myaccount') }}" class="nav-item">Mon Compte</a>
           {% elseif config('Auth-Mode') == 'SQL' %}
-            <a href='{{ asset("agent/password") }}' class='myAccountLink'>Changer de mot de passe</a>
+            <a href="{{ asset('agent/password') }}" class="myAccountLink">Changer de mot de passe</a>
           {% endif %}
           </li>
-          <li class='av-item dropdown menu_li'>
-            <a href='{{ asset("logout") }}'>Déconnexion</a>
+          <li class="nav-item dropdown menu_li">
+            <a href="{{ asset('logout') }}">Déconnexion</a>
           </li>
         </ul>
       </div>
+      
+    </div>
     </div>
   </nav>

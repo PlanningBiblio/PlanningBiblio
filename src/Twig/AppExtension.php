@@ -174,13 +174,10 @@ class AppExtension extends AbstractExtension
         if (empty($menu)) {
             $uri = substr($requested_url, strlen($config['URL']));
 
-            if ($uri == '/') {
+            if ($uri == '/' or $uri == '/detached') {
                 return true;
             }
 
-            if (preg_match('/^\/(\/d{4}-\d{2}-\d{2})/', $uri)) {
-                return true;
-            }
             return (bool) preg_match('/^\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri);
         }
 
@@ -188,7 +185,7 @@ class AppExtension extends AbstractExtension
             return true;
         }
 
-        // Handle specfic admin menu
+        // Handle specific admin menu
         if ($menu == 'admin') {
             $admin_pages = array(
                 'skill', 'agent', 'position',
