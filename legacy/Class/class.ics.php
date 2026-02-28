@@ -57,31 +57,33 @@ class CJICS
     public static function createIcsEvent($params): array {
     
         /* 
-        For absences, params are $id, $start, $end, $reason, $comment, $status, $createdAt, $lastModified
-        For planning, params are $id, $start, $end, $position, $positionId, $site, $siteId, $floor, $organizer, $lastModified
+        For absences, params are $userId, $start, $end, $summary, $lastModified, $description, $createdAt, $status
+        For planning, params are $userId, $start, $end, $summary, $lastModified, $location, $organizer, $position, $site
         */
     
         extract($params);
-    
-        $description = $comment ?? '';
-        $createdAt = isset($createdAt) ? gmdate('Ymd\THis\Z', $createdAt) : null;
-        $floor = $floor ?? null;
+
+        $description = $description ?? '';
+        $location = $location ?? '';
         $organizer = $organizer ?? null;
-        $positionId = $positionId ?? null;
-        $positionOrReason = $position ?? $reason;
+        $position = $position ?? null;
         $site = $site ?? null;
-        $siteId = $siteId ?? null;
         $status = $status ?? 'CONFIRMED';
     
         $tz = date_default_timezone_get();
         $url = $_SERVER['SERVER_NAME'];
     
-        $start = date('Ymd\THis', $start);
-        $end = date('Ymd\THis', $end);
-        $lastModified = gmdate('Ymd\THis\Z', $lastModified);
-    
-        // If the site is not provide, this is an absence
-        $location = $siteId ? $site . $floor : null;
+        $start = $start->format('Ymd\THis');
+        $end = $end->format('Ymd\THis');
+        $lastModified->setTimezone(new DateTimeZone('UTC'));
+        $lastModified = $lastModified->format('Ymd\THis\Z');
+
+        if (!empty($createdAt)) {
+            $createdAt->setTimezone(new DateTimeZone('UTC'));
+            $createdAt = $createdAt->format('Ymd\THis\Z');
+        } else {
+            $createdAt = null;
+        }
 
         $shortDescription = $description;
         if ($shortDescription) {
@@ -91,14 +93,14 @@ class CJICS
             $shortDescription = ' ' . $shortDescription;
         }
 
-        $summary = $positionOrReason . $shortDescription;
+        $summary .= $shortDescription;
 
         $description = str_replace("\r\n", "\\n", $description);
 
         $event = [];
     
         $event[] = "BEGIN:VEVENT";
-        $event[] = "UID:$id-$siteId-$positionId-$start-$end@$url";
+        $event[] = "UID:$userId-$site-$position-$start-$end@$url";
         $event[] = 'DTSTAMP:' . gmdate('Ymd\THis\Z');
         $event[] = "DTSTART;TZID=$tz:$start";
         $event[] = "DTEND;TZID=$tz:$end";
@@ -108,7 +110,7 @@ class CJICS
             $event[] = self::splitLine("DESCRIPTION:$description");
         }
     
-        if($organizer){
+        if(!empty($organizer)){
           $event[] = "ORGANIZER;CN=$organizer";
         }
     
