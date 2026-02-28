@@ -127,6 +127,10 @@
     - 100
 "calendar.index":
     - 100
+"closingday.index":
+    - 25
+"closingday.save":
+    - 25
 "config.index":
     - 20
 "config.ldap_test":
@@ -135,10 +139,14 @@
     - 20
 "config.update":
     - 20
-"closingday.index":
-    - 25
-"closingday.save":
-    - 25
+"crontab.disable":
+    - 20
+"crontab.edit":
+    - 20
+"crontab.index":
+    - 20
+"crontab.update":
+    - 20
 "overtime.add":
     - 100
 "overtime.check":

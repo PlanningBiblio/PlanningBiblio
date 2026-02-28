@@ -1,0 +1,96 @@
+{# crontab/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <div id="content-admin">
+    <h3>Modification de la commande "{{ cron.command }}"</h3>
+
+      <div class="admin-div">
+        <form id="form" method="post" action="{{ asset('crontab') }}" name="form" >
+          <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+          <input type="hidden" name="id" value="{{ cron.id }}" />
+
+          <table class="tableauFiches">
+            <tr>
+              <td><label>Nom</label> </td>
+              <td>
+                <label>{{ cron.name }}</label>
+              </td>
+            </tr>
+
+            <tr>
+              <td><label>Commande</label> </td>
+              <td>
+                <label>{{ cron.command }}</label>
+              </td>
+            </tr>
+
+            <tr>
+              <td><label>Description</label> </td>
+              <td><label>{{ cron.comment }}</label></td>
+            </tr>
+
+            <tr>
+              <td><label>Dernière execution</label></td>
+              <td>{{ cron.last | dateOrNull('d/m/Y H:i:s') }}</td>
+            </tr>
+
+            <tr>
+              <td><label>Activée</label> </td>
+              <td>
+                <input type="checkbox" name="enabled" value="1" {% if cron.disabled != 1 %}  checked="checked" {% endif %} />
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding-top:20px;"><u>Plannification</u></td>
+            </tr>
+
+            <tr>
+              <td><label>Minute</label> </td>
+              <td>
+                <input type="text" id="input_text_number" name="min" value="{{ cron.m }}" style="width:100%;"/>
+                </td>
+            </tr>
+
+            <tr>
+              <td><label>Heure</label></td>
+              <td>
+                <input type="text" id="input_text_number" name="hour" value="{{ cron.h }}" style="width:100%;"/>
+              </td>
+            </tr>
+
+            <tr>
+              <td><label>Jour du mois</label></td>
+              <td>
+                <input type="text" id="input_text_number" name="dom" value="{{ cron.dom }}" style="width:100%;"/>
+              </td>
+            </tr>
+
+            <tr>
+              <td><label>Mois</label></td>
+              <td>
+                <input type="text" id="input_text_number" name="mon" value="{{ cron.mon }}" style="width:100%;"/>
+              </td>
+            </tr>
+
+            <tr>
+              <td><label>Jour de la semaine</label></td>
+              <td>
+                <input type="text" id="input_text_number" name="dow" value="{{ cron.dow }}" style="width:100%;"/>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan="2" style="padding-top:20px; text-align:center;">
+                <a href="{{ asset('crontab') }}" class="ui-button ui-button-type2" style="margin-left:30px;">Annuler</a>
+                <input type="submit" value="Valider" class="ui-button ui-button-type1" style="margin-left:30px;"/>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+  </div>
+  <script type="text/JavaScript" src="{{ asset('js/crontab.js') }}"></script>
+{% endblock %}

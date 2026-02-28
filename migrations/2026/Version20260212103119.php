@@ -1,0 +1,72 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Migrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
+
+final class Version20260212103119 extends AbstractMigration
+{
+    public function getDescription(): string
+    {
+        return 'MT50734: Add a web interface to manage the crontab, insert commands into the crontab';
+    }
+
+    public function up(Schema $schema): void
+    {
+        $dbprefix = $_ENV['DATABASE_PREFIX'];
+
+        $this->addSql("ALTER TABLE `{$dbprefix}cron`
+            MODIFY `m`   VARCHAR(32) NOT NULL DEFAULT '',
+            MODIFY `h`   VARCHAR(32) NOT NULL DEFAULT '',
+            MODIFY `dom` VARCHAR(32) NOT NULL DEFAULT '',
+            MODIFY `mon` VARCHAR(32) NOT NULL DEFAULT '',
+            MODIFY `dow` VARCHAR(32) NOT NULL DEFAULT '';
+        ");
+
+        $this->addSql("INSERT INTO `{$dbprefix}cron` (`m`, `h`, `dom`, `mon`, `dow`, `name`, `command`, `comments`, `last`, `disabled`) VALUES
+            ('0', '6', '*', '*', '*', 'absenceDeleteDocuments', 'app:absence:delete-documents', 'Remove old documents depending the configuration', null, 1),
+            ('*/15', '6-23', '*', '*', '*', 'absenceImportCSV', 'app:absence:import-csv', 'Import absences from a CSV file', null, 1),
+            ('*/15', '6-23', '*', '*', '*', 'absenceImportICS', 'app:absence:import-ics', 'Import absences from ICS flows', null, 1),
+            ('0', '8', '*', '*', '*', 'holidayReminder', 'app:holiday:reminder', 'Send reminders for holidays to be validated', null, 1),
+            ('*/15', '6-23', '*', '*', '*', 'mSGraphImportCalendar', 'app:import:ms-graph-calendar', 'Import calendars from Microsoft Graph API', null, 1),
+            ('0', '8', '*', '*', '*', 'plannintControl', 'app:planning:control', 'Check upcoming schedules and sends a report to the planning team', null, 1),
+            ('0', '5', '1', '1', '*', 'purgeData', 'app:purge:data', 'Purge Planno old data', null, 1),
+            ('30', '6', '*', '*', '*', 'purgeLogTable', 'app:purge:log-table', 'Purge Planno log table', null, 1),
+            ('30', '8', '*', '*', '*', 'workingHourExport', 'app:workinghour:export', 'Export working hours to a CSV file', null, 1);
+        ");
+    }
+
+    public function down(Schema $schema): void
+    {
+        $dbprefix = $_ENV['DATABASE_PREFIX'];
+
+        $this->addSql("DELETE FROM `{$dbprefix}cron` WHERE `command` IN (
+            'app:absence:delete-documents',
+            'app:absence:import-csv',
+            'app:absence:import-ics',
+            'app:holiday:reminder',
+            'app:import:ms-graph-calendar',
+            'app:planning:control',
+            'app:purge:data',
+            'app:purge:log-table',
+            'app:update-db',
+            'app:workinghour:export'
+        );");
+        
+        $this->addSql("ALTER TABLE `{$dbprefix}cron`
+            MODIFY `m`   varchar(2) NULL DEFAULT NULL,
+            MODIFY `h`   VARCHAR(2) NULL DEFAULT NULL,
+            MODIFY `dom` VARCHAR(2) NULL DEFAULT NULL,
+            MODIFY `mon` VARCHAR(2) NULL DEFAULT NULL,
+            MODIFY `dow` VARCHAR(2) NULL DEFAULT NULL;
+        ");
+    }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
+}

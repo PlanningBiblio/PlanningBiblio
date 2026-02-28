@@ -36,7 +36,7 @@ The delay parameter is mandatory. See https://dev.mysql.com/doc/refman/en/expres
 Usage:   php bin/console app:purge:log-table "<DELAY>"
 Example: php bin/console app:purge:log-table "12 MONTH"
             ')
-            ->addArgument('delay', InputArgument::REQUIRED, 'MySQL interval (ex: 12 MONTH)')
+            ->addArgument('delay', InputArgument::OPTIONAL, 'MySQL interval (ex: 12 MONTH)')
             ->addOption('stdout', null, InputOption::VALUE_OPTIONAL, 'Output result in stdout', false)
         ;
     }
@@ -44,7 +44,7 @@ Example: php bin/console app:purge:log-table "12 MONTH"
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $delay = $input->getArgument('delay');
+        $delay = $input->getArgument('delay') ?? '12 MONTH';
 
         if (!$this->lock()) {
             $io->error('The command is already running in another process.');
