@@ -35,7 +35,7 @@
 | category | categorie |
 | change | modification or modif | type int (userId) |
 | changeDate | modification | type DateTime |
-| comment | texte or commentaires |
+| comment | texte or commentaires or commentaire |
 | current | actuel |
 | day | jour |
 | debit | debit |
