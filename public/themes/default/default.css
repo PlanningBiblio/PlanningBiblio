@@ -85,7 +85,7 @@ h4{
 }
 
 #auth, #auth input {
-  color:#29485C;
+  color:#29495C;
 }
 
 #auth-logo{
@@ -467,68 +467,92 @@ li .agent-acces-checked2{
   width:15%;
 }
 
-/*		Menu JavaScript		*/
-.menu_table{
-  position: absolute;
-  min-width:200px;
+/* Menu Bootstrap */
+.navbar {
+  background-color: white;
 }
 
-.menu_table td{
-  padding : 1px 10px;
+@media (min-width: 992px) {
+  .dropdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dropdown-menu[data-bs-popper] {
+    left: 50%;
+    transform: translateX(-55%);
+    margin: 10px;
+  }     
 }
 
-.menu_table tr:first-child td{
-  border-top: 1px outset #29495C;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+@media (max-width: 992px) {
+  .dropdown {
+    display: flex;
+    flex-direction:column;
+    align-items: end;
+  }
+
+  .nav-link{
+    display: inline-block;
+  }
+
+  .dropdown-item{
+    text-align: right;
+    font-size: 11pt;
+  }
+
+  .navbar-nav .dropdown-menu{
+    margin: 15px 0px;
+  }
 }
 
-.menu_table tr:last-child td{
-  border-bottom: 1px outset #29495C;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+.nav-link {
+  color: #29495C;
+  font-weight: bold;
+  font-size: 13pt;
+  padding: 5px;
+  border-bottom: 5px solid transparent;
 }
 
-.ejsmenu2{
-  padding : 5px;
+li.nav-item.dropdown a.nav-link.active, li.nav-item.dropdown a.nav-link.active:hover {
+  color: #FFD700 ;
+  border-bottom: 5px solid #FFD700;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
-.navigation { 
-  position:relative;
-  background: #FFF;
+li.nav-item a.nav-link.active, li.nav-item a.nav-link.active:hover {
+  color: #FFD700 ;
+  border-bottom: 5px solid #FFD700;
+  pointer-events: none;
+  cursor: default;
+}
+
+.nav-link:hover, .nav-link.dropdown-toggle.show {
+  color: #29495C;
+  border-bottom: 5px solid #29495C;
+}
+
+ul.dropdown-menu a.dropdown-item {
+  color: #29495C;
+}
+
+a.dropdown-item:hover {
+  background-color: #FFD700 ;
+}
+
+ul.dropdown-menu a.dropdown-item.active , a.dropdown-item.active:hover {
+  background-color: white ;
+  color: #FFD700;
+  pointer-events: none;
+  cursor: default;
 }
 
 .popper { 
   position: absolute; 
   visibility: hidden; 
   z-index:20; 
-}
-
-a.ejsmenu, a:hover.ejsmenu {
-  font-size:16px; 
-  text-decoration:none; 
-  display:inline-block; 
-  width:100%;
-}
-
-a.ejsmenu2 {
-  font-size:16px; 
-  text-decoration:none;
-  font-weight:bold;
-}
-
-a:hover.ejsmenu2 {
-  font-size:16px; 
-  text-decoration:none;
-  font-weight:bold; 
-  color: #FFD700;
-  border-bottom: 5px solid #FFD700;
-}
-
-
-.ejsmenu2.active {
-  color: #FFD700;
-  border-bottom: 5px solid #FFD700;
 }
 
 /* Menu top */
@@ -555,12 +579,7 @@ a:hover.ejsmenu2 {
 }
 
 .menu_li{
-  display: inline;
   padding: 5px 15px;
-}
-
-.menu_li a, .menu_li a:hover{
-  font-size:13pt;
 }
 
 .days_ul {
@@ -596,10 +615,6 @@ li.menu_li:hover {
 */
 
 /* TD des sous menu top */
-.menu_table{
-  margin-top: 15px;
-  z-index: 20;
-}
 .menu_td{
   padding-left: 30px;
 }
@@ -617,11 +632,17 @@ td.menu_td2:hover{
 	background:#FFD700;
 }
 
-.myAccountLink{
-  font-size:9pt;
+a.myAccountLink{
+  font-size:10pt;
+  text-decoration: none;
 }
 
-.myAccountLink:hover{
+a.myAccountLink:hover{
+  text-decoration:underline;
+}
+
+a.myAccountLink.active{
+  text-decoration:underline;
   color: #FFD700;
 }
 
@@ -1903,14 +1924,14 @@ table.dataTable th{
   border: 2px solid #FFF;
   background: #FFF;
   font-weight: bold;
-  color: #29485C;
+  color: #29495C;
 }
 
 #admin .ui-state-hover, .ui-widget-header .ui-state-hover{
   border: 2px solid #FFF;
   background: #FFF;
   font-weight: bold;
-  color: #29485C;
+  color: #29495C;
 }
 
 .ui-widget-header .ui-state-hover a {
