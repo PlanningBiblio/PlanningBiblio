@@ -44,12 +44,12 @@
                 </tr>
 
                 <tr>
-                    <td colspan='2' style='text-align:center;'>
-                    <a href='{{ asset('absences/info') }}' class='ui-button ui-button-type2' style='margin-left:30px;'>Annuler</a>
+                    <td colspan="2" style="text-align:center;">
+                    <a href="{{ asset('absences/info') }}" role="button" class="btn btn-secondary rounded-1" style="margin-left:30px;">Annuler</a>
                     {% if id %}
-                        <a href='javascript:deleteAbsenceInfo({{ id }});' class='ui-button ui-button-type3' style='margin-left:30px;' >Supprimer</a>
+                        <a href="javascript:deleteAbsenceInfo({{ id }});" role="button" class="btn btn-danger rounded-1" style="margin-left:30px;" >Supprimer</a>
                     {% endif %}
-                    <input type='submit' value='Valider' class='ui-button' style='margin-left:30px;'/>
+                    <input type="submit" role="button" value="Valider" class="btn btn-primary rounded-1" style="margin-left:30px;"/>
                     </td>
                 </tr>
                 </table>

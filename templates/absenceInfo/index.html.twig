@@ -1,12 +1,12 @@
 {# absenceInfo/index.html.twig #}
 
-{% extends 'base.html.twig' %}
+{% extends "base.html.twig" %}
 
 {% block page %}
     <h3>Informations sur les absences</h3>
 
-    <div class='top-button-div'>
-        <a href='{{ asset("absences/info/add") }}' class='ui-button'>Ajouter</a>
+    <div class="top-button-div">
+        <a href="{{ asset('absences/info/add') }}" role="button" class="btn btn-primary rounded-1" aria-label="Ajouter une absence">Ajouter</a>
     </div>
 
     {% if info %}
