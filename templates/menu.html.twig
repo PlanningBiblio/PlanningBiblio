@@ -1,7 +1,7 @@
 {# menu.html.twig #}
-  <nav id="mainMenu" class="navbar navbar-expand-lg">
+  <nav id="mainMenu" class="navbar navbar-expand-lg" role="navigation">
      <div class="container-fluid">
-      <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Menu">
         <div class="logo-thumbnail"></div>
       </button>
       <a class="navbar-brand collapse navbar-collapse" href="{{ asset('') }}">
@@ -28,7 +28,7 @@
           </li>
           {% else %}
           <li class="nav-item menu_li">
-            <a href="{{ asset(entry.url) }}" role="button" class="nav-link {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %}" {% if menuIsActive(entry.url, app.request.uri) %} aria-current="page" {% endif %}>{{ entry.title|raw}}</a>
+            <a href="{{ asset(entry.url) }}" class="nav-link {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %}" {% if menuIsActive(entry.url, app.request.uri) %} aria-current="page" {% endif %}>{{ entry.title|raw}}</a>
           </li>
           {% endif %}
         {% endfor %} 
@@ -40,14 +40,14 @@
         </div>
 
         <div id="logoutIcon">
-          <a href="{{ asset('logout') }}" title="Déconnexion">
+          <a href="{{ asset('logout') }}" title="Déconnexion" aria-label="Déconnexion">
             <span class="pl-icon pl-icon-logout"></span>
           </a>
         </div>
           
         <div id="myAccountDiv">
           {% if planninghebdo or ics_export %}
-            <a href="{{ asset('myaccount') }}" class="myAccountLink">Mon Compte</a>
+            <a href="{{ asset('myaccount') }}" class="myAccountLink {% if menuIsActive('myaccount', app.request.uri) %} active {% endif %}" {% if menuIsActive('myaccount', app.request.uri) %} aria-current="page" {% endif %} >Mon Compte</a>
           {% elseif config('Auth-Mode') == 'SQL' %}
             <a href="{{ asset('agent/password') }}" class="myAccountLink">Changer de mot de passe</a>
           {% endif %}
@@ -56,16 +56,14 @@
 
       <div id="accountDivReverse">
         <ul colspan="2" style="text-align:right;" class="menu_ul navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item dropdown menu_li">
+          <li class="nav-item menu_li">
           {% if planninghebdo or ics_export %}
-            <a href="{{ asset('myaccount') }}" class="nav-item">Mon Compte</a>
+            <a href="{{ asset('myaccount') }}" class="nav-link {% if menuIsActive('myaccount', app.request.uri) %} active {% endif %}" {% if menuIsActive('myaccount', app.request.uri) %} aria-current="page" {% endif %} >Mon Compte</a>
           {% elseif config('Auth-Mode') == 'SQL' %}
             <a href="{{ asset('agent/password') }}" class="myAccountLink">Changer de mot de passe</a>
           {% endif %}
           </li>
-          <li class="nav-item dropdown menu_li">
-            <a href="{{ asset('logout') }}">Déconnexion</a>
-          </li>
+            <a href="{{ asset('logout') }}" style="padding: 0px 20px;">Déconnexion</a>
         </ul>
       </div>
       

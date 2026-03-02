@@ -486,6 +486,27 @@ li .agent-acces-checked2{
   }     
 }
 
+@media (max-width: 992px) {
+  .dropdown {
+    display: flex;
+    flex-direction:column;
+    align-items: end;
+  }
+
+  .nav-link{
+    display: inline-block;
+  }
+
+  .dropdown-item{
+    text-align: right;
+    font-size: 11pt;
+  }
+
+  .navbar-nav .dropdown-menu{
+    margin: 15px 0px;
+  }
+}
+
 .nav-link {
   color: #29495C;
   font-weight: bold;
@@ -494,9 +515,18 @@ li .agent-acces-checked2{
   border-bottom: 5px solid transparent;
 }
 
+li.nav-item.dropdown a.nav-link.active, li.nav-item.dropdown a.nav-link.active:hover {
+  color: #FFD700 ;
+  border-bottom: 5px solid #FFD700;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 li.nav-item a.nav-link.active, li.nav-item a.nav-link.active:hover {
   color: #FFD700 ;
   border-bottom: 5px solid #FFD700;
+  pointer-events: none;
+  cursor: default;
 }
 
 .nav-link:hover, .nav-link.dropdown-toggle.show {
@@ -515,45 +545,14 @@ a.dropdown-item:hover {
 ul.dropdown-menu a.dropdown-item.active , a.dropdown-item.active:hover {
   background-color: white ;
   color: #FFD700;
-}
-
-
-
-.ejsmenu2{
-  padding : 5px;
+  pointer-events: none;
+  cursor: default;
 }
 
 .popper { 
   position: absolute; 
   visibility: hidden; 
   z-index:20; 
-}
-
-a.ejsmenu, a:hover.ejsmenu {
-  font-size:16px; 
-  text-decoration:none; 
-  display:inline-block; 
-  width:100%;
-}
-
-a.ejsmenu2 {
-  font-size:16px; 
-  text-decoration:none;
-  font-weight:bold;
-}
-
-a:hover.ejsmenu2 {
-  font-size:16px; 
-  text-decoration:none;
-  font-weight:bold; 
-  color: #FFD700;
-  border-bottom: 5px solid #FFD700;
-}
-
-
-.ejsmenu2.active {
-  color: #FFD700;
-  border-bottom: 5px solid #FFD700;
 }
 
 /* Menu top */
@@ -580,12 +579,7 @@ a:hover.ejsmenu2 {
 }
 
 .menu_li{
-  display: inline;
   padding: 5px 15px;
-}
-
-.menu_li a, .menu_li a:hover{
-  font-size:13pt;
 }
 
 .days_ul {
@@ -638,11 +632,17 @@ td.menu_td2:hover{
 	background:#FFD700;
 }
 
-.myAccountLink{
-  font-size:9pt;
+a.myAccountLink{
+  font-size:10pt;
+  text-decoration: none;
 }
 
-.myAccountLink:hover{
+a.myAccountLink:hover{
+  text-decoration:underline;
+}
+
+a.myAccountLink.active{
+  text-decoration:underline;
   color: #FFD700;
 }
 
