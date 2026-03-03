@@ -70,10 +70,10 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//textarea');
         $this->assertEquals($result->attr('name'),'text','textarea name is texte');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
+        $class = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
         $this->assertEquals($class->text('Node does not exist', false), 'Annuler','a button is Annuler');
     }
 
@@ -121,13 +121,13 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $class = $crawler->filterXPath('//textarea');
         $this->assertEquals($class->text('Node does not exist', false), 'salut','input submit text is salut');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
+        $class = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
         $this->assertEquals($class->text('Node does not exist', false), 'Annuler','a button is Annuler');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type3"]');
+        $class = $crawler->filterXPath('//a[@class="btn btn-danger"]');
         $this->assertEquals($class->text('Node does not exist', false), 'Supprimer','a button is Supprimer');
     }
 
@@ -146,8 +146,8 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button"]');
-        $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
+        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
+        $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a button is Ajouter');
 
         $this->assertSelectorTextContains('p', 'Aucune information enregistrée');
 
@@ -166,8 +166,8 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button"]');
-        $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
+        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
+        $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a button is Ajouter');
 
         $result = $crawler->filterXPath('//table[@id="AbsenceInfoTable"]');
         $this->assertStringContainsString('Début',$result->text('Node does not exist', false), 'table title id Début');

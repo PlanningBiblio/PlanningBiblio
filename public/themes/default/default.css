@@ -1703,7 +1703,8 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 .btn.btn-primary {
   background-color: #FFD700 ;
   border: 1px solid #FFD700;
-  color: #29495C
+  color: #29495C;
+  border-radius: var(--bs-border-radius-sm);
 }
 
 .btn.btn-primary:hover, .btn.btn-primary:focus, .btn.btn-primary:active {
@@ -1717,6 +1718,7 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   background-color: #fff;
   border:  1px solid #29495C;
   color: #29495C ;
+  border-radius: var(--bs-border-radius-sm);
 }
 
 .btn.btn-secondary:hover, .btn.btn-secondary:focus, .btn.btn-secondary:active {
@@ -1730,6 +1732,7 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   background-color: #fff ;
   border:  1px solid #cd1b19;
   color: #cd1b19 ;
+  border-radius: var(--bs-border-radius-sm);
 }
 
 .btn.btn-danger:hover, .btn.btn-danger:focus, .btn.btn-danger:active {
