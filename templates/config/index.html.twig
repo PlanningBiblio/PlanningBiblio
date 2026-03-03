@@ -12,71 +12,71 @@
         var previous_Multisites_site{{ i }}_cycles = $('#Multisites-site{{ i }}-cycles option:selected').val();
       {% endfor %}
 
-      $( "#conges_mode_dialog" ).dialog({
+      $( '#conges_mode_dialog' ).dialog({
         autoOpen: false,
         resizable: false,
         width: 400,
         modal: true,
         buttons: {
-          "Je suis d'accord": function() {
-            $( this ).dialog( "close" );
-            $("#Conges-Recuperations").val('1');
+          'Je suis d\'accord': function() {
+            $( this ).dialog( 'close' );
+            $('#Conges-Recuperations').val('1');
           },
-          "Annuler ma modification": function() {
+          'Annuler ma modification': function() {
             $( this ).dialog( "close" );
-            $("#Conges-Mode").val('heures');
+            $('#Conges-Mode').val('heures');
           }
         }
       });
       $('#Conges-Mode').on('change', function() {
-        conges_mode = $("#Conges-Mode").val();
-        conges_recuperations = $("#Conges-Recuperations").val();
+        conges_mode = $('#Conges-Mode').val();
+        conges_recuperations = $('#Conges-Recuperations').val();
         if (conges_mode == 'jours' && conges_recuperations == 0) {
-          $( "#conges_mode_dialog" ).dialog( "open" );
+          $( '#conges_mode_dialog' ).dialog( 'open' );
         }
       });
 
-      $( "#nb_semaine_dialog" ).dialog({
+      $( '#nb_semaine_dialog' ).dialog({
         autoOpen: false,
         resizable: false,
         width: 400,
         modal: true,
         buttons: {
-          "Je suis d'accord": function() {
-            $( this ).dialog( "close" );
-            $("#PlanningHebdo").prop("checked", true);
+          'Je suis d\'accord': function() {
+            $( this ).dialog( 'close' );
+            $('#PlanningHebdo').prop('checked', true);
           },
-          "Annuler ma modification": function() {
-            $( this ).dialog( "close" );
-            var previous_nb_semaine = $("#nb_semaine_dialog").data('previous_nb_semaine');
+          'Annuler ma modification': function() {
+            $( this ).dialog( 'close');
+            var previous_nb_semaine = $('#nb_semaine_dialog').data('previous_nb_semaine');
             $('#nb_semaine option[value="' + previous_nb_semaine + '"]').prop('selected', true);
           }
         }
       });
 
       $('#nb_semaine').on('change', function() {
-        nb_semaine = $("#nb_semaine").val();
-        planningHebdo = $("#PlanningHebdo").is(':checked');
+        nb_semaine = $('#nb_semaine').val();
+        planningHebdo = $('#PlanningHebdo').is(':checked');
         if (nb_semaine > 3 && !planningHebdo) {
-          $( "#nb_semaine_dialog" ).data('previous_nb_semaine', previous_nb_semaine).dialog( "open" );
+          $( '#nb_semaine_dialog').data('previous_nb_semaine', previous_nb_semaine).dialog( 'open' );
         }
         previous_nb_semaine = nb_semaine;
       });
 
-      $( "#longueur_mot_de_passe_dialog" ).dialog({
+      $( '#longueur_mot_de_passe_dialog' ).dialog({
         autoOpen: false,
         resizable: false,
         width: 400,
         modal: true,
         buttons: {
-          "Valider": function() {
-            $( this ).dialog( "close" );
+          'Valider': function() {
+            $( this ).dialog( 'close' );
           }
         }
       });
       $('#Auth-PasswordLength').on('change', function() {
         if ($('#Auth-PasswordLength').val() < 8) {
-            $("#Auth-PasswordLength").val('8');
+            $('#Auth-PasswordLength').val('8');
             $('#longueur_mot_de_passe_dialog').dialog('open');
         }
       });
@@ -84,17 +84,17 @@
     });
   </script>
   {% if warning %}
-    <script type='text/JavaScript'>
+    <script type="text/JavaScript">
       CJInfo('{{ warning }}','error');
     </script>
   {% endif %}
   {% if post %}
     {% if error %}
-      <script type='text/JavaScript'>
+      <script type="text/JavaScript">
         CJInfo('Il y a eu des erreurs pendant la modification.<br/>Veuillez vérifier la configuration.','error');
       </script>
     {% else %}
-      <script type='text/JavaScript'>
+      <script type="text/JavaScript">
         CJInfo('Les modifications ont été enregistrées.','highlight');
       </script>
     {% endif %}
@@ -106,17 +106,17 @@
       <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
       <input type="hidden" name="technical" value="{{ technical }}" />
 
-      <div id='accordion' class='ui-accordion'>
+      <div id="accordion" class="ui-accordion">
         {% for key,val in elements %}
             <h3><span>{{ key }}</span></h3>
             {% include 'config/category.html.twig' with { 'vars': val } %}
         {% endfor %}
       </div>
 
-      <div style='text-align:center;margin:20px;'>
-        <a href="{{ path('home') }}" class="ui-button ui-button-type2">Annuler</a>
+      <div style="text-align:center;margin:20px;">
+        <a href="{{ path('home') }}" role="button" class="btn btn-secondary">Annuler</a>
         &nbsp;&nbsp;&nbsp;
-        <input type='submit' value='Valider' class='ui-button' />
+        <input type="submit" role="button" value="Valider" class="btn btn-primary" />
       </div>
     </form>
 
