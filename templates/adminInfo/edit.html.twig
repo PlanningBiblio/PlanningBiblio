@@ -13,22 +13,22 @@
                 <h4>Ajout d'une information</h4>
             {% endif %}
 
-            <form id='form' method='POST' action='{{ asset('admin/info') }}' name='form' onsubmit='return verif_form("start=date1;end=date2;text");'>
+            <form id="form" method="POST" action="{{ asset('admin/info') }}" name="form" onsubmit="return verif_form('start=date1;end=date2;text');">
                 <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
-                <input type='hidden' name='id' value='{{ id }}'/>
+                <input type="hidden" name="id" value="{{ id }}"/>
 
-                <table class='tableauFiches'>
+                <table class="tableauFiches">
                 <tr>
                     <td><label>Date de début</label> </td>
                     <td>
-                    <input type='text' name='start' value='{{ start }}' style='width:100%;' class='datepicker'/>
+                    <input type="text" name="start" value="{{ start }}" style="width:100%;" class="datepicker"/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>Date de fin</label></td>
                     <td>
-                    <input type='text' name='end' value='{{ end }}' style='width:100%;' class='datepicker'/>
+                    <input type="text" name="end" value="{{ end }}" style="width:100%;" class="datepicker"/>
                     </td>
                 </tr>
 
@@ -44,12 +44,12 @@
                 </tr>
 
                 <tr>
-                    <td colspan='2' style='text-align:center;'>
-                    <a href='{{ asset('admin/info') }}' class='ui-button ui-button-type2' style='margin-left:30px;'>Annuler</a>
+                    <td colspan="2" style="text-align:center;">
+                    <a href="{{ asset('admin/info') }}" role="button" class="btn btn-secondary" style="margin-left:30px;">Annuler</a>
                     {% if id %}
-                        <a href='javascript:deleteAdminInfo({{ id }});' class='ui-button ui-button-type3' style='margin-left:30px;' >Supprimer</a>
+                        <a href="javascript:deleteAdminInfo({{ id }});" role="button" class="btn btn-danger" style="margin-left:30px;" >Supprimer</a>
                     {% endif %}
-                    <input type='submit' value='Valider' class='ui-button ui-button-type1' style='margin-left:30px;'/>
+                    <input type="submit" role="button" value="Valider" class="btn btn-primary" style="margin-left:30px;"/>
                     </td>
                 </tr>
                 </table>
