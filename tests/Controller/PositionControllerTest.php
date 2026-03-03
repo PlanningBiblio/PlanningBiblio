@@ -52,7 +52,7 @@ class PositionControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/position/add');
 
-        $this->assertSelectorTextContains('h3', 'Modification du poste');
+        $this->assertSelectorTextContains('h3', 'Ajout d\'un poste');
 
         $result = $crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
         $this->assertEquals($result->attr('name'),'nom','input for post name value is nom');
