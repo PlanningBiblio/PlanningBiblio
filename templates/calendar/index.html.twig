@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block page %}
-  <div id='div_agenda'>
+  <div id="div_agenda">
     {% if agent is not null %}
       <h3> Agenda de {{ agent }} du {{ begin }} au {{ end }} </h3>
     {% else %}
@@ -15,49 +15,49 @@
     {% endif %}
     <div id="div_agenda_content">
     {% if agents is iterable %}
-      <form name='form' method='get' action="{{ asset('calendar') }}">
-        Début : <input type='text' name='debut' id='debut' value={{begin}} class='datepicker' />
-        &nbsp;&nbsp;Fin : <input type='text' name='fin' id='fin' value={{end}} class='datepicker' />
+      <form name="form" method="get" action="{{ asset('calendar') }}">
+        Début : <input type="text" name="debut" id="debut" value={{begin}} class="datepicker" />
+        &nbsp;&nbsp;Fin : <input type="text" name="fin" id="fin" value={{end}} class="datepicker" />
       {% if admin == 1 %}
         &nbsp;&nbsp;Agent :
-        <select name='perso_id' class='ui-widget-content ui-corner-all' >
-          <option value='0' selected >&nbsp;</option>
+        <select name="perso_id" class="ui-widget-content ui-corner-all" >
+          <option value="0" selected >&nbsp;</option>
           {% for a in agents %}
             {% if a.id == perso_id %}
-              <option value='{{a.id}}' selected > {{ a.nom }} {{ a.prenom }}</option>
+              <option value="{{a.id}}" selected > {{ a.nom }} {{ a.prenom }}</option>
             {% else %}
-              <option value='{{a.id}}' > {{ a.nom }} {{ a.prenom }}</option>
+              <option value="{{a.id}}" > {{ a.nom }} {{ a.prenom }}</option>
             {% endif %}
           {% endfor %}
         </select>
       {% endif %}
-      &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button'/>
+      &nbsp;&nbsp;<input type="submit" role="button" value="OK" aria-label="Validation de la séléction" class="btn btn-primary"/>
       </form>
     {% else %}
       Aucun agent disponible
     {% endif %}
 
     {% if beginSQL > endSQL  %}
-    <p class='information'> La date de fin doit être supérieure à la date de début </p>
+    <p class="information"> La date de fin doit être supérieure à la date de début </p>
     {% elseif agent is not null and days %}
       <br/>
-      <table cellpadding='10' cellspacing='0' border='0' id='tab_agenda'>
+      <table cellpadding="10" cellspacing="0" border="0" id="tab_agenda">
         <thead>
-          <tr class='center'>
-            <th class='ui-widget-header calendar-border ui-corner-tl' style="width : 143px;"> Lundi </th>
-            <th class='ui-widget-header calendar-border' style="width : 143px;"> Mardi </th>
-            <th class='ui-widget-header calendar-border' style="width : 143px;"> Mercredi </th>
-            <th class='ui-widget-header calendar-border' style="width : 143px;"> Jeudi </th>
-            <th class='ui-widget-header calendar-border' style="width : 143px;"> Vendredi </th>
-            <th class='ui-widget-header calendar-border' style="width : 143px;"> Samedi </th>
-            <th class='ui-widget-header calendar-border ui-corner-tr' style="width : 143px;"> Dimanche </th>
+          <tr class="center">
+            <th class="ui-widget-header calendar-border ui-corner-tl" style="width : 143px;"> Lundi </th>
+            <th class="ui-widget-header calendar-border" style="width : 143px;"> Mardi </th>
+            <th class="ui-widget-header calendar-border" style="width : 143px;"> Mercredi </th>
+            <th class="ui-widget-header calendar-border" style="width : 143px;"> Jeudi </th>
+            <th class="ui-widget-header calendar-border" style="width : 143px;"> Vendredi </th>
+            <th class="ui-widget-header calendar-border" style="width : 143px;"> Samedi </th>
+            <th class="ui-widget-header calendar-border ui-corner-tr" style="width : 143px;"> Dimanche </th>
           </tr>
         </thead>
         <tbody>
           <tr style="height: 180px;">
             {% if cellsBefore %}
               {% for c in 1..cellsBefore %}
-                <td class='cellule_grise'>&nbsp;</td>
+                <td class="cellule_grise">&nbsp;</td>
               {% endfor %}
             {% endif %}
 
@@ -69,24 +69,24 @@
                 {% endif %}
               {% endif %}
               <td>
-                <div class='div_date'> {{ d.aff | raw }} </div>
+                <div class="div_date"> {{ d.aff | raw }} </div>
                 {% if d.closed == true %}
-                    <div class='ferie'>
+                    <div class="ferie">
                           Bibliothèque fermée<br/><b>{{ d.name }}</b>
                     </div>
                   </td>
                 {% else %}
                   {% if d.presence is not empty %}
-                    <div class='attendance'>
+                    <div class="attendance">
                       {% if d.presence.schedule | length > 1 %}
                         {% if nbSites > 1 %}
                           {% if d.presence.site == -1 %}
-                            <p style='margin-bottom:0;'> Présence sur tous les sites : </p>
+                            <p style="margin-bottom:0;"> Présence sur tous les sites : </p>
                           {% else %}
-                            <p style='margin-bottom:0;'> Présence à {{ d.presence.site_name }} : </p>
+                            <p style="margin-bottom:0;"> Présence à {{ d.presence.site_name }} : </p>
                           {% endif %}
                         {% else %}
-                          <p style='margin-bottom:0;'> Présence :</p>
+                          <p style="margin-bottom:0;"> Présence :</p>
                         {% endif %}
                         <ul>
                         {% for p in d.presence.schedule %}
@@ -107,7 +107,7 @@
                     </div>
                   {% endif %}
                   {% if d.absence is not empty %}
-                    <div class ='important'>
+                    <div class ="important">
                       {% if d.absence | length == 1 %}
                         <p class="calendar-absence"> Absence : </p>
                       {% elseif d.absence | length > 1 %}
@@ -121,7 +121,7 @@
                     </div>
                   {% endif %}
                   {% if d.position is not empty %}
-                    <div class ='postes'>Postes occupés :
+                    <div class ="postes">Postes occupés :
                       <ul>
                       {% for position in d.position  %}
                         {% if position.absent == true %}
@@ -138,7 +138,7 @@
             {% endfor %}
             {% if cellsAfter %}
               {% for c in 1..cellsAfter %}
-                <td class='cellule_grise'>&nbsp;</td>
+                <td class="cellule_grise">&nbsp;</td>
               {% endfor %}
             {% endif %}
           </tr>

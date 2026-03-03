@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block page %}
-  <div id='content-form'>
+  <div id="content-form">
     <h3>Poser des récupérations</h3>
-    <div class='admin-div'>
-      <table border='0'>
-        <tr style='vertical-align:top'>
+    <div class="admin-div">
+      <table border="0">
+        <tr style="vertical-align:top">
           <td>
             <form name="form" action="{{ asset('comptime') }}" method="post" id="form">
               <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
@@ -23,18 +23,18 @@
               <input type="hidden" id="conges-recup" value="1" />
               <input type="hidden" id="is-recover" value="1" />
 
-              <table border='0'>
+              <table border="0">
                 <tr>
-                  <td style='width:350px;'>
+                  <td style="width:350px;">
                     Nom, prénom :
                   </td>
                   <td>
                     {% if managed | length > 1 %}
-                      <select name="perso_id" id="perso_id" onchange='document.location.href="/comptime/add?perso_id="+this.value;' style='width:98%;'>
-                        <option value='0'></option>
+                      <select name="perso_id" id="perso_id" onchange='document.location.href="/comptime/add?perso_id="+this.value;' style="width:98%;">
+                        <option value="0"></option>
                         {% for m in managed %}
                           {% if perso_id == m.id %}
-                            <option value="{{ m.id }}" selected='selected'>
+                            <option value="{{ m.id }}" selected="selected">
                               {{ m.lastname }} {{ m.firstname }}
                             </option>
                           {% else %}
@@ -77,7 +77,7 @@
                   </td>
                 </tr>
 
-                <tr id='hre_fin'>
+                <tr id="hre_fin">
                   <td>Heure de fin : </td>
                   <td>
                     <input name="hre_fin" id="hre_fin_select" class="planno-timepicker center ui-widget-content ui-corner-all checkdate" style="width:97%;"/>
@@ -101,7 +101,7 @@
                       <input type="hidden" name="hours_per_day" id="hours_per_day" value="{{ hours_per_day }}" />
                     </td>
 
-                    <td><div id='nbJours' style='padding:0 5px; width:50px;'></div></td>
+                    <td><div id="nbJours" style="padding:0 5px; width:50px;"></div></td>
                   </tr>
                 {% endif %}
 
@@ -124,7 +124,7 @@
                       <tr class="balance_tr">
                         <td>Solde prévisionnel<sup>*</sup> au <span class="balance_date">{{ balance_date }}</span> : </td>
                         <td id="balance2_before">{{ balance2_before }} {{ balance2_before_days }}</td>
-                        <td>(après débit : <span id='balance2_after'>{{ balance2_before }} {{ balance2_before_days }}</span>)</td>
+                        <td>(après débit : <span id="balance2_after">{{ balance2_before }} {{ balance2_before_days }}</span>)</td>
                       </tr>
                     </table>
                   </td>
@@ -145,16 +145,16 @@
                 <tr>
                   <td>
                     {% if not config('Conges-validation') %}
-                      <input type='hidden' name='valide' id='validation' value='1' />
+                      <input type="hidden" name="valide" id="validation" value="1" />
                     {% endif %}
                   </td>
                 </tr>
 
                 <tr>
                   <td colspan="2" style="text-align:center;">
-                    <input type="button" value="Annuler" onclick='document.location.href="/holiday/index?recup=1";' class="ui-button ui-button-type2"/>
+                    <input type="button" value="Annuler" onclick='document.location.href="/holiday/index?recup=1";' class="btn btn-secondary"/>
                   &nbsp;&nbsp;
-                    <input type="button" value="Valider" class="ui-button" onclick="verifConges();" style="margin-left:20px;" id="submit-button"/>
+                    <input type="button" value="Valider" class="btn btn-primary" onclick="verifConges();" style="margin-left:20px;" id="submit-button"/>
                     <div id="google-calendar-div" class="inline"></div>
                   </td>
                 </tr>
