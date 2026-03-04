@@ -57,11 +57,11 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filter('label')->eq(2);
         $this->assertEquals($result->text('Node does not exist', false), 'Texte','label 3 is Texte');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
-        $this->assertEquals($class->attr('href'),'/admin/info','href a>span>Annuler is admin/info');
+        $class = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
+        $this->assertEquals($class->attr('href'),'/admin/info','button href a>span>Annuler is admin/info');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
         $result = $crawler->filterXPath('//input[@class="datepicker"]')->eq(0);
         $this->assertEquals($result->attr('name'),'start','input datepicker name is start');
@@ -109,8 +109,8 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filter('label')->eq(2);
         $this->assertEquals($result->text('Node does not exist', false), 'Texte','label 3 is Texte');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
         $class = $crawler->filterXPath('//input[@name="start"]');
         $this->assertEquals($class->attr('value'),'05/10/2022','input submit start is 05/10/2022');
@@ -118,7 +118,11 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $class = $crawler->filterXPath('//input[@name="end"]');
         $this->assertEquals($class->attr('value'),'10/10/2022','input submit end is 10/10/2022');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type3"]');
-        $this->assertEquals($class->attr('href'),"javascript:deleteAdminInfo($id);",'href a>span>Annuler is admin/info');
+        $class = $crawler->filterXPath('//a[@class="btn btn-danger"]');
+        $this->assertEquals($class->attr('href'),"javascript:deleteAdminInfo($id);",'button value is Supprimer');
+
+        $class = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
+        $this->assertEquals($class->attr('href'),'/admin/info','button href a>span>Annuler is admin/info');
+
     }
 }

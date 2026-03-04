@@ -69,10 +69,10 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//textarea');
         $this->assertEquals($result->attr('name'),'texte','textarea name is texte');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1 ui-corner-all"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $this->assertEquals($class->attr('value'),'Valider','input button submit value is Valider');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2 ui-widget ui-button-type1 ui-corner-all ui-button-text-only"]/span');
+        $result = $crawler->filterXPath('//a[@class="btn btn-secondary"]/span');
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','a/span button is Annuler');
     }
 
@@ -121,13 +121,13 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $class = $crawler->filterXPath('//textarea');
         $this->assertEquals($class->text('Node does not exist', false), 'salut','input submit text is salut');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1 ui-corner-all"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2 ui-widget ui-button-type1 ui-corner-all ui-button-text-only"]/span');
+        $result = $crawler->filterXPath('//a[@class="btn btn-secondary"]/span');
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','a/span button is Annuler');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type3 ui-widget ui-button-type1 ui-corner-all ui-button-text-only"]/span');
+        $class = $crawler->filterXPath('//a[@class="btn btn-danger"]/span');
         $this->assertEquals($class->text('Node does not exist', false), 'Supprimer','a button is Supprimer');
     }
 
@@ -146,7 +146,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button"]');
+        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
 
         $this->assertSelectorTextContains('p', 'Aucune information enregistrée.');
@@ -166,7 +166,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button"]');
+        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
 
         $result = $crawler->filterXPath('//th[@class="dataTableDateFR"]');

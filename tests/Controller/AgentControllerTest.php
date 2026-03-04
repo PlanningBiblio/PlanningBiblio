@@ -153,7 +153,7 @@ class AgentControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/agent');
 
-        $result = $crawler->filterXPath('//input[@class="ui-button ui-button-type2"]');
+        $result = $crawler->filterXPath('//input[@class="btn btn-secondary"]');
 
         $this->assertEquals('Import LDAP', $result->attr('value'));
 

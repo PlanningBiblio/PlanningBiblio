@@ -52,7 +52,7 @@ class PositionControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/position/add');
 
-        $this->assertSelectorTextContains('h3', 'Modification du poste');
+        $this->assertSelectorTextContains('h3', 'Ajout d\'un poste');
 
         $result = $crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
         $this->assertEquals($result->attr('name'),'nom','input for post name value is nom');
@@ -108,10 +108,10 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('value'),'1','input teleworking value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input teleworking value is 0');
 
-        $result = $crawler->filterXPath('//input[@class="ui-button"]');
+        $result = $crawler->filterXPath('//input[@class="btn btn-primary"]');
         $this->assertEquals($result->attr('value'),'Valider','input submit value is Valider');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
+        $result = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','input submit value is Annuler');
 
         $result = $crawler->filterXPath('//td[@class="noteBasDePage"]');
@@ -213,10 +213,10 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('value'),'1','input teleworking value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input teleworking value is 0');
 
-        $result = $crawler->filterXPath('//input[@class="ui-button"]');
+        $result = $crawler->filterXPath('//input[@class="btn btn-primary"]');
         $this->assertEquals($result->attr('value'),'Valider','input submit value is Valider');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
+        $result = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','input submit value is Annuler');
 
         $result = $crawler->filterXPath('//td[@class="noteBasDePage"]');
