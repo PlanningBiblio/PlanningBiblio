@@ -154,22 +154,22 @@
               {% endif %}
             {% endif %}
             <div id='boutons' style='padding-top:50px;'>
-              <input type='button' value='Retour' onclick='location.href="{{ retour }}";' class='ui-button ui-button-type2' />
+              <input type='button' value='Retour' onclick='location.href="{{ retour }}";' class='btn btn-secondary' />
               {% if ((adminN1 == true or adminN2 == true  or modifAutorisee == true ) and (not request_exception and not is_exception and not copy and not is_new)) %}
-                <input type='button' value='Ajouter une exception' onclick="location.href='{{asset("workinghour")}}/{{id}}?exception={{id}}&retour={{exception_back}}';" style='margin-left:30px;' class='ui-button ui-button-type2' />
+                <input type='button' value='Ajouter une exception' onclick="location.href='{{asset("workinghour")}}/{{id}}?exception={{id}}&retour={{exception_back}}';" style='margin-left:30px;' class='btn btn-primary' />
               {% endif %}
               {% if admin == true and (cle == null or cle == "") %}
                 {% if request_exception == true %}
-                  <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
+                  <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="btn btn-primary" />
                 {% else %}
-                  <input type='submit' value='Enregistrer' style="margin-left:30px"; class='ui-button' />
+                  <input type='submit' value='Enregistrer' style="margin-left:30px"; class='btn btn-primary' />
                 {% endif %}
               {% else %}
                 {% if modifAutorisee == true %}
                   {% if request_exception == true %}
-                    <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
+                    <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="btn btn-primary" />
                   {% else %}
-                    <input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />
+                    <input type='submit' value='Enregistrer' style='margin-left:30px;' class='btn btn-primary' />
                   {% endif %}
                 {% endif %}
               {% endif %}
