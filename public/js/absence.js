@@ -119,7 +119,7 @@ $(function() {
           $( this ).dialog( "close" );
               },
         text: "Annuler",
-        class: "ui-button-type2"
+        class: "btn btn-secondary"
             },
     },
     close: function() {
@@ -329,7 +329,7 @@ $(function() {
           $( this ).dialog( "close" );
               },
         text: "Annuler",
-        class: "ui-button-type2"
+        class: "btn btn-secondary"
             },
     },
 
@@ -553,7 +553,7 @@ $(function() {
           $( this ).dialog( "close" );
               },
         text: "Annuler",
-        class: "ui-button-type2"
+        class: "btn btn-secondary"
             },
     },
     close: function() {
@@ -596,7 +596,7 @@ $(function() {
           $( this ).dialog( "close" );
               },
         text: "Annuler",
-        class: "ui-button-type2"
+        class: "btn btn-secondary"
             },
     },
     close: function() {
