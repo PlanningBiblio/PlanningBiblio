@@ -36,7 +36,7 @@
                   {% if objects is iterable %}
                       <option value='Tous'>Tous</option>
                       {% for o in objects %}
-                          <option value='{{ o.id }}' {{ (o.id in data) ? "selected = 'selected'" : " " }}>{{ o.valeur | raw }}</option>
+                          <option value='{{ o.id }}' {{ (o.id in data) ? "selected = 'selected'" : " " }}>{{ o.valeur }}</option>
                       {% endfor %}
                   {% endif %}
                   </select>
@@ -100,6 +100,7 @@
         <td>
           {% if tab %}
             <b>Statistiques par statut du {{ debut }} au {{ fin }}</b>
+            {# raw is needed because ouverture contains HTML (see statistiques::ouverture) #}
             {{ ouverture|raw }}
             <table border='1' cellspacing='0' cellpadding='0' class="statistics-table">
               <tr class='th'>
@@ -124,7 +125,7 @@
                   <td style='padding-left:8px;'>
                     <table>
                       <tr>
-                        <td colspan='2'><b>{{ elem[0] | raw }}</b></td>
+                        <td colspan='2'><b>{{ elem[0] }}</b></td>
                       </tr>
                       <tr>
                         <td>Total</td>
@@ -138,7 +139,7 @@
                         {% for i in 1..nbSites %}
                             {% if elem.sites[i] is not null %}
                               <tr>
-                                <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i] | raw }}</u></td>
+                                <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i] }}</u></td>
                               </tr>
                               <tr>
                                 <td>Total</td>
@@ -159,7 +160,7 @@
                         <tr style='vertical-align:top;'>
                           <td>
                             <b>{{ poste[1] }}</b>
-                            <br/><i>{{ poste.siteEtage | raw }}</i>
+                            <br/><i>{{ poste.siteEtage }}</i>
                           </td>
                           <td class='statistiques-heures'>{{ poste[3] }}</td>
                         </tr>

@@ -131,9 +131,9 @@
                     <td>
                       {% for s in skillList %}
                         {% if s.id in activites %}
-                          <input type="checkbox" name="activites[]" value="{{ s.id }}" checked="checked" /> {{ s.name | raw }}<br/>
+                          <input type="checkbox" name="activites[]" value="{{ s.id }}" checked="checked" /> {{ s.name }}<br/>
                         {% else %}
-                          <input type="checkbox" name="activites[]" value="{{ s.id }}" /> {{ s.name | raw }}<br/>
+                          <input type="checkbox" name="activites[]" value="{{ s.id }}" /> {{ s.name }}<br/>
                         {% endif %}
                       {% endfor %}
                     </td>
@@ -144,9 +144,9 @@
                       <td style='padding-top:26px;'>
                         {% for c in categoriesList %}
                           {% if c.id in categories %}
-                            <input type="checkbox" name="categories[]" value="{{ c.id }}" checked="checked" /> {{ c.valeur | raw }}<br/>
+                            <input type="checkbox" name="categories[]" value="{{ c.id }}" checked="checked" /> {{ c.valeur }}<br/>
                           {% else %}
-                            <input type="checkbox" name="categories[]" value="{{ c.id }}" /> {{ c.valeur | raw }}<br/>
+                            <input type="checkbox" name="categories[]" value="{{ c.id }}" /> {{ c.valeur }}<br/>
                           {% endif %}
                         {% endfor %}
                       </td>

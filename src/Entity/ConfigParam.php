@@ -35,9 +35,6 @@ class ConfigParam
     #[ORM\Column]
     private ?bool $technical = false;
 
-    #[ORM\Column(length: 255)]
-    private ?string $extra = null;
-
     #[ORM\Column]
     private ?int $ordre = null;
 
@@ -66,18 +63,6 @@ class ConfigParam
     public function setComment(?string $comments): static
     {
         $this->commentaires = $comments;
-
-        return $this;
-    }
-
-    public function getExtra(): ?string
-    {
-        return $this->extra;
-    }
-
-    public function setExtra(?string $extra): static
-    {
-        $this->extra = $extra;
 
         return $this;
     }

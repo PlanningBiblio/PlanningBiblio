@@ -80,6 +80,7 @@
         <td>
           {% if tab %}
             <b>Statistiques par poste de renfort du {{ debut }} au {{ fin }}</b>
+            {# raw is needed because ouverture contains HTML (see statistiques::ouverture) #}
             {{ ouverture | raw }}
             <table border='1' cellspacing='0' cellpadding='0' class="statistics-table">
               <tr class='th'>
@@ -129,7 +130,7 @@
                   </td>
                   <td style='padding-left:8px;'>
                     {% for date in elem[1] %}
-                      <b>{{ date[3]|raw }} </b><br/>
+                      <b>{{ date[0] | datefull }} : {{ date[2] | hours }}</b><br/>
                       {% for horaires in date[1] %}
                         {{ horaires[3] }}<br/>
                       {% endfor %}

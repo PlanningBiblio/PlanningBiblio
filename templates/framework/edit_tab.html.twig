@@ -229,7 +229,7 @@
                   <td style='white-space:nowrap;text-align:left;'>
                     Titre <input type='text' name='select_{{ tab.nom }}Titre_0' class='tr_horaires select_titre' style='text-align:center;white-space:nowrap;' value="{{ tab.titre }}"/>&nbsp;
                     Classe<sup>*</sup>
-                    <input type='text' name='select_{{ tab.nom }}Classe_0' class='tr_horaires select_titre' style='text-align:center;width:120px;' value="{{ tab.classe | raw }}"/>
+                    <input type='text' name='select_{{ tab.nom }}Classe_0' class='tr_horaires select_titre' style='text-align:center;width:120px;' value="{{ tab.classe }}"/>
                     <a href="javascript:ajout('select_{{ tab.nom }}_',-1);">
                       <span class='pl-icon pl-icon-add-white' title='Ajouter'></span>
                     </a>
@@ -245,11 +245,11 @@
                         <option value=''>&nbsp;</option>
                         {% if postes is iterable and postes is not empty %}
                           {% for poste in postes %}
-                            <option value='{{ poste.id }}' {{ (tab.lignes[i] is defined and tab.lignes[i].type =="poste" and poste.id == tab.lignes[i].poste ) ? "selected='selected'" : " " }} {{ poste.obligatoire == "Obligatoire" ? "class='td_obligatoire'" : "class='td_renfort'"}}>{{ poste.nom | raw}} ({{ poste.etage }})</option>
+                            <option value='{{ poste.id }}' {{ (tab.lignes[i] is defined and tab.lignes[i].type =="poste" and poste.id == tab.lignes[i].poste ) ? "selected='selected'" : " " }} {{ poste.obligatoire == "Obligatoire" ? "class='td_obligatoire'" : "class='td_renfort'"}}>{{ poste.nom }} ({{ poste.etage }})</option>
                           {% endfor %}
                         {% endif %}
                         {% for ligne_sep in lignes_sep %}
-                          <option value='{{ ligne_sep.id }}Ligne' class='tr_horaires' {{ (tab.lignes[i] is defined and tab.lignes[i].type =="ligne" and ligne_sep.id == tab.lignes[i].poste) ? "selected='selected'" : " " }} style='font-weight:normal;'>{{ ligne_sep.nom | raw }}</option>
+                          <option value='{{ ligne_sep.id }}Ligne' class='tr_horaires' {{ (tab.lignes[i] is defined and tab.lignes[i].type =="ligne" and ligne_sep.id == tab.lignes[i].poste) ? "selected='selected'" : " " }} style='font-weight:normal;'>{{ ligne_sep.nom }}</option>
                         {% endfor %}
                       </select>&nbsp;&nbsp;
                       <a href="javascript:ajout('select_{{ tab.nom }}_',{{ i }});">

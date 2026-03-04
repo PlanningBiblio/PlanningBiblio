@@ -69,7 +69,9 @@
                 {% endif %}
               {% endif %}
               <td>
-                <div class='div_date'> {{ d.aff | raw }} </div>
+                <div class='div_date'>
+                    {{ d.aff | datefull(day: false, year: false) }}
+                </div>
                 {% if d.closed == true %}
                     <div class='ferie'>
                           Bibliothèque fermée<br/><b>{{ d.name }}</b>
@@ -115,7 +117,7 @@
                       {% endif %}
                       <ul>
                       {% for a in d.absence %}
-                        <li> {{ a | raw }} </li>
+                        <li> {{ a }} </li>
                       {% endfor %}
                       </ul>
                     </div>

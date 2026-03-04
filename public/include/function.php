@@ -902,7 +902,7 @@ function dateAlpha2($date)
     case 6: $day="Samedi"; break;
     case 0: $day="Dimanche"; break;
   }
-    return $day."<br/>".$dayOfMonth." ".$month;
+    return $day."\n".$dayOfMonth." ".$month;
 }
 
 function dateFr($date, $heure=null)

@@ -156,10 +156,10 @@
         <p>
           <ul>
             <li>Agenda des plages de service public : 
-              <span id='urlIcs'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics | raw }}'>{{ config('URL') }}{{ ics | raw }}</a></span>
+              <span id='urlIcs'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics }}'>{{ config('URL') }}{{ ics }}</a></span>
             </li>
             <li>Agenda des plages de service public et des absences : 
-              <span id='urlIcsWithAbsences'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics | raw }}&absences=1'>{{ config('URL') }}{{ ics | raw }}&absences=1</a></span>
+              <span id='urlIcsWithAbsences'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics }}&absences=1'>{{ config('URL') }}{{ ics }}&absences=1</a></span>
             </li>
           </ul>
           {% if config('ICS-Code') %}
