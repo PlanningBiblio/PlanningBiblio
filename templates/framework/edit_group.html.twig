@@ -3,14 +3,14 @@
 
 {% block specificjs %}
   <script type="text/JavaScript" src="{{ asset('js/framework.js') }}"></script>
-  <script type='text/JavaScript'>
+  <script type="text/JavaScript">
     grp_nom=new Array();
     {% for elem in groupes %}
       grp_nom.push("{{ elem.nom | lower }}");
     {% endfor %}
   </script>
   {% if config('Multisites-nombre') > 1 %}
-    <script type='text/JavaScript'>
+    <script type="text/JavaScript">
       $(document).ready(function(){
         $(".hiddenOptions").hide();
         $(".optionSite"+$("#selectSite").val()).show();
@@ -32,16 +32,16 @@
       <h3> Nouveau groupe </h3>
     {% endif %}
     <div class="admin-div">
-      <form name='form' method='post' action="{{ asset('framework-group') }}" onsubmit='return ctrl_form({{champs}});'>
-        <input type='hidden' name='id' value="{{ id }}" />
-        <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}" />
-        <table class='tableauFiches'>
+      <form name="form" method="post" action="{{ asset('framework-group') }}" onsubmit="return ctrl_form({{champs}});">
+        <input type="hidden" name="id" value="{{ id }}" />
+        <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
+        <table class="tableauFiches">
           <tr>
             <td class="textAlignRight">Nom du groupe</td>
             <td>
-              <input type='text' name='nom' id='Nom' value="{{ groupe.nom }}" class='ui-widget-content ui-corner-all' onkeyup='ctrl_nom(this);'/>
+              <input type="text" name="nom" id="Nom" value="{{ groupe.nom }}" class="ui-widget-content ui-corner-all" onkeyup="ctrl_nom(this);"/>
             </td>
-            <td style='padding-left:30px;color:red;'><font id='nom_utilise' style='display:none;'>
+            <td style="padding-left:30px;color:red;"><font id="nom_utilise" style="display:none;">
               Ce nom est déjà utilisé</font>
             </td>
           </tr>
@@ -49,8 +49,8 @@
             <tr>
               <td class="textAlignRight">Site</td>
               <td>
-                <select name='site' id='selectSite' class='ui-widget-content ui-corner-all' onchange="tabOptions(this)">
-                  <option value=''>&nbsp;</option>
+                <select name="site" id="selectSite" class="ui-widget-content ui-corner-all" onchange="tabOptions(this)">
+                  <option value="">&nbsp;</option>
                   {% for i in 1..config('Multisites-nombre') %}
                     <option value="{{ i }}" {{ groupe.site == i ? "selected='selected'" : ""}}>{{ multisites[i] }}</option>
                   {% endfor %}
@@ -59,21 +59,21 @@
             </tr>
           {% endif %}
           <tr>
-            <td colspan='2' style='padding-top:20px;text-align:justify;'>
+            <td colspan="2" style="padding-top:20px;text-align:justify;">
               Choisissez les tableaux que vous souhaitez affecter à chacun des jours de la semaine
             </td>
           </tr>
           {% for jour in semaine %}
             <tr>
-              <td style='padding-left:20px;' class="textAlignRight">{{ jour }}</td>
+              <td style="padding-left:20px;" class="textAlignRight">{{ jour }}</td>
               <td>
-                <select name="{{ jour }}" id="{{ jour }}" class='ui-widget-content ui-corner-all'>
-                  <option value=''>&nbsp;</option>
+                <select name="{{ jour }}" id="{{ jour }}" class="ui-widget-content ui-corner-all">
+                  <option value="">&nbsp;</option>
                   {% for tab in tableaux %}
                     {% if id is null %}
-                      <option value="{{ tab.tableau }}" class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
+                      <option value="{{ tab.tableau }}" class="optionSite{{tab.site}} hiddenOptions">{{ tab.nom }}</option>
                     {% else %}
-                      <option value="{{ tab.tableau }}" {{ tab.tableau == groupe[jour] ? "selected='selected'" : ""}} class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
+                      <option value="{{ tab.tableau }}" {{ tab.tableau == groupe[jour] ? "selected='selected'" : ""}} class="optionSite{{tab.site}} hiddenOptions">{{ tab.nom }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>
@@ -81,9 +81,9 @@
             </tr>
           {% endfor %}
           <tr>
-            <td colspan='2' style='text-align:center;padding-top:20px;'>
-              <input type='button' value='Annuler' onclick="document.location.href='{{ asset('framework')}}';" class='ui-button ui-button-type2'/>
-              <input type='submit' value='Valider' style='margin-left:30px;' id='submit' class='ui-button'/>
+            <td colspan="2" style="text-align:center;padding-top:20px;">
+              <input type="button" value="Annuler" onclick="document.location.href='{{ asset('framework')}}';" class="btn btn-secondary"/>
+              <input type="submit" role="button" value="Valider" style="margin-left:30px;" id="submit" class="btn btn-primary"/>
             </td>
           </tr>
         </table>
