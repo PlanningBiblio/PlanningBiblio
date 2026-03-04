@@ -51,7 +51,7 @@
                     <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
                       <option value='Tous'>Tous</option>
                       {% for i in 1..nbSites %}
-                        <option value='{{ i }}' {{ (i in selectedSites) ? "selected = 'selected'" : " " }}>{{ multisites[i] | raw }}</option> 
+                        <option value='{{ i }}' {{ (i in selectedSites) ? "selected = 'selected'" : " " }}>{{ multisites[i] }}</option>
                       {% endfor %}
                     </select>
                   </td>
@@ -79,6 +79,7 @@
         <td>
           {% if tab %}
             <b>Statistiques par poste (Synthèse) du {{ debut }} au {{ fin }}</b>
+            {# raw is needed because ouverture contains HTML (see statistiques::ouverture) #}
             {{ ouverture | raw }}
             <table id='tableStatSynthese' class='CJDataTable'>
               <thead>

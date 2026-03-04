@@ -57,9 +57,9 @@
                       <option value='Tous'>Tous</option>
                         {% for i in 1..nbSites %}
                           {% if i in selectedSites %}
-                            <option value='{{ i }}' selected='selected'>{{ multisites[i] | raw }}</option>
+                            <option value='{{ i }}' selected='selected'>{{ multisites[i] }}</option>
                           {% else %}
-                            <option value='{{ i }}'>{{ multisites[i] | raw }}</option>
+                            <option value='{{ i }}'>{{ multisites[i] }}</option>
                           {% endif %}
                         {% endfor %}
                     </select>
@@ -100,6 +100,7 @@
         <td>
           {% if tab is not empty %}
             <b>Statistiques par agent du {{ debut }} au {{ fin }}</b>
+            {# raw is needed because ouverture contains HTML (see statistiques::ouverture) #}
             {{ ouverture | raw }}
             <table border='1' cellspacing='0' cellpadding='0' class="statistics-table">
               <tr class='th'>
@@ -140,7 +141,7 @@
                         {% for i in 1..nbSites %}
                           {% if elem.sites[i] %}
                             <tr>
-                              <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i] | raw }}</u></td>
+                              <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i] }}</u></td>
                             </tr>
                             <tr>
                               <td>Total</td>

@@ -54,14 +54,14 @@
           </td>
           <td>{{ elem.surname }}</td>
           <td>{{ elem.firstname }}</td>
-          <td>{{ elem.service | raw }}</td>
+          <td>{{ elem.service }}</td>
           <td>{{ elem.debut }}</td>
           <td>{{ elem.fin }}</td>
           <td>{{ elem.saisie }}</td>
           <td {{ (elem.valide >= 0) ? " " : "class='red'"}} >{{ elem.validation }}</td>
           <td {{ (elem.valide >= 0) ? " " : "class='red'"}} >{{ elem.validation_date }}</td>
           <td>{{ (elem.actuel != 0) ? "Oui" : " "}}</td>
-          <td>{{ elem.commentaires | raw }}</td>
+          <td>{{ elem.commentaires | nl2br }}</td>
       </tr>
       {% endfor %}
     </tbody>

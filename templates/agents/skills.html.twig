@@ -7,7 +7,7 @@
       <div id='dispo_div'>
         <ul>
           {% for elem in postes_dispo %}
-            <li>{{ elem[1] | raw }}</li>
+            <li>{{ elem[1] }}</li>
           {% endfor %}
         </ul>
       </div>
@@ -18,7 +18,7 @@
       <div id='attrib_div'>
         <ul>
           {% for elem in postes_attribues %}
-            <li>{{ elem[1] | raw }}</li>
+            <li>{{ elem[1] }}</li>
           {% endfor %}
         </ul>
       </div>

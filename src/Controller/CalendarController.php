@@ -134,7 +134,7 @@ class CalendarController extends BaseController
         while ($current <= $finSQL) {
             $current_postes = array();
             $date_tab = explode("-", $current);
-            $date_aff = dateAlpha($current, false, false);
+            $date_aff = $current;
             $jour = date("w", strtotime($current))-1;
             $d = new \datePl($current);
             $semaine = $d->semaine;
@@ -227,13 +227,13 @@ class CalendarController extends BaseController
                 } elseif (substr($elem['debut'], 0, 10) == $current and substr($elem['fin'], 0, 10)==$current) {
                     $deb = heure2(substr($elem['debut'], -8));
                     $fi = heure2(substr($elem['fin'], -8));
-                    $absences_affichage[] = "De $deb &agrave; $fi : ".$elem['motif'];
+                    $absences_affichage[] = "De $deb à $fi : ".$elem['motif'];
                 } elseif (substr($elem['debut'], 0, 10) == $current and $elem['fin'] >= $current." 23:59:59") {
                     $deb = heure2(substr($elem['debut'], -8));
-                    $absences_affichage[]="&Agrave; partir de $deb : ".$elem['motif'];
+                    $absences_affichage[]="À partir de $deb : ".$elem['motif'];
                 } elseif ($elem['debut'] <= $current." 00:00:00" and substr($elem['fin'], 0, 10)==$current) {
                     $fi = heure2(substr($elem['fin'], -8));
-                    $absences_affichage[] = "Jusqu'&agrave; $fi : ".$elem['motif'];
+                    $absences_affichage[] = "Jusqu'à $fi : ".$elem['motif'];
                 } else {
                     $absences_affichage[] = "{$elem['debut']} &rarr; {$elem['fin']} : {$elem['motif']}";
                 }
@@ -257,19 +257,19 @@ class CalendarController extends BaseController
                         // (remplace le message d'absence)
                         if ($conge['debut'] <= $current." 00:00:00" and $conge['fin'] >= $current." 23:59:59") {
                             $absent = true;
-                            $conges_affichage[] = "Toute la journ&eacute;e : Cong&eacute;";
+                            $conges_affichage[] = "Toute la journée : Congé";
                         } elseif (substr($conge['debut'], 0, 10) == $current and substr($conge['fin'], 0, 10)==$current) {
                             $deb = heure2(substr($conge['debut'], -8));
                             $fi = heure2(substr($conge['fin'], -8));
-                            $conges_affichage[] = "De $deb &agrave; $fi : Cong&eacute;";
+                            $conges_affichage[] = "De $deb à $fi : Congé";
                         } elseif (substr($conge['debut'], 0, 10) == $current and $conge['fin'] >= $current." 23:59:59") {
                             $deb = heure2(substr($conge['debut'], -8));
-                            $conges_affichage[] = "&Agrave; partir de $deb : Cong&eacute;";
+                            $conges_affichage[] = "À partir de $deb : Congé";
                         } elseif ($conge['debut'] <= $current." 00:00:00" and substr($conge['fin'], 0, 10) == $current) {
                             $fi = heure2(substr($conge['fin'], -8));
-                            $conges_affichage[] = "Jusqu'&agrave; $fi : Cong&eacute;";
+                            $conges_affichage[] = "Jusqu'à $fi : Congé";
                         } else {
-                            $conges_affichage[] = "{$conge['debut']} &rarr; {$conge['fin']} : Cong&eacute;";
+                            $conges_affichage[] = "{$conge['debut']} → {$conge['fin']} : Congé";
                         }
                         // Modifie l'index "absent" du tableau $current_postes pour barrer les postes concernés par le congé
                         for ($j = 0; $j < count($current_postes); $j++) {

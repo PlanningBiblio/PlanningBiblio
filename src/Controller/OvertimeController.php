@@ -122,7 +122,7 @@ class OvertimeController extends BaseController
                 if ($elem['solde_prec']!=null and $elem['solde_actuel']!=null) {
                     $credits=heure4($elem['solde_prec'])." → ".heure4($elem['solde_actuel']);
                     if ($holiday_helper->showHoursToDays()) {
-                        $credits .= "<br />" . $holiday_helper->hoursToDays($elem['solde_prec'], $elem['perso_id']) . "j &rarr; " . $holiday_helper->hoursToDays($elem['solde_actuel'], $elem['perso_id']) . "j";
+                        $credits .= "\n" . $holiday_helper->hoursToDays($elem['solde_prec'], $elem['perso_id']) . "j → " . $holiday_helper->hoursToDays($elem['solde_actuel'], $elem['perso_id']) . "j";
                     }
                 }
             } elseif ($elem['valide']<0) {
@@ -184,9 +184,7 @@ class OvertimeController extends BaseController
             'perso_id'                  => $perso_id,
             'perso_name'                => nom($perso_id, 'prenom nom'),
             'managed'                   => $managed,
-            'categories'                => json_encode($categories, JSON_HEX_APOS),
-            'label'                     => ($this->config('Recup-DeuxSamedis')) ? "Date (1<sup>er</sup> samedi)" : "Date",
-            'saturday'                  => "Date (2<sup>ème</sup> samedi) (optionel)",
+            'categories'                => $categories,
         ));
 
         return $this->output('overtime/index.html.twig');

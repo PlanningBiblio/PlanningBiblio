@@ -41,9 +41,9 @@
                           {% for elem in postes_list %}
                             {% if postes is defined %}
                               {% if elem.id in postes %}
-                                <option value='{{ elem.id }}' selected="selected"> {{ elem.name | raw }} ({{ elem.floor | raw }})</option>
+                                <option value='{{ elem.id }}' selected="selected"> {{ elem.name }} ({{ elem.floor }})</option>
                               {% else %}
-                                <option value='{{ elem.id }}'>{{ elem.name | raw }} ({{ elem.floor | raw }})</option>
+                                <option value='{{ elem.id }}'>{{ elem.name }} ({{ elem.floor }})</option>
                               {% endif %}
                             {% endif %}
                           {% endfor %}
@@ -59,9 +59,9 @@
                         <option value='Tous'>Tous</option>
                           {% for i in 1..nbSites %}
                             {% if i in selectedSites %}
-                              <option value='{{ i }}' selected>{{ multisites[i] | raw }}</option>
+                              <option value='{{ i }}' selected>{{ multisites[i] }}</option>
                             {% else %}
-                              <option value='{{ i }}' >{{ multisites[i] | raw }}</option>
+                              <option value='{{ i }}' >{{ multisites[i] }}</option>
                             {% endif %}
                           {% endfor %}
                       </select>
@@ -90,6 +90,7 @@
           <td>
             {% if tab is not empty %}
               <b>Statistiques par poste du {{ debut }} au {{ fin }}</b>
+              {# raw is needed because ouverture contains HTML (see statistiques::ouverture) #}
               {{ ouverture | raw }}
               <table border='1' cellspacing='0' cellpadding='0' class='statistics-table'>
                 <tr class='th'>
@@ -106,7 +107,7 @@
                           <td colspan='2'><b>{{ elem[0][1] }}</b></td>
                         </tr>
                         <tr>
-                          <td colspan='2'><i>{{ elem.siteEtage | raw }}</i></td>
+                          <td colspan='2'><i>{{ elem.siteEtage }}</i></td>
                         </tr>
                         <tr>
                           <td>Total</td>
@@ -155,7 +156,7 @@
                       <table style='width:100%;'>
                         {% for service in elem.services %}
                           <tr>
-                            <td>{{ service.nom | raw }}</td>
+                            <td>{{ service.nom }}</td>
                             <td class='statistiques-heures'>{{ service.heures | hours }}</td>
                           </tr>
                         {% endfor %}
@@ -165,7 +166,7 @@
                       <table style='width:100%;'>
                         {% for statut in elem.statuts %}
                           <tr>
-                            <td>{{ statut.nom | raw  }}</td>
+                            <td>{{ statut.nom }}</td>
                             <td class='statistiques-heures'>{{ statut.heures | hours }}</td>
                           </tr>
                         {% endfor %}

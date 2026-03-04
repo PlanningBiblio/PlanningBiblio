@@ -176,7 +176,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
                 $hours_tab .= "<option value='' class='edt-site-0'>&nbsp;</option>\n";
                 for ($l=1;$l<=$config['Multisites-nombre'];$l++) {
                     $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$l) ? "selected='selected'" : null;
-                    $hours_tab .= "<option value='$l' $selected class='edt-site-$l'>{$config["Multisites-site{$l}"]}</option>\n";
+                    $hours_tab .= "<option value='$l' $selected class='edt-site-$l'>" . htmlspecialchars($config["Multisites-site{$l}"]) . "</option>\n";
                 }
                 $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4] == -1) ? "selected='selected'" : null;
                 $hours_tab .= "<option value='-1' $selected class='edt-site--1'>Tout site</option>\n";

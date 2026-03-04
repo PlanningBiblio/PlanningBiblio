@@ -77,8 +77,8 @@ class CompTimeController extends BaseController
             foreach ($db->result as $elem) {
                 $information[] = 'Du '. dateFr($elem['debut'])
                     . ' au ' . dateFr($elem['fin'])
-                    . ' :<br/>' . str_replace("\n", '<br/>', $elem['texte'])
-                    . "<br/><br/>\n";
+                    . " :\n" . $elem['texte']
+                    . "\n\n";
             }
         }
 

@@ -80,6 +80,9 @@
             $('#longueur_mot_de_passe_dialog').dialog('open');
         }
       });
+      $('#Mail-IsMail-IsSMTP').on('change', function() {
+        mail_config();
+      });
       mail_config();
     });
   </script>

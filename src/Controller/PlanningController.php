@@ -1510,7 +1510,7 @@ class PlanningController extends BaseController
                         $title .= ' ' . $elem['prenom'];
                     }
 
-                    $resultat = $nom_affiche;
+                    $resultat = htmlspecialchars($nom_affiche);
 
                     //		Affichage des sans repas
                     if ($elem['nom'] and ($sansRepas === true or in_array($elem['perso_id'], $sansRepas))) {
@@ -1632,7 +1632,7 @@ class PlanningController extends BaseController
                     $classe[$i] = implode(' ', $class_tmp);
 
                     // Création d'une balise span avec les classes cellSpan, et agent_ de façon à les repérer et agir dessus à partir de la fonction JS bataille_navale.
-                    $span="<span class='cellSpan agent_{$elem['perso_id']}' title='$title' >$resultat</span>";
+                    $span="<span class='cellSpan agent_{$elem['perso_id']}' title='" . htmlspecialchars($title) . "'>$resultat</span>";
                     $resultats[$i]=array("text"=>$span, "perso_id"=>$elem['perso_id']);
                     $i++;
                 }

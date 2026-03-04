@@ -123,6 +123,7 @@
       {% endif %}
 
       <div id='temps' style='display:none;padding-top:30px;'>
+        {# raw is needed because hours_tab contains html (see hours_tables.php) #}
         {{ hours_tab | raw }}
       </div>
 

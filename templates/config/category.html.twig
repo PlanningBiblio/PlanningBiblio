@@ -13,15 +13,11 @@
         <td style='width:180px;'>{{ v.nom }}</td>
         <td>
           {% if v.type == 'boolean' %}
-            {% if v.valeur == '1' %}
-              <input type='checkbox' name='{{ v.nom }}' id='{{ v.nom }}' value='1' {{ v.extra|raw }} checked='checked' />
-            {% else %}
-              <input type='checkbox' name='{{ v.nom }}' id='{{ v.nom }}' value='1' {{ v.extra|raw }} />
-            {% endif %}
+            <input type='checkbox' name='{{ v.nom }}' id='{{ v.nom }}' value='1' {{ v.valeur == '1' ? 'checked' : '' }} />
           {% elseif v.type == 'info' %}
             {{ v.valeur }}
           {% elseif v.type == 'enum' %}
-            <select name='{{ v.nom }}' id='{{ v.nom }}' {{ v.extra|raw }} style='width:400px;'>
+            <select name='{{ v.nom }}' id='{{ v.nom }}' style='width:400px;'>
               {% for o in v.options %}
                 {% if o == v.valeur %}
                   <option value='{{ o }}' selected='selected'>{{ o }}</option>
@@ -31,7 +27,7 @@
               {% endfor %}
             </select>
           {% elseif v.type == 'enum2' %}
-            <select name='{{ v.nom }}' id='{{ v.nom }}' {{ v.extra|raw }} style='width:400px;'>
+            <select name='{{ v.nom }}' id='{{ v.nom }}' style='width:400px;'>
               {% for o in v.options %}
                 {% if o.0 == v.valeur %}
                   <option value='{{ o.0 }}' selected='selected'>{{ o.1 }}</option>
@@ -46,27 +42,29 @@
               {% if vs.0 in v.choisies %}
                 <input type='checkbox' name='{{v.nom}}[]'
                        id='{{ v.nom }}_{{ i }}' value='{{ vs.0 }}'
-                       {{ v.extra|raw }}
                        checked="checked" /> {{ vs.1 }}<br/>
               {% else %}
                 <input type='checkbox' name='{{v.nom}}[]'
-                       id='{{ v.nom }}_{{ i }}' value='{{ vs.0 }}' {{ v.extra|raw }} /> {{ vs.1 }}<br/>
+                       id='{{ v.nom }}_{{ i }}' value='{{ vs.0 }}' /> {{ vs.1 }}<br/>
               {% endif %}
               {% set i = i + 1 %}
             {% endfor %}
           {% elseif v.type == 'textarea' %}
-            <textarea name='{{ v.nom }}' id='{{ v.nom }}' {{ v.extra|raw }} style='width:400px;height:100px;' rows='1' cols='1'>{{ v.valeur }}</textarea>
+            <textarea name='{{ v.nom }}' id='{{ v.nom }}' style='width:400px;height:100px;' rows='1' cols='1'>{{ v.valeur }}</textarea>
           {% elseif v.type == 'text' or v.type == '' %}
-            <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' {{ v.extra|raw }} style='width:400px;'/>
+            <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' style='width:400px;'/>
           {% elseif v.type == 'password' %}
-            <input type='password' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' {{ v.extra|raw }} style='width:400px;'/>
+            <input type='password' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' style='width:400px;'/>
           {% elseif v.type == 'date' %}
-            <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value="{{ v.valeur }}" {{ v.extra|raw }} style='width:400px;' class='datepicker'/>
+            <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value="{{ v.valeur }}" style='width:400px;' class='datepicker'/>
           {% elseif v.type == 'color' %}
-            <input type='color' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' {{ v.extra|raw }} style='width:400px;'/>
+            <input type='color' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' style='width:400px;'/>
           {% endif %}
         </td>
-        <td>{{ v.commentaires | raw }}</td>
+        <td>
+            {# raw is needed because some comments contain HTML #}
+            {{ v.commentaires | raw }}
+        </td>
       </tr>
       {% if v.nom == 'Mail-Planning' %}
         <tr>

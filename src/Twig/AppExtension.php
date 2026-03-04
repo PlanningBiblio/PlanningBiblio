@@ -51,9 +51,9 @@ class AppExtension extends AbstractExtension
         ];
     }
 
-    public function dateFull($date)
+    public function dateFull($date, bool $day = true, bool $year = true)
     {
-        return dateAlpha($date);
+        return dateAlpha($date, $day, $year);
     }
 
     public function dateFr($date): ?string

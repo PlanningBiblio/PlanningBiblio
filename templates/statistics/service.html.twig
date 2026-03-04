@@ -26,7 +26,7 @@
                     {% if objects is iterable %}
                       <option value='Tous'>Tous</option>
                       {% for o in objects %}
-                          <option value='{{ o.id }}' {{ (o.id in data) ? "selected = 'selected'" : " " }}>{{ o.valeur | raw }}</option>
+                          <option value='{{ o.id }}' {{ (o.id in data) ? "selected = 'selected'" : " " }}>{{ o.valeur }}</option>
                       {% endfor %} 
                     {% endif %}
                   </select>
@@ -86,6 +86,7 @@
         <td>
           {% if tab %}
             <b>Statistiques par service du {{ debut }} au {{ fin }}</b>
+            {# raw is needed because ouverture contains HTML (see statistiques::ouverture) #}
             {{ ouverture | raw }}
             <table border='1' cellspacing='0' cellpadding='0' class="statistics-table">
               <tr class='th'>

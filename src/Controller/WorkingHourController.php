@@ -230,7 +230,7 @@ class WorkingHourController extends BaseController
             }
 
             $planningRemplace = $elem['remplace'] == 0 ? dateFr($elem['saisie'], true) : $planningRemplace;
-            $commentaires = $elem['remplace']?"Remplace les heures <br/>du $planningRemplace" : null;
+            $commentaires = $elem['remplace']?"Remplace les heures \ndu $planningRemplace" : null;
             $commentaires = $elem['exception'] ? 'Exception' : $commentaires;
 
             $elem['debut'] = dateFr($elem['debut']);

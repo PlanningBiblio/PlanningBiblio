@@ -9,7 +9,7 @@
     var limitContractuel1 = {{ recup_delaicontractuel1 }};
     var limitContractuel2 = {{ recup_delaicontractuel2 }};
     var perso_id = {{ perso_id }};
-    var categories = JSON.parse('{{ categories | raw }}');
+    var categories = {{ categories | json_encode | raw }};
     var samediSeulement = {{ recup_samediseulement }};
     var oneRecoveryPerDay = {{ recup_uneparjour }};
 
@@ -255,7 +255,7 @@
 
                 <td style="{{ elem.validation_style }}">{{ elem.validation }}</td>
                 <td>{{ elem.validation_date }}</td>
-                <td>{{ elem.credits | raw }}</td>
+                <td>{{ elem.credits | nl2br }}</td>
                 <td>{{ elem.commentaires | nl2br }}</td>
               </tr>
             {% endfor %}
@@ -288,7 +288,13 @@
 
               <tr>
                 <td>
-                  <label for="date">{{ label|raw }}</label>
+                  <label for="date">
+                    {% if recup_deuxsamedis %}
+                        Date (1<sup>er</sup> samedi)
+                    {% else %}
+                        Date
+                    {% endif %}
+                  </label>
                 </td>
 
                 <td>
@@ -299,7 +305,7 @@
               {% if recup_deuxsamedis %}
                 <tr>
                   <td>
-                    <label  for="date2">{{ saturday|raw }}</label>
+                    <label  for="date2">Date (2<sup>ème</sup> samedi) (optionnel)</label>
                   </td>
 
                   <td>
