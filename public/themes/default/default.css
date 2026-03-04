@@ -1754,14 +1754,6 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   display: contents;
 }
 
-.ui-button{
-  min-width: 105px;
-}
-
-.ui-button {
-  min-width: 40px;
-}
-
 .ui-button-icon-only {
   min-width: 10px;
 }
@@ -1779,104 +1771,6 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 .top-buttons .col:last-child {
   padding: 10px 0;
   text-align: right;
-}
-
-/*main button style*/
-.ui-button-type1{
-  border: 1px solid #FFD700;
-  background-color: #FFD700;
-  color: #29495C;
-}
-
-.ui-button-type1:hover{
-  border: 1px solid #d5ba2B;
-  background-color: #d5ba2B;
-  color: #29495C;
-}
-.ui-button-type1:active{
-  border: 1px solid #d5ba2B;
-  background-color: #d5ba2B;
-  color: #29495C;
-}
-
-.ui-button-type1.ui-state-active:hover{
-  border: 1px solid #d5ba2B;
-  background-color: #d5ba2B;
-  color: #29495C;
-}
-
-.ui-button-type1:focus{
-  border: 1px solid #d5ba2B;
-  background-color: #d5ba2B;
-  color: #29495C;
-}
-
-/*secondary button style*/
-.ui-button-type2{
-  border: 1px solid #29495C;
-  color: #29495C;
-  background-color: #FFFFFF;
-}
-
-.ui-button-type2:hover{
-  border: 1px solid #29495C;
-  color: #FFFFFF;
-  background-color: #29495C;
-}
-
-.ui-button-type2 .ui-state-hover{
-  border: 1px solid #29495C;
-  color: #FFFFFF;
-  background-color: #29495C;
-}
-
-.ui-button-type2:active{
-  border: 1px solid #29495C;
-  color: #FFFFFF;
-  background-color: #29495C;
-}
-
-.ui-button-type2:focus{
-  border: 1px solid #29495C;
-  color: #FFFFFF;
-  background-color: #29495C;
-}
-
-.ui-button-type2.ui-state-active:hover{
-  border: 1px solid #29495C;
-  color: #FFFFFF;
-  background-color: #29495C;
-}
-
-/*delete button style*/
-.ui-button-type3{
-  border: 1px solid #cd1b19;
-  color: #cd1b19;
-  background-color: #FFFFFF;
-}
-
-.ui-button-type3:hover{
-  border: 1px solid #cd1b19;
-  color: #FFFFFF;
-  background-color: #cd1b19;
-}
-
-.ui-button-type3:active{
-  border: 1px solid #cd1b19;
-  color: #FFFFFF;
-  background-color: #cd1b19;
-}
-
-.ui-button-type3:focus{
-  border: 1px solid #cd1b19;
-  color: #FFFFFF;
-  background-color: #cd1b19;
-}
-
-.ui-button-type3.ui-state-active:hover{
-  border: 1px solid #cd1b19;
-  color: #FFFFFF;
-  background-color: #cd1b19;
 }
 
 /*Buttons END*/

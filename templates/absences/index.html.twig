@@ -52,7 +52,7 @@
         {% endif %}
 
         <div class="col">
-          <input type="submit" value="Rechercher" class="btn btn-primary" style="margin-right:20px;" />
+          <input type="submit" value="Rechercher" class="btn btn-secondary" style="margin-right:20px;" />
         </div>
 
         <div class="col-3">
@@ -61,7 +61,7 @@
 
         <div class="col">
           <div class="ml-auto">
-            <a href='{{ asset("absence/add") }}' class="btn btn-secondary">Ajouter</a>
+            <a href='{{ asset("absence/add") }}' class="btn btn-primary">Ajouter</a>
             {% if config('AbsImport-CSV') and can_import_abs_csv %}
               <a href='{{ asset("absence/import") }}' class="btn btn-secondary">Importer</a>
             {% endif %}
