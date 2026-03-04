@@ -8,38 +8,38 @@
     <div class="statistics-div">
       <table>
         <tr>
-          <td style='width:350px;'><b>Du {{ debut }} au {{ fin }}</b></td>
+          <td style="width:350px;"><b>Du {{ debut }} au {{ fin }}</b></td>
           <td>
-            <form name='form' method='get' action='{{ asset("statistics/absence") }}'>
-              <input type='hidden' id='afficheHeures' value='{{ afficheHeures }}' />
-              Début <input type='text' name='debut' class='datepicker' value='{{ debut }}' />&nbsp;
-              Fin <input type='text' name='fin' class='datepicker' value='{{ fin }}' />&nbsp;
+            <form name="form" method="get" action="{{ asset('statistics/absence') }}">
+              <input type="hidden" id="afficheHeures" value="{{ afficheHeures }}" />
+              Début <input type="text" name="debut" class="datepicker" value="{{ debut }}" />&nbsp;
+              Fin <input type="text" name="fin" class="datepicker" value="{{ fin }}" />&nbsp;
               {% if nbSites >1 %}
                 Sites : 
-                <select name='site'>
-                  <option value='0'>Tous</option>
+                <select name="site">
+                  <option value="0">Tous</option>
                   {% for i in 1..nbSites %}
                     {% if i == site %}
-                      <option value='{{ i }}' selected = 'selected'> {{ multisites[i-1] | raw }}</option>
+                      <option value="{{ i }}" selected = "selected"> {{ multisites[i-1] | raw }}</option>
                     {% else %}
-                      <option value='{{ i }}'> {{ multisites[i-1] | raw }}</option>
+                      <option value="{{ i }}"> {{ multisites[i-1] | raw }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>&nbsp;
               {% endif %}
-              <input type='submit' value='OK' id='submit' class='ui-button'/>
+              <input type="submit" role="button" value="Rechercher" id="submit" class="btn btn-secondary"/>
             </form>
           </td>
         </tr>
       </table>
       <br/>
-      <table id='tableStatAbsences' class='CJDataTable' data-fixedColumns='3' data-responsive="false">
+      <table id="tableStatAbsences" class="CJDataTable" data-fixedColumns="3" data-responsive="false">
         <thead>
           <tr>
             {% if afficheHeures == true %}
               <th rowspan="2">Agents</th>
               <th rowspan="2">Total<br/>d'absences</th>
-              <th rowspan="2" class='dataTableHeureFR'>Total<br/>d'heures</th>
+              <th rowspan="2" class="dataTableHeureFR">Total<br/>d'heures</th>
             {% else %}
               <th rowspan="1">Agents</th>
               <th rowspan="1">Total<br/>d'absences</th>
@@ -56,7 +56,7 @@
               <tr>
                 {% for elem in motifs %}
                   <th>Nombre</th>
-                  <th class='dataTableHeureFR'>Heures</th>
+                  <th class="dataTableHeureFR">Heures</th>
                 {% endfor %}
             {% endif %}
           </tr>
@@ -65,26 +65,26 @@
           {% for elem in tab %}
             <tr>
               <td class="no-hover">{{ elem.nom }} {{ elem.prenom }}</td>
-              <td class='center nowrap no-hover'>{{ elem.total }}</td>
+              <td class="center nowrap no-hover">{{ elem.total }}</td>
               {% if afficheHeures == true %}
-                {% if elem.totalHeures == 'Erreur' %}
-                  <td class='center nowrap no-hover' title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
+                {% if elem.totalHeures == "Erreur" %}
+                  <td class="center nowrap no-hover" title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
                 {% else %}
-                  <td class='center nowrap no-hover'>{{ elem.totalHeures }}</td>
+                  <td class="center nowrap no-hover">{{ elem.totalHeures }}</td>
                 {% endif %}
               {% endif %}
               {% for motif in motifs %}
                 {% if attribute(elem, motif) is defined and elem[motif].total != '' %}
-                  <td class='center nowrap bg-yellow'>{{ elem[motif].total }}</td>
+                  <td class="center nowrap bg-yellow">{{ elem[motif].total }}</td>
                 {% else %}
-                  <td class='center nowrap no-hover'> - </td>
+                  <td class="center nowrap no-hover"> - </td>
                 {% endif %}  
                 {% if afficheHeures == true %}
                   {% if attribute(elem, motif) is defined %}
                     {% if elem[motif].heures == 'Erreur' %}
-                      <td class='center nowrap bg-yellow' title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
+                      <td class="center nowrap bg-yellow" title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
                     {% else %}
-                      <td class='center nowrap bg-yellow '>{{ elem[motif].heures }}</td>
+                      <td class="center nowrap bg-yellow ">{{ elem[motif].heures }}</td>
                     {% endif %}
                   {% else %}
                     <td class="no-hover"></td>
@@ -95,23 +95,23 @@
           {% endfor %}
         </tbody>
         <tfoot>
-          <tr style='background:#DDDDDD;'>
+          <tr style="background:#DDDDDD;">
             <th class="no-hover">Totaux</th>
-            <th class='nowrap no-hover'>{{ totaux._general}}</th>
+            <th class="nowrap no-hover">{{ totaux._general}}</th>
             {% if afficheHeures == true %}
               {% if totaux._generalHeures == 'Erreur' %}
-                <th class='nowrap' title="Erreur de calcul. Vérifiez les heures de présence des agents (Emploi du temps)."> Erreur </th>
+                <th class="nowrap" title="Erreur de calcul. Vérifiez les heures de présence des agents (Emploi du temps)."> Erreur </th>
               {% else %}
-                <th class='nowrap no-hover'> {{ totaux._generalHeures }} </th>
+                <th class="nowrap no-hover"> {{ totaux._generalHeures }} </th>
               {% endif %}
             {% endif %}
             {% for motif in motifs %}
-              <th class='nowrap no-hover'>{{ totaux[motif].frequence }}</th>
+              <th class="nowrap no-hover">{{ totaux[motif].frequence }}</th>
               {% if afficheHeures %}
                 {% if totaux[motif].heures == 'Erreur' %}
-                  <th class='nowrap no-hover' title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </th>
+                  <th class="nowrap no-hover" title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </th>
                 {% else %}
-                  <th class='nowrap no-hover'>{{ totaux[motif].heures }}</th>
+                  <th class="nowrap no-hover">{{ totaux[motif].heures }}</th>
                 {% endif %}
               {% endif %}
             {% endfor %}

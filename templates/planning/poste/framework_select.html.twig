@@ -1,28 +1,28 @@
 {# planning/poste/framework_select.html.twig #}
 
 {% if frameworks %}
-  <div id='choix_tableaux'>
+  <div id="choix_tableaux">
     <b>Choisissez un tableau pour le {{ date | datefull | raw }}</b><br/>
     <form name="form" action="{{ path('planning.setFramework') }}" method="post">
       <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
-      <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+      <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
 
       <table>
         <tr>
           <td>Choix d'un tableau : </td>
           <td>
             <select name="tab" class="ui-widget-content ui-corner-all">
-              <option value=''>&nbsp;</option>
+              <option value="">&nbsp;</option>
                 {% for framework in frameworks %}
                   {% if framework.site == site %}
-                    <option value='{{ framework.tableau }}'>{{ framework.nom }}</option>
+                    <option value="{{ framework.tableau }}">{{ framework.nom }}</option>
                   {% endif %}
                 {% endfor %}
             </select>
           </td>
 
           <td>
-            <input type='submit' value='Valider' class='ui-button' />
+            <input type="submit" role="button" value="Valider" class="btn btn-primary" />
           </td>
         </tr>
       </table>
@@ -32,24 +32,24 @@
       <br/><br/><b>OU un groupe de tableaux pour la semaine {{ week }}</b><br/>
       <form name="form" action="{{ path('planning.setFrameworkGroup') }}" method="post">
         <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
-        <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+        <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
 
         <table>
           <tr>
             <td>Choix d'un groupe : </td>
             <td>
               <select name="group" class="ui-widget-content ui-corner-all">
-                <option value=''>&nbsp;</option>
+                <option value="">&nbsp;</option>
                 {% for group in groups %}
                   {% if group.site == site or config('Multisites-nombre') < 2 %}
-                    <option value='{{ group.id }}'>{{ group.nom }}</option>
+                    <option value="{{ group.id }}">{{ group.nom }}</option>
                   {% endif %}
                 {% endfor %}
               </select>
             </td>
 
             <td>
-              <input type='submit' value='Valider' class='ui-button' />
+              <input type="submit" role="button" value="Valider" class="btn btn-primary" />
             </td>
           </tr>
         </table>

@@ -1308,7 +1308,7 @@ img{
 }
 
 #choix_tableaux{
-  margin: 20px 15px;
+  margin: 50px 15px;
 }
 
 #choix_tableaux td{
@@ -1322,6 +1322,7 @@ img{
 
 #tableau, .tableau{
   text-align:center;
+  padding: 15px 0 0 0;
 }
 
 /*	Jours Fériés	*/
