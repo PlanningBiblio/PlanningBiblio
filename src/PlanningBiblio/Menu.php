@@ -80,7 +80,7 @@ class Menu
             $menu_entries[] = array(
                 'key' => $key,
                 'url' => $elements[$key][0]['url'],
-                'title' => $elements[$key][0]['titre']
+                'title' => $elements[$key][0]['titre'],
                 );
         
             $menu_js[$key] = array(
@@ -97,7 +97,7 @@ class Menu
                 $menu_js[$key]['items'][$i] = array(
                     'key' => $key,
                     'url' => $elements[$key][$key2]['url'],
-                    'title' => $elements[$key][$key2]['titre']
+                    'title' => html_entity_decode($elements[$key][$key2]['titre'], ENT_QUOTES|ENT_HTML5, 'UTF-8'),
                     );
                 $i++;
             }

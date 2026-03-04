@@ -8,7 +8,7 @@
         {% set i = 0 %}
         {% for item in menu.items %}
             {% set i = i + 1 %}
-            zlien['{{ item.key }}'][{{ i }}] = "<a href='{{ asset(item.url) }}' class='ejsmenu'>{{ item.title|raw }}</a>";
+            zlien['{{ item.key }}'][{{ i }}] = "<a href='{{ asset(item.url) }}' class='ejsmenu'>{{ item.title }}</a>";
         {% endfor %}
       {% endfor %}
 
@@ -41,7 +41,7 @@
       <ul class='menu_ul navbar-nav me-auto mb-2 mb-lg-0'>
         {% for entry in menu_entries %}
             <li onmousemove='pop(zlien[{{ entry.key }}],$(this))' class='av-item dropdown menu_li'>
-            <a href='{{ asset(entry.url) }}' class='ejsmenu2 {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %} dropdown-toggle'>{{ entry.title|raw}}</a></li>
+            <a href='{{ asset(entry.url) }}' class='ejsmenu2 {% if menuIsActive(entry.url, app.request.uri) %} active {% endif %} dropdown-toggle'>{{ entry.title}}</a></li>
         {% endfor %}
       </ul>
 

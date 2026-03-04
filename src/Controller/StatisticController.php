@@ -2372,7 +2372,6 @@ class StatisticController extends BaseController
                 }
             }
             foreach ($elem[1] as &$date) {
-                $date[3] = dateAlpha($date[0])." : ".heure4($date[2]);
                 foreach ($date[1] as &$horaires) {
                     $horaires[3] = heure2($horaires[0])." - ".heure2($horaires[1])." : ".heure4($horaires[2]);
                 }

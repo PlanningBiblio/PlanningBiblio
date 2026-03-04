@@ -36,11 +36,11 @@
           <th>Agents</th>
           <th style="border-right-color: #000;">Statut</th>
           {% for d in dates %}
-            <th class='dataTableHeureFR'>{{ d[1] | raw }}</th>
+            <th class='dataTableHeureFR'>{{ d[1] | nl2br }}</th>
           {% endfor %}
           {% if nbSites > 1 %}
             {% for i in 1..nbSites %}
-              <th class="dataTableHeureFR">{{ multisites[i-1] | raw }}</th>
+              <th class="dataTableHeureFR">{{ multisites[i-1] }}</th>
               {% if nbSemaines!= 1 %}
                 <th class="dataTableHeureFR">Moyenne Hebdo.</th>
               {% endif %}
@@ -62,7 +62,7 @@
           <tr style ='vertical-align:top;'>
             <td>{{ t.nom }} {{ t.prenom }}</td>
             {% if t.statut is not null %}
-              <td style="border-right-color: #000;">{{ t.statut | raw }}</td>
+              <td style="border-right-color: #000;">{{ t.statut }}</td>
             {% else %}
               <td style="border-right-color: #000;">&nbsp;</td>
             {% endif %}

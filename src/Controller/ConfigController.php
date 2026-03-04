@@ -42,7 +42,6 @@ class ConfigController extends BaseController
                 'valeurs'       => html_entity_decode($cp->getValues(), ENT_QUOTES|ENT_HTML5),
                 'categorie'     => $cp->getCategory(),
                 'commentaires'  => html_entity_decode($cp->getComment(), ENT_QUOTES|ENT_HTML5),
-                'extra'         => $cp->getExtra(),
             );
 
             if ($cp->getType() == 'password') {

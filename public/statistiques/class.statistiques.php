@@ -401,7 +401,7 @@ class statistiques
         for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
             if ($GLOBALS['config']['Multisites-nombre']>1) {
                 if (in_array($i, $selectedSites)) {
-                    $echo.="<br/>{$GLOBALS['config']["Multisites-site$i"]}, ouverture au public : ";
+                    $echo.="<br/>" . htmlspecialchars($GLOBALS['config']["Multisites-site$i"]) . ", ouverture au public : ";
                 }
             } else {
                 $echo.="<br/>Ouverture au public : ";
