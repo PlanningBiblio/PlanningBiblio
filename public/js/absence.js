@@ -627,26 +627,7 @@ $(function() {
     });
   });
 
-  $("#absencesListForm").submit(function( event ) {
-    var start = $("#debut").datepicker("getDate");
-    var end = $("#fin").datepicker("getDate");
-    if (start || end) {
-      if (!start) {
-        start = new Date();
-      }
-      if (!end) {
-        end = new Date();
-      }
-      var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
-      if (number_of_days > 367 || start > end) {
-        end.setTime(start.getTime() +  (365 * 24 * 60 * 60 * 1000));
-        $('#fin').val(end.toLocaleDateString());
-      }
-    }
-  });
-
 });
-
 
 /**
   * Agents multiples

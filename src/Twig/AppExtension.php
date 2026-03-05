@@ -239,7 +239,7 @@ class AppExtension extends AbstractExtension
             }
         }
 
-        if ($menu == 'holiday/index') {
+        if ($menu == 'holiday') {
             if (strpos($requested_url, 'holiday') !== false) {
                 return true;
             }

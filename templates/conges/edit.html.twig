@@ -15,7 +15,7 @@
     {% endif %}
 
     <div class="admin-div">
-      <form name="form" action="{{ asset('holiday/edit') }}" method="post" id="form" class="googleCalendarForm">
+      <form name="form" action="{{ asset('holiday/edit') }}" method="post" id="form" class="googleCalendarForm" onsubmit="return verif_form('debut=date1;fin=date2');">
         <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
         <input type="hidden" name="confirm" value="confirm" />
         <input type="hidden" name="reliquat" value="{{ reliquat }}" />
@@ -70,7 +70,7 @@
           <tr>
             <td>Date de début : </td>
             <td>
-              <input type="text" name="debut" id="debut" value="{{ debut }}" class="datepicker googleCalendarTrigger checkdate" style="width:40%;"/>
+              <input type="text" name="debut" id="debut" value="{{ debut }}" class="datepicker start-date googleCalendarTrigger checkdate" style="width:40%;"/>
               {% if halfday %}
                 <select name="start_halfday" class="checkdate">
                   {% if start_halfday == 'fullday' %}
@@ -116,7 +116,7 @@
           <tr>
             <td>Date de fin : </td>
             <td>
-              <input type="text" name="fin" id="fin" value="{{ fin }}"  class="datepicker googleCalendarTrigger checkdate" style="width:40%;"/>
+              <input type="text" name="fin" id="fin" value="{{ fin }}"  class="datepicker end-date googleCalendarTrigger checkdate" style="width:40%;"/>
               {% if halfday %}
                 <select name="end_halfday" class="checkdate">
                   {% if end_halfday == 'fullday' %}
@@ -376,9 +376,9 @@
           <tr>
             <td colspan="2" style="text-align:center;">
               {% if conges_recuperations and debit == 'recuperation' %}
-                <a href="{{ asset('holiday/index?recup=1') }}" role="button" class="btn btn-secondary" >Annuler</a>
+                <a href="{{ asset('holiday/?recup=1') }}" role="button" class="btn btn-secondary" >Annuler</a>
               {% else %}
-                <a href="{{ asset('holiday/index') }}" role="button" class="btn btn-secondary" >Annuler</a>
+                <a href="{{ asset('holiday') }}" role="button" class="btn btn-secondary" >Annuler</a>
               {% endif %}
 
               {% if save_button %}
@@ -387,9 +387,9 @@
 
               {% if delete_button %}
                 {% if conges_recuperations and debit == 'recuperation' %}
-                  <input type="button" value="Supprimer" style="margin-left:20px;" onclick="supprimeConges('/holiday/index?recup=1')" class="btn btn-danger"/>
+                  <input type="button" value="Supprimer" style="margin-left:20px;" onclick="supprimeConges('/holiday/?recup=1')" class="btn btn-danger"/>
                 {% else %}
-                  <input type="button" value="Supprimer" style="margin-left:20px;" onclick="supprimeConges('/holiday/index')" class="btn btn-danger"/>
+                  <input type="button" value="Supprimer" style="margin-left:20px;" onclick="supprimeConges('/holiday')" class="btn btn-danger"/>
                 {% endif %}
               {% endif %}
               <div id="google-calendar-div" class="inline"></div>

@@ -197,9 +197,6 @@ h4{
   color: #BA1800;
 }
 
-.calendar-absence{
-  margin-bottom: 0px;
-}
 
 .absences-pj{
   display:inline;
@@ -1126,17 +1123,94 @@ div#tabsemaine1{
 /* Calendrier affiché en haut des plannings */
 #pl-calendar{
   border:0;
-  background: rgba(255, 255, 255, 0);
+  background: transparent;
   margin: 10px 0 5px 10px;
-  width: 165.75px;
+  width: 200px;
 }
 
-#pl-calendar .calendar-datepicker {
-  font-size:65%;
+.datepicker-inline {
+  width: 185px;
+  font-size: 11px;
+  border: 1px solid #29495C;
+  padding: 6px 4px 1px 4px;
 }
 
-#pl-calendar .calendar-datepicker a{
-  font-size:110%;
+.datepicker {
+  font-size: 11px;
+  color: #29495C ;
+  font-weight: bolder;
+}
+
+.datepicker .datepicker-days table thead tr th {
+  max-width: 25px;
+}
+
+.datepicker td.day {
+  width: 25px;
+}
+
+.datepicker table tr td span{
+  max-height: 40px;
+  line-height: 40px;
+}
+
+.datepicker .datepicker-months table td,
+.datepicker .datepicker-years table td,
+.datepicker .datepicker-decades table td,
+.datepicker .datepicker-centuries table td {
+  padding-top: 5px;
+}
+
+.datepicker-days, .datepicker-months, .datepicker-years, .datepicker-decades, .datepicker-centuries {
+  display: inline-block;
+}
+
+.datepicker table thead th.prev {
+  background-color: #FFD700 ;
+  border-radius: 0;
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
+}
+
+.datepicker table thead th.prev.disabled,
+.datepicker table thead th.next.disabled {
+  visibility: visible;
+  pointer-events: none;
+  color: gray;
+}
+
+
+.datepicker table thead th.datepicker-switch {
+  background-color: #FFD700 ;
+  border-radius: 0;
+}
+
+.datepicker table thead th.next{
+  background-color: #FFD700 ;
+  border-radius: 0;
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+
+.datepicker table tr td.today,
+.datepicker table tr td.today:hover:hover,
+.datepicker table tr td.today.disabled,
+.datepicker table tr td.today.disabled:hover {
+  background-color: #FFD700 ;
+  background-image: none;
+  color: #29495C;
+  border: none;
+}
+
+.datepicker table tr td.active.active,
+.datepicker table tr td.active.active:hover,
+.datepicker table tr td span.active.active,
+.datepicker table tr td span.active.active:hover {
+  background-color: #29495C ;
+  background-image: none;
+  color: white;
+  border: none;
 }
 
 .pl-highlight {
@@ -1228,7 +1302,7 @@ div#tabsemaine1{
   font-weight: normal;
   width:50%;
   text-align:left;
-  padding: 20px 0 10px 50px;
+  padding: 20px 0 10px 5px;
 }
 
 .titreSemFixe div,
@@ -1359,7 +1433,7 @@ img{
 }
 
 #choix_tableaux{
-  margin: 50px 15px;
+  margin: 75px 15px;
 }
 
 #choix_tableaux td{
@@ -1373,7 +1447,7 @@ img{
 
 #tableau, .tableau{
   text-align:center;
-  padding: 15px 0 0 0;
+  padding: 30px 0 0 0;
 }
 
 /*	Jours Fériés	*/
@@ -1629,16 +1703,6 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 #tab_agenda td{
   border-right : 1px solid #999999;
   border-bottom : 1px solid #999999;
-}
-
-.calendar-border{
-  border-right : 1px solid #999999;
-  border-bottom : 1px solid #999999;
-  border-top :  1px solid #999999;
-}
-
-.calendar-border td:first-child{
-  border-left: 1px solid #999999;
 }
 
 #div_agenda .div_date{
@@ -2074,395 +2138,6 @@ table.dataTable th{
 }
 
 /*Account END*/
-
-/*CSS Datepicker START*/
-/* This CSS overrides the Jquery-ui.min.css to set the datepicker style*/
-
-.calendar-helper-clearfix:before, .calendar-helper-clearfix:after{
-  content:"";
-  display:table;
-  border-collapse:collapse
-}
-
-.calendar-helper-clearfix:after{
-  clear:both
-}
-
-.calendar-state-disabled{
-  cursor:default!important;
-  pointer-events:none
-}
-
-.calendar-icon{
-  display:inline-block;
-  vertical-align:middle;
-  margin-top:-.25em;
-  position:relative;
-  text-indent:-99999px;
-  overflow:hidden;
-  background-repeat:no-repeat
-}
-
-.calendar-datepicker{
-  width:17em;
-  padding:.2em .2em 0;
-  display:none
-}
-
-.calendar-datepicker .calendar-datepicker-header{
-  position:relative;
-  padding:.2em 0
-}
-
-.calendar-datepicker .calendar-datepicker-prev,.calendar-datepicker .calendar-datepicker-next{
-  position:absolute;
-  top:2px;width:1.8em;
-  height:1.8em
-}
-
-.calendar-datepicker .calendar-datepicker-prev-hover,.calendar-datepicker .calendar-datepicker-next-hover{
-  top:1px
-}
-
-.calendar-datepicker .calendar-datepicker-prev{
-  left:2px
-}
-
-.calendar-datepicker .calendar-datepicker-next{
-  right:2px
-}
-
-.calendar-datepicker .calendar-datepicker-prev-hover{
-  left:1px
-}
-
-.calendar-datepicker .calendar-datepicker-next-hover{
-  right:1px
-}
-
-.calendar-datepicker .calendar-datepicker-prev span,.calendar-datepicker .calendar-datepicker-next span{
-  display:block;
-  position:absolute;
-  left:50%;
-  margin-left:-8px;
-  top:50%;
-  margin-top:-8px
-}
-
-.calendar-datepicker .calendar-datepicker-title{
-  margin:0 2.3em;
-  line-height:1.8em;
-  text-align:center
-}
-
-.calendar-datepicker .calendar-datepicker-title select{
-  font-size:1em;
-  margin:1px 0
-}
-
-.calendar-datepicker select.calendar-datepicker-month,.calendar-datepicker select.calendar-datepicker-year{
-  width:45%
-}
-
-.calendar-datepicker table{
-  width:100%;
-  font-size:.9em;
-  border-collapse:collapse;
-  margin:0 0 .4em
-}
-
-.calendar-datepicker th{
-  padding:.7em .3em;
-  text-align:center;
-  font-weight:bold;
-  border:0
-}
-
-.calendar-datepicker td{
-  border:0;padding:1px
-}
-
-.calendar-datepicker td span,.calendar-datepicker td a{
-  display:block;
-  padding:.2em;
-  text-align:right;
-  text-decoration:none
-}
-
-.calendar-datepicker .calendar-datepicker-buttonpane{
-  background-image:none;
-  margin:.7em 0 0 0;
-  padding:0 .2em;
-  border-left:0;
-  border-right:0;
-  border-bottom:0
-}
-
-.calendar-datepicker .calendar-datepicker-buttonpane button{
-  float:right;
-  margin:.5em .2em .4em;
-  cursor:pointer;
-  padding:.2em .6em .3em .6em;
-  width:auto;
-  overflow:visible
-}
-
-.calendar-datepicker .calendar-datepicker-buttonpane button.calendar-datepicker-current{
-  float:left
-}
-
-.calendar-datepicker.calendar-datepicker-multi{
-  width:auto
-}
-
-.calendar-datepicker-multi .calendar-datepicker-group{
-  float:left
-}
-
-.calendar-datepicker-multi .calendar-datepicker-group table{
-  width:95%;
-  margin:0 auto .4em
-}
-
-.calendar-datepicker-multi-2 .calendar-datepicker-group{
-  width:50%
-}
-
-.calendar-datepicker-multi-3 .calendar-datepicker-group{
-  width:33.3%
-}
-
-.calendar-datepicker-multi-4 .calendar-datepicker-group{
-  width:25%
-}
-
-.calendar-datepicker-multi .calendar-datepicker-group-last .calendar-datepicker-header,.calendar-datepicker-multi .calendar-datepicker-group-middle .calendar-datepicker-header{border-left-width:0}
-.calendar-datepicker-multi .calendar-datepicker-buttonpane{
-  clear:left
-}
-
-.calendar-datepicker-row-break{
-  clear:both;
-  width:100%;
-  font-size:0
-}
-
-.calendar-datepicker-rtl{
-  direction:rtl
-}
-
-.calendar-datepicker-rtl .calendar-datepicker-prev{
-  right:2px;
-  left:auto
-}
-
-.calendar-datepicker-rtl .calendar-datepicker-next{
-  left:2px;
-  right:auto
-}
-
-.calendar-datepicker-rtl .calendar-datepicker-prev:hover{
-  right:1px;
-  left:auto
-}
-
-.calendar-datepicker-rtl .calendar-datepicker-next:hover{
-  left:1px;
-  right:auto
-}
-
-.calendar-datepicker-rtl .calendar-datepicker-buttonpane{
-  clear:right
-}
-
-.calendar-datepicker-rtl .calendar-datepicker-buttonpane button{
-  float:left
-}
-
-.calendar-datepicker-rtl .calendar-datepicker-buttonpane button.calendar-datepicker-current,.calendar-datepicker-rtl .calendar-datepicker-group{
-  float:right
-}
-
-.calendar-datepicker-rtl .calendar-datepicker-group-last .calendar-datepicker-header,.calendar-datepicker-rtl .calendar-datepicker-group-middle .calendar-datepicker-header{
-  border-right-width:0;
-  border-left-width:1px
-}
-
-.calendar-datepicker .calendar-icon{
-  display:block;
-  text-indent:-99999px;
-  overflow:hidden;
-  background-repeat:no-repeat;
-  left:.5em;top:.3em
-}
-
-.calendar-widget{
-  font-family:Poppins;
-  font-size:1em
-}
-
-.calendar-widget .calendar-widget{
-  font-size:1em
-}
-
-.calendar-widget input,.calendar-widget select,.calendar-widget textarea,.calendar-widget button{
-  font-family:Poppins;
-  font-size:1em
-}
-
-.calendar-widget.calendar-widget-content{
-  border:1px solid #999
-}
-
-.calendar-widget-content{
-  border:1px solid #FFF;
-  background:#fff;
-  color:#29495C
-}
-
-.calendar-widget-content a{
-  color:#29495C
-}
-
-.calendar-widget-header{
-  border:1px solid #FFD700;
-  background:#FFD700;
-  color:#29495C;
-  font-weight:bold
-}
-
-.calendar-widget-header a{
-  color:#29495C
-}
-
-.calendar-state-default,.calendar-widget-content .calendar-state-default,.calendar-widget-header .calendar-state-default,.calendar-button,html .calendar-button.calendar-state-disabled:hover,html .calendar-button.calendar-state-disabled:active{
-  border:1px solid #999;
-  background:#999;
-  font-weight:bold;
-  color:#29495C
-}
-
-.calendar-state-default a,.calendar-state-default a:link,.calendar-state-default a:visited,a.calendar-button,a:link.calendar-button,a:visited.calendar-button,.calendar-button{
-  color:#29495C;
-  text-decoration:none
-}
-.calendar-state-hover,.calendar-widget-content .calendar-state-hover,.calendar-widget-header .calendar-state-hover,.calendar-state-focus,.calendar-widget-content .calendar-state-focus,.calendar-widget-header .calendar-state-focus,.calendar-button:hover,.calendar-button:focus{
-  border:1px solid #29495C;
-  background:#29495C;
-  font-weight:bold;
-  color:#FFF
-}
-
-.calendar-state-hover a,.calendar-state-hover a:hover,.calendar-state-hover a:link,.calendar-state-hover a:visited,.calendar-state-focus a,.calendar-state-focus a:hover,.calendar-state-focus a:link,.calendar-state-focus a:visited,a.calendar-button:hover,a.calendar-button:focus{
-  color:#FFF;
-  text-decoration:none
-}
-
-.calendar-state-active,.calendar-widget-content .calendar-state-active,.calendar-widget-header .calendar-state-active,a.calendar-button:active,.calendar-button:active,.calendar-button.calendar-state-active:hover{
-  border:1px solid #29495C;
-  background:#29495C;
-  font-weight:bold;
-  color:#fff
-}
-
-.calendar-icon-background,.calendar-state-active .calendar-icon-background{
-  border:#29495C;
-  background-color:#fff
-}
-
-.calendar-state-active a,.calendar-state-active a:link,.calendar-state-active a:visited{
-  color:#fff;
-  text-decoration:none
-}
-
-.calendar-state-highlight,.calendar-widget-content .calendar-state-highlight,.calendar-widget-header .calendar-state-highlight{
-  border:1px solid #FFD700;
-  background:#FFD700;
-  color:#29495C
-}
-
-.calendar-state-highlight a,.calendar-widget-content .calendar-state-highlight a,.calendar-widget-header .calendar-state-highlight a{
-  color:#29495C
-}
-
-.calendar-priority-primary,.calendar-widget-content .calendar-priority-primary,.calendar-widget-header .calendar-priority-primary{
-  font-weight:bold
-}
-
-.calendar-priority-secondary,.calendar-widget-content .calendar-priority-secondary,.calendar-widget-header .calendar-priority-secondary{
-  opacity:.7;
-  -ms-filter:"alpha(opacity=70)";
-  font-weight:normal
-}
-
-.calendar-state-disabled,.calendar-widget-content .calendar-state-disabled,.calendar-widget-header .calendar-state-disabled{
-  opacity:.35;
-  -ms-filter:"alpha(opacity=35)";
-  background-image:none
-}
-
-.calendar-state-disabled .calendar-icon{
-  -ms-filter:"alpha(opacity=35)"
-}
-
-.calendar-icon{
-  width:16px;
-  height:16px
-}
-
-.calendar-icon,.calendar-widget-content .calendar-icon{
-  background-image:url("images/ui-icons_29495C_256x240.png")
-}
-
-.calendar-widget-header .calendar-icon{
-  background-image:url("images/ui-icons_29495C_256x240.png")
-}
-
-.calendar-state-hover .calendar-icon,.calendar-state-focus .calendar-icon,.calendar-button:hover .calendar-icon,.calendar-button:focus .calendar-icon{
-  background-image:url("images/ui-icons_FFFFFF_256x240.png")
-}
-
-.calendar-state-active .calendar-icon,.calendar-button:active .calendar-icon{
-  background-image:url("images/ui-icons_ffffff_256x240.png")
-}
-
-.calendar-state-highlight .calendar-icon,.calendar-button .calendar-state-highlight.calendar-icon{
-  background-image:url("images/ui-icons_29495C_256x240.png")
-}
-
-.calendar-button .calendar-icon{
-  background-image:url("images/ui-icons_29495C_256x240.png")
-}
-
-.calendar-icon-blank.calendar-icon-blank.calendar-icon-blank{
-  background-image:none
-}
-
-.calendar-icon-circle-triangle-w{
-  background-position:-80px -192px
-}
-
-.calendar-icon-circle-triangle-e{
-  background-position:-48px -192px
-}
-
-.calendar-corner-all,.calendar-corner-top,.calendar-corner-left,.calendar-corner-tl{
-  border-top-left-radius:4px
-}
-
-.calendar-corner-all,.calendar-corner-top,.calendar-corner-right,.calendar-corner-tr{
-  border-top-right-radius:4px
-}
-
-.calendar-corner-all,.calendar-corner-bottom,.calendar-corner-left,.calendar-corner-bl{
-  border-bottom-left-radius:4px
-}
-
-.calendar-corner-all,.calendar-corner-bottom,.calendar-corner-right,.calendar-corner-br{
-  border-bottom-right-radius:4px
-}
-
-/*CSS Datepicker END*/
 
 /*Personnalisation couleur tableau*/
 /* Bleu */
