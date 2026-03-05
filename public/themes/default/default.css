@@ -1075,9 +1075,9 @@ div#tabsemaine1{
 /* Calendrier affiché en haut des plannings */
 #pl-calendar{
   border:0;
-  background: rgba(255, 255, 255, 0);
+  background: transparent;
   margin: 10px 0 5px 10px;
-  width: 165.75px;
+  width: 240px;
 }
 
 #pl-calendar .calendar-datepicker {
@@ -1177,7 +1177,7 @@ div#tabsemaine1{
   font-weight: normal;
   width:50%;
   text-align:left;
-  padding: 20px 0 10px 50px;
+  padding: 20px 0 10px 5px;
 }
 
 .titreSemFixe div,
@@ -1308,7 +1308,7 @@ img{
 }
 
 #choix_tableaux{
-  margin: 20px 15px;
+  margin: 75px 15px;
 }
 
 #choix_tableaux td{
@@ -1322,6 +1322,7 @@ img{
 
 #tableau, .tableau{
   text-align:center;
+  padding: 30px 0 0 0;
 }
 
 /*	Jours Fériés	*/
@@ -2108,6 +2109,10 @@ table.dataTable th{
   width:17em;
   padding:.2em .2em 0;
   display:none
+}
+
+.datepicker-days, .datepicker-months, .datepicker-years, .datepicker-decades, .datepicker-centuries {
+  display: inline-block;
 }
 
 .calendar-datepicker .calendar-datepicker-header{

@@ -777,12 +777,15 @@ $(function(){
     });
 
     $(".ui-button").button();
-    $(".datepicker").datepicker({
-      showOtherMonths: true,
-      selectOtherMonths: true,
+    $(".datepicker").bootstrapDP({
+      format: 'dd/mm/yyyy',
+      todayHighlight: true,
+      language: "fr",
+      toggleActive : true,
+      updateViewDate : true
     });
 
-    $(".datepicker").addClass("center ui-widget-content ui-corner-all");
+    $(".datepicker").addClass("center ui-widget-content");
     $(".datepicker").attr('autocomplete','off');
 
     /**
