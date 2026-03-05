@@ -153,6 +153,15 @@ class WorkingHourController extends BaseController
         $_SESSION['oups']['planningHebdoFin'] = $fin;
         $message = null;
 
+        // Default start & end
+        if (!$debut) {
+            $debut = date('d/m/Y');
+        }
+
+        if (!$fin) {
+            $fin = date('d/m/Y', strtotime(dateFr($debut) . ' +1 year'));
+        }
+
         // Droits d'administration
         // Seront utilisés pour n'afficher que les agents gérés si l'option "PlanningHebdo-notifications-agent-par-agent" est cochée
         list($adminN1, $adminN2) = $this->entityManager

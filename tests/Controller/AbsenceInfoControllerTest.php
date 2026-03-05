@@ -63,9 +63,11 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filter('label')->eq(2);
         $this->assertEquals($result->text('Node does not exist', false), 'Texte','label 3 is Texte');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker"]');
-        $this->assertEquals($result->eq(0)->attr('name'),'start','input datepicker name is start');
-        $this->assertEquals($result->eq(1)->attr('name'),'end','input datepicker name is end');
+        $result = $crawler->filterXPath('//input[@class="datepicker start-date"]');
+        $this->assertEquals($result->attr('name'),'start','input datepicker name is start');
+
+        $result = $crawler->filterXPath('//input[@class="datepicker end-date"]');
+        $this->assertEquals($result->attr('name'),'end','input datepicker name is end');
 
         $result = $crawler->filterXPath('//textarea');
         $this->assertEquals($result->attr('name'),'text','textarea name is texte');

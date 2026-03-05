@@ -8,16 +8,16 @@
 
 {% block page %}
   <h3>Liste des absences</h3>
-  <form name="form" id="absencesListForm" method="get" action="{{ asset('absence') }}">
+  <form name="form" id="absencesListForm" method="get" action="{{ asset('absence') }}" onsubmit="return verif_form('debut=date1;fin=date2');">
     <div class="container top-buttons">
       <div class="row">
         <div class="col">
           <label for="debut" >Début :</label>
-          <input type="text" id="debut" name="debut" value="{{ debut }}" class="datepicker"/>
+          <input type="text" id="debut" name="debut" value="{{ debut }}" class="datepicker start-search"/>
         </div>
         <div class="col" style='vertical-align:middle;'>
           <label>Fin :</label>
-          <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker'/>
+          <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker end-search'/>
         </div>
         {% if managed | length > 1 %}
           <div class="col">

@@ -8,16 +8,16 @@
     <table class="statistics-div">
       <tr style='vertical-align:top;'>
         <td id='stat-col1'>
-          <form name='form' id='form' action='{{ asset("statistics/service")}}' method='post'>
+          <form name='form' id='form' action='{{ asset("statistics/service")}}' method='post' onsubmit="return verif_form('debut=date1;fin=date2');">
             <input type="hidden" name="statisticsDefaultHours" id="statisticsDefaultHours" value="{{ config('Statistiques-Heures') }}" />
             <table>
               <tr>
                 <td><label >Début</label></td>
-                <td><input type='text' name='debut' value='{{ debut }}' class='datepicker'/></td>
+                <td><input type='text' name='debut' value='{{ debut }}' class='datepicker start-date'/></td>
               </tr>
               <tr>
                 <td><label >Fin</label></td>
-                <td><input type='text' name='fin' value='{{ fin }}' class='datepicker'/></td>
+                <td><input type='text' name='fin' value='{{ fin }}' class='datepicker end-date'/></td>
               </tr>
               <tr style='vertical-align:top'>
                 <td><label >Services</label></td>

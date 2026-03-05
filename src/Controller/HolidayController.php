@@ -21,19 +21,27 @@ require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
 class HolidayController extends BaseController
 {
-    #[Route(path: '/holiday/index', name: 'holiday.index', methods: ['GET'])]
-    public function index(Request $request)
+    #[Route(path: '/holiday', name: 'holiday.index', methods: ['GET'])]
+    public function index(Request $request, Session $session)
     {
         $session = $request->getSession();
 
-        $annee = $request->get('annee');
-        $congesAffiches = $request->get('congesAffiches');
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
         $perso_id = $request->get('perso_id');
         $reset = $request->get('reset');
         $supprimes = $request->get('supprimes');
         $voir_recup = $request->get('recup');
 
         $lang = $GLOBALS['lang'];
+
+        if (!$debut) {
+            $debut = $session->get('HolidayStart');
+        }
+
+         if (!$fin) {
+            $fin = $session->get('HolidayEnd');
+        }
 
         // Gestion des droits d'administration
         // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
@@ -51,38 +59,35 @@ class HolidayController extends BaseController
         }
 
         $agents_supprimes=isset($_SESSION['oups']['conges_agents_supprimes'])?$_SESSION['oups']['conges_agents_supprimes']:false;
-        $agents_supprimes=($annee and $supprimes)?true:$agents_supprimes;
-        $agents_supprimes=($annee and !$supprimes)?false:$agents_supprimes;
-
-        if (!$annee) {
-            $annee=isset($_SESSION['oups']['conges_annee'])?$_SESSION['oups']['conges_annee']:(date("m")<9?date("Y")-1:date("Y"));
-        }
-
-        if (!$congesAffiches) {
-            $congesAffiches=isset($_SESSION['oups']['congesAffiches'])?$_SESSION['oups']['congesAffiches']:"aVenir";
-        }
+        $agents_supprimes = (isset($_GET['debut']) and isset($_GET['supprimes']))?true:$agents_supprimes;
+        $agents_supprimes = (isset($_GET['debut']) and !isset($_GET['supprimes']))?false:$agents_supprimes;
 
         if ($reset) {
-            $annee=date("m")<9?date("Y")-1:date("Y");
+            $debut = null;
+            $fin = null;
             $perso_id = $session->get('loginId');
             $agents_supprimes=false;
         }
-        $_SESSION['oups']['conges_annee']=$annee;
-        $_SESSION['oups']['congesAffiches']=$congesAffiches;
+
+        // Default start & end
+        if (!$debut) {
+            $debut = date('d/m/Y');
+        }
+        if (!$fin) {
+            $fin = date('d/m/Y', strtotime(dateFr($debut) . ' +1 year'));
+        }
+
+        $session->set('HolidayStart', $debut);
+        $session->set('HolidayEnd', $fin);
         $_SESSION['oups']['conges_perso_id']=$perso_id;
         $_SESSION['oups']['conges_agents_supprimes']=$agents_supprimes;
 
-
-        $debut=$annee."-09-01";
-        $fin=($annee+1)."-08-31";
-
-        if ($congesAffiches=="aVenir") {
-            $debut=date("Y-m-d");
-        }
+        $debutSQL = \dateSQL($debut);
+        $finSQL = \dateSQL($fin);
 
         $c = new \conges();
-        $c->debut = $debut;
-        $c->fin = $fin . " 23:59:59";
+        $c->debut = $debutSQL;
+        $c->fin = $finSQL . ' 23:59:59';
         if ($perso_id != 0) {
             $c->perso_id = $perso_id;
         }
@@ -133,10 +138,9 @@ class HolidayController extends BaseController
             'conges_mode'           => $this->config('Conges-Mode'),
             'show_recovery'         => $voir_recup,
             'agent_name'            => nom($perso_id, "prenom nom", $agents),
-            'from_year'             => $annee,
-            'to_year'               => $annee + 1,
+            'debut'                 => $debut,
+            'fin'                   => $fin,
             'years'                 => $annees,
-            'forthcoming'           => $congesAffiches == "aVenir" ? 1 : 0,
             'balance'               => $this->config('Conges-Recuperations') == '0' or !$voir_recup ? 1 : 0,
             'recovery'              => $this->config('Conges-Recuperations') == '0' or $voir_recup ? 1 : 0,
             'perso_ids'             => $perso_ids,
