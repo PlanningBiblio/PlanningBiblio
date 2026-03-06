@@ -7,8 +7,8 @@ Fichier regroupant les scripts JS nécessaires à la page planning/volants/index
 // Evénements JQuery
 $(function() {
   // Calendar
-  $("#pl-calendar").change(function(){
-    var date=dateFr($(this).val());
+  $("#pl-calendar").on('changeDate', function(e) {
+    var date = $('#pl-calendar').data().datepicker.getFormattedDate('yyyy-mm-dd') ;
     window.location.href= url('detached') + '?date=' + date;
   });
 
