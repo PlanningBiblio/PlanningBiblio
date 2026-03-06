@@ -1432,6 +1432,7 @@ class AbsenceController extends BaseController
         $a = new \absences();
         $a->debut = $debut_sql;
         $a->fin = $fin_sql;
+        $a->rrule = $rrule;
         $a->perso_ids = $perso_ids;
         $a->infoPlannings();
         $infosPlanning = $a->message;
