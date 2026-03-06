@@ -778,33 +778,15 @@ $(function(){
 
     $(".ui-button").button();
     $(".datepicker").bootstrapDP({
-      format: 'dd/mm/yyyy',
+      format: 'yyyy-mm-dd',
       todayHighlight: true,
       language: "fr",
       toggleActive : true,
-      updateViewDate : true
     });
 
     $(".datepicker").addClass("center ui-widget-content");
     $(".datepicker").attr('autocomplete','off');
 
-    /**
-    * Initialiser le calendrier avec la date choisie
-    * @author Farid Goara
-    */
-    if ($("#date").length > 0){
-      if ($("#date").attr("data-set-calendar") != 'undefined' && $("#date").attr("data-set-calendar")!= false  ){
-	var strSelectedDate=$("#date").attr("data-set-calendar");
-	if(strSelectedDate){
-	  var arrSelectedDate=strSelectedDate.split("-");
-	  var numYear = arrSelectedDate[0];
-	  var numMonth = parseInt(arrSelectedDate[1]) - 1;
-	  var numDay = arrSelectedDate[2];
-	  var objSelectedDate = new Date(numYear,numMonth,numDay);
-	  $(".datepicker").datepicker("setDate",objSelectedDate);
-	}
-      }
-    }
 
     /**
     * Initialiser le defaultDate du calendrier de fin avec eventuelle date choisie dans le calendrier debut
