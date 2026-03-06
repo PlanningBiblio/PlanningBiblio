@@ -7,8 +7,10 @@ use App\Entity\Holiday;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionHours;
 use App\Entity\PlanningPositionTabAffectation;
+use App\Planno\DateTime\TimeSlot;
 use DateTime;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
 class PlanningPositionRepository extends EntityRepository
 {
@@ -122,5 +124,132 @@ class PlanningPositionRepository extends EntityRepository
         $query = $qb->getQuery();
 
         return $query->getResult();
+    }
+
+    /**
+     * @param int[] $agentIds
+     * @param TimeSlot[] $timeSlots Only positions within at least one of these
+     *                              time slots will be returned
+     * @return PlanningPosition[]
+     */
+    public function findByAgentsAndTimeSlots(array $agentIds, array $timeSlots): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->andWhere($qb->expr()->in('p.perso_id', ':perso_ids'));
+        $qb->setParameter('perso_ids', $agentIds);
+
+        $dateExpr = $qb->expr()->orX();
+        $paramIdx = 0;
+        foreach ($timeSlots as $timeSlot) {
+            $startParamName = sprintf('start_%d', $paramIdx);
+            $endParamName = sprintf('end_%d', $paramIdx);
+            $dateExpr->add($qb->expr()->between('p.date', ":$startParamName", ":$endParamName"));
+            $qb->setParameter($startParamName, $timeSlot->start->format('Y-m-d'));
+            $qb->setParameter($endParamName, $timeSlot->end->format('Y-m-d'));
+            $paramIdx++;
+        }
+        $qb->andWhere($dateExpr);
+        $qb->addOrderBy('p.date', 'ASC');
+        $qb->addOrderBy('p.debut', 'ASC');
+        $qb->addOrderBy('p.fin', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Adds a filter to keep only rows that insersects with at least one of
+     * given time slots.
+     *
+     * @param QueryBuilder $qb
+     * @param TimeSlot[] $timeSlots
+     */
+    protected function filterByTimeSlots(QueryBuilder $qb, array $timeSlots): void
+    {
+        $rootAliases = $qb->getRootAliases();
+        $rootAlias = $rootAliases[0];
+
+        $dateExpr = $qb->expr()->orX();
+        $paramIdx = 0;
+        foreach ($timeSlots as $timeSlot) {
+            $startParamName = sprintf('start_%d', $paramIdx);
+            $endParamName = sprintf('end_%d', $paramIdx);
+            $dateExpr->add(
+                $qb->expr()->andX(
+                    // These conditions cannot use database indices so the
+                    // query might be slow on large datasets.
+                    // One possible solution: create two generated columns
+                    $qb->expr()->lt(
+                        $qb->expr()->concat("$rootAlias.date", $qb->expr()->literal(' '), "$rootAlias.debut"),
+                        ":$endParamName"
+                    ),
+                    $qb->expr()->gt(
+                        $qb->expr()->concat("$rootAlias.date", $qb->expr()->literal(' '), "$rootAlias.fin"),
+                        ":$startParamName"
+                    )
+                )
+            );
+            $qb->setParameter($startParamName, $timeSlot->start->format('Y-m-d H:i:s'));
+            $qb->setParameter($endParamName, $timeSlot->end->format('Y-m-d H:i:s'));
+            $paramIdx++;
+        }
+        $qb->andWhere($dateExpr);
+    }
+
+    /**
+     * @param int[] $agentIds
+     * @param TimeSlot[] $timeSlots Only positions within at least one of these
+     *                              time slots will be returned
+     * @return string[]
+     */
+    public function findApprovedDatesByAgentsAndTimeSlots(array $agentIds, array $timeSlots): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('DISTINCT p.date');
+        $qb->andWhere($qb->expr()->in('p.perso_id', ':perso_ids'));
+        $qb->setParameter('perso_ids', $agentIds);
+
+        $this->filterByTimeSlots($qb, $timeSlots);
+
+        $lockQb = $this->getEntityManager()->createQueryBuilder();
+        $lockQb->from('App\Entity\PlanningPositionLock', 'lock');
+        $lockQb->select('lock');
+        $lockQb->andWhere('lock.date = p.date');
+        $lockQb->andWhere('lock.site = p.site');
+        $lockQb->andWhere('lock.verrou2 = 1');
+
+        $qb->andWhere($qb->expr()->exists($lockQb->getDql()));
+
+        return $qb->getQuery()->getSingleColumnResult();
+    }
+
+    /**
+     * @param int[] $siteIds
+     * @param TimeSlot[] $timeSlots Only positions within at least one of these
+     *                              time slots will be returned
+     * @return string[]
+     */
+    public function findInProgressDatesBySitesAndTimeSlots(array $siteIds, array $timeSlots): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('DISTINCT p.date');
+        $qb->andWhere($qb->expr()->in('p.site', ':site_ids'));
+        $qb->setParameter('site_ids', $siteIds);
+
+        $this->filterByTimeSlots($qb, $timeSlots);
+
+        $lockQb = $this->getEntityManager()->createQueryBuilder();
+        $lockQb->from('App\Entity\PlanningPositionLock', 'lock');
+        $lockQb->select('lock');
+        $lockQb->andWhere('lock.date = p.date');
+        $lockQb->andWhere('lock.site = p.site');
+        $lockQb->andWhere('lock.verrou2 = 1');
+
+        $qb->andWhere(
+            $qb->expr()->not(
+                $qb->expr()->exists($lockQb->getDql())
+            )
+        );
+
+        return $qb->getQuery()->getSingleColumnResult();
     }
 }
