@@ -221,7 +221,7 @@ class AbsenceController extends BaseController
 
 
     #[Route(path: '/absence/add', name: 'absence.add', methods: ['GET'])]
-    public function add(Request $request)
+    public function add(Request $request, \App\Service\ICalendar $iCal)
     {
         $session = $request->getSession();
 
@@ -1431,6 +1431,7 @@ class AbsenceController extends BaseController
         $a = new \absences();
         $a->debut = $debut_sql;
         $a->fin = $fin_sql;
+        $a->rrule = $rrule;
         $a->perso_ids = $perso_ids;
         $a->infoPlannings();
         $infosPlanning = $a->message;

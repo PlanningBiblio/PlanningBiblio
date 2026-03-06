@@ -19,6 +19,7 @@ use App\Entity\AbsenceReason;
 use App\Entity\AbsenceDocument;
 use App\Planno\WorkingHours;
 use App\Planno\ClosingDay;
+use App\Service\ICalendar;
 
 
 class absences
@@ -267,6 +268,7 @@ class absences
             $a = new absences();
             $a->debut = $debut_sql;
             $a->fin = $fin_sql;
+            $a->rrule = $this->rrule;
             $a->perso_ids = array($agent->getId());
             $a->infoPlannings();
             $infosPlanning = $a->message;
@@ -1819,6 +1821,7 @@ class absences
     * Retourne la liste des plannings concernés (dates, horaires sites et postes) (@param $this->message @string)
     * @param $this->debut @string
     * @param $this->fin @string
+    * @param $this->rrule @string
     * @param $this->perso_id @int
     * TODO : si besoin, cette fonction peut être complétée de façon à retourner les infos sous forme de tableaux
     * (dates des plannings concernés, validés ou non, postes et sites concernés)
@@ -1828,6 +1831,8 @@ class absences
     {
         $version="absences";
         require_once 'class.postes.php';
+
+        global $entityManager;
   
         $debut=dateSQL($this->debut);
         $fin=dateSQL($this->fin);
@@ -1839,14 +1844,29 @@ class absences
         $heureDebut=substr($debut, 11);
         $heureFin=substr($fin, 11);
 
+        $rrule = $this->rrule;
+        $rrule = null;
+
+        $recurring_absence_dates = [];
+        if ($rrule) {
+            $iCalendar = new ICalendar();
+            $recurring_absence_dates = $iCalendar->getRecurringEventDates(DateTime::createFromFormat('Y-m-d', $dateDebut), $rrule);
+        }
+
         // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
         // Recherche des plannings validés
         $plannings_valides=array();
-        $db=new db();
-        $db->select2("pl_poste_verrou", "date", array("date"=>"BETWEEN $dateDebut AND $dateFin","verrou2"=>"1"));
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $plannings_valides[]=$elem['date'];
+        if ($rrule) {
+            $query = $entityManager->createQuery('SELECT ppl.date FROM App\Entity\PlanningPositionLock ppl WHERE ppl.date IN (:dates) AND verrou2 = 1');
+            $query->setParameter('dates', $recurring_absence_dates);
+            $planning_valides = $query->getSingleColumnResult();
+        } else {
+            $db=new db();
+            $db->select2("pl_poste_verrou", "date", array("date"=>"BETWEEN $dateDebut AND $dateFin","verrou2"=>"1"));
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    $plannings_valides[]=$elem['date'];
+                }
             }
         }
 
@@ -1867,25 +1887,29 @@ class absences
 
         // Recherche des plannings dans lequel apparaît l'agent
         $plannings=array();
-        $db=new db();
-        $db->select2("pl_poste", null, array("date"=>"BETWEEN $dateDebut AND $dateFin","perso_id"=>"IN $perso_ids"), "ORDER BY date,debut,fin");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                // On exclu les créneaux horaires qui sont en dehors de l'absences
-                if ($elem['date']==$dateDebut and $elem['fin']<=$heureDebut) {
-                    continue;
-                }
-                if ($elem['date']==$dateFin and $elem['debut']>=$heureFin) {
-                    continue;
-                }
+        if ($rrule) {
+            // TODO
+        } else {
+            $db=new db();
+            $db->select2("pl_poste", null, array("date"=>"BETWEEN $dateDebut AND $dateFin","perso_id"=>"IN $perso_ids"), "ORDER BY date,debut,fin");
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    // On exclu les créneaux horaires qui sont en dehors de l'absences
+                    if ($elem['date']==$dateDebut and $elem['fin']<=$heureDebut) {
+                        continue;
+                    }
+                    if ($elem['date']==$dateFin and $elem['debut']>=$heureFin) {
+                        continue;
+                    }
 
-                $elem['valide']=in_array($elem['date'], $plannings_valides)?" (Valid&eacute;)":null;
-                $elem['date']=dateFr($elem['date']);
-                $elem['debut']=heure2($elem['debut']);
-                $elem['fin']=heure2($elem['fin']);
-                $elem['site']=$sites[$elem['site']];
-                $elem['poste']=$postes[$elem['poste']]['nom'];
-                $plannings[]=$elem;
+                    $elem['valide']=in_array($elem['date'], $plannings_valides)?" (Valid&eacute;)":null;
+                    $elem['date']=dateFr($elem['date']);
+                    $elem['debut']=heure2($elem['debut']);
+                    $elem['fin']=heure2($elem['fin']);
+                    $elem['site']=$sites[$elem['site']];
+                    $elem['poste']=$postes[$elem['poste']]['nom'];
+                    $plannings[]=$elem;
+                }
             }
         }
     

@@ -1013,17 +1013,18 @@ function verif_absences(ctrl_form){
   var groupe = $("#groupe").val();
   debut=document.form.debut.value;
   fin=document.form.fin.value;
-  fin=fin?fin:debut;
-  debut=debut.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
-  fin=fin.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
-
   hre_debut = document.form.hre_debut.value;
   hre_fin = document.form.hre_fin.value;
-  hre_debut = hre_debut ? hre_debut + ':00' : '00:00:00';
-  hre_fin = hre_fin ? hre_fin + ':00' : '23:59:59';
 
+  debut=debut.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
+  hre_debut = hre_debut ? hre_debut + ':00' : '00:00:00';
   debut = debut + ' ' + hre_debut;
-  fin = fin + ' ' + hre_fin;
+
+  if (fin) {
+    fin = fin.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
+    hre_fin = hre_fin ? hre_fin + ':00' : '23:59:59';
+    fin = fin + ' ' + hre_fin;
+  }
 
   var retour=true;
 
@@ -1031,10 +1032,20 @@ function verif_absences(ctrl_form){
     url: url('ajax/holiday-absence-control'),
     type: "get",
     datatype: "json",
-    data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin, type:'absence'},
+    data: {
+      perso_ids: JSON.stringify(perso_ids),
+      id: id,
+      groupe: groupe,
+      debut: debut,
+      fin: fin,
+      'recurrence-checkbox': document.form['recurrence-checkbox'].checked ? '1' : '0',
+      'recurrence-hidden': document.form['recurrence-hidden'].value,
+      type: 'absence',
+    },
     async: false,
     success: function(result){
       result=JSON.parse(result);
+        console.log(result);
       var admin = result['admin'];
 
       // Contrôle si d'autres absences sont enregistrées

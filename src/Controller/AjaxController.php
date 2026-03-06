@@ -6,6 +6,10 @@ use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Planno\Helper\AbsenceBlockHelper;
+use App\Planno\TimeSlot;
+use App\Service\ICalendar;
+
+use DateTime;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -173,7 +177,7 @@ class AjaxController extends BaseController
 
 
     #[Route(path: '/ajax/holiday-absence-control', name: 'ajax.holiday.absence.control', methods: ['GET'])]
-    public function holidayAbsenceControl(Request $request): Response
+    public function holidayAbsenceControl(Request $request, ICalendar $iCalendar): Response
     {
       $session = $request->getSession();
 
@@ -183,13 +187,15 @@ class AjaxController extends BaseController
       $groupe = $request->get('groupe');
       $debut = $request->get('debut');
       $fin = $request->get('fin');
+      $recurrence = (bool) $request->get('recurrence-checkbox', false);
+      $rrule = $request->get('recurrence-hidden');
       $perso_ids = $request->get('perso_ids');
       $perso_ids = json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
       // Get comma separated sites for agent
       $sites = implode(',', $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids));
 
-      $fin = $fin ?? str_replace('00:00:00', '23:59:59', $debut);
+      $fin = $fin ?: str_replace('00:00:00', '23:59:59', $debut);
       $result = array();
 
       $p = new \personnel();
@@ -248,22 +254,50 @@ class AjaxController extends BaseController
           // Contrôle si placé sur planning validé
           if ($this->config("$config_name-apresValidation") == 0) {
               $datesValidees=array();
-              $dbprefix = $this->config('dbprefix');
-              $req = "SELECT `date`,`site` FROM `{$dbprefix}pl_poste` WHERE `perso_id`='$perso_id' "
-                . "AND CONCAT_WS(' ',`date`,`debut`)<'$fin' AND CONCAT_WS(' ',`date`,`fin`)>'$debut' "
-                . "GROUP BY `date`;";
 
-              $db = new \db();
-              $db->query($req);
-              if ($db->result) {
-                  foreach ($db->result as $elem) {
-                      $db2 = new \db();
-                      $db2->select2("pl_poste_verrou", "*", array("date"=>$elem['date'], "site"=>$elem['site'], "verrou2"=>"1"));
-                      if ($db2->result) {
-                          $datesValidees[] = dateFr($elem['date']);
+              if ($recurrence) {
+                  $initialTimeSlot = new TimeSlot(
+                      DateTime::createFromFormat('Y-m-d H:i:s', $debut),
+                      DateTime::createFromFormat('Y-m-d H:i:s', $fin)
+                  );
+                  $timeSlots = $iCalendar->getRecurringEventTimeSlots($initialTimeSlot, $rrule);
+                  foreach ($timeSlots as $timeSlot) {
+                      $query = $this->entityManager->createQuery(<<<'DQL'
+                          SELECT DISTINCT pp.date FROM App\Entity\PlanningPosition pp
+                          WHERE pp.perso_id = :perso_id
+                          AND pp.date BETWEEN :start AND :end
+                          AND EXISTS (
+                              SELECT ppl FROM App\Entity\PlanningPositionLock ppl
+                              WHERE ppl.date = pp.date AND ppl.site = pp.site AND ppl.verrou2 = 1
+                          )
+                          ORDER BY pp.date
+                      DQL);
+                      $query->setParameter('perso_id', $perso_id);
+                      $query->setParameter('start', $timeSlot->start->format('Y-m-d'));
+                      $query->setParameter('end', $timeSlot->end->format('Y-m-d'));
+                      foreach ($query->getSingleColumnResult() as $date) {
+                          $datesValidees[] = dateFr($date);
+                      }
+                  }
+              } else {
+                  $dbprefix = $this->config('dbprefix');
+                  $req = "SELECT `date`,`site` FROM `{$dbprefix}pl_poste` WHERE `perso_id`='$perso_id' "
+                    . "AND CONCAT_WS(' ',`date`,`debut`)<'$fin' AND CONCAT_WS(' ',`date`,`fin`)>'$debut' "
+                    . "GROUP BY `date`;";
+
+                  $db = new \db();
+                  $db->query($req);
+                  if ($db->result) {
+                      foreach ($db->result as $elem) {
+                          $db2 = new \db();
+                          $db2->select2("pl_poste_verrou", "*", array("date"=>$elem['date'], "site"=>$elem['site'], "verrou2"=>"1"));
+                          if ($db2->result) {
+                              $datesValidees[] = dateFr($elem['date']);
+                          }
                       }
                   }
               }
+
               if (!empty($datesValidees)) {
                   $result['users'][$perso_id]["planning_validated"]=implode(" ; ", $datesValidees);
               }
@@ -275,6 +309,7 @@ class AjaxController extends BaseController
 
       // Contrôle si placé sur des plannings en cours d'élaboration;
       if ($this->config("$config_name-planningVide") == 0) {
+          // TODO Check recurrence
           // Dates à contrôler
           $date_debut = substr($debut, 0, 10);
           $date_fin = substr($fin, 0, 10);
