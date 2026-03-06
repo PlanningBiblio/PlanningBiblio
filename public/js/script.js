@@ -777,11 +777,17 @@ $(function(){
     });
 
     $(".ui-button").button();
-    $(".datepicker").bootstrapDP({
+
+    $("#pl-calendar").bootstrapDP({
       format: 'yyyy-mm-dd',
       todayHighlight: true,
       language: "fr",
       toggleActive : true,
+    });
+
+    $("input.datepicker").bootstrapDP({
+      format: 'dd/mm/yyyy',
+      language: "fr",
     });
 
     $(".datepicker").addClass("center ui-widget-content");
