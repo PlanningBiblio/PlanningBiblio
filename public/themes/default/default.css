@@ -1077,7 +1077,52 @@ div#tabsemaine1{
   border:0;
   background: transparent;
   margin: 10px 0 5px 10px;
-  width: 240px;
+  width: 220px;
+}
+
+.datepicker-inline {
+  width: 200px;
+  font-size: 11px;
+  border: 1px solid #29495C;
+}
+
+.datepicker table thead th.prev{
+  background-color: #FFD700 ;
+  border-radius: 0;
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
+}
+
+.datepicker table thead th.datepicker-switch {
+  background-color: #FFD700 ;
+  border-radius: 0;
+}
+
+.datepicker table thead th.next{
+  background-color: #FFD700 ;
+  border-radius: 0;
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+
+.datepicker table tr td.today,
+.datepicker table tr td.today:hover,
+.datepicker table tr td.today:hover:hover {
+  background-color: #FFD700 ;
+  background-image: none;
+  color: #29495C;
+  border: none;
+}
+
+.datepicker table tr td.active,
+.datepicker table tr td.active:hover,
+.datepicker table tr td.active.active,
+.datepicker table tr td.active.active:hover {
+  background-color: #29495C ;
+  background-image: none;
+  color: white;
+  border: none;
 }
 
 #pl-calendar .calendar-datepicker {
