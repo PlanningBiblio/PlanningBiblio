@@ -37,56 +37,6 @@ $(document).ready(function(){
     },
   });
 
-  delete_planning_week_confirm = $( "#delete-planning-dialog-confirm-week" ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 220,
-    width: 480,
-    buttons: {
-      "Oui": function() {
-        $('#delete-planning-week-form').submit();
-      },
-      "Non": function() {
-        delete_planning_week_confirm.dialog('close');
-      },
-    }
-  });
-
-  delete_planning_day_confirm = $( "#delete-planning-dialog-confirm-day" ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 220,
-    width: 480,
-    buttons: {
-      "Oui": function() {
-        $('#delete-planning-day-form').submit();
-      },
-      "Non": function() {
-        delete_planning_day_confirm.dialog('close');
-      },
-    }
-  });
-
-  delete_planning = $( "#delete-planning-dialog" ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 220,
-    width: 480,
-    buttons: {
-      "Jour": function() {
-        delete_planning.dialog('close');
-        delete_planning_day_confirm.dialog('open');
-      },
-      "Semaine": function() {
-        delete_planning.dialog('close');
-        delete_planning_week_confirm.dialog('open');
-      },
-      "Annuler": function() {
-        delete_planning.dialog('close');
-      },
-    }
-  });
-
   model_finish = $( "#finish-model-dialog" ).dialog({
     autoOpen: false,
     modal: true,
@@ -193,10 +143,6 @@ $(document).ready(function(){
     return false;
   });
 
-  $('.pl-icon-drop').on('click', function() {
-    delete_planning.dialog('open');
-    return false;
-  });
   // Vérifions si un agent de catégorie A est placé en fin de service
   verif_categorieA();
 

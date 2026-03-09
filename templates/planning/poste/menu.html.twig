@@ -88,9 +88,9 @@
                 <span class='pl-icon pl-icon-open'></span>
               </a>
 
-              <a id="planning-drop" title='Supprimer le planning' style="{{ locked ? 'display:none;' }}">
-                <span class='pl-icon pl-icon-drop'></span>
-              </a>
+              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#DropModal" title="Supprimer le planning"  style="{{ locked ? 'display:none;' }}">
+                <span class="pl-icon pl-icon-drop"></span>
+              </button>
             {% endif %}
 
             <a href='javascript:print();' title='Imprimer le planning'>
@@ -106,9 +106,9 @@
           {% if (userCan('300', site) or userCan('1000', site)) and not locked %}
             <div id='undo-redo' class='pl-undo' style="{{ locked ? 'display:none;' }}">
               {% if undoable %}
-                <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
+                <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> -
               {% else %}
-                <a id="undo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
+                <a id="undo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> -
               {% endif %}
 
               {% if redoable %}
@@ -126,5 +126,5 @@
         {% endif %}
       </div>
     </div>
-  </div>  
-</div>  
+  </div>
+</div>
