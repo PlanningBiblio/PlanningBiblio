@@ -1,11 +1,11 @@
 {# planning/poste/model_form.html.twig #}
 
-<div style="text-align:center">
-  <form name="form" id="form" method="post" action="{{ asset('modelimport') }}" onsubmit="return ctrl_form('model');">
-    <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
-    <input type='hidden' name='_token' value='{{ csrf_token('') }}' />
-    <input type='hidden' name='date' value='{{ date }}' />
-    <input type='hidden' name='site' value='{{ site }}' />
+<div class="modal-body" style="text-align:center">
+  <form name="form" id="import-model-form" method="post" action="{{ asset('modelimport') }}" onsubmit="return ctrl_form('model');">
+    <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
+    <input type="hidden" name="_token" value="{{ csrf_token("") }}" />
+    <input type="hidden" name="date" value="{{ date }}" />
+    <input type="hidden" name="site" value="{{ site }}" />
 
     {% if models | length == 0 %}
       <div style="margin: 20px auto;">
@@ -19,14 +19,13 @@
 
       {% if models | length > 1 %}
 
-        <div style="margin: 20px auto;">
+        <div style="margin: 20px auto;display: table;">
           Sélectionnez le modèle à importer
           <br />
-          <br />
-          <select name='model' id='model'>
-            <option value=''>&nbsp;</option>
+          <select name="model" id="model" class="form-select form-select-sm" aria-label="Séléction du modèle">
+            <option hidden disabled selected value=""></option>
             {% for m in models %}
-              <option value='{{ m.modelId }}'>{{ m.name }}{% if m.isWeek %} (semaine){% endif %}</option>
+              <option value="{{ m.modelId }}">{{ m.name }}{% if m.isWeek %} (semaine){% endif %}</option>
             {% endfor %}
           </select>
         </div>
@@ -34,16 +33,16 @@
       {% else %}
 
         {% set model = models | first  %}
-        <input type='hidden' name='model' id='model' value='{{ model.modelId }}' />
+        <input type="hidden" name="model" id="model" value="{{ model.modelId }}" />
         <div style="margin: 20px auto;">
           Importer le modèle "{{ model.name }}"{%if model.isWeek %} (semaine){% endif %} ?
         </div>
 
     {% endif %}
 
-    <div style="margin: 20px auto;">
-      Importer les absents ?
-      <input type='checkbox' name='absents' checked='checked' />
+    <div class="form-group" style="margin: 20px auto;">
+      <label for="AbsentsCheck" class="form-check-label">Importer les absents ?</label>
+      <input type="checkbox" id="AbsentsCheck" name="absents" class="form-check-input" checked="checked"/>
     </div>
 
   {% endif %}
