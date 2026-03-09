@@ -1826,6 +1826,35 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 
 /*Buttons END*/
 
+/* Modals START */
+
+.btn-icon {
+display: contents;
+}
+
+.modal-header {
+  background-color: #FFD700 ;
+  border: 1px solid;
+  border-color: #FFD700;
+  color: #29495C
+}
+
+.modal-body{
+  color: #29495C;
+  font-size: 14px;
+}
+
+/* Approximation de la couleur #29495C par filtrage (loss 0.2) */
+.modal-header .btn-close, 
+.modal-header .btn-close.active,
+.modal-header .btn-close:hover {
+  filter: invert(24%) sepia(13%) saturate(1634%) hue-rotate(159deg) brightness(98%) contrast(91%);
+  opacity: 100%;
+}
+
+
+/* Modals END */
+
 /*ui-dialog START*/
 
 .ui-dialog {
