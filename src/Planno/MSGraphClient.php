@@ -30,8 +30,9 @@ class MSGraphClient
     private $reason_name;
     private $ignoredStatuses;
     private $stdout;
+    private $user_id;
 
-    public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full, $stdout)
+    public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full, $stdout, $user_id)
     {
         $tokenURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/token";
         $authURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/authorize";
@@ -58,6 +59,7 @@ class MSGraphClient
         $this->ignoredStatuses = !empty($ignoredStatuses) ? explode(';', $ignoredStatuses) : ['free', 'tentative'];
         $this->full = $full;
         $this->stdout = $stdout;
+        $this->user_id = $user_id;
     }
 
     public function retrieveEvents(): void {
@@ -83,7 +85,11 @@ class MSGraphClient
     private function getIncomingEvents(): void {
         $this->incomingEvents = array();
         $this->graphUsers = array();
-        $users = $this->entityManager->getRepository(Agent::class)->findBy(['supprime' => 0, 'check_ms_graph' => 1]);
+        if ($this->user_id) {
+            $users = array($this->entityManager->find(Agent::class, $this->user_id));
+        } else {
+            $users = $this->entityManager->getRepository(Agent::class)->findBy(['supprime' => 0, 'check_ms_graph' => 1]);
+        }
         foreach ($users as $user) {
             if ($this->isGraphUser($user)) {
                 array_push($this->graphUsers, $user->getId());
