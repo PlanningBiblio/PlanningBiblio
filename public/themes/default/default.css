@@ -273,6 +273,10 @@ h4{
   text-decoration:none;
 }
 
+.btn.disabled .pl-icon{
+  opacity: 65%;
+}
+
 .pl-icon-add {
   background:url("images/icon/add_black_18dp.svg") no-repeat center;
 }
@@ -1465,8 +1469,7 @@ img{
   width:100px;
 }
 
-.intitule, label{
-  font-weight: bold;
+.intitule, label {
   white-space: nowrap;
   color: #29495C;
 }
@@ -1889,6 +1892,61 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 }
 
 /*Buttons END*/
+
+/* Modals START */
+
+.btn-icon {
+display: contents;
+}
+
+.modal-header {
+  background-color: #FFD700 ;
+  border: 1px solid;
+  border-color: #FFD700;
+  color: #29495C
+}
+
+.modal-body {
+  color: #29495C;
+  font-size: 15px;
+}
+
+/* Approximation de la couleur #29495C par filtrage (loss 0.2) */
+.modal-header .btn-close, 
+.modal-header .btn-close.active,
+.modal-header .btn-close:hover {
+  filter: invert(24%) sepia(13%) saturate(1634%) hue-rotate(159deg) brightness(98%) contrast(91%);
+  opacity: 100%;
+}
+
+.modal-body .form-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input.form-control, input.form-control:focus {
+  margin :10px;
+  color: #29495C;
+} 
+
+input.form-check-input {
+  margin : 10px;
+}
+
+input.form-check-input:checked {
+  background-color: #29495C;
+  border-color: #29495C;
+}
+
+.form-select {
+  color: #29495C;
+  text-align: center;
+  max-width: fit-content;
+  margin-top: 8px;
+}
+
+/* Modals END */
 
 /*ui-dialog START*/
 

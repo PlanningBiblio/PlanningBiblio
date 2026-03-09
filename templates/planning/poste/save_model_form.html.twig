@@ -1,33 +1,59 @@
 {# planning/poste/save_model_form.html.twig #}
 
-<div id="save-model-dialog" title="Enregistrement du planning du {{ date | datefr }} comme modèle">
-  <div style="text-align:center">
-    <form name='save-model-form'>
+<div class="modal" id="SaveModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="saveModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
 
-      <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
-      <input type='hidden' name='date' value='{{ date }}' />
-      <input type='hidden' name='site' value='{{ site }}' />
+      <div class="modal-header">
+        <h5 class="modal-title" id="saveModalTitle">Enregistrement du planning du {{ date | datefr }} comme modèle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
-      Nom du modèle&nbsp;&nbsp;
-      <input type='text' name='name' value='{{ date }}' />
-      <br/><br/>
-      Enregistrer toute la semaine&nbsp;&nbsp;
-      <input type='checkbox' name='semaine' />
-      <br/><br/>
-    </form>
+      <div class="modal-body">
+        <form id="save-model-form">
+          <div class="form-group">
+            <label for="InputModelName" class="col-form-label">Nom du modèle</label>
+            <input type="text" id="InputModelName" name="modelName"class="form-control form-control-sm" value="{{date}}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="WeekCheck" class="form-check-label">Enregistrer toute la semaine</label>
+            <input type="checkbox" id="WeekCheck" name="semaine" class="form-check-input"/>
+        </div>
+
+        <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
+        <input type="hidden" name="date" value="{{ date }}" />
+        <input type="hidden" name="site" value="{{ site }}" />
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" form="save-model-form" class="btn btn-primary" >Enregistrer</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<div id="duplicate-model-dialog" title="Enregistrement du planning du {{ date | datefr }} comme modèle">
-    <div style="text-align:center">
-      <b>Le modèle <span id="duplicate-model-name"></span> existe</b><br/><br/>
-      Voulez vous le remplacer ?<br/><br/>
-    </div>
-</div>
+<div class="modal" id="DuplicateModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="saveModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
 
-<div id="finish-model-dialog" title="Enregistrement du planning du {{ date | datefr }} comme modèle">
-    <div style="text-align:center">
-      <br/>
-      Le modèle "<span id="finish-model-name"></span>" a été enregistré<br/><br/>
+      <form id="duplicate-model-form">
+        <div class="modal-header">
+          <h5 class="modal-title" id="saveModalTitle">Enregistrement du planning du {{ date | datefr }} comme modèle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body" style="min-height: 116px; align-content: flex-end;">
+          <p>Un modèle avec ce nom existe déjà. <br> Voulez vous le remplacer ?</p>
+        </div>
+      </form>
+
+      <div class="modal-footer" style="text-align:center">
+        <button type="submit" class="btn btn-danger" form="duplicate-model-form" >Oui</button>
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#SaveModal">Non</button>
+      </div>
     </div>
+  </div>
 </div>

@@ -17,186 +17,77 @@ cellules = new Array();
 // Chargement de la page
 $(document).ready(function(){
 
-  import_model = $( '#import-model-dialog' ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 300,
-    width: 480,
-    buttons: {
-      "Annuler": function() {
-        $(this).dialog('close');
-      },
-        "Valider": function() {
-          if ($('#model').length == 0) {
-            CJInfo('Aucun modèle enregistré', 'error');
-            $(this).dialog('close');
-          } else {
-            $('#form').submit();
-          }
-      }
-    },
+  if ($('.cellSpan').length > 0 ) $('#planning-save').removeClass('disabled');
+
+  $('.pl-icon-open').on('click', function(e){
+    date = $('input[name="date"]').val();
+    site = $('input[name="site"]').val();
+    CSRFSession = $('input[name="CSRFSession"]').val();
+    params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
+    $('#model-selection').load('/modelform' + params);
+    $('#ImportModal').modal('show');
+    return false;
   });
 
-  delete_planning_week_confirm = $( "#delete-planning-dialog-confirm-week" ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 220,
-    width: 480,
-    buttons: {
-      "Oui": function() {
-        $('#delete-planning-week-form').submit();
-      },
-      "Non": function() {
-        delete_planning_week_confirm.dialog('close');
-      },
-    }
+   $('#duplicate-model-form').submit(function(e) {
+    e.preventDefault();
+    save_model(true);
   });
 
-  delete_planning_day_confirm = $( "#delete-planning-dialog-confirm-day" ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 220,
-    width: 480,
-    buttons: {
-      "Oui": function() {
-        $('#delete-planning-day-form').submit();
-      },
-      "Non": function() {
-        delete_planning_day_confirm.dialog('close');
-      },
-    }
-  });
-
-  delete_planning = $( "#delete-planning-dialog" ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 220,
-    width: 480,
-    buttons: {
-      "Jour": function() {
-        delete_planning.dialog('close');
-        delete_planning_day_confirm.dialog('open');
-      },
-      "Semaine": function() {
-        delete_planning.dialog('close');
-        delete_planning_week_confirm.dialog('open');
-      },
-      "Annuler": function() {
-        delete_planning.dialog('close');
-      },
-    }
-  });
-
-  model_finish = $( "#finish-model-dialog" ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 250,
-    width: 550,
-    buttons: {
-      "Fermer": function() {
-        model_finish.dialog('close');
-      }
-    }
-  });
-
-  duplicate_model = $( "#duplicate-model-dialog" ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 250,
-    width: 550,
-    buttons: {
-      "Oui": function() {
-        save_model(true);
-      },
-      "Non": function() {
-        duplicate_model.dialog('close');
-      }
-    },
-  });
-
-  model_form = $( "#save-model-dialog" ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 250,
-    width: 550,
-    buttons: {
-      "Enregistrer": function() {
-        save_model();
-      },
-      Annuler: function() {
-        model_form.dialog('close');
-      }
-    },
+  $('#save-model-form').submit(function(e) {
+    e.preventDefault();
+    save_model();
   });
 
   function save_model(erase = 0) {
-    name = $('form[name="save-model-form"] input[name="name"]').val()
-    site = $('form[name="save-model-form"] input[name="site"]').val()
-    date = $('form[name="save-model-form"] input[name="date"]').val()
-    week = $('form[name="save-model-form"] input[name="semaine"]').is(':checked') ? 1 : 0;
+    modelName = $('#save-model-form input[name="modelName"]').val();
+    site = $('#save-model-form input[name="site"]').val();
+    date = $('#save-model-form input[name="date"]').val();
+    week = $('#save-model-form input[name="semaine"]').is(':checked') ? 1 : 0;
     csrftoken = $('#CSRFSession').val();
 
     $.ajax({
         url: url('ajax/sanitize-html'),
-        type: "POST",
-        dataType: "html",
+        type: 'POST',
+        dataType: 'html',
         async: false,
-        data: {text: name},
+        data: {text: modelName},
         success: function(result){
-            $('form[name="save-model-form"] input[name="name"]').val(result);
+            $('#save-model-form input[name="modelName"]').val(result);
         },
         error: function(xhr, ajaxOptions, thrownError){
-            CJInfo("Impossible d'enregistrer le modèle", "error");
+            CJInfo('Impossible d\'enregistrer le modèle', 'error');
             return;
         }
     });
 
-    name = $('form[name="save-model-form"] input[name="name"]').val()
+    modelName = $('#save-model-form input[name="modelName"]').val()
 
     $.ajax({
       url: url('model-add'),
       type: 'post',
       //dataType: 'json',
-      data: {name: name, site: site, date: date, week: week, CSRFToken: csrftoken, erase: erase},
+      data: {name: modelName, site: site, date: date, week: week, CSRFToken: csrftoken, erase: erase},
       success: function(result){
-        if (result == 'model exists' && erase == false) {
-          model_form.dialog('close');
-          $('#duplicate-model-name').html(name);
-          duplicate_model.dialog('open');
-        }
 
+        if (result == 'model exists' && erase == false) {
+          $('.modal').modal('hide');
+          $('#DuplicateModal').modal('show');
+        }
+        
         if (result == 'ok') {
-          model_form.dialog('close');
-          duplicate_model.dialog('close');
-          $('#finish-model-name').html(name);
-          model_finish.dialog('open');
+          $('.modal').modal('hide');
+          if( erase == true) msg = 'Le modèle ' + modelName + ' a bien été remplacé.';
+          else msg = 'Le modèle ' + modelName + ' a bien été enregistré.';
+          CJInfo(msg, 'success');
         }
       },
       error: function(jqXHR, textStatus, errorThrown){
-        CJInfo(result.responseText,"error");
+        CJInfo(result.responseText,'error');
       }
     });
-  }
+  };
 
-  $('.pl-icon-open').on('click', function() {
-    date = $('input[name="date"]').val();
-    site = $('input[name="site"]').val();
-    CSRFSession = $('input[name="CSRFSession"]').val();
-    params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
-    $('#import-model-dialog').load('/modelform' + params);
-    import_model.dialog('open');
-    return false;
-  });
-
-  $('.pl-icon-save').on('click', function() {
-    model_form.dialog('open');
-    return false;
-  });
-
-  $('.pl-icon-drop').on('click', function() {
-    delete_planning.dialog('open');
-    return false;
-  });
   // Vérifions si un agent de catégorie A est placé en fin de service
   verif_categorieA();
 
@@ -1517,6 +1408,12 @@ function bataille_navale(poste, date, debut, fin, perso_id, barrer, ajouter, sit
           $(jtem).css('top', top);
         });
       });
+
+      // Enable and disable the save planning button depending on whether it is empty or not
+      if ($('.cellSpan').length > 0 ) $('#planning-save').removeClass('disabled');
+      else {
+        if (!$('#planning-save').hasClass('disabled')) $('#planning-save').addClass('disabled');
+      }
 
       // cacher le menudiv
       emptyContextMenu();

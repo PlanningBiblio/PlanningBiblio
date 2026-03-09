@@ -75,30 +75,31 @@
             </div>
 
             {% if userCan('300', site) or userCan('1000', site) %}
-              <span id="icon-lock" class="pl-icon pl-icon-lock pointer noprint" title="Déverrouiller le planning" {% if not locked %} style="display:none;" {% endif %}></span></a>
-              <span id="icon-unlock" class="pl-icon pl-icon-unlock pointer noprint" title="Verrouiller le planning" {% if locked %} style="display:none;" {% endif %}></span></a>
+              <span id="icon-lock" class="pl-icon pl-icon-lock pointer noprint" title="Déverrouiller le planning" {% if not locked %} style="display:none;" {% endif %}></span>
+              <span id="icon-unlock" class="pl-icon pl-icon-unlock pointer noprint" title="Verrouiller le planning" {% if locked %} style="display:none;" {% endif %}></span>
             {% endif %}
 
             {% if userCan('300', site) %}
-              <a href='#' title='Enregistrer comme modèle'>
-                <span class='pl-icon pl-icon-save'></span>
-              </a>
 
-              <a id="planning-import" href='#' title='Importer un modèle' style="{{ locked ? 'display:none;' }}">
-                <span class='pl-icon pl-icon-open'></span>
-              </a>
+              <button id="planning-save" type="button" class="btn btn-icon disabled" data-bs-toggle="modal" data-bs-target="#SaveModal">
+                <span class="pl-icon pl-icon-save" title="Enregistrer comme modèle"></span>
+              </button>
 
-              <a id="planning-drop" title='Supprimer le planning' style="{{ locked ? 'display:none;' }}">
-                <span class='pl-icon pl-icon-drop'></span>
-              </a>
+              <button id="planning-import" type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#ImportModal" style="{{ locked ? 'display:none;' }}">
+                <span class="pl-icon pl-icon-open" title="Importer un modèle"></span>
+              </button>
+
+              <button id="planning-drop" type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#DropModal" style="{{ locked ? 'display:none;' }}">
+                <span class="pl-icon pl-icon-drop" title="Supprimer le planning"></span>
+              </button>
             {% endif %}
 
-            <a href='javascript:print();' title='Imprimer le planning'>
-              <span class='pl-icon pl-icon-printer'></span>
+            <a href="javascript:print();">
+              <span class="pl-icon pl-icon-printer" title="Imprimer le planning"></span>
             </a>
 
-            <a href="{{ path('home') }}" title="Actualiser">
-              <span class='pl-icon pl-icon-refresh'>
+            <a href="{{ path('home') }}">
+              <span class="pl-icon pl-icon-refresh" title="Actualiser">
             </a>
 
           </div>
@@ -106,9 +107,9 @@
           {% if (userCan('300', site) or userCan('1000', site)) and not locked %}
             <div id='undo-redo' class='pl-undo' style="{{ locked ? 'display:none;' }}">
               {% if undoable %}
-                <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
+                <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> -
               {% else %}
-                <a id="undo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
+                <a id="undo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> -
               {% endif %}
 
               {% if redoable %}
@@ -126,5 +127,5 @@
         {% endif %}
       </div>
     </div>
-  </div>  
-</div>  
+  </div>
+</div>

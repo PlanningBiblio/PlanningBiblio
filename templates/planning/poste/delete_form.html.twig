@@ -1,36 +1,77 @@
 {# planning/poste/delete_form.html.twig #}
 
-<div id="delete-planning-dialog" title="Suppression du planning">
-  <div style="text-align:center">
-    <p>Voulez vous supprimer le planning du jour ({{ date | datefr }})</p>
-    <p>ou de la semaine (du {{ start | datefr }} au {{ end | datefr }}) ?</p>
+<div class="modal" id="DropModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Supression du planning </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="text-align:center">
+        <p>Voulez vous supprimer le planning du jour ({{ date | datefr }})</p>
+        <p>ou de la semaine (du {{ start | datefr }} au {{ end | datefr }}) ?</p>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#DropDayModal">Jour</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#DropWeekModal">Semaine</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<div id="delete-planning-dialog-confirm-day" title="Suppression du planning">
-    <div style="text-align:center">
-      <br />
-      Etes vous sûr de vouloir supprimer le planning du {{ date | datefr }} ?
-      <form id="delete-planning-day-form" action="{{ asset('deleteplanning') }}" method="post">
-        <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
-        <input type='hidden' name='week' value='0' />
-        <input type='hidden' name='site' value='{{ site }}' />
-        <input type='hidden' name='date' value='{{ date }}' />
-      </form>
+
+<div class="modal" id="DropDayModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Supression du planning</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="text-align:center; min-height : 109px;align-content: center;">
+
+        <p>Êtes vous sûr de vouloir supprimer le planning du {{ date | datefr }} ?</p>
+        <form id="delete-planning-day-form" action="{{ asset('deleteplanning') }}" method="post">
+
+        <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
+        <input type="hidden" name="week" value="0" />
+        <input type="hidden" name="site" value="{{ site }}" />
+        <input type="hidden" name="date" value="{{ date }}" />
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-danger" form="delete-planning-day-form">Oui</button>
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#DropModal">Non</button>
+      </div>
     </div>
+  </div>
 </div>
 
-<div id="delete-planning-dialog-confirm-week" title="Suppression du planning">
-    <div style="text-align:center">
-      <br />
-      Etes vous sûr de vouloir supprimer le planning de la semaine
-      (du {{ start | datefr }} au {{ end | datefr }}) ?
-      <form id="delete-planning-week-form" action="{{ asset('deleteplanning') }}" method="post">
-        <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
-        <input type='hidden' name='week' value='1' />
-        <input type='hidden' name='site' value='{{ site }}' />
-        <input type='hidden' name='start' value='{{ start }}' />
-        <input type='hidden' name='end' value='{{ end }}' />
-      </form>
+<div class="modal" id="DropWeekModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Supression du planning </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
+        
+        <p>Êtes vous sûr de vouloir supprimer le planning de la semaine ({{ start | datefr }} au {{ end | datefr }}) ?</p>
+        <form id="delete-planning-week-form" action="{{ asset('deleteplanning') }}" method="post">
+          <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
+          <input type="hidden" name="week" value="1" />
+          <input type="hidden" name="site" value="{{ site }}" />
+          <input type="hidden" name="start" value="{{ start }}" />
+          <input type="hidden" name="end" value="{{ end }}" />
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-danger" form="delete-planning-week-form">Oui</button>
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#DropModal">Non</button>
+      </div>
     </div>
+  </div>
 </div>
