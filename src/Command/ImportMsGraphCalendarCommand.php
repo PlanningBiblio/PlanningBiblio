@@ -29,6 +29,7 @@ class ImportMsGraphCalendarCommand extends Command
             ->setHelp("Import a calendar from Microsoft Graph API")
             ->addOption('full', null, InputOption::VALUE_OPTIONAL, 'Performs a full import', false)
             ->addOption('stdout', null, InputOption::VALUE_OPTIONAL, 'Also output logs in stdout', false)
+            ->addOption('user_id', null, InputOption::VALUE_OPTIONAL, 'Only import for this user', false)
         ;
     }
 
@@ -60,7 +61,7 @@ class ImportMsGraphCalendarCommand extends Command
             return Command::FAILURE;
         }
 
-        $graph_client = new MSGraphClient($em, $tenantid, $clientid, $clientsecret, $input->getOption('full'), $input->getOption('stdout'));
+        $graph_client = new MSGraphClient($em, $tenantid, $clientid, $clientsecret, $input->getOption('full'), $input->getOption('stdout'), $input->getOption('user_id'));
         $graph_client->retrieveEvents();
 
         $this->release();
