@@ -1077,28 +1077,59 @@ div#tabsemaine1{
   border:0;
   background: transparent;
   margin: 10px 0 5px 10px;
-  width: 220px;
+  width: 200px;
 }
 
 .datepicker-inline {
-  width: 200px;
+  width: 185px;
   font-size: 11px;
   border: 1px solid #29495C;
+  padding: 6px 4px 1px 4px;
 }
 
-.datepicker-inline table thead th.prev{
+.datepicker {
+  font-size: 11px;
+  color: #29495C ;
+  font-weight: bolder;
+}
+
+.datepicker .datepicker-days table thead tr th {
+  max-width: 25px;
+}
+
+.datepicker td.day {
+  width: 25px;
+}
+
+.datepicker table tr td span{
+  max-height: 40px;
+  line-height: 40px;
+}
+
+.datepicker .datepicker-months table td,
+.datepicker .datepicker-years table td,
+.datepicker .datepicker-decades table td,
+.datepicker .datepicker-centuries table td {
+  padding-top: 5px;
+}
+
+.datepicker-days, .datepicker-months, .datepicker-years, .datepicker-decades, .datepicker-centuries {
+  display: inline-block;
+}
+
+.datepicker table thead th.prev{
   background-color: #FFD700 ;
   border-radius: 0;
   border-bottom-left-radius: 4px;
   border-top-left-radius: 4px;
 }
 
-.datepicker-inline table thead th.datepicker-switch {
+.datepicker table thead th.datepicker-switch {
   background-color: #FFD700 ;
   border-radius: 0;
 }
 
-.datepicker-inline table thead th.next{
+.datepicker table thead th.next{
   background-color: #FFD700 ;
   border-radius: 0;
   border-bottom-right-radius: 4px;
@@ -1106,19 +1137,18 @@ div#tabsemaine1{
 }
 
 
-.datepicker-inline table tr td.today,
-.datepicker-inline table tr td.today:hover,
-.datepicker-inline table tr td.today:hover:hover {
+.datepicker table tr td.today,
+.datepicker table tr td.today:hover:hover {
   background-color: #FFD700 ;
   background-image: none;
   color: #29495C;
   border: none;
 }
 
-.datepicker-inline table tr td.active,
-.datepicker-inline table tr td.active:hover,
-.datepicker-inline table tr td.active.active,
-.datepicker-inline table tr td.active.active:hover {
+.datepicker table tr td.active.active,
+.datepicker table tr td.active.active:hover,
+.datepicker table tr td span.active.active,
+.datepicker table tr td span.active.active:hover {
   background-color: #29495C ;
   background-image: none;
   color: white;
@@ -2154,10 +2184,6 @@ table.dataTable th{
   width:17em;
   padding:.2em .2em 0;
   display:none
-}
-
-.datepicker-days, .datepicker-months, .datepicker-years, .datepicker-decades, .datepicker-centuries {
-  display: inline-block;
 }
 
 .calendar-datepicker .calendar-datepicker-header{

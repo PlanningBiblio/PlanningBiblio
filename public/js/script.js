@@ -788,6 +788,7 @@ $(function(){
     $("input.datepicker").bootstrapDP({
       format: 'dd/mm/yyyy',
       language: "fr",
+      todayHighlight: true,
     });
 
     $(".datepicker").addClass("center ui-widget-content");
