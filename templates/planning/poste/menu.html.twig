@@ -80,9 +80,10 @@
             {% endif %}
 
             {% if userCan('300', site) %}
-              <a href='#' title='Enregistrer comme modèle'>
-                <span class='pl-icon pl-icon-save'></span>
-              </a>
+
+              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#SaveModal" title='Enregistrer comme modèle'>
+                <span class="pl-icon pl-icon-save"></span>
+              </button>
 
               <a id="planning-import" href='#' title='Importer un modèle' style="{{ locked ? 'display:none;' }}">
                 <span class='pl-icon pl-icon-open'></span>
