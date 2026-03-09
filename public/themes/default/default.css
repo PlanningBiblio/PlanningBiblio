@@ -1839,7 +1839,7 @@ display: contents;
   color: #29495C
 }
 
-.modal-body{
+.modal-body {
   color: #29495C;
   font-size: 14px;
 }
@@ -1852,6 +1852,24 @@ display: contents;
   opacity: 100%;
 }
 
+.modal-body .form-group {
+  display: flex;
+  align-items: center;
+}
+
+input.form-control, input.form-control:focus {
+  margin :10px;
+  color: #29495C;
+} 
+
+input.form-check-input {
+  margin : 10px;
+}
+
+input.form-check-input:checked {
+  background-color: #29495C;
+  border-color: #29495C;
+}
 
 /* Modals END */
 
