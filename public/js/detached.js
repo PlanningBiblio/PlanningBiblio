@@ -8,7 +8,7 @@ Fichier regroupant les scripts JS nécessaires à la page planning/volants/index
 $(function() {
   // Calendar
   $("#pl-calendar").on('changeDate', function(e) {
-    var date = $('#pl-calendar').data().datepicker.getFormattedDate('yyyy-mm-dd') ;
+    var date = $('#pl-calendar').bootstrapDP('getFormattedDate','yyyy-mm-dd') ;
     window.location.href= url('detached') + '?date=' + date;
   });
 

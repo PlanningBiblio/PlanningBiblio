@@ -425,7 +425,7 @@ $(function() {
   // Calendar
 
   $("#pl-calendar").on('changeDate', function(e) {
-    var date = $('#pl-calendar').data().datepicker.getFormattedDate('yyyy-mm-dd') ;
+    var date = $('#pl-calendar').bootstrapDP('getFormattedDate', 'yyyy-mm-dd') ;
     if($(this).attr("class").search("datepickerSemaine")>0){
       window.location.href = url('week') + '/' + date;
     }else{

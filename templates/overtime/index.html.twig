@@ -144,14 +144,8 @@
         }
       });
 
-
-      $( "#dialog-button" )
-        .click(function() {
-          date.datepicker("disable");
-          date2.datepicker("disable");
+      $( "#dialog-button" ).click(function() {
           $( "#dialog-form" ).dialog( "open" );
-          date.datepicker("enable");
-          date2.datepicker("enable");
           return false;
         });
 

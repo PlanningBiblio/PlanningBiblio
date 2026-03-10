@@ -625,9 +625,10 @@ $(function() {
     });
   });
 
-  $("#absencesListForm").submit(function( event ) {
-    var start = $("#debut").datepicker("getDate");
-    var end = $("#fin").datepicker("getDate");
+    $("#debut").on('changeDate', function(e) {
+    var start = $("#debut").bootstrapDP('getDate');
+    var end = $("#fin").bootstrapDP('getDate');
+
     if (start || end) {
       if (!start) {
         start = new Date();
@@ -638,7 +639,26 @@ $(function() {
       var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
       if (number_of_days > 367 || start > end) {
         end.setTime(start.getTime() +  (365 * 24 * 60 * 60 * 1000));
-        $('#fin').val(end.toLocaleDateString());
+        $('#fin').bootstrapDP('setDate', end.toLocaleDateString());
+      }
+    }
+  });
+
+  $("#fin").on('changeDate', function(e) {
+    var start = $("#debut").bootstrapDP('getDate');
+    var end = $("#fin").bootstrapDP('getDate');
+
+    if (start || end) {
+      if (!start) {
+        start = new Date();
+      }
+      if (!end) {
+        end = new Date();
+      }
+      var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
+      if (number_of_days > 367 || start > end) {
+        start.setTime(end.getTime() -  (365 * 24 * 60 * 60 * 1000));
+        $('#debut').bootstrapDP('setDate',start.toLocaleDateString());
       }
     }
   });

@@ -1114,12 +1114,20 @@ div#tabsemaine1{
   display: inline-block;
 }
 
-.datepicker table thead th.prev{
+.datepicker table thead th.prev {
   background-color: #FFD700 ;
   border-radius: 0;
   border-bottom-left-radius: 4px;
   border-top-left-radius: 4px;
 }
+
+.datepicker table thead th.prev.disabled,
+.datepicker table thead th.next.disabled {
+  visibility: visible;
+  pointer-events: none;
+  color: gray;
+}
+
 
 .datepicker table thead th.datepicker-switch {
   background-color: #FFD700 ;
@@ -1135,7 +1143,9 @@ div#tabsemaine1{
 
 
 .datepicker table tr td.today,
-.datepicker table tr td.today:hover:hover {
+.datepicker table tr td.today:hover:hover,
+.datepicker table tr td.today.disabled,
+.datepicker table tr td.today.disabled:hover {
   background-color: #FFD700 ;
   background-image: none;
   color: #29495C;

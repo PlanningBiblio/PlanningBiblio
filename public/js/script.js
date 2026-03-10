@@ -789,6 +789,7 @@ $(function(){
       format: 'dd/mm/yyyy',
       language: "fr",
       todayHighlight: true,
+      autoclose: true
     });
 
     $(".datepicker").addClass("center ui-widget-content");
@@ -796,25 +797,46 @@ $(function(){
 
 
     /**
-    * Initialiser le defaultDate du calendrier de fin avec eventuelle date choisie dans le calendrier debut
-    * @author Farid Goara
+    * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début et inversement
+    * La date du calendrier de début devient la date minimal disponible pour le calendrier de fin et inversement
     */
     $(".datepicker").focusin(function(){
       if($(this).attr("name") == "fin"){
-	var objDateDefaultFin = "";
-	var objDateCurrentDeb = "";
-	if($('input[name="debut"]').datepicker("getDate")){
-	  if(!$(this).datepicker("option","defaultDate" )){
-	    $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
-	  }
-	  else{
-	    objDateDefaultFin = new Date($(this).datepicker("option","defaultDate"));
-	    objDateCurrentDeb = new Date($('input[name="debut"]').datepicker("getDate"));
-	    if(objDateDefaultFin.getDate() != objDateCurrentDeb.getDate() || objDateDefaultFin.getMonth() != objDateCurrentDeb.getMonth() || objDateDefaultFin.getYear() != objDateCurrentDeb.getYear()){
-	      $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
-	    }
-	  }
-	}
+        var debut = $('input[name="debut"]').bootstrapDP("getDate");
+        var fin = $(this).bootstrapDP("getDate");
+
+        if(debut != null && fin == null){
+          $(this).bootstrapDP('setStartDate', debut);
+          $(this).bootstrapDP('setDate', debut);
+        }
+      }
+      if($(this).attr("name") == "debut"){
+        var fin = $('input[name="fin"]').bootstrapDP("getDate");
+        var debut = $(this).bootstrapDP("getDate");
+
+        if(fin != null && debut == null){
+          $(this).bootstrapDP('setEndDate', fin);
+          $(this).bootstrapDP('setDate', fin);
+        }
+      }
+    });
+
+    $(".datepicker").on('changeDate',function(){
+      if($(this).attr("name") == "fin"){
+        var debut = $('input[name="debut"]').bootstrapDP("getDate");
+        var fin = $(this).bootstrapDP("getDate");
+
+        if(debut != null){
+          $('input[name="debut"]').bootstrapDP('setEndDate', fin);
+        }
+      }
+      if($(this).attr("name") == "debut"){
+        var fin = $('input[name="fin"]').bootstrapDP("getDate");
+        var debut = $(this).bootstrapDP("getDate");
+
+        if(fin != null){
+          $('input[name="fin"]').bootstrapDP('setStartDate', debut);
+        }
       }
     });
 
