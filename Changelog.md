@@ -1,5 +1,28 @@
 # Changelog Planno
 
+## Version 25.11.17 (2026-03-10)
+
+### Enhancement
+
+- MT40540: MS Graph: Option to synchronize only one user #1337
+
+### Fixes
+
+- MT45926: Fix how absences are treated when calculating absence in a week #1330
+- MT49425: Exclude absent staff from "end of service" check #1308
+- MT50253: Use a Bootstrap icon for the emoji selector #1333
+
+### Security
+
+- MT51961: Fix XSS issue when updating the list of options for a select
+- MT52356: Remove `raw` filters where possible
+- MT51960: Sanitize dateSQL and dateFr3 return values
+- MT50461: Update DataTables (2.3.7) #1332 / Fix XSS vulnerability in the DataTables CVE-2015-6584
+
+### Plumbing
+
+- MT51475: ICS Export: Isolate data preparation #1304
+
 ## Version 25.11.16 (2026-02-20)
 
 ### Enhancement
