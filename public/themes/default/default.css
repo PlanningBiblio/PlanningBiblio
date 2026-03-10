@@ -1744,7 +1744,7 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 }
 
 .btn {
-  min-width: 40px;
+  min-width: 105px;
   font-family: Poppins;
   font-size: 1em;
   font-weight: bold;
@@ -1764,12 +1764,11 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   white-space: nowrap;
 }
 
-.top-buttons .col:first-child {
-  padding: 10px 0;
+.container{
+  display: contents;
 }
 
 .top-buttons .col:last-child {
-  padding: 10px 0;
   text-align: right;
 }
 
