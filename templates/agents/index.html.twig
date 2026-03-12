@@ -81,8 +81,8 @@
           <td>{{ a.surname | raw}} </td>
           <td>{{ a.hours }}</td>
           {% if not config('Planook') %}
-            <td>{{ a.status | raw }}</td>
-            <td>{{ a.service | raw }}</td>
+            <td>{{ a.status }}</td>
+            <td>{{ a.service }}</td>
           {% endif %}
           {% if nbSites > 1 %}
             <td>{{ a.sites | raw }}</td>
@@ -123,7 +123,7 @@
                   <option value='-1'>{{ lang.do_not_change }}</option>
                   <option value=''>Aucun</option>
                   {% for s in status %}
-                    <option value='{{ s.valeur }}'>{{ s.valeur | raw }}</option>
+                    <option value='{{ s.valeur }}'>{{ s.valeur }}</option>
                   {% endfor %}
                 </select>
               </td>
@@ -151,7 +151,7 @@
                   <option value='-1'>{{ lang.do_not_change }}</option>
                   <option value=''>Aucun</option>
                   {% for se in services %}
-                    <option value='{{ se.valeur }}'>{{ se.valeur | raw }}</option>
+                    <option value='{{ se.valeur }}'>{{ se.valeur }}</option>
                   {% endfor %}
                 </select>
               </td>
