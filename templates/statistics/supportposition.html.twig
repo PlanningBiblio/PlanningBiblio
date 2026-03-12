@@ -8,7 +8,7 @@
       <table class="statistics-div">
         <tr style='vertical-align:top;'>
           <td id='stat-col1'>
-            <form name='form' action='{{ asset('statistics/supportposition') }}' method='post'>
+            <form name='form' action='{{ asset('statistics/supportposition') }}' method='post' onsubmit="return verif_form('debut=date1;fin=date2');">
               <table>
                 <tr>
                   <td><label >Début</label></td>

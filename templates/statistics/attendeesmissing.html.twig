@@ -7,7 +7,7 @@
     <h3>Liste des agents présents et absents</h3>
     <div class="statistics-div">
       <div>
-        <form name="form" method="post" action="{{ asset('statistics/attendeesmissing') }}">
+        <form name="form" method="post" action="{{ asset('statistics/attendeesmissing') }}" onsubmit="return verif_form('from=date1;to=date2');">
           <table class='tableauStandard' style='margin-top:35px;'>
             <tr>
               <td>

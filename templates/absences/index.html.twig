@@ -8,7 +8,7 @@
 
 {% block page %}
   <h3>Liste des absences</h3>
-  <form name="form" id="absencesListForm" method="get" action="{{ asset('absence') }}">
+  <form name="form" id="absencesListForm" method="get" action="{{ asset('absence') }}" onsubmit="return verif_form('debut=date1;fin=date2');">
     <div class="container top-buttons">
       <div class="row">
         <div class="col">

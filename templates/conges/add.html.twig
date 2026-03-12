@@ -14,7 +14,7 @@
       <table border='0' class="align-info">
         <tr style='vertical-align:top'>
           <td>
-            <form name='form' action='/holiday' method='post' id='form'>
+            <form name='form' action='/holiday' method='post' id='form' onsubmit="return verif_form('debut=date1;fin=date2');">
               <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
               <input type='hidden' name='confirm' value='confirm' />
               <input type='hidden' name='reliquat' value='{{ reliquat }}' />

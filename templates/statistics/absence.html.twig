@@ -10,7 +10,7 @@
         <tr>
           <td style='width:350px;'><b>Du {{ debut }} au {{ fin }}</b></td>
           <td>
-            <form name='form' method='get' action='{{ asset("statistics/absence") }}'>
+            <form name='form' method='get' action='{{ asset("statistics/absence") }}' onsubmit="return verif_form('debut=date1;fin=date2');">
               <input type='hidden' id='afficheHeures' value='{{ afficheHeures }}' />
               Début <input type='text' name='debut' class='datepicker start-date' value='{{ debut }}' />&nbsp;
               Fin <input type='text' name='fin' class='datepicker end-date' value='{{ fin }}' />&nbsp;

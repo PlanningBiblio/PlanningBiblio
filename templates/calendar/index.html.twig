@@ -15,7 +15,7 @@
     {% endif %}
     <div id="div_agenda_content">
     {% if agents is iterable %}
-      <form name='form' method='get' action="{{ asset('calendar') }}">
+      <form name='form' method='get' action="{{ asset('calendar') }} onsubmit="return verif_form('debut=date1;fin=date2');"">
         Début : <input type='text' name='debut' id='debut' value={{begin}} class='datepicker start-date' />
         &nbsp;&nbsp;Fin : <input type='text' name='fin' id='fin' value={{end}} class='datepicker end-date' />
       {% if admin == 1 %}
