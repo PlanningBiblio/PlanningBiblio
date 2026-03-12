@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Config;
 use App\Planno\Notifier;
+use App\Repository\ConfigRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +30,9 @@ class BaseController extends AbstractController
 
     protected $permissions;
 
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, RequestStack $requestStack)
+    protected $configRepository;
+
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, RequestStack $requestStack, ConfigRepository $configRepository)
     {
         $request = $requestStack->getCurrentRequest();
 
@@ -64,15 +67,17 @@ class BaseController extends AbstractController
 
         /*
          * TODO FIXME
-         * Some unit tests fail if we do not use  $url and $GLOBLAS['config']
+         * Some unit tests fail if we do not use $url and $GLOBLAS['config']
          * The result return by Config::getAll may be incomplete
          */
         // $this->config = $entityManager->getRepository(Config::class)->getAll();
-        $url = $this->entityManager->getRepository(Config::class)
+        /*
+        $url = $this->configRepository
             ->findOneBy(['nom' => 'URL'])
             ->getValue();
 
         $GLOBALS['config']['URL'] = $url;
+        */
         $this->config = $GLOBALS['config'];
     }
 

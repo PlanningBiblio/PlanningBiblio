@@ -3,13 +3,17 @@
 namespace App\Repository;
 
 use App\Entity\Config;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends EntityRepository<Config>
- */
-class ConfigRepository extends EntityRepository
+class ConfigRepository extends ServiceEntityRepository
 {
+
+   public function __construct(ManagerRegistry $registry)
+   {
+       parent::__construct($registry, Config::class);
+   }
+
     /**
      * @return Config[] Returns an array of Config objects
      */
@@ -27,4 +31,23 @@ class ConfigRepository extends EntityRepository
 
         return $config;
     }
+
+    public function getParam($name) {
+        $configOption = $this->findOneBy(['nom' => $name]);
+        return $configOption->getValue();
+    }
+
+    public function setParam($name, $value, $technical = 0)
+    {
+        $GLOBALS['config'][$name] = $value;
+        $param = $this->findOneBy(['nom' => $name]);
+
+        if (!$param) {
+            # error
+        } else {
+            $param->setValue($value);
+            $param->setTechnical($technical);
+        }
+    }
+
 }

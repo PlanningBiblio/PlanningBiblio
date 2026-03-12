@@ -1,7 +1,9 @@
 <?php
 
 use App\Entity\Agent;
+use App\Controller\ConfigController;
 
+use Symfony\Component\HttpFoundation\Request;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 

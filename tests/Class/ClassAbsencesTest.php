@@ -197,6 +197,7 @@ class ClassAbsencesTest extends PLBWebTestCase
         return $absence->id;
     }
 
+    #TODO: Remove me, since duplicate of PLBWebTestCase.php:setParam?
     protected function setParam($name, $value)
     {
         global $entityManager;
