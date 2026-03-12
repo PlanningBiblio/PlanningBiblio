@@ -800,23 +800,28 @@ $(function(){
     * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début et inversement
     * La date du calendrier de début devient la date minimal disponible pour le calendrier de fin et inversement
     */
-    $(".datepicker").focusin(function(){
+    $(".datepicker").on('click', function(){
       if($(this).attr("name") == "fin"){
         var debut = $('input[name="debut"]').bootstrapDP("getDate");
         var fin = $(this).bootstrapDP("getDate");
 
-        if(debut != null && fin == null){
+        if(debut != null){
           $(this).bootstrapDP('setStartDate', debut);
-          $(this).bootstrapDP('setDate', debut);
+          if( fin == null){
+            $(this).bootstrapDP('setDate', debut);
+          }
         }
       }
+
       if($(this).attr("name") == "debut"){
         var fin = $('input[name="fin"]').bootstrapDP("getDate");
         var debut = $(this).bootstrapDP("getDate");
 
-        if(fin != null && debut == null){
+        if(fin != null){
           $(this).bootstrapDP('setEndDate', fin);
-          $(this).bootstrapDP('setDate', fin);
+          if( debut == null){
+            $(this).bootstrapDP('setDate', fin);
+          }
         }
       }
     });
