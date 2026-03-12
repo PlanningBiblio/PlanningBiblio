@@ -35,10 +35,7 @@ class AbsenceController extends BaseController
         $session = $request->getSession();
 
         $debut = $request->get('debut');
-        $debut = filter_var($debut, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
         $fin = $request->get('fin');
-        $fin = filter_var($fin, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
-
         $reset = $request->get('reset');
         $droits = $GLOBALS['droits'];
 

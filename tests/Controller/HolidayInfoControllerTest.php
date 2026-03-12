@@ -22,8 +22,11 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,401,601));
 
+        $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
+        $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
+
         $_SESSION['oups']['CSRFToken'] = '00000';
-        $this->client->request('POST', '/holiday-info', array('debut' => '05/10/2022', 'fin' => '10/10/2022', 'texte' => 'salut', 'CSRFToken' => '00000'));
+        $this->client->request('POST', '/holiday-info', array('debut' => '05/10/2022 00:00:00', 'fin' => '10/10/2022 00:00:00', 'texte' => 'salut', 'CSRFToken' => '00000'));
         $info = $entityManager->getRepository(HolidayInfo::class)->findOneBy(array('texte' => 'salut'));
 
         $this->assertEquals('2022-10-05', $info->getStart()->format('Y-m-d'), "debut is ok");
