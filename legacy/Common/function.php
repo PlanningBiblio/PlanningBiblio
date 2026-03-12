@@ -890,27 +890,46 @@ function dateFr($date, $heure=null): ?string
 
 // Converts a Y-m-d (SQL) date to a d/m/Y (fr) date
 // If a fr date is provided, it is returned as is.
+// Allows to have an hour after the date in hh:mm:ss form
 function dateFr3($date)
 {
-    if (preg_match("/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/", $date)) {
+    $sqlDateRegex = '([0-9]{4})-([0-9]{2})-([0-9]{2})';
+    $frDateRegex  = '([0-9]{2})\/([0-9]{2})\/([0-9]{4})';
+    $hourRegex    = '([0-9]{2}:[0-9]{2}:[0-9]{2})';
+
+    if (preg_match("/^$frDateRegex$/", $date) ||
+        preg_match("/^$frDateRegex $hourRegex$/", $date)
+    ) {
         return $date;
     }
-    $count = 0;
-    $result = preg_replace("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", "$3/$2/$1", $date, -1, $count);
-    return $count !== 0 ? $result : '';
+    if (preg_match("/^$sqlDateRegex$/", $date)) {
+        return preg_replace("/^$sqlDateRegex$/", "$3/$2/$1", $date);
+    }
+    if (preg_match("/^$sqlDateRegex $hourRegex$/", $date)) {
+        return preg_replace("/^$sqlDateRegex $hourRegex$/", "$3/$2/$1 $4", $date);
+    }
 }
 
 // Converts a d/m/Y (fr) date to a Y-m-d (SQL) date
 // If a SQL date is provided, it is returned as is.
+// Allows to have an hour after the date in hh:mm:ss form
 function dateSQL($date)
 {
-    if (preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $date)) {
+    $sqlDateRegex = '([0-9]{4})-([0-9]{2})-([0-9]{2})';
+    $frDateRegex  = '([0-9]{2})\/([0-9]{2})\/([0-9]{4})';
+    $hourRegex    = '([0-9]{2}:[0-9]{2}:[0-9]{2})';
+
+    if (preg_match("/^$sqlDateRegex$/", $date) ||
+        preg_match("/^$sqlDateRegex $hourRegex$/", $date)
+    ) {
         return $date;
     }
-    $count = 0;
-    $result = preg_replace("/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/", "$3-$2-$1", $date, -1, $count);
-    return $count !== 0 ? $result : '';
-
+    if (preg_match("/^$frDateRegex$/", $date)) {
+        return preg_replace("/^$frDateRegex$/", "$3-$2-$1", $date);
+    }
+    if (preg_match("/^$frDateRegex $hourRegex$/", $date)) {
+        return preg_replace("/^$frDateRegex $hourRegex$/", "$3-$2-$1 $4", $date);
+    }
 }
 
 function decode($n)
