@@ -33,9 +33,9 @@
           <option value=''>Aucun</option>
             {%for elem in statuts %}
               {% if elem.valeur == statut %}
-                <option selected="selected" value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
+                <option selected="selected" value="{{ elem.valeur }}">{{ elem.valeur }}</option>
               {% else %}
-                <option value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
+                <option value="{{ elem.valeur }}">{{ elem.valeur }}</option>
               {% endif %}
             {% endfor %}
         </select>
@@ -66,9 +66,9 @@
           <option value=''>Aucun</option>
           {%for elem in services %}
             {% if elem.valeur == service %}
-              <option selected="selected" value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
+              <option selected="selected" value='{{ elem.valeur }}'>{{ elem.valeur }}</option>
             {% else %}
-              <option value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
+              <option value='{{ elem.valeur }}'>{{ elem.valeur }}</option>
             {% endif %}
           {% endfor %}
         </select>
