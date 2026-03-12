@@ -13,11 +13,11 @@
       <div class="row">
         <div class="col">
           <label for="debut" >Début :</label>
-          <input type="text" id="debut" name="debut" value="{{ debut }}" class="datepicker"/>
+          <input type="text" id="debut" name="debut" value="{{ debut }}" class="datepicker start-search"/>
         </div>
         <div class="col" style='vertical-align:middle;'>
           <label>Fin :</label>
-          <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker'/>
+          <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker end-search'/>
         </div>
         {% if managed | length > 1 %}
           <div class="col">

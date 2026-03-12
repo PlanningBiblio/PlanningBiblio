@@ -800,48 +800,41 @@ $(function(){
     * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début et inversement
     * La date du calendrier de début devient la date minimal disponible pour le calendrier de fin et inversement
     */
-    $(".datepicker").on('click', function(){
-      if($(this).attr("name") == "fin"){
-        var debut = $('input[name="debut"]').bootstrapDP("getDate");
+    $(".datepicker.end-date").on('click', function(){
+      var debut = $(".datepicker.start-date").bootstrapDP("getDate");
+      var fin = $(this).bootstrapDP("getDate");
+
+      if(debut != null){
+        $(this).bootstrapDP('setStartDate', debut);
+        if( fin == null){
+          $(this).bootstrapDP('setDate', debut);
+        }
+      }
+    }).on('changeDate',function(){
+        var debut = $(".datepicker.start-date").bootstrapDP("getDate");
         var fin = $(this).bootstrapDP("getDate");
 
         if(debut != null){
-          $(this).bootstrapDP('setStartDate', debut);
-          if( fin == null){
-            $(this).bootstrapDP('setDate', debut);
-          }
+          $(".datepicker.start-date").bootstrapDP('setEndDate', fin);
         }
-      }
-
-      if($(this).attr("name") == "debut"){
-        var fin = $('input[name="fin"]').bootstrapDP("getDate");
-        var debut = $(this).bootstrapDP("getDate");
-
-        if(fin != null){
-          $(this).bootstrapDP('setEndDate', fin);
-          if( debut == null){
-            $(this).bootstrapDP('setDate', fin);
-          }
-        }
-      }
     });
 
-    $(".datepicker").on('changeDate',function(){
-      if($(this).attr("name") == "fin"){
-        var debut = $('input[name="debut"]').bootstrapDP("getDate");
-        var fin = $(this).bootstrapDP("getDate");
+    $(".datepicker.start-date").on('click', function(){
+      var fin = $(".datepicker.end-date").bootstrapDP("getDate");
+      var debut = $(this).bootstrapDP("getDate");
 
-        if(debut != null){
-          $('input[name="debut"]').bootstrapDP('setEndDate', fin);
+      if(fin != null){
+        $(this).bootstrapDP('setEndDate', fin);
+        if( debut == null){
+          $(this).bootstrapDP('setDate', fin);
         }
       }
-      if($(this).attr("name") == "debut"){
-        var fin = $('input[name="fin"]').bootstrapDP("getDate");
-        var debut = $(this).bootstrapDP("getDate");
+    }).on('changeDate',function(){
+      var fin = $(".datepicker.end-date").bootstrapDP("getDate");
+      var debut = $(this).bootstrapDP("getDate");
 
-        if(fin != null){
-          $('input[name="fin"]').bootstrapDP('setStartDate', debut);
-        }
+      if(fin != null){
+        $(".datepicker.end-date").bootstrapDP('setStartDate', debut);
       }
     });
 

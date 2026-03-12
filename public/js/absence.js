@@ -625,9 +625,9 @@ $(function() {
     });
   });
 
-    $("#debut").on('changeDate', function(e) {
-    var start = $("#debut").bootstrapDP('getDate');
-    var end = $("#fin").bootstrapDP('getDate');
+    $(".start-search").on('changeDate', function(e) {
+    var start = $(".start-search").bootstrapDP('getDate');
+    var end = $(".end-search").bootstrapDP('getDate');
 
     if (start || end) {
       if (!start) {
@@ -639,14 +639,14 @@ $(function() {
       var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
       if (number_of_days > 367 || start > end) {
         end.setTime(start.getTime() +  (365 * 24 * 60 * 60 * 1000));
-        $('#fin').bootstrapDP('setDate', end.toLocaleDateString());
+        $('.end-search').bootstrapDP('setDate', end.toLocaleDateString());
       }
     }
   });
 
-  $("#fin").on('changeDate', function(e) {
-    var start = $("#debut").bootstrapDP('getDate');
-    var end = $("#fin").bootstrapDP('getDate');
+  $(".end-search").on('changeDate', function(e) {
+    var start = $(".start-search").bootstrapDP('getDate');
+    var end = $(".end-search").bootstrapDP('getDate');
 
     if (start || end) {
       if (!start) {
@@ -658,7 +658,7 @@ $(function() {
       var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
       if (number_of_days > 367 || start > end) {
         start.setTime(end.getTime() -  (365 * 24 * 60 * 60 * 1000));
-        $('#debut').bootstrapDP('setDate',start.toLocaleDateString());
+        $('.start-search').bootstrapDP('setDate',start.toLocaleDateString());
       }
     }
   });

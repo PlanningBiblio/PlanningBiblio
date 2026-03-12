@@ -13,9 +13,9 @@
           <input type='hidden' name='page' />
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <label for='debut'>Début</label>
-          <input type='text' name='debut' class='datepicker' value='{{ debutFr }}' style='margin:0 20px 0 5px;' />
+          <input type='text' name='debut' class='datepicker start-date' value='{{ debutFr }}' style='margin:0 20px 0 5px;' />
           <label for='fin'>Fin</label>
-          <input type='text' name='fin' class='datepicker' value='{{ finFr }}' style='margin:0 0 0 5px;' />
+          <input type='text' name='fin' class='datepicker end-date' value='{{ finFr }}' style='margin:0 0 0 5px;' />
           {% if groups_exist %}
             <span id='stat-temps-aff-grp'>
               <input type='checkbox' value='on' id='selection_groupe' name='selection_groupe' {{ checked }} />
