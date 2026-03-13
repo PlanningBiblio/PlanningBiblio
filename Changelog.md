@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 25.11.18 (2026-03-13)
+
+### Security
+
+- MT51960: Sanitize dateSQL and dateFr3 return values
+> Keep exact compatibility for dateSQL and dateFr3 by allowing to have date and hour as a parameter
+
 ## Version 25.11.17 (2026-03-10)
 
 ### Enhancement
