@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.10.14 (2026-03-13)
+
+### Security
+
+- MT51960: Sanitize dateSQL and dateFr3 return values
+
 ## Version 25.10.13 (2026-03-12)
 
 ### Enhancement
