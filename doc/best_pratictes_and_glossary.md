@@ -38,6 +38,8 @@
 | comment | texte or commentaires |
 | current | actuel |
 | day | jour |
+| dayOff | ferie |
+| dayClosed | fermeture |
 | debit | debit |
 | delete | supprime | type int (userId) |
 | deleteDate | suppr_date |
@@ -125,6 +127,7 @@
 | week | semaine |
 | weeklyWorkingHours | heures_travail | For Agent |
 | workingHours | temps |
+| year | annee |
 
 ## Repositories
 
