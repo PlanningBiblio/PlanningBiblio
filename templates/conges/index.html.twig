@@ -16,7 +16,7 @@
     Liste des congés de {{ agent_name }}, de {{ debut }} à {{ fin }}.
   </h3>
 
-  <form name='form' method='get' action='{{ asset("holiday/index") }}' class='noprint' onsubmit="return verif_form('debut=date1;fin=date2');">
+  <form name='form' method='get' action='{{ asset("holiday") }}' class='noprint' onsubmit="return verif_form('debut=date1;fin=date2');">
     <div class="container top-buttons">
       <div class="row">
         <div class="col">
@@ -63,9 +63,9 @@
         </div>
         <div class="col-3">
           {% if show_recovery %}
-            <a href='{{ asset("holiday/index") }}?recup=1&reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
+            <a href='{{ asset("holiday") }}?recup=1&reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
           {% else %}
-            <a href='{{ asset("holiday/index") }}?reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
+            <a href='{{ asset("holiday") }}?reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
           {% endif %}
         </div>
         <div class="col">

@@ -45,7 +45,7 @@ $(function(){
   });
 
   $('#cancel').on('click', function() {
-    document.location.href = url('holiday/index');
+    document.location.href = url('holiday');
   });
 
   $('#validate').on('click', function() {
@@ -569,7 +569,7 @@ function hours_to_days(hours, hours_per_day) {
 
 function supprimeConges(retour){
   if(retour == undefined){
-    retour = '/holiday/index';
+    retour = '/holiday';
   }
 
   conf=confirm("Etes-vous sûr(e) de vouloir supprimer ce congé ?");
