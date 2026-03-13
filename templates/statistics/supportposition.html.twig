@@ -8,15 +8,15 @@
       <table class="statistics-div">
         <tr style='vertical-align:top;'>
           <td id='stat-col1'>
-            <form name='form' action='{{ asset('statistics/supportposition') }}' method='post'>
+            <form name='form' action='{{ asset('statistics/supportposition') }}' method='post' onsubmit="return verif_form('debut=date1;fin=date2');">
               <table>
                 <tr>
                   <td><label >Début</label></td>
-                  <td><input type='text' name='debut' value='{{ debut }}' class='datepicker' /></td>
+                  <td><input type='text' name='debut' value='{{ debut }}' class='datepicker start-date' /></td>
               </tr>
               <tr>
                 <td><label >Fin</label></td>
-                <td><input type='text' name='fin' value='{{ fin }}' class='datepicker' /></td>
+                <td><input type='text' name='fin' value='{{ fin }}' class='datepicker end-date' /></td>
               </tr>
               <tr>
                 <td><label >Tri</label></td>

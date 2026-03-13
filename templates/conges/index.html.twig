@@ -2,6 +2,10 @@
 
 {% extends 'base.html.twig' %}
 
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('js/absence.js') }}"></script>
+{% endblock %}
+
 {% block page %}
   {% if conges_recuperation == 1 and show_recovery %}
     <h3 class='noprint'>Liste des récupérations</h3>
@@ -9,34 +13,19 @@
     <h3 class='noprint'>Liste des congés</h3>
   {% endif %}
   <h3 class='print_only'>
-    Liste des congés de {{ agent_name }}, année {{ from_year }}-{{ to_year }}.
+    Liste des congés de {{ agent_name }}, de {{ debut }} à {{ fin }}.
   </h3>
 
-  <form name='form' method='get' action='{{ asset("holiday/index") }}' class='noprint'>
+  <form name='form' method='get' action='{{ asset("holiday") }}' class='noprint' onsubmit="return verif_form('debut=date1;fin=date2');">
     <div class="container top-buttons">
       <div class="row">
         <div class="col">
-          Année: 
-          <select name='annee'>
-            {% for y in years %}
-              {% if from_year == y[0] %}
-                <option value='{{ y[0] }}' selected="selected">{{ y[1] }}</option>
-              {% else %}
-                <option value='{{ y[0] }}'>{{ y[1] }}</option>
-              {% endif %}
-            {% endfor %}
-          </select>
+          <label for="debut" >Début :</label>
+          <input type="text" id="debut" name="debut" value="{{ debut }}" class="datepicker start-search"/>
         </div>
         <div class="col">
-          Congés: 
-          <select name='congesAffiches'>
-            <option value='tous'>Tous</option>
-            {% if forthcoming %}
-              <option value='aVenir' selected="selected">A venir</option>
-            {% else %}
-              <option value='aVenir'>A venir</option>
-            {% endif %}
-          </select>
+          <label>Fin :</label>
+          <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker end-search'/>
         </div>
 
         {% if admin %}
@@ -74,9 +63,9 @@
         </div>
         <div class="col-3">
           {% if show_recovery %}
-            <a href='{{ asset("holiday/index") }}?recup=1&reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
+            <a href='{{ asset("holiday") }}?recup=1&reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
           {% else %}
-            <a href='{{ asset("holiday/index") }}?reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
+            <a href='{{ asset("holiday") }}?reset=on' class='ui-button ui-button-type2' >Réinitialiser</a>
           {% endif %}
         </div>
         <div class="col">

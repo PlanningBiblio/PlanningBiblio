@@ -63,10 +63,10 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1"]');
         $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker"]')->eq(0);
+        $result = $crawler->filterXPath('//input[@class="datepicker start-date"]');
         $this->assertEquals($result->attr('name'),'start','input datepicker name is start');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker"]')->eq(1);
+        $result = $crawler->filterXPath('//input[@class="datepicker end-date"]');
         $this->assertEquals($result->attr('name'),'end','input datepicker name is end');
 
         $result = $crawler->filterXPath('//textarea');

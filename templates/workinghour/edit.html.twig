@@ -53,11 +53,11 @@
             <div id='periode'>
               <p>
                 <label  for='debut'>Début d'utilisation</label>
-                <input type='text' name='debut' {% if request_exception is null %}value='{{ debut1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:400px; width:200px;' />
+                <input type='text' name='debut' {% if request_exception is null %}value='{{ debut1Fr }}'{% endif %} class='datepicker start-date' style='position:absolute; left:400px; width:200px;' />
               </p>
               <p>
                 <label for='fin'>Fin d'utilisation</label>
-                <input type='text' name='fin' {% if request_exception is null %}value='{{ fin1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:400px; width:200px;' />
+                <input type='text' name='fin' {% if request_exception is null %}value='{{ fin1Fr }}'{% endif %} class='datepicker end-date' style='position:absolute; left:400px; width:200px;' />
               </p>
             </div> <!-- id=periode -->
             {% if thisNbSemaine is defined and copy is defined and copy != '' and nbSemaine is defined and thisNbSemaine != nbSemaine %}

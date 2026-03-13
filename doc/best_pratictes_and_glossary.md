@@ -129,6 +129,7 @@
 ## Repositories
 
 | Old | New | Comment |
+| ---- | -------- | ------- |
 | conges::fetchCredit | Agent::fetchCredits |
 | conges::maj | Holiday::insert |
 | personnel::delete | Agent::delete |
@@ -153,3 +154,12 @@
     * `bin/console doctrine:migrations:migrate first` : rollback all migrate
 
 > NB: All pending migrations will be automatically executed during Planno updates (when the branch is released). We no longer need to add them to the maj.php file.
+
+## Templates
+
+| Old | New | Comment |
+| ---- | -------- | ------- |
+| #debut | .start-date| class used for the correct initialization of a datepicker's starting-date |
+| #fin | .end-date| class used for the correct initialization of a datepicker's ending-date|
+| #debut | .start-search| class used for the starting-date of a search form with search span limitation of one year|
+| #fin | .end-search| class used for the ending-date of a search form with search span limitation of one year |

@@ -21,7 +21,7 @@
           Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>
           <a href='{{ asset("absence") }}'>Retour à la liste des absences</a><br/><br/>
       {% else %}
-        <form name='form' id='form' method='post' action='{{ asset("absence") }}' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
+        <form name='form' id='form' method='post' action='{{ asset("absence") }}'>
           <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />
@@ -100,7 +100,7 @@
               <tr>
                 <td class="textAlignRight"><label>Date de début</label> </td>
                 <td style='white-space:nowrap;'>
-                  <input type='text' name='debut' value='{{ debut }}' style='width:100%;' class='datepicker'/>
+                  <input type='text' name='debut' value='{{ debut }}' style='width:100%;' class='datepicker start-date'/>
                 </td>
               </tr>
                 {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
@@ -121,7 +121,7 @@
                   <label>Date de fin</label>
                 </td>
                 <td style='white-space:nowrap;'>
-                  <input type='text' name='fin' value='{{ fin }}' style='width:100%;' class='datepicker'/>
+                  <input type='text' name='fin' value='{{ fin }}' style='width:100%;' class='datepicker end-date'/>
                 </td>
               </tr>
                 {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}

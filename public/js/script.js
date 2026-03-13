@@ -777,52 +777,64 @@ $(function(){
     });
 
     $(".ui-button").button();
-    $(".datepicker").datepicker({
-      showOtherMonths: true,
-      selectOtherMonths: true,
+
+    $("#pl-calendar").bootstrapDP({
+      format: 'yyyy-mm-dd',
+      todayHighlight: true,
+      language: "fr",
+      toggleActive : true,
     });
 
-    $(".datepicker").addClass("center ui-widget-content ui-corner-all");
+    $("input.datepicker").bootstrapDP({
+      format: 'dd/mm/yyyy',
+      language: "fr",
+      todayHighlight: true,
+      autoclose: true
+    });
+
+    $(".datepicker").addClass("center ui-widget-content");
     $(".datepicker").attr('autocomplete','off');
 
-    /**
-    * Initialiser le calendrier avec la date choisie
-    * @author Farid Goara
-    */
-    if ($("#date").length > 0){
-      if ($("#date").attr("data-set-calendar") != 'undefined' && $("#date").attr("data-set-calendar")!= false  ){
-	var strSelectedDate=$("#date").attr("data-set-calendar");
-	if(strSelectedDate){
-	  var arrSelectedDate=strSelectedDate.split("-");
-	  var numYear = arrSelectedDate[0];
-	  var numMonth = parseInt(arrSelectedDate[1]) - 1;
-	  var numDay = arrSelectedDate[2];
-	  var objSelectedDate = new Date(numYear,numMonth,numDay);
-	  $(".datepicker").datepicker("setDate",objSelectedDate);
-	}
-      }
-    }
 
     /**
-    * Initialiser le defaultDate du calendrier de fin avec eventuelle date choisie dans le calendrier debut
-    * @author Farid Goara
+    * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début et inversement
+    * La date du calendrier de début devient la date minimal disponible pour le calendrier de fin et inversement
     */
-    $(".datepicker").focusin(function(){
-      if($(this).attr("name") == "fin"){
-	var objDateDefaultFin = "";
-	var objDateCurrentDeb = "";
-	if($('input[name="debut"]').datepicker("getDate")){
-	  if(!$(this).datepicker("option","defaultDate" )){
-	    $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
-	  }
-	  else{
-	    objDateDefaultFin = new Date($(this).datepicker("option","defaultDate"));
-	    objDateCurrentDeb = new Date($('input[name="debut"]').datepicker("getDate"));
-	    if(objDateDefaultFin.getDate() != objDateCurrentDeb.getDate() || objDateDefaultFin.getMonth() != objDateCurrentDeb.getMonth() || objDateDefaultFin.getYear() != objDateCurrentDeb.getYear()){
-	      $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
-	    }
-	  }
-	}
+    $(".datepicker.end-date").on('click', function(){
+      var debut = $(".datepicker.start-date").bootstrapDP("getDate");
+      var fin = $(this).bootstrapDP("getDate");
+
+      if(debut != null){
+        $(this).bootstrapDP('setStartDate', debut);
+        if( fin == null){
+          $(this).bootstrapDP('setDate', debut);
+        }
+      }
+    }).on('changeDate',function(){
+        var debut = $(".datepicker.start-date").bootstrapDP("getDate");
+        var fin = $(this).bootstrapDP("getDate");
+
+        if(debut != null){
+          $(".datepicker.start-date").bootstrapDP('setEndDate', fin);
+        }
+    });
+
+    $(".datepicker.start-date").on('click', function(){
+      var fin = $(".datepicker.end-date").bootstrapDP("getDate");
+      var debut = $(this).bootstrapDP("getDate");
+
+      if(fin != null){
+        $(this).bootstrapDP('setEndDate', fin);
+        if( debut == null){
+          $(this).bootstrapDP('setDate', fin);
+        }
+      }
+    }).on('changeDate',function(){
+      var fin = $(".datepicker.end-date").bootstrapDP("getDate");
+      var debut = $(this).bootstrapDP("getDate");
+
+      if(fin != null){
+        $(".datepicker.end-date").bootstrapDP('setStartDate', debut);
       }
     });
 

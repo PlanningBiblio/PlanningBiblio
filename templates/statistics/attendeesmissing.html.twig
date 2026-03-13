@@ -7,16 +7,16 @@
     <h3>Liste des agents présents et absents</h3>
     <div class="statistics-div">
       <div>
-        <form name="form" method="post" action="{{ asset('statistics/attendeesmissing') }}">
+        <form name="form" method="post" action="{{ asset('statistics/attendeesmissing') }}" onsubmit="return verif_form('from=date1;to=date2');">
           <table class='tableauStandard' style='margin-top:35px;'>
             <tr>
               <td>
                 <label >Début :</label>
-                <input type='text' name='from' value='{{ from }}' class='datepicker'/>
+                <input type='text' name='from' value='{{ from }}' class='datepicker start-date'/>
               </td>
               <td>
                 <label >Fin :</label>
-                <input type='text' name='to' value='{{ to }}' class='datepicker'/>
+                <input type='text' name='to' value='{{ to }}' class='datepicker end-date'/>
               </td>
               <td>
                 <input type='submit' value='Rechercher' class='ui-button ui-button-type1' />
