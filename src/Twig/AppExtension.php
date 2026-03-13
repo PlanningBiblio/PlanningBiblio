@@ -172,13 +172,41 @@ class AppExtension extends AbstractExtension
     {
         $config = $GLOBALS['config'];
         $url = $config['URL'] . '/' . $itemUrl;
+        $session = new Session();
+        $site = $session->get('site');
 
         // Handle Planning's menu
-        // si requestedURL  est une date, vérifier la session $session->get('site');
-        // $session = new Session();
-        // $site = $session->get('site');
 
-        return $url === $requestedUrl;
+        // If URL ends with a date or /week check site 
+        if (preg_match('/(.+)(\/[0-9]{4}((-[0-9]{2}){2})|\/week)/', $requestedUrl)){
+            return $url === ($config['URL'] . '/' . $site);
+        }
+
+        // If URL ends with site number
+            if (preg_match('/(.+)(\/[0-9]{1})/', $requestedUrl, $match) and $match[1]===$config['URL']){
+            return $url === $requestedUrl;
+        }
+
+        // if URL empty
+        if ($requestedUrl===($config['URL'] . '/')){
+            return $url === ($config['URL'] . '/' . $site);
+        }
+
+        // Specific case for /absence/add
+        if (preg_match('/absence\/add/', $requestedUrl)){
+            return $url === $requestedUrl;
+        }
+
+        // Find the level-up URL for all routes ending in 'add' or in any number for edit
+        if (preg_match('/(.+?)(-.+)?\/add/', $requestedUrl, $match) or preg_match('/(.+?)(-.+)?(\/[0-9]+)/', $requestedUrl, $match)){
+            return $url === $match[1];
+        }
+
+        // Find the origin URL without the route parameters     
+        if (preg_match('/^([^?]*)/', $requestedUrl, $match)){
+            return $url === $match[0];
+        }
+
     }
 
     public function menuIsActive($menu, $requested_url): bool
