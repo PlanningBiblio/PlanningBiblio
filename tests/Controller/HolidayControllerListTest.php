@@ -94,7 +94,7 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         // Login with agent without rights for holiday
         $this->logInAgent($jdupont, $jdupont->getACL());
-        $crawler = $client->request('GET', "/holiday/index?debut=$debut&fin=$fin");
+        $crawler = $client->request('GET', "/holiday?debut=$debut&fin=$fin");
 
         $this->assertSelectorNotExists('select#perso_id');
 
@@ -103,7 +103,7 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         // Login with agent having rights for holiday
         $this->logInAgent($kboivin, $kboivin->getACL());
-        $crawler = $client->request('GET', "/holiday/index?debut=$debut&fin=$fin");
+        $crawler = $client->request('GET', "/holiday?debut=$debut&fin=$fin");
 
         $agents_select = $crawler->filter('select#perso_id option');
         $this->assertCount(4, $agents_select, 'KBoivin can select 4 options in the list (All, Admin and 3 agents)');

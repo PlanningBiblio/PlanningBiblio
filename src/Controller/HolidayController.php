@@ -21,8 +21,8 @@ require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
 class HolidayController extends BaseController
 {
-    #[Route(path: '/holiday/index', name: 'holiday.index', methods: ['GET'])]
-    public function index(Request $request)
+    #[Route(path: '/holiday', name: 'holiday.index', methods: ['GET'])]
+    public function index(Request $request, Session $session)
     {
         $session = $request->getSession();
 
@@ -36,11 +36,11 @@ class HolidayController extends BaseController
         $lang = $GLOBALS['lang'];
 
         if (!$debut) {
-            $debut = isset($_SESSION['oups']['conges_debut'])?? null;
+            $debut = $session->get('HolidayStart');
         }
 
          if (!$fin) {
-            $fin = isset($_SESSION['oups']['conges_fin'])?? null;
+            $fin = $session->get('HolidayEnd');
         }
 
         // Gestion des droits d'administration
@@ -77,15 +77,17 @@ class HolidayController extends BaseController
             $fin = date('d/m/Y', strtotime(dateFr($debut) . ' +1 year'));
         }
 
-        $_SESSION['oups']['conges_debut']=$debut;
-        $_SESSION['oups']['conges_fin']=$fin;
+        $session->set('HolidayStart', $debut);
+        $session->set('HolidayEnd', $fin);
         $_SESSION['oups']['conges_perso_id']=$perso_id;
         $_SESSION['oups']['conges_agents_supprimes']=$agents_supprimes;
 
+        $debutSQL = \dateSQL($debut);
+        $finSQL = \dateSQL($fin);
 
         $c = new \conges();
-        $c->debut = $debut;
-        $c->fin = $fin . " 23:59:59";
+        $c->debut = $debutSQL;
+        $c->fin = $finSQL . ' 23:59:59';
         if ($perso_id != 0) {
             $c->perso_id = $perso_id;
         }
