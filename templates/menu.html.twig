@@ -19,10 +19,8 @@
             <ul class="dropdown-menu">
 
               {% for item in menu_js[entry.key]["items"] %}
-              {% set url = config('URL') ~ "/" ~ item.url %}
-              {% set itemActive = (app.request.uri is same as(url)) ? true : false %}
-
-              <li><a class="dropdown-item {% if itemActive %} active {% endif %}" {% if itemActive %} aria-current="true" {% endif %} href="{{ asset(item.url) }}">{{ item.title|raw}}</a></li>
+                {% set itemActive = itemIsActive(item.url, app.request.uri) %}
+                <li><a class="dropdown-item {% if itemActive %} active {% endif %}" {% if itemActive %} aria-current="true" {% endif %} href="{{ asset(item.url) }}">{{ item.title|raw}}</a></li>
               {% endfor %} 
             </ul>
           </li>

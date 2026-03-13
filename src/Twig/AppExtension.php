@@ -4,6 +4,7 @@ namespace App\Twig;
 
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -46,6 +47,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('config', [$this, 'getConfig']),
             new TwigFunction('siteName', [$this, 'siteName']),
             new TwigFunction('userCan', [$this, 'userCan']),
+            new TwigFunction('itemIsActive', [$this, 'itemIsActive']),
             new TwigFunction('menuIsActive', [$this, 'menuIsActive']),
             new TwigFunction('colspan', [$this, 'colspan']),
         ];
@@ -166,6 +168,19 @@ class AppExtension extends AbstractExtension
         return $config[$key];
     }
 
+    public function itemIsActive($itemUrl, $requestedUrl): bool
+    {
+        $config = $GLOBALS['config'];
+        $url = $config['URL'] . '/' . $itemUrl;
+
+        // Handle Planning's menu
+        // si requestedURL  est une date, vérifier la session $session->get('site');
+        // $session = new Session();
+        // $site = $session->get('site');
+
+        return $url === $requestedUrl;
+    }
+
     public function menuIsActive($menu, $requested_url): bool
     {
         $config = $GLOBALS['config'];
@@ -174,7 +189,7 @@ class AppExtension extends AbstractExtension
         if (empty($menu)) {
             $uri = substr($requested_url, strlen($config['URL']));
 
-            if ($uri == '/' or $uri == '/detached') {
+            if (in_array($uri, ['/', '/detached', '/week'])) {
                 return true;
             }
 
@@ -207,12 +222,6 @@ class AppExtension extends AbstractExtension
                 return true;
             }
             if (strpos($requested_url, 'overtime') !== false) {
-                return true;
-            }
-        }
-
-        if ($menu == 'index') {
-            if (strpos($requested_url, 'week') !== false) {
                 return true;
             }
         }
