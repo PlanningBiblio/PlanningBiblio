@@ -260,6 +260,17 @@ h4{
 }
 
 /*	Icônes		*/
+
+.bi{
+  color : #29495C;
+}
+
+.bi.bi-caret-right-fill{
+  min-width: 16px;
+  visibility: hidden;
+  padding-top: 2px;
+}
+
 .pl-icon{
   padding: 9px 13px 9px 13px;
   text-decoration:none;
@@ -540,18 +551,23 @@ ul.dropdown-menu a.dropdown-item {
   color: #29495C;
   font-weight: bold;
   font-size: 14px;
+  padding-left: 4px;
 }
 
-a.dropdown-item:hover {
+ul.dropdown-menu li{
+  display: flex;
+}
+
+ul.dropdown-menu li:hover, a.dropdown-item:hover {
   background-color: #FFD700 ;
 }
 
-ul.dropdown-menu li:first-child a.dropdown-item {
+ul.dropdown-menu li:first-child {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
 
-ul.dropdown-menu li:last-child a.dropdown-item {
+ul.dropdown-menu li:last-child {
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 }
@@ -561,6 +577,9 @@ ul.dropdown-menu a.dropdown-item.active , a.dropdown-item.active:hover {
   color: #29495C;
   pointer-events: none;
   cursor: default;
+}
+
+ul.dropdown-menu li.active, ul.dropdown-menu li.active:hover{
   border-bottom : 1px solid #29495C;
   border-top : 1px solid #29495C;
 }
