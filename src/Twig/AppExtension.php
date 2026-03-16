@@ -215,13 +215,11 @@ class AppExtension extends AbstractExtension
 
         // Handle Planning's menu
         if (empty($menu)) {
-            $uri = substr($requested_url, strlen($config['URL']));
 
-            if (in_array($uri, ['/', '/detached', '/week'])) {
-                return true;
-            }
+            (preg_match('/^([^?]*)/', $requested_url, $match));
+            $uri = substr($match[0], strlen($config['URL']));
 
-            return (bool) preg_match('/^\/(\d+)(\/d{4}-\d{2}-\d{2})?/', $uri);
+            return (bool) preg_match('/(\/[0-9]{4}((-[0-9]{2}){2})|\/week|\/detached|\/$|\/[0-9]{1,2}$)/', $uri);
         }
 
         if(strpos($requested_url, "{$config['URL']}/$menu") !== false){
