@@ -186,6 +186,7 @@
               <td>
                 {% if can_manage_agent %}
                   <input type='checkbox' value='1' name='check_ics3' {% if agent.icsCheck[2] %} checked="checked" {% endif %}/>
+                  <input type="text" value="{{ agent.icsUrl }}" name="url_ics" style="width:400px; margin-left:20px;" />
                 {% else %}
                   {% if agent.icsCheck[2] %}
                     <span class='agent-acces-checked2 green bold'>Oui</span>
