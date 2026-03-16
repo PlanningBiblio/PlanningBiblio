@@ -168,11 +168,10 @@ class AppExtension extends AbstractExtension
         return $config[$key];
     }
 
-    public function itemIsActive($itemUrl, $requestedUrl): bool
+    public function itemIsActive($itemUrl, $requestedUrl, $session): bool
     {
         $config = $GLOBALS['config'];
         $url = $config['URL'] . '/' . $itemUrl;
-        $session = new Session();
         $site = $session->get('site');
 
         // Handle Planning's menu
@@ -219,7 +218,7 @@ class AppExtension extends AbstractExtension
             (preg_match('/^([^?]*)/', $requested_url, $match));
             $uri = substr($match[0], strlen($config['URL']));
 
-            return (bool) preg_match('/(\/[0-9]{4}((-[0-9]{2}){2})|\/week|\/detached|\/$|\/[0-9]{1,2}$)/', $uri);
+            return (bool) preg_match('/(\/[0-9]{4}((-[0-9]{2}){2})|\/week|\/detached|\A\/$|\A\/[0-9]{1,2}$)/', $uri);
         }
 
         if(strpos($requested_url, "{$config['URL']}/$menu") !== false){
