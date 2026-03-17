@@ -75,9 +75,8 @@
             </div>
 
             {% if userCan('300', site) or userCan('1000', site) %}
-              <span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning' style="{{ locked ?: 'display:none'}}"></span></a>
-
-              <span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning' style="{{ locked ? 'display:none'}}"></span></a>
+              <span id="icon-lock" class="pl-icon pl-icon-lock pointer noprint" title="Déverrouiller le planning" {% if not locked %} style="display:none;" {% endif %}></span></a>
+              <span id="icon-unlock" class="pl-icon pl-icon-unlock pointer noprint" title="Verrouiller le planning" {% if locked %} style="display:none;" {% endif %}></span></a>
             {% endif %}
 
             {% if userCan('300', site) %}

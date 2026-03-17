@@ -6,6 +6,7 @@ use App\Entity\Config;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverSelect;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Panther\PantherTestCase;
@@ -123,6 +124,9 @@ class PLBWebTestCase extends PantherTestCase
                 '--headless'
             )
         );
+
+        $size = new WebDriverDimension(1600, 1000);
+        $this->client->manage()->window()->maximize()->setSize($size);
     }
 
     protected function login($agent)
