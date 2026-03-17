@@ -838,6 +838,50 @@ $(function(){
       }
     });
 
+    /**
+    * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début +1an et inversement
+    */
+
+    $(".start-search").on('changeDate', function(e) {
+      var start = $(".start-search").bootstrapDP('getDate');
+      var end = $(".end-search").bootstrapDP('getDate');
+
+      if (start || end) {
+        if (!start) {
+          start = new Date();
+        }
+        if (!end) {
+          end = new Date();
+        }
+        var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
+        if (number_of_days > 367 || start > end) {
+          end.setTime(start.getTime() +  (365 * 24 * 60 * 60 * 1000));
+          $('.end-search').bootstrapDP('setDate', end.toLocaleDateString());
+        }
+      }
+    });
+
+    $(".end-search").on('changeDate', function(e) {
+      var start = $(".start-search").bootstrapDP('getDate');
+      var end = $(".end-search").bootstrapDP('getDate');
+
+      if (start || end) {
+        if (!start) {
+          start = new Date();
+        }
+        if (!end) {
+          end = new Date();
+        }
+        var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
+        if (number_of_days > 367 || start > end) {
+          start.setTime(end.getTime() -  (365 * 24 * 60 * 60 * 1000));
+          $('.start-search').bootstrapDP('setDate',start.toLocaleDateString());
+        }
+      }
+    });
+
+
+
     // Onglets
     $(".ui-tabs").tabs({
       active: $(".ui-tabs").attr("data-active"),

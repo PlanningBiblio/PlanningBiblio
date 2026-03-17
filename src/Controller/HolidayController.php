@@ -63,7 +63,7 @@ class HolidayController extends BaseController
         $agents_supprimes = (isset($_GET['debut']) and !isset($_GET['supprimes']))?false:$agents_supprimes;
 
         if ($reset) {
-            $debut = date('d/m/Y');
+            $debut = null;
             $fin = null;
             $perso_id = $session->get('loginId');
             $agents_supprimes=false;

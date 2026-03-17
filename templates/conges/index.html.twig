@@ -2,10 +2,6 @@
 
 {% extends 'base.html.twig' %}
 
-{% block specificjs %}
-  <script type="text/JavaScript" src="{{ asset('js/absence.js') }}"></script>
-{% endblock %}
-
 {% block page %}
   {% if conges_recuperation == 1 and show_recovery %}
     <h3 class='noprint'>Liste des récupérations</h3>

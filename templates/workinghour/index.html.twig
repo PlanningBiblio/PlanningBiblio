@@ -6,11 +6,11 @@
 
   <h3>Heures de présence</h3>
   <div id='buttons'>
-    <form name='form' method='get' action='{{ asset("workinghour") }}' onsubmit="return verif_form('debut=date1;fin=date2');">
-      Début : <input type='text' name='debut' class='datepicker start-date' value='{{ debut }}' />
-      &nbsp;&nbsp;Fin : <input type='text' name='fin' class='datepicker end-date' value='{{ fin }}' />
-      &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
-      &nbsp;&nbsp;<input type='button' value='Effacer' onclick="location.href='{{ asset("workinghour") }}?reset=on'" class='ui-button ui-button-type2' />
+    <form name='form' method='get' action='{{ asset("workinghour") }}' onsubmit="return plHebdoVerifForm();">
+      Début : <input type='text' name='debut' class='datepicker start-search' value='{{ debut }}' />
+      &nbsp;&nbsp;Fin : <input type='text' name='fin' class='datepicker end-search' value='{{ fin }}' />
+      &nbsp;&nbsp;<input type='submit' value='Rechercher' class='ui-button' />
+      &nbsp;&nbsp;<input type='button' value='Réinitialiser' onclick="location.href='{{ asset("workinghour") }}?reset=on'" class='ui-button ui-button-type2' />
      <a class='ui-button ui-button-type2' href='{{ asset("workinghour") }}/add?retour={{ asset("workinghour") }}' style='position:absolute; right:95px;'>Entrer de nouveaux horaires</a>
     </form>
   </div>
