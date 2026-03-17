@@ -58,7 +58,7 @@
         $('#login-empty').hide();
         $('#login-identic').hide();
         $('#new_login').val('');
-        $('#reset-login-form').dialog( 'open' );
+        $('#reset-login-form').dialog('open');
       });
     });
   </script>
@@ -269,7 +269,7 @@
   </div>
 
   <div id="add-statut-form" title="Liste des statuts" class="noprint">
-    <p class="validateTips">Ajoutez, supprimez des statuts. Modifiez leur catégorie. <br> Modifiez l'ordre des statuts dans les menus déroulant.</p>
+    <p class="validateTips">Ajoutez, supprimez des statuts. Modifiez leur catégorie. <br/> Modifiez l'ordre des statuts dans les menus déroulant.</p>
     <form>
       <p>
         <input type="text" id="add-statut-text" style="width:300px;"/>
@@ -294,7 +294,7 @@
                   {% endfor %}
                 </select>
                 {% if elem.value not in statuts_utilises %}
-                  <span class="pl-icon pl-icon-trash" style="position:absolute;left: 500px;cursor:pointer;" onclick='$(this).closest("li").hide();'></span>
+                  <span class="pl-icon pl-icon-trash" style="position:absolute;left: 500px;cursor:pointer;" onclick="$(this).closest('li').hide();"></span>
                 {% endif %}
               </li>
             {% endfor %}
@@ -320,7 +320,7 @@
                 <span class="pl-icon pl-icon-arrowupdown"></span>
                 <font id="valeur_{{ elem.id }}">{{ elem.value }}</font>
                 {% if elem.value not in services_utilises %}
-                  <span class="pl-icon pl-icon-trash" style="position:absolute;left: 500px;cursor:pointer;" onclick='$(this).closest("li").hide();'></span>
+                  <span class="pl-icon pl-icon-trash" style="position:absolute;left: 500px;cursor:pointer;" onclick="$(this).closest('li').hide();"></span>
                 {% endif %}
               </li>
             {% endfor %}

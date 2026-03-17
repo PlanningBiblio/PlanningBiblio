@@ -67,7 +67,7 @@
               <td class="no-hover">{{ elem.nom }} {{ elem.prenom }}</td>
               <td class="center nowrap no-hover">{{ elem.total }}</td>
               {% if afficheHeures == true %}
-                {% if elem.totalHeures == "Erreur" %}
+                {% if elem.totalHeures == 'Erreur' %}
                   <td class="center nowrap no-hover" title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
                 {% else %}
                   <td class="center nowrap no-hover">{{ elem.totalHeures }}</td>

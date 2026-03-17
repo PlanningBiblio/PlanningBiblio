@@ -53,11 +53,11 @@
             <div id='periode'>
               <p>
                 <label  for='debut'>Début d'utilisation</label>
-                <input type='text' name='debut' {% if request_exception is null %}value='{{ debut1Fr }}'{% endif %} class='datepicker start-date' style='position:absolute; left:400px; width:200px;' />
+                <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker start-date" style="position:absolute; left:400px; width:200px;" />
               </p>
               <p>
                 <label for='fin'>Fin d'utilisation</label>
-                <input type='text' name='fin' {% if request_exception is null %}value='{{ fin1Fr }}'{% endif %} class='datepicker end-date' style='position:absolute; left:400px; width:200px;' />
+                <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker end-date" style="position:absolute; left:400px; width:200px;" />
               </p>
             </div> <!-- id=periode -->
             {% if thisNbSemaine is defined and copy is defined and copy != '' and nbSemaine is defined and thisNbSemaine != nbSemaine %}
@@ -154,22 +154,22 @@
               {% endif %}
             {% endif %}
             <div id='boutons' style='padding-top:50px;'>
-              <input type='button' value='Retour' onclick='location.href="{{ retour }}";' class='btn btn-secondary' />
+              <input type="button" value="Retour" onclick="location.href='{{ retour }}';" class="btn btn-secondary" />
               {% if ((adminN1 == true or adminN2 == true  or modifAutorisee == true ) and (not request_exception and not is_exception and not copy and not is_new)) %}
-                <input type='button' value='Ajouter une exception' onclick="location.href='{{asset("workinghour")}}/{{id}}?exception={{id}}&retour={{exception_back}}';" style='margin-left:30px;' class='btn btn-primary' />
+                <input type="button" value="Ajouter une exception" onclick="location.href='{{asset('workinghour')}}/{{id}}?exception={{id}}&retour={{exception_back}}';" style="margin-left:30px;" class="btn btn-primary" />
               {% endif %}
               {% if admin == true and (cle == null or cle == "") %}
                 {% if request_exception == true %}
                   <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="btn btn-primary" />
                 {% else %}
-                  <input type='submit' value='Enregistrer' style="margin-left:30px"; class='btn btn-primary' />
+                  <input type="submit" value="Enregistrer" style="margin-left:30px"; class="btn btn-primary" />
                 {% endif %}
               {% else %}
                 {% if modifAutorisee == true %}
                   {% if request_exception == true %}
                     <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="btn btn-primary" />
                   {% else %}
-                    <input type='submit' value='Enregistrer' style='margin-left:30px;' class='btn btn-primary' />
+                    <input type="submit" value="Enregistrer" style="margin-left:30px;" class="btn btn-primary" />
                   {% endif %}
                 {% endif %}
               {% endif %}

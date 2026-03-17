@@ -58,9 +58,9 @@ class HolidayController extends BaseController
             $perso_id = $session->get('loginId');
         }
 
-        $agents_supprimes=isset($_SESSION['oups']['conges_agents_supprimes'])?$_SESSION['oups']['conges_agents_supprimes']:false;
-        $agents_supprimes = (isset($_GET['debut']) and isset($_GET['supprimes']))?true:$agents_supprimes;
-        $agents_supprimes = (isset($_GET['debut']) and !isset($_GET['supprimes']))?false:$agents_supprimes;
+        $agents_supprimes = isset($_SESSION['oups']['conges_agents_supprimes'])?$_SESSION['oups']['conges_agents_supprimes']:false;
+        $agents_supprimes = (!empty($request->get('debut')) and !empty($request->get('supprimes'))) ? true : $agents_supprimes;
+        $agents_supprimes = (!empty($request->get('debut')) and empty($request->get('supprimes'))) ? false :$agents_supprimes;
 
         if ($reset) {
             $debut = null;
@@ -82,8 +82,8 @@ class HolidayController extends BaseController
         $_SESSION['oups']['conges_perso_id']=$perso_id;
         $_SESSION['oups']['conges_agents_supprimes']=$agents_supprimes;
 
-        $debutSQL = \dateSQL($debut);
-        $finSQL = \dateSQL($fin);
+        $debutSQL = dateSQL($debut);
+        $finSQL = dateSQL($fin);
 
         $c = new \conges();
         $c->debut = $debutSQL;

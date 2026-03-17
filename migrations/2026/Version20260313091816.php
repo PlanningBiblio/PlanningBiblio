@@ -19,6 +19,7 @@ final class Version20260313091816 extends AbstractMigration
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
         $this->addSql("UPDATE `{$dbprefix}menu` SET `url` = '/holiday' WHERE `url` = '/holiday/index';");
+        $this->addSql("UPDATE `{$dbprefix}menu` SET `url` = '/holiday/?recup=1' WHERE `url` = '/holiday/index?recup=1';");
     }
 
     public function down(Schema $schema): void
@@ -26,5 +27,6 @@ final class Version20260313091816 extends AbstractMigration
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
         $this->addSql("UPDATE `{$dbprefix}menu` SET `url` = '/holiday/index' WHERE `url` = '/holiday';");
+        $this->addSql("UPDATE `{$dbprefix}menu` SET `url` = '/holiday/index?recup=1' WHERE `url` = '/holiday/?recup=1';");
     }
 }

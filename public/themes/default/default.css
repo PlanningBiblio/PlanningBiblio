@@ -258,11 +258,11 @@ h4{
 
 /*	Icônes		*/
 
-.bi{
+.bi {
   color : #29495C;
 }
 
-.bi.bi-caret-right-fill{
+.bi.bi-caret-right-fill {
   min-width: 16px;
   visibility: hidden;
   padding-top: 2px;
@@ -490,7 +490,7 @@ li .agent-acces-checked2{
   .dropdown-menu[data-bs-popper] {
     left: 50%;
     transform: translateX(-55%);
-    margin: 7px 10px 10px 10px ;
+    margin: 7px 10px 10px 10px;
   }     
 }
 
@@ -529,7 +529,7 @@ li.nav-item.dropdown a.nav-link.active, li.nav-item.dropdown a.nav-link.active:h
 }
 
 li.nav-item a.nav-link.active, li.nav-item a.nav-link.active:hover {
-  color: #29495C ;
+  color: #29495C;
   border-bottom: 5px solid #FFD700;
   pointer-events: none;
   cursor: default;
@@ -540,7 +540,7 @@ li.nav-item a.nav-link.active, li.nav-item a.nav-link.active:hover {
   border-bottom: 5px solid #29495C;
 }
 
-ul.dropdown-menu{
+ul.dropdown-menu {
   padding: 0px;
 }
 
@@ -551,12 +551,12 @@ ul.dropdown-menu a.dropdown-item {
   padding-left: 4px;
 }
 
-ul.dropdown-menu li{
+ul.dropdown-menu li {
   display: flex;
 }
 
 ul.dropdown-menu li:hover, a.dropdown-item:hover {
-  background-color: #FFD700 ;
+  background-color: #FFD700;
 }
 
 ul.dropdown-menu li:first-child {
@@ -570,7 +570,7 @@ ul.dropdown-menu li:last-child {
 }
 
 ul.dropdown-menu a.dropdown-item.active , a.dropdown-item.active:hover {
-  background-color: white ;
+  background-color: white;
   color: #29495C;
   pointer-events: none;
   cursor: default;
@@ -659,18 +659,19 @@ td.menu_td2:hover{
 	background:#FFD700;
 }
 
-a.myAccountLink{
+a.myAccountLink {
   font-size:10pt;
   text-decoration: none;
 }
 
-a.myAccountLink:hover{
-  text-decoration:underline;
+a.myAccountLink:hover {
+  text-decoration:underline 3px;
+  text-underline-offset: 5px;
 }
 
-a.myAccountLink.active{
-  text-decoration:underline;
-  color: #FFD700;
+a.myAccountLink.active {
+  text-decoration:underline 3px #FFD700;
+  text-underline-offset: 5px;
 }
 
 input[type=text],input[type=password]
@@ -1121,7 +1122,7 @@ div#tabsemaine1{
 }
 
 /* Calendrier affiché en haut des plannings */
-#pl-calendar{
+#pl-calendar {
   border:0;
   background: transparent;
   margin: 10px 0 5px 10px;
@@ -1137,7 +1138,7 @@ div#tabsemaine1{
 
 .datepicker {
   font-size: 11px;
-  color: #29495C ;
+  color: #29495C;
   font-weight: bolder;
 }
 
@@ -1149,7 +1150,7 @@ div#tabsemaine1{
   width: 25px;
 }
 
-.datepicker table tr td span{
+.datepicker table tr td span {
   max-height: 40px;
   line-height: 40px;
 }
@@ -1166,7 +1167,7 @@ div#tabsemaine1{
 }
 
 .datepicker table thead th.prev {
-  background-color: #FFD700 ;
+  background-color: #FFD700;
   border-radius: 0;
   border-bottom-left-radius: 4px;
   border-top-left-radius: 4px;
@@ -1181,12 +1182,12 @@ div#tabsemaine1{
 
 
 .datepicker table thead th.datepicker-switch {
-  background-color: #FFD700 ;
+  background-color: #FFD700;
   border-radius: 0;
 }
 
-.datepicker table thead th.next{
-  background-color: #FFD700 ;
+.datepicker table thead th.next {
+  background-color: #FFD700;
   border-radius: 0;
   border-bottom-right-radius: 4px;
   border-top-right-radius: 4px;
@@ -1197,7 +1198,7 @@ div#tabsemaine1{
 .datepicker table tr td.today:hover:hover,
 .datepicker table tr td.today.disabled,
 .datepicker table tr td.today.disabled:hover {
-  background-color: #FFD700 ;
+  background-color: #FFD700;
   background-image: none;
   color: #29495C;
   border: none;
@@ -1207,7 +1208,7 @@ div#tabsemaine1{
 .datepicker table tr td.active.active:hover,
 .datepicker table tr td span.active.active,
 .datepicker table tr td span.active.active:hover {
-  background-color: #29495C ;
+  background-color: #29495C;
   background-image: none;
   color: white;
   border: none;
@@ -1817,44 +1818,44 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 /*Buttons START*/
 
 .btn.btn-primary , .btn.btn-primary:focus, .btn.btn-primary:active {
-  background-color: #FFD700 ;
+  background-color: #FFD700;
   border: 1px solid #FFD700;
   color: #29495C;
   border-radius: var(--bs-border-radius-sm);
 }
 
 .btn.btn-primary:hover {
-  background-color: #d5ba2B ;
-  border:  1px solid #d5ba2B;
+  background-color: #d5ba2B;
+  border: 1px solid #d5ba2B;
   color: #29495C;
   box-shadow: none;
 }
 
 .btn.btn-secondary, .btn.btn-secondary:focus, .btn.btn-secondary:active {
   background-color: #fff;
-  border:  1px solid #29495C;
-  color: #29495C ;
+  border: 1px solid #29495C;
+  color: #29495C;
   border-radius: var(--bs-border-radius-sm);
 }
 
 .btn.btn-secondary:hover {
-  background-color: #29495C ;
-  border:  1px solid #29495C;
-  color: #fff ;
+  background-color: #29495C;
+  border: 1px solid #29495C;
+  color: #fff;
   box-shadow: none;
   }
 
 .btn.btn-danger, .btn.btn-danger:active, .btn.btn-danger:focus {
-  background-color: #fff ;
-  border:  1px solid #cd1b19;
-  color: #cd1b19 ;
+  background-color: #fff;
+  border: 1px solid #cd1b19;
+  color: #cd1b19;
   border-radius: var(--bs-border-radius-sm);
 }
 
-.btn.btn-danger:hover{
-  background-color: #cd1b19 ;
-  border:  1px solid #cd1b19;
-  color: #fff ;
+.btn.btn-danger:hover {
+  background-color: #cd1b19;
+  border: 1px solid #cd1b19;
+  color: #fff;
   box-shadow: none;
 }
 
@@ -1879,7 +1880,7 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   white-space: nowrap;
 }
 
-.container{
+.container {
   display: contents;
 }
 
