@@ -4,7 +4,6 @@ namespace App\Twig;
 
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;

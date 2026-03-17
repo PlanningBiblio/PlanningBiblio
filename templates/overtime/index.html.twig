@@ -144,8 +144,8 @@
         }
       });
 
-      $( "#dialog-button" ).click(function() {
-          $( "#dialog-form" ).dialog( "open" );
+      $('#dialog-button').click(function() {
+          $('#dialog-form').dialog('open');
           return false;
         });
 
@@ -197,10 +197,10 @@
                     </select>
                   </div>
                 {% endif %}
-                <div class="col" style='margin-left:30px;'><input type='submit' value='Rechercher' id='button-OK' class='btn btn-secondary' style="margin-top: 10px;"/></div>
-                <div class="col" style='margin-left:30px;'><input type='button' value='Réinitialiser' id='button-Effacer' class='btn btn-secondary' onclick='location.href="{{ asset('overtime') }}?reset=on"' style="margin-top: 10px;"/></div>
-                <div class="col" style='float:right; vertical-align:top; margin-top: 10px;'>
-                  <button id='dialog-button' class='btn btn-primary'>Nouvelle demande</button>
+                <div class="col" style="margin-left:30px;"><input type="submit" value="Rechercher" id="button-OK" class="btn btn-secondary" style="margin-top: 10px;"/></div>
+                <div class="col" style="margin-left:30px;"><input type="button" value="Réinitialiser" id="button-Effacer" class="btn btn-secondary" onclick="location.href='{{ asset('overtime') }}?reset=on'" style="margin-top: 10px;"/></div>
+                <div class="col" style="float:right; vertical-align:top; margin-top: 10px;">
+                  <button id="dialog-button" class="btn btn-primary">Nouvelle demande</button>
                 </div>
               </div>
             </span>

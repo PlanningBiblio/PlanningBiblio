@@ -152,7 +152,7 @@
 
                 <tr>
                   <td colspan="2" style="text-align:center;">
-                    <input type="button" value="Annuler" onclick="document.location.href='/holiday/?recup=1';" class="btn btn-secondary"/>
+                    <input type="button" value="Annuler" onclick="document.location.href='{{ asset('holiday/?recup=1') }}';" class="btn btn-secondary"/>
                   &nbsp;&nbsp;
                     <input type="button" value="Valider" class="btn btn-primary" onclick="verifConges();" style="margin-left:20px;" id="submit-button"/>
                     <div id="google-calendar-div" class="inline"></div>

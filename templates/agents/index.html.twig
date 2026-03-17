@@ -23,12 +23,12 @@
         <td style="width:80px;"></td>
         <td>
           {% if rights21 %}
-          <input type="button" value="Ajouter" onclick='location.href="{{ asset('agent/add') }}";' class="btn btn-primary"/>
+          <input type="button" value="Ajouter" onclick="location.href='{{ asset('agent/add') }}';" class="btn btn-primary"/>
             {% if ldapBouton %}
-              <input type="button" value="Import LDAP" onclick='location.href="{{ asset('agent/ldap') }}";' class="btn btn-secondary" style="margin-left:21px;"/>
+              <input type="button" value="Import LDAP" onclick="location.href='{{ asset('agent/ldap') }}';" class="btn btn-secondary" style="margin-left:21px;"/>
             {% endif %}
             {% if ldifBouton %}
-              <input type="button" value="Import LDIF" onclick='location.href="{{ asset('agent/ldif') }}";' class="btn-secondary" style="margin-left:21px;"/>
+              <input type="button" value="Import LDIF" onclick="location.href='{{ asset('agent/ldif') }}';" class="btn-secondary" style="margin-left:21px;"/>
             {% endif %}
           {% endif %}
         </td>
@@ -102,7 +102,7 @@
       {% endif %}
       <option value="delete">Supprimer la sélection</option>
     </select>
-    <input type="button" value="Valider" class="btn btn-primary" style="margin-left:20px;" onclick="agent_list()"/>
+    <input type="button" value="Valider" class="btn btn-primary" style="margin-left:20px;" onclick="agent_list();"/>
   {% endif %}
   <div id="dialog-form" title="{{ lang.edit_selected_users }}" class="noprint" style="display:none;">
     <p class="validateTips"></p>
@@ -146,7 +146,7 @@
               <td>
                 <label for="service">Service de rattachement</label>
               </td>
-              <td style="white-space:nowrap">
+              <td style="white-space:nowrap;">
                 <select name="service" id="service" style="text-align:center;">
                   <option value="-1">{{ lang.do_not_change }}</option>
                   <option value="">Aucun</option>

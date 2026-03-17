@@ -12,7 +12,7 @@
         var previous_Multisites_site{{ i }}_cycles = $('#Multisites-site{{ i }}-cycles option:selected').val();
       {% endfor %}
 
-      $( '#conges_mode_dialog' ).dialog({
+      $('#conges_mode_dialog').dialog({
         autoOpen: false,
         resizable: false,
         width: 400,
@@ -36,7 +36,7 @@
         }
       });
 
-      $( '#nb_semaine_dialog' ).dialog({
+      $('#nb_semaine_dialog').dialog({
         autoOpen: false,
         resizable: false,
         width: 400,
@@ -58,19 +58,19 @@
         nb_semaine = $('#nb_semaine').val();
         planningHebdo = $('#PlanningHebdo').is(':checked');
         if (nb_semaine > 3 && !planningHebdo) {
-          $( '#nb_semaine_dialog').data('previous_nb_semaine', previous_nb_semaine).dialog( 'open' );
+          $('#nb_semaine_dialog').data('previous_nb_semaine', previous_nb_semaine).dialog( 'open' );
         }
         previous_nb_semaine = nb_semaine;
       });
 
-      $( '#longueur_mot_de_passe_dialog' ).dialog({
+      $('#longueur_mot_de_passe_dialog').dialog({
         autoOpen: false,
         resizable: false,
         width: 400,
         modal: true,
         buttons: {
           'Valider': function() {
-            $( this ).dialog( 'close' );
+            $( this ).dialog('close');
           }
         }
       });

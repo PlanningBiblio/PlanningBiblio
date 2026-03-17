@@ -47,7 +47,7 @@ class AgentControllerListTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Liste des agents');
 
-        $onclick = 'location.href="/agent/add";';
+        $onclick = "location.href='/agent/add';";
         $result = $crawler->filterXPath("//input[@value='Ajouter']");
         $this->assertEquals($onclick, $result->attr('onclick'));
 
