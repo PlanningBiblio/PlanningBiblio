@@ -29,7 +29,7 @@
         <h5 class="modal-title" id="staticBackdropLabel">Supression du planning </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" style="text-align:center">
+      <div class="modal-body" style="text-align:center; min-height : 106px;align-content: center;">
 
         <p>Êtes vous sûr de vouloir supprimer le planning du {{ date | datefr }} ?</p>
         <form id="delete-planning-day-form" action="{{ asset('deleteplanning') }}" method="post">
@@ -44,7 +44,7 @@
 
       <div class="modal-footer">
         <button type="submit" class="btn btn-warning" form="delete-planning-day-form">Oui</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#DropModal">Non</button>
       </div>
     </div>
   </div>
@@ -57,7 +57,7 @@
         <h5 class="modal-title" id="staticBackdropLabel">Supression du planning </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" style="text-align:center">
+      <div class="modal-body" style="text-align:center; min-height : 106px; align-content: center;">
         
         <p>Êtes vous sûr de vouloir supprimer le planning de la semaine ({{ start | datefr }} au {{ end | datefr }}) ?</p>
         <form id="delete-planning-week-form" action="{{ asset('deleteplanning') }}" method="post">
@@ -70,7 +70,7 @@
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-warning" form="delete-planning-week-form">Oui</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#DropModal">Non</button>
       </div>
     </div>
   </div>
