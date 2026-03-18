@@ -1338,8 +1338,7 @@ img{
   width:100px;
 }
 
-.intitule, label{
-  font-weight: bold;
+.intitule, label {
   white-space: nowrap;
   color: #29495C;
 }
@@ -1841,7 +1840,7 @@ display: contents;
 
 .modal-body {
   color: #29495C;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* Approximation de la couleur #29495C par filtrage (loss 0.2) */
@@ -1855,6 +1854,7 @@ display: contents;
 .modal-body .form-group {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 input.form-control, input.form-control:focus {
@@ -1869,6 +1869,13 @@ input.form-check-input {
 input.form-check-input:checked {
   background-color: #29495C;
   border-color: #29495C;
+}
+
+.form-select {
+  color: #29495C;
+  text-align: center;
+  max-width: fit-content;
+  margin-top: 8px;
 }
 
 /* Modals END */

@@ -82,15 +82,15 @@
 
             {% if userCan('300', site) %}
 
-              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#SaveModal" title='Enregistrer comme modèle'>
+              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#SaveModal" title="Enregistrer comme modèle">
                 <span class="pl-icon pl-icon-save"></span>
               </button>
 
-              <a id="planning-import" href='#' title='Importer un modèle' style="{{ locked ? 'display:none;' }}">
-                <span class='pl-icon pl-icon-open'></span>
-              </a>
+              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#ImportModal" title="Importer un planning" style="{{ locked ? 'display:none;' }}">
+                <span class="pl-icon pl-icon-open"></span>
+              </button>
 
-              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#DropModal" title="Supprimer le planning"  style="{{ locked ? 'display:none;' }}">
+              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#DropModal" title="Supprimer le planning" style="{{ locked ? 'display:none;' }}">
                 <span class="pl-icon pl-icon-drop"></span>
               </button>
             {% endif %}
