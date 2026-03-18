@@ -17,6 +17,17 @@ cellules = new Array();
 // Chargement de la page
 $(document).ready(function(){
 
+  $('.pl-icon-open').on('click', function(e){
+    date = $('input[name="date"]').val();
+    site = $('input[name="site"]').val();
+    CSRFSession = $('input[name="CSRFSession"]').val();
+    params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
+    $('#model-selection').load('/modelform' + params);
+    $('#ImportModal').modal('show');
+    return false;
+  });
+
+
   import_model = $( '#import-model-dialog' ).dialog({
     autoOpen: false,
     modal: true,
@@ -95,16 +106,6 @@ $(document).ready(function(){
       }
     });
   };
-
-  $('.pl-icon-open').on('click', function() {
-    date = $('input[name="date"]').val();
-    site = $('input[name="site"]').val();
-    CSRFSession = $('input[name="CSRFSession"]').val();
-    params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
-    $('#import-model-dialog').load('/modelform' + params);
-    import_model.dialog('open');
-    return false;
-  });
 
   // Vérifions si un agent de catégorie A est placé en fin de service
   verif_categorieA();
