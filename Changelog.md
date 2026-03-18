@@ -1,5 +1,15 @@
 # Changelog Planno
 
+## Version 25.11.19 (2026-03-18)
+
+### Enhancement
+
+* MT46629: Upgrade and use Bootstrap #1338
+  * Update Bootstrap from 5.1.3 to 5.3.8
+  * Improve the main menu (responsive and RGAA)
+  * Use Bootstrap to display the buttons
+  * Use Bootstrap Datepicker v1.9.0
+
 ## Version 25.11.18 (2026-03-13)
 
 ### Security
