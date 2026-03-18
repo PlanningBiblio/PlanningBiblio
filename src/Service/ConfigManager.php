@@ -7,43 +7,35 @@ use App\Entity\Config;
 
 class ConfigManager
 {
-/*
-    private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-*/
-
-    #TODO Demain: utiliser un helper plutôt qu'un service quand même?
-
-#    private ConfigRepository $configRepository;
-#    private EntityManager $entityManager;
-/*
-    public function __construct(ConfigRepository $configRepository, EntityManagerInterface $entityManager)
-    {
-        $this->configRepository = $configRepository;
-        $this->entityManager = $entityManager;
-    }
-*/
-
- public function __construct(
+    public function __construct(
         private ConfigRepository $configRepository,
         private EntityManagerInterface $entityManager
     ) {}
 
-    public function saveConfig($params): string
+    public function getValue($name): string
     {
-            $technical = $params['technical'];
-            $error = '';
+        return $this->configRepository->findOneBy(['nom' => $name])->getValue();
+    }
 
-            $configParams = $this->configRepository->findBy(
+    public function getParams($technical): array
+    {
+        return $this->configRepository->findBy(
                 array('technical' => $technical),
                 array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
             );
+    }
+
+    public function saveConfig($params): string
+    {
+ #           error_log("Save config was called\n");
+            $technical = $params['technical'];
+            $error = '';
+
+            $configParams = $this->getParams($technical);
 
             foreach ($configParams as $cp) {
+#                error_log ("Processing one cp " . $cp->getName() . "\n");
                 if (in_array($cp->getType(), ['hidden', 'info'])) {
                     continue;
                 }
@@ -59,6 +51,7 @@ class ConfigManager
 
                 // Passwords
                 if (substr($cp->getName(), -9) == '-Password') {
+  #                  error_log( "Hey, i have a password: $value");
                     if ($value == '') {
                         continue;
                     }

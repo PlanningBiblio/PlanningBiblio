@@ -18,16 +18,11 @@ class ConfigController extends BaseController
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
-        $url = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'URL'])
-            ->getValue();
+        $url = $configManager->getValue('URL');
 
         $technical = $request->get('options') == 'technical' ? 1 : 0;
 
-        $configParams = $this->entityManager->getRepository(Config::class)->findBy(
-            array('technical' => $technical),
-            array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
-        );
+        $configParams = $configManager->getParams($technical);
 
         $elements = array();
         foreach ($configParams as $cp) {
@@ -112,7 +107,7 @@ class ConfigController extends BaseController
             $error = $configManager->saveConfig($params);
         }
 
-        if (isset($error)) {
+        if (isset($error) && $error != null) {
             $session->getFlashBag()->add('error', $error);
         } else {
             $flash = 'La configuration a été modifiée avec succès';

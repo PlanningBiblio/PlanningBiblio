@@ -6,7 +6,6 @@ use App\Repository\ConfigRepository;
 use Tests\PLBWebTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-#class ConfigManagerTest extends PLBWebTestCase
 class ConfigManagerTest extends KernelTestCase
 {
     public function testPasswordUpdate(): void {
@@ -15,22 +14,22 @@ class ConfigManagerTest extends KernelTestCase
         $container = static::getContainer();
         $configManager = $container->get(ConfigManager::class);        
         $repository = $container->get(ConfigRepository::class);
-        #$configManager = self::getContainer()->get(ConfigManager::class, true);
 
-        $repository->setParam('LDAP-Password',  'current_encrypted_password');
+        $repository->setParam('LDAP-Password', 'current_encrypted_password', 1);
 
         $params = array('LDAP-Password' => '', 'technical' => 1);
-
         $error = $configManager->saveConfig($params);
 
         $this->assertEquals('', $error, 'No error has been returned');
-        $this->assertEquals('current_encrypted_password', $repository->getParam('LDAP-Password'), 'Password has not been updated');
+        $this->assertEquals('current_encrypted_password', $repository->getParam('LDAP-Password'), 'Password has not been updated (empty password)');
 
         $params = array('LDAP-Password' => 'NewPassword', 'technical' => 1);
         $configManager->saveConfig($params);
 
         $this->assertEquals('', $error, 'No error has been returned');
-        $this->assertEquals('NewPassword', $repository->getParam('LDAP-Password'), 'Password has been updated');
+        $this->assertNotEquals('current_encrypted_password', $repository->getParam('LDAP-Password'), 'Password is not current_encrypted_password');
+        $this->assertNotEquals('NewPassword', $repository->getParam('LDAP-Password'), 'Password is not NewPassword');
+        $this->assertNotEquals('', $repository->getParam('LDAP-Password'), 'Password is not empty');
 
     }
 

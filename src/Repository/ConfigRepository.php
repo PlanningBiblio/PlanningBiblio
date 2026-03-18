@@ -6,9 +6,6 @@ use App\Entity\Config;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends EntityRepository<Config>
- */
 class ConfigRepository extends ServiceEntityRepository
 {
 
@@ -40,7 +37,7 @@ class ConfigRepository extends ServiceEntityRepository
         return $configOption->getValue();
     }
 
-    public function setParam($name, $value)
+    public function setParam($name, $value, $technical = 0)
     {
         $GLOBALS['config'][$name] = $value;
         $param = $this->findOneBy(['nom' => $name]);
@@ -49,6 +46,7 @@ class ConfigRepository extends ServiceEntityRepository
             # error
         } else {
             $param->setValue($value);
+            $param->setTechnical($technical);
         }
     }
 
