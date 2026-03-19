@@ -86,11 +86,11 @@
                 <span class="pl-icon pl-icon-save"></span>
               </button>
 
-              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#ImportModal" title="Importer un planning" style="{{ locked ? 'display:none;' }}">
+              <button id="planning-import" type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#ImportModal" title="Importer un modèle" style="{{ locked ? 'display:none;' }}">
                 <span class="pl-icon pl-icon-open"></span>
               </button>
 
-              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#DropModal" title="Supprimer le planning" style="{{ locked ? 'display:none;' }}">
+              <button id="planning-drop" type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#DropModal" title="Supprimer le planning" style="{{ locked ? 'display:none;' }}">
                 <span class="pl-icon pl-icon-drop"></span>
               </button>
             {% endif %}
