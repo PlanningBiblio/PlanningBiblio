@@ -339,7 +339,7 @@ class AgentController extends BaseController
             // Decimal breaktime to time (H:i).
             foreach ($breaktimes as $index => $time) {
                 $breaktimes[$index] = $breaktimes[$index]
-                    ? gmdate('H:i', floor($breaktimes[$index] * 3600)) : '';
+                    ? HourHelper::decimalToHoursMinutes($breaktimes[$index])['as_string'] : '';
             }
 
             $postes_attribues = json_decode(html_entity_decode($db->result[0]['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
