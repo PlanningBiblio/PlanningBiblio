@@ -17,6 +17,8 @@ cellules = new Array();
 // Chargement de la page
 $(document).ready(function(){
 
+  if ($('.cellSpan').length > 0 ) $('#planning-save').removeClass('disabled');
+
   $('.pl-icon-open').on('click', function(e){
     date = $('input[name="date"]').val();
     site = $('input[name="site"]').val();
@@ -1406,6 +1408,12 @@ function bataille_navale(poste, date, debut, fin, perso_id, barrer, ajouter, sit
           $(jtem).css('top', top);
         });
       });
+
+      // Enable and disable the save planning button depending on whether it is empty or not
+      if ($('.cellSpan').length > 0 ) $('#planning-save').removeClass('disabled');
+      else {
+        if (!$('#planning-save').hasClass('disabled')) $('#planning-save').addClass('disabled');
+      }
 
       // cacher le menudiv
       emptyContextMenu();
