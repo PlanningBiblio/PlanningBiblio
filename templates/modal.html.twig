@@ -1,0 +1,68 @@
+{% block modal %}
+
+<div {% block modal_id %}{% endblock %} class="modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="ModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalTitle"> {% block modal_title %}{% endblock %} </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body" style="text-align: center;">
+
+        {% block modal_body %}{% endblock %}
+
+      </div>
+      <div class="modal-footer">
+        {% block modal_footer %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block modal_2 %}
+
+<div {% block modal_id_2 %}{% endblock %} class="modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="ModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalTitle"> {{ block("modal_title") }} </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      {% block modal_body_2 %}{% endblock %}
+
+      <div class="modal-footer">
+        {% block modal_footer_2 %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block modal_3 %}
+
+<div {% block modal_id_3 %}{% endblock %} class="modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="ModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalTitle"> {{ block("modal_title")}} </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      {% block modal_body_3 %}{% endblock %}
+
+      <div class="modal-footer">
+        {% block modal_footer_3 %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
