@@ -41,6 +41,7 @@ class ClassAbsencesCalculHeuresAbsencesTest extends TestCase
         $entityManager->persist($this->workingHour);
         $entityManager->flush();
 
+        $GLOBALS['config']['nb_semaine'] = 1;
         $GLOBALS['config']['PlanningHebdo'] = true;
     }
 

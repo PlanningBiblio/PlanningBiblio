@@ -3,35 +3,58 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Agent;
+use App\Entity\Config;
 use App\Entity\WorkingHour;
 use App\Entity\WorkingHourCycle;
 use Tests\PLBWebTestCase;
 
 class WorkingHourControllerCyclesTest extends PLBWebTestCase
 {
-    protected function setUp(): void
+    public static function setUpBeforeClass(): void
     {
-        parent::setUp();
-    }
+        global $entityManager;
 
-    private function configure(): void
-    {
-        parent::setData('data7');
+        $entityManager->getRepository(Config::class)
+            ->findOneBy(['nom' => 'dateDebutPlHebdo'])
+            ->setValue('29/12/2025');
 
-        $this->setParam('nb_semaine', 3);
-        $this->setParam('dateDebutPlHebdo', '29/12/2025');
-        $this->setParam('PlanningHebdo-resetCycles', 2);
+        $entityManager->getRepository(Config::class)
+            ->findOneBy(['nom' => 'nb_semaine'])
+            ->setValue('3');
 
-        $this->builder->delete(WorkingHour::class);
-        $this->builder->delete(WorkingHourCycle::class);
+        $entityManager->getRepository(Config::class)
+            ->findOneBy(['nom' => 'PlanningHebdo-resetCycles'])
+            ->setValue('1');
+
+//        $entityManager->createQuery('DELETE FROM \App\Entity\Agent')->execute();
+        $entityManager->createQuery('DELETE FROM \App\Entity\WorkingHour')->execute();
+        $entityManager->createQuery('DELETE FROM \App\Entity\WorkingHourCycle')->execute();
+
+        // Create agents
+        $agent = new Agent();
+        $agent->setLogin('agent1')
+            ->setACL([6, 99, 100, 201, 301, 302, 501, 1001, 1002, 1101, 1201]);
+
+        $alex = new Agent();
+        $alex->setLogin('alex');
+        $aurelie = new Agent();
+        $aurelie->setLogin('aurelie');
+        $delphine = new Agent();
+        $delphine->setLogin('delphine');
+
+        $entityManager->persist($agent);
+        $entityManager->persist($alex);
+        $entityManager->persist($aurelie);
+        $entityManager->persist($delphine);
+        $entityManager->flush();
 
         // Create Working hours
         $start = new \DateTime('- 1 year');
         $end = new \DateTime('+ 1 year');
 
-        // Alex (9), site n°1
+        // Alex, site n°1
         $alexWorkingHour = new WorkingHour();
-        $alexWorkingHour->setUser(9);
+        $alexWorkingHour->setUser($alex->getId());
         $alexWorkingHour->setStart($start);
         $alexWorkingHour->setEnd($end);
         $alexWorkingHour->setValidLevel2(1);
@@ -57,11 +80,9 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
             18 => ['09:00:00', '13:00:00', '14:00:00', '17:00:00', '1'],
         ]);
 
-        $this->entityManager->persist($alexWorkingHour);
-
-        // Aurélie (14), site n°1
+        // Aurélie, site n°1
         $aurelieWorkingHour = new WorkingHour();
-        $aurelieWorkingHour->setUser(14);
+        $aurelieWorkingHour->setUser($aurelie->getId());
         $aurelieWorkingHour->setStart($start);
         $aurelieWorkingHour->setEnd($end);
         $aurelieWorkingHour->setValidLevel2(1);
@@ -87,11 +108,9 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
             19 => ['09:00:00', '13:00:00', '14:00:00', '18:00:00', '1'],
         ]);
 
-        $this->entityManager->persist($aurelieWorkingHour);
-
-        // Delphine (15), site n°2
+        // Delphine, site n°2
         $delphineWorkingHour = new WorkingHour();
-        $delphineWorkingHour->setUser(15);
+        $delphineWorkingHour->setUser($delphine->getId());
         $delphineWorkingHour->setStart($start);
         $delphineWorkingHour->setEnd($end);
         $delphineWorkingHour->setValidLevel2(1);
@@ -117,21 +136,17 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
             18 => ['09:00:00', '13:00:00', '14:00:00', '17:00:00', '2'],
         ]);
 
-        $this->entityManager->persist($delphineWorkingHour);
-
-        // Use agent 9 and log in
-        $agent = $this->entityManager->getRepository(Agent::class)->find(9);
-        $agent->setACL([6, 99, 100, 201, 301, 302, 501, 1001, 1002, 1101, 1201]);
-
-        $this->entityManager->persist($agent);
-
-        $this->entityManager->flush();
+        $entityManager->persist($alexWorkingHour);
+        $entityManager->persist($aurelieWorkingHour);
+        $entityManager->persist($delphineWorkingHour);
+        $entityManager->flush();
     }
 
     private function testWeekDisplay($tests)
     {
+        global $entityManager;
+        $agent = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'agent1']);
         $this->setUpPantherClient();
-        $agent = $this->entityManager->getRepository(Agent::class)->find(9);
         $this->login($agent);
 
         foreach ($tests as $test) {
@@ -142,8 +157,6 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
 
     public function testWeekDisplayWithoutCycleReset(): void
     {
-        $this->configure();
-
         $tests = [
             [
                 'site' => 1,
@@ -182,14 +195,14 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
 
     public function testWeekDisplayWithCycleReset(): void
     {
-        $this->setParam('PlanningHebdo-resetCycles', 1);
+        global $entityManager;
 
         $cycle = new WorkingHourCycle();
         $cycle->setDate(new \DateTime('2026-01-05'));
         $cycle->setWeek(1);
 
-        $this->entityManager->persist($cycle);
-        $this->entityManager->flush();
+        $entityManager->persist($cycle);
+        $entityManager->flush();
 
         $tests = [
             [
@@ -260,8 +273,8 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
         $cycle->setDate(new \DateTime('2026-01-27'));
         $cycle->setWeek(3);
 
-        $this->entityManager->persist($cycle);
-        $this->entityManager->flush();
+        $entityManager->persist($cycle);
+        $entityManager->flush();
 
         $tests = [
             [
@@ -331,7 +344,12 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
 
     public function testWeekDisplayDisableCycleReset(): void
     {
-        $this->setParam('PlanningHebdo-resetCycles', 0);
+        global $entityManager;
+
+        $entityManager->getRepository(Config::class)
+            ->findOneBy(['nom' => 'PlanningHebdo-resetCycles'])
+            ->setValue('0');
+        $entityManager->flush();
 
         // We don't change cycles for this tests, we want them to be ignore.
 
@@ -399,8 +417,31 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
         ];
 
         $this->testWeekDisplay($tests);
+    }
 
-        // Reset data for next tests
-        parent::setData();
+    public static function tearDownAfterClass(): void
+    {
+        global $entityManager;
+
+        $entityManager->createQuery('DELETE FROM \App\Entity\WorkingHour')->execute();
+
+        foreach (['agent1', 'alex', 'aurelie', 'delphine'] as $login) {
+            $agent = $entityManager->getRepository(Agent::class)->findOneBy(['login' => $login]);
+            $entityManager->remove($agent);
+        }
+
+        $entityManager->getRepository(Config::class)
+            ->findOneBy(['nom' => 'dateDebutPlHebdo'])
+            ->setValue('');
+
+        $entityManager->getRepository(Config::class)
+            ->findOneBy(['nom' => 'nb_semaine'])
+            ->setValue('1');
+
+        $entityManager->getRepository(Config::class)
+            ->findOneBy(['nom' => 'PlanningHebdo-resetCycles'])
+            ->setValue('0');
+
+        $entityManager->flush();
     }
 }

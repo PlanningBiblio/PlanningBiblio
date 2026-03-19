@@ -13,9 +13,9 @@
       <form name="form" method="get" action="{{ path('workinghour.settings') }}">
         Début : <input type="text" name="start" class="datepicker" value="{{ start }}" style="margin-right:20px;" />
         Fin : <input type="text" name="end" class="datepicker" value="{{ end }}" style="margin-right:20px;" />
-        <input type="submit" value="OK" class="ui-button" style="margin-right:20px;" />
-        <input type="button" value="Réinitialiser" onclick="location.href='{{ path('workinghour.settings') }}'" class="ui-button ui-button-type2" style="margin-right:20px;" />
-        <input type="button" value="Ajouter" onclick="location.href='{{ path('workinghour.settings.edit', {id: 0}) }}'" class="ui-button ui-button-type2" />
+        <input type="submit" value="Rechercher" class="btn btn-secondary" style="margin-right:20px;" />
+        <input type="button" value="Réinitialiser" onclick="location.href='{{ path('workinghour.settings') }}'" class="btn btn-secondary" style="margin-right:20px;" />
+        <input type="button" value="Ajouter" onclick="location.href='{{ path('workinghour.settings.edit', {id: 0}) }}'" class="btn btn-primary" />
       </form>
     </div>
 
