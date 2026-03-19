@@ -21,9 +21,6 @@ class WorkingHourCycle
     #[ORM\Column]
     private ?int $week = null;
 
-    #[ORM\Column]
-    private array $sites = [];
-
     public function getId(): ?int
     {
         return $this->id;
@@ -49,18 +46,6 @@ class WorkingHourCycle
     public function setWeek(int $week): static
     {
         $this->week = $week;
-
-        return $this;
-    }
-
-    public function getSites(): array
-    {
-        return $this->sites;
-    }
-
-    public function setSites(array $sites): static
-    {
-        $this->sites = $sites;
 
         return $this;
     }
