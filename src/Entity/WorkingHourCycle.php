@@ -16,17 +16,22 @@ class WorkingHourCycle
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $date = null;
+    private \DateTime $date;
 
     #[ORM\Column]
-    private ?int $week = null;
+    private int $week = 0;
+
+    public function __construct()
+    {
+        $this->date = new \DateTime();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?\DateTime
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
@@ -38,7 +43,7 @@ class WorkingHourCycle
         return $this;
     }
 
-    public function getWeek(): ?int
+    public function getWeek(): int
     {
         return $this->week;
     }
