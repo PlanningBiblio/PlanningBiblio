@@ -18,7 +18,6 @@ use App\Entity\WorkingHour;
 use App\Entity\WorkingHourCycle;
 use App\Planno\WorkingHours;
 use App\Planno\NotificationTransporter\NotificationTransporterInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
@@ -115,15 +114,12 @@ class datePl
         return $weekcycle;
     }
 
-    public function getNumberOfWeeksSinceStartDate($date) {
+    public function getNumberOfWeeksSinceStartDate($date): int {
 
         $em = $GLOBALS['entityManager'];
         $firstWeekDate = $GLOBALS['config']['dateDebutPlHebdo'];
 
-        $session = new Session();
-        $site = $session->get('site');
-
-        $newFirstWeekDate = $em->getRepository(WorkingHourCycle::class)->findFirstWeek($date, $site);
+        $newFirstWeekDate = $em->getRepository(WorkingHourCycle::class)->findFirstWeek($date);
         if ($newFirstWeekDate) {
             $firstWeekDate = $newFirstWeekDate;
         }

@@ -39,7 +39,7 @@ class WorkingHourCycleRepository extends EntityRepository
     /**
     * @return $firstWeekDate Returns the first week of a cycle.
     */
-    public function findFirstWeek($date, $site): ?string
+    public function findFirstWeek($date): ?string
     {
         $entityManager = $this->getEntityManager();
         $configResetCycles = $entityManager->getRepository(Config::class)->findOneBy(['nom' => 'PlanningHebdo-resetCycles'])->getValue();
@@ -48,30 +48,22 @@ class WorkingHourCycleRepository extends EntityRepository
             return null;
         }
 
-        $results = $this->createQueryBuilder('w')
+        $result = $this->createQueryBuilder('w')
             ->andWhere('w.date <= :date')
             ->setParameter('date', $date)
             ->orderBy('w.date', 'DESC')
+            ->setFirstResult(0)
+            ->setMaxResults(1)
             ->getQuery()
             ->getResult()
         ;
 
-        foreach ($results as $elem) {
-            if (in_array($site, $elem->getSites())
-                or empty($elem->getSites())
-                or $configResetCycles == 1
-            ) {
-                $result = $elem;
-                break;
-            }
-        }
-
-        if (empty($result)) {
+        if (!$result) {
             return null;
         }
 
-        $offset = $result->getWeek() - 1;
-        $firstWeekDate = date('Y-m-d', strtotime($result->getDate()->format('Y-m-d') . " - $offset week"));
+        $offset = $result[0]->getWeek() - 1;
+        $firstWeekDate = date('Y-m-d', strtotime($result[0]->getDate()->format('Y-m-d') . " - $offset week"));
 
         return $firstWeekDate;
     }
