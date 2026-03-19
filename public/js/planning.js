@@ -27,27 +27,6 @@ $(document).ready(function(){
     return false;
   });
 
-
-  import_model = $( '#import-model-dialog' ).dialog({
-    autoOpen: false,
-    modal: true,
-    height: 300,
-    width: 480,
-    buttons: {
-      "Annuler": function() {
-        $(this).dialog('close');
-      },
-        "Valider": function() {
-          if ($('#model').length == 0) {
-            CJInfo('Aucun modèle enregistré', 'error');
-            $(this).dialog('close');
-          } else {
-            $('#form').submit();
-          }
-      }
-    },
-  });
-
    $('#duplicate-model-form').submit(function(e) {
     e.preventDefault();
     save_model(true);
@@ -59,10 +38,10 @@ $(document).ready(function(){
   });
 
   function save_model(erase = 0) {
-    modelName = $('form[id="save-model-form"] input[name="modelName"]').val();
-    site = $('form[id="save-model-form"] input[name="site"]').val();
-    date = $('form[id="save-model-form"] input[name="date"]').val();
-    week = $('form[id="save-model-form"] input[name="semaine"]').is(':checked') ? 1 : 0;
+    modelName = $('#save-model-form input[name="modelName"]').val();
+    site = $('#save-model-form input[name="site"]').val();
+    date = $('#save-model-form input[name="date"]').val();
+    week = $('#save-model-form input[name="semaine"]').is(':checked') ? 1 : 0;
     csrftoken = $('#CSRFSession').val();
 
     $.ajax({
@@ -72,7 +51,7 @@ $(document).ready(function(){
         async: false,
         data: {text: modelName},
         success: function(result){
-            $('form[id="save-model-form"] input[name="modelName"]').val(result);
+            $('#save-model-form input[name="modelName"]').val(result);
         },
         error: function(xhr, ajaxOptions, thrownError){
             CJInfo('Impossible d\'enregistrer le modèle', 'error');
@@ -80,7 +59,7 @@ $(document).ready(function(){
         }
     });
 
-    modelName = $('form[id="save-model-form"] input[name="modelName"]').val()
+    modelName = $('#save-model-form input[name="modelName"]').val()
 
     $.ajax({
       url: url('model-add'),
