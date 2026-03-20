@@ -14,9 +14,10 @@
  *   Load ORM
  */
 
-use Doctrine\ORM\ORMSetup;
-use Doctrine\ORM\EntityManager;
 use App\Entity\Extensions\TablePrefix;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMSetup;
 
 require_once __DIR__ . '/../legacy/Common/config.php';
 $config = $GLOBALS['config'];
@@ -40,4 +41,5 @@ $dbParams = array(
 );
 
 global $entityManager;
-$entityManager = EntityManager::create($dbParams, $emConfig, $evm);
+$conn = DriverManager::getConnection($dbParams);
+$entityManager = new EntityManager($conn, $emConfig, $evm);
