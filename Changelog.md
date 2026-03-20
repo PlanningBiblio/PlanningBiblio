@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.10.15 (2026-03-20)
+
+### Fixes
+
+* MT52612: Use HourHelper in AgentController #1339
+
 ## Version 25.10.14 (2026-03-13)
 
 ### Security
