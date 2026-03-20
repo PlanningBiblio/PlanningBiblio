@@ -31,7 +31,7 @@
       </div>
       <div class="modal-body" style="text-align:center; min-height : 109px;align-content: center;">
 
-        <p>Êtes vous sûr de vouloir supprimer le planning du {{ date | datefr }} ?</p>
+        <p style="padding: 5px;">Êtes vous sûr de vouloir supprimer le planning du {{ date | datefr }} ?</p>
         <form id="delete-planning-day-form" action="{{ asset('deleteplanning') }}" method="post">
 
         <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />

@@ -238,9 +238,13 @@ h4{
   }
 
 /* Absences récurrentes */
-#recurrence-summary, #recurrence-summary-form {
-  max-width:300px;
+#recurrence-summary {
+  max-width:165px;
   white-space: normal;
+}
+
+#recurrence-info {
+  display: inline-flex;
 }
 
 /* .perso_ul : sélection des agents dans les pages absences/* */
@@ -1126,7 +1130,7 @@ class cellule = cellule par défaut
 }
 
 .datepicker {
-  font-size: 11px;
+  font-size: 12px;
   color: #29495C;
   font-weight: bolder;
 }
@@ -1896,6 +1900,11 @@ display: contents;
   font-size: 15px;
 }
 
+hr {
+  color: #DEE2E6;
+  opacity: 100%;
+}
+
 /* Approximation de la couleur #29495C par filtrage (loss 0.2) */
 .modal-header .btn-close, 
 .modal-header .btn-close.active,
@@ -1910,13 +1919,12 @@ display: contents;
   justify-content: center;
 }
 
-input.form-control, input.form-control:focus {
+input[type=text].form-control {
   margin :10px;
-  color: #29495C;
 } 
 
-input.form-check-input {
-  margin : 10px;
+input.form-control, input.form-control:focus {
+  color: #29495C;
 }
 
 input.form-check-input:checked {
@@ -1924,11 +1932,12 @@ input.form-check-input:checked {
   border-color: #29495C;
 }
 
-.form-select {
+input.form-check-input {
+  margin-top: 0.5em;
+}
+
+select.form-select {
   color: #29495C;
-  text-align: center;
-  max-width: fit-content;
-  margin-top: 8px;
 }
 
 /* Modals END */
