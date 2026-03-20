@@ -1,3 +1,7 @@
+*** Version 25.04.18   (2026-03-20)    ***
+- Fixes
+MT52612: Use HourHelper in AgentController #1339
+
 *** Version 25.04.17   (2026-01-23)    ***
 - Security
 MT51914: OIDC: prevent connection with empty login #1302
