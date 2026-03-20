@@ -22,7 +22,7 @@
         <div style="margin: 20px auto;display: table;">
           Sélectionnez le modèle à importer
           <br />
-          <select name="model" id="model" class="form-select form-select-sm" aria-label="Séléction du modèle">
+          <select name="model" id="model" class="form-select form-select-sm" aria-label="Séléction du modèle" style="margin-top: 8px; text-align: center;">
             <option hidden disabled selected value=""></option>
             {% for m in models %}
               <option value="{{ m.modelId }}">{{ m.name }}{% if m.isWeek %} (semaine){% endif %}</option>

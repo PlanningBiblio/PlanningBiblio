@@ -15,7 +15,7 @@ $(function() {
     // Mise à jour des status disponible.
     update_validation_statuses();
 
-    // Affichage des récurrences lors de la modification d'une absence
+    // Affichage de la règle de récurrences lors de la modification d'une absence
     if($('#rrule').val()){
       var text = recurrenceRRuleText2($('#rrule').val());
       $('#recurrence-summary').html(text);
@@ -251,214 +251,51 @@ $(function() {
   });
 
 
-
   /* Récurence */
 
-  // checkbox récurrence
+  // Lien de modification récurrence
   $('#recurrence-link').click(function(){
-    if($("#recurrence-form").length){
-      $("#recurrence-form").dialog( "open" );
-    } else if($("#recurrence-form-tmp").length){
-      $("#recurrence-form-tmp").dialog( "open" );
-    }
+    $('#recurrence-modal').modal('show');
   });
 
-  $("#recurrence-checkbox").change(function() {
-    if($("#recurrence-checkbox").prop('checked')){
-      if (
-        $('input[name="fin"]').val() != '' &&
-        $('input[name="fin"]').val() != $('input[name="debut"]').val()
-      ) {
-        $("#recurrence-enddate-alert").dialog("open");
-      } else {
+  // Recurrence checkbox
+  $('#recurrence-checkbox').change(function() {
+    if($('#recurrence-checkbox').prop('checked')){
+      if ($('#absence-end').val() != '' && $('#absence-end').val() != $('#absence-start').val()) {
+        // Affichage de la boite de dialogue d'alerte
+        $('#end-date-alert-modal').modal('show');
+      } 
+      else {
         if($('#recurrence-hidden').val()){
+          // Affichage des informations de récurrence
           $('#recurrence-info').show();
-        } else {
-          $("#recurrence-form").dialog( "open" );
+        } 
+        else {
+          // Affichage de la boite de dialogue de configuration des récurrences
+          $('#recurrence-modal').modal('show');
         }
       }
-    } else {
+    } 
+    else {
       $('#recurrence-info').hide();
     }
   });
 
-  $('input[name="fin"]').change(function() {
-    if (
-      $("#recurrence-checkbox").prop('checked') &&
-      $('input[name="fin"]').val() != '' &&
-      $('input[name="fin"]').val() != $('input[name="debut"]').val()
-    ) {
-      $("#recurrence-enddate-alert").dialog("open");
-    }
-  });
-
-  /* Si champ date de début modifiable */
-  $('.recurrence-start').change(function(){
+  // Modification date de début
+  $('#absence-start').change(function(){
     var date = $(this).val();
-    date = date.replace(/(\d*)\/(\d*)\/(\d*)/,"$2/$1/$3");
+    date = date.replace(/(\d*)\/(\d*)\/(\d*)/,'$2/$1/$3');
     var d = new Date(date);
     var n = d.getDay();
-    $('.recurrence-by-day').prop('checked',false);
-    $('.recurrence-by-day'+n).prop('checked',true);
-  });
-
-
-  // Formulaire récurrence
-  $("#recurrence-form").dialog({
-    autoOpen: false,
-    height: 480,
-    width: 650,
-    modal: true,
-    buttons: {
-      "Enregistrer": function() {
-
-        $('.recurrence').removeClass( "ui-state-error" );
-
-        rrule = recurrenceRRule();
-
-        $('#recurrence-summary').html(rrule[1]);
-        $('#recurrence-hidden').val(rrule[0]);
-        $('#recurrence-info').show();
-
-        $( this ).dialog( "close" );
-      },
-
-      Annuler: {
-        click: function() {
-          if(!$('#recurrence-hidden').val()){
-            $('#recurrence-checkbox').prop('checked', false);
-          }
-          $( this ).dialog( "close" );
-              },
-        text: "Annuler",
-        class: "btn btn-secondary"
-            },
-    },
-
-    close: function() {
-
-      /** Réinitialise les champs du formulaire de façon à se qu'ils soient cohérents avec les derniers choix validés.
-       *  Utile si le formulaire est modifié sans être validé puis ouvert de nouveau
-       */
-
-      $('.recurrence').removeClass( "ui-state-error" );
-
-      var rrule = $('#recurrence-hidden').val();
-      if(!rrule){
-        return false;
-      }
-
-      var freq = rrule.replace(/.*FREQ=(\w*).*/,"$1");
-      var interval = rrule.indexOf('INTERVAL') > 0 ? rrule.replace(/.*INTERVAL=(\d*).*/,"$1") : 1;
-      var count = rrule.indexOf('COUNT') > 0 ? rrule.replace(/.*COUNT=(\d*).*/,"$1") : null;
-      var until = rrule.indexOf('UNTIL') > 0 ? rrule.replace(/.*UNTIL=(\w*).*/,"$1") : null;
-      var byday = rrule.indexOf('BYDAY') > 0 ;
-
-      if(freq){
-        $('#recurrence-freq').val(freq);
-        $('#recurrence-freq').change();
-      }
-
-      if(freq == 'MONTHLY' && byday){
-        $('#recurrence-repet-mois2').click();
-      }
-
-      if(interval){
-        $('#recurrence-interval').val(interval);
-      }
-
-      $('#recurrence-end1').click();
-
-      if(count){
-        $('#recurrence-end2').click();
-        $('#recurrence-count').val(count);
-      }
-
-      if(until){
-        until = dateICSGMTToFr(until);
-        until = until.substr(0,10);
-
-        $('#recurrence-end3').click();
-        $('#recurrence-until').val(until);
-      }
-    }
-  });
-
-  $('#recurrence-form').on('dialogclose', function(){
-    if(!$('#recurrence-hidden').val()){
-      $('#recurrence-checkbox').prop('checked', false);
-    }
-  });
-
-  $('#recurrence-form').on('dialogopen', function(){
-    rrule = recurrenceRRule();
-    $('#recurrence-summary-form').html(rrule[1]);
-  });
-
-  // Formulaire récurrence pour la modification (temporaire, lorsque sera terminé, utiliser #recurrence-form)
-  // TODO : A continuer
-  $("#recurrence-form-tmp").dialog({
-    autoOpen: false,
-    height: 250,
-    width: 650,
-    modal: true,
-    buttons: {
-      "Fermer": function() {
-        $( this ).dialog( "close" );
-      }
-    }
-  });
-
-  $("#recurrence-enddate-alert").dialog({
-    autoOpen: false,
-    height: 180,
-    width: 600,
-    modal: true,
-    buttons: {
-      "Oui": function() {
-        $(this).dialog("close");
-        $('input[name="fin"]').val("");
-      },
-      "Non": function() {
-        $(this).dialog("close");
-      }
-    },
-    close: function() {
-      if($('#recurrence-hidden').val()){
-        $('#recurrence-info').show();
-      } else {
-        $("#recurrence-form").dialog( "open" );
-      }
-    }
-  });
-
-  $('#recurrence-freq').change(function(){
-    switch($(this).val()){
-      case 'DAILY' : $('#recurrence-repet-freq').text('jours'); break;
-      case 'WEEKLY' : $('#recurrence-repet-freq').text('semaines'); break;
-      case 'MONTHLY' : $('#recurrence-repet-freq').text('mois'); break;
-    }
-
-    if($(this).val() == 'WEEKLY'){
-      $('#recurrence-tr-semaine').show();
-    } else {
-      $('#recurrence-tr-semaine').hide();
-    }
-
-    if($(this).val() == 'MONTHLY'){
-      $('#recurrence-tr-mois').show();
-    } else {
-      $('#recurrence-tr-mois').hide();
-    }
-
+    $('.r-day').prop('checked',false);
+    $('#r-day'+ n).prop('checked',true);
   });
 
   $('#absence-start').change(function(){
     var date = $(this).val();
 
-    // Affichage de la date de début dans le formulaire "récurrence"
-//     $('#recurrence-start').val(date);   /* Si champ date de début modifiable */
-    $('#recurrence-start').text(date);
+    // Affichage de la date de début dans le formulaire récurrence
+    $('#r-start').text(date);
 
     // Modification de la récurrence si la date de début a changé
     var rrule = $('#recurrence-hidden').val();
@@ -491,37 +328,107 @@ $(function() {
 
     $('#recurrence-hidden').val(rrule);
     $('#recurrence-summary').html(text);
-
   });
 
-  $('.recurrence-end').change(function(){
-    if($('#recurrence-end2').is(':checked')){
-      $('#recurrence-count').val(30);
-    } else {
-      $('#recurrence-count').val(null);
-    }
-    if($('#recurrence-end3').is(':checked')){
-    } else {
-      $('#recurrence-until').val(null);
+  // Modification date de fin
+  $('#absence-end').change(function() {
+    if (
+      $('#recurrence-checkbox').prop('checked') &&
+      $('#absence-end').val() != '' &&
+      $('#absence-end').val() != $('#absence-start').val()
+    ) {
+      $('#end-date-alert-modal').modal('show');
     }
   });
 
-  $('#recurrence-count').click(function(){
-    $('#recurrence-end2').click();
+  // Soumission du formulaire de récurrence
+  $('#rform').submit(function(e){
+    e.preventDefault();
+    rrule = recurrenceRRule();
+    $('#recurrence-summary').html(rrule[1]);
+    $('#recurrence-hidden').val(rrule[0]);
+    $('#recurrence-info').show();
+    $('#recurrence-modal').modal('hide');
   });
 
-  $('#recurrence-until').click(function(){
-    $('#recurrence-end3').click();
+  // Ouverture de la modale de récurrence
+  $('#recurrence-modal').on('shown.bs.modal', function(e){
+    rrule = recurrenceRRule();
+    $('#recurrence-summary-form').html(rrule[1]);
+  });
+
+
+  // Fermeture de la modale de récurrence
+  $('#recurrence-modal').on('hidden.bs.modal', function(){
+    var rrule = $('#recurrence-hidden').val();
+    if(!rrule){
+      $('#recurrence-checkbox').prop('checked', false);
+    }
+  });
+
+  // Supression date de fin depuis modale d'alerte
+  $('#clear-end-date').on('click',function(){
+    $('#end-date-alert-modal').modal('hide');
+    $('.end-date').val('');
+  });
+
+  // Fermeture de la modale d'alerte
+  $('#end-date-alert-modal').on('hidden.bs.modal',function(){
+    if($('#recurrence-hidden').val())$('#recurrence-info').show();
+    else $('#recurrence-modal').modal('show');
+  });
+
+  // Changement affichage modale en fonction de le fréquence de récurrence choisie
+  $('#recurrence-freq').change(function(){
+    switch($(this).val()){
+      case 'DAILY' : $('#recurrence-label').text('tout'); $('#recurrence-label-freq').text('jours'); break;
+      case 'WEEKLY' : $('#recurrence-label').text('toutes');$('#recurrence-label-freq').text('semaines'); break;
+      case 'MONTHLY' : $('#recurrence-label').text('tout');$('#recurrence-label-freq').text('mois'); break;
+    }
+
+    if($(this).val() == 'WEEKLY'){
+      $('#recurrence-week').show();
+    } else {
+      $('#recurrence-week').hide();
+    }
+
+    if($(this).val() == 'MONTHLY'){
+      $('#recurrence-month').show();
+    } else {
+      $('#recurrence-month').hide();
+    }
+
+  });
+
+  // Changement affichage modale en fonction de la modalité de fin choisie
+  $('.r-end').change(function(){
+    if($('#r-end2').is(':checked')){
+      $('#r-count').val(30);
+    } else {
+      $('#r-count').val(null);
+    }
+    if($('#r-end3').is(':checked')){
+    } else {
+      $('#r-until').val(null);
+    }
+  });
+
+  $('#r-count').click(function(){
+    $('#r-end2').click();
+  });
+
+  $('#r-until').click(function(){
+    $('#r-end3').click();
   });
 
   // Détecte les modifications du formulaire pour adapter la règle ICS
-  $('.recurrence').change(function(){
+  $('.r-data').change(function(){
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').html(rrule[1]);
+    $('#recurrence-summary-form').text(rrule[1]);
   });
-  $('input[type=text].recurrence').keyup(function(){
+  $('input[type=text].r-data').keyup(function(){
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').html(rrule[1]);
+    $('#recurrence-summary-form').text(rrule[1]);
   });
 
   // Récurrences : alerte lors de la modification d'une absence récurrente
@@ -822,32 +729,32 @@ function recurrenceRRule(){
   freq = $('#recurrence-freq').val();
 
   // BYDAY / WEEKLY
-  $('.recurrence-by-day:visible:checked').each(function(){
+  $('.r-day:visible:checked').each(function(){
     byday = (byday == null) ? $(this).val() : byday+=','+$(this).val();
   });
 
   // BYMONTHDAY
-  if($('#recurrence-repet-mois1:visible:checked').length > 0){
+  if($('#r-month1:visible:checked').length > 0){
     bymonthday = parseInt($('#absence-start').val().substr(0,2));
   }
 
   // BYDAY / MONTHLY
-  if($('#recurrence-repet-mois2:visible:checked').length > 0){
+  if($('#r-month2:visible:checked').length > 0){
     var date = $('#absence-start').val();
     byday = recurrenceMonthlyByDay(date);
   }
 
   // COUNT && UNTIL
-  switch($('.recurrence-end:checked').val()){
+  switch($('.r-end:checked').val()){
     // COUNT
     case 'count' :
-      var count = $('#recurrence-count').val();
+      var count = $('#r-count').val();
       end = 'COUNT='+count;
       break;
 
     // UNTIL
     case 'until' :
-      var until = $('#recurrence-until').val();
+      var until = $('#r-until').val();
 
       if(until){
         // Conversion date ICS sur fuseau GMT
@@ -925,16 +832,17 @@ function recurrenceRRuleText(freq, interval, byday, bymonthday, until, count){
         } else {
           var n = byday.substring(0,1);
           var d = byday.substring(1);
-          n = n == 1 ? 'Le 1<sup>er</sup> ' : 'Le '+n+'<sup>&egrave;me</sup> ';
+          n = n == 1 ? 'Le 1er ' : 'Le '+n+'ème ';
         }
         day = d.replace('MO', ' lundi').replace('TU', ' mardi').replace('WE', ' mercredi').replace('TH', ' jeudi').replace('FR', ' vendredi').replace('SA', ' samedi').replace('SU', ' dimanche');
+        // tableau pour traduction
 
         text = text == 'Tous les mois' ? n+day+' de chaque mois' : n+day+', tous les '+interval+' mois';
       }
 
       if(bymonthday){
         var n = bymonthday;
-        n = n == 1 ? 'Le 1<sup>er</sup>' : 'Le '+n;
+        n = n == 1 ? 'Le 1er' : 'Le '+n;
         text = text == 'Tous les mois' ? n+' de chaque mois' : n+', tous les '+interval+' mois';
       }
 

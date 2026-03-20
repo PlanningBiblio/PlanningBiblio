@@ -67,7 +67,7 @@
                 <tr>
                   <td>&nbsp;</td>
                   <td>
-                    <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
+                    <select name="perso_id" id="perso_ids" class="ui-widget-content ui-corner-all" style="margin-bottom:20px; width: 100%;">
                       <option value='0' selected='selected'>-- Ajoutez un agent --</option>
                       {% if config('Absences-tous') %}
                         <option value='tous'>Tous les agents</option>
@@ -109,7 +109,7 @@
                   </td>
 
                   <td style='white-space:nowrap;'>
-                    <input type="text" name="debut" value="" style="width:100%;" class="recurrence-start datepicker start-date" id="absence-start"/>
+                    <input type="text" name="debut" value="" style="width:100%;" class="datepicker start-date" id="absence-start"/>
                   </td>
                 </tr>
 
@@ -129,7 +129,7 @@
                   </td>
 
                   <td style='white-space:nowrap;'>
-                    <input type="text" name="fin" value="" style="width:100%;" class="datepicker end-date"/>
+                    <input type="text" name="fin" value="" style="width:100%;" class="datepicker end-date" id="absence-end"/>
                   </td>
                 </tr>
 
@@ -145,15 +145,14 @@
 
                 <tr>
                   <td style='padding-bottom:30px;' class="textAlignRight">
-                    <label >Récurrence</label>
+                    <label for="recurrence-checkbox" class="form-check-label">Récurrence</label>
                   </td>
 
                   <td style='padding-bottom:30px;'>
-                    <input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1'/>
-
-                    <span id='recurrence-info' style='display:none;'>
+                    <input type="checkbox" id="recurrence-checkbox" name="recurrence-checkbox" class="form-check-input" style="margin-top: 3px;"/>
+                    <span id='recurrence-info' style="display:none; padding-left: 5px;">
                       <span id='recurrence-summary'>&nbsp;</span>
-                      <a href='#' id='recurrence-link' style='margin-left:10px;'>Modifier</a>
+                      <a href='#' id='recurrence-link' style="margin-left:6px;">Modifier</a>
                     </span>
 
                     <input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />
@@ -281,150 +280,147 @@
         {% endif %}
 
       </div>
-      <div id="recurrence-enddate-alert" title="Date de fin de récurrence" class='noprint' style='display:none;'>
-        Pour les absences récurrentes, la date de fin ne doit pas être saisie dans le formulaire d'absence mais dans la fenêtre de configuration de la récurrence.<br/>
-        Voulez-vous supprimer la date de fin choisie ?
+
+      <div class="modal" id="end-date-alert-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="end-date-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="end-date-modal-title">Date de fin de récurrence</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Pour les absences récurrentes, la date de fin ne doit pas être saisie dans le formulaire d'absence mais dans la fenêtre de configuration de la récurrence.
+              <br/><br/>
+              Voulez-vous supprimer la date de fin choisie ?
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="clear-end-date">Oui</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="recurrence-form" title="Récurrence" class='noprint' style='display:none;'>
-        <p class="validateTips">&nbsp;</p>
-        <form>
-          <table class='tableauFiches'>
-            <tr>
-              <td>
-                <label  for='recurrence-freq'>Récurrent : 
-              </td>
+      
+      <div class="modal" id="recurrence-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="recurrence-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
 
-              <td>
-                <select name='recurrence-freq' id='recurrence-freq' class='recurrence'>
-                  <option value='DAILY'>Tous les jours</option>
-                  <option value='WEEKLY' selected='selected'>Toutes les semaines</option>
-                  <option value='MONTHLY'>Tous les mois</option>
+            <div class="modal-header">
+              <h5 class="modal-title" id="recurrence-modal-title">Récurrence absence</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+            <form id="rform">
+              
+              <div class="row mb-2">
+                <label for="recurrence-freq" class="col-4 col-form-label">Récurrence :</label>
+                <select name="recurrence-freq" id="recurrence-freq" class="col-6 form-select form-select-sm r-data">
+                  <option value="DAILY">Tous les jours</option>
+                  <option value="WEEKLY" selected="selected">Toutes les semaines</option>
+                  <option value="MONTHLY">Tous les mois</option>
                 </select>
-              </td>
-            </tr>
+              </div>
 
-            <tr>
-              <td>
-                <label  for='recurrence-interval' >R&eacute;p&eacute;ter tous les : </label>
-              </td>
+              <div class="row mb-2">
+                <label  for="recurrence-interval" class="col-4 col-form-label"> Répéter <span id="recurrence-label">toutes</span> les : </label>
+                <input type="number" min="1" step="1" class="col-5 form-control form-control-sm r-data" id="recurrence-interval" style="max-width: 200px;" value="1">
+                <span id="recurrence-label-freq" class="col-3" style="margin-top: 7px;">semaines</span>
+              </div>
+              
+              <fieldset class="row mb-2" id="recurrence-week">
+                <legend class="col-form-label col-4">Répéter le :</legend>
+                <div class="col-8" style="padding: 7px 0px;">
+                  <div class="form-check">
+                    <input class="form-check-input r-data r-day" type="checkbox" id="r-day1" value="MO">
+                    <label  for="r-day1">Lundi</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input r-data r-day" type="checkbox" id="r-day2" value="TU">
+                    <label  for="r-day2">Mardi</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input r-data r-day" type="checkbox" id="r-day3" value="WE">
+                    <label  for="r-day3">Mercredi</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input r-data r-day" type="checkbox" id="r-day4" value="TH">
+                    <label  for="r-day4">Jeudi</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input r-data r-day" type="checkbox" id="r-day5" value="FR">
+                    <label  for="r-day5">Vendredi</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input r-data r-day" type="checkbox" id="r-day6" value="SA">
+                    <label  for="r-day6">Samedi</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input r-data r-day" type="checkbox" id="r-day0" value="SU">
+                    <label  for="r-day0">Dimanche</label>
+                  </div>
+                </div>
+              </fieldset>
 
-              <td>
-                <select name='recurrence-interval' id='recurrence-interval' style='width:50%;' class='recurrence'>
-                  <option value='1'>1</option>
-                  <option value='2'>2</option>
-                  <option value='3'>3</option>
-                  <option value='4'>4</option>
-                  <option value='5'>5</option>
-                  <option value='6'>6</option>
-                  <option value='7'>7</option>
-                  <option value='8'>8</option>
-                  <option value='9'>9</option>
-                  <option value='10'>10</option>
-                  <option value='11'>11</option>
-                  <option value='12'>12</option>
-                  <option value='13'>13</option>
-                  <option value='14'>14</option>
-                  <option value='15'>15</option>
-                  <option value='16'>16</option>
-                  <option value='17'>17</option>
-                  <option value='18'>18</option>
-                  <option value='19'>19</option>
-                  <option value='20'>20</option>
-                  <option value='21'>21</option>
-                  <option value='22'>22</option>
-                  <option value='23'>23</option>
-                  <option value='24'>24</option>
-                  <option value='25'>25</option>
-                  <option value='26'>26</option>
-                  <option value='27'>27</option>
-                  <option value='28'>28</option>
-                  <option value='29'>29</option>
-                  <option value='30'>30</option>
-                </select>
-                <span id='recurrence-repet-freq'>semaines</span>
-              </td>
-            </tr>
+              <fieldset class="row mb-2" id="recurrence-month" style="display:none;">
+                <legend class="col-form-label col-4">Répéter chaque :</legend>
+                <div class="col-8" style="padding: 7px 0px;">
+                  <div class="form-check">
+                    <input class="form-check-input r-data" type="radio" id="r-month1" value="BYMONTHDAY" checked>
+                    <label class="form-check-label" for="r-month1">Jour du mois</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input r-data" type="radio" id="r-month2" value="BYDAY">
+                    <label class="form-check-label" for="r-month2">Jour de la semaine</label>
+                  </div>
+                </div>
+              </fieldset>
 
-            <tr id='recurrence-tr-semaine'>
-              <td>
-                <label >R&eacute;p&eacute;ter le : </label>
-              </td>
+              <div class="row mb-2">
+                <label class="col-4" for="r-start">Date de début :</label>
+                <span class="col-4" id="r-start" style="padding: 0px 12px 0px 0px;"></span>
+              </div>
 
-              <td>
-                <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day1' value='MO' class='recurrence recurrence-by-day recurrence-by-day1' /><label  for='recurrence-by-day1'>L</label>
-                <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day2' value='TU' class='recurrence recurrence-by-day recurrence-by-day2' /><label  for='recurrence-by-day2'>Ma</label>
-                <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day3' value='WE' class='recurrence recurrence-by-day recurrence-by-day3' /><label  for='recurrence-by-day3'>Me</label>
-                <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day4' value='TH' class='recurrence recurrence-by-day recurrence-by-day4' /><label  for='recurrence-by-day4'>J</label>
-                <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day5' value='FR' class='recurrence recurrence-by-day recurrence-by-day5' /><label  for='recurrence-by-day5'>V</label>
-                <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day6' value='SA' class='recurrence recurrence-by-day recurrence-by-day6' /><label  for='recurrence-by-day6'>S</label>
-                <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day0' value='SU' class='recurrence recurrence-by-day recurrence-by-day0' /><label  for='recurrence-by-day0'>D</label>
-              </td>
-            </tr>
-
-            <tr id='recurrence-tr-mois' style='display:none;'>
-              <td>
-                <label >Répéter chaque : </label>
-              </td>
-
-              <td>
-                <input type='radio' name='recurrence-repet-mois' id='recurrence-repet-mois1' class='recurrence' value='BYMONTHDAY' checked='cheched' /><label  for='recurrence-repet-mois1'>jour du mois</label>
-                <input type='radio' name='recurrence-repet-mois' id='recurrence-repet-mois2' class='recurrence' value='BYDAY' />
-                <label for='recurrence-repet-mois2' >jour de la semaine</label>
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <label  for='recurrence-debut'>Date de d&eacute;but : </label>
-              </td>
-
-              <td>
-                <span id='recurrence-start'></span>
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <label  for='recurrence-end'>Fin : </label>
-              </td>
-
-              <td>
-                <ul style='margin:0; padding:0; list-style:none;'>
-                  <li style='margin:5px 0;' id='recurrence-end1-li'>
-                    <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end1' value='never' checked='checked' />
-                    <label  for='recurrence-end1'> Jamais</label>
-                  </li>
-
-                  <li style='margin:5px 0;' id='recurrence-end2-li'>
-                    <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end2' value='count'/>
-                    <label  for='recurrence-end2'>  Après 
-                      <input type='text' name='recurrence-count' id='recurrence-count' style='width:30px;' class='recurrence ui-widget ui-corner-all ui-widget-content'/> répétitions
+              <fieldset class="row mb-2">
+                <legend class="col-form-label col-4">Fin : </legend>
+                <div class="col-8" style="padding: 7px 0px;">
+                  <div class="form-check">
+                    <input class="form-check-input r-data r-end" name="r-end" type="radio" id="r-end1" value="never" checked>
+                    <label class="form-check-label" for="r-end1">Jamais</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input r-data r-end" name="r-end" type="radio" id="r-end2" value="count">
+                    <label class="form-check-label" for="r-end2" style="display: block ruby;">Après
+                      <input type="number" min="1" step="1" class="col-1 form-control form-control-sm r-data" id="r-count" value="1" style="max-width: 60px;">
+                      répétitions</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input r-data r-end" name="r-end" type="radio" id="r-end3" value="until">
+                    <label class="form-check-label" for="r-end3">Le 
+                      <input type="text" id="r-until" class="datepicker r-data" style="border: 1px solid #DEE2E6; width: 110px;"/>
                     </label>
-                  </li>
+                  </div>
+                </div>
+              </fieldset>
 
-                  <li style='margin:5px 0;' id='recurrence-end3-li'>
-                    <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end3' value='until'/>
-                    <label  for='recurrence-end3'> Le 
-                      <input type='text' name='recurrence-until' id='recurrence-until' style='width:130px;' class='recurrence datepicker'/>
-                    </label>
-                  </li>
-                </ul>
-              </td>
-            </tr>
+              <hr style="width: 498px; margin-left: -16px;">
+              
+              <div class="row">
+                <label class="col-4">Résumé : </label>
+                <span class="col-8" id="recurrence-summary-form" style="padding: 0px 12px 0px 0px; min-height: 45px;"></span>
+              </div>
+                            
+            </form>
+            </div>
 
-            <tr>
-              <td>
-                <label >R&eacute;sum&eacute; : </label>
-              </td>
+            <div class="modal-footer">
+              <button type="submit" form="rform" class="btn btn-primary" >Enregistrer</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Annuler</button>
+            </div>
 
-              <td>
-                <span id='recurrence-summary-form'>&nbsp;</span>
-              </td>
-            </tr>
-          </table>
-        </form>
+          </div>
+          {% include 'absences/reasons.html.twig' %}
+        </div>
       </div>
-      {% include 'absences/reasons.html.twig' %}
-    </div>
-  </div>  
 {% endblock %}
