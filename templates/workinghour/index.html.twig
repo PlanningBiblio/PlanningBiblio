@@ -5,13 +5,16 @@
 {% block page %}
 
   <h3>Heures de présence</h3>
-  <div id='buttons'>
-    <form name='form' method='get' action='{{ asset("workinghour") }}'>
-      Début : <input type='text' name='debut' class='datepicker' value='{{ debut }}' />
-      &nbsp;&nbsp;Fin : <input type='text' name='fin' class='datepicker' value='{{ fin }}' />
-      &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
-      &nbsp;&nbsp;<input type='button' value='Effacer' onclick="location.href='{{ asset("workinghour") }}?reset=on'" class='ui-button ui-button-type2' />
-     <a class='ui-button ui-button-type2' href='{{ asset("workinghour") }}/add?retour={{ asset("workinghour") }}' style='position:absolute; right:95px;'>Entrer de nouveaux horaires</a>
+  <div id="buttons">
+    <form name="form" method="get" action="{{ asset('workinghour') }}">
+      Début : <input type="text" name="debut" class="datepicker" value="{{ debut }}" style="margin-right:20px;" />
+      Fin : <input type="text" name="fin" class="datepicker" value="{{ fin }}" style="margin-right:20px;" />
+      <input type="submit" value="OK" class="ui-button" style="margin-right:20px;" />
+      <input type="button" value="Réinitialiser" onclick="location.href='{{ asset('workinghour') }}?reset=on'" class="ui-button ui-button-type2" style="margin-right:20px;" />
+      {%if admin and config('PlanningHebdo-resetCycles') and config('nb_semaine') > 2 %}
+        <a class="ui-button ui-button-type2" href="{{ path('workinghour.settings') }}" >Paramètres</a>
+      {% endif %}
+     <a class="ui-button ui-button-type2" href="{{ asset('workinghour') }}/add?retour={{ asset('workinghour') }}" style="position:absolute; right:95px;">Entrer de nouveaux horaires</a>
     </form>
   </div>
   <br/>
