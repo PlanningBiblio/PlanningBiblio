@@ -1,5 +1,18 @@
 # Changelog Planno
 
+## Version 25.11.20 (2026-03-20)
+
+> Planno is compatible with PHP 8.2 and 8.3
+> Due to the Symfony update, Planno is no longer compatible with PHP 8.1
+
+### Enhancement
+
+* MT46629 : Planning's modals (save, import and delete) #1340
+
+### Dependencies
+
+* MT52680: Upgrade Symfony from 6.4 to 7.4 #1341
+
 ## Version 25.11.19 (2026-03-18)
 
 ### Enhancement
