@@ -1,68 +1,78 @@
 {# absences/reasons.html.twig #}
 
-<div id="add-motif-form" title="Liste des motifs d'absences" class='noprint' style='display:none;'>
-  <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des motifs dans le menu déroulant.</p>
-  <form>
-    <p>
-      <input type='text' id='add-motif-text' style='width:300px;'/>
-      <input type="button" id="add-motif-button2" class="btn btn-secondary" value="Ajouter" style="margin-left:15px;"/>
-    </p>
-
-    <fieldset>
-      <div class="absences-motif-div">
-        <span>Nom</span>
-        <span style='position:absolute;left:415px;' >Niveau</span>
-        <span style='position:absolute;left:590px;'>Circuit de notification</span>
-        <span style='position:absolute;left:750px;'>Télétravail</span>
+<div class="modal modal-lg" id="add-motif-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-motif-modal-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="add-motif-modal-title">Liste des motifs d'absences</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <ul id="motifs-sortable">
-        {% if reasons is iterable %}
-          {% for r in reasons %}
-            <li class='ui-state-default' id='li_{{ r.id }}'>
-              <span class='pl-icon pl-icon-arrowupdown'></span>
-              {% if r.type == 2 %}
-                <font class='padding20' id='valeur_{{ r.id}}'>{{ r.valeur }}</font>
-              {% else %}
-                <font class='bold' id='valeur_{{ r.id}}'>{{ r.valeur }}</font>
-              {% endif %}
-              <select id='type_{{ r.id }}' style='position:absolute;width:150px;left:410px;' onchange='padding20($(this));'>
-                <option value='0'>&nbsp;</option>
-                {% for t in reason_types %}
-                  {% if t.id == r.type %}
-                    <option value='{{ t.id }}' selected="selected">{{ t.valeur }}</option>
-                  {% else %}
-                    <option value='{{ t.id }}'>{{ t.valeur }}</option>
-                  {% endif %}
+      <div class="modal-body">
+
+        <p class="validateTips" style="margin-bottom: 6px;">Ajoutez, supprimez et modifiez l'ordre des motifs dans le menu déroulant.</p>
+        <form id="add-reason">
+          <div class="row">
+            <input type="text" id="add-motif-text" class="col-6 form-control form-control-sm" style="width:300px;" required>
+            <button type="submit" id="add-motif-button" class="col-1 btn btn-primary" style="margin: 10px;font-size: 13px;">Ajouter</button>
+          </div>
+        </form>
+
+        <form id="arrange-reasons">
+          <fieldset class="container-fluid">
+          <div class="row row-header">
+              <i class="col-auto p-2 bi bi-arrow-down-up" aria-hidden="true"></i>
+              <span class="col-3">Nom</span>
+              <span class="col-3" >Niveau</span>
+              <span class="col-3">Circuit de notification</span>
+              <span class="col-2" style="text-align: center;">Télétravail</span>
+          </div>
+            <div id="motifs-sortable">
+              {% if reasons is iterable %}
+                {% for r in reasons %}
+            
+                  <li class="row row-motifs" id="li_{{ r.id }}">
+                      <i class="col-auto p-2 bi bi-arrow-down-up"></i>
+                      <span class="col-3 {% if r.type == 2 %} bold {% endif %}" id="valeur_{{ r.id}}">{{ r.valeur }}</span>
+
+                    <div class="col-3">
+                      <select id="type_{{ r.id }}" class="form-control form-select form-select-sm" aria-label="Séléction du Niveau" onchange="padding20($(this));">
+                        <option hidden disabled selected value=""></option>
+                        {% for t in reason_types %}
+                        <option value="{{ t.id }}" {% if t.id == r.type %} selected="selected" {% endif %}>{{ t.valeur }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="col-3">
+                      <select id="notification-workflow_{{ r.id }}" class="form-control form-select form-select-sm" aria-label="Séléction du circuit de notification" onchange="padding20($(this));">
+                        <option value="A" {% if r.notification_workflow == 'A' %} selected="selected" {% endif %}>Circuit A</option>
+                        <option value="B" {% if r.notification_workflow == 'B' %} selected="selected" {% endif %}>Circuit B</option>
+                      </select>
+                    </div>
+
+                    <div class="col-2" style="text-align: center;">
+                      <input type="checkbox" id="teleworking_{{ r.id }}" class="form-check-input" {% if r.teleworking %} checked="checked" {% endif %}/>
+                    </div>
+
+                    {% if r.unused %}
+                      <span class="col-auto p-1" onclick="$(this).closest('li').hide();">
+                        <i class="bi bi-trash3-fill"></i>
+                      </span>
+                    {% endif %}
+                  </li>
+
                 {% endfor %}
-              </select>
-
-                <select id="notification-workflow_{{ r.id }}" style="position:absolute;width:150px;left:590px;">
-                  {% if r.notification_workflow == 'A' %}
-                    <option value="A" selected="selected">Circuit A</option>
-                  {% else %}
-                    <option value="A">Circuit A</option>
-                  {% endif %}
-
-                  {% if r.notification_workflow == 'B' %}
-                    <option value="B" selected="selected">Circuit B</option>
-                  {% else %}
-                    <option value="B">Circuit B</option>
-                  {% endif %}
-                </select>
-
-                {% if r.teleworking %}
-                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:780px;' checked='checked' />
-                {% else %}
-                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:780px;' />
-                {% endif %}
-
-              {% if r.unused %}
-                <span class='pl-icon pl-icon-trash' style='position:absolute;left:840px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
               {% endif %}
-            </li>
-          {% endfor %}
-        {% endif %}
-      </ul>
-    </fieldset>
-  </form>
+              </div>
+          </fieldset>
+
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" form="arrange-reasons">Enregister</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
 </div>

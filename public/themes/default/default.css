@@ -217,25 +217,6 @@ h4{
   color:#FFF;
 }
 
-.absences-motif-div span {
-  position: absolute;
-  }
-  
-  .absences-motif-div span:nth-child(1) {
-  left: 60px;
-  }
-  
-  .absences-motif-div span:nth-child(2) {
-  left: 415px;
-  }
-  
-  .absences-motif-div span:nth-child(3) {
-  left: 590px;
-  }
-  
-  .absences-motif-div span:nth-child(4) {
-  left: 750px;
-  }
 
 /* Absences récurrentes */
 #recurrence-summary {
@@ -270,6 +251,10 @@ h4{
   min-width: 16px;
   visibility: hidden;
   padding-top: 2px;
+}
+
+.bi.bi-trash3-fill {
+  cursor: pointer;
 }
 
 .pl-icon {
@@ -354,9 +339,8 @@ h4{
   background:url("images/icon/delete_black_18dp.svg") no-repeat center;
 }
 
-.pl-icon-arrowupdown{
+.pl-icon-arrowupdown {
   background:url("images/icon/import_export_black_18dp.svg") no-repeat center;
-  margin-top: 3px;
 }
 
 .pl-icon-undo {
@@ -1951,11 +1935,44 @@ input.form-check-input {
   margin-top: 0.5em;
 }
 
-select.form-select {
+select.form-select, select.form-select:focus {
   color: #29495C;
 }
 
 /* Modals END */
+
+/* Bootstra Grid START */
+
+.row {
+  min-height: 45px;
+  align-items: center;
+}
+
+.row.row-motifs {
+  background-color: white;
+  border: 1px solid;
+  margin-bottom: -1px;
+  margin-top: -1px;
+}
+
+.row.row-motifs select {
+  width: 100%;
+  background-color: aliceblue;
+}
+
+.row.row-header {
+  background-color: #29495C;
+  color: white;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.row.row-header i {
+  visibility: hidden;
+}
+
+
+/* Bootstra Grid END */
 
 /*ui-dialog START*/
 
