@@ -189,12 +189,12 @@ h4{
 }
 
 #ferie,.ferie{
-  color: #BA1800;
+  color: #DC3545;
   margin: 15px 0 5px 0;
 }
 
 .important{
-  color: #BA1800;
+  color: #DC3545 !important;
 }
 
 
@@ -217,25 +217,6 @@ h4{
   color:#FFF;
 }
 
-.absences-motif-div span {
-  position: absolute;
-  }
-  
-  .absences-motif-div span:nth-child(1) {
-  left: 60px;
-  }
-  
-  .absences-motif-div span:nth-child(2) {
-  left: 415px;
-  }
-  
-  .absences-motif-div span:nth-child(3) {
-  left: 590px;
-  }
-  
-  .absences-motif-div span:nth-child(4) {
-  left: 750px;
-  }
 
 /* Absences récurrentes */
 #recurrence-summary {
@@ -270,6 +251,10 @@ h4{
   min-width: 16px;
   visibility: hidden;
   padding-top: 2px;
+}
+
+.bi.bi-trash3-fill {
+  cursor: pointer;
 }
 
 .pl-icon {
@@ -354,9 +339,8 @@ h4{
   background:url("images/icon/delete_black_18dp.svg") no-repeat center;
 }
 
-.pl-icon-arrowupdown{
+.pl-icon-arrowupdown {
   background:url("images/icon/import_export_black_18dp.svg") no-repeat center;
-  margin-top: 3px;
 }
 
 .pl-icon-undo {
@@ -1473,7 +1457,17 @@ ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
 ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 30px; }
 ul[id$="-sortable"] li span { margin-left: -1.3em; }
 
-.bold{
+ul[id$="_sortable"] { 
+  list-style-type: none; 
+  padding: 0;
+}
+
+form[id^="arrange-"] {
+  height: 400px; 
+  overflow-y: scroll;
+}
+
+.bold {
   font-weight:bold;
 }
 
@@ -1489,12 +1483,12 @@ option.bold{
   display: inline;
 }
 
-.nowrap{
-  white-space:nowrap;
+.bg-blue {
+  background-color: aliceblue;
 }
 
-.padding20{
-  padding-left:20px;
+.nowrap {
+  white-space:nowrap;
 }
 
 /* Statistiques */
@@ -1897,7 +1891,10 @@ display: contents;
 
 .modal-body {
   color: #29495C;
-  font-size: 15px;
+}
+
+.modal-body p{
+  font-size: 1.15em;
 }
 
 hr {
@@ -1934,13 +1931,50 @@ input.form-check-input:checked {
 
 input.form-check-input {
   margin-top: 0.5em;
+  border: 1px solid;
 }
 
-select.form-select {
+select.form-select, select.form-select:focus {
   color: #29495C;
 }
 
 /* Modals END */
+
+/* Bootstrap Grid START */
+
+.row {
+  min-height: 45px;
+}
+
+.row.row-sortable {
+  border: 1px solid;
+  margin-bottom: -1px;
+  align-items: center;
+}
+
+.row.row-sortable span {
+  font-size: 1.08em;
+}
+
+.row.row-sortable select {
+  width: 100%;
+  background-color: aliceblue;
+}
+
+.row.row-header {
+  background-color: #29495C;
+  color: white;
+  font-weight: bold;
+  white-space: nowrap;
+  align-items: center;
+}
+
+.row.row-header i {
+  visibility: hidden;
+}
+
+
+/* Bootstrap Grid END */
 
 /*ui-dialog START*/
 

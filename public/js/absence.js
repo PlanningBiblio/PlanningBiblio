@@ -7,6 +7,10 @@ $(function() {
 
   $(document).ready(function(){
 
+    if($('#reasons_sortable').length) {
+      Sortable.create(reasons_sortable, {ghostClass: 'bg-blue', animation: 150}); 
+    }
+
     // Affichage de la liste des agents sélectionnés lors du chargement de la page modif.php
     if($('.perso_ul').length){
       affiche_perso_ul();
@@ -45,110 +49,93 @@ $(function() {
 
   });
 
-  // Paramétrage de la boite de dialogue permettant la modification des motifs
-  $("#add-motif-form").dialog({
-    autoOpen: false,
-    height: 600,
-    width: 900,
-    modal: true,
-    resizable: false,
-    draggable: false,
-    buttons: {
-      Enregistrer: function() {
-	// Supprime les lignes cachées lors du clic sur la corbeille
-	$("#motifs-sortable li:hidden").each(function(){
-	  $(this).remove();
-	});
+  $('#add-reason-modal').on('hidden.bs.modal', function() {
+    $('#reasons_sortable li:hidden').each(function() {
+      $(this).show();
+    });
+  });
 
-	// Enregistre les éléments du formulaire dans un tableau
-	tab=new Array();
-	$("#motifs-sortable li").each(function(){
-	  var id=$(this).attr("id").replace("li_","");
-      var teleworking = $("#teleworking_" + id).prop('checked') ? 1 : 0;
+  $('#arrange-reasons').on('submit', function(e) {
+    e.preventDefault();
+    // Supprime les lignes cachées lors du clic sur la corbeille
+    $('#reasons_sortable li:hidden').each(function() {
+     $(this).remove();
+   });
+
+    // Enregistre les éléments du formulaire dans un tableau
+    tab = new Array();
+    $('#reasons_sortable li').each(function() {
+      var id = $(this).attr('id').replace('li_', '');
+      var teleworking = $('#teleworking_' + id).prop('checked') ? 1 : 0;
       tab.push(new Array(
-        $("#valeur_"+id).text(),
+        $('#valeur_'+id).text(),
         $(this).index(),
-        $("#type_"+id+" option:selected").val(),
-        $("#notification-workflow_" + id).val(),
+        $('#type_'+id+' option:selected').val(),
+        $('#notification-workflow_' + id).val(),
         teleworking,
       ));
     });
 
-  // Transmet le tableau à la page de validation ajax
-  var _token = $('input[name=_token]').val();
-  console.log(_token);
+    // Transmet le tableau à la page de validation ajax
+    var _token = $('input[name=_token]').val();
 
-  $.ajax({
-	  url: url('ajax/edit-absence-reasons'),
-	  type: 'post',
-          dataType: 'json',
-	  data: {
-      _token: _token,
-      data: tab,
-      menu:'abs',
-      option: 'type',
-    },
-	  success: function(){
-            var current_val = $('#motif').val();
-            $('#motif').empty();
-            $('#motif').append("<option value=''>&nbsp;</option>");
-
-            $("#motifs-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $("#valeur_"+id).text();
-              var type = $("#type_"+id+" option:selected").val();
-
-              var nbsp = "\xa0";
-              var padding = type == 2 ? nbsp.repeat(3) : "" ;
-              var text = padding + val;
-              var selected = val == current_val;
-
-              var option = new Option(text, val, selected, selected);
-              option.disabled = type == 1;
-
-              $('#motif').append(option);
-            });
-            $("#add-motif-form").dialog( "close" );
-            $('#motif').effect("highlight",null,2000);
-	  },
-	  error: function(){
-	    alert("Erreur lors de l'enregistrement des modifications");
-	  }
-	});
+    $.ajax({
+      url: url('ajax/edit-absence-reasons'),
+      type: 'post',
+        dataType: 'json',
+      data: {
+        _token: _token,
+        data: tab,
+        menu:'abs',
+        option: 'type',
       },
-      Annuler: {
-        click: function() {
-          $( this ).dialog( "close" );
-              },
-        text: "Annuler",
-        class: "btn btn-secondary"
-            },
-    },
-    close: function() {
-      $("#motifs-sortable li:hidden").each(function(){
-	$(this).show();
-      });
-    }
-  });
+      success: function() {
+        var current_val = $('#motif').val();
+        $('#motif').empty();
+        $('#motif').append('<option value="">&nbsp;</option>');
 
-  // Affiche la boite de dialogue permettant la modification des motifs
-  $("#add-motif-button")
-    .click(function() {
-      $("#add-motif-form").dialog( "open" );
-      return false;
+        $('#reasons_sortable li').each(function() {
+          var id = $(this).attr('id').replace('li_', '');
+          var val = $('#valeur_'+id).text();
+          var type = $('#type_'+id+' option:selected').val();
+
+          var nbsp = '\xa0';
+          var padding = type == 2 ? nbsp.repeat(3) : '' ;
+          var text = padding + val;
+          var selected = val == current_val;
+
+          var option = new Option(text, val, selected, selected);
+          option.disabled = type == 1;
+
+          $('#motif').append(option);
+        });
+
+        $('#add-reason-modal').modal('hide');
+        $('#motif').effect('highlight', null, 2000);
+      },
+      error: function() {
+        alert('Erreur lors de l\'enregistrement des modifications.\nVérifiez qu\'il ne manque aucune information.');
+      },
     });
-
-  // Permet de rendre la liste des motifs triable
-  $( "#motifs-sortable" ).sortable({
-    placeholder: "ui-state-highlight",
   });
+
+  // Suppression message invalidité lors du changement d'input
+  $('#add-reason-text').on('input', function(e) {
+    if($('.invalid-feedback').is(':visible')) {
+      $('.invalid-feedback').hide();
+      $('#add-reason-text').removeClass('important');
+    }
+  })
 
   // Permet d'ajouter de nouveaux motifs (clic sur le bouton ajouter)
-  $("#add-motif-button2").click(function(){
+  $('#add-reason').on('submit', function(e) {
+    e.preventDefault();
+    $('.invalid-feedback').text('Motif invalide')
+
     // Récupère les options du premier select "type" pour les réutiliser lors d'un ajout
     var select=$("select[id^=type_]");
     var select_id=select.attr("id");
-    var options="";
+    var options = '<option hidden disabled selected value=""></option>';
     $("#"+select_id+" option").each(function(){
       var val=sanitize_string($(this).val());
       var text=sanitize_string($(this).text());
@@ -157,17 +144,33 @@ $(function() {
 
     var select_wf = $("select[id^=notification-workflow_]");
     var select_id_wf = select_wf.attr("id");
-    var options_wf = "";
+    var options_wf = '<option hidden disabled selected value=""></option>';
     $("#" + select_id_wf + " option").each(function() {
       var val=sanitize_string($(this).val());
       var text=sanitize_string($(this).text());
       options_wf+="<option value='"+val+"'>"+text+"</option>";
     });
 
-    var text=sanitize_string($("#add-motif-text").val());
+    var text = sanitize_string($('#add-reason-text').val());
     if(!text){
-      CJInfo("Donnée invalide","error");
-      $("#add-motif-text").val();
+      $('.invalid-feedback').show();
+      $('#add-reason-text').addClass('important');
+      return;
+    }
+
+    // Vérifie si le motif existe déjà
+    var exist = false;
+    $('#reasons_sortable > li > span').each(function() {
+      if($(this).text().toLowerCase() == text.toLowerCase()) {
+        $('.invalid-feedback').text('Motif invalide. Un motif avec ce nom existe déjà.')
+        $('.invalid-feedback').show();
+        $('#add-reason-text').addClass('important');
+        exist = true;
+        return;
+      }
+    });
+
+    if(exist) {
       return;
     }
 
@@ -176,20 +179,29 @@ $(function() {
       number++;
     }
 
-    $("#motifs-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='pl-icon pl-icon-arrowupdown'></span>"
-      +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<select id='type_"+number+"' style='position:absolute;width:150px;left:410px;' onchange='padding20($(this));'>"
-      +options
-      +"</select>"
-      +"<select id='notification-workflow_"+number+"' style='position:absolute;width:150px;left:590px;'>"
-      +options_wf
-      +"</select>"
-      +"<input type='checkbox' id='teleworking_"+number+"' style='position:absolute; left:780px;' />"
-      +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:840px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
-      +"</li>");
+    $('#reasons_sortable').append(
+      '<li class="row row-sortable" id="li_' + number + '"><i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>'
+      + '<span class="col-3 p-2" id="valeur_' + number + '">' + text + '</span>'
+      + '<div class="col-3">'
+      + '<select id="type_' + number + '" class="form-control form-select form-select-sm" aria-label="Séléction du Niveau" onchange="padding20($(this));">'
+      + options
+      + '</select>'
+      + '</div>'
+      + '<div class="col-3">'
+      + '<select id="notification-workflow_' + number + '" class="form-control form-select form-select-sm" aria-label="Séléction du circuit de notification">'
+      + options_wf
+      + '</select>'
+      + '</div>'
+      + '<div class="col-2" style="text-align: center;">'
+      + '<input type="checkbox" id="teleworking_' + number + '" class="form-check-input"/>'
+      + '</div>'
+      + '<span class="col-auto p-1" onclick="$(this).closest(\'li\').hide();">'
+      + '<i class="bi bi-trash3-fill"></i>'
+      + '</span>'
+      + '</li>');
 
     // Reset du champ texte une fois l'ajout effectué
-    $("#add-motif-text").val(null);
+    $('#add-reason-text').val(null);
   });
 
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
@@ -364,7 +376,7 @@ $(function() {
     }
   });
 
-  // Supression date de fin depuis modale d'alerte
+  // Suppression date de fin depuis modale d'alerte
   $('#clear-end-date').on('click', function() {
     $('#end-date-alert-modal').modal('hide');
     $('.end-date').val('');
