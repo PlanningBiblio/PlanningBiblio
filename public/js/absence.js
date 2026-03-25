@@ -131,12 +131,6 @@ $(function() {
     }
   });
 
-  // Affiche la boite de dialogue permettant la modification des motifs
-  $("#add-motif-button")
-    .click(function() {
-      $("#add-motif-form").dialog( "open" );
-      return false;
-    });
 
   // Permet de rendre la liste des motifs triable
   $( "#motifs-sortable" ).sortable({
@@ -144,7 +138,7 @@ $(function() {
   });
 
   // Permet d'ajouter de nouveaux motifs (clic sur le bouton ajouter)
-  $("#add-motif-button2").click(function(){
+  $("#add-motif-button").click(function(){
     // Récupère les options du premier select "type" pour les réutiliser lors d'un ajout
     var select=$("select[id^=type_]");
     var select_id=select.attr("id");
