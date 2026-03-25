@@ -142,7 +142,7 @@ $(function() {
     // Récupère les options du premier select "type" pour les réutiliser lors d'un ajout
     var select=$("select[id^=type_]");
     var select_id=select.attr("id");
-    var options="";
+    var options = "<option hidden disabled selected value=''></option>";
     $("#"+select_id+" option").each(function(){
       var val=sanitize_string($(this).val());
       var text=sanitize_string($(this).text());
@@ -151,7 +151,7 @@ $(function() {
 
     var select_wf = $("select[id^=notification-workflow_]");
     var select_id_wf = select_wf.attr("id");
-    var options_wf = "";
+    var options_wf = "<option hidden disabled selected value=''></option>";
     $("#" + select_id_wf + " option").each(function() {
       var val=sanitize_string($(this).val());
       var text=sanitize_string($(this).text());
@@ -170,20 +170,28 @@ $(function() {
       number++;
     }
 
-    $("#motifs-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='pl-icon pl-icon-arrowupdown'></span>"
-      +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<select id='type_"+number+"' style='position:absolute;width:150px;left:410px;' onchange='padding20($(this));'>"
+    $("#motifs-sortable").append("<li class='row row-motifs' id='li_"+number+"'><i class='col-auto p-2 bi bi-arrow-down-up'></i>"
+      +"<span class='col-3' id='valeur_"+number+"'>"+text+"</span>"
+      +"<div class='col-3'>"
+      +"<select id='type_"+number+"' class='form-control form-select form-select-sm' aria-label='Séléction du Niveau' onchange='padding20($(this));'>"
       +options
       +"</select>"
-      +"<select id='notification-workflow_"+number+"' style='position:absolute;width:150px;left:590px;'>"
+      +"</div>"
+      +"<div class='col-3'>"
+      +"<select id='notification-workflow_"+number+"' class='form-control form-select form-select-sm' aria-label='Séléction du circuit de notification'>"
       +options_wf
       +"</select>"
-      +"<input type='checkbox' id='teleworking_"+number+"' style='position:absolute; left:780px;' />"
-      +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:840px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"</div>"
+      +"<div class='col-2' style='text-align: center;'>"
+      +"<input type='checkbox' id='teleworking_"+number+"' class='form-check-input'/>"
+      +"</div>"
+      +"<span class='col-auto p-1' onclick='$(this).closest(\"li\").hide();'>"
+      +"<i class='bi bi-trash3-fill'></i>"
+      +"</span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué
-    $("#add-motif-text").val(null);
+    // $("#add-motif-text").val(null);
   });
 
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif

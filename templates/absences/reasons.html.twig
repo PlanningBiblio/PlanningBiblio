@@ -13,7 +13,7 @@
         <form id="add-reason">
           <div class="row">
             <input type="text" id="add-motif-text" class="col-6 form-control form-control-sm" style="width:300px;" required>
-            <button type="submit" id="add-motif-button" class="col-1 btn btn-primary" style="margin: 10px;font-size: 13px;">Ajouter</button>
+            <button type="button" id="add-motif-button" class="col-1 btn btn-primary" style="margin: 10px;font-size: 13px;">Ajouter</button>
           </div>
         </form>
 
@@ -36,7 +36,6 @@
 
                     <div class="col-3">
                       <select id="type_{{ r.id }}" class="form-control form-select form-select-sm" aria-label="Séléction du Niveau" onchange="padding20($(this));">
-                        <option hidden disabled selected value=""></option>
                         {% for t in reason_types %}
                         <option value="{{ t.id }}" {% if t.id == r.type %} selected="selected" {% endif %}>{{ t.valeur }}</option>
                         {% endfor %}
