@@ -323,12 +323,11 @@ function decompte(dcpt){
 
 
 function padding20(elem) {
-    if(elem.val()==2){
-      elem.prev("font").removeClass("bold");
-      elem.prev("font").addClass("padding20");
-    }else{
-      elem.prev("font").addClass("bold");
-      elem.prev("font").removeClass("padding20");
+    if(elem.val() == 2) {
+      elem.parent('div').prev('span').addClass('ps-4');
+    }
+    else {
+      elem.parent('div').prev('span').removeClass('ps-4');
     }
 }
 
