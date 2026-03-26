@@ -18,7 +18,7 @@ $(function() {
     // Affichage de la règle de récurrences lors de la modification d'une absence
     if($('#rrule').val()){
       var text = recurrenceRRuleText2($('#rrule').val());
-      $('#recurrence-summary').html(text);
+      $('#recurrence-summary').html(sanitize_string(text));
       $('#recurrence-info').show();
       $('#recurrence-checkbox').attr('checked','checked');
     }
@@ -287,15 +287,15 @@ $(function() {
     date = date.replace(/(\d*)\/(\d*)\/(\d*)/,'$2/$1/$3');
     var d = new Date(date);
     var n = d.getDay();
-    $('.r-day').prop('checked',false);
-    $('#r-day'+ n).prop('checked',true);
+    $('.recurrence-by-day').prop('checked',false);
+    $('#recurrence-by-day'+ n).prop('checked',true);
   });
 
   $('#absence-start').change(function(){
     var date = $(this).val();
 
     // Affichage de la date de début dans le formulaire récurrence
-    $('#r-start').text(date);
+    $('#recurrence-start').text(date);
 
     // Modification de la récurrence si la date de début a changé
     var rrule = $('#recurrence-hidden').val();
@@ -327,7 +327,7 @@ $(function() {
     var text = recurrenceRRuleText2(rrule);
 
     $('#recurrence-hidden').val(rrule);
-    $('#recurrence-summary').html(text);
+    $('#recurrence-summary').html(sanitize_string(text));
   });
 
   // Modification date de fin
@@ -342,10 +342,10 @@ $(function() {
   });
 
   // Soumission du formulaire de récurrence
-  $('#rform').submit(function(e){
+  $('#recurrence-form').submit(function(e){
     e.preventDefault();
     rrule = recurrenceRRule();
-    $('#recurrence-summary').html(rrule[1]);
+    $('#recurrence-summary').html(sanitize_string(rrule[1]));
     $('#recurrence-hidden').val(rrule[0]);
     $('#recurrence-info').show();
     $('#recurrence-modal').modal('hide');
@@ -354,7 +354,7 @@ $(function() {
   // Ouverture de la modale de récurrence
   $('#recurrence-modal').on('shown.bs.modal', function(e){
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').html(rrule[1]);
+    $('#recurrence-summary-form').html(sanitize_string(rrule[1]));
   });
 
 
@@ -381,9 +381,9 @@ $(function() {
   // Changement affichage modale en fonction de le fréquence de récurrence choisie
   $('#recurrence-freq').change(function(){
     switch($(this).val()){
-      case 'DAILY' : $('#recurrence-label').text('tout'); $('#recurrence-label-freq').text('jours'); break;
+      case 'DAILY' : $('#recurrence-label').text('tous'); $('#recurrence-label-freq').text('jours'); break;
       case 'WEEKLY' : $('#recurrence-label').text('toutes');$('#recurrence-label-freq').text('semaines'); break;
-      case 'MONTHLY' : $('#recurrence-label').text('tout');$('#recurrence-label-freq').text('mois'); break;
+      case 'MONTHLY' : $('#recurrence-label').text('tous');$('#recurrence-label-freq').text('mois'); break;
     }
 
     if($(this).val() == 'WEEKLY'){
@@ -401,34 +401,34 @@ $(function() {
   });
 
   // Changement affichage modale en fonction de la modalité de fin choisie
-  $('.r-end').change(function(){
-    if($('#r-end2').is(':checked')){
-      $('#r-count').val(30);
+  $('.recurrence-end').change(function(){
+    if($('#recurrence-end2').is(':checked')){
+      $('#recurrence-count').val(30);
     } else {
-      $('#r-count').val(null);
+      $('#recurrence-count').val(null);
     }
-    if($('#r-end3').is(':checked')){
+    if($('#recurrence-end3').is(':checked')){
     } else {
-      $('#r-until').val(null);
+      $('#recurrence-until').val(null);
     }
   });
 
-  $('#r-count').click(function(){
-    $('#r-end2').click();
+  $('#recurrence-count').click(function(){
+    $('#recurrence-end2').click();
   });
 
-  $('#r-until').click(function(){
-    $('#r-end3').click();
+  $('#recurrence-until').click(function(){
+    $('#recurrence-end3').click();
   });
 
   // Détecte les modifications du formulaire pour adapter la règle ICS
-  $('.r-data').change(function(){
+  $('.recurrence-data').change(function(){
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').text(rrule[1]);
+    $('#recurrence-summary-form').html(sanitize_string(rrule[1]));
   });
-  $('input[type=text].r-data').keyup(function(){
+  $('input[type=text].recurrence-data').keyup(function(){
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').text(rrule[1]);
+    $('#recurrence-summary-form').html(sanitize_string(rrule[1]));
   });
 
   // Récurrences : alerte lors de la modification d'une absence récurrente
@@ -729,32 +729,32 @@ function recurrenceRRule(){
   freq = $('#recurrence-freq').val();
 
   // BYDAY / WEEKLY
-  $('.r-day:visible:checked').each(function(){
+  $('.recurrence-by-day:visible:checked').each(function(){
     byday = (byday == null) ? $(this).val() : byday+=','+$(this).val();
   });
 
   // BYMONTHDAY
-  if($('#r-month1:visible:checked').length > 0){
+  if($('#recurrence-by-month1:visible:checked').length > 0){
     bymonthday = parseInt($('#absence-start').val().substr(0,2));
   }
 
   // BYDAY / MONTHLY
-  if($('#r-month2:visible:checked').length > 0){
+  if($('#recurrence-by-month2:visible:checked').length > 0){
     var date = $('#absence-start').val();
     byday = recurrenceMonthlyByDay(date);
   }
 
   // COUNT && UNTIL
-  switch($('.r-end:checked').val()){
+  switch($('.recurrence-end:checked').val()){
     // COUNT
     case 'count' :
-      var count = $('#r-count').val();
+      var count = $('#recurrence-count').val();
       end = 'COUNT='+count;
       break;
 
     // UNTIL
     case 'until' :
-      var until = $('#r-until').val();
+      var until = $('#recurrence-until').val();
 
       if(until){
         // Conversion date ICS sur fuseau GMT
@@ -832,7 +832,7 @@ function recurrenceRRuleText(freq, interval, byday, bymonthday, until, count){
         } else {
           var n = byday.substring(0,1);
           var d = byday.substring(1);
-          n = n == 1 ? 'Le 1er ' : 'Le '+n+'ème ';
+          n = n == 1 ? 'Le 1<sup>er</sup> ' : 'Le '+n+'<sup>ème</sup> ';
         }
         day = d.replace('MO', ' lundi').replace('TU', ' mardi').replace('WE', ' mercredi').replace('TH', ' jeudi').replace('FR', ' vendredi').replace('SA', ' samedi').replace('SU', ' dimanche');
         // tableau pour traduction
@@ -842,7 +842,7 @@ function recurrenceRRuleText(freq, interval, byday, bymonthday, until, count){
 
       if(bymonthday){
         var n = bymonthday;
-        n = n == 1 ? 'Le 1er' : 'Le '+n;
+        n = n == 1 ? 'Le 1<sup>er</sup> ' : 'Le '+n;
         text = text == 'Tous les mois' ? n+' de chaque mois' : n+', tous les '+interval+' mois';
       }
 
