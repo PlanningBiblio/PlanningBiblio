@@ -137,8 +137,17 @@ $(function() {
     placeholder: "ui-state-highlight",
   });
 
+  // Suppression message invalidité lors du changement d'input
+  $('#add-motif-text').on('input', function(e) {
+    if($('.invalid-feedback').css('display') === 'block'){
+      $('.invalid-feedback').css({'display': 'none'})
+      $('#add-motif-text').css({'color': '#29495C'});
+    }
+  })
+
   // Permet d'ajouter de nouveaux motifs (clic sur le bouton ajouter)
-  $("#add-motif-button").click(function(){
+   $('#add-reason').on('submit', function(e) {
+    e.preventDefault();
     // Récupère les options du premier select "type" pour les réutiliser lors d'un ajout
     var select=$("select[id^=type_]");
     var select_id=select.attr("id");
@@ -160,8 +169,8 @@ $(function() {
 
     var text=sanitize_string($("#add-motif-text").val());
     if(!text){
-      CJInfo("Donnée invalide","error");
-      $("#add-motif-text").val();
+      $('.invalid-feedback').show();
+      $('#add-motif-text').css({'color': '#DD404F'});
       return;
     }
 
@@ -170,7 +179,7 @@ $(function() {
       number++;
     }
 
-    $("#motifs-sortable").append("<li class='row row-motifs' id='li_"+number+"'><i class='col-auto p-2 bi bi-arrow-down-up'></i>"
+    $('#motifs-sortable').append("<li class='row row-motifs' id='li_"+number+"'><i class='col-auto p-2 bi bi-arrow-down-up'></i>"
       +"<span class='col-3' id='valeur_"+number+"'>"+text+"</span>"
       +"<div class='col-3'>"
       +"<select id='type_"+number+"' class='form-control form-select form-select-sm' aria-label='Séléction du Niveau' onchange='padding20($(this));'>"
@@ -191,7 +200,7 @@ $(function() {
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué
-    // $("#add-motif-text").val(null);
+    $('#add-motif-text').val(null);
   });
 
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
