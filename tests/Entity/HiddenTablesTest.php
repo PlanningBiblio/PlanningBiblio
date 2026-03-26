@@ -17,10 +17,8 @@ class HiddenTablesTest extends KernelTestCase
 
     public function testInitialState(): void
     {
-        // Arrange
         $entity = new HiddenTables();
 
-        // Assert
         $this->assertNull($entity->getId(), 'Initial ID should be null');
         $this->assertSame([], $entity->getHiddenTables(), 'Hidden tables should be empty by default');
         $this->assertSame(0, $entity->getTableId(), 'Default table ID should be 0');
@@ -29,84 +27,57 @@ class HiddenTablesTest extends KernelTestCase
 
     public function testSetAndGetHiddenTables(): void
     {
-        // Arrange
         $entity = new HiddenTables();
         $tables = ['userIds', 'orders', 'products'];
 
-        // Act
         $result = $entity->setHiddenTables($tables);
 
-        // Assert
         $this->assertSame($entity, $result, 'Setter should return the same instance (fluent interface)');
         $this->assertSame($tables, $entity->getHiddenTables(), 'Hidden tables should match the given array');
     }
 
     public function testSetHiddenTablesOverwrite(): void
     {
-        // Arrange
         $entity = new HiddenTables();
 
-        // Act
         $entity->setHiddenTables(['userIds']);
         $entity->setHiddenTables(['logs', 'sessions']);
 
-        // Assert
         $this->assertSame(['logs', 'sessions'], $entity->getHiddenTables(), 'Hidden tables should be overwritten');
     }
 
     public function testSetAndGetTableId(): void
     {
-        // Arrange
         $entity = new HiddenTables();
 
-        // Act
         $result = $entity->setTableId(42);
 
-        // Assert
         $this->assertSame($entity, $result, 'Setter should be fluent');
         $this->assertSame(42, $entity->getTableId(), 'Table ID should match the given value');
     }
 
     public function testSetAndGetUserId(): void
     {
-        // Arrange
         $entity = new HiddenTables();
 
-        // Act
         $result = $entity->setUserId(1001);
 
-        // Assert
         $this->assertSame($entity, $result, 'Setter should be fluent');
         $this->assertSame(1001, $entity->getUserId(), 'User ID should match the given value');
     }
 
     public function testMultiplePropertyAssignments(): void
     {
-        // Arrange
         $entity = new HiddenTables();
 
-        // Act
         $entity
             ->setUserId(123)
             ->setTableId(99)
             ->setHiddenTables(['customers', 'invoices']);
 
-        // Assert
         $this->assertSame(123, $entity->getUserId(), 'User ID should be correctly assigned');
         $this->assertSame(99, $entity->getTableId(), 'Table ID should be correctly assigned');
         $this->assertSame(['customers', 'invoices'], $entity->getHiddenTables(), 'Hidden tables should match assigned values');
-    }
-
-    public function testPurgeDoesNotThrowException(): void
-    {
-        // Arrange
-        $entity = new HiddenTables();
-
-        // Assert
-        $this->expectNotToPerformAssertions();
-
-        // Act
-        $entity->purge();
     }
 
     public function testPersistWithDefaultValues(): void

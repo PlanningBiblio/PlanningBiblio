@@ -24,9 +24,9 @@ class PlanningExportUtils
 
     /**
      * The export function exports information from plannings, absences and holidays for external calendars, like ICS, MS Graph API and Google API.
-     * Input: 
+     * Input:
      * - $userIds, array of user ids, default []
-     * - $start, DateTime or null, default null. If given, we only search for events that begin after that date. 
+     * - $start, DateTime or null, default null. If given, we only search for events that begin after that date.
      * - $exportAbsences, boolean, default false. If given, we search events from the plannings AND from the absences.
      * Output:
      * - array of events with the following keys for each event:
@@ -42,14 +42,14 @@ class PlanningExportUtils
      * -- organizer: String. Format '<firstname> <lastname>:mailto:<e-mail>' for planning events, empty string for absences
      * -- position: Int or null. Position id for planning events, null for absences
      * -- site: Int or null. Site id for planning events, null for absences
-     * 
+     *
      * TODO: Make this function works with several $userIds
      * TODO: Use Doctrine instead of legacy classes (absences, conges, db, personnel, postes)
      * TODO: Eventually, $userIds could be replaced with Agent Entities in input and output (if it helps).
+     * @return mixed[]
      */
-    public function export($userIds = [], $start = null, $exportAbsences = false)
+    public function export($userIds = [], $start = null, $exportAbsences = false): array
     {
-
         // Cas ICS
         $userId = $userIds[0];
 

@@ -101,12 +101,13 @@ class ConfigController extends BaseController
         }
 
         $params = $request->request->all();
+
         // Demo mode
-        if ($params && !empty($this->config('demo'))) {
+        if ($params !== [] && !empty($this->config('demo'))) {
             $error = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
             $error .= "#BR#Merci de votre compréhension";
         }
-        elseif ($params) {
+        elseif ($params !== []) {
 
             $technical = $request->get('technical');
 
