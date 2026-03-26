@@ -794,7 +794,7 @@ select
 }
 
 /*
-table #tabsemaine1 .tabsemaine1
+table .tabsemaine1
     -----------------------------------------------------------------------------------------------------
 tr .tr_horaires		|   td					|   td					|
     -----------------------------------------------------------------------------------------------------
@@ -852,15 +852,6 @@ class cellule = cellule par défaut
   background:yellow;
 }
 */
-#tabsemaine1 tr:first-child td:first-child{
-  border-top-left-radius: 5px;
-  -moz-border-top-left-radius: 5px;
-}
-
-#tabsemaine1 tr:first-child td:last-child{
-  border-top-right-radius: 5px;
-  -moz-border-top-right-radius: 5px;
-}
 
 .arrondi_tabsemaine_topLeft{
   border-top-left-radius: 5px;
@@ -875,19 +866,14 @@ class cellule = cellule par défaut
   border-bottom-right-radius: 5px;
 }
 
-#tabsemaine1, .tabsemaine1 {
+.tabsemaine1 {
   width:90%;
   margin: auto;
   empty-cells:show;
 }
 
-#tabsemaine1 td, .tabsemaine1 td{
+.tabsemaine1 td {
   height: 30px;
-}
-
-/* tabsemaine1 est un div sur la page semaine.php : permet l'affichage des tableaux masqués */
-div#tabsemaine1{
-  margin: 20px 0 0 0;
 }
 
 .tr_horaires, .tr_separation, .tr_horaires a{
@@ -954,8 +940,7 @@ div#tabsemaine1{
   height:20px; 
 }
 
-#tabsemaine1 tr.tr_espace td,
-.tabsemaine1 tr.tr_espace td{
+.tabsemaine1 tr.tr_espace td {
   border: none;
 }
 

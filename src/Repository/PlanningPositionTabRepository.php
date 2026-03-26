@@ -25,7 +25,7 @@ class PlanningPositionTabRepository extends EntityRepository
             return 0;
         }
 
-        $this->removeObjects(HiddenTables::class,          'tableau', $tableau);
+        $this->removeObjects(HiddenTables::class,          'tableId', $tableau);
         $this->removeObjects(PlanningPositionCells::class, 'numero',  $tableau);
         $this->removeObjects(PlanningPositionHours::class, 'numero',  $tableau);
         $this->removeObjects(PlanningPositionLines::class, 'numero',  $tableau);
