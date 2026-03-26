@@ -9,24 +9,28 @@
       </div>
       <div class="modal-body">
 
-        <p class="validateTips" style="margin-bottom: 6px;">Ajoutez, supprimez et modifiez l'ordre des motifs dans le menu déroulant.</p>
+        <p class="validateTips mb-1">Ajoutez, supprimez et modifiez l'ordre des motifs dans le menu déroulant.</p>
         <form id="add-reason">
           <div class="row">
-            <input type="text" id="add-motif-text" class="col-6 form-control form-control-sm" style="width:300px;" required>
-            <button type="button" id="add-motif-button" class="col-1 btn btn-primary" style="margin: 10px;font-size: 13px;">Ajouter</button>
+            <div class="col-5 ps-0">
+              <input type="text" id="add-motif-text" class="form-control form-control-sm mb-0" style="width:100%;" required>
+            </div>
+            <button type="submit" id="add-motif-button" class="col-1 btn btn-primary m-2 mb-0">Ajouter</button>
+            <div class="invalid-feedback m-0" style="display: none;">Motif invalide</div>
           </div>
         </form>
 
+        <div class="row row-header m-0 mt-2">
+          <i class="col-auto p-2 bi bi-arrow-down-up" aria-hidden="true"></i>
+          <span class="col-3">Nom</span>
+          <span class="col-3" >Niveau</span>
+          <span class="col-3">Circuit de notification</span>
+          <span class="col-2" style="text-align: center;">Télétravail</span>
+        </div>
+
         <form id="arrange-reasons">
           <fieldset class="container-fluid">
-          <div class="row row-header">
-              <i class="col-auto p-2 bi bi-arrow-down-up" aria-hidden="true"></i>
-              <span class="col-3">Nom</span>
-              <span class="col-3" >Niveau</span>
-              <span class="col-3">Circuit de notification</span>
-              <span class="col-2" style="text-align: center;">Télétravail</span>
-          </div>
-            <div id="motifs-sortable">
+            <ul id="motifs-sortable">
               {% if reasons is iterable %}
                 {% for r in reasons %}
             
@@ -62,7 +66,7 @@
 
                 {% endfor %}
               {% endif %}
-              </div>
+                </ul>
           </fieldset>
 
         </form>

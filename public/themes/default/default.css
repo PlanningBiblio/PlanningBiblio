@@ -1468,9 +1468,15 @@ img{
 }
 
 /* Elements "sortable" (gestion des motifs d'absences, des statuts des agents */
-ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
-ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 30px; }
-ul[id$="-sortable"] li span { margin-left: -1.3em; }
+ul[id$="-sortable"] { 
+  list-style-type: none; 
+  padding: 0;
+}
+
+#arrange-reasons{
+  height: 500px; 
+  overflow-y: scroll;
+}
 
 .bold{
   font-weight:bold;
@@ -1853,7 +1859,7 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 .btn {
   min-width: 105px;
   font-family: Poppins;
-  font-size: 1em;
+  font-size: 13px;
   font-weight: bold;
 }
 
@@ -1933,6 +1939,7 @@ input.form-check-input:checked {
 
 input.form-check-input {
   margin-top: 0.5em;
+  border: 1px solid;
 }
 
 select.form-select, select.form-select:focus {
@@ -1952,7 +1959,6 @@ select.form-select, select.form-select:focus {
   background-color: white;
   border: 1px solid;
   margin-bottom: -1px;
-  margin-top: -1px;
 }
 
 .row.row-motifs select {
