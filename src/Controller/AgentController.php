@@ -255,8 +255,10 @@ class AgentController extends BaseController
                 $breaktimes = $workingHours ? $workingHours[0]->getBreaktime() : [];
 
                 // Decimal breaktime to time (H:i).
-                foreach ($breaktimes as &$time) {
-                    $time = $time ? HourHelper::decimalToHoursMinutes($time)['as_string'] : '';
+                foreach ($breaktimes as $key => $value) {
+                    $breaktimes[$key] = $value
+                        ? str_replace('h', ':', HourHelper::decimalToHoursMinutes($value)['as_string'])
+                        : '';
                 }
             } else {
                 $temps = $agent->getWorkingHours();
