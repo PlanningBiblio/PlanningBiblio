@@ -15,13 +15,13 @@ class HiddenTables
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $perso_id = null;
+    private array $hidden_tables = [];
 
-    #[ORM\Column]
-    private ?int $tableau = null;
+    #[ORM\Column(name: 'tableau')]
+    private int $tableId = 0;
 
-    #[Column(type: Types::TEXT)]
-    private ?string $hidden_tables = null;
+    #[ORM\Column(name: 'perso_id')]
+    private int $userId = 0;
 
     public function getId(): ?int
     {
@@ -30,6 +30,42 @@ class HiddenTables
 
     public function purge(): void
     {
-        error_log("hidden tables purge");
+        error_log('hidden tables purge');
+    }
+
+    public function getHiddenTables(): array
+    {
+        return $this->hidden_tables;
+    }
+
+    public function setHiddenTables(array $tables): static
+    {
+        $this->hidden_tables = $tables;
+
+        return $this;
+    }
+
+    public function getTableId(): int
+    {
+        return $this->tableId;
+    }
+
+    public function setTableId(int $tableId): static
+    {
+        $this->tableId = $tableId;
+
+        return $this;
+    }
+
+    public function getuserId(): int
+    {
+        return $this->userId;
+    }
+
+    public function setuserId(int $userId): static
+    {
+        $this->userId = $userId;
+
+        return $this;
     }
 }
