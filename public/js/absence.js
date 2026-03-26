@@ -45,25 +45,23 @@ $(function() {
 
   });
 
-  // Paramétrage de la boite de dialogue permettant la modification des motifs
-  $("#add-motif-form").dialog({
-    autoOpen: false,
-    height: 600,
-    width: 900,
-    modal: true,
-    resizable: false,
-    draggable: false,
-    buttons: {
-      Enregistrer: function() {
-	// Supprime les lignes cachées lors du clic sur la corbeille
-	$("#motifs-sortable li:hidden").each(function(){
-	  $(this).remove();
-	});
+  $('#add-motif-modal').on('hidden.bs.modal', function(){
+    $("#motifs-sortable li:hidden").each(function(){
+	    $(this).show();
+    });
+  });
 
-	// Enregistre les éléments du formulaire dans un tableau
-	tab=new Array();
-	$("#motifs-sortable li").each(function(){
-	  var id=$(this).attr("id").replace("li_","");
+  $('#arrange-reasons').on('submit', function(e){
+    e.preventDefault();
+    // Supprime les lignes cachées lors du clic sur la corbeille
+    $("#motifs-sortable li:hidden").each(function(){
+	    $(this).remove();
+	  });
+
+    // Enregistre les éléments du formulaire dans un tableau
+    tab=new Array();
+    $("#motifs-sortable li").each(function(){
+      var id=$(this).attr("id").replace("li_","");
       var teleworking = $("#teleworking_" + id).prop('checked') ? 1 : 0;
       tab.push(new Array(
         $("#valeur_"+id).text(),
@@ -74,63 +72,48 @@ $(function() {
       ));
     });
 
-  // Transmet le tableau à la page de validation ajax
-  var _token = $('input[name=_token]').val();
-  console.log(_token);
+    // Transmet le tableau à la page de validation ajax
+    var _token = $('input[name=_token]').val();
+    console.log(_token);
 
-  $.ajax({
-	  url: url('ajax/edit-absence-reasons'),
-	  type: 'post',
-          dataType: 'json',
-	  data: {
-      _token: _token,
-      data: tab,
-      menu:'abs',
-      option: 'type',
-    },
-	  success: function(){
-            var current_val = $('#motif').val();
-            $('#motif').empty();
-            $('#motif').append("<option value=''>&nbsp;</option>");
-
-            $("#motifs-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $("#valeur_"+id).text();
-              var type = $("#type_"+id+" option:selected").val();
-
-              var nbsp = "\xa0";
-              var padding = type == 2 ? nbsp.repeat(3) : "" ;
-              var text = padding + val;
-              var selected = val == current_val;
-
-              var option = new Option(text, val, selected, selected);
-              option.disabled = type == 1;
-
-              $('#motif').append(option);
-            });
-            $("#add-motif-form").dialog( "close" );
-            $('#motif').effect("highlight",null,2000);
-	  },
-	  error: function(){
-	    alert("Erreur lors de l'enregistrement des modifications");
-	  }
-	});
+    $.ajax({
+      url: url('ajax/edit-absence-reasons'),
+      type: 'post',
+            dataType: 'json',
+      data: {
+        _token: _token,
+        data: tab,
+        menu:'abs',
+        option: 'type',
       },
-      Annuler: {
-        click: function() {
-          $( this ).dialog( "close" );
-              },
-        text: "Annuler",
-        class: "btn btn-secondary"
-            },
-    },
-    close: function() {
-      $("#motifs-sortable li:hidden").each(function(){
-	$(this).show();
-      });
-    }
-  });
+      success: function(){
+        var current_val = $('#motif').val();
+        $('#motif').empty();
+        $('#motif').append("<option value=''>&nbsp;</option>");
 
+        $("#motifs-sortable li").each(function(){
+          var id=$(this).attr("id").replace("li_","");
+          var val = $("#valeur_"+id).text();
+          var type = $("#type_"+id+" option:selected").val();
+
+          var nbsp = "\xa0";
+          var padding = type == 2 ? nbsp.repeat(3) : "" ;
+          var text = padding + val;
+          var selected = val == current_val;
+
+          var option = new Option(text, val, selected, selected);
+          option.disabled = type == 1;
+
+          $('#motif').append(option);
+        });
+        $('#motif').effect("highlight",null,2000);
+        $('#add-motif-modal').modal('hide');
+      },
+      error: function(){
+        alert("Erreur lors de l'enregistrement des modifications.\nVérifiez qu'il ne manque aucune information.");
+      },
+      });
+  });
 
   // Permet de rendre la liste des motifs triable
   $( "#motifs-sortable" ).sortable({
