@@ -45,29 +45,29 @@ $(function() {
 
   });
 
-  $('#add-motif-modal').on('hidden.bs.modal', function(){
-    $("#motifs-sortable li:hidden").each(function(){
+  $('#add-motif-modal').on('hidden.bs.modal', function() {
+    $('#motifs_sortable li:hidden').each(function() {
 	    $(this).show();
     });
   });
 
-  $('#arrange-reasons').on('submit', function(e){
+  $('#arrange-reasons').on('submit', function(e) {
     e.preventDefault();
     // Supprime les lignes cachées lors du clic sur la corbeille
-    $("#motifs-sortable li:hidden").each(function(){
+    $('#motifs_sortable li:hidden').each(function(){
 	    $(this).remove();
 	  });
 
     // Enregistre les éléments du formulaire dans un tableau
     tab=new Array();
-    $("#motifs-sortable li").each(function(){
-      var id=$(this).attr("id").replace("li_","");
-      var teleworking = $("#teleworking_" + id).prop('checked') ? 1 : 0;
+    $('#motifs_sortable li').each(function() {
+      var id=$(this).attr('id').replace('li_','');
+      var teleworking = $('#teleworking_' + id).prop('checked') ? 1 : 0;
       tab.push(new Array(
-        $("#valeur_"+id).text(),
+        $('#valeur_'+id).text(),
         $(this).index(),
-        $("#type_"+id+" option:selected").val(),
-        $("#notification-workflow_" + id).val(),
+        $('#type_'+id+'option:selected').val(),
+        $('#notification-workflow_' + id).val(),
         teleworking,
       ));
     });
@@ -91,13 +91,13 @@ $(function() {
         $('#motif').empty();
         $('#motif').append("<option value=''>&nbsp;</option>");
 
-        $("#motifs-sortable li").each(function(){
-          var id=$(this).attr("id").replace("li_","");
-          var val = $("#valeur_"+id).text();
-          var type = $("#type_"+id+" option:selected").val();
+        $('#motifs_sortable li').each(function() {
+          var id=$(this).attr('id').replace('li_','');
+          var val = $('#valeur_'+id).text();
+          var type = $('#type_'+id+' option:selected').val();
 
-          var nbsp = "\xa0";
-          var padding = type == 2 ? nbsp.repeat(3) : "" ;
+          var nbsp = '\xa0';
+          var padding = type == 2 ? nbsp.repeat(3) : '' ;
           var text = padding + val;
           var selected = val == current_val;
 
@@ -106,19 +106,17 @@ $(function() {
 
           $('#motif').append(option);
         });
-        $('#motif').effect("highlight",null,2000);
+        $('#motif').effect('highlight',null,2000);
         $('#add-motif-modal').modal('hide');
       },
       error: function(){
-        alert("Erreur lors de l'enregistrement des modifications.\nVérifiez qu'il ne manque aucune information.");
+        alert('Erreur lors de l\'enregistrement des modifications.\nVérifiez qu\'il ne manque aucune information.');
       },
       });
   });
-
-  // Permet de rendre la liste des motifs triable
-  $( "#motifs-sortable" ).sortable({
-    placeholder: "ui-state-highlight",
-  });
+            
+  // Rendre le tableau de motifs triable
+  Sortable.create(motifs_sortable, {ghostClass: 'bg-blue', animation: 150});  
 
   // Suppression message invalidité lors du changement d'input
   $('#add-motif-text').on('input', function(e) {
@@ -150,7 +148,7 @@ $(function() {
       options_wf+="<option value='"+val+"'>"+text+"</option>";
     });
 
-    var text=sanitize_string($("#add-motif-text").val());
+    var text=sanitize_string($('#add-motif-text').val());
     if(!text){
       $('.invalid-feedback').show();
       $('#add-motif-text').css({'color': '#DD404F'});
@@ -162,7 +160,7 @@ $(function() {
       number++;
     }
 
-    $('#motifs-sortable').append("<li class='row row-motifs' id='li_"+number+"'><i class='col-auto p-2 bi bi-arrow-down-up'></i>"
+    $('#motifs_sortable').append("<li class='row row-motifs' id='li_"+number+"'><i class='col-auto p-2 bi bi-arrow-down-up'></i>"
       +"<span class='col-3' id='valeur_"+number+"'>"+text+"</span>"
       +"<div class='col-3'>"
       +"<select id='type_"+number+"' class='form-control form-select form-select-sm' aria-label='Séléction du Niveau' onchange='padding20($(this));'>"
