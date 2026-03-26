@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
+use App\Entity\HiddenTables;
 use App\Entity\Model;
 use App\Entity\PlanningPositionHistory;
 use App\Entity\PlanningPositionLock;
@@ -818,7 +819,7 @@ class PlanningController extends BaseController
      * Affiche "true" ou "false"
      */
     #[Route(path: '/planning/end-of-service/check', name: 'planning.end_of_service.check', methods: ['GET'])]
-    public function EndOfServiceCheck(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function EndOfServiceCheck(Request $request): Response
     {
         $p = new \planning();
         $p->date = $request->get('date');
@@ -834,57 +835,68 @@ class PlanningController extends BaseController
      * Permet de récupérer les préférences sur les tableaux cachés
      */
     #[Route(path: '/planning/hidden-tables', name: 'planning.hidden_tables.get', methods: ['GET'])]
-    public function ajaxGetHiddenTables(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    public function ajaxGetHiddenTables(Request $request, Session $session): Response
     {
-        $perso_id = $session->get('loginId');
         $tableId = $request->get('tableId');
         $tableId = filter_var($tableId, FILTER_SANITIZE_NUMBER_INT);
 
-        $return = [];
-    
-        $db = new \db();
-        $db->select2('hidden_tables', '*', ['perso_id' => $perso_id, 'tableau' => $tableId]);
-        if ($db->result) {
-            $return = html_entity_decode($db->result[0]['hidden_tables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-        }
+        $hiddenTables = $this->getHiddenTables($request, $tableId);
 
-        return new Response(json_encode($return));
+        return new Response(json_encode($hiddenTables));
     }
 
     /*
      * Permet l'enregistrement des préférences sur les tableaux cachés
      */
     #[Route(path: '/planning/hidden-tables', name: 'planning.hidden_tables.set', methods: ['POST'])]
-    public function setHiddenTables(Request $request, Session $session)
+    public function setHiddenTables(Request $request, Session $session): Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
-        $perso_id = $session->get('loginId');
-        $CSRFToken = $request->get('CSRFToken');
         $hiddenTables = $request->get('hiddenTables');
         $tableId = $request->get('tableId');
-
         $tableId = filter_var($tableId, FILTER_SANITIZE_NUMBER_INT);
+        $userId = $session->get('loginId');
 
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete('hidden_tables', ['perso_id' => $perso_id, 'tableau' => $tableId]);
+        if (json_validate($hiddenTables)) {
+            $hiddenTables = json_decode($hiddenTables);
+        }
 
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->insert('hidden_tables', ['perso_id' => $perso_id, 'tableau' => $tableId, 'hidden_tables' => $hiddenTables]);
-        $return = [];
+        $hiddenTables = is_array($hiddenTables) ? $hiddenTables : [];
 
-        return new Response(json_encode($return));
+        $entity = $this->entityManager->getRepository(HiddenTables::class)->findOneBy([
+            'userId' => $userId,
+            'tableId' => $tableId
+        ]);
+
+        if (!$entity and !empty($hiddenTables)) {
+            $entity = new HiddenTables();
+            $entity->setTableId($tableId);
+            $entity->setUserId($userId);
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
+        }
+
+        if ($entity and !empty($hiddenTables)) {
+            $entity->setHiddenTables($hiddenTables);
+            $this->entityManager->flush();
+        }
+
+        if ($entity and empty($hiddenTables)) {
+            $this->entityManager->remove($entity);
+            $this->entityManager->flush();
+        }
+
+        return new Response('[]');
     }
 
     /*
      * Enregistre dans la base de donées les notes en bas des plannings
      */
     #[Route(path: '/planning/notes', name: 'planning.notes', methods: ['POST'])]
-    public function updateNotes(Request $request)
+    public function updateNotes(Request $request): Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -931,7 +943,7 @@ class PlanningController extends BaseController
      * (événement $("#icon-lock").click, page public/js/planning.js)
      */
     #[Route(path: '/planning/notifications', name: 'planning.notifications', methods: ['POST'])]
-    public function planningNotifications(Request $request)
+    public function planningNotifications(Request $request): Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -962,7 +974,7 @@ class PlanningController extends BaseController
      * Cette page est appelée par la fonction JavaScript refresh_poste
      */
     #[Route(path: '/planning/refresh', name: 'planning.refresh', methods: ['get'])]
-    public function refreshPlanning(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function refreshPlanning(Request $request): Response
     {
         $date = $request->get('date');
         $site = $request->get('site');
@@ -2100,18 +2112,12 @@ class PlanningController extends BaseController
     {
         $session = $request->getSession();
 
-        $hiddenTables = array();
-        $db = new \db();
-        $db->select2('hidden_tables', '*', array(
-            'perso_id' => $session->get('loginId'),
-            'tableau' => $tab
-        ));
+        $entity = $this->entityManager->getRepository(HiddenTables::class)->findOneBy([
+            'tableId' => $tab,
+            'userId' => $session->get('loginId'),
+        ]);
 
-        if ($db->result) {
-            $hiddenTables = json_decode(html_entity_decode($db->result[0]['hidden_tables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-        }
-
-        return $hiddenTables;
+        return $entity ? $entity->getHiddenTables() : [];
     }
 
     private function getHolidays($date, $site = null): array

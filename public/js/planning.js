@@ -126,7 +126,6 @@ $(document).ready(function(){
           return;
         }
 
-        result = JSON.parse(result);
         for(i in result){
           $('.tableau' + result[i]).hide();
         }
@@ -1108,37 +1107,42 @@ function afficheTableauxDiv(){
   // Affichage des liens en bas du planning
   $("#afficheTableaux").remove();
   
-  var tab=new Array();
-  var hiddenTables=new Array();
-  $(".tr_horaires .td_postes:hidden").each(function(){
-    var tabId=$(this).attr("data-id");
-    var tabTitle=$(this).attr("data-title");
+  var tab = new Array();
+  var hiddenTables = new Array();
+  $('.tr_horaires .td_postes:hidden').each(function() {
+    var tabId = $(this).attr('data-id');
+    var tabTitle = $(this).attr('data-title');
     var exist = false;
-    for(i in hiddenTables){
-      if(hiddenTables[i] == tabId){
+
+    for(i in hiddenTables) {
+      if(hiddenTables[i] == tabId) {
         exist = true;
       }
     }
-    if(!exist){
-      tab.push("<a href='JavaScript:afficheTableau("+tabId+");'>"+tabTitle+"</a>");
-      hiddenTables.push(tabId);
+  
+    if(!exist) {
+      tab.push('<a href="JavaScript:afficheTableau(' + tabId + ');">' + tabTitle + '</a>');
+      hiddenTables.push(parseInt(tabId));
     }
   });
-  
-  if(tab.length>0){
-    $("#tabsemaine1").after("<div id='afficheTableaux' class='noprint'>Tableaux masqués : "+tab.join(" ; ")+"</div>");
+
+  if(tab.length > 0) {
+    $('#tableau').css('padding-top', '10px');
+    $('#tableau').before('<div id="afficheTableaux" class="noprint">Tableaux masqués : ' + tab.join(' ; ') + '</div>');
+  } else {
+    $('#tableau').css('padding-top', '30px');
   }
-  
+
   // Enregistre la liste des tableaux cachés dans la base de données
-  var tableId=$("#tableau").attr("data-tableId");
-  hiddenTables=JSON.stringify(hiddenTables);
+  var tableId = $('#tableau').attr('data-tableId');
+  hiddenTables = JSON.stringify(hiddenTables);
   var _token = $('input[name=_token]').val();
 
   $.ajax({
     url: url('planning/hidden-tables'),
-    type: "post",
-    dataType: "json",
-    data: {_token: _token, tableId: tableId, hiddenTables: hiddenTables, CSRFToken: $('#CSRFSession').val()},
+    type: 'post',
+    dataType: 'json',
+    data: {_token: _token, tableId: tableId, hiddenTables: hiddenTables},
     success: function(result){
     },
     error: function(result){
