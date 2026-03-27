@@ -18,7 +18,7 @@ $(function() {
     // Affichage de la règle de récurrences lors de la modification d'une absence
     if($('#rrule').val()){
       var text = recurrenceRRuleText2($('#rrule').val());
-      $('#recurrence-summary').html(sanitize_string(text));
+      $('#recurrence-summary').text(text);
       $('#recurrence-info').show();
       $('#recurrence-checkbox').attr('checked','checked');
     }
@@ -254,13 +254,13 @@ $(function() {
   /* Récurence */
 
   // Lien de modification récurrence
-  $('#recurrence-link').click(function(){
+  $('#recurrence-link').click(function() {
     $('#recurrence-modal').modal('show');
   });
 
   // Recurrence checkbox
   $('#recurrence-checkbox').change(function() {
-    if($('#recurrence-checkbox').prop('checked')){
+    if($('#recurrence-checkbox').prop('checked')) {
       if ($('#absence-end').val() != '' && $('#absence-end').val() != $('#absence-start').val()) {
         // Affichage de la boite de dialogue d'alerte
         $('#end-date-alert-modal').modal('show');
@@ -275,20 +275,19 @@ $(function() {
           $('#recurrence-modal').modal('show');
         }
       }
-    } 
-    else {
+    } else {
       $('#recurrence-info').hide();
     }
   });
 
   // Modification date de début
-  $('#absence-start').change(function(){
+  $('#absence-start').change(function() {
     var date = $(this).val();
-    date = date.replace(/(\d*)\/(\d*)\/(\d*)/,'$2/$1/$3');
+    date = date.replace(/(\d*)\/(\d*)\/(\d*)/, '$2/$1/$3');
     var d = new Date(date);
     var n = d.getDay();
-    $('.recurrence-by-day').prop('checked',false);
-    $('#recurrence-by-day'+ n).prop('checked',true);
+    $('.recurrence-by-day').prop('checked', false);
+    $('#recurrence-by-day' + n).prop('checked', true);
   });
 
   $('#absence-start').change(function(){
@@ -327,7 +326,7 @@ $(function() {
     var text = recurrenceRRuleText2(rrule);
 
     $('#recurrence-hidden').val(rrule);
-    $('#recurrence-summary').html(sanitize_string(text));
+    $('#recurrence-summary').text(text);
   });
 
   // Modification date de fin
@@ -345,54 +344,65 @@ $(function() {
   $('#recurrence-form').submit(function(e){
     e.preventDefault();
     rrule = recurrenceRRule();
-    $('#recurrence-summary').html(sanitize_string(rrule[1]));
+    $('#recurrence-summary').text(rrule[1]);
     $('#recurrence-hidden').val(rrule[0]);
     $('#recurrence-info').show();
     $('#recurrence-modal').modal('hide');
   });
 
   // Ouverture de la modale de récurrence
-  $('#recurrence-modal').on('shown.bs.modal', function(e){
+  $('#recurrence-modal').on('shown.bs.modal', function(e) {
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').html(sanitize_string(rrule[1]));
+    $('#recurrence-summary-form').text(rrule[1]);
   });
 
-
   // Fermeture de la modale de récurrence
-  $('#recurrence-modal').on('hidden.bs.modal', function(){
+  $('#recurrence-modal').on('hidden.bs.modal', function() {
     var rrule = $('#recurrence-hidden').val();
-    if(!rrule){
+    if(!rrule) {
       $('#recurrence-checkbox').prop('checked', false);
     }
   });
 
   // Supression date de fin depuis modale d'alerte
-  $('#clear-end-date').on('click',function(){
+  $('#clear-end-date').on('click', function() {
     $('#end-date-alert-modal').modal('hide');
     $('.end-date').val('');
   });
 
   // Fermeture de la modale d'alerte
-  $('#end-date-alert-modal').on('hidden.bs.modal',function(){
-    if($('#recurrence-hidden').val())$('#recurrence-info').show();
-    else $('#recurrence-modal').modal('show');
+  $('#end-date-alert-modal').on('hidden.bs.modal', function() {
+    if ($('#recurrence-hidden').val()) {
+      $('#recurrence-info').show();
+    } else {
+      $('#recurrence-modal').modal('show');
+    }
   });
 
   // Changement affichage modale en fonction de le fréquence de récurrence choisie
-  $('#recurrence-freq').change(function(){
-    switch($(this).val()){
-      case 'DAILY' : $('#recurrence-label').text('tous'); $('#recurrence-label-freq').text('jours'); break;
-      case 'WEEKLY' : $('#recurrence-label').text('toutes');$('#recurrence-label-freq').text('semaines'); break;
-      case 'MONTHLY' : $('#recurrence-label').text('tous');$('#recurrence-label-freq').text('mois'); break;
+  $('#recurrence-freq').change(function() {
+    switch ($(this).val()) {
+      case 'DAILY' :
+        $('#recurrence-label').text('tous');
+        $('#recurrence-label-freq').text('jours');
+        break;
+      case 'WEEKLY' :
+        $('#recurrence-label').text('toutes');
+        $('#recurrence-label-freq').text('semaines');
+        break;
+      case 'MONTHLY' :
+        $('#recurrence-label').text('tous');
+        $('#recurrence-label-freq').text('mois');
+        break;
     }
 
-    if($(this).val() == 'WEEKLY'){
+    if($(this).val() == 'WEEKLY') {
       $('#recurrence-week').show();
     } else {
       $('#recurrence-week').hide();
     }
 
-    if($(this).val() == 'MONTHLY'){
+    if($(this).val() == 'MONTHLY') {
       $('#recurrence-month').show();
     } else {
       $('#recurrence-month').hide();
@@ -401,34 +411,34 @@ $(function() {
   });
 
   // Changement affichage modale en fonction de la modalité de fin choisie
-  $('.recurrence-end').change(function(){
-    if($('#recurrence-end2').is(':checked')){
+  $('.recurrence-end').change(function() {
+    if ($('#recurrence-end2').is(':checked')) {
       $('#recurrence-count').val(30);
     } else {
       $('#recurrence-count').val(null);
     }
-    if($('#recurrence-end3').is(':checked')){
+    if ($('#recurrence-end3').is(':checked')) {
     } else {
       $('#recurrence-until').val(null);
     }
   });
 
-  $('#recurrence-count').click(function(){
+  $('#recurrence-count').click(function() {
     $('#recurrence-end2').click();
   });
 
-  $('#recurrence-until').click(function(){
+  $('#recurrence-until').click(function() {
     $('#recurrence-end3').click();
   });
 
   // Détecte les modifications du formulaire pour adapter la règle ICS
   $('.recurrence-data').change(function(){
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').html(sanitize_string(rrule[1]));
+    $('#recurrence-summary-form').text(rrule[1]);
   });
   $('input[type=text].recurrence-data').keyup(function(){
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').html(sanitize_string(rrule[1]));
+    $('#recurrence-summary-form').text(rrule[1]);
   });
 
   // Récurrences : alerte lors de la modification d'une absence récurrente
@@ -734,12 +744,12 @@ function recurrenceRRule(){
   });
 
   // BYMONTHDAY
-  if($('#recurrence-by-month1:visible:checked').length > 0){
+  if($('#recurrence-by-month1:visible:checked').length > 0) {
     bymonthday = parseInt($('#absence-start').val().substr(0,2));
   }
 
   // BYDAY / MONTHLY
-  if($('#recurrence-by-month2:visible:checked').length > 0){
+  if($('#recurrence-by-month2:visible:checked').length > 0) {
     var date = $('#absence-start').val();
     byday = recurrenceMonthlyByDay(date);
   }
@@ -832,17 +842,17 @@ function recurrenceRRuleText(freq, interval, byday, bymonthday, until, count){
         } else {
           var n = byday.substring(0,1);
           var d = byday.substring(1);
-          n = n == 1 ? 'Le 1<sup>er</sup> ' : 'Le '+n+'<sup>ème</sup> ';
+          n = n == 1 ? 'Le 1er ' : 'Le ' + n + 'ème ';
         }
-        day = d.replace('MO', ' lundi').replace('TU', ' mardi').replace('WE', ' mercredi').replace('TH', ' jeudi').replace('FR', ' vendredi').replace('SA', ' samedi').replace('SU', ' dimanche');
-        // tableau pour traduction
 
+        day = d.replace('MO', ' lundi').replace('TU', ' mardi').replace('WE', ' mercredi').replace('TH', ' jeudi').replace('FR', ' vendredi').replace('SA', ' samedi').replace('SU', ' dimanche');
+        
         text = text == 'Tous les mois' ? n+day+' de chaque mois' : n+day+', tous les '+interval+' mois';
       }
 
       if(bymonthday){
         var n = bymonthday;
-        n = n == 1 ? 'Le 1<sup>er</sup> ' : 'Le '+n;
+        n = n == 1 ? 'Le 1er' : 'Le ' + n;
         text = text == 'Tous les mois' ? n+' de chaque mois' : n+', tous les '+interval+' mois';
       }
 
