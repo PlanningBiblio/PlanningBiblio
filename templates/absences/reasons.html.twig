@@ -22,7 +22,7 @@
 
         <div class="row row-header m-0 mt-2">
           <i class="col-auto p-2 bi bi-arrow-down-up" aria-hidden="true"></i>
-          <span class="col-3">Nom</span>
+          <span class="col-3 ps-0">Nom</span>
           <span class="col-3" >Niveau</span>
           <span class="col-3">Circuit de notification</span>
           <span class="col-2" style="text-align: center;">Télétravail</span>
@@ -35,11 +35,10 @@
                 {% for r in reasons %}
             
                   <li class="row row-motifs" id="li_{{ r.id }}">
-                      <i class="col-auto p-2 bi bi-arrow-down-up"></i>
-                      <span class="col-3 {% if r.type == 2 %} bold {% endif %}" id="valeur_{{ r.id}}">{{ r.valeur }}</span>
-
+                    <i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>
+                    <span class="col-3 p-2 {% if r.type == 2 %} ps-4 {% else %} bold {% endif %}" id="valeur_{{ r.id}}">{{ r.valeur }}</span>
                     <div class="col-3">
-                      <select id="type_{{ r.id }}" class="form-control form-select form-select-sm" aria-label="Séléction du Niveau" onchange="padding20($(this));">
+                      <select id="type_{{ r.id }}" class="form-control form-select form-select-sm" aria-label="Séléction du Niveau"  onchange='padding20($(this));'>
                         {% for t in reason_types %}
                         <option value="{{ t.id }}" {% if t.id == r.type %} selected="selected" {% endif %}>{{ t.valeur }}</option>
                         {% endfor %}
@@ -58,7 +57,7 @@
                     </div>
 
                     {% if r.unused %}
-                      <span class="col-auto p-1" onclick="$(this).closest('li').hide();">
+                      <span class="col-auto p-0 pe-3" onclick="$(this).closest('li').hide();">
                         <i class="bi bi-trash3-fill"></i>
                       </span>
                     {% endif %}
