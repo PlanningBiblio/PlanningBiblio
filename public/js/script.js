@@ -323,7 +323,7 @@ function decompte(dcpt){
 
 
 function padding20(elem) {
-    if(elem.val()==2) {
+    if(elem.val()== 2) {
       elem.parent('div').prev('span').removeClass('bold');
       elem.parent('div').prev('span').addClass('ps-4');
     }

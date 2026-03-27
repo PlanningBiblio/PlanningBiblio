@@ -183,7 +183,9 @@
                       {% endfor %}
                     </select>
                   {% if admin and not config('Planook') %}
-                    <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer;' id='add-motif-button'/>
+                    <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-motif-modal">
+                      <span class="pl-icon pl-icon-add" title="Ajouter un motif"></span>
+                    </button>
                   {% endif %}
                 </td>
               </tr>

@@ -66,7 +66,7 @@ $(function() {
       tab.push(new Array(
         $('#valeur_'+id).text(),
         $(this).index(),
-        $('#type_'+id+'option:selected').val(),
+        $('#type_'+id+' option:selected').val(),
         $('#notification-workflow_' + id).val(),
         teleworking,
       ));
@@ -160,8 +160,8 @@ $(function() {
       number++;
     }
 
-    $('#motifs_sortable').append("<li class='row row-motifs' id='li_"+number+"'><i class='col-auto p-2 bi bi-arrow-down-up'></i>"
-      +"<span class='col-3' id='valeur_"+number+"'>"+text+"</span>"
+    $('#motifs_sortable').append("<li class='row row-motifs' id='li_"+number+"'><i class='col-auto p-0 ps-2 bi bi-arrow-down-up'></i>"
+      +"<span class='col-3 p-2' id='valeur_"+number+"'>"+text+"</span>"
       +"<div class='col-3'>"
       +"<select id='type_"+number+"' class='form-control form-select form-select-sm' aria-label='Séléction du Niveau' onchange='padding20($(this));'>"
       +options
