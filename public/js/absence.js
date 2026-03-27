@@ -54,7 +54,7 @@ $(function() {
   $('#arrange-reasons').on('submit', function(e) {
     e.preventDefault();
     // Supprime les lignes cachées lors du clic sur la corbeille
-    $('#motifs_sortable li:hidden').each(function(){
+    $('#motifs_sortable li:hidden').each(function() {
 	    $(this).remove();
 	  });
 
@@ -106,8 +106,8 @@ $(function() {
 
           $('#motif').append(option);
         });
-        $('#motif').effect('highlight',null,2000);
         $('#add-motif-modal').modal('hide');
+        $('#motif').effect('highlight',null,2000);
       },
       error: function(){
         alert('Erreur lors de l\'enregistrement des modifications.\nVérifiez qu\'il ne manque aucune information.');
@@ -358,7 +358,7 @@ $(function() {
     }
   });
 
-  // Supression date de fin depuis modale d'alerte
+  // Suppression date de fin depuis modale d'alerte
   $('#clear-end-date').on('click',function(){
     $('#end-date-alert-modal').modal('hide');
     $('.end-date').val('');
