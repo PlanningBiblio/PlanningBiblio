@@ -1462,12 +1462,12 @@ ul[id$="-sortable"] li span { margin-left: -1.3em; }
   padding: 0;
 }
 
-#arrange-reasons{
+#arrange-reasons {
   height: 500px; 
   overflow-y: scroll;
 }
 
-.bold{
+.bold {
   font-weight:bold;
 }
 
@@ -1483,11 +1483,11 @@ option.bold{
   display: inline;
 }
 
-.bg-blue{
+.bg-blue {
   background-color: aliceblue;
 }
 
-.nowrap{
+.nowrap {
   white-space:nowrap;
 }
 
@@ -1941,12 +1941,12 @@ select.form-select, select.form-select:focus {
 
 .row {
   min-height: 45px;
-  align-items: center;
 }
 
 .row.row-motifs {
   border: 1px solid;
   margin-bottom: -1px;
+  align-items: center;
 }
 
 .row.row-motifs select {
@@ -1959,6 +1959,7 @@ select.form-select, select.form-select:focus {
   color: white;
   font-weight: bold;
   white-space: nowrap;
+  align-items: center;
 }
 
 .row.row-header i {
