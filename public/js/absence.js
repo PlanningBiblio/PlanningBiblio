@@ -113,10 +113,7 @@ $(function() {
         alert('Erreur lors de l\'enregistrement des modifications.\nVérifiez qu\'il ne manque aucune information.');
       },
       });
-  });
-            
-  // Rendre le tableau de motifs triable
-  Sortable.create(motifs_sortable, {ghostClass: 'bg-blue', animation: 150});  
+  }); 
 
   // Suppression message invalidité lors du changement d'input
   $('#add-motif-text').on('input', function(e) {
