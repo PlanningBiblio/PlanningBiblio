@@ -235,7 +235,7 @@ trait PlanningJobTrait
         if ($break_countdown !== 0) {
 
             $events = $this->entityManager->getRepository(PlanningPosition::class)->findBy([
-                'date' => new \DateTime($dateSQL),
+                'date' => new \DateTime($date),
                 'supprime' => 0,
             ]);
 
