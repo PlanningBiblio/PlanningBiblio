@@ -40,7 +40,7 @@ class planningHebdo
             $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['debut']);
             $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['fin']);
         }
-        $data['breaktime'] = isset($data['breaktime']) ? $data['breaktime'] : null;
+        $data['breaktime'] = isset($data['breaktime']) ? $data['breaktime'] : [];
         $data['exception'] = $data['exception'] ?? 0;
 
         $perso_id=array_key_exists("perso_id", $data)?$data["perso_id"]:$_SESSION['login_id'];
@@ -510,8 +510,9 @@ class planningHebdo
             }
         }
 
-        $temps = json_encode($data['temps']);
-        $breaktime = json_encode($data['breaktime']);
+        $temps = $data['temps'] ? json_encode($data['temps']) : '[]';
+        $breaktime = $data['breaktime'] ? json_encode($data['breaktime']) : '[]';
+
         $update = array(
             'debut'         => $data['debut'],
             'fin'           => $data['fin'],

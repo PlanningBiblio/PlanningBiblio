@@ -11,12 +11,12 @@ use Doctrine\ORM\Mapping as ORM;
 class WorkingHour
 {
     #[ORM\Id]
-    #[ORM\GeneratedName]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = 0;
+    private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $perso_id = 0;
+    private int $perso_id = 0;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $debut = null;
@@ -25,70 +25,70 @@ class WorkingHour
     private ?\DateTime $fin = null;
 
     #[ORM\Column]
-    private ?array $temps = [];
+    private array $temps = [];
 
     #[ORM\Column]
-    private ?array $breaktime = [];
+    private array $breaktime = [];
 
     #[ORM\Column]
     private ?\DateTime $saisie = null;
 
     #[ORM\Column]
-    private ?int $modif = 0;
+    private int $modif = 0;
 
     #[ORM\Column]
     private ?\DateTime $modification = null;
 
     #[ORM\Column]
-    private ?int $valide_n1 = 0;
+    private int $valide_n1 = 0;
 
     #[ORM\Column]
     private ?\DateTime $validation_n1 = null;
 
     #[ORM\Column]
-    private ?int $valide = 0;
+    private int $valide = 0;
 
     #[ORM\Column]
     private ?\DateTime $validation = null;
 
     #[ORM\Column]
-    private ?bool $actuel = false;
+    private bool $actuel = false;
 
     #[ORM\Column]
-    private ?int $remplace = 0;
+    private int $remplace = 0;
 
     #[ORM\Column]
-    private ?string $cle = '';
+    private ?string $cle = null;
 
     #[ORM\Column]
-    private ?int $exception = 0;
+    private int $exception = 0;
 
     #[ORM\Column]
-    private ?int $nb_semaine = 1;
+    private int $nb_semaine = 1;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getBreaktime(): ?array
+    public function getBreaktime(): array
     {
         return $this->breaktime;
     }
 
-    public function setBreaktime(?array $breaktime): static
+    public function setBreaktime(array $breaktime): static
     {
         $this->breaktime = $breaktime;
 
         return $this;
     }
 
-    public function getUser(): ?int
+    public function getUser(): int
     {
         return $this->perso_id;
     }
 
-    public function setUser(?int $user): static
+    public function setUser(int $user): static
     {
         $this->perso_id = $user;
 
@@ -103,6 +103,7 @@ class WorkingHour
     public function setKey(?string $key): static
     {
         $this->cle = $key;
+
         return $this;
     }
 
@@ -130,12 +131,12 @@ class WorkingHour
         return $this;
     }
 
-    public function getWorkingHours(): ?array
+    public function getWorkingHours(): array
     {
         return $this->temps;
     }
 
-    public function setWorkingHours(?array $workingHours): static
+    public function setWorkingHours(array $workingHours): static
     {
         $this->temps = $workingHours;
 
@@ -154,12 +155,12 @@ class WorkingHour
         return $this;
     }
 
-    public function getChange(): ?int
+    public function getChange(): int
     {
         return $this->modif;
     }
 
-    public function setChange(?int $change): static
+    public function setChange(int $change): static
     {
         $this->modif = $change;
 
@@ -178,12 +179,12 @@ class WorkingHour
         return $this;
     }
 
-    public function getValidLevel1(): ?int
+    public function getValidLevel1(): int
     {
         return $this->valide_n1;
     }
 
-    public function setValidLevel1(?int $level1): static
+    public function setValidLevel1(int $level1): static
     {
         $this->valide_n1 = $level1;
 
@@ -202,12 +203,12 @@ class WorkingHour
         return $this;
     }
 
-    public function getValidLevel2(): ?int
+    public function getValidLevel2(): int
     {
         return $this->valide;
     }
 
-    public function setValidLevel2(?int $level2): static
+    public function setValidLevel2(int $level2): static
     {
         $this->valide = $level2;
 
@@ -226,48 +227,48 @@ class WorkingHour
         return $this;
     }
 
-    public function isCurrent(): ?bool
+    public function isCurrent(): bool
     {
         return $this->actuel;
     }
 
-    public function setCurrent(?bool $current): static
+    public function setCurrent(bool $current): static
     {
         $this->actuel = $current;
 
         return $this;
     }
 
-    public function getReplace(): ?int
+    public function getReplace(): int
     {
         return $this->remplace;
     }
 
-    public function setReplace(?int $replace): static
+    public function setReplace(int $replace): static
     {
         $this->remplace = $replace;
 
         return $this;
     }
     
-    public function getException(): ?int
+    public function getException(): int
     {
         return $this->exception;
     }
 
-    public function setException(?int $exception): static
+    public function setException(int $exception): static
     {
         $this->exception = $exception;
 
         return $this;
     }
 
-    public function getNumberOfWeeks(): ?int
+    public function getNumberOfWeeks(): int
     {
         return $this->nb_semaine;
     }
 
-    public function setNumberOfWeeks(?int $number): static
+    public function setNumberOfWeeks(int $number): static
     {
         $this->nb_semaine = $number;
 
