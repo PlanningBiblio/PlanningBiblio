@@ -767,6 +767,25 @@ function position(object,top,left){
 }
 //	--------------------------------	FIN Aide		---------------------------------	//
 
+// CronTab
+function disableCron(id){
+  var enabled = $('#enabled' + id).prop('checked');
+  var _token = $('input[name="_token"]').val();
+
+  $.ajax({
+    url: url('crontab/disable'),
+    method: 'POST',
+    dataType: 'json',
+    data: {_token: _token, id: id, enabled: enabled},
+    success: function() {
+      CJInfo('Modification enregistrée', 'highlight');
+    },
+    error: function() {
+      CJInfo('Attention, la modification n\'a pas pu être enregistrée', 'error');
+    }
+  });
+}
+
 // Initialisations JQuery-UI
 $(function(){
   $(document).ready(function() {
