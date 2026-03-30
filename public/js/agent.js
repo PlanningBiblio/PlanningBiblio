@@ -433,109 +433,94 @@ function control_credits_hours(o) {
 }
 
 $(function() {
-  // Paramétrage de la boite de dialogue permettant la modification des statuts
-  $('#add-statut-form').dialog({
-    autoOpen: false,
-    height: 480,
-    width: 560,
-    modal: true,
-    resizable: false,
-    draggable: false,
-    buttons: {
-      Enregistrer: function() {
-        // Supprime les lignes cachées lors du clic sur la corbeille
-        $('#statuts-sortable li:hidden').each(function() {
-          $(this).remove();
-        });
-        
-        // Enregistre les éléments du formulaire dans un tableau
-        tab = new Array();
-        $('#statuts-sortable li').each(function() {
-          var id = $(this).attr('id').replace('li_', '');
-          tab.push(new Array(
-            $(this).find('#valeur_' + id).text(),
-            $(this).index(),
-            $(this).find('#categorie_' + id + ' option:selected').val()
-          ));
-        });
 
-        // Transmet le tableau à la page de validation ajax
-        var _token = $('input[name=_token]').val();
+  $('#arrange-statuts').on('submit', function(e) {
+    e.preventDefault();
+    // Supprime les lignes cachées lors du clic sur la corbeille
+    $('#statuts_sortable li:hidden').each(function() {
+	    $(this).remove();
+	  });
 
-        $.ajax({
-          url: url('ajax/update-select-options'),
-          type: 'post',
-          dataType: 'json',
-          data: {
-            _token: _token,
-            CSRFToken: $('#CSRFSession').val(),
-            menu: 'statuts',
-            option: 'categorie',
-            tab: tab,
-          },
-
-          success: function() {
-            var current_val = $('#statut').val();
-            $('#statut').empty();
-            $('#statut').append('<option value="">Aucun</option>');
-
-            $('#statuts-sortable li').each(function() {
-              var id = $(this).attr('id').replace('li_','');
-              var val = $(this).find('#valeur_' + id).text();
-              var selected = val == current_val;
-              var option = new Option(val, val, selected, selected);
-              $('#statut').append(option);
-            });
-            $('#add-statut-form').dialog('close');
-            $('#statut').effect('highlight', null, 2000);
-          },
-
-          error: function(){
-            alert('Erreur lors de l\'enregistrement des modifications');
-          }
-        });
-      },
-
-      Annuler: function() {
-        $(this).dialog('close');
-      },
-    },
-
-    close: function() {
-      $('#statuts-sortable li:hidden').each(function() {
-	      $(this).show();
-      });
-    }
-  });
-
-  // Affiche la boite de dialogue permettant la modification des statuts
-  $("#add-statut-button")
-    .click(function() {
-      $("#add-statut-form").dialog( "open" );
-      return false;
+    // Enregistre les éléments du formulaire dans un tableau
+    tab = new Array();
+    $('#statuts_sortable li').each(function() {
+      var id = $(this).attr('id').replace('li_', '');
+      tab.push(new Array(
+        $(this).find('#valeur_' + id).text(),
+        $(this).index(),
+        $(this).find('#categorie_' + id + ' option:selected').val()
+      ));
     });
 
-  // Permet de rendre la liste des statuts triable
-  $( "#statuts-sortable" ).sortable({
-    placeholder: "ui-state-highlight",
+    // Transmet le tableau à la page de validation ajax
+    var _token = $('input[name=_token]').val();
+
+    $.ajax({
+      url: url('ajax/update-select-options'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        _token: _token,
+        CSRFToken: $('#CSRFSession').val(),
+        menu: 'statuts',
+        option: 'categorie',
+        tab: tab,
+      },
+
+      success: function() {
+        var current_val = $('#statut').val();
+        $('#statut').empty();
+        $('#statut').append('<option value="">Aucun</option>');
+
+        $('#statuts_sortable li').each(function() {
+          var id = $(this).attr('id').replace('li_','');
+          var val = $(this).find('#valeur_' + id).text();
+          var selected = val == current_val;
+          var option = new Option(val, val, selected, selected);
+          $('#statut').append(option);
+        });
+
+        $('#add-statut-modal').modal('hide');
+        $('#statut').effect('highlight', null, 2000);
+      },
+
+      error: function(){
+        alert('Erreur lors de l\'enregistrement des modifications');
+      }
+    });
   });
 
-  // Permet d'ajouter de nouveau statuts (click sur le bouton ajouter
-  $("#add-statut-button2").click(function(){
+  $('#add-statut-modal').on('hidden.bs.modal', function() {
+    $('#statuts_sortable li:hidden').each(function() {
+	    $(this).show();
+    });
+  });
+
+  // Suppression message invalidité lors du changement d'input
+  $('#add-statut-text').on('input', function(e) {
+    if($('.invalid-statut').css('display') === 'block'){
+      $('.invalid-statut').css({'display': 'none'})
+      $('#add-statut-text').css({'color': '#29495C'});
+    }
+  })
+
+  // Permet d'ajouter de nouveau statuts
+  $('#add-statut').on('submit', function(e) {
+    e.preventDefault();
     // Récupère les options du premier select "catégorie" pour les réutiliser lors d'un ajout
-    var select=$("select[id^=categorie_]");
-    var select_id=select.attr("id");
-    var options="";
-    $("#"+select_id+" option").each(function(){
+    var select=$('select[id^=categorie_]');
+    var select_id=select.attr('id');
+    var options = '<option hidden disabled selected value=""></option>';
+    $('#'+select_id+' option').each(function() {
       var val=sanitize_string($(this).val());
       var text=sanitize_string($(this).text());
-      options+="<option value='"+val+"'>"+text+"</option>";
+      options+='<option value="'+val+'">'+text+'</option>';
     });
 
-    var text=sanitize_string($("#add-statut-text").val());
+    var text=sanitize_string($('#add-statut-text').val());
     if(!text){
-      CJInfo("Donnée invalide","error");
-      $("#add-statut-text").val();
+      $('.invalid-statut').show();
+      $('#add-statut-text').css({'color': '#DD404F'});
       return;
     }
 
@@ -544,12 +529,13 @@ $(function() {
       number++;
     }
 
-    $("#statuts-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='pl-icon pl-icon-arrowupdown'></span>"
-      +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<select id='categorie_"+number+"' class='select-popup'>"
+    $('#statuts_sortable').append('<li class="row row-statuts" id="li_'+number+'"> <i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>'
+      +'<span class="col-6 p-2" id="valeur_'+ number + '">'+text+'</span>'
+      +'<div class="col-4">'
+      +'<select id="categorie_'+number+'" class="form-control form-select form-select-sm" aria-label="Séléction Catégorie">'
       +options
-      +"</select>"
-      +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:500px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +'</select></div>'
+      +'<span class="col-1 ps-4" onclick="$(this).closest(\'li\').hide();"> <i class="bi bi-trash3-fill"></i></span>'
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué

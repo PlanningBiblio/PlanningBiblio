@@ -268,41 +268,76 @@
     </form>
   </div>
 
-  <div id="add-statut-form" title="Liste des statuts" class="noprint">
-    <p class="validateTips">Ajoutez, supprimez des statuts. Modifiez leur catégorie. <br/> Modifiez l'ordre des statuts dans les menus déroulant.</p>
-    <form>
-      <p>
-        <input type="text" id="add-statut-text" style="width:300px;"/>
-        <input type="button" id="add-statut-button2" class="btn btn-primary" value="Ajouter" style="margin-left:15px;"/>
-      </p>
+  <div class="modal modal-lg noprint" id="add-statut-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-statut-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="add-statut-title">Liste des statuts</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          
+          <p class="validateTips">Ajoutez, supprimez des statuts et modifiez l'ordre générale dans le menu déroulant.</p>
+          <form id="add-statut">
+            <div class="row">
+              <div class="col-5 ps-0">
+                <input type="text" id="add-statut-text" class="form-control form-control-sm mb-0" style="width:100%;" required>
+              </div>
+              <button type="submit" id="add-statut-button" class="col-1 btn btn-primary m-2 mb-0">Ajouter</button>
+              <div class="invalid-feedback invalid-statut m-0" style="display: none;">Statut invalide</div>
+            </div>
+          </form>
 
-      <fieldset>
-        <ul id="statuts-sortable">
-          {% if statuts is iterable %}
-            {% for elem in statuts %}
-              <li class="ui-state-default" id="li_{{ elem.id }}">
-                <span class="pl-icon pl-icon-arrowupdown"></span>
-                <font id="valeur_{{ elem.id }}">{{ elem.value }}</font>
-                <select id="categorie_{{ elem.id }}" class="select-popup">
-                  <option value="0">&nbsp;</option>
-                  {% for elem2 in categories %}
-                    {% if elem2.id == elem.category %}
-                      <option value="{{ elem2.id }}" selected="selected">{{ elem2.value }}</option>
-                    {% else %}
-                      <option value="{{ elem2.id }}">{{ elem2.value }}</option>
-                    {% endif %}
+          <div class="row row-header rounded-top-1 m-0 mt-2">
+            <i class="col-auto p-2 bi bi-arrow-down-up" aria-hidden="true"></i>
+            <span class="col-6 ps-0">Nom</span>
+            <span class="col-4" >Catégorie</span>
+          </div>
+
+          <form id="arrange-statuts">
+            <fieldset class="container-fluid">
+
+              <ul id="statuts_sortable">
+                {% if statuts is iterable %}
+                  {% for s in statuts %}
+
+                  <li class="row row-statuts" id="li_{{ s.id }}">
+                      <i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>
+                      <span class="col-6 p-2" id="valeur_{{ s.id}}">{{ s.value }}</span>
+                      <div class="col-4">
+                        <select id="categorie_{{ s.id }}" class="form-control form-select form-select-sm" aria-label="Séléction Catégorie">
+                          {% for c in categories %}
+                            <option value="{{c.id }}"  {% if c.id == s.category %} selected="selected" {% endif %} >{{ c.value }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                      {% if s.value not in statuts_utilises %}
+                        <span class="col-1 ps-4" onclick="$(this).closest('li').hide();">
+                          <i class="bi bi-trash3-fill"></i>
+                        </span>
+                      {% endif %}
+                  </li>
+
                   {% endfor %}
-                </select>
-                {% if elem.value not in statuts_utilises %}
-                  <span class="pl-icon pl-icon-trash" style="position:absolute;left: 500px;cursor:pointer;" onclick="$(this).closest('li').hide();"></span>
                 {% endif %}
-              </li>
-            {% endfor %}
-          {% endif %}
-        </ul>
-      </fieldset>
-    </form>
+              </ul>
+            </fieldset>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" form="arrange-statuts">Enregister</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        </div>
+
+      </div>
+    </div>
   </div>
+
+  <script>
+    Sortable.create(statuts_sortable, {ghostClass: 'bg-blue', animation: 150}); 
+  </script>
 
   <div id="add-service-form" title="Liste des services" class="noprint" style="display:none;" >
     <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des services dans le menu déroulant.</p>
