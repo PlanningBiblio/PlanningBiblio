@@ -290,7 +290,7 @@
               <tr>
                 <td colspan='2'><br/>
                   {% if absence.editable %}
-                    <input type="button" class="btn btn-danger" value="Supprimer" id="absence-bouton-supprimer" data-id="{{ id }}"/> 
+                    <input type="button" class="btn btn-danger" value="Supprimer" id="absence-bouton-suppression" data-id="{{ id }}"/> 
                     <input type="button" class="btn btn-secondary" value="Annuler" onclick="annuler(1);"/> 
                     <input type="submit" class="btn btn-primary" value="Valider"/>
                   {% else %}
@@ -307,12 +307,45 @@
           <p>La modification des règles de récurrence n'est pas possible.</p>
         </div>
 
-        <div id="recurrence-alert" title="Modification d'une absence récurrente" class='noprint' style='display:none;'>
-          <p>Souhaitez-vous modifier uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+        <div class="modal modal-lg" id="recurrence-modification-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="recurrence-modification-title" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="recurrence-modification-title">Modification d'une absence récurrente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
+                <p>Souhaitez-vous modifier uniquement cet événement, cet événement et ceux qui le suivent dans la série ou tous les événements de la série ?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="modification-current">Uniquement cet événement</button>
+                <button type="button" class="btn btn-primary" id="modification-next">Cet événement et les suivants</button>
+                <button type="button" class="btn btn-primary" id="modification-all">Tous les événements</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div id="recurrence-alert-suppression" title="Suppression d'une absence récurrente" class='noprint' style="display:none;">
-          <p>Souhaitez-vous supprimer uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+
+        <div class="modal modal-lg" id="recurrence-suppression-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="recurrence-suppression-title" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="recurrence-suppression-title">Suppression d'une absence récurrente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
+                <p>Souhaitez-vous supprimer uniquement cet événement, cet événement et ceux qui le suivent dans la série ou tous les événements de la série ?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="deletion-current">Uniquement cet événement</button>
+                <button type="button" class="btn btn-danger" id="deletion-next">Cet événement et les suivants</button>
+                <button type="button" class="btn btn-danger" id="deletion-all">Tous les événements</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+              </div>
+            </div>
+          </div>
         </div>
       {% endif %}
       {% include 'absences/reasons.html.twig' %}
