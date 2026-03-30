@@ -1893,7 +1893,7 @@ display: contents;
   color: #29495C;
 }
 
-.modal-body p{
+.modal-body p {
   font-size: 1.15em;
 }
 
@@ -1972,7 +1972,6 @@ select.form-select, select.form-select:focus {
 .row.row-header i {
   visibility: hidden;
 }
-
 
 /* Bootstrap Grid END */
 

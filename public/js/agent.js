@@ -433,250 +433,234 @@ function control_credits_hours(o) {
 }
 
 $(function() {
-  // Paramétrage de la boite de dialogue permettant la modification des statuts
-  $('#add-statut-form').dialog({
-    autoOpen: false,
-    height: 480,
-    width: 560,
-    modal: true,
-    resizable: false,
-    draggable: false,
-    buttons: {
-      Enregistrer: function() {
-        // Supprime les lignes cachées lors du clic sur la corbeille
-        $('#statuts-sortable li:hidden').each(function() {
-          $(this).remove();
-        });
-        
-        // Enregistre les éléments du formulaire dans un tableau
-        tab = new Array();
-        $('#statuts-sortable li').each(function() {
-          var id = $(this).attr('id').replace('li_', '');
-          tab.push(new Array(
-            $(this).find('#valeur_' + id).text(),
-            $(this).index(),
-            $(this).find('#categorie_' + id + ' option:selected').val()
-          ));
-        });
 
-        // Transmet le tableau à la page de validation ajax
-        var _token = $('input[name=_token]').val();
+  if($('#statuses_sortable').length) {
+      Sortable.create(statuses_sortable, {ghostClass: 'bg-blue', animation: 150}); 
+  }
 
-        $.ajax({
-          url: url('ajax/update-select-options'),
-          type: 'post',
-          dataType: 'json',
-          data: {
-            _token: _token,
-            CSRFToken: $('#CSRFSession').val(),
-            menu: 'statuts',
-            option: 'categorie',
-            tab: tab,
-          },
+  if($('#services_sortable').length) {
+      Sortable.create(services_sortable, {ghostClass: 'bg-blue', animation: 150}); 
+  }
 
-          success: function() {
-            var current_val = $('#statut').val();
-            $('#statut').empty();
-            $('#statut').append('<option value="">Aucun</option>');
-
-            $('#statuts-sortable li').each(function() {
-              var id = $(this).attr('id').replace('li_','');
-              var val = $(this).find('#valeur_' + id).text();
-              var selected = val == current_val;
-              var option = new Option(val, val, selected, selected);
-              $('#statut').append(option);
-            });
-            $('#add-statut-form').dialog('close');
-            $('#statut').effect('highlight', null, 2000);
-          },
-
-          error: function(){
-            alert('Erreur lors de l\'enregistrement des modifications');
-          }
-        });
-      },
-
-      Annuler: function() {
-        $(this).dialog('close');
-      },
-    },
-
-    close: function() {
-      $('#statuts-sortable li:hidden').each(function() {
-	      $(this).show();
-      });
-    }
-  });
-
-  // Affiche la boite de dialogue permettant la modification des statuts
-  $("#add-statut-button")
-    .click(function() {
-      $("#add-statut-form").dialog( "open" );
-      return false;
-    });
-
-  // Permet de rendre la liste des statuts triable
-  $( "#statuts-sortable" ).sortable({
-    placeholder: "ui-state-highlight",
-  });
-
-  // Permet d'ajouter de nouveau statuts (click sur le bouton ajouter
-  $("#add-statut-button2").click(function(){
+  // Formulaire d'ajout de nouveau statut
+  $('#add-status').on('submit', function(e) {
+    e.preventDefault();
+    $('#invalid-status').text('Statut invalide');
     // Récupère les options du premier select "catégorie" pour les réutiliser lors d'un ajout
-    var select=$("select[id^=categorie_]");
-    var select_id=select.attr("id");
-    var options="";
-    $("#"+select_id+" option").each(function(){
-      var val=sanitize_string($(this).val());
-      var text=sanitize_string($(this).text());
-      options+="<option value='"+val+"'>"+text+"</option>";
+    var select = $('select[id^=categorie_]');
+    var select_id = select.attr('id');
+    var options = '<option hidden disabled selected value=""></option>';
+    $('#' + select_id + ' option').each(function() {
+      var val = sanitize_string($(this).val());
+      var text = sanitize_string($(this).text());
+      options += '<option value="' + val + '">' + text + '</option>';
     });
 
-    var text=sanitize_string($("#add-statut-text").val());
-    if(!text){
-      CJInfo("Donnée invalide","error");
-      $("#add-statut-text").val();
+    var text = sanitize_string($('#add-status-text').val());
+    if(!text) {
+      $('#add-status-text').addClass('is-invalid');
       return;
     }
 
-    var number = 1;
-    while($('#li_'+number).length){
-      number++;
-    }
-
-    $("#statuts-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='pl-icon pl-icon-arrowupdown'></span>"
-      +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<select id='categorie_"+number+"' class='select-popup'>"
-      +options
-      +"</select>"
-      +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:500px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
-      +"</li>");
-
-    // Reset du champ texte une fois l'ajout effectué
-    $("#add-statut-text").val(null);
-  });
-  
-  // Paramétrage de la boite de dialogue permettant la modification des services
-  $('#add-service-form').dialog({
-    autoOpen: false,
-    height: 480,
-    width: 560,
-    modal: true,
-    resizable: false,
-    draggable: false,
-    buttons: {
-      Enregistrer: function() {
-        // Supprime les lignes cachées lors du clic sur la corbeille
-        $('#services-sortable li:hidden').each(function() {
-          $(this).remove();
-        });
-
-        // Enregistre les éléments du formulaire dans un tableau
-        tab = new Array();
-        $('#services-sortable li').each(function() {
-          var id = $(this).attr('id').replace('li_','');
-          tab.push(new Array(
-            $(this).find('#valeur_' + id).text(),
-            $(this).index()
-          ));
-        });
-
-        // Transmet le tableau à la page de validation ajax
-        var _token = $('input[name=_token]').val();
-
-        $.ajax({
-          url: url('ajax/update-select-options'),
-          type: 'post',
-          dataType: 'json',
-          data: {
-            _token: _token,
-            CSRFToken: $('#CSRFSession').val(),
-            menu: 'services',
-            tab: tab,
-          },
-
-          success: function(){
-            var current_val = $('#service').val();
-            $('#service').empty();
-            $('#service').append('<option value="">Aucun</option>');
-
-            $('#services-sortable li').each(function() {
-              var id = $(this).attr('id').replace('li_', '');
-              var val = $(this).find('#valeur_' + id).text();
-              var selected = val == current_val;
-              var option = new Option(val, val, selected, selected);
-              $('#service').append(option);
-            });
-            $('#add-service-form').dialog('close');
-            $('#service').effect('highlight', null, 2000);
-          },
-
-          error: function(){
-            alert('Erreur lors de l\'enregistrement des modifications');
-          }
-        });
-      },
-
-      Annuler: function() {
-        $(this).dialog('close');
-      },
-    },
-
-    close: function() {
-      $('#services-sortable li:hidden').each(function() {
-        $(this).show();
-      });
-    }
-  });
-
-  // Affiche la boite de dialogue permettant la modification des services
-  $("#add-service-button").click(function() {
-      $("#add-service-form").dialog( "open" );
-      return false;
-    });
-
-  // Permet de rendre la liste des services triable
-  $("#services-sortable" ).sortable({
-    placeholder: "ui-state-highlight",
-  });
-
-  // Permet d'ajouter de nouveaux services (clic sur le bouton ajouter)
-  $("#add-service-button2").click(function(){
-    var text=sanitize_string($("#add-service-text").val());
-    if(!text){
-      CJInfo("Donnée invalide","error");
-      $("#add-service-text").val();
-      return;
-    }
-    
-    // Vérifie si l'étage existe déjà
+    // Vérifie si le statut existe déjà
     var exist = false;
-    $('#services-sortable > li > font').each(function(){
-      if($(this).text().toLowerCase() == text.toLowerCase()){
-        CJInfo("Cette valeur existe déjà.","error");
+    $('#statuses_sortable > li > span').each(function() {
+      if($(this).text().toLowerCase() == text.toLowerCase()) {
+        $('#invalid-status').text('Un statut avec ce nom existe déjà.');
+        $('#add-status-text').addClass('is-invalid');
         exist = true;
         return;
       }
     });
-    
-    if(exist){
+
+    if(exist) {
       return;
     }
-    
+
     var number = 1;
     while($('#li_'+number).length){
       number++;
     }
-    $("#services-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='pl-icon pl-icon-arrowupdown'></span>"
-      +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<span class='pl-icon pl-icon-trash' style='position:absolute;left:500px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
-      +"</li>");
+
+    $('#statuses_sortable').append('<li class="row row-sortable" id="li_' + number + '"> <i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>'
+      + '<span class="col-6 p-2" id="valeur_' + number + '">' + text + '</span>'
+      + '<div class="col-4">'
+      + '<select id="categorie_' + number + '" class="form-control form-select form-select-sm" aria-label="Séléction Catégorie">'
+      + options
+      + '</select></div>'
+      + '<span class="col-1 ps-5" onclick="$(this).closest(\'li\').hide();"> <i class="bi bi-trash3-fill"></i></span>'
+      + "</li>");
+
+    // Reset du champ texte une fois l'ajout effectué
+    $("#add-status-text").val(null);
+  });
+
+  // Formulaire de modification des statuts (ordre, catégorie, suppression...)
+  $('#arrange-statuses').on('submit', function(e) {
+    e.preventDefault();
+    // Supprime les lignes cachées lors du clic sur la corbeille
+    $('#statuses_sortable li:hidden').each(function() {
+	    $(this).remove();
+	  });
+
+    // Enregistre les éléments du formulaire dans un tableau
+    tab = new Array();
+    $('#statuses_sortable li').each(function() {
+      var id = $(this).attr('id').replace('li_', '');
+      tab.push(new Array(
+        $(this).find('#valeur_' + id).text(),
+        $(this).index(),
+        $(this).find('#categorie_' + id + ' option:selected').val()
+      ));
+    });
+
+    // Transmet le tableau à la page de validation ajax
+    var _token = $('input[name=_token]').val();
+
+    $.ajax({
+      url: url('ajax/update-select-options'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        _token: _token,
+        CSRFToken: $('#CSRFSession').val(),
+        menu: 'statuts',
+        option: 'categorie',
+        tab: tab,
+      },
+
+      success: function() {
+        var current_val = $('#statut').val();
+        $('#statut').empty();
+        $('#statut').append('<option value="">Aucun</option>');
+
+        $('#statuses_sortable li').each(function() {
+          var id = $(this).attr('id').replace('li_', '');
+          var val = $(this).find('#valeur_' + id).text();
+          var selected = val == current_val;
+          var option = new Option(val, val, selected, selected);
+          $('#statut').append(option);
+        });
+
+        $('#add-status-modal').modal('hide');
+        $('#statut').effect('highlight', null, 2000);
+      },
+
+      error: function() {
+        alert('Erreur lors de l\'enregistrement des modifications');
+      }
+    });
+  });
+
+  // Suppression message invalidité lors du changement d'input de statut
+  $('#add-status-text').on('input', function(e) {
+    $(this).removeClass('is-invalid');
+  })
+
+  // Restaure les éléments supprimés mais non validés (pour les services et les statuts)
+  $('[id^=add-][id$=-modal]').on('hidden.bs.modal', function() {
+    $('[id$=_sortable] li:hidden').each(function() {
+	    $(this).show();
+    });
+  });
+
+  // Formulaire d'ajout de nouveaux services
+  $('#add-service').on('submit', function(e) {
+    e.preventDefault();
+    $('#invalid-service').text('Service invalide');
+    var text = sanitize_string($('#add-service-text').val());
+    if (!text) {
+      $('#add-service-text').addClass('is-invalid');
+      return;
+    }
+
+    // Vérifie si le service existe déjà
+    var exist = false;
+    $('#services_sortable > li > span').each(function() {
+      if($(this).text().toLowerCase() == text.toLowerCase()) {
+        $('#invalid-service').text('Un service avec ce nom existe déjà.');
+        $('#add-service-text').addClass('is-invalid');
+        exist = true;
+        return;
+      }
+    });
+
+    if (exist) {
+      return;
+    }
+
+    var number = 1;
+    while($('#li_'+number).length){
+      number++;
+    }
+    $('#services_sortable').append('<li class="row row-sortable" id="li_' + number + '"><i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>'
+      + '<span class="col-10 p-2" id="valeur_' + number + '">' + text + '</span>'
+      + '<span class="col-1 ps-5" onclick="$(this).closest(\'li\').hide();"><i class="bi bi-trash3-fill"></i></span>'
+      + '</li>');
 
     // Reset du champ texte une fois l'ajout effectué
     $("#add-service-text").val(null);
   });
-  
-  
+
+  // Formulaire de modification des services (ordre, suppression...)
+  $('#arrange-services').on('submit', function(e) {
+    e.preventDefault();
+    // Supprime les lignes cachées lors du clic sur la corbeille
+    $('#services_sortable li:hidden').each(function() {
+      $(this).remove();
+    });
+
+    // Enregistre les éléments du formulaire dans un tableau
+    tab = new Array();
+    $('#services_sortable li').each(function() {
+      var id = $(this).attr('id').replace('li_', '');
+      tab.push(new Array(
+        $(this).find('#valeur_' + id).text(),
+        $(this).index()
+      ));
+    });
+
+    // Transmet le tableau à la page de validation ajax
+    var _token = $('input[name=_token]').val();
+
+    $.ajax({
+      url: url('ajax/update-select-options'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        _token: _token,
+        CSRFToken: $('#CSRFSession').val(),
+        menu: 'services',
+        tab: tab,
+      },
+
+      success: function(){
+        var current_val = $('#service').val();
+        $('#service').empty();
+        $('#service').append('<option value="">Aucun</option>');
+
+        $('#services_sortable li').each(function() {
+          var id = $(this).attr('id').replace('li_', '');
+          var val = $(this).find('#valeur_' + id).text();
+          var selected = val == current_val;
+          var option = new Option(val, val, selected, selected);
+          $('#service').append(option);
+        });
+        $('#add-service-modal').modal('hide');
+        $('#service').effect('highlight', null, 2000);
+      },
+
+      error: function() {
+        alert('Erreur lors de l\'enregistrement des modifications');
+      }
+    });
+  });
+
+  // Suppression message invalidité lors du changement d'input de service
+  $('#add-service-text').on('input', function(e) {
+    $(this).removeClass('is-invalid');
+  })
+
   $('#ics-url-form').dialog({
     autoOpen: false,
     height: 525,
