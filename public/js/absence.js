@@ -47,7 +47,7 @@ $(function() {
 
   $('#add-motif-modal').on('hidden.bs.modal', function() {
     $('#motifs_sortable li:hidden').each(function() {
-	    $(this).show();
+      $(this).show();
     });
   });
 
@@ -55,13 +55,13 @@ $(function() {
     e.preventDefault();
     // Supprime les lignes cachées lors du clic sur la corbeille
     $('#motifs_sortable li:hidden').each(function() {
-	    $(this).remove();
-	  });
+     $(this).remove();
+   });
 
     // Enregistre les éléments du formulaire dans un tableau
-    tab=new Array();
+    tab = new Array();
     $('#motifs_sortable li').each(function() {
-      var id=$(this).attr('id').replace('li_','');
+      var id = $(this).attr('id').replace('li_', '');
       var teleworking = $('#teleworking_' + id).prop('checked') ? 1 : 0;
       tab.push(new Array(
         $('#valeur_'+id).text(),
@@ -74,25 +74,24 @@ $(function() {
 
     // Transmet le tableau à la page de validation ajax
     var _token = $('input[name=_token]').val();
-    console.log(_token);
 
     $.ajax({
       url: url('ajax/edit-absence-reasons'),
       type: 'post',
-            dataType: 'json',
+        dataType: 'json',
       data: {
         _token: _token,
         data: tab,
         menu:'abs',
         option: 'type',
       },
-      success: function(){
+      success: function() {
         var current_val = $('#motif').val();
         $('#motif').empty();
-        $('#motif').append("<option value=''>&nbsp;</option>");
+        $('#motif').append('<option value="">&nbsp;</option>');
 
         $('#motifs_sortable li').each(function() {
-          var id=$(this).attr('id').replace('li_','');
+          var id = $(this).attr('id').replace('li_', '');
           var val = $('#valeur_'+id).text();
           var type = $('#type_'+id+' option:selected').val();
 
@@ -106,14 +105,15 @@ $(function() {
 
           $('#motif').append(option);
         });
+
         $('#add-motif-modal').modal('hide');
-        $('#motif').effect('highlight',null,2000);
+        $('#motif').effect('highlight', null, 2000);
       },
-      error: function(){
+      error: function() {
         alert('Erreur lors de l\'enregistrement des modifications.\nVérifiez qu\'il ne manque aucune information.');
       },
-      });
-  }); 
+    });
+  });
 
   // Suppression message invalidité lors du changement d'input
   $('#add-motif-text').on('input', function(e) {
@@ -129,7 +129,7 @@ $(function() {
     // Récupère les options du premier select "type" pour les réutiliser lors d'un ajout
     var select=$("select[id^=type_]");
     var select_id=select.attr("id");
-    var options = "<option hidden disabled selected value=''></option>";
+    var options = '<option hidden disabled selected value=""></option>';
     $("#"+select_id+" option").each(function(){
       var val=sanitize_string($(this).val());
       var text=sanitize_string($(this).text());
@@ -138,14 +138,14 @@ $(function() {
 
     var select_wf = $("select[id^=notification-workflow_]");
     var select_id_wf = select_wf.attr("id");
-    var options_wf = "<option hidden disabled selected value=''></option>";
+    var options_wf = '<option hidden disabled selected value=""></option>';
     $("#" + select_id_wf + " option").each(function() {
       var val=sanitize_string($(this).val());
       var text=sanitize_string($(this).text());
       options_wf+="<option value='"+val+"'>"+text+"</option>";
     });
 
-    var text=sanitize_string($('#add-motif-text').val());
+    var text = sanitize_string($('#add-motif-text').val());
     if(!text){
       $('.invalid-feedback').show();
       $('#add-motif-text').css({'color': '#DD404F'});
@@ -154,8 +154,8 @@ $(function() {
 
     // Vérifie si le motif existe déjà
     var exist = false;
-    $('#motifs_sortable > li > span').each(function(){
-      if($(this).text().toLowerCase() == text.toLowerCase()){
+    $('#motifs_sortable > li > span').each(function() {
+      if($(this).text().toLowerCase() == text.toLowerCase()) {
         $('.invalid-feedback').text('Un motif avec ce nom existe déjà.')
         $('.invalid-feedback').show();
         $('#add-motif-text').css({'color': '#DD404F'});
@@ -163,8 +163,8 @@ $(function() {
         return;
       }
     });
-    
-    if(exist){
+
+    if(exist) {
       return;
     }
 
@@ -173,25 +173,26 @@ $(function() {
       number++;
     }
 
-    $('#motifs_sortable').append("<li class='row row-motifs' id='li_"+number+"'><i class='col-auto p-0 ps-2 bi bi-arrow-down-up'></i>"
-      +"<span class='col-3 p-2' id='valeur_"+number+"'>"+text+"</span>"
-      +"<div class='col-3'>"
-      +"<select id='type_"+number+"' class='form-control form-select form-select-sm' aria-label='Séléction du Niveau' onchange='padding20($(this));'>"
-      +options
-      +"</select>"
-      +"</div>"
-      +"<div class='col-3'>"
-      +"<select id='notification-workflow_"+number+"' class='form-control form-select form-select-sm' aria-label='Séléction du circuit de notification'>"
-      +options_wf
-      +"</select>"
-      +"</div>"
-      +"<div class='col-2' style='text-align: center;'>"
-      +"<input type='checkbox' id='teleworking_"+number+"' class='form-check-input'/>"
-      +"</div>"
-      +"<span class='col-auto p-1' onclick='$(this).closest(\"li\").hide();'>"
-      +"<i class='bi bi-trash3-fill'></i>"
-      +"</span>"
-      +"</li>");
+    $('#motifs_sortable').append(
+      '<li class="row row-motifs" id="li_' + number + '"><i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>'
+      + '<span class="col-3 p-2" id="valeur_' + number + '">' + text + '</span>'
+      + '<div class="col-3">'
+      + '<select id="type_' + number + '" class="form-control form-select form-select-sm" aria-label="Séléction du Niveau" onchange="padding20($(this));">'
+      + options
+      + '</select>'
+      + '</div>'
+      + '<div class="col-3">'
+      + '<select id="notification-workflow_' + number + '" class="form-control form-select form-select-sm" aria-label="Séléction du circuit de notification">'
+      + options_wf
+      + '</select>'
+      + '</div>'
+      + '<div class="col-2" style="text-align: center;">'
+      + '<input type="checkbox" id="teleworking_' + number + '" class="form-check-input"/>'
+      + '</div>'
+      + '<span class="col-auto p-1" onclick="$(this).closest(\'li\').hide();">'
+      + '<i class="bi bi-trash3-fill"></i>'
+      + '</span>'
+      + '</li>');
 
     // Reset du champ texte une fois l'ajout effectué
     $('#add-motif-text').val(null);
