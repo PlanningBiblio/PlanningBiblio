@@ -152,6 +152,22 @@ $(function() {
       return;
     }
 
+    // Vérifie si le motif existe déjà
+    var exist = false;
+    $('#motifs_sortable > li > span').each(function(){
+      if($(this).text().toLowerCase() == text.toLowerCase()){
+        $('.invalid-feedback').text('Un motif avec ce nom existe déjà.')
+        $('.invalid-feedback').show();
+        $('#add-motif-text').css({'color': '#DD404F'});
+        exist = true;
+        return;
+      }
+    });
+    
+    if(exist){
+      return;
+    }
+
     var number = 1;
     while($('#li_'+number).length){
       number++;
