@@ -39,7 +39,9 @@
               {% endif %}
             {% endfor %}
         </select>
-        <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer; margin-left:4px;' id='add-statut-button'></span>
+        <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-status-modal">
+          <span class="pl-icon pl-icon-add" title="Ajouter un statut"></span>
+        </button>
       </td>
     </tr>
 
@@ -72,7 +74,9 @@
             {% endif %}
           {% endfor %}
         </select>
-        <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer; margin-left:4px;' id='add-service-button'></span>
+        <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-service-modal">
+          <span class="pl-icon pl-icon-add" title="Ajouter un service"></span>
+        </button>
       </td>
     </tr>
   {% endif %}
