@@ -1477,13 +1477,13 @@ ul[id$="-sortable"] li span { margin-left: -1.3em; }
   background-color: aliceblue;
 }
 
-#statuts_sortable { 
+ul[id$="_sortable"] { 
   list-style-type: none; 
   padding: 0;
 }
 
-#arrange-statuts {
-  height: 500px; 
+form[id^="arrange-"] {
+  height: 400px; 
   overflow-y: scroll;
 }
 
@@ -1491,13 +1491,13 @@ ul[id$="-sortable"] li span { margin-left: -1.3em; }
   min-height: 45px;
 }
 
-.row.row-statuts {
+.row.row-sortable {
   border: 1px solid;
   margin-bottom: -1px;
   align-items: center;
 }
 
-.row.row-statuts select {
+.row.row-sortable select {
   width: 100%;
   background-color: aliceblue;
 }
