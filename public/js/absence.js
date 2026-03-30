@@ -242,17 +242,17 @@ $(function() {
     update_validation_statuses();
   });
 
-  $("#absence-bouton-supprimer").click(function(){
+  $('#absence-bouton-suppression').click(function() {
 
     // Suppression d'une absence récurrente
     if($('#rrule').val() && !$('#recurrence-modif').val()){
-      $("#recurrence-alert-suppression").dialog('open');
+      $('#recurrence-suppression-modal').modal('show');
       return false;
     }
 
     if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
       var CSRFToken = $('#CSRFSession').val();
-      var id=$("#absence-bouton-supprimer").attr("data-id");
+      var id = $('#absence-bouton-suppression').attr('data-id');
       delete_absence(CSRFToken, id, null);
     }
   });
@@ -448,87 +448,45 @@ $(function() {
     $('#recurrence-summary-form').text(rrule[1]);
   });
 
-  // Récurrences : alerte lors de la modification d'une absence récurrente
-  $("#recurrence-alert").dialog({
-    autoOpen: false,
-    height: 220,
-    width: 1000,
-    modal: true,
-    buttons: {
-
-      "Uniquement cet événement": function() {
-        $('#recurrence-modif').val('current');
-        $('#form').submit();
-        $( this ).dialog( "close" );
-      },
-
-      "Cet événement et les suivants": function() {
-        $('#recurrence-modif').val('next');
-        $('#form').submit();
-        $( this ).dialog( "close" );
-      },
-
-      "Tous les événements": function() {
-        $('#recurrence-modif').val('all');
-        $('#form').submit();
-        $( this ).dialog( "close" );
-      },
-
-      Annuler: {
-        click: function() {
-          $( this ).dialog( "close" );
-              },
-        text: "Annuler",
-        class: "btn btn-secondary"
-            },
-    },
-    close: function() {
-      $('.recurrence').removeClass( "ui-state-error" );
-    },
-
+  // Options de modification d'une absence récurrente
+  $('#modification-current').on('click', function(e) {
+    $('#recurrence-modif').val('current');
+    $('#form').submit();
+    $('#recurrence-modification-modal' ).modal('hide');
   });
 
-  // Récurrences : alerte lors de la suppression d'une absence récurrente
-  $("#recurrence-alert-suppression").dialog({
-    autoOpen: false,
-    height: 220,
-    width: 1000,
-    modal: true,
-    buttons: {
+  $('#modification-next').on('click', function(e) {
+    $('#recurrence-modif').val('next');
+    $('#form').submit();
+    $('#recurrence-modification-modal' ).modal('hide');
+  });
 
-      "Uniquement cet événement": function() {
-        var CSRFToken = $('#CSRFSession').val();
-        var id=$("#absence-bouton-supprimer").attr("data-id");
-        $( this ).dialog( "close" );
-        delete_absence(CSRFToken, id, 'current');
-      },
+  $('#modification-all').on('click', function(e) {
+    $('#recurrence-modif').val('all');
+    $('#form').submit();
+    $('#recurrence-modification-modal' ).modal('hide');
+  });
 
-      "Cet événement et les suivants": function() {
-        var CSRFToken = $('#CSRFSession').val();
-        var id=$("#absence-bouton-supprimer").attr("data-id");
-        $( this ).dialog( "close" );
-        delete_absence(CSRFToken, id, 'next');
-      },
+  // Options de suppression d'une absence récurrente
+  $('#deletion-current').on('click', function(e) {
+    var CSRFToken = $('#CSRFSession').val();
+    var id = $('#absence-bouton-suppression').attr('data-id');
+    $('#recurrence-suppression-modal').modal('hide');
+    delete_absence(CSRFToken, id, 'current');
+  });
 
-      "Tous les événements": function() {
-        var CSRFToken = $('#CSRFSession').val();
-        var id=$("#absence-bouton-supprimer").attr("data-id");
-        $( this ).dialog( "close" );
-        delete_absence(CSRFToken, id, 'all');
-      },
+  $('#deletion-next').on('click', function(e) {
+    var CSRFToken = $('#CSRFSession').val();
+    var id = $('#absence-bouton-suppression').attr('data-id');
+    $('#recurence-suppression-modal').modal('hide');
+    delete_absence(CSRFToken, id, 'next');
+  });
 
-      Annuler: {
-        click: function() {
-          $( this ).dialog( "close" );
-              },
-        text: "Annuler",
-        class: "btn btn-secondary"
-            },
-    },
-    close: function() {
-      $('.recurrence').removeClass( "ui-state-error" );
-    },
-
+  $('#deletion-all').on('click', function(e) {
+    var CSRFToken = $('#CSRFSession').val();
+    var id = $('#absence-bouton-suppression').attr('data-id');
+    $('#recurence-suppression-modal').modal('hide');
+    delete_absence(CSRFToken, id, 'all');
   });
 
   $(".absences-pj input[type=checkbox]").click(function(){
@@ -1063,8 +1021,8 @@ function verif_absences(ctrl_form){
   });
 
   // Modification d'une absence récurrente
-  if($('#rrule').val() && !$('#recurrence-modif').val() && retour){
-    $("#recurrence-alert").dialog('open');
+  if($('#rrule').val() && !$('#recurrence-modif').val() && retour) {
+    $('#recurrence-modification-modal').modal('show');
     return false;
   } else {
     return retour;
