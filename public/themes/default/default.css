@@ -1457,13 +1457,13 @@ ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
 ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 30px; }
 ul[id$="-sortable"] li span { margin-left: -1.3em; }
 
-#motifs_sortable { 
+ul[id$="_sortable"] { 
   list-style-type: none; 
   padding: 0;
 }
 
-#arrange-reasons {
-  height: 500px; 
+form[id^="arrange-"] {
+  height: 400px; 
   overflow-y: scroll;
 }
 
