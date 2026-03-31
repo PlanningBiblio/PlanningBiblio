@@ -15,7 +15,7 @@
     {% endif %}
 
     <div class="admin-div">
-      <form name="form" action="{{ asset('holiday/edit') }}" method="post" id="form" class="googleCalendarForm" onsubmit="return verif_form('debut=date1;fin=date2');">
+      <form name="form" action="{{ asset('holiday/edit') }}" method="post" id="form" class="googleCalendarForm" onsubmit="return verif_form('debut=date1;fin=date2', 'form', 'verifConges');">
         <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
         <input type="hidden" name="confirm" value="confirm" />
         <input type="hidden" name="reliquat" value="{{ reliquat }}" />
@@ -70,7 +70,7 @@
           <tr>
             <td>Date de début : </td>
             <td>
-              <input type="text" name="debut" id="debut" value="{{ debut }}" class="datepicker start-date googleCalendarTrigger checkdate" style="width:40%;"/>
+              <input type="text" name="debut" id="debut" value="{{ debut }}" class="datepicker start-date form-control googleCalendarTrigger checkdate" style="width:40%;"/>
               {% if halfday %}
                 <select name="start_halfday" class="checkdate">
                   {% if start_halfday == 'fullday' %}
@@ -116,7 +116,7 @@
           <tr>
             <td>Date de fin : </td>
             <td>
-              <input type="text" name="fin" id="fin" value="{{ fin }}"  class="datepicker end-date googleCalendarTrigger checkdate" style="width:40%;"/>
+              <input type="text" name="fin" id="fin" value="{{ fin }}"  class="datepicker end-date form-control googleCalendarTrigger checkdate" style="width:40%;"/>
               {% if halfday %}
                 <select name="end_halfday" class="checkdate">
                   {% if end_halfday == 'fullday' %}
@@ -158,6 +158,10 @@
               <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:40%"
                 value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
             </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</td>
           </tr>
 
           <tr>
@@ -382,7 +386,7 @@
               {% endif %}
 
               {% if save_button %}
-                <input type="button" id="validate" value="Enregistrer les modifications" style="margin-left:20px;" class="btn btn-primary"/>
+                <input role="button" type="submit" value="{% trans %}Save changes{% endtrans %}" style="margin-left:20px;" class="btn btn-primary"/>
               {% endif %}
 
               {% if delete_button %}

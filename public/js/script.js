@@ -599,6 +599,15 @@ function updateTips( text , type) {
   CJErrorHighlight( $(".validateTips"), type);
 }
 
+// Cette fonction a pour but de remplacer verif_date() sur le long terme
+// Elle permet de vérifier la validité d'une date (str) et son adéquation à un format spécifique
+// Le format de date est chargé depuis les fichiers de traduction dans la locale choisie
+
+function date_validation(date) {
+  format = Translator.trans('MM/DD/YYYY');
+  return dayjs(date, format, true).isValid();
+};
+
 function verif_date(d){
   // Cette fonction vérifie le format AAAA-MM-JJ saisi et la validité de la date.
   // Le séparateur est défini dans la variable separateur
@@ -638,11 +647,16 @@ function verif_date(d){
   }
   return ok;
 }
- 
-function verif_form(champs,form){
-  if(form==undefined){
-    form="form";
+
+function verif_form(champs, form='form', callback=null)
+{
+  // Checks if the form was submitted with invalid inputs and stops the submission
+  if ($('.is-invalid').length > 0) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
   }
+
   erreurs="";
   valeur1="";
   valeur2="";
@@ -695,12 +709,16 @@ function verif_form(champs,form){
     return false;
   }
   else{
-    if(valeur1 && valeur2 && valeur2<valeur1){
-      CJInfo("Le champ "+objet2+" doit être supérieur au champ "+objet1,"error");
+    if(valeur1 && valeur2 && valeur2 < valeur1) {
       return false;
     }
-    else{
-      return true;
+    else {
+      if (callback) {
+        return window[callback]();
+      } 
+      else {
+        return true;
+      }
     }
   }
 }
@@ -780,106 +798,119 @@ $(function(){
     $("#pl-calendar").bootstrapDP({
       format: 'yyyy-mm-dd',
       todayHighlight: true,
-      language: "fr",
+      language: Translator.locale,
       toggleActive : true,
     });
 
     $("input.datepicker").bootstrapDP({
       format: 'dd/mm/yyyy',
-      language: "fr",
+      language: Translator.locale,
       todayHighlight: true,
-      autoclose: true
+      autoclose: true,
+      forceParse : false
     });
 
     $(".datepicker").addClass("center ui-widget-content");
     $(".datepicker").attr('autocomplete','off');
+    $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
 
+    // Invalid message feedback when date interval is not valid and disabled submit button
 
-    /**
-    * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début et inversement
-    * La date du calendrier de début devient la date minimal disponible pour le calendrier de fin et inversement
-    */
-    $(".datepicker.end-date").on('click', function(){
-      var debut = $(".datepicker.start-date").bootstrapDP("getDate");
-      var fin = $(this).bootstrapDP("getDate");
+    $('.datepicker.end-date').on('change',function() {
+      var valid_start = date_validation($('.datepicker.start-date').val());
+      var valid_end = date_validation($(this).val());
+      var end_required = typeof($(this).attr('required')) != 'undefined';
+      var start = $('.datepicker.start-date').bootstrapDP('getDate');
+      var end = $(this).bootstrapDP('getDate');
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
 
-      if(debut != null){
-        $(this).bootstrapDP('setStartDate', debut);
-        if( fin == null){
-          $(this).bootstrapDP('setDate', debut);
+      if((end == null && end_required ) || (end != null && !valid_end)){
+        $(this).addClass('is-invalid');
+        if(feedback.text() == Translator.trans("Please choose a valid date interval.") || !$('.datepicker.start-date').hasClass('is-invalid')){
+          $('.datepicker.start-date').removeClass('is-invalid');
+          feedback.text(Translator.trans("Please enter a valid end date"));
+          feedback.show();
         }
+        return;
       }
-    }).on('changeDate',function(){
-        var debut = $(".datepicker.start-date").bootstrapDP("getDate");
-        var fin = $(this).bootstrapDP("getDate");
 
-        if(debut != null){
-          $(".datepicker.start-date").bootstrapDP('setEndDate', fin);
-        }
+      if (!valid_end && !valid_start){
+        return;
+      }
+
+      if(valid_end && !valid_start) {
+        $(this).removeClass('is-invalid');
+        return;
+      }
+
+      if(valid_start && valid_end && end < start) {
+        $(this).addClass('is-invalid');
+        $('.datepicker.start-date').addClass('is-invalid');
+        feedback.text(Translator.trans("Please choose a valid date interval.", 'validators'));
+        feedback.show();
+        return;
+      }
+
+      $(this).removeClass('is-invalid');
+      $('.datepicker.start-date').removeClass('is-invalid');
+      feedback.hide()
     });
 
-    $(".datepicker.start-date").on('click', function(){
-      var fin = $(".datepicker.end-date").bootstrapDP("getDate");
-      var debut = $(this).bootstrapDP("getDate");
+    $('.datepicker.start-date').on('change',function() {
+      var valid_start = date_validation($(this).val());
+      var valid_end = date_validation($('.datepicker.end-date').val());
+      var end_required = typeof($('.datepicker.end-date').attr('required')) != 'undefined';
+      var start = $(this).bootstrapDP('getDate');
+      var end = $('.datepicker.end-date').bootstrapDP('getDate');
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback')
 
-      if(fin != null){
-        $(this).bootstrapDP('setEndDate', fin);
-        if( debut == null){
-          $(this).bootstrapDP('setDate', fin);
+      if(!valid_start) {
+        if(valid_end) {
+          $('.datepicker.end-date').removeClass('is-invalid');
         }
+        $(this).addClass('is-invalid');
+        feedback.text(Translator.trans("Please enter a valid start date"));
+        feedback.show();
+        return;
       }
-    }).on('changeDate',function(){
-      var fin = $(".datepicker.end-date").bootstrapDP("getDate");
-      var debut = $(this).bootstrapDP("getDate");
 
-      if(fin != null){
-        $(".datepicker.end-date").bootstrapDP('setStartDate', debut);
+      if(valid_start && ((end != null && !valid_end) || (end == null && end_required ))) {
+        $(this).removeClass('is-invalid');
+        feedback.text(Translator.trans("Please enter a valid end date"));
+        return;
       }
+
+      if((valid_end && valid_start && start > end)) {
+        $(this).addClass('is-invalid');
+        $('.datepicker.end-date').addClass('is-invalid');
+        feedback.text(Translator.trans("Please choose a valid date interval.", 'validators'));
+        feedback.show();
+        return;
+      }
+
+      $(this).removeClass('is-invalid');
+      $('.datepicker.end-date').removeClass('is-invalid');
+      feedback.hide()
     });
 
-    /**
-    * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début +1an et inversement
-    */
+    // One year limitation on research form
 
-    $(".start-search").on('changeDate', function(e) {
-      var start = $(".start-search").bootstrapDP('getDate');
-      var end = $(".end-search").bootstrapDP('getDate');
+    $('.one-year').on('change', function(e) {
+      var start = dayjs($(".start-date").val(), Translator.trans('DD/MM/YYYY'));
+      var end = dayjs($(".end-date").val(), Translator.trans('DD/MM/YYYY'));
+      var valid_start = date_validation($(".start-date").val());
+      var valid_end = date_validation($(".end-date").val());
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
 
-      if (start || end) {
-        if (!start) {
-          start = new Date();
-        }
-        if (!end) {
-          end = new Date();
-        }
-        var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
-        if (number_of_days > 367 || start > end) {
-          end.setTime(start.getTime() +  (365 * 24 * 60 * 60 * 1000));
-          $('.end-search').bootstrapDP('setDate', end.toLocaleDateString());
-        }
-      }
-    });
-
-    $(".end-search").on('changeDate', function(e) {
-      var start = $(".start-search").bootstrapDP('getDate');
-      var end = $(".end-search").bootstrapDP('getDate');
-
-      if (start || end) {
-        if (!start) {
-          start = new Date();
-        }
-        if (!end) {
-          end = new Date();
-        }
-        var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
-        if (number_of_days > 367 || start > end) {
-          start.setTime(end.getTime() -  (365 * 24 * 60 * 60 * 1000));
-          $('.start-search').bootstrapDP('setDate',start.toLocaleDateString());
+      if (valid_end && valid_start){
+        if (end.diff(start, 'year', true) > 1){
+          $('.datepicker.start-date').addClass('is-invalid');
+          $('.datepicker.end-date').addClass('is-invalid');
+          feedback.text(Translator.trans('Search results are limited to a period of one year'));
+          feedback.show()
         }
       }
     });
-
-
 
     // Onglets
     $(".ui-tabs").tabs({
