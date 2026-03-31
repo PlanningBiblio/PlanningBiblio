@@ -109,7 +109,7 @@
                   </td>
 
                   <td style='white-space:nowrap;'>
-                    <input type="text" name="debut" value="" style="width:100%;" class="datepicker start-date" placeholder="jj/mm/aaaa" id="absence-start"/>
+                    <input type="text" name="debut" value="" style="width:100%;" class="datepicker start-date form-control" id="absence-start"/>
                   </td>
                 </tr>
 
@@ -129,7 +129,7 @@
                   </td>
 
                   <td style='white-space:nowrap;'>
-                    <input type="text" name="fin" value="" style="width:100%;" class="datepicker end-date" placeholder="jj/mm/aaaa" id="absence-end"/>
+                    <input type="text" name="fin" value="" style="width:100%;" class="datepicker end-date form-control" id="absence-end"/>
                   </td>
                 </tr>
 
@@ -141,6 +141,10 @@
                   <td>
                     <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value=""/>
                   </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</td>
                 </tr>
 
                 <tr>
@@ -318,7 +322,7 @@
               
               <div class="row mb-2">
                 <label for="recurrence-freq" class="col-4 col-form-label">Récurrence :</label>
-                <select name="recurrence-freq" id="recurrence-freq" class="col-6 form-select form-select-sm recurrence-data">
+                <select name="recurrence-freq" id="recurrence-freq" class="form-select form-select-sm recurrence-data" style="max-width: 200px;">
                   <option value="DAILY">Tous les jours</option>
                   <option value="WEEKLY" selected="selected">Toutes les semaines</option>
                   <option value="MONTHLY">Tous les mois</option>
@@ -335,31 +339,31 @@
                 <legend class="col-form-label col-4">Répéter le :</legend>
                 <div class="col-8 p-0 pt-2 pb-2">
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day1" value="MO">
+                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day1" value="MO">
                     <label  for="recurrence-by-day1">Lundi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day2" value="TU">
+                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day2" value="TU">
                     <label  for="recurrence-by-day2">Mardi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day3" value="WE">
+                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day3" value="WE">
                     <label  for="recurrence-by-day3">Mercredi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day4" value="TH">
+                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day4" value="TH">
                     <label  for="recurrence-by-day4">Jeudi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day5" value="FR">
+                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day5" value="FR">
                     <label  for="recurrence-by-day5">Vendredi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day6" value="SA">
+                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day6" value="SA">
                     <label  for="recurrence-by-day6">Samedi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day0" value="SU">
+                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day0" value="SU">
                     <label  for="recurrence-by-day0">Dimanche</label>
                   </div>
                 </div>
@@ -400,7 +404,7 @@
                   <div class="form-check">
                     <input class="form-check-input recurrence-data recurrence-end" name="recurrence-end" type="radio" id="recurrence-end3" value="until">
                     <label class="form-check-label" for="recurrence-end3">Le 
-                      <input type="text" id="recurrence-until" class="datepicker recurrence-data" placeholder="jj/mm/aaaa" style="border: 1px solid #DEE2E6; width: 110px;"/>
+                      <input type="text" id="recurrence-until" class="datepicker recurrence-data" style="width: 150px;"/>
                     </label>
                   </div>
                 </div>

@@ -98,6 +98,10 @@ h4{
   background:url("images/logo-planno.svg") no-repeat right top;
 }
 
+#auth input {
+  width: 150px;
+}
+
 #h2-authentification, #h2-planning-authentification {
   text-align:center;
   margin: 30px 0 30px;
@@ -669,16 +673,6 @@ a.myAccountLink.active {
   text-underline-offset: 5px;
 }
 
-input[type=text],input[type=password]
-	{
-	width:150px;
-	}
-select
-	{
-	width:155px;
-	}
-
-
 .select-popup{
   width: auto;
   height: 20px;
@@ -1160,7 +1154,6 @@ class cellule = cellule par défaut
   color: gray;
 }
 
-
 .datepicker table thead th.datepicker-switch {
   background-color: #FFD700;
   border-radius: 0;
@@ -1172,7 +1165,6 @@ class cellule = cellule par défaut
   border-bottom-right-radius: 4px;
   border-top-right-radius: 4px;
 }
-
 
 .datepicker table tr td.today,
 .datepicker table tr td.today:hover:hover,
@@ -1932,13 +1924,10 @@ hr {
   justify-content: center;
 }
 
-input[type=text].form-control {
-  margin :10px;
-} 
-
 .form-control, .form-control:focus, .form-control-plaintext {
   color: #29495C;
   font-size: inherit;
+  border-radius: var(--bs-border-radius-sm);
 }
 
 div.form-control, div.form-control:focus {
@@ -1955,19 +1944,30 @@ input.form-check-input {
   border: 1px solid;
 }
 
+input[type=number] {
+  border: 1px solid #456578;
+}
+
 select.form-select, select.form-select:focus {
   color: #29495C;
+  border: 1px solid #456578;
+  height: 30px;
+}
+
+.form-control.is-invalid {
+  padding-right: 0px;
+}
+
+input::placeholder {
+    color: gray !important;
 }
 
 /* Modals END */
 
 /* Bootstrap Grid START */
 
-.row {
-  min-height: 45px;
-}
-
 .row.row-sortable {
+  min-height: 45px;
   border: 1px solid;
   margin-bottom: -1px;
   align-items: center;
@@ -1992,6 +1992,17 @@ select.form-select, select.form-select:focus {
 
 .row.row-header i {
   visibility: hidden;
+}
+
+.row.row-search .datepicker {
+  margin: 0.7em;
+  width: 13em ;
+}
+
+.row.row-search select {
+  width: 13em ;
+  margin: 0.6em;
+  text-align: center;
 }
 
 /* Bootstrap Grid END */
@@ -2052,10 +2063,6 @@ table.dataTable th{
   border-radius: 5px;
   margin: 20px 0 0 0;
   padding: 20px;
-}
-
-.admin-div select {
-  width: 200px;
 }
 
 .info-align{
@@ -2320,7 +2327,7 @@ table.dataTable th{
 }
 
 #workinghour_tables h3 {
-  margin: 40px 0 15px 0;
+  margin: 15px 0 15px 0;
 }
 
 #workinghour_tables table {
@@ -2367,7 +2374,7 @@ table.dataTable th{
 }
 
 #tableWorkingHourCycles_wrapper {
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 @media only screen and (max-width: 1550px){

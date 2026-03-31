@@ -11,11 +11,32 @@
     <h3>Heures de présence - Gestion des cycles</h3>
     <div id="buttons">
       <form name="form" method="get" action="{{ path('workinghour.cycle') }}">
-        Début : <input type="text" name="start" class="datepicker" value="{{ start }}" style="margin-right:20px;" />
-        Fin : <input type="text" name="end" class="datepicker" value="{{ end }}" style="margin-right:20px;" />
-        <input type="submit" value="Rechercher" class="btn btn-secondary" style="margin-right:20px;" />
-        <input type="button" value="Réinitialiser" onclick="location.href='{{ path('workinghour.cycle') }}'" class="btn btn-secondary" style="margin-right:20px;" />
-        <input type="button" value="Ajouter" onclick="location.href='{{ path('workinghour.cycle.edit', {id: 0}) }}'" class="btn btn-primary" />
+
+        <div class="row row-search mt-3">
+          <label class="col-xl-auto col-form-label mt-2" for="workinghour-cycle-search-start">{% trans %}Start{% endtrans %} :</label>
+          <div class="col-xl-auto ps-0">
+            <input id="workinghour--cycle-search-start" type="text" name="start" class="datepicker form-control start-date" value="{{ start }}"/>
+          </div>
+
+          <label class="col-xl-auto col-form-label mt-2" for="workinghour-cycle-search-end">{% trans %}End{% endtrans %} :</label>
+          <div class="col-xl-auto ps-0">
+            <input id="workinghour-cycle-search-end" type="text" name="end" class="datepicker form-control end-date" value="{{ end }}"/>
+          </div>
+
+          <div class="col-xl-4 ps-0">
+            <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
+            <input type="button" value="{% trans %}Clear{% endtrans %}" onclick="location.href='{{ path('workinghour.cycle') }}'" class="btn btn-secondary m-2" />  
+          </div>
+
+          <div class="col-xl text-end">
+            <input type="button" value="{% trans %}Add{% endtrans %}" onclick="location.href='{{ path('workinghour.cycle.edit', {id: 0}) }}'" class="btn btn-primary m-2 me-0" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+        </div>
+
       </form>
     </div>
 

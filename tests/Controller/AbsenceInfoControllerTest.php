@@ -63,19 +63,19 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filter('label')->eq(2);
         $this->assertEquals($result->text('Node does not exist', false), 'Texte','label 3 is Texte');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker start-date"]');
+        $result = $crawler->filterXPath('//input[contains(@class, "start-date")]');
         $this->assertEquals($result->attr('name'),'start','input datepicker name is start');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker end-date"]');
+        $result = $crawler->filterXPath('//input[contains(@class, "end-date")]');
         $this->assertEquals($result->attr('name'),'end','input datepicker name is end');
 
         $result = $crawler->filterXPath('//textarea');
         $this->assertEquals($result->attr('name'),'text','textarea name is texte');
 
-        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $class = $crawler->filterXPath('//input[contains(@class, "btn-primary")]');
         $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
-        $class = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
+        $class = $crawler->filterXPath('//a[contains(@class, "btn-secondary")]');
         $this->assertEquals($class->text('Node does not exist', false), 'Annuler','a button is Annuler');
     }
 
@@ -123,13 +123,13 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $class = $crawler->filterXPath('//textarea');
         $this->assertEquals($class->text('Node does not exist', false), 'salut','input submit text is salut');
 
-        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $class = $crawler->filterXPath('//input[contains(@class, "btn-primary")]');
         $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
-        $class = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
+        $class = $crawler->filterXPath('//a[contains(@class, "btn-secondary")]');
         $this->assertEquals($class->text('Node does not exist', false), 'Annuler','a button is Annuler');
 
-        $class = $crawler->filterXPath('//a[@class="btn btn-danger"]');
+        $class = $crawler->filterXPath('//a[contains(@class, "btn-danger")]');
         $this->assertEquals($class->text('Node does not exist', false), 'Supprimer','a button is Supprimer');
     }
 

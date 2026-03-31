@@ -48,10 +48,6 @@ $(function(){
     document.location.href = url('holiday');
   });
 
-  $('#validate').on('click', function() {
-    verifConges();
-  });
-
   $('input[name=halfday]').change(function() {
     if ($(this).is(':checked') == false) {
       $('#hre_debut_select').val('');
@@ -593,7 +589,16 @@ function valideConges(){
   document.form.submit();
 }
 
-function verifConges(){
+function verifConges()
+{
+  
+  // Checks if the form was submitted with invalid inputs and stops the submission
+  if ($('.is-invalid').length > 0) {
+    event.preventDefault();
+    event.stopPropagation();
+    return false;
+  }
+
   if($("#erreurCalcul").val()=="true"){
     information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
     return false;
@@ -667,15 +672,15 @@ function verifConges(){
   }
 
   // Vérifions si un autre congé a été demandé ou validé
+  var valid = true;
 
-  var result=$.ajax({
+  $.ajax({
     url: url('ajax/holiday-absence-control'),
     type: "get",
     dataType: "json",
     data: {perso_ids: JSON.stringify(perso_ids), debut: debut, fin: fin, id: id, type:'holiday'},
     async: false,
     success: function(result){
-      var valid = true;
       var admin = result['admin'];
 
       for (i in result['users']) {
@@ -749,8 +754,9 @@ function verifConges(){
                 success: function(data){
                   if(data){
                     CJInfo(data, "error");
-                  }else{
-                    $("#form").submit();
+                  }
+                  else {
+                     return true;
                   }
                 },
                 error: function(){
@@ -758,7 +764,7 @@ function verifConges(){
                 },
             });
           } else {
-            $("#form").submit(); 
+            return true;
           }
       }
     },
@@ -766,6 +772,7 @@ function verifConges(){
       information("Une erreur est survenue lors de l'enregistrement du congé","error");
     },
   });
+  return valid;
 }
 
 function verifRecup(o){
