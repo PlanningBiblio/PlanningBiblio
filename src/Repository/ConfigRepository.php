@@ -33,9 +33,13 @@ class ConfigRepository extends ServiceEntityRepository
     }
 
     public function getParam($name) {
-        $configOption = $this->findOneBy(['nom' => $name]);
-        return $configOption->getValue();
+        return $this->findOneBy(['nom' => $name]);
     }
+
+    public function getParamValue($name) {
+        return $this->getParam($name)->getValue();
+    }
+
 
     public function setParam($name, $value, $technical = 0)
     {

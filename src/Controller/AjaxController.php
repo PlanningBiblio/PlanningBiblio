@@ -76,6 +76,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/mail-test', name: 'ajax.mailtest', methods: ['POST'])]
+    # TODO: MT51958
     public function mailTest(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
 

@@ -3,6 +3,8 @@
 namespace Tests;
 
 use App\Entity\Config;
+use App\Service\ConfigManager;
+use App\Repository\ConfigRepository;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -16,6 +18,7 @@ class PLBWebTestCase extends PantherTestCase
     protected $client;
     protected $CSRFToken;
     protected $entityManager;
+    protected $configRepository;
 
     /**
      * The addConfig function allows you to test additional parameters that are usually found in the custom_options.php file
@@ -61,21 +64,8 @@ class PLBWebTestCase extends PantherTestCase
         }
     }
 
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(Config::class)
-            ->findOneBy(['nom' => $name]);
-
-        if (!$param) {
-            $this->addConfig($name, $value);
-        } else {
-            $param->setValue($value);
-            $this->entityManager->persist($param);
-        }
-
-        $this->entityManager->flush();
+    protected function setParam($name, $value) {
+        $this->configRepository->setParam($name, $value);
     }
 
     protected function setUp(): void
@@ -88,6 +78,7 @@ class PLBWebTestCase extends PantherTestCase
         $this->CSRFToken = $CSRFToken;
         $this->builder = new FixtureBuilder();
         $this->entityManager = $entityManager;
+        $this->configRepository = static::getContainer()->get(ConfigRepository::class);
 
         $_SESSION['oups']['Auth-Mode'] = 'SQL';
         $_SESSION['login_id'] = 1;
