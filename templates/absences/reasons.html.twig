@@ -1,11 +1,11 @@
 {# absences/reasons.html.twig #}
 
-<div class="modal modal-lg" id="add-motif-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-motif-modal-title" aria-hidden="true">
+<div class="modal modal-lg" id="add-reason-modal" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="add-reason-modal-title" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title" id="add-motif-modal-title">Liste des motifs d'absences</h5>
+        <h5 class="modal-title" id="add-reason-modal-title">Liste des motifs d'absences</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -13,12 +13,12 @@
         <p class="validateTips mb-1">Ajoutez, supprimez et modifiez l'ordre des motifs dans le menu déroulant.</p>
         <form id="add-reason">
           <div class="row">
-            <div class="col-5 ps-0">
-              <input type="text" id="add-motif-text" class="form-control form-control-sm mb-0" style="width:100%;" required>
+            <div class="col-5">
+              <input type="text" id="add-reason-text" class="form-control form-control-sm ms-0 mb-0" style="width:100%;" required>
             </div>
-            <button type="submit" id="add-motif-button" class="col-1 btn btn-primary m-2 mb-0">Ajouter</button>
-            <div class="invalid-feedback m-0" style="display: none;">Motif invalide</div>
+            <button type="submit" id="add-reason-button" class="col-1 btn btn-primary m-2 mb-0">Ajouter</button>
           </div>
+          <div class="invalid-feedback ms-1" style="display: none;">Motif invalide</div>
         </form>
 
         <div class="row row-header m-0 mt-2">
@@ -31,13 +31,13 @@
 
         <form id="arrange-reasons">
           <fieldset class="container-fluid">
-            <ul id="motifs_sortable">
+            <ul id="reasons_sortable">
               {% if reasons is iterable %}
                 {% for r in reasons %}
 
-                  <li class="row row-motifs" id="li_{{ r.id }}">
+                  <li class="row row-sortable" id="li_{{ r.id }}">
                     <i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>
-                    <span class="col-3 p-2 {% if r.type == 2 %} ps-4 {% else %} bold {% endif %}" id="valeur_{{ r.id}}">{{ r.valeur }}</span>
+                    <span class="col-3 p-2 {% if r.type == 2 %} ps-4 {% endif %}" id="valeur_{{ r.id}}">{{ r.valeur }}</span>
                     <div class="col-3">
                       <select id="type_{{ r.id }}" class="form-control form-select form-select-sm" aria-label="Séléction du Niveau"  onchange='padding20($(this));'>
                         {% for t in reason_types %}
@@ -79,6 +79,3 @@
   </div>
 </div>
 
-<script>
-  Sortable.create(motifs_sortable, {ghostClass: 'bg-blue', animation: 150}); 
-</script>

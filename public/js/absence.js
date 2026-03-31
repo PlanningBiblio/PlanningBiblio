@@ -7,6 +7,10 @@ $(function() {
 
   $(document).ready(function(){
 
+    if($('#reasons_sortable').length) {
+      Sortable.create(reasons_sortable, {ghostClass: 'bg-blue', animation: 150}); 
+    }
+
     // Affichage de la liste des agents sélectionnés lors du chargement de la page modif.php
     if($('.perso_ul').length){
       affiche_perso_ul();
@@ -45,8 +49,8 @@ $(function() {
 
   });
 
-  $('#add-motif-modal').on('hidden.bs.modal', function() {
-    $('#motifs_sortable li:hidden').each(function() {
+  $('#add-reason-modal').on('hidden.bs.modal', function() {
+    $('#reasons_sortable li:hidden').each(function() {
       $(this).show();
     });
   });
@@ -54,13 +58,13 @@ $(function() {
   $('#arrange-reasons').on('submit', function(e) {
     e.preventDefault();
     // Supprime les lignes cachées lors du clic sur la corbeille
-    $('#motifs_sortable li:hidden').each(function() {
+    $('#reasons_sortable li:hidden').each(function() {
      $(this).remove();
    });
 
     // Enregistre les éléments du formulaire dans un tableau
     tab = new Array();
-    $('#motifs_sortable li').each(function() {
+    $('#reasons_sortable li').each(function() {
       var id = $(this).attr('id').replace('li_', '');
       var teleworking = $('#teleworking_' + id).prop('checked') ? 1 : 0;
       tab.push(new Array(
@@ -90,7 +94,7 @@ $(function() {
         $('#motif').empty();
         $('#motif').append('<option value="">&nbsp;</option>');
 
-        $('#motifs_sortable li').each(function() {
+        $('#reasons_sortable li').each(function() {
           var id = $(this).attr('id').replace('li_', '');
           var val = $('#valeur_'+id).text();
           var type = $('#type_'+id+' option:selected').val();
@@ -106,7 +110,7 @@ $(function() {
           $('#motif').append(option);
         });
 
-        $('#add-motif-modal').modal('hide');
+        $('#add-reason-modal').modal('hide');
         $('#motif').effect('highlight', null, 2000);
       },
       error: function() {
@@ -116,16 +120,18 @@ $(function() {
   });
 
   // Suppression message invalidité lors du changement d'input
-  $('#add-motif-text').on('input', function(e) {
-    if($('.invalid-feedback').css('display') === 'block'){
-      $('.invalid-feedback').css({'display': 'none'})
-      $('#add-motif-text').css({'color': '#29495C'});
+  $('#add-reason-text').on('input', function(e) {
+    if($('.invalid-feedback').is(':visible')) {
+      $('.invalid-feedback').hide();
+      $('#add-reason-text').removeClass('important');
     }
   })
 
   // Permet d'ajouter de nouveaux motifs (clic sur le bouton ajouter)
-   $('#add-reason').on('submit', function(e) {
+  $('#add-reason').on('submit', function(e) {
     e.preventDefault();
+    $('.invalid-feedback').text('Motif invalide')
+
     // Récupère les options du premier select "type" pour les réutiliser lors d'un ajout
     var select=$("select[id^=type_]");
     var select_id=select.attr("id");
@@ -145,20 +151,20 @@ $(function() {
       options_wf+="<option value='"+val+"'>"+text+"</option>";
     });
 
-    var text = sanitize_string($('#add-motif-text').val());
+    var text = sanitize_string($('#add-reason-text').val());
     if(!text){
       $('.invalid-feedback').show();
-      $('#add-motif-text').css({'color': '#DD404F'});
+      $('#add-reason-text').addClass('important');
       return;
     }
 
     // Vérifie si le motif existe déjà
     var exist = false;
-    $('#motifs_sortable > li > span').each(function() {
+    $('#reasons_sortable > li > span').each(function() {
       if($(this).text().toLowerCase() == text.toLowerCase()) {
-        $('.invalid-feedback').text('Un motif avec ce nom existe déjà.')
+        $('.invalid-feedback').text('Motif invalide. Un motif avec ce nom existe déjà.')
         $('.invalid-feedback').show();
-        $('#add-motif-text').css({'color': '#DD404F'});
+        $('#add-reason-text').addClass('important');
         exist = true;
         return;
       }
@@ -173,8 +179,8 @@ $(function() {
       number++;
     }
 
-    $('#motifs_sortable').append(
-      '<li class="row row-motifs" id="li_' + number + '"><i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>'
+    $('#reasons_sortable').append(
+      '<li class="row row-sortable" id="li_' + number + '"><i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>'
       + '<span class="col-3 p-2" id="valeur_' + number + '">' + text + '</span>'
       + '<div class="col-3">'
       + '<select id="type_' + number + '" class="form-control form-select form-select-sm" aria-label="Séléction du Niveau" onchange="padding20($(this));">'
@@ -195,7 +201,7 @@ $(function() {
       + '</li>');
 
     // Reset du champ texte une fois l'ajout effectué
-    $('#add-motif-text').val(null);
+    $('#add-reason-text').val(null);
   });
 
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif

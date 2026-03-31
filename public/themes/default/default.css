@@ -189,12 +189,12 @@ h4{
 }
 
 #ferie,.ferie{
-  color: #BA1800;
+  color: #dc3545;
   margin: 15px 0 5px 0;
 }
 
 .important{
-  color: #BA1800;
+  color: #dc3545 !important;
 }
 
 
@@ -1848,7 +1848,7 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 .btn {
   min-width: 105px;
   font-family: Poppins;
-  font-size: 13px;
+  font-size: 1em;
   font-weight: bold;
 }
 
@@ -1891,7 +1891,10 @@ display: contents;
 
 .modal-body {
   color: #29495C;
-  font-size: 15px;
+}
+
+.modal-body p{
+  font-size: 1.15em;
 }
 
 hr {
@@ -1943,13 +1946,17 @@ select.form-select, select.form-select:focus {
   min-height: 45px;
 }
 
-.row.row-motifs {
+.row.row-sortable {
   border: 1px solid;
   margin-bottom: -1px;
   align-items: center;
 }
 
-.row.row-motifs select {
+.row.row-sortable span {
+  font-size: 1.08em;
+}
+
+.row.row-sortable select {
   width: 100%;
   background-color: aliceblue;
 }
