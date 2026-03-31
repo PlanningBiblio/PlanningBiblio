@@ -6,15 +6,34 @@
 
   <h3>Heures de présence</h3>
   <div id="buttons">
-    <form name="form" method="get" action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm();">
-      Début : <input type="text" name="debut" class="datepicker start-search" value="{{ debut }}" style="margin-right:20px;" />
-      Fin : <input type="text" name="fin" class="datepicker end-search" value="{{ fin }}" style="margin-right:20px;" />
-      <input type="submit" role="button" value="Rechercher" class="btn btn-secondary" style="margin-right:20px;" />
-      <input type="button" value="Réinitialiser" onclick="location.href='{{ asset('workinghour') }}?reset=on'" class="btn btn-secondary" style="margin-right:20px;" />
-      {%if admin and config('PlanningHebdo-resetCycles') and config('nb_semaine') > 2 %}
-        <a role="button" class="btn btn-secondary" href="{{ path('workinghour.cycle') }}" >Gestion des cylces</a>
-      {% endif %}
-      <a class="btn btn-primary" role="button" href="{{ asset('workinghour') }}/add?retour={{ asset('workinghour') }}" style="position:absolute; right:95px;">Entrer de nouveaux horaires</a>
+    <form name="form" method="get" action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm();" id="search-presence-form">
+      <div class="row">
+
+        <label class="col-xl-auto col-form-label mt-2 pb-0" for=".datepicker.d">Début :</label>
+        <div class="col-xl-auto ps-0">
+          <input type="text" name="debut" class="datepicker form-control d" value="{{ debut }}" placeholder="jj/mm/aaaa"/>
+          <div class="invalid-feedback ps-2">La date de début doit être inférieure à la date de fin.</div>
+        </div>
+
+        <label class="col-xl-auto col-form-label mt-2 pb-0" for=".datepicker.f">Fin :</label>
+        <div class="col-xl-auto ps-0">
+          <input type="text" name="fin" class="datepicker form-control f" value="{{ fin }}" placeholder="jj/mm/aaaa"/>
+          <div class="invalid-feedback ps-2">La date de fin doit être supérieure à la date de début.</div>
+        </div>
+
+        <div class="col-xl-3 ps-0">
+          <input id="submit-search" type="submit" role="button" value="Rechercher" class="btn btn-primary m-2"/>
+          <input type="button" value="Réinitialiser" onclick="location.href='{{ asset('workinghour') }}?reset=on'" class="btn btn-secondary m-2" />        
+          {%if admin and config('PlanningHebdo-resetCycles') and config('nb_semaine') > 2 %}
+            <a role="button" class="btn btn-secondary m-2" href="{{ path('workinghour.cycle') }}" >Gestion des cylces</a>
+          {% endif %}
+        </div>
+
+        <div class="col-xl text-end">
+          <a class="btn btn-primary m-2 me-0" role="button" href="{{ asset('workinghour') }}/add?retour={{ asset('workinghour') }}">Entrer de nouveaux horaires</a>
+        </div>
+
+      </div>
     </form>
   </div>
   <br/>
@@ -73,3 +92,4 @@
 {% block specificjs %}
   <script type="text/javascript" src="{{ asset('js/workingHour.js') }}"></script>
 {% endblock %}
+

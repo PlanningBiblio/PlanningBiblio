@@ -51,14 +51,20 @@
               </div>
             {% endif %}
             <div id='periode'>
-              <p>
-                <label  for='debut'>Début d'utilisation</label>
-                <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker start-date" style="position:absolute; left:400px; width:200px;" />
-              </p>
-              <p>
-                <label for='fin'>Fin d'utilisation</label>
-                <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker end-date" style="position:absolute; left:400px; width:200px;" />
-              </p>
+              <div class="row" style="height: 60px;">
+                <label class="col-auto col-form-label" for="debut">Début d'utilisation</label>
+                <div class="col-4">
+                  <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker form-control d m-0" style="position:sticky; left:400px; width:200px;" placeholder="jj/mm/aaaa" />
+                  <div class="invalid-feedback" style="position:absolute; left:400px;">La date de début doit être inférieure à la date de fin.</div>
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-auto col-form-label" for="fin">Fin d'utilisation</label>
+                <div class="col-4">
+                  <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker form-control f m-0" style="position:sticky; left:400px; width:200px;" placeholder="jj/mm/aaaa" />
+                  <div class="invalid-feedback" style="position:absolute; left:400px;">La date de fin doit être supérieure à la date de début.</div>
+                </div>
+              </div>
             </div> <!-- id=periode -->
             {% if thisNbSemaine is defined and copy is defined and copy != '' and nbSemaine is defined and thisNbSemaine != nbSemaine %}
             <div id='cycle'>
