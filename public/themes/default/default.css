@@ -1940,6 +1940,14 @@ select.form-select {
   color: #29495C;
 }
 
+.form-control {
+  display: inline;
+}
+
+.form-control.is-invalid {
+  padding-right: 0px;
+}
+
 /* Modals END */
 
 /*ui-dialog START*/

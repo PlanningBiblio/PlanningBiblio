@@ -800,6 +800,33 @@ $(function(){
     * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début et inversement
     * La date du calendrier de début devient la date minimal disponible pour le calendrier de fin et inversement
     */
+
+    $(".datepicker.f").on('changeDate',function() {
+        var debut = $(".datepicker.d").bootstrapDP("getDate");
+        var fin = $(this).bootstrapDP("getDate");
+
+        if ($(".datepicker.d").hasClass('is-invalid')){
+          $(".datepicker.d").removeClass('is-invalid')
+        }
+
+        if(fin < debut) {
+          $(this).addClass('is-invalid');
+        }
+    });
+
+    $(".datepicker.d").on('changeDate',function() {
+        var debut = $(this).bootstrapDP("getDate");
+        var fin = $(".datepicker.f").bootstrapDP("getDate");
+
+        if ($(".datepicker.f").hasClass('is-invalid')){
+          $(".datepicker.f").removeClass('is-invalid')
+        }
+
+        if(debut > fin) {
+          $(this).addClass('is-invalid');
+        }
+    });
+
     $(".datepicker.end-date").on('click', function(){
       var debut = $(".datepicker.start-date").bootstrapDP("getDate");
       var fin = $(this).bootstrapDP("getDate");
