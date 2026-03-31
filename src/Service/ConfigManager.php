@@ -18,6 +18,12 @@ class ConfigManager
         return $this->configRepository->findOneBy(['nom' => $name])->getValue();
     }
 
+    public function getParam($name)
+    {
+        return $this->configRepository->findOneBy(['nom' => $name]);
+    }
+
+
     public function getParams($technical): array
     {
         return $this->configRepository->findBy(

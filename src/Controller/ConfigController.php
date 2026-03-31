@@ -42,7 +42,6 @@ class ConfigController extends BaseController
             );
 
             if ($cp->getType() == 'password') {
-                #$elem['valeur']=decrypt($elem['valeur']);
                 $elem['valeur'] = '';
             }
             switch ($elem['type']) {

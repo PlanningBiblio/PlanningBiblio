@@ -28,7 +28,6 @@ services:
         autowire: true
         autoconfigure: true
 
-    # TODO: Remove me?
     App\Repository\ConfigRepository:
         public: true
         tags: ['doctrine.repository_service']
