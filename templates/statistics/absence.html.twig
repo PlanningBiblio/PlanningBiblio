@@ -6,32 +6,46 @@
   <div id="content-form">
     <h3>Statistiques sur les absences</h3>
     <div class="statistics-div">
-      <table>
-        <tr>
-          <td style="width:350px;"><b>Du {{ debut }} au {{ fin }}</b></td>
-          <td>
-            <form name="form" method="get" action="{{ asset('statistics/absence') }}" onsubmit="return verif_form('debut=date1;fin=date2');">
-              <input type="hidden" id="afficheHeures" value="{{ afficheHeures }}" />
-              Début <input type="text" name="debut" class="datepicker start-date" value="{{ debut }}" />&nbsp;
-              Fin <input type="text" name="fin" class="datepicker end-date" value="{{ fin }}" />&nbsp;
-              {% if nbSites >1 %}
-                Sites : 
-                <select name="site">
-                  <option value="0">Tous</option>
-                  {% for i in 1..nbSites %}
-                    {% if i == site %}
-                      <option value="{{ i }}" selected = "selected"> {{ multisites[i-1] }}</option>
-                    {% else %}
-                      <option value="{{ i }}"> {{ multisites[i-1] }}</option>
-                    {% endif %}
-                  {% endfor %}
-                </select>&nbsp;
-              {% endif %}
-              <input type="submit" role="button" value="Rechercher" id="submit" class="btn btn-secondary"/>
-            </form>
-          </td>
-        </tr>
-      </table>
+      <form name="form" method="get" action="{{ asset('statistics/absence') }}" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
+        <input type="hidden" id="afficheHeures" value="{{ afficheHeures }}" />
+
+        <div class="row row-search">
+
+          <div class="col-xl-auto">
+            <input type="text" readonly class="form-control-plaintext mt-2" id="time-period" value="{% trans with {'%start%': debut, '%end%' : fin} %}From %start% to %end%{% endtrans %}">
+          </div>
+
+          <label class="col-xl-auto col-form-label mt-2" for="stat-absences-search-start">{% trans %}Start{% endtrans %} :</label>
+          <div class="col-xl-auto ps-0">
+            <input id="stat-absences-search-start" type="text" name="debut" class="datepicker form-control start-date" value="{{ debut }}"/>
+          </div>
+
+          <label class="col-xl-auto col-form-label mt-2" for="stat-absences-search-end">{% trans %}End{% endtrans %} :</label>
+          <div class="col-xl-auto ps-0">
+            <input id="stat-absences-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{ fin }}" required/>
+          </div>
+
+          {% if nbSites >1 %}
+            <label class="col-xl-auto col-form-label mt-2" for="site-search">{% trans %}Sites{% endtrans %} :</label>
+            <div class="col-xl-auto ps-0">
+              <select name="perso_id" class="form-select form-select-sm" id="site-search">
+                <option value="0" selected>Tous</option>
+                {% for i in 1..nbSites %}
+                  <option value="{{ i }}"  {% if i == site %} selected {% endif %}> {{ multisites[i-1] }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endif %}
+
+          <div class="col-xl-2 ps-0">
+            <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+        </div>
+      </form>
       <br/>
       <table id="tableStatAbsences" class="CJDataTable" data-fixedColumns="3" data-responsive="false">
         <thead>

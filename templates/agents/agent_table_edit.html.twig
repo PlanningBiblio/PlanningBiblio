@@ -164,15 +164,19 @@
   <tr>
     <td>Date d'arrivée</td>
     <td>
-      <input type="text" value="{{ agent.arrival | dateOrNull('d/m/Y') }}" name="arrivee" style="width:400px" class="datepicker start-date"/>
+      <input type="text" value="{{ agent.arrival | dateOrNull('d/m/Y') }}" name="arrivee" style="width:400px" class="datepicker start-date form-control"/>
     </td>
   </tr>
 
   <tr>
     <td>Date de départ</td>
     <td>
-      <input type="text" value="{{ agent.departure | dateOrNull('d/m/Y') }}" name="depart" style="width:400px" class="datepicker end-date"/>
+      <input type="text" value="{{ agent.departure | dateOrNull('d/m/Y') }}" name="depart" style="width:400px" class="datepicker end-date form-control"/>
     </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td class="invalid-feedback" style="width:auto;">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</td>
   </tr>
 
   {% if not config('Planook') %}

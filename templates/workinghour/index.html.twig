@@ -6,15 +6,36 @@
 
   <h3>Heures de présence</h3>
   <div id="buttons">
-    <form name="form" method="get" action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm();">
-      Début : <input type="text" name="debut" class="datepicker start-search" value="{{ debut }}" style="margin-right:20px;" />
-      Fin : <input type="text" name="fin" class="datepicker end-search" value="{{ fin }}" style="margin-right:20px;" />
-      <input type="submit" role="button" value="Rechercher" class="btn btn-secondary" style="margin-right:20px;" />
-      <input type="button" value="Réinitialiser" onclick="location.href='{{ asset('workinghour') }}?reset=on'" class="btn btn-secondary" style="margin-right:20px;" />
-      {%if admin and config('PlanningHebdo-resetCycles') and config('nb_semaine') > 2 %}
-        <a role="button" class="btn btn-secondary" href="{{ path('workinghour.cycle') }}" >Gestion des cylces</a>
-      {% endif %}
-      <a class="btn btn-primary" role="button" href="{{ asset('workinghour') }}/add?retour={{ asset('workinghour') }}" style="position:absolute; right:95px;">Entrer de nouveaux horaires</a>
+    <form name="form" method="get" action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm($(this));" novalidate>
+      <div class="row row-search">
+
+        <label class="col-xl-auto col-form-label mt-2" for="workinghour-search-start">{% trans %}Start{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0">
+          <input id="workinghour-search-start" type="text" name="debut" class="datepicker form-control start-date" value="{{ debut }}"/>
+        </div>
+
+        <label class="col-xl-auto col-form-label mt-2" for="workinghour-search-end">{% trans %}End{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0">
+          <input id="workinghour-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{ fin }}" required/>
+        </div>
+
+        <div class="col-xl-4 ps-0">
+          <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
+          <input type="button" value="{% trans %}Clear{% endtrans %}" onclick="location.href='{{ asset('workinghour') }}?reset=on'" class="btn btn-secondary m-2" />        
+          {% if admin and config('PlanningHebdo-resetCycles') and config('nb_semaine') > 2 %}
+            <a role="button" class="btn btn-primary m-2" href="{{ path('workinghour.cycle') }}">{% trans %}Cycle management{% endtrans %}</a>
+          {% endif %}
+        </div>
+
+        <div class="col-xl text-end">
+          <a class="btn btn-primary m-2 me-0" role="button" href="{{ asset('workinghour') }}/add?retour={{ asset('workinghour') }}">{% trans %}Enter new schedules{% endtrans %}</a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+      </div>
+
     </form>
   </div>
   <br/>
@@ -73,3 +94,4 @@
 {% block specificjs %}
   <script type="text/javascript" src="{{ asset('js/workingHour.js') }}"></script>
 {% endblock %}
+

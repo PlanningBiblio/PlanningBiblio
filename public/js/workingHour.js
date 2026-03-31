@@ -232,7 +232,25 @@ function plHebdoSupprime(id){
   }
 }
 
-function plHebdoVerifForm(){
+function plHebdoVerifForm(form) {
+
+  // Checks if the form was submitted with invalid inputs and stops the submission
+  if ($('.is-invalid').length > 0) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+
+  // Checks that the form wasn't submitted with empty date interval when there is no initialization
+  if (!date_validation($('.datepicker.end-date').val()) || !date_validation($('.datepicker.start-date').val())){
+    var submit = form.find(':submit');
+    var date_feedback = form.find('.invalid-feedback')
+    $('.datepicker.end-date').addClass('is-invalid');
+    $('.datepicker.start-date').addClass('is-invalid');
+    submit.addClass('disabled');
+    date_feedback.show();
+  }
+
   debut=$("input[name=debut]").val().replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
   fin=$("input[name=fin]").val().replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
   id=$("input[name=id]").val();
@@ -240,13 +258,11 @@ function plHebdoVerifForm(){
   is_exception = $('input[name="exception"]').val();
   is_copy = $('input[name="copy"]').val();
 
-  if(!debut || !fin){
-    alert("Les dates de début et de fin sont obligatoires");
+  if(!debut || !fin) {
     return false;
   }
   
-  if(fin<debut){
-    alert("La date de fin doit être supérieure à la date de début");
+  if(fin < debut) {
     return false;
   }
 
