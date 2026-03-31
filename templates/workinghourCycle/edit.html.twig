@@ -1,4 +1,4 @@
-{# workinghour/settings/edit.html.twig #}
+{# workinghour/cycle/edit.html.twig #}
 
 {% extends 'base.html.twig' %}
 
@@ -17,7 +17,7 @@
         <h4>Ajout d'un cycle</h4>
       {% endif %}
 
-      <form id="form" name="form" method="post" action="{{ path('workinghour.settings.save') }}" >
+      <form id="form" name="form" method="post" action="{{ path('workinghour.cycle.save') }}" >
         <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
         <input type="hidden" name="id" value="{{ cycle.id }}" />
 
@@ -42,9 +42,9 @@
 
           <tr>
             <td colspan="2" style="text-align:center;">
-              <a href="{{ path('workinghour.settings') }}" class="btn btn-secondary" style="margin-left:30px;">Annuler</a>
+              <a href="{{ path('workinghour.cycle') }}" class="btn btn-secondary" style="margin-left:30px;">Annuler</a>
               {% if cycle.id %}
-                <a href="javascript:workingHourSettingDelete({{ cycle.id }});" class="btn btn-danger" style="margin-left:30px;">Supprimer</a>
+                <a href="javascript:workingHourCycleDelete({{ cycle.id }});" class="btn btn-danger" style="margin-left:30px;">Supprimer</a>
               {% endif %}
               <input type="submit" value="Valider" class="btn btn-primary" style="margin-left:30px;" />
             </td>
@@ -53,7 +53,7 @@
       </form>
 
       {% if cycle.id %}
-        <form id="delete-form" name="delete-form" method="post" action="{{ path('workinghour.settings.delete') }}" >
+        <form id="delete-form" name="delete-form" method="post" action="{{ path('workinghour.cycle.delete') }}" >
           <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
           <input type="hidden" id="delete-id" name="id" value="{{ cycle.id }}" />
         </form>

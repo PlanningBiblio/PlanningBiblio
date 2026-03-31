@@ -142,7 +142,7 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
         $entityManager->flush();
     }
 
-    private function testWeekDisplay($tests)
+    private function testWeekDisplay($tests): void
     {
         global $entityManager;
         $agent = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'agent1']);

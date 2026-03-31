@@ -4,14 +4,15 @@ namespace App\Controller;
 
 use App\Entity\WorkingHourCycle;
 use App\PlanningBiblio\Helper\HourHelper;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-class WorkingHourSettingController extends BaseController
+class WorkingHourCycleController extends BaseController
 {
-    #[Route(path: '/workinghour/settings', name: 'workinghour.settings', methods: ['GET'])]
+    #[Route(path: '/workinghour/cycle', name: 'workinghour.cycle', methods: ['GET'])]
     public function index(Request $request, Session $session) {
 
         if (!$this->checkACL()) {
@@ -29,10 +30,10 @@ class WorkingHourSettingController extends BaseController
             'start' => $start,
         ]);
 
-        return $this->output('/workinghourSettings/index.html.twig');
+        return $this->output('/workinghourCycle/index.html.twig');
     }
 
-    #[Route(path: '/workinghour/settings/{id<\d+>}', name: 'workinghour.settings.edit', methods: ['GET'])]
+    #[Route(path: '/workinghour/cycle/{id<\d+>}', name: 'workinghour.cycle.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session) {
 
         if (!$this->checkACL()) {
@@ -49,11 +50,11 @@ class WorkingHourSettingController extends BaseController
             'cycle' => $cycle,
         ]);
 
-        return $this->output('/workinghourSettings/edit.html.twig');
+        return $this->output('/workinghourCycle/edit.html.twig');
     }
 
-    #[Route(path: '/workinghour/settings', name: 'workinghour.settings.save', methods: ['POST'])]
-    public function save(Request $request, Session $session) {
+    #[Route(path: '/workinghour/cycle', name: 'workinghour.cycle.save', methods: ['POST'])]
+    public function save(Request $request, Session $session): RedirectResponse {
 
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -87,11 +88,11 @@ class WorkingHourSettingController extends BaseController
         $notice = 'Les paramètres ont été enregistrés avec succés';
         $session->getFlashBag()->add('notice', $notice);
 
-        return $this->redirectToRoute('workinghour.settings');
+        return $this->redirectToRoute('workinghour.cycle');
     }
 
-    #[Route(path: '/workinghour/settings/delete', name: 'workinghour.settings.delete', methods: ['POST'])]
-    public function delete(Request $request, Session $session) {
+    #[Route(path: '/workinghour/cycle/delete', name: 'workinghour.cycle.delete', methods: ['POST'])]
+    public function delete(Request $request, Session $session): RedirectResponse {
 
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -112,17 +113,12 @@ class WorkingHourSettingController extends BaseController
         $notice = 'Les paramètres ont été supprimés avec succés';
         $session->getFlashBag()->add('notice', $notice);
 
-        return $this->redirectToRoute('workinghour.settings');
+        return $this->redirectToRoute('workinghour.cycle');
     }
 
-    private function checkACL() {
+    private function checkACL(): bool {
 
         $admin = (in_array(1101, $_SESSION['droits']) or in_array(1201, $_SESSION['droits']));
-
-        if (!$this->config['PlanningHebdo-resetCycles'] or !$admin) {
-            return false;
-        }
-
-        return true;
+        return !(!$this->config['PlanningHebdo-resetCycles'] or !$admin);
     }
 }

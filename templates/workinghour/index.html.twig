@@ -12,7 +12,7 @@
       <input type="submit" role="button" value="Rechercher" class="btn btn-secondary" style="margin-right:20px;" />
       <input type="button" value="Réinitialiser" onclick="location.href='{{ asset('workinghour') }}?reset=on'" class="btn btn-secondary" style="margin-right:20px;" />
       {%if admin and config('PlanningHebdo-resetCycles') and config('nb_semaine') > 2 %}
-        <a role="button" class="btn btn-secondary" href="{{ path('workinghour.settings') }}" >Paramètres</a>
+        <a role="button" class="btn btn-secondary" href="{{ path('workinghour.cycle') }}" >Gestion des cylces</a>
       {% endif %}
       <a class="btn btn-primary" role="button" href="{{ asset('workinghour') }}/add?retour={{ asset('workinghour') }}" style="position:absolute; right:95px;">Entrer de nouveaux horaires</a>
     </form>

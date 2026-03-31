@@ -348,7 +348,7 @@ function updateTables(selected_weeks) {
   plHebdoMemePlanning();
 }
 
-function workingHourSettingDelete(id) {
+function workingHourCycleDelete(id) {
   var message = 'Êtes vous sûr de vouloir supprimer ce cycle ?\n\n';
   message += 'Attention !\n\n';
   message += 'La suppression des cycles peut avoir des conséquences grâves sur la rotation des heures de présence, ';

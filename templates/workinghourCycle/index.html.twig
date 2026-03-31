@@ -1,4 +1,4 @@
-{# workinghour/settings/index.html.twig #}
+{# workinghour/cycle/index.html.twig #}
 
 {% extends 'base.html.twig' %}
 
@@ -8,14 +8,14 @@
 
 {% block page %}
   <div id="content-form">
-    <h3>Heures de présence - Paramètres</h3>
+    <h3>Heures de présence - Gestion des cycles</h3>
     <div id="buttons">
-      <form name="form" method="get" action="{{ path('workinghour.settings') }}">
+      <form name="form" method="get" action="{{ path('workinghour.cycle') }}">
         Début : <input type="text" name="start" class="datepicker" value="{{ start }}" style="margin-right:20px;" />
         Fin : <input type="text" name="end" class="datepicker" value="{{ end }}" style="margin-right:20px;" />
         <input type="submit" value="Rechercher" class="btn btn-secondary" style="margin-right:20px;" />
-        <input type="button" value="Réinitialiser" onclick="location.href='{{ path('workinghour.settings') }}'" class="btn btn-secondary" style="margin-right:20px;" />
-        <input type="button" value="Ajouter" onclick="location.href='{{ path('workinghour.settings.edit', {id: 0}) }}'" class="btn btn-primary" />
+        <input type="button" value="Réinitialiser" onclick="location.href='{{ path('workinghour.cycle') }}'" class="btn btn-secondary" style="margin-right:20px;" />
+        <input type="button" value="Ajouter" onclick="location.href='{{ path('workinghour.cycle.edit', {id: 0}) }}'" class="btn btn-primary" />
       </form>
     </div>
 
@@ -31,10 +31,10 @@
         {% for cycle in cycles %}
           <tr>
             <td>
-              <a href="{{ path('workinghour.settings.edit', {id: cycle.id}) }}">
+              <a href="{{ path('workinghour.cycle.edit', {id: cycle.id}) }}">
                 <span class='pl-icon pl-icon-edit' title='Edit'></span>
               </a>
-              <a href="javascript:workingHourSettingDelete({{ cycle.id }})">
+              <a href="javascript:workingHourCycleDelete({{ cycle.id }})">
                 <span class='pl-icon pl-icon-dropblack' title='Edit'></span>
               </a>
             <td>{{ cycle.date | date('d/m/Y') }}</td>
@@ -44,7 +44,7 @@
       </tbody>
     </table>
 
-    <form id="delete-form" name="delete-form" method="post" action="{{ path('workinghour.settings.delete') }}" >
+    <form id="delete-form" name="delete-form" method="post" action="{{ path('workinghour.cycle.delete') }}" >
       <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
       <input type="hidden" id="delete-id" name="id" />
     </form>

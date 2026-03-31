@@ -338,15 +338,15 @@
     - 100
 "workinghour.save":
     - 100
-"workinghour.settings":
+"workinghour.cycle":
     - 1101
     - 1201
-"workinghour.settings.delete":
+"workinghour.cycle.delete":
     - 1101
     - 1201
-"workinghour.settings.edit":
+"workinghour.cycle.edit":
     - 1101
     - 1201
-"workinghour.settings.save":
+"workinghour.cycle.save":
     - 1101
     - 1201
