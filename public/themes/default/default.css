@@ -1497,6 +1497,10 @@ form[id^="arrange-"] {
   align-items: center;
 }
 
+.row.row-sortable span {
+  font-size: 1.08em;
+}
+
 .row.row-sortable select {
   width: 100%;
   background-color: aliceblue;
@@ -1938,7 +1942,10 @@ display: contents;
 
 .modal-body {
   color: #29495C;
-  font-size: 15px;
+}
+
+.modal-body p{
+  font-size: 1.15em;
 }
 
 hr {

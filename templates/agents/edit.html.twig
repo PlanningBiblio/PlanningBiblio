@@ -268,23 +268,25 @@
     </form>
   </div>
 
-  <div class="modal modal-lg noprint" id="add-statut-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-statut-title" aria-hidden="true">
+  <div class="modal modal-lg noprint" id="add-status-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="add-status-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="add-statut-title">Liste des statuts</h5>
+          <h5 class="modal-title" id="add-status-title">Liste des statuts</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           
           <p class="validateTips">Ajoutez, supprimez des statuts et modifiez l'ordre générale dans le menu déroulant.</p>
-          <form id="add-statut">
+          <form id="add-status">
             <div class="row">
               <div class="col-5 ps-0">
-                <input type="text" id="add-statut-text" class="form-control form-control-sm mb-0" style="width:100%;" required>
+                <input type="text" id="add-status-text" class="form-control form-control-sm mb-0" style="width:100%;" required>
+                <div class="invalid-feedback ms-3" id="invalid-status">Statut invalide</div>
               </div>
-              <button type="submit" id="add-statut-button" class="col-1 btn btn-primary m-2 mb-0">Ajouter</button>
-              <div class="invalid-feedback m-0" id="invalid-statut" style="display: none;">Statut invalide</div>
+              <div class="col-1">
+                <button type="submit" id="add-status-button" class="btn btn-primary m-2 mb-0">Ajouter</button>
+              </div>
             </div>
           </form>
 
@@ -294,10 +296,10 @@
             <span class="col-4" >Catégorie</span>
           </div>
 
-          <form id="arrange-statuts">
+          <form id="arrange-statuses">
             <fieldset class="container-fluid">
 
-              <ul id="statuts_sortable">
+              <ul id="statuses_sortable">
                 {% if statuts is iterable %}
                   {% for s in statuts %}
 
@@ -327,7 +329,7 @@
         </div>
 
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" form="arrange-statuts">Enregister</button>
+          <button type="submit" class="btn btn-primary" form="arrange-statuses">Enregister</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
         </div>
 
@@ -335,11 +337,7 @@
     </div>
   </div>
 
-  <script>
-    Sortable.create(statuts_sortable, {ghostClass: 'bg-blue', animation: 150}); 
-  </script>
-
-  <div class="modal modal-lg noprint" id="add-service-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="add-service-title" aria-hidden="true">
+  <div class="modal modal-lg noprint" id="add-service-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="add-service-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -353,9 +351,12 @@
             <div class="row">
               <div class="col-5 ps-0">
                 <input type="text" id="add-service-text" class="form-control form-control-sm mb-0" style="width:100%;" required>
+                <div class="invalid-feedback ms-3" id="invalid-service">Service invalide</div>
               </div>
-              <button type="submit" id="add-service-button" class="col-1 btn btn-primary m-2 mb-0">Ajouter</button>
-              <div class="invalid-feedback m-0" id="invalid-service" style="display: none;">Statut invalide</div>
+
+              <div class="col-1">
+                <button type="submit" id="add-service-button" class="col-1 btn btn-primary m-2 mb-0">Ajouter</button>
+              </div>
             </div>
           </form>
 
@@ -395,10 +396,6 @@
       </div>
     </div>
   </div>
-
-  <script>
-    Sortable.create(services_sortable, {ghostClass: 'bg-blue', animation: 150}); 
-  </script>
 
   <div id="ics-url-form" title="Envoi des URL des agendas Planno" class="noprint" style="display:none;">
     <p class="validateTips">Envoyez à l'agent les URL de ses agendas Planno.</p>

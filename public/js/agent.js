@@ -434,9 +434,18 @@ function control_credits_hours(o) {
 
 $(function() {
 
+  if($('#statuses_sortable').length) {
+      Sortable.create(statuses_sortable, {ghostClass: 'bg-blue', animation: 150}); 
+  }
+
+  if($('#services_sortable').length) {
+      Sortable.create(services_sortable, {ghostClass: 'bg-blue', animation: 150}); 
+  }
+
   // Formulaire d'ajout de nouveau statut
-  $('#add-statut').on('submit', function(e) {
+  $('#add-status').on('submit', function(e) {
     e.preventDefault();
+    $('#invalid-status').text('Statut invalide');
     // Récupère les options du premier select "catégorie" pour les réutiliser lors d'un ajout
     var select=$('select[id^=categorie_]');
     var select_id=select.attr('id');
@@ -447,20 +456,18 @@ $(function() {
       options+='<option value="'+val+'">'+text+'</option>';
     });
 
-    var text=sanitize_string($('#add-statut-text').val());
+    var text=sanitize_string($('#add-status-text').val());
     if(!text){
-      $('#invalid-statut').show();
-      $('#add-statut-text').css({'color': '#DD404F'});
+      $('#add-status-text').addClass('is-invalid');
       return;
     }
 
     // Vérifie si le statut existe déjà
     var exist = false;
-    $('#statuts_sortable > li > span').each(function(){
+    $('#statuses_sortable > li > span').each(function(){
       if($(this).text().toLowerCase() == text.toLowerCase()){
-        $('#invalid-statut').text('Un statut avec ce nom existe déjà.')
-        $('#invalid-statut').show();
-        $('#add-statut-text').css({'color': '#DD404F'});
+        $('#invalid-status').text('Un statut avec ce nom existe déjà.')
+        $('#add-status-text').addClass('is-invalid');
         exist = true;
         return;
       }
@@ -475,7 +482,7 @@ $(function() {
       number++;
     }
 
-    $('#statuts_sortable').append('<li class="row row-sortable" id="li_'+number+'"> <i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>'
+    $('#statuses_sortable').append('<li class="row row-sortable" id="li_'+number+'"> <i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>'
       +'<span class="col-6 p-2" id="valeur_'+ number + '">'+text+'</span>'
       +'<div class="col-4">'
       +'<select id="categorie_'+number+'" class="form-control form-select form-select-sm" aria-label="Séléction Catégorie">'
@@ -485,20 +492,20 @@ $(function() {
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué
-    $("#add-statut-text").val(null);
+    $("#add-status-text").val(null);
   });
 
   // Formulaire de modification des statuts (ordre, catégorie, suppression...)
-  $('#arrange-statuts').on('submit', function(e) {
+  $('#arrange-statuses').on('submit', function(e) {
     e.preventDefault();
     // Supprime les lignes cachées lors du clic sur la corbeille
-    $('#statuts_sortable li:hidden').each(function() {
+    $('#statuses_sortable li:hidden').each(function() {
 	    $(this).remove();
 	  });
 
     // Enregistre les éléments du formulaire dans un tableau
     tab = new Array();
-    $('#statuts_sortable li').each(function() {
+    $('#statuses_sortable li').each(function() {
       var id = $(this).attr('id').replace('li_', '');
       tab.push(new Array(
         $(this).find('#valeur_' + id).text(),
@@ -527,7 +534,7 @@ $(function() {
         $('#statut').empty();
         $('#statut').append('<option value="">Aucun</option>');
 
-        $('#statuts_sortable li').each(function() {
+        $('#statuses_sortable li').each(function() {
           var id = $(this).attr('id').replace('li_','');
           var val = $(this).find('#valeur_' + id).text();
           var selected = val == current_val;
@@ -535,7 +542,7 @@ $(function() {
           $('#statut').append(option);
         });
 
-        $('#add-statut-modal').modal('hide');
+        $('#add-status-modal').modal('hide');
         $('#statut').effect('highlight', null, 2000);
       },
 
@@ -546,10 +553,9 @@ $(function() {
   });
 
   // Suppression message invalidité lors du changement d'input de statut
-  $('#add-statut-text').on('input', function(e) {
-    if($('#invalid-statut').css('display') === 'block'){
-      $('#invalid-statut').css({'display': 'none'})
-      $(this).css({'color': '#29495C'});
+  $('#add-status-text').on('input', function(e) {
+    if($(this).hasClass('is-invalid')) {
+      $(this).removeClass('is-invalid');
     }
   })
 
@@ -563,10 +569,10 @@ $(function() {
   // Formulaire d'ajout de nouveaux services
   $('#add-service').on('submit', function(e) {
     e.preventDefault();
+    $('#invalid-service').text('Service invalide');
     var text=sanitize_string($('#add-service-text').val());
-    if(!text){
-      $('#invalid-service').show();
-      $('#add-service-text').css({'color': '#DD404F'});
+    if(!text) {
+      $('#add-service-text').addClass('is-invalid');
       return;
     }
     
@@ -575,8 +581,7 @@ $(function() {
     $('#services_sortable > li > span').each(function(){
       if($(this).text().toLowerCase() == text.toLowerCase()){
         $('#invalid-service').text('Un service avec ce nom existe déjà.')
-        $('#invalid-service').show();
-        $('#add-service-text').css({'color': '#DD404F'});
+        $('#add-service-text').addClass('is-invalid');
         exist = true;
         return;
       }
@@ -655,9 +660,8 @@ $(function() {
 
   // Suppression message invalidité lors du changement d'input de service
   $('#add-service-text').on('input', function(e) {
-    if($('#invalid-service').css('display') === 'block'){
-      $('#invalid-service').css({'display': 'none'})
-      $(this).css({'color': '#29495C'});
+    if($(this).hasClass('is-invalid')) {
+      $(this).removeClass('is-invalid');
     }
   })
   
