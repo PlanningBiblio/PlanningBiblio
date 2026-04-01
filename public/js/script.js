@@ -806,11 +806,13 @@ $(function(){
         var fin = $(this).bootstrapDP("getDate");
 
         if ($(".datepicker.d").hasClass('is-invalid')){
-          $(".datepicker.d").removeClass('is-invalid')
+          $(".datepicker.d").removeClass('is-invalid');
+          $('#submit-search').removeClass('disabled');
         }
 
         if(fin < debut) {
           $(this).addClass('is-invalid');
+          $('#submit-search').addClass('disabled');
         }
     });
 
@@ -819,11 +821,13 @@ $(function(){
         var fin = $(".datepicker.f").bootstrapDP("getDate");
 
         if ($(".datepicker.f").hasClass('is-invalid')){
-          $(".datepicker.f").removeClass('is-invalid')
+          $(".datepicker.f").removeClass('is-invalid');
+          $('#submit-search').removeClass('disabled');
         }
 
         if(debut > fin) {
           $(this).addClass('is-invalid');
+          $('#submit-search').addClass('disabled');
         }
     });
 
