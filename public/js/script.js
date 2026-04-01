@@ -810,7 +810,7 @@ $(function(){
         $('#submit-search').removeClass('disabled');
       }
 
-      if(fin < debut) {
+      if(debut && fin < debut) {
         $(this).addClass('is-invalid');
         $('#submit-search').addClass('disabled');
       }
@@ -832,7 +832,7 @@ $(function(){
         $('#submit-search').removeClass('disabled');
       }
 
-      if(debut > fin) {
+      if(fin && debut > fin) {
         $(this).addClass('is-invalid');
         $('#submit-search').addClass('disabled');
       }

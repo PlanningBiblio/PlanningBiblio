@@ -1946,6 +1946,10 @@ div[class*='-auto'] .is-invalid ~ .invalid-feedback {
   display: table-caption;
 }
 
+input::placeholder {
+    color: gray !important;
+}
+
 /* Modals END */
 
 /*ui-dialog START*/
