@@ -17,6 +17,51 @@ class PLBWebTestCase extends PantherTestCase
     protected $CSRFToken;
     protected $entityManager;
 
+    /**
+     * The addConfig function allows you to test additional parameters that are usually found in the custom_options.php file
+     */
+    private function addConfig($name, $value): void
+    {
+        $c = new Config();
+        $c->setName($name);
+        $c->setValue($value);
+        $this->entityManager->persist($c);
+    }
+
+    protected function setData($dataSet = 'default')
+    {
+        $config = $GLOBALS['config'];
+
+        $file = __DIR__ . "/data/$dataSet.sql";
+
+        if (file_exists($file)) {
+            $dblink= mysqli_init();
+            $dbconn = mysqli_real_connect($dblink, $config['dbhost'], $config['dbuser'], $config['dbpass'], 'mysql');
+
+            if ($dbconn) {
+                $handle = fopen($file, 'r');
+                $queries = "USE {$config['dbname']};";
+
+                if ($handle) {
+                    while (($line = fgets($handle)) !== false) {
+                        if (in_array(substr($line, 0, 1), ['-', '/', 'c', 's', 'L', 'U'])) {
+                            continue;
+                        }
+                        $queries .= $line;
+                    }
+                    fclose($handle);
+                }
+                mysqli_multi_query($dblink, $queries);
+                mysqli_close($dblink);       
+                sleep(3);
+
+                exec(__DIR__ . '/../bin/console doctrine:migrations:migrate --env=test -q');
+            }
+        sleep(3);
+        }
+    }
+
+    // When possible, use Config::setParam instead (see src/Repository/ConfigRepository.php)
     protected function setParam($name, $value)
     {
         $GLOBALS['config'][$name] = $value;
