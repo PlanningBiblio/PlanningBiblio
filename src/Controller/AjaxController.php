@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Planno\Helper\AbsenceBlockHelper;
+use App\Planno\Helper\ConfigHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -95,6 +96,11 @@ class AjaxController extends BaseController
         $fromName = $request->get('fromName');
         $signature = $request->get('signature');
         $planning = $request->get('planning');
+
+        if ($password == '') {
+            $configHelper = new ConfigHelper();
+            $password = decrypt($configHelper->getValue('Mail-Password'));
+        }
 
         // Connexion au serveur de messagerie
         if ($fp=@fsockopen($host, $port, $errno, $errstr, 5)) {
