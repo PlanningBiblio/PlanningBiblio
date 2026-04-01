@@ -17,8 +17,8 @@ class CalendarController extends BaseController
 {
     #[Route(path: 'calendar', name: 'calendar.index', methods: ['GET'])]
     public function index(Request $request, Session $session){
-        $debut = $request->get('debut');
-        $fin = $request->get('fin');
+        $debut = $request->query->get('debut');
+        $fin = $request->query->get('fin');
 
         if (!array_key_exists('agenda_debut', $_SESSION)){
             $_SESSION['agenda_debut'] = null;
@@ -30,7 +30,7 @@ class CalendarController extends BaseController
         $fin = $fin ? $fin : $_SESSION['agenda_fin'];
         $admin = in_array(3, $GLOBALS['droits']);
         if($admin){
-            $perso_id = $request->get('perso_id');
+            $perso_id = $request->query->getInt('perso_id');
             $perso_id = $perso_id?$perso_id:$_SESSION['agenda_perso_id'];
         } else {
             $perso_id = $session->get('loginId');

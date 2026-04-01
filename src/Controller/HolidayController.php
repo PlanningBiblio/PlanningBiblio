@@ -22,16 +22,16 @@ require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 class HolidayController extends BaseController
 {
     #[Route(path: '/holiday', name: 'holiday.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session): Response
     {
         $session = $request->getSession();
 
-        $debut = $request->get('debut');
-        $fin = $request->get('fin');
-        $perso_id = $request->get('perso_id');
-        $reset = $request->get('reset');
-        $supprimes = $request->get('supprimes');
-        $voir_recup = $request->get('recup');
+        $debut = $request->query->get('debut');
+        $fin = $request->query->get('fin');
+        $perso_id = $request->query->get('perso_id');
+        $reset = $request->query->get('reset');
+        $supprimes = $request->query->get('supprimes');
+        $voir_recup = $request->query->get('recup');
 
         $lang = $GLOBALS['lang'];
 

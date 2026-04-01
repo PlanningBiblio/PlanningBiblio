@@ -34,12 +34,12 @@ class AbsenceController extends BaseController
     {
         $session = $request->getSession();
 
-        $debut = $request->get('debut');
+        $debut = $request->query->get('debut');
         $debut = filter_var($debut, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
-        $fin = $request->get('fin');
+        $fin = $request->query->get('fin');
         $fin = filter_var($fin, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
 
-        $reset = $request->get('reset');
+        $reset = $request->query->getBoolean('reset');
         $droits = $GLOBALS['droits'];
 
         if (!$debut) {
@@ -63,8 +63,9 @@ class AbsenceController extends BaseController
             ->getValidationLevelFor($session->get('loginId'));
 
         if ($admin or $adminN2) {
-            $perso_id = $request->get('perso_id');
-            if ($perso_id === null) {
+            $perso_id = $request->query->filter('perso_id', -1, \FILTER_SANITIZE_NUMBER_INT, ['flags' => \FILTER_NULL_ON_FAILURE]);
+
+            if ($perso_id == -1) {
                 $perso_id = $_SESSION['oups']['absences_perso_id'] ?? $session->get('loginId');
             }
         } else {
@@ -297,7 +298,7 @@ class AbsenceController extends BaseController
         $this->agents_multiples = ($this->admin or $this->adminN2 or in_array(9, $this->droits));
         $this->edit_own_absences = ($this->admin or $this->adminN2 or in_array(6, $this->droits));
 
-        $id = $request->get('id');
+        $id = $request->request->filter('id', 0, \FILTER_SANITIZE_NUMBER_INT, ['flags' => \FILTER_NULL_ON_FAILURE]);
 
         if ($id) {
             return $this->update($request);
@@ -343,7 +344,7 @@ class AbsenceController extends BaseController
     {
         $session = $request->getSession();
 
-        $id = $request->get('id');
+        $id = $request->attributes->getInt('id');
 
         $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
@@ -509,9 +510,9 @@ class AbsenceController extends BaseController
     {
         $session = $request->getSession();
 
-        $CSRFToken = $request->get('CSRFToken');
-        $id = $request->get('id');
-        $recurrent = $request->get('rec');
+        $CSRFToken = $request->request->get('CSRFToken');
+        $id = $request->request->get('id');
+        $recurrent = $request->request->get('rec');
 
         $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
@@ -760,10 +761,10 @@ class AbsenceController extends BaseController
     #[Route(path: '/absence-statuses', name: 'absence.statuses', methods: ['GET'])]
     public function absence_validation_statuses(Request $request)
     {
-        $agent_ids = $request->get('ids') ?? array();
-        $module = $request->get('module');
-        $entity_id = $request->get('id');
-        $workflow = $request->get('workflow', 'A');
+        $agent_ids = $request->query->all('ids') ?? array();
+        $module = $request->query->get('module');
+        $entity_id = $request->query->get('id');
+        $workflow = $request->query->get('workflow', 'A');
 
         $this->templateParams($this->getStatusesParams($agent_ids, $module, $entity_id, $workflow));
 
@@ -773,10 +774,10 @@ class AbsenceController extends BaseController
     #[Route(path: '/absence/supporting-doc', name: 'absence.supporting_doc', methods: ['POST'])]
     public function supportingDoc(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
-        $id = $request->get('id');
-        $pj = $request->get('pj');
-        $checked = $request->get('checked');
-        $CSRFToken = $request->get('CSRFToken');
+        $id = $request->request->get('id');
+        $pj = $request->request->get('pj');
+        $checked = $request->request->get('checked');
+        $CSRFToken = $request->request->get('CSRFToken');
 
         $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 
@@ -829,7 +830,7 @@ class AbsenceController extends BaseController
     {
         $session = $request->getSession();
 
-        $perso_id = $request->get('perso_id');
+        $perso_id = $request->request->get('perso_id');
         $perso_ids = array();
         if (!empty($perso_id)) {
             $perso_ids[] = $perso_id;
@@ -851,15 +852,15 @@ class AbsenceController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        $debut = $request->get('debut');
-        $fin = $request->get('fin');
-        $motif = $request->get('motif');
-        $motif_autre = trim($request->get('motif_autre'));
-        $commentaires = $request->get('commentaires');
-        $CSRFToken = $request->get('CSRFToken');
-        $rrule = $request->get('recurrence-hidden');
-        $rcheckbox = $request->get('recurrence-checkbox');
-        $valide = $request->get('valide');
+        $debut = $request->request->get('debut');
+        $fin = $request->request->get('fin');
+        $motif = $request->request->get('motif');
+        $motif_autre = trim($request->request->get('motif_autre'));
+        $commentaires = $request->request->get('commentaires');
+        $CSRFToken = $request->request->get('CSRFToken');
+        $rrule = $request->request->get('recurrence-hidden');
+        $rcheckbox = $request->request->get('recurrence-checkbox');
+        $valide = $request->request->get('valide');
 
         list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
 
@@ -867,9 +868,9 @@ class AbsenceController extends BaseController
             $hre_fin .= ':00';
         }
 
-        $pj1 = $request->get('pj1') ? 1 : 0;
-        $pj2 = $request->get('pj2') ? 1 : 0;
-        $so = $request->get('so') ? 1 : 0;
+        $pj1 = $request->request->get('pj1') ? 1 : 0;
+        $pj2 = $request->request->get('pj2') ? 1 : 0;
+        $so = $request->request->get('so') ? 1 : 0;
 
         // Récurrence : supprime la règle rrule si la case à cocher "Récurrence" n'est pas cochée
         if (!$rcheckbox) {
@@ -922,24 +923,24 @@ class AbsenceController extends BaseController
         $session = $request->getSession();
 
         // Initialisation des variables
-        $commentaires = $request->get('commentaires');
-        $CSRFToken = trim($request->get('CSRFToken'));
-        $debut = $request->get('debut');
-        $fin = $request->get('fin');
-        $id = $request->get('id');
-        $motif = $request->get('motif');
-        $motif_autre = trim($request->get('motif_autre'));
-        $valide = $request->get('valide');
-        $groupe = $request->get('groupe');
-        $rrule = $request->get('rrule');
-        $recurrenceModif = $request->get('recurrence-modif');
+        $commentaires = $request->request->get('commentaires');
+        $CSRFToken = trim($request->request->get('CSRFToken'));
+        $debut = $request->request->get('debut');
+        $fin = $request->request->get('fin');
+        $id = $request->request->get('id');
+        $motif = $request->request->get('motif');
+        $motif_autre = trim($request->request->get('motif_autre'));
+        $valide = $request->request->get('valide');
+        $groupe = $request->request->get('groupe');
+        $rrule = $request->request->get('rrule');
+        $recurrenceModif = $request->request->get('recurrence-modif');
 
         list($hre_debut, $hre_fin) = HourHelper::StartEndFromRequest($request);
 
         $baseurl = $this->config('URL');
 
         // Absence with several agents.
-        $perso_ids = $request->get('perso_ids');
+        $perso_ids = $request->request->all('perso_ids');
         $perso_ids = filter_var_array($perso_ids, FILTER_SANITIZE_NUMBER_INT);
 
         // If many agents, create absences group
@@ -950,9 +951,9 @@ class AbsenceController extends BaseController
         }
 
         // Vouchers.
-        $pj1 = filter_var($request->get('pj1'), FILTER_CALLBACK, ['options' => 'sanitize_on01']);
-        $pj2 = filter_var($request->get('pj2'), FILTER_CALLBACK, ['options' => 'sanitize_on01']);
-        $so = filter_var($request->get('so'), FILTER_CALLBACK, ['options' => 'sanitize_on01']);
+        $pj1 = filter_var($request->request->get('pj1'), FILTER_CALLBACK, ['options' => 'sanitize_on01']);
+        $pj2 = filter_var($request->request->get('pj2'), FILTER_CALLBACK, ['options' => 'sanitize_on01']);
+        $so = filter_var($request->request->get('so'), FILTER_CALLBACK, ['options' => 'sanitize_on01']);
 
         $fin = $fin ? $fin : $debut;
 
@@ -1527,7 +1528,7 @@ class AbsenceController extends BaseController
     {
         $session = $request->getSession();
 
-        $perso_ids = $request->get('perso_ids');
+        $perso_ids = $request->request->all('perso_ids');
 
         $valid_ids = array();
 

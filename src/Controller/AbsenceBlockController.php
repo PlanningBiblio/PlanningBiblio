@@ -42,7 +42,7 @@ class AbsenceBlockController extends BaseController
     #[Route("/absence/block/{id<\d+>}", name: "absence.block.edit", methods: ["GET"])]
     public function edit(Request $request)
     {
-        $id = $request->get('id');
+        $id = $request->attributes->getInt('id');
 
         $block = $this->entityManager->getRepository(AbsenceBlock::class)->find($id);
 
@@ -64,15 +64,15 @@ class AbsenceBlockController extends BaseController
             return $this->redirectToRoute('absence.block.index');
         }
 
-        $id = $request->get('id');
-        $start = \DateTime::createFromFormat("d/m/Y", $request->get('start'));
-        $end = \DateTime::createFromFormat("d/m/Y", $request->get('end'));
+        $id = $request->request->filter('id', 0, \FILTER_SANITIZE_NUMBER_INT, ['flags' => \FILTER_NULL_ON_FAILURE]);
+        $start = \DateTime::createFromFormat('d/m/Y', $request->request->get('start'));
+        $end = \DateTime::createFromFormat('d/m/Y', $request->request->get('end'));
 
         if (empty($end)) {
           $end = $start;
         }
 
-        $text = trim($request->get('text'));
+        $text = trim($request->request->get('text'));
 
         if ($id) {
             $block = $this->entityManager->getRepository(AbsenceBlock::class)->find($id);
@@ -107,7 +107,7 @@ class AbsenceBlockController extends BaseController
             return $response;
         }
 
-        $id = $request->get('id');
+        $id = $request->request->get('id');
 
         $block = $this->entityManager->getRepository(AbsenceBlock::class)->find($id);
         $this->entityManager->remove($block);

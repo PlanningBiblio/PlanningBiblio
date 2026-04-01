@@ -17,7 +17,7 @@ class AbsenceDocumentController extends BaseController
     #[Route(path: '/absences/document/{id}', name: 'absences.document.index', methods: ['GET'])]
     public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
-        $id = $request->get('id');
+        $id = $request->attributes->get('id');
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
 
         $file = new File($ad->upload_dir() . $ad->getAbsenceId() . '/' . $ad->getId() . '/' . $ad->getFilename());
@@ -34,7 +34,7 @@ class AbsenceDocumentController extends BaseController
             return $this->redirectToRoute('access-denied');
         }
 
-        $id = $request->get('id');
+        $id = $request->attributes->get('id');
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
         $ad->deleteFile();
         $this->entityManager->remove($ad);
@@ -50,7 +50,7 @@ class AbsenceDocumentController extends BaseController
             return $this->redirectToRoute('access-denied');
         }
 
-        $id = $request->get('id_absence');
+        $id = $request->attributes->get('id_absence');
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
             $filename = $file->getClientOriginalName();
@@ -70,7 +70,7 @@ class AbsenceDocumentController extends BaseController
    #[Route(path: '/absences/documents/{id_absence}', name: 'absences.document.list', methods: ['GET'])]
     public function list(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
-        $id = $request->get('id_absence');
+        $id = $request->attributes->get('id_absence');
         $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
         $adarray = array();
         foreach ($absdocs as $absdoc) {

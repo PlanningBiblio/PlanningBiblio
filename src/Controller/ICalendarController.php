@@ -13,20 +13,20 @@ use Symfony\Component\Routing\Annotation\Route;
 class ICalendarController extends BaseController
 {
     #[Route(path: 'ical', name: 'ical.index', methods: ['GET'])]
-    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response{
-
+    public function index(Request $request, Session $session): Response
+    {
         $module = 'Ical export';
 
         if (!$this->config('ICS-Export')) {
             return $this->returnError("L'exportation ICS est désactivée", $module, 403);
         }
 
-        $interval_get = $request->get('interval');
-        $code = $request->get('code');
-        $id = $request->get('id');
-        $login = $request->get('login');
-        $mail = $request->get('mail');
-        $get_absences = $request->get('absences');
+        $interval_get = $request->query->get('interval');
+        $code = $request->query->get('code');
+        $id = $request->query->get('id');
+        $login = $request->query->get('login');
+        $mail = $request->query->get('mail');
+        $get_absences = $request->query->get('absences');
 
         $agent = null;
 
