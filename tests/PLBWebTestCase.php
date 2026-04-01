@@ -62,6 +62,7 @@ class PLBWebTestCase extends PantherTestCase
         }
     }
 
+    // When possible, use Config::setParam instead (see src/Repository/ConfigRepository.php)
     protected function setParam($name, $value)
     {
         $GLOBALS['config'][$name] = $value;
