@@ -108,61 +108,17 @@ class ConfigController extends BaseController
             $error .= "#BR#Merci de votre compréhension";
         }
         elseif ($params !== []) {
-
-            $technical = $request->get('technical');
-
-            $configParams = $this->entityManager->getRepository(Config::class)->findBy(
-                array('technical' => $technical),
-                array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
-            );
-
-            foreach ($configParams as $cp) {
-                if (in_array($cp->getType(), ['hidden', 'info'])) {
-                    continue;
-                }
-                // boolean and checkboxes elements.
-                if (!isset($params[$cp->getName()])) {
-                    $params[$cp->getName()] = $cp->getType() == 'boolean' ? '0' : array();
-                }
-                $value = $params[$cp->getName()];
-
-                if (is_string($value)) {
-                    $value = trim($value);
-                }
-
-                // Passwords
-                if (substr($cp->getName(), -9) == '-Password') {
-                    $value = encrypt($value);
-                }
-                // Checkboxes
-                if (is_array($value)) {
-                    $value = json_encode($value);
-                }
-
-                if ($cp->getType() == 'color') {
-                    $value = filter_var($value, FILTER_CALLBACK, ['options' => 'sanitize_color']);
-                }
-
-                try {
-                    $cp->setValue($value);
-                    $this->entityManager->persist($cp);
-                }
-                catch (Exception $e) {
-                    $error = 'Une erreur est survenue pendant la modification de la configuration !';
-                }
-            }
-            $this->entityManager->flush();
-
+            $error = $configHelper->saveConfig($params);
         }
 
-        if (isset($error)) {
+        if (isset($error) && $error != null) {
             $session->getFlashBag()->add('error', $error);
         } else {
             $flash = 'La configuration a été modifiée avec succès';
             $session->getFlashBag()->add('notice', $flash);
         }
 
-        $options = $technical ? ['options' => 'technical'] : [];
+        $options = $params['technical'] ? ['options' => 'technical'] : [];
 
         return $this->redirectToRoute('config.index', $options);
     }
