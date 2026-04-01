@@ -801,34 +801,48 @@ $(function(){
     * La date du calendrier de début devient la date minimal disponible pour le calendrier de fin et inversement
     */
 
-    $(".datepicker.f").on('changeDate',function() {
-        var debut = $(".datepicker.d").bootstrapDP("getDate");
-        var fin = $(this).bootstrapDP("getDate");
+    $('.datepicker.f').on('changeDate',function() {
+      var debut = $('.datepicker.d').bootstrapDP('getDate');
+      var fin = $(this).bootstrapDP('getDate');
 
-        if ($(".datepicker.d").hasClass('is-invalid')){
-          $(".datepicker.d").removeClass('is-invalid');
+      if ($('.datepicker.d').hasClass('is-invalid')) {
+        $('.datepicker.d').removeClass('is-invalid');
+        $('#submit-search').removeClass('disabled');
+      }
+
+      if(fin < debut) {
+        $(this).addClass('is-invalid');
+        $('#submit-search').addClass('disabled');
+      }
+
+      else {
+        if ($(this).hasClass('is-invalid')) {
+          $(this).removeClass('is-invalid');
           $('#submit-search').removeClass('disabled');
         }
-
-        if(fin < debut) {
-          $(this).addClass('is-invalid');
-          $('#submit-search').addClass('disabled');
-        }
+      }
     });
 
-    $(".datepicker.d").on('changeDate',function() {
-        var debut = $(this).bootstrapDP("getDate");
-        var fin = $(".datepicker.f").bootstrapDP("getDate");
+    $('.datepicker.d').on('changeDate',function() {
+      var debut = $(this).bootstrapDP('getDate');
+      var fin = $('.datepicker.f').bootstrapDP('getDate');
 
-        if ($(".datepicker.f").hasClass('is-invalid')){
-          $(".datepicker.f").removeClass('is-invalid');
+      if ($('.datepicker.f').hasClass('is-invalid')) {
+        $('.datepicker.f').removeClass('is-invalid');
+        $('#submit-search').removeClass('disabled');
+      }
+
+      if(debut > fin) {
+        $(this).addClass('is-invalid');
+        $('#submit-search').addClass('disabled');
+      }
+
+      else {
+        if ($(this).hasClass('is-invalid')) {
+          $(this).removeClass('is-invalid');
           $('#submit-search').removeClass('disabled');
         }
-
-        if(debut > fin) {
-          $(this).addClass('is-invalid');
-          $('#submit-search').addClass('disabled');
-        }
+      }
     });
 
     $(".datepicker.end-date").on('click', function(){

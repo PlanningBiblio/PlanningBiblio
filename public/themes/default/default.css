@@ -682,14 +682,12 @@ a.myAccountLink.active {
   text-underline-offset: 5px;
 }
 
-input[type=text],input[type=password]
-	{
-	width:150px;
+input[type=text], input[type=password] {
+	width:160px;
 	}
-select
-	{
+select{
 	width:155px;
-	}
+}
 
 
 .select-popup{
@@ -1940,12 +1938,12 @@ select.form-select {
   color: #29495C;
 }
 
-.form-control {
-  display: inline;
-}
-
 .form-control.is-invalid {
   padding-right: 0px;
+}
+
+div[class*='-auto'] .is-invalid ~ .invalid-feedback {
+  display: table-caption;
 }
 
 /* Modals END */
