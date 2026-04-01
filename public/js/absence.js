@@ -121,10 +121,7 @@ $(function() {
 
   // Suppression message invalidité lors du changement d'input
   $('#add-reason-text').on('input', function(e) {
-    if($('.invalid-feedback').is(':visible')) {
-      $('.invalid-feedback').hide();
-      $('#add-reason-text').removeClass('important');
-    }
+    $('#add-reason-text').removeClass('is-invalid');
   })
 
   // Permet d'ajouter de nouveaux motifs (clic sur le bouton ajouter)
@@ -153,8 +150,7 @@ $(function() {
 
     var text = sanitize_string($('#add-reason-text').val());
     if(!text){
-      $('.invalid-feedback').show();
-      $('#add-reason-text').addClass('important');
+      $('#add-reason-text').addClass('is-invalid');
       return;
     }
 
@@ -163,8 +159,7 @@ $(function() {
     $('#reasons_sortable > li > span').each(function() {
       if($(this).text().toLowerCase() == text.toLowerCase()) {
         $('.invalid-feedback').text('Motif invalide. Un motif avec ce nom existe déjà.')
-        $('.invalid-feedback').show();
-        $('#add-reason-text').addClass('important');
+        $('#add-reason-text').addClass('is-invalid');
         exist = true;
         return;
       }
