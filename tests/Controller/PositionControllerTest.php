@@ -89,8 +89,11 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString(' Catégorie B', $result->eq(1)->text('Node does not exist', false), 'checkBox is Catégorie B');
         $this->assertStringContainsString(' Catégorie C', $result->eq(1)->text('Node does not exist', false), 'checkBox is Catégorie C');
 
-        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add"]');
-        $this->assertEquals($result->attr('title'),'Ajouter','span is Ajouter');
+        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add ps-3"]');
+        $this->assertEquals($result->eq(0)->attr('title'), 'Ajouter un étage', 'title is Ajouter un étage');
+
+        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add ps-3"]');
+        $this->assertEquals($result->eq(1)->attr('title'), 'Ajouter un groupe', 'title is Ajouter un groupe');
 
         $result = $crawler->filterXPath('//input[@name="obligatoire"]');
         $this->assertEquals($result->attr('value'),'Obligatoire','input submit value is Obligatoire');
@@ -189,9 +192,11 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString(' Catégorie B', $result->eq(1)->text('Node does not exist', false), 'checkBox is Catégorie B');
         $this->assertStringContainsString(' Catégorie C', $result->eq(1)->text('Node does not exist', false), 'checkBox is Catégorie C');
 
-        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add"]');
-        $this->assertEquals($result->attr('title'),'Ajouter','span edit icon is Ajouter');
+        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add ps-3"]');
+        $this->assertEquals($result->eq(0)->attr('title'), 'Ajouter un étage', 'title is Ajouter un étage');
 
+        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add ps-3"]');
+        $this->assertEquals($result->eq(1)->attr('title'), 'Ajouter un groupe', 'title is Ajouter un groupe');
 
         $result = $crawler->filterXPath('//input[@name="obligatoire"]');
         $this->assertEquals($result->attr('value'),'Obligatoire','input obligatoire value is Obligatoire');
