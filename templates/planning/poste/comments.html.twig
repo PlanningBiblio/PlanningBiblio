@@ -10,16 +10,31 @@
 
 {% if autorisationNotes %}
   <div id="pl-notes-div2" class="noprint">
-    <input type="button" class="btn btn-primary noprint" id="pl-notes-button" value="Ajouter un commentaire" />
+    <button id="pl-notes-button" type="button" class="btn btn-primary noprint" data-bs-toggle="modal" data-bs-target="#pl-notes-modal">Ajouter un commentaire</button>
   </div>
 
-  <div id="pl-notes-form" title="Commentaire" class="noprint" style="display:none;">
-    <p class="validateTips" id="pl-notes-tips">
-      Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.
-    </p>
+  <div class="modal" id="pl-notes-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="pl-notes-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
 
-    <form>
-      <textarea id="pl-notes-text" class="emoji-picker-textarea" data-emojiable="true" data-emoji-input="unicode">{{ comments.textarea | raw_black_listed }}</textarea>
-    </form>
+        <div class="modal-header">
+          <h5 class="modal-title" id="pl-notes-modal-title">Commentaire</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body" style="text-align: left;">
+          <p class="validateTips" id="pl-notes-tips">Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.</p>
+          <form id="pl-notes-form">
+            <textarea id="pl-notes-text" class="emoji-picker-textarea form-control">{{ comments.textarea | raw_black_listed }}</textarea>
+            <div class="invalid-feedback ms-1">Commentaire invalide</div>     
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" form="pl-notes-form">Enregistrer</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        </div>
+      </div>
+    </div>
   </div>
 {% endif %}

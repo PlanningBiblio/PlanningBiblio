@@ -948,9 +948,9 @@ $(function(){
 
     // Initializes and creates emoji set from sprite sheet
     $('.emoji-picker-textarea').each(function() {
-      $(this).wrap('<p class="emoji-picker-container"></p>');
+      $(this).next('div.invalid-feedback').andSelf().wrapAll('<div class="emoji-picker-container"></div>');
       $(this).attr('data-emojiable', 'true');
-      $(this).attr('data-emoji-input', 'unicode');
+      $(this).attr('data-emoji-input', 'image');
     });
 
     window.emojiPicker = new EmojiPicker({
@@ -961,10 +961,12 @@ $(function(){
 
     window.emojiPicker.discover();
 
+    $('.emoji-wysiwyg-editor').on('input', function() {
+      $(this).removeClass('is-invalid');
+      $(this).prev('textarea').removeClass('is-invalid');
+    })
   });
 
   // Infobulles
   $(document).tooltip();
 });
-
-
