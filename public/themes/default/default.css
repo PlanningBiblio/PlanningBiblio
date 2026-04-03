@@ -1237,9 +1237,9 @@ class cellule = cellule par défaut
   height: 160px;
 }
 
-#pl-notes-text{
+#pl-notes-text {
   width: 100%;
-  height: 240px;
+  height: 200px;
 }
 
 .empty-line,
@@ -1921,6 +1921,10 @@ input[type=text].form-control {
 } 
 
 input.form-control, input.form-control:focus {
+  color: #29495C;
+}
+
+div.form-control, div.form-control:focus {
   color: #29495C;
 }
 

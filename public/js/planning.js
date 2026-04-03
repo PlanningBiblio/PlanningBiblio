@@ -91,10 +91,9 @@ $(document).ready(function(){
   // Vérifions si un agent de catégorie A est placé en fin de service
   verif_categorieA();
 
-  if($("#pl-notes-text").text()){
-    $("#pl-notes-button").val("Modifier le commentaire");
+  if($('#pl-notes-text').text()) {
+    $('#pl-notes-button').text('Modifier le commentaire');
   }
-
 
   // Mise en forme des lignes du tableau planning
   // Pour chaque TD
@@ -322,93 +321,62 @@ $(function() {
       window.location.href = date;
     }
   });
-  
+
   // Notes
-  var text=$("#pl-notes-text"),
-  allFields=$([]).add(text);
+  var text = $('#pl-notes-text');
+  allFields = $([]).add(text);
 
-  // Bouton Notes
-  $("#pl-notes-button").click(function() {
-    $( '#pl-notes-tips' ).text("Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.");
-    $( "#pl-notes-form" ).dialog( "open" );
-    return false;
-  });
+  $('#pl-notes-form').on('submit', function(e) {
+    e.preventDefault();
 
-  // Formulaire Notes
-  $('#pl-notes-form').dialog({
-    autoOpen: false,
-    height: 480,
-    width: 650,
-    modal: true,
-    buttons: {
-      'Enregistrer': {
-	      click: function() {
-          allFields.removeClass('ui-state-error');
-          var bValid = true;
+    // Enregistre le commentaire
+    text.val(text.val().trim());
+    var text2 = text.val().replace(/\n/g, '#br#');
+    var _token = $('input[name=_token]').val();
 
-          if ( bValid ) {
-            // Enregistre le commentaire
-            text.val(text.val().trim());
-            var text2=text.val().replace(/\n/g,'#br#');
-            var text3=text.val().replace(/\n/g,'<br/>');
-            var _token = $('input[name=_token]').val();
+    $.ajax({
+      dataType: 'json',
+      url: url('planning/notes'),
+      type: 'post',
+      data: {
+        _token: _token,
+        CSRFToken: $('#CSRFSession').val(),
+        date: $('#date').val(),
+        site: $('#site').val(),
+        text: encodeURIComponent(text2),
+      },
 
-            $.ajax({
-              dataType: 'json',
-              url: url('planning/notes'),
-              type: 'post',
-              data: {
-                _token: _token,
-                CSRFToken: $('#CSRFSession').val(),
-                date: $('#date').val(),
-                site: $('#site').val(),
-                text: encodeURIComponent(text2),
-              },
-
-              success: function(result) {
-                if(result.error) {
-                  CJInfo(result.error, 'error');
-                } else {
-                  if(result.notes) {
-                    $('#pl-notes-button').val('Modifier le commentaire');
-                    $('#pl-notes-div1').show();
-                    var suppression = '';
-                  } else {
-                    $('#pl-notes-button').val('Ajouter un commentaire');
-                    $('#pl-notes-div1').hide();
-                    var suppression = 'Suppression du commentaire : ';
-                  }
-                  // Met à jour le texte affiché en bas du planning
-                  $('#pl-notes-div1').html(result.notes);
-                  $('#pl-notes-div1-validation').html(suppression + result.validation);
-                  CJInfo('Le commentaire a été modifié avec succès', 'success');
-                  // Ferme le dialog
-                }
-                $('#pl-notes-form').dialog('close');
-              },
-
-              error: function() {
-                updateTips('Une erreur est survenue lors de l\'enregistrement du commentaire', 'error');
-              }
-            });
+      success: function(result) {
+        if(result.error) {
+          CJInfo(result.error, 'error');
+        } else {
+          if(result.notes) {
+            $('#pl-notes-button').text('Modifier le commentaire');
+            $('#pl-notes-div1').show();
+            var suppression = '';
+          } else {
+            if ($('#pl-notes-div1').is(':visible')) {
+              $('#pl-notes-button').text('Ajouter un commentaire');
+              $('#pl-notes-div1').hide();
+              var suppression = 'Suppression du commentaire : ';
+            } else {
+              $('.emoji-picker-textarea').addClass('is-invalid');
+              return;
+            }
           }
-        },
-        text: 'Enregistrer'
+          // Met à jour le texte affiché en bas du planning
+          $('#pl-notes-div1').html(result.notes);
+          $('#pl-notes-div1-validation').html(suppression + result.validation);
+          CJInfo('Le commentaire a été modifié avec succès', 'success');
+          // Ferme le dialog
+        }
+        $('#pl-notes-modal').modal('hide');
       },
-
-      Annuler: {
-        click: function() {
-          $( this ).dialog('close');
-        },
-        text: 'Annuler',
-        class: 'btn btn-secondary',
-      },
-    },
-
-    close: function() {
-      allFields.removeClass('ui-state-error');
-    }
-  });
+      error: function() {
+        updateTips('Une erreur est survenue lors de l\'enregistrement du commentaire', 'error');
+      }
+    });
+  })
 
   // Formulaire Appel à disponibilité
   $( "#pl-appelDispo-form" ).dialog({
