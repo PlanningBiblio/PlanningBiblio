@@ -397,17 +397,41 @@
     </div>
   </div>
 
-  <div id="ics-url-form" title="Envoi des URL des agendas Planno" class="noprint" style="display:none;">
-    <p class="validateTips">Envoyez à l'agent les URL de ses agendas Planno.</p>
-    <form>
-      <strong>Destinataire</strong><br/>
-      <span id="ics-url-recipient">&nbsp;</span><br/><br/>
-      <label for="ics-url-subject">Sujet</label><br/>
-      <input type="text" id="ics-url-subject" name="ics-url-subject" value="{{ lang_send_ics_url_subject }}"/><br/><br/>
-      <label for="ics-url-text">Message</label><br/>
-      <textarea id="ics-url-text" name="ics-url-text">{{ lang_send_ics_url_message }}</textarea>
-    </form>
+  <div class="modal" id="ics-url-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ics-url-modal-title" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ics-url-modal-title">Envoi des URL des agendas Planno</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+        <p class="validateTips">Envoyez à l'agent les URL de ses agendas Planno.</p>
+        <form id="ics-url-form">
+
+          <div class="mb-3">
+            <label for="ics-url-recipient" class="form-label mb-0"><strong>Destinataire</strong></label>
+            <input type="text" readonly class="form-control ms-0" id="ics-url-recipient" value="">
+          </div>
+
+          <div class="mb-3">
+            <label for="ics-url-subject" class="form-label mb-0"><strong>Sujet</strong></label>
+            <input type="text" id="ics-url-subject" class="form-control ms-0" name="ics-url-subject" value="{{ lang_send_ics_url_subject }}"/>
+          </div>
+          <div class="mb-3">
+            <label for="ics-url-text" class="form-label"><strong>Message</strong></label>
+            <textarea id="ics-url-text" name="ics-url-text" class="form-control" rows="8">{{ lang_send_ics_url_message }}</textarea>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" form="ics-url-form">Envoyer</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+      </div>
+    </div>
   </div>
+</div>
 
   <script type="text/JavaScript">
     {% if config('EDTSamedi') %}
