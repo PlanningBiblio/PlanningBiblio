@@ -1232,9 +1232,13 @@ class cellule = cellule par défaut
   height: 200px;
 }
 
-#ics-url-text{
+#ics-url-text {
   width: 100%;
-  height: 160px;
+  height: 170px;
+}
+
+#ics-url-recipient {
+  width: 100%;
 }
 
 #pl-notes-text {
@@ -1920,8 +1924,9 @@ input[type=text].form-control {
   margin :10px;
 } 
 
-input.form-control, input.form-control:focus {
+.form-control, .form-control:focus, .form-control-plaintext {
   color: #29495C;
+  font-size: inherit;
 }
 
 div.form-control, div.form-control:focus {

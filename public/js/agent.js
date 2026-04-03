@@ -330,9 +330,10 @@ function sendICSURL(){
   message = message.replace('[urlIcs]', urlIcs);
   message = message.replace('[urlIcsWithAbsences]', urlIcsWithAbsences);
 
-  $( "#ics-url-recipient" ).text(mail);
-  $( "#ics-url-text" ).val(message);
-  $( "#ics-url-form" ).dialog( 'open' );
+  $('#ics-url-recipient').val(mail);
+  $('#ics-url-text').val(message);
+  $('.validateTips').text('Envoyez à l\'agent les URL de ses agendas Planno.');
+  $('#ics-url-modal').modal('show');
 }
 
 function sendPassword() {
@@ -657,58 +658,43 @@ $(function() {
   });
 
   // Suppression message invalidité lors du changement d'input de service
-  $('#add-service-text').on('input', function(e) {
+  $('#add-service-text').on('input', function() {
     $(this).removeClass('is-invalid');
   })
 
-  $('#ics-url-form').dialog({
-    autoOpen: false,
-    height: 525,
-    width: 650,
-    modal: true,
-    buttons: {
-      'Envoyer': function() {
+  $('#ics-url-form').on('submit',function(e) {
+    e.preventDefault();
 
-        // Envoi le mail
-        var recipient = $('#ics-url-recipient').text();
-        var subject = $('#ics-url-subject').val();
-        var message = $('#ics-url-text').val();
-        var _token = $('input[name=_token]').val();
+    // Envoi le mail
+    var recipient = $('#ics-url-recipient').val();
+    var subject = $('#ics-url-subject').val();
+    var message = $('#ics-url-text').val();
+    var _token = $('input[name=_token]').val();
 
-        $.ajax({
-          dataType: 'json',
-          url: url('agent/ics/send-url'),
-          type: 'post',
-          data: {
-            _token: _token,
-            message: message,
-            recipient: recipient,
-            subject: subject,
-          },
-          success: function(result){
-            if(result.error) {
-              updateTips(result.error, 'error');
-            } else {
-              CJInfo('L\'e-mail a bien été envoyé', 'success');
-              $('#ics-url-form').dialog('close');
-            }
-          },
-          error: function(){
-            updateTips('Une erreur est survenue lors de l\'envoi de l\'e-mail', 'error');
-          }
-        });
+    $.ajax({
+      dataType: 'json',
+      url: url('agent/ics/send-url'),
+      type: 'post',
+      data: {
+        _token: _token,
+        message: message,
+        recipient: recipient,
+        subject: subject,
       },
-
-      Annuler: function() {
-        $( this ).dialog('close');
+      success: function(result) {
+        if(result.error) {
+          updateTips(result.error, 'error');
+        } else {
+          CJInfo('L\'e-mail a bien été envoyé', 'success');
+          $('#ics-url-modal').modal('hide');
+        }
+      },
+      error: function(){
+        updateTips('Une erreur est survenue lors de l\'envoi de l\'e-mail', 'error');
       }
-    },
-
-    close: function() {
-      $('.validateTips').text('Envoyez à l\'agent les URL de ses agendas Planno.');
-    }
+    });
   });
-  
+
   $('#conges_annuel_hours').on('keyup', function(){
     control_credits_hours($(this));
   });
