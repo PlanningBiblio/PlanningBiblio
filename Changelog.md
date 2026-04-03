@@ -1,5 +1,25 @@
 # Changelog Planno
 
+## Version 25.11.21 (2026-04-03)
+
+### Enhancement
+
+* MT50936: Allow to change working hours cycles #1217
+* MT46629: Use bootstrap for recurring absences modals #1344
+* MT46629: Use bootstrap for edit/delete absence modals #1349
+* MT46629: Use bootstrap for absence reasons modals #1351
+* MT46629: Use bootstrap for status and services modals #1353
+
+### Fixes
+
+* MT52751: Fix Planning Hidden Tables #1343
+* MT52775: Define breaktime and workingHours default values #1345
+* MT52796: Fix Undefined variable (src/Traits/PlanningJobTrait.php:238) #1346
+
+### Depreciations
+
+* MT52843: Fix some depreciations (Use of Request::get, to be continued) #1352
+
 ## Version 25.11.20 (2026-03-20)
 
 > Planno is compatible with PHP 8.2 and 8.3
