@@ -1,5 +1,13 @@
 # Changelog Planno
 
+## Version 25.10.16 (2026-04-03)
+
+### Fixes
+
+* MT52796: Fix Undefined variable (src/Traits/PlanningJobTrait.php:243) #1346
+
+### Security
+
 ## Version 25.10.15 (2026-03-20)
 
 ### Fixes
