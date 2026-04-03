@@ -1,0 +1,43 @@
+{# crontab/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+
+<h3>Ordonnanceur</h3>
+
+  {% if elements %}
+    <table class="CJDataTable" data-sort="[[1],[2]]" id="CronInfoTable">
+      <thead>
+        <tr>
+          <th class="dataTableNoSort"></th>
+          <th class="dataTableNoSort">Activée</th>
+          <th>Nom</th>
+          <th>Commande</th>
+          <th>Description</th>
+          <th>Planification</th>
+          <th>Dernière execution</th>
+        </tr>
+      </thead>
+      <tbody>
+          {%for elem in elements %}
+            <tr>
+              <td>
+                <a href="{{ path('crontab.edit', {id: elem.cron.id}) }}">
+                  <span class="pl-icon pl-icon-edit" title="Edit"></span>
+                </a>
+              </td>
+              <td><input type="checkbox" id="enabled{{ elem.cron.id }}" onclick="disableCron('{{ elem.cron.id }}')" value="1" {% if elem.cron.disabled != 1 %}  checked="checked" {% endif %} /></td>
+              <td>{{ elem.cron.name }}</td>
+              <td>{{ elem.cron.command }}</td>
+              <td>{{ elem.cron.comment }}</td>
+              <td>{{ elem.resume }}</td>
+              <td class="dataTableDateFR">{{ elem.cron.last | dateOrNull('d/m/Y H:i:s') }}</td>
+            </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    Aucune information enregistrée.
+  {% endif %}
+{% endblock %}
