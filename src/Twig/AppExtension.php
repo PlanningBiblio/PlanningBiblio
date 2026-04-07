@@ -2,6 +2,7 @@
 
 namespace App\Twig;
 
+use App\Entity\Site;
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
 use Twig\Extension\AbstractExtension;
@@ -117,15 +118,10 @@ class AppExtension extends AbstractExtension
         return in_array( $right + $site, $droits );
     }
 
-    public function siteName($site = 1)
+    public function siteName($site = 1): string
     {
-        $config = $GLOBALS['config'];
-
-        if (!empty($config['Multisites-site' . $site])) {
-            return $config['Multisites-site' . $site];
-        }
-
-        return '';
+        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+        return $s ? $s->getName() : '';
     }
 
     public function hoursToDays($hours, $perso_id): string
@@ -275,11 +271,12 @@ class AppExtension extends AbstractExtension
             return '';
         }
 
-        $config = $GLOBALS['config'];
-
         $displayedSites = [];
         foreach ($sites as $site) {
-            $displayedSites[] = $config['Multisites-site' . $site];
+            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+            if ($s !== null) {
+                $displayedSites[] = $s->getName();
+            }
         }
 
         return implode(', ', $displayedSites);

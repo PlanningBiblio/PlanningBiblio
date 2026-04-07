@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use App\Entity\Site;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -53,9 +54,10 @@ class PositionController extends BaseController
             $postes[] = $poste;
         }
 
-        $nbMultisite = $this->config('Multisites-nombre');
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites=count($sites);
         $this->templateParams(array(
-            'multisite'     => $nbMultisite,
+            'multisite'     => $nbSites,
             'usedPositions' => $postes_utilises,
             'CSRFSession'   => $GLOBALS['CSRFSession']
         ));
@@ -89,8 +91,9 @@ class PositionController extends BaseController
                 $activitesAffichees.=" ...";
             }
 
-            if ($nbMultisite>1) {
-                $site = $this->config("Multisites-site{$value->getSite()}") ? $this->config("Multisites-site{$value->getSite()}") :"-";
+            if ($nbSites>1) {
+                $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($value->getSite());
+                $site = $s->getName() ? $s->getName() :"-";
                 $new['site'] = $site;
             }
             $new['nom'] =  $value->getName();
@@ -208,14 +211,15 @@ class PositionController extends BaseController
         $db->select2("select_categories", "*", "1", "order by rang");
         $categories_list = $db->result;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites = $this->entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites);
         $multisite = array();
         $selectedSites = array();
 
         if ($nbSites>1){
-            for ($i = 1; $i<= $nbSites; $i++) {
-                $selected = $site==$i?"selected='selected'":null;
-                $multisite[] = $this->config("Multisites-site{$i}");
+            foreach ($sites as $site) {
+                $selected = $site==$site->getId()?"selected='selected'":null;
+                $multisite[] = $site->getName();
                 $selectedSites[] = $selected;
             }
         }

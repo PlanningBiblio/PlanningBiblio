@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\ConfigRepository;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ConfigRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'config')]
 class Config
 {
@@ -22,9 +22,6 @@ class Config
     private ?string $type = 'text';
 
     #[ORM\Column(length: 255)]
-    private ?string $valeur = null;
-
-    #[ORM\Column(length: 255)]
     private ?string $commentaires = '';
 
     #[ORM\Column(length: 255)]
@@ -38,6 +35,18 @@ class Config
 
     #[ORM\Column]
     private ?int $ordre = 0;
+
+    #[ORM\OneToMany(mappedBy: 'config', targetEntity: TechnicalConfig::class)]
+    private Collection $technicalConfig;
+
+    #[ORM\OneToMany(mappedBy: 'config', targetEntity: NetworkConfig::class)]
+    private Collection $networkConfig;
+
+    public function __construct()
+    {
+        $this->technicalConfig = new ArrayCollection();
+        $this->networkConfig = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -116,18 +125,6 @@ class Config
         return $this;
     }
 
-    public function getValue(): ?string
-    {
-        return $this->valeur;
-    }
-
-    public function setValue(?string $value): static
-    {
-        $this->valeur = $value;
-
-        return $this;
-    }
-
     public function getValues(): ?string
     {
         return $this->valeurs;
@@ -138,5 +135,15 @@ class Config
         $this->valeurs = $values;
 
         return $this;
+    }
+
+    public function getTechnicalConfig(): Collection
+    {
+        return $this->technicalConfig;
+    }
+
+    public function getNetworkConfig(): Collection
+    {
+        return $this->networkConfig;
     }
 }

@@ -3,9 +3,10 @@
 namespace App\Command;
 
 use App\Entity\Agent;
+use App\Entity\NetworkConfig;
 use App\Entity\Holiday;
 use App\Entity\Manager;
-use App\Entity\Config;
+use App\Planno\ConfigFinder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -21,10 +22,12 @@ class HolidayReminderCommand extends Command
 {
     use \App\Traits\LoggerTrait;
     private $entityManager;
+    private ConfigFinder $configFinder;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, ConfigFinder $configFinder)
     {
         $this->entityManager = $entityManager;
+        $this->configFinder = $configFinder;
         parent::__construct();
     }
 
@@ -47,7 +50,7 @@ Exemple à ajouter en crontab :
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->entityManager->getRepository(Config::class)->getAll();
+        $config = $this->configFinder->getAll(NetworkConfig::class, $_SESSION['network']['id']);
 
         if (!$config['Conges-Rappels']) {
             $message = 'Holiday reminder is disabled.';

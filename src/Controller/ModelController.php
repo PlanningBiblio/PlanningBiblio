@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use App\Entity\Site;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,6 +21,7 @@ class ModelController extends BaseController
     public function index(Request $request, Session $session)
     {
         $all_models = $this->entityManager->getRepository(Model::class)->findAll();
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
 
         $models = array();
         foreach ($all_models as $model) {
@@ -33,11 +35,11 @@ class ModelController extends BaseController
             }
         }
 
-        $multi_sites = $this->config('Multisites-nombre') > 1 ? 1 : 0;
+        $multi_sites = count($sites_array) > 1 ? 1 : 0;
         $sites = array();
         if ($multi_sites !== 0) {
-            for ($i=1; $i < $this->config('Multisites-nombre')+1; $i++) {
-                $sites[$i] = $this->config("Multisites-site$i");
+            foreach ($sites_array as $site) {
+                $sites[$site->getId()] = $site->getName();
             }
         }
 

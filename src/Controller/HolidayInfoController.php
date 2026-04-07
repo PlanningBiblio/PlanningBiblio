@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use App\Entity\Site;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -145,8 +146,9 @@ class HolidayInfoController extends BaseController
     private function isAdmin(): bool
     {
         $droits = $GLOBALS['droits'];
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
 
-        for ($i = 1; $i <= $this->config('Multisites-nombre') ; $i++) {
+        for ($i = 1; $i <= count($sites) ; $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
                 return true;
             }

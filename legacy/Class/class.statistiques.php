@@ -1,4 +1,7 @@
 <?php
+
+use App\Entity\Site;
+
 /**
 Description :
 Classe statistiques
@@ -14,35 +17,24 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
     $titre="Statistiques par $nom du $debutAlpha au $finAlpha";
 
     $lignes=array($titre,null,"Postes");
+    $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
     if ($nom=="agent") {
         $cellules=array("Nom","Prénom","Heures","Moyenne hebdo");
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-                $cellules[]="Heures ".$GLOBALS['config']["Multisites-site{$i}"];
-                $cellules[]="Moyenne ".$GLOBALS['config']["Multisites-site{$i}"];
-            }
-        }
-        $cellules[]="Poste";
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            $cellules[]="Site";
-        }
-        $cellules=array_merge($cellules, array("Etage","Heures par poste"));
-        $lignes[]=implode($separateur, $cellules);
     } else {
         $cellules=array(ucfirst($nom),"Heures","Moyenne hebdo");
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-                $cellules[]="Heures ".$GLOBALS['config']["Multisites-site{$i}"];
-                $cellules[]="Moyenne ".$GLOBALS['config']["Multisites-site{$i}"];
-            }
-        }
-        $cellules[]="Poste";
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            $cellules[]="Site";
-        }
-        $cellules=array_merge($cellules, array("Etage","Heures par poste"));
-        $lignes[]=implode($separateur, $cellules);
     }
+    if (count($sites)>1) {
+        foreach ($sites as $site) {
+            $cellules[]="Heures ".$site->getName();
+            $cellules[]="Moyenne ".$site->getName();
+        }
+    }
+    $cellules[]="Poste";
+    if (count($sites)>1) {
+        $cellules[]="Site";
+    }
+    $cellules=array_merge($cellules, array("Etage","Heures par poste"));
+    $lignes[]=implode($separateur, $cellules);
 
     $neverSelected = array();
     if ($nom == 'agent' and !empty ($tab['neverSelected'])) {
@@ -63,8 +55,8 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
             }
             $cellules[]=number_format($elem[2], 2, ',', ' ');	// Nombre d'heures
             $cellules[]=number_format($hebdo, 2, ',', ' ');	// moyenne hebdo
-            if ($GLOBALS['config']['Multisites-nombre']>1) {
-                for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
+            if (count($sites)>1) {
+                for ($i=1;$i<=count($sites);$i++) {
                     $jour = ($nbJours > 0) ? $elem['sites'][$i] / $nbJours : 0;
                     $site_hebdo = statistiques::average($elem['sites'][$i], $debut, $fin);
                     $cellules[]=number_format($elem["sites"][$i], 2, ',', ' ');
@@ -73,10 +65,11 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
             }
             $cellules[]=$poste[1];				// Nom du poste
             $site=null;
-            if ($poste["site"]>0 and $GLOBALS['config']['Multisites-nombre']>1) {
-                $site=$GLOBALS['config']["Multisites-site{$poste['site']}"]." ";
+            if ($poste["site"]>0 and count($sites)>1) {
+                $siteName = $GLOBALS['entityManager']->getRepository(Site::class)->find($poste['site']);
+                $site=$siteName." ";
             }
-            if ($GLOBALS['config']['Multisites-nombre']>1) {
+            if (count($sites)>1) {
                 $cellules[]=$site;
             }
             $cellules[]=$poste[2];				// Etage
@@ -348,13 +341,14 @@ class statistiques
         $totalJours=array();
         $totalSemaines=array();
 
-        if ($GLOBALS['config']['Multisites-nombre']>1 and is_array($selectedSites)) {
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        if (count($sites)>1 and is_array($selectedSites)) {
             $reqSites="AND `site` IN (0,".implode(",", $selectedSites).")";
         } else {
             $reqSites=null;
         }
 
-        for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
+        for ($i=1;$i<=count($sites);$i++) {
             // Nombre d'heures
             $totalHeures[$i]=0;
             $db=new db();
@@ -384,10 +378,10 @@ class statistiques
         }
 
         $echo="<p style='margin-top:0px;'>";
-        for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-            if ($GLOBALS['config']['Multisites-nombre']>1) {
+        for ($i=0;$i<=count($sites)-1;$i++) {
+            if (count($sites)>1) {
                 if (in_array($i, $selectedSites)) {
-                    $echo.="<br/>" . htmlspecialchars($GLOBALS['config']["Multisites-site$i"]) . ", ouverture au public : ";
+                    $echo.="<br/>" . $sites[$i]->getName() . ", ouverture au public : ";
                 }
             } else {
                 $echo.="<br/>Ouverture au public : ";
