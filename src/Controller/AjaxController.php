@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Entity\Config;
 use App\Entity\Agent;
+use App\Entity\Site;
 use App\Planno\Helper\AbsenceBlockHelper;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -46,9 +47,10 @@ class AjaxController extends BaseController
             ->getManagedFor($session->get('loginId'));
 
         $agents = array();
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
         foreach ($managed as $m) {
             if ($m->getId() == $session->get('loginId') ||
-                $this->config('Multisites-nombre') == 1 ||
+                count($sites_array) == 1 ||
                 ($sites && $m->inOneOfSites($sites))) {
 
                 $agents[] = array(

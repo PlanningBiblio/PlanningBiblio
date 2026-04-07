@@ -66,11 +66,25 @@ $dbprefix = $config['dbprefix'];
 
 include 'db.php';
 
-// Get config values from DB
+//config technique
 $db = new db();
-$db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `id`;");
-foreach ($db->result as $elem) {
-  $config[$elem['nom']] = $elem['valeur'];
+$db->query("SELECT nom, value FROM `{$dbprefix}technical_config` ct JOIN `{$dbprefix}config` c ON ct.config_id=c.id");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $config[$elem['nom']] = $elem['value'];
+    }
+}
+
+//config réseau
+$db = new db();
+$network = isset($_SESSION['network']['id']) ? (int) $_SESSION['network']['id'] : null;
+if ($network !== null) {
+    $db->query("SELECT nom, value FROM `{$dbprefix}network_config` cr JOIN  `{$dbprefix}config` c ON cr.config_id=c.id WHERE network_id = $network");
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $config[$elem['nom']] = $elem['value'];
+        }
+    }
 }
 
 /** Get custom options

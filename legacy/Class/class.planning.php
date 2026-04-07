@@ -13,6 +13,7 @@ use App\Entity\PlanningPositionHours;
 use App\Entity\PlanningPosition;
 use App\Entity\Position;
 use App\Entity\SelectStatus;
+use App\Entity\Site;
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 
@@ -550,12 +551,14 @@ class planning
         }
 
         $sujet=$notificationType=="nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
+        $sites_array = $entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
 
         // Tous les agents qui doivent être notifiés.
         foreach ($perso_ids as $elem) {
             // Création du message avec date et nom de l'agent
             $agent = isset($tab[$elem]) ? $tab[$elem]['prenom'].' '.$tab[$elem]['nom'] : $oldData[$elem]['prenom'].' '.$oldData[$elem]['nom'];
-            $location = $GLOBALS['config']['Multisites-nombre'] > 1 ? '<br/>Site : <strong>' . $GLOBALS['config']["Multisites-site{$site}"] . '</strong>' : null;
+            $siteName = $entityManager->getRepository(Site::class)->find($site)->getName();
+            $location = count($sites_array) > 1 ? '<br/>Site : <strong>' . $siteName . '</strong>' : null;
 
             $message=$notificationType=="nouveauPlanning"?"Validation du planning":"Modification du planning";
             $message .= "<br/><br/>Agent : <strong>$agent</strong>";
