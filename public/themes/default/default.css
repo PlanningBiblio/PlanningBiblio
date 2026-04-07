@@ -1953,10 +1953,11 @@ input::placeholder {
 /* Bootstrap Grid START */
 
 .row {
-  min-height: 45px;
+  min-height: 60px;
 }
 
 .row.row-sortable {
+  min-height: 45px;
   border: 1px solid;
   margin-bottom: -1px;
   align-items: center;
@@ -2044,7 +2045,7 @@ table.dataTable th{
   padding: 20px;
 }
 
-.admin-div select {
+.admin-div select, .admin-div input {
   width: 200px;
 }
 
@@ -2310,7 +2311,7 @@ table.dataTable th{
 }
 
 #workinghour_tables h3 {
-  margin: 40px 0 15px 0;
+  margin: 15px 0 15px 0;
 }
 
 #workinghour_tables table {
