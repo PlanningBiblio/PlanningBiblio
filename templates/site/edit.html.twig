@@ -1,0 +1,84 @@
+{# site/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+
+    <h3>{{ id ? "Modification du site" : "Ajout d'un site" }}</h3>
+
+    <form id='site_form' method='post' action="{{ asset('site') }}" name='form'>
+        <input type='hidden' name='id' value='{{ id ?? "" }}'/>
+
+        <div style='margin-left:70px; padding-top:30px;'>
+            <table class='tableauFiches'>
+                <tr>
+                    <td style='width:200px;'>Nom du site :</td>
+                    <td>
+                        <input type='text' name='name' value='{{ site_name ?? "" }}' style='width:300px;'
+                               class='ui-widget-content ui-corner-all' required/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style='vertical-align:top; padding-top:8px;'>Adresses e-mail :</td>
+                    <td style="padding: 0;">
+                        <table id='mails-table'>
+                            {% for mail in mails %}
+                                <tr class='tr-mail'>
+                                    <td>
+                                        <input type='text' name='mail_{{ loop.index }}' value='{{ mail }}'
+                                               style='width:300px;' class='ui-widget-content ui-corner-all'
+                                               placeholder='adresse@exemple.fr'/>
+                                    </td>
+                                    <td style='padding-left:8px;'>
+                                        <span class='pl-icon pl-icon-trash' title='Supprimer' style='cursor:pointer;'
+                                              onclick="$(this).closest('tr').remove(); reindexMails();"></span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+
+                        <span class='pl-icon pl-icon-add' title='Ajouter un mail'
+                              style='cursor:pointer; margin-top:6px; display:inline-block;'
+                              onclick="ajouterMail()"></span>
+                    </td>
+                </tr>
+            </table>
+
+            <br/><br/>
+            <a href='{{ asset("site") }}' class='btn btn-secondary'>Annuler</a>
+            &nbsp;&nbsp;&nbsp;
+            <input type='submit' value='Valider' class='btn btn-primary'/>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block specificjs %}
+    <script type="text/javascript">
+
+        let mailIndex = {{ mails | length }} +1;
+
+        function ajouterMail() {
+            const tr = $('<tr class="tr-mail">'
+                + '<td>'
+                + '<input type="text" name="mail_' + mailIndex + '" value="" '
+                + 'style="width:300px;" class="ui-widget-content ui-corner-all" placeholder="adresse@exemple.fr"/>'
+                + '</td>'
+                + '<td style="padding-left:8px;">'
+                + '<span class="pl-icon pl-icon-trash" title="Supprimer" style="cursor:pointer;" '
+                + 'onclick="$(this).closest(\'tr\').remove(); reindexMails();"></span>'
+                + '</td>'
+                + '</tr>');
+            $('#mails-table').append(tr);
+            mailIndex++;
+        }
+
+        function reindexMails() {
+            let $mails = $('#mails-table tr.tr-mail');
+            $mails.each(function (i) {
+                $(this).find('input[type="text"]').attr('name', 'mail_' + (i + 1));
+            });
+            mailIndex = $mails.length + 1;
+        }
+    </script>
+{% endblock %}

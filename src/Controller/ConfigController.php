@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\Config;
+use App\Entity\NetworkConfig;
+use App\Entity\TechnicalConfig;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -17,35 +19,33 @@ class ConfigController extends BaseController
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
-        $url = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'URL'])
+        $url = $this->configFinder->findOneByConfigName(TechnicalConfig::class, 'URL')
             ->getValue();
 
         $technical = $request->get('options') == 'technical' ? 1 : 0;
 
-        $configParams = $this->entityManager->getRepository(Config::class)->findBy(
-            array('technical' => $technical),
-            array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
-        );
+        $entityClass = $technical ? TechnicalConfig::class : NetworkConfig::class;
+        $networkId = $technical ? null : $_SESSION['network']['id'];
+        $configParams = $this->configFinder->findByType($entityClass, $networkId);
 
         $elements = array();
         foreach ($configParams as $cp) {
 
             // Do not display hidden information
-            if ($cp->getType() == 'hidden') {
+            if ($cp->getConfig()->getType() == 'hidden') {
                 continue;
             }
 
             $elem = array(
-                'type'          => $cp->getType(),
-                'nom'           => $cp->getName(),
+                'type'          => $cp->getConfig()->getType(),
+                'nom'           => $cp->getConfig()->getName(),
                 'valeur'        => html_entity_decode($cp->getValue(), ENT_QUOTES|ENT_HTML5),
-                'valeurs'       => html_entity_decode($cp->getValues(), ENT_QUOTES|ENT_HTML5),
-                'categorie'     => $cp->getCategory(),
-                'commentaires'  => html_entity_decode($cp->getComment(), ENT_QUOTES|ENT_HTML5),
+                'valeurs'       => html_entity_decode($cp->getConfig()->getValues(), ENT_QUOTES|ENT_HTML5),
+                'categorie'     => $cp->getConfig()->getCategory(),
+                'commentaires'  => html_entity_decode($cp->getConfig()->getComment(), ENT_QUOTES|ENT_HTML5),
             );
 
-            if ($cp->getType() == 'password') {
+            if ($cp->getConfig()->getType() == 'password') {
                 $elem['valeur']=decrypt($elem['valeur']);
             }
             switch ($elem['type']) {
@@ -79,7 +79,7 @@ class ConfigController extends BaseController
             $elem['commentaires'] = str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
             $elem['commentaires'] = str_replace("[SERVER]", $url, $elem['commentaires']);
             $category = str_replace('_', '', $elem['categorie']);
-            $elements[$category][$cp->getName()] = $elem;
+            $elements[$category][$cp->getConfig()->getName()] = $elem;
         }
 
         $this->templateParams(array(
@@ -111,27 +111,26 @@ class ConfigController extends BaseController
 
             $technical = $request->get('technical');
 
-            $configParams = $this->entityManager->getRepository(Config::class)->findBy(
-                array('technical' => $technical),
-                array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
-            );
+            $entityClass = $technical ? TechnicalConfig::class : NetworkConfig::class;
+            $networkId = $technical ? null : $_SESSION['network']['id'];
+            $configParams = $this->configFinder->findByType($entityClass, $networkId);
 
             foreach ($configParams as $cp) {
-                if (in_array($cp->getType(), ['hidden', 'info'])) {
+                if (in_array($cp->getConfig()->getType(), ['hidden', 'info'])) {
                     continue;
                 }
                 // boolean and checkboxes elements.
-                if (!isset($params[$cp->getName()])) {
-                    $params[$cp->getName()] = $cp->getType() == 'boolean' ? '0' : array();
+                if (!isset($params[$cp->getConfig()->getName()])) {
+                    $params[$cp->getConfig()->getName()] = $cp->getConfig()->getType() == 'boolean' ? '0' : array();
                 }
-                $value = $params[$cp->getName()];
+                $value = $params[$cp->getConfig()->getName()];
 
                 if (is_string($value)) {
                     $value = trim($value);
                 }
 
                 // Passwords
-                if (substr($cp->getName(), -9) == '-Password') {
+                if (substr($cp->getConfig()->getName(), -9) == '-Password') {
                     $value = encrypt($value);
                 }
                 // Checkboxes
@@ -139,7 +138,7 @@ class ConfigController extends BaseController
                     $value = json_encode($value);
                 }
 
-                if ($cp->getType() == 'color') {
+                if ($cp->getConfig()->getType() == 'color') {
                     $value = filter_var($value, FILTER_CALLBACK, ['options' => 'sanitize_color']);
                 }
 
