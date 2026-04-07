@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 
 use App\Entity\Agent;
 
+use App\Entity\Site;
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
 use App\Planno\Helper\WeekPlanningHelper;
@@ -618,6 +619,7 @@ class HolidayController extends BaseController
         }
 
         $lang = $GLOBALS['lang'];
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
         $templateParams = array(
             'admin'                 => $admin || $adminN2,
             'adminN1'               => $admin,
@@ -657,6 +659,7 @@ class HolidayController extends BaseController
             'selected_agent_id'     => $perso_id,
             'sites_select'          => $sites_select,
             'show_allday'           => $show_allday,
+            'multisites'            => count($sites_array)>1,
         );
 
         $this->templateParams($templateParams);
@@ -687,8 +690,9 @@ class HolidayController extends BaseController
         $droits = $GLOBALS['droits'];
         $admin = false;
         $sites = array();
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
 
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
                 $admin = true;
                 $sites[] = $i;

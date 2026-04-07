@@ -3,6 +3,8 @@
 namespace App\EventListener;
 
 use App\Entity\Config;
+use App\Entity\TechnicalConfig;
+use App\Planno\ConfigFinder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,11 +13,11 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class LoginListener
 {
-    private EntityManagerInterface $entityManager;
+    private ConfigFinder $configFinder;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(ConfigFinder $configFinder)
     {
-        $this->entityManager = $em;
+        $this->configFinder = $configFinder;
     }
 
     public function onKernelRequest(RequestEvent $event): void
@@ -25,8 +27,8 @@ class LoginListener
 
         $session = $event->getRequest()->getSession();
 
-        $config = $this->entityManager->getRepository(Config::class);
-        $url = $config->findOneBy(array('nom' => 'URL'))->getValue();
+        $config = $this->configFinder->findOneByConfigName(TechnicalConfig::class, 'URL');
+        $url = $config->getValue() ?? '';
 
         // Prevent user accessing to login page if he is already authenticated
         if (!empty($session->get('loginId')) and $route == 'login') {
@@ -60,11 +62,13 @@ class LoginListener
 
             // Anonymous login
             $login = $event->getRequest()->get('login');
-            if ($login and $login === 'anonyme' and $config->findOneBy(array('nom' => 'Auth-Anonyme'))->getValue()) {
+            $anonymousAuthConfig = $this->configFinder->findOneByConfigName(TechnicalConfig::class, 'Auth-Anonyme');
+            if ($login and $login === 'anonyme' and $anonymousAuthConfig !== null and $anonymousAuthConfig->getValue()) {
                 $_SESSION['login_id']=999999999;
                 $_SESSION['login_nom']="Anonyme";
                 $_SESSION['login_prenom']="";
                 $_SESSION['oups']["Auth-Mode"]="Anonyme";
+                $_SESSION['network'] = ['id' => 1, 'name' => 'Anonyme'];
 
                 // Symfony Session
                 $session->set('loginId', 9999999999);
