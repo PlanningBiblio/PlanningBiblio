@@ -803,13 +803,14 @@ $(function(){
     $('.datepicker.f').on('change',function() {
       var debut = $('.datepicker.d').bootstrapDP('getDate');
       var fin = $(this).bootstrapDP('getDate');
+      var submit = $(this).closest('form').find(':submit');
 
       $('.datepicker.d').removeClass('is-invalid');
-      $('#submit-search').removeClass('disabled');
+      submit.removeClass('disabled');
 
       if(debut && fin < debut) {
         $(this).addClass('is-invalid');
-        $('#submit-search').addClass('disabled');
+        submit.addClass('disabled');
       }
 
       else {
@@ -820,13 +821,14 @@ $(function(){
     $('.datepicker.d').on('change',function() {
       var debut = $(this).bootstrapDP('getDate');
       var fin = $('.datepicker.f').bootstrapDP('getDate');
+      var submit = $(this).closest('form').find(':submit');
 
       $('.datepicker.f').removeClass('is-invalid');
-      $('#submit-search').removeClass('disabled');
+      submit.removeClass('disabled');
 
       if(fin && debut > fin) {
         $(this).addClass('is-invalid');
-        $('#submit-search').addClass('disabled');
+        submit.addClass('disabled');
       }
 
       else {

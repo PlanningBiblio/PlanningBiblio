@@ -36,33 +36,36 @@
               {% else %}
                 <h3>Nouveaux horaires</h3>
               {% endif %}
-              <div id='plHebdo-perso-id'>
+              <div id="plHebdo-perso-id">
                 {% if managed | length > 1 and request_exception is null %}
-                  <label for='perso_id'>Pour l'agent</label>
-                  <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:400px; text-align:center;' >
-                    <option value=''>&nbsp;</option>
+                <div class="row">
+                <label class="col-2 col-form-label" for="perso_id">Pour l'agent</label>
+                <div class="col-4">
+                  <select name="perso_id" class="ui-widget-content ui-corner-all" id="perso_id" style="text-align:center;" >
+                    <option hidden disabled selected value=""></option>
                     {% for m in managed %}
-                      <option value='{{ m.id }}' {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.lastname }} {{ m.firstname }}</option>
+                      <option value="{{ m.id }}" {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.lastname }} {{ m.firstname }}</option>
                     {% endfor %}
                   </select>
                 {% else %}
-                  <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
+                  <input type="hidden" name="perso_id" value="{{ perso_id }}" id="perso_id" />
                 {% endif %}
               </div>
+            </div>
             {% endif %}
-            <div id='periode'>
-              <div class="row" style="height: 60px;">
-                <label class="col-auto col-form-label" for="debut">Début d'utilisation</label>
+            <div id="periode">
+              <div class="row">
+                <label class="col-2 col-form-label" for="debut">Début d'utilisation</label>
                 <div class="col-4">
-                  <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker form-control d m-0" style="position:sticky; left:400px; width:200px;" placeholder="jj/mm/aaaa" />
-                  <div class="invalid-feedback" style="position:absolute; left:400px;">La date de début doit être inférieure à la date de fin.</div>
+                  <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker form-control d m-0" placeholder="jj/mm/aaaa" />
+                  <div class="invalid-feedback">{% trans %}The start date must be earlier than the end date.{% endtrans %}</div>
                 </div>
               </div>
               <div class="row">
-                <label class="col-auto col-form-label" for="fin">Fin d'utilisation</label>
+                <label class="col-2 col-form-label" for="fin">Fin d'utilisation</label>
                 <div class="col-4">
-                  <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker form-control f m-0" style="position:sticky; left:400px; width:200px;" placeholder="jj/mm/aaaa" />
-                  <div class="invalid-feedback" style="position:absolute; left:400px;">La date de fin doit être supérieure à la date de début.</div>
+                  <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker form-control f m-0" placeholder="jj/mm/aaaa" />
+                  <div class="invalid-feedback">{% trans %}The end date must be later than the start date.{% endtrans %}</div>
                 </div>
               </div>
             </div> <!-- id=periode -->
