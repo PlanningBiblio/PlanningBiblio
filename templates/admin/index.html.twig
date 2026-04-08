@@ -42,5 +42,9 @@
     {% if userCan('20') %}
       <li><a href="{{ path('config.index', {'options': 'technical'}) }}">Configuration fonctionnelle technique</a></li>
     {% endif %}
+
+    {% if userCan('20') %}
+      <li><a href="{{ path('crontab.index') }}">Ordonnanceur</a></li>
+    {% endif %}
   </ul>
 {% endblock %}
