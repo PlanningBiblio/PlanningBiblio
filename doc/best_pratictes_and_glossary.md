@@ -51,6 +51,7 @@
 | floor | etage |
 | finished | end | for RecurringAbsence |
 | firstname | prenom |
+| friday | vendredi |
 | group | groupe |
 | groupId | groupe_id |
 | halfDay | halfday | type int |
@@ -81,6 +82,7 @@
 | manager | responsable |
 | managersMails | mails_responsables |
 | mandatory | obligatoire |
+| monday | lundi |
 | modelId | model_id |
 | msGraphCheck | check_ms_graph |
 | number | numero |
@@ -106,14 +108,18 @@
 | replace | remplace |
 | requestDate | demande |
 | rRule| rrule |
+| saturday | samedi |
 | site | site |
 | sites | sites |
 | skills | postes | for Agents |
 | start | debut |
 | statistics | statistiques |
 | status | etat, statut |
+| sunday | dimanche |
 | table | tableau |
 | teleworking | teleworking |
+| thursday | jeudi |
+| tuesday | mardi |
 | user | agent |
 | userId | perso_id or agent_id or agentId |
 | validLevel1 | valide_n1 |
@@ -122,6 +128,7 @@
 | validLevel2Date | validation or validation_n2 |
 | value | valeur |
 | values | valeurs |
+| wednesday | mercredi |
 | week | semaine |
 | weeklyWorkingHours | heures_travail | For Agent |
 | workingHours | temps |
