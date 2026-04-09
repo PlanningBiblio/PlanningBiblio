@@ -23,6 +23,7 @@ use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
 use App\Planno\Ldif2Array;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -1331,26 +1332,25 @@ class AgentController extends BaseController
         return $results;
     }
 
-    #[Route(path: '/agent', name: 'agent.delete', methods: ['DELETE'])]
-    public function deleteAgent(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
+    #[Route(path: '/agent/delete', name: 'agent.delete', methods: ['POST'])]
+    public function deleteAgent(Request $request, Session $session): RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
-            $response = new Response();
-            $response->setContent('CSRF token error');
-            $response->setStatusCode(400);
-            return $response;
+            return $this->redirectToRoute('agent.index');
         }
 
         // Initialisation des variables
-        $id = $request->get('id');
-        $date = $request->get('date');
+        $id = $request->request->getInt('id');
+        $date = $request->request->get('date');
 
         // Disallow admin deletion
         if ($id == 1) {
-            return $this->json('error');
+            $this->addFlash('error', 'L\'agent 1 ne peut être supprimé.');
+            return $this->redirectToRoute('agent.index');
+        }
 
         // If the date parameter is given, even if empty : deletion level 1
-        } elseif ($date !== null) {
+        if ($date !== null) {
             $date = dateSQL($date);
             // Mise à jour de la table personnel
             $agent = $this->entityManager->getRepository(Agent::class)->find($id);
@@ -1368,13 +1368,15 @@ class AgentController extends BaseController
             // Deletes manager links by agent or responsible IDs.
             $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable([$id]);
 
-            return $this->json('level 1 delete OK');
+            $this->addFlash('notice', 'L\'agent a bien été supprimé.');
+            return $this->redirectToRoute('agent.index');
 
         // If the date parameter is not given : deletion level 2
         } else {
             $this->entityManager->getRepository(Agent::class)->delete($id);
 
-            return $this->json('permanent delete OK');
+            $this->addFlash('notice', 'L\'agent a été supprimé définitivement.');
+            return $this->redirectToRoute('agent.index');
         }
     }
 
