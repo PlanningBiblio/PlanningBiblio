@@ -117,41 +117,6 @@ function agent_list() {
   }
 }
 
-function deleteAgent() {
-  var date = $('#delete-date').val();
-
-  var data = {
-    _token: $('input[name=_token]').val(),
-    id: $('#agentId').val(),
-  };
-
-  if ($('#permanentDelete').val() == 0) {
-    data.date = date;
-  }
-
-  $.ajax({
-    url : url('agent'),
-         type : 'DELETE',
-         data : data,
-         success: function(response) {
-           if (response == "level 1 delete OK") {
-             var msg = encodeURI("L'agent a bien été supprimé.");
-             parent.location.href=url('agent') + '?msg=' + msg + '&msgType=success';
-           } else if (response == "permanent delete OK") {
-             var msg = encodeURI("L'agent a été supprimé définitivement.");
-             parent.location.href=url('agent') + '?msg=' + msg + '&msgType=success';
-           } else {
-             var msg = encodeURI("Une erreur est survenue lors de la suppresion de l'agent.");
-             parent.location.href=url('agent') + '?msg=' + msg + '&msgType=error';
-           }
-         },
-         error: function() {
-           var msg = encodeURI("Une erreur est survenue lors de la suppresion de l'agent.");
-           parent.location.href=url('agent') + '?msg=' + msg + '&msgType=error';
-         }
-  });
-}
-
 function changeSelectSites(){
   // Tous les sites
   sites=new Array();
@@ -750,8 +715,8 @@ $(document).ready(function(){
     var agentId = $(this).data('id');
     var agentName = $(this).data('name');
 
-    $('#agentId').val(agentId);
-    $('#deleteDialog').dialog('open');
+    $('.agentId').val(agentId);
+    $('#delete-agent-modal').modal('show');
 
     if ($('#showAgentSelect').val() != 'Supprimé') {
       $('#permanentDelete').val(0);
@@ -762,40 +727,4 @@ $(document).ready(function(){
     }
   });
 
-  $('#deleteDialog').dialog({
-    autoOpen: false,
-    modal: true,
-    width: 400,
-    height: 260,
-    buttons: {
-      Non: function() {
-        $(this).dialog('close');
-      },
-      Oui: function(e) {
-        e.preventDefault();
-
-        if ($('#permanentDelete').val() == 0) {
-          $("#deleteDialog").dialog('close');
-          $("#deleteStep2Dialog").dialog('open');
-        } else {
-          deleteAgent();
-        }
-      }
-    }
-  });
-
-  $('#deleteStep2Dialog').dialog({
-    autoOpen: false,
-    modal: true,
-    width: 400,
-    height: 260,
-    buttons: {
-      Annuler: function() {
-        $(this).dialog('close');
-      },
-      Supprimer: function() {
-        deleteAgent();
-      }
-    }
-  });
 });

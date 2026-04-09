@@ -200,6 +200,7 @@ class AuthorizationsController extends BaseController
     #[Route(path: '/access-denied', name: 'access-denied', methods: ['GET'])]
     public function denied(Request $request): \Symfony\Component\HttpFoundation\Response
     {
+        // Managed by ControllerAuthorizationListener::triggerAccessDenied
         $content = $this->renderView('access-denied.html.twig');
         return new Response($content, 403);
     }

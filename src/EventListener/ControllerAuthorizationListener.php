@@ -119,12 +119,19 @@ class ControllerAuthorizationListener
         return false;
     }
 
-    private function triggerAccessDenied(RequestEvent $event): void{
+    private function triggerAccessDenied(RequestEvent $event): void
+    {
+        $request = $event->getRequest();
+        $session = $request->getSession();
+        $reason = $session->get('AccessDeniedReason', '');
+        $session->remove('AccessDeniedReason');
 
-        $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
+        $params = array_merge($this->templateParams, ['reason' => $reason]);
+
+        $content = $this->twig->render('access-denied.html.twig', $params);
 
         $response = new Response();
-        $response->setContent($body);
+        $response->setContent($content);
         $response->setStatusCode(403);
 
         $event->setResponse($response);

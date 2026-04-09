@@ -233,22 +233,62 @@
     </form>
   </div>
 
-  <div id="deleteDialog" style="display: none;">
-    <h3>Suppression</h3>
-    <form id="deleteForm">
-      <input type="hidden" name="agentId" id="agentId" value="" />
-      <input type="hidden" name="permanentDelete" id="permanentDelete" value="0" />
-      <p id="c-text"></p>
-    </form>
+  <div class="modal" id="delete-agent-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="delete-agent-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="delete-agent-modal-title">Supression d'un agent</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="text-align:center;">
+          
+          <p id="c-text"></p>
+          <form id="delete-agent-form" method="post" action="{{ path('agent.delete') }}" >
+            <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+            <input type="hidden" name="id" class="agentId" value="" />
+          </form>
+        </div>
+            <div class="modal-footer">
+              {% if active != "Supprimé" %}
+                <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-agent-validation-modal">Oui</button>
+              {% else %}
+                <button type="submit" class="btn btn-danger" form="delete-agent-form">Oui</button>
+              {% endif %}
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+            </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   {% if active != "Supprimé" %}
-    <div id="deleteStep2Dialog" style="display: none;">
-      <h3>Suppression</h3>
-      <form id="deleteStep2Form">
-        Sélectionner sa date de départ : 
-        <input type="text" name="date" id ="delete-date" value="{{ 'now' | date('d/m/Y') }}" class="datepicker checkdate" tabindex="-1">
-      </form>
+    <div class="modal" id="delete-agent-validation-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="delete-agent-validation-modal-title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="delete-agent-validation-modal-title">Supression d'un agent</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" style="min-height:86px">
+
+            <form id="delete-agent-validation-form" method="post" action="{{ path('agent.delete') }}" >
+              <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+              <input type="hidden" name="id" class="agentId" value="" />
+
+              <div class="row" style="align-content:center">
+                <label for="delete-date" class="col-sm-auto col-form-label">Sélectionner sa date de départ : </label>
+                <div class="col">
+                  <input type="text" class="form-control datepicker checkdate mt-1" id="delete-date" name="date" value="{{ 'now' | date('d/m/Y') }}" required>
+                </div>
+              </div>
+          </form>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-danger" form="delete-agent-validation-form">Supprimer</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          </div>
+        </div>
+      </div>
     </div>
   {% endif %}
 
