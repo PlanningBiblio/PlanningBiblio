@@ -2,6 +2,8 @@
 
 namespace App\Planno;
 
+use App\Entity\Site;
+
 class PresentSet
 {
     public $date;
@@ -39,9 +41,10 @@ class PresentSet
         }
 
         $presents = array();
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
         foreach ($this->db->result as $elem) {
             // Exclude agents who are not working on the request site
-            if ($config['Multisites-nombre'] > 1 and $this->site != 0 ) {
+            if (count($sites_array) > 1 and $this->site != 0 ) {
                 $agentSites = json_decode($elem['sites']);
                 if (!is_array($agentSites) or !in_array($this->site, $agentSites)) {
                     continue;
@@ -74,9 +77,10 @@ class PresentSet
             // S'il y a des horaires correctement renseignés
             $siteAgent=null;
             if ($heures and !in_array($elem['id'], $absents)) {
-                if ($config['Multisites-nombre']>1) {
+                if (count($sites_array)>1) {
                     if (!empty($heures[4])) {
-                        $siteAgent = $heures[4] == -1 ? "Tout site" : $config['Multisites-site'.$heures[4]];
+                        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($heures[4]);
+                        $siteAgent = $heures[4] == -1 ? "Tout site" : ($s ? $s->getName() : '');
                     }
                 }
                 $siteAgent=$siteAgent?$siteAgent.", ":null;

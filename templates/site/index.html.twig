@@ -1,0 +1,108 @@
+{# site/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+
+    <table style='margin:20px 0;'>
+        <tr style="vertical-align: top;">
+            <td style='width:270px'>
+                <h3 style='margin-top:0;'>Liste des sites</h3>
+            </td>
+            <td>
+                <input type="button" value="Ajouter" onclick="location.href='{{ asset('site/add') }}'"
+                       class='btn btn-primary'/>
+            </td>
+        </tr>
+    </table>
+
+    <table id='tableSites' class='CJDataTable' data-sort='[[1, "asc"]]'>
+        <thead>
+        <tr>
+            <th class='dataTableNoSort aLeft'>&nbsp;</th>
+            <th>Nom du site</th>
+            <th>Mails</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for site in sites %}
+            <tr>
+                <td style='white-space:nowrap;'>
+                    <div class="icon-div">
+                        <a href='{{ asset("site/") }}{{ site.id }}'>
+                            <span class='pl-icon pl-icon-edit' title='Modifier'></span>
+                        </a>
+                        &nbsp;
+                        {% if site.id != 1 %}
+                            <a href='#'>
+                            <span class='pl-icon pl-icon-dropblack delete-site' title='Supprimer'
+                                  data-id='{{ site.id }}' data-name='{{ site.name }}'></span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>{{ site.name }}</td>
+                <td title='{{ site.mails }}'>{{ site.mailsAffiches }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan='3'>Aucun site enregistré.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="deleteDialog" style="display:none;">
+        <p id="deleteDialogText"></p>
+    </div>
+
+{% endblock %}
+
+{% block specificjs %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#deleteDialog").dialog({
+                autoOpen: false,
+                modal: true,
+                title: "Suppression d'un site",
+                resizable: false,
+                width: 400,
+                buttons: {
+                    "Supprimer": function () {
+                        const id = $(this).data('site-id');
+
+                        $.ajax({
+                            url: url('site') + '/' + id,
+                            type: 'delete',
+                            success: function () {
+                                window.location.reload();
+                            },
+                            error: function (xhr) {
+                                let message = "Une erreur est survenue";
+                                if (xhr.responseJSON) {
+                                    message = xhr.responseJSON;
+                                }
+
+                                CJInfo(message, "error");
+                            }
+                        });
+
+                        $(this).dialog("close");
+                    },
+                    "Annuler": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            $(document).on('click', '.delete-site', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+
+                $('#deleteDialogText').text('Voulez-vous vraiment supprimer le site "' + name + '" ?');
+                $('#deleteDialog').data('site-id', id).dialog('open');
+            });
+
+        });
+    </script>
+{% endblock %}

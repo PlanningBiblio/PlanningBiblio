@@ -41,7 +41,7 @@
               <select name="group" class="ui-widget-content ui-corner-all">
                 <option value="">&nbsp;</option>
                 {% for group in groups %}
-                  {% if group.site == site or config('Multisites-nombre') < 2 %}
+                  {% if group.site == site or nbSites < 2 %}
                     <option value="{{ group.id }}">{{ group.nom }}</option>
                   {% endif %}
                 {% endfor %}

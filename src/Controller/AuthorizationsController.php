@@ -134,11 +134,17 @@ class AuthorizationsController extends BaseController
             // Log login and client IP if success login.
             loginSuccess($login, $CSRFToken);
             $db = new \db();
-            $db->select2("personnel", "id,nom,prenom", array("login"=>$login));
+            $db->select2("personnel", "id,nom,prenom,network_id", array("login"=>$login));
             if ($db->result) {
                 $_SESSION['login_id'] = $db->result[0]['id'];
                 $_SESSION['login_nom'] = $db->result[0]['nom'];
                 $_SESSION['login_prenom'] = $db->result[0]['prenom'];
+
+                $network_id = $db->result[0]['network_id'];
+                $db = new \db();
+                $db->select2("network", "*", ["id" => $network_id]);
+                $network = $db->result ? $db->result[0] : null;
+                $_SESSION['network'] = $network;
 
                 // Symfony Session
                 $session = $request->getSession();
@@ -235,7 +241,7 @@ class AuthorizationsController extends BaseController
 
             // Check if user login exists in database.
             $db = new \db();
-            $db->select2('personnel', array('id','nom','prenom'), array('login' => 'LIKE' . $login, 'supprime' => '0'));
+            $db->select2('personnel', array('id','nom','prenom','network_id'), array('login' => 'LIKE' . $login, 'supprime' => '0'));
 
             // If user's login doesn't exist,
             // show an unauthorized message
@@ -249,6 +255,12 @@ class AuthorizationsController extends BaseController
             $_SESSION['login_id']=$db->result[0]['id'];
             $_SESSION['login_nom']=$db->result[0]['nom'];
             $_SESSION['login_prenom']=$db->result[0]['prenom'];
+
+            $network_id = $db->result[0]['network_id'];
+            $db = new \db();
+            $db->select2("network", "*", ["id" => $network_id]);
+            $network = $db->result ? $db->result[0] : null;
+            $_SESSION['network'] = $network;
 
             // Symfony Session
             $session = $request->getSession();

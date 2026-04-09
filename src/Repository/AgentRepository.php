@@ -2,7 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\NetworkConfig;
+use App\Entity\Site;
+use App\Planno\ConfigFinder;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
 
 use App\Entity\Absence;
@@ -35,6 +40,14 @@ class AgentRepository extends EntityRepository
     private $agent_id;
 
     private $check_by_site = true;
+
+    private ConfigFinder $configFinder;
+
+    public function __construct(EntityManagerInterface $registry, ClassMetadata $class)
+    {
+        parent::__construct($registry, $class);
+        $this->configFinder = new ConfigFinder($registry);
+    }
 
     /**
      * @return mixed[]
@@ -171,11 +184,9 @@ class AgentRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => $this->by_agent_param]);
+        $by_agent_param = $this->configFinder->findOneByConfigName(NetworkConfig::class, $this->by_agent_param, $_SESSION['network']['id']);
 
-        $sites_number = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
+        $sites = $entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
@@ -195,21 +206,21 @@ class AgentRepository extends EntityRepository
         $rights = $loggedin->getACL();
 
         $sites_select = array();
-        for ($i = 1; $i <= $sites_number; $i++) {
-            $name = $entityManager->getRepository(Config::class)
-                ->findOneBy(['nom' => "Multisites-site$i"])->getValue();
+
+        foreach ($sites as $site) {
+            $siteId = $site->getId();
+            $name = $site->getName();
 
             if ($by_agent_param->getValue()) {
-                if (in_array($i, $managed_sites)) {
-                    $sites_select[] = array('id' => $i, 'name' => $name);
+                if (in_array($siteId, $managed_sites)) {
+                    $sites_select[] = ['id' => $siteId, 'name' => $name];
                 }
                 continue;
             }
+            if (in_array(($this->needed_level1 + $siteId), $rights)
+                or in_array(($this->needed_level2 + $siteId), $rights)) {
 
-            if (in_array(($this->needed_level1 + $i), $rights)
-                or in_array(($this->needed_level2 + $i), $rights)) {
-
-                $sites_select[] = array('id' => $i, 'name' => $name);
+                $sites_select[] = ['id' => $siteId, 'name' => $name];
             }
         }
 
@@ -220,11 +231,10 @@ class AgentRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => $this->by_agent_param]);
+        $by_agent_param = $this->configFinder->findOneByConfigName(NetworkConfig::class, $this->by_agent_param, $_SESSION['network']['id']);
 
-        $sites_number = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
+        $sites = $entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_number = count($sites);
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
@@ -279,11 +289,10 @@ class AgentRepository extends EntityRepository
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => $this->by_agent_param]);
+        $by_agent_param = $this->configFinder->findOneByConfigName(NetworkConfig::class, $this->by_agent_param, $_SESSION['network']['id']);
 
-        $sites_number = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
+        $sites = $entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_number = count($sites);
 
         $sites = array(1);
         if ($this->check_by_site && $sites_number > 1) {
@@ -397,7 +406,8 @@ class AgentRepository extends EntityRepository
      */
     public function getSitesForAgents($agent_ids = array()): array
     {
-        if ($GLOBALS['config']['Multisites-nombre'] == 1) {
+        $sites = $this->getEntityManager()->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        if (count($sites) == 1) {
             return array("1");
         }
 
@@ -413,6 +423,17 @@ class AgentRepository extends EntityRepository
         $sites_array = array_unique($sites_array);
         $sites_array = array_values($sites_array);
         return $sites_array;
+    }
+
+    public function getAgentsForSite($site_id): array
+    {
+        return $this->getEntityManager()->getRepository(Agent::class)->createQueryBuilder('a')
+            ->where('a.supprime = 0')
+            ->andWhere('a.sites LIKE :site_id')
+            ->setParameter('site_id', '%' . json_encode($site_id) . '%')
+            ->orderBy('a.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     public function holidayCreditAndCompTimeToRemainder(): void

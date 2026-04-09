@@ -12,6 +12,7 @@ use App\Entity\PlanningPositionLock;
 use App\Entity\Position;
 use App\Entity\SelectFloor;
 use App\Entity\SeparationLine;
+use App\Entity\Site;
 use App\Planno\Helper\PlanningPositionHistoryHelper;
 use App\Planno\Framework;
 use App\Planno\PresentSet;
@@ -108,6 +109,7 @@ class PlanningController extends BaseController
         }
 
         // Index page only
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
         $this->templateParams(array(
             'start' => $this->dates[0]->dates[0],
             'end' => $this->dates[0]->dates[6],
@@ -121,6 +123,7 @@ class PlanningController extends BaseController
             'redoable' => $redoable,
             'show_framework_select' => $show_framework_select,
             'comments' => $comments[$date][$site],
+            'nbSites' => count($sites_array),
         ));
 
 
@@ -369,7 +372,8 @@ class PlanningController extends BaseController
 
         // Search for agents on other sites.
         $autres_sites = array();
-        if ($this->config('Multisites-nombre') > 1) {
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        if (count($sites) > 1) {
             $db = new \db();
             $db->select2('pl_poste', array('perso_id','date','debut','fin','poste'), array('date' => "BETWEEN {$dates[0]} AND ".end($dates), 'site' => "<>$site"));
             if ($db->result) {
@@ -1450,7 +1454,8 @@ class PlanningController extends BaseController
 
         // Sécurité
         // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
-        $droit = ($this->config['Multisites-nombre'] > 1) ? (300 + $site) : 12;
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $droit = count($sites) ? (300 + $site) : 12;
         $droits_agent = $_SESSION['droits'];
 
         if (!in_array((300 + $site), $droits_agent) and !in_array((1000 + $site), $droits_agent)) {

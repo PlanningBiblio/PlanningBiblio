@@ -1,11 +1,11 @@
 <?php
 /**
  * Planno
- * 
+ *
  * @file legacy/migrations/data.php
  * @author Jérôme Combes <jerome@planningbiblio.fr>
- * 
- * @note : 
+ *
+ * @note :
  * - File data.php, previously public/setup/db_data.php
  * - Still used to create the database for unit tests
  */
