@@ -336,10 +336,12 @@ class AgentController extends BaseController
                     $temps = array();
                 }
             }
+
             // Decimal breaktime to time (H:i).
-            foreach ($breaktimes as $index => $time) {
-                $breaktimes[$index] = $breaktimes[$index]
-                    ? HourHelper::decimalToHoursMinutes($breaktimes[$index])['as_string'] : '';
+            foreach ($breaktimes as $key => $value) {
+                $breaktimes[$key] = $value
+                    ? str_replace('h', ':', HourHelper::decimalToHoursMinutes($value)['as_string'])
+                    : '';
             }
 
             $postes_attribues = json_decode(html_entity_decode($db->result[0]['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
