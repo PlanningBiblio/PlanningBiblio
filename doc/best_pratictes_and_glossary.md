@@ -163,3 +163,35 @@
 | #fin | .end-date| class used for the correct initialization of a datepicker's ending-date|
 | #debut | .start-search| class used for the starting-date of a search form with search span limitation of one year|
 | #fin | .end-search| class used for the ending-date of a search form with search span limitation of one year |
+
+## Translation
+
+### Translation in Controllers
+
+**Ref.:** https://symfony.com/doc/current/translation.html#basic-translation
+
+The **TranslatorInterface** is loaded in the BaseController.\
+We can directly use `$this->translator->trans` in Controllers that inherit from BaseController.
+
+To translate a string from the default domain (messages), use `$this->translator->trans` with the string as the first argument.\
+E.g.:
+```
+$error = $this->translator->trans('This object can\'t be deleted.');
+```
+
+To translate a string from an other domain (e.g.:validators), use `$this->translator->trans` with:
+1. the string as the first argument
+2. an empty array, or an array for replacement, e.g.: `['%status%' => $order->getStatus()],`
+3. the domain to use
+
+E.g.:
+```
+$error = $this->translator->trans(
+  'The CSRF token is invalid. Please try to resubmit the form.',
+  [],
+  'validators'
+  );
+$this->addFlash('error', $error);
+
+// (This is what is done in BaseController::csrf_protection)
+```

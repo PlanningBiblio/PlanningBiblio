@@ -7,29 +7,30 @@ use App\Planno\Notifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Psr\Log\LoggerInterface;
 
 class BaseController extends AbstractController
 {
     protected $entityManager;
-
-    private $templateParams = array();
-
+    private $templateParams = [];
     protected $dispatcher;
-
-    protected $config = array();
-
+    protected $config = [];
     protected $logger;
-
     protected $notifier;
-
     protected $permissions;
+    protected $translator;
 
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, RequestStack $requestStack)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger,
+        RequestStack $requestStack,
+        TranslatorInterface $translator
+    )
     {
         $request = $requestStack->getCurrentRequest();
 
@@ -74,6 +75,8 @@ class BaseController extends AbstractController
 
         $GLOBALS['config']['URL'] = $url;
         $this->config = $GLOBALS['config'];
+
+        $this->translator = $translator;
     }
 
     public function setNotifier(Notifier $notifier): void {
@@ -121,8 +124,13 @@ class BaseController extends AbstractController
         $submittedToken = $request->request->get('_token');
 
         if (!$this->isCsrfTokenValid('', $submittedToken)) {
-            $session = $request->getSession();
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
+            $error = $this->translator->trans(
+                'The CSRF token is invalid. Please try to resubmit the form.',
+                [],
+                'validators'
+            );
+
+            $this->addFlash('error', $error);
             return false;
         }
         return true;

@@ -3,6 +3,17 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-    <div id='acces_refuse'>Accès refusé</div>
-    <a href='javascript:history.back();'>Retour</a>
+  <div id='acces_refuse'>
+    <div>Accès refusé</div>
+      <div class="important">
+        {% if reason == 'CSRF' %}
+          {% trans from 'validators' %}
+            The CSRF token is invalid. Please try to resubmit the form.
+          {% endtrans %}
+        {% else %}
+          {{ reason }}
+        {% endif %}
+      </div>
+     <a href="javascript:history.back();" class="btn btn-primary" role="button">Retour</a>
+   </div>
 {% endblock %}
