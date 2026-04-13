@@ -1,0 +1,2 @@
+msgid "mm/dd/yyyy"
+msgstr "mm/dd/yyyy"

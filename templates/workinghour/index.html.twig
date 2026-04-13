@@ -11,14 +11,14 @@
 
         <label class="col-xl-auto col-form-label mt-2 pb-0" for="workinghour-search-start">Début :</label>
         <div class="col-xl-auto ps-0">
-          <input id="workinghour-search-start" type="text" name="debut" class="datepicker form-control d" value="{{ debut }}" placeholder="jj/mm/aaaa"/>
-          <div class="invalid-feedback ps-2">{% trans %}The start date must be earlier than the end date.{% endtrans %}</div>
+          <input id="workinghour-search-start" type="text" name="debut" class="datepicker form-control d" value="{{ debut }}"/>
+          <div class="invalid-feedback ps-2">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
         </div>
 
         <label class="col-xl-auto col-form-label mt-2 pb-0" for="workinghour-search-end">Fin :</label>
         <div class="col-xl-auto ps-0">
-          <input id="workinghour-search-end" type="text" name="fin" class="datepicker form-control f" value="{{ fin }}" placeholder="jj/mm/aaaa"/>
-          <div class="invalid-feedback ps-2">{% trans %}The end date must be later than the start date.{% endtrans %}</div>
+          <input id="workinghour-search-end" type="text" name="fin" class="datepicker form-control f" value="{{ fin }}"/>
+          <div class="invalid-feedback ps-2">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
         </div>
 
         <div class="col-xl-3 ps-0">

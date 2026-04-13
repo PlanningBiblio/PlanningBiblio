@@ -793,7 +793,7 @@ $(function(){
 
     $(".datepicker").addClass("center ui-widget-content");
     $(".datepicker").attr('autocomplete','off');
-
+    $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
 
     /**
     * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début et inversement
