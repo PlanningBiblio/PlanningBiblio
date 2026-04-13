@@ -795,88 +795,53 @@ $(function(){
     $(".datepicker").attr('autocomplete','off');
     $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
 
-    /**
-    * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début et inversement
-    * La date du calendrier de début devient la date minimal disponible pour le calendrier de fin et inversement
-    */
+    // Invalid message feedback when date interval is not valid and disabled submit button
 
-    $('.datepicker.f').on('change',function() {
-      var debut = $('.datepicker.d').bootstrapDP('getDate');
+    $('.datepicker.end-date').on('change',function() {
+      var debut = $('.datepicker.start-date').bootstrapDP('getDate');
       var fin = $(this).bootstrapDP('getDate');
       var submit = $(this).closest('form').find(':submit');
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
 
-      $('.datepicker.d').removeClass('is-invalid');
+      $('.datepicker.start-date').removeClass('is-invalid');
       submit.removeClass('disabled');
 
       if(debut && fin < debut) {
         $(this).addClass('is-invalid');
+        $('.datepicker.start-date').addClass('is-invalid');
         submit.addClass('disabled');
+        feedback.show();
       }
 
       else {
         $(this).removeClass('is-invalid');
+        feedback.hide();
       }
     });
 
-    $('.datepicker.d').on('change',function() {
+    $('.datepicker.start-date').on('change',function() {
       var debut = $(this).bootstrapDP('getDate');
-      var fin = $('.datepicker.f').bootstrapDP('getDate');
+      var fin = $('.datepicker.end-date').bootstrapDP('getDate');
       var submit = $(this).closest('form').find(':submit');
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
 
-      $('.datepicker.f').removeClass('is-invalid');
+      $('.datepicker.end-date').removeClass('is-invalid');
       submit.removeClass('disabled');
 
       if(fin && debut > fin) {
         $(this).addClass('is-invalid');
+        $('.datepicker.end-date').addClass('is-invalid');
         submit.addClass('disabled');
+        feedback.show();
       }
 
       else {
         $(this).removeClass('is-invalid');
+        feedback.hide();
       }
     });
 
-    $(".datepicker.end-date").on('click', function(){
-      var debut = $(".datepicker.start-date").bootstrapDP("getDate");
-      var fin = $(this).bootstrapDP("getDate");
-
-      if(debut != null){
-        $(this).bootstrapDP('setStartDate', debut);
-        if( fin == null){
-          $(this).bootstrapDP('setDate', debut);
-        }
-      }
-    }).on('changeDate',function(){
-        var debut = $(".datepicker.start-date").bootstrapDP("getDate");
-        var fin = $(this).bootstrapDP("getDate");
-
-        if(debut != null){
-          $(".datepicker.start-date").bootstrapDP('setEndDate', fin);
-        }
-    });
-
-    $(".datepicker.start-date").on('click', function(){
-      var fin = $(".datepicker.end-date").bootstrapDP("getDate");
-      var debut = $(this).bootstrapDP("getDate");
-
-      if(fin != null){
-        $(this).bootstrapDP('setEndDate', fin);
-        if( debut == null){
-          $(this).bootstrapDP('setDate', fin);
-        }
-      }
-    }).on('changeDate',function(){
-      var fin = $(".datepicker.end-date").bootstrapDP("getDate");
-      var debut = $(this).bootstrapDP("getDate");
-
-      if(fin != null){
-        $(".datepicker.end-date").bootstrapDP('setStartDate', debut);
-      }
-    });
-
-    /**
-    * Initialiser la date du calendrier de fin avec la date choisie dans le calendrier de début +1an et inversement
-    */
+    // Initialize the calendar end date with start date + 1 year and vice versa
 
     $(".start-search").on('changeDate', function(e) {
       var start = $(".start-search").bootstrapDP('getDate');

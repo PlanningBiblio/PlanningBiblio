@@ -1952,10 +1952,6 @@ input::placeholder {
 
 /* Bootstrap Grid START */
 
-.row {
-  min-height: 60px;
-}
-
 .row.row-sortable {
   min-height: 45px;
   border: 1px solid;
@@ -2045,7 +2041,7 @@ table.dataTable th{
   padding: 20px;
 }
 
-.admin-div select, .admin-div input {
+.admin-div select, .admin-div input[type=text] {
   width: 200px;
 }
 
