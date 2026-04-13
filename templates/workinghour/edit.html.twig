@@ -57,16 +57,17 @@
               <div class="row">
                 <label class="col-2 col-form-label" for="debut">Début d'utilisation</label>
                 <div class="col-4">
-                  <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker form-control d m-0" />
-                  <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+                  <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker form-control start-date m-0" />
                 </div>
               </div>
               <div class="row">
                 <label class="col-2 col-form-label" for="fin">Fin d'utilisation</label>
                 <div class="col-4">
-                  <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker form-control f m-0" />
-                  <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+                  <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker form-control end-date m-0" />
                 </div>
+              </div>
+              <div class="row">
+                <div class="col-4 offset-2 invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
               </div>
             </div> <!-- id=periode -->
             {% if thisNbSemaine is defined and copy is defined and copy != '' and nbSemaine is defined and thisNbSemaine != nbSemaine %}
