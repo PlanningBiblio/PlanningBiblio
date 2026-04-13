@@ -57,13 +57,14 @@
         "symfony/security-bundle": "*",
         "symfony/security-csrf": "*",
         "symfony/serializer": "*",
-        "symfony/translation": "*",
+        "symfony/translation": "7.4.*",
         "symfony/twig-bundle": "*",
         "symfony/validator": "*",
         "symfony/web-link": "*",
         "symfony/yaml": "*",
         "twig/extra-bundle": "^3.4",
-        "twig/markdown-extra": "^3.4"
+        "twig/markdown-extra": "^3.4",
+        "willdurand/js-translation-bundle": "^8.0"
     },
     "require-dev": {
         "dbrekelmans/bdi": "^1.4",
@@ -111,7 +112,8 @@
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
-            "app:update-db" : "symfony-cmd"
+            "app:update-db" : "symfony-cmd",
+            "bazinga:js-translation:dump --format=js --merge-domains": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"

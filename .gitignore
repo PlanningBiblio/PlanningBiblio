@@ -39,3 +39,7 @@ public/themes/*
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+###> willdurand/BazingaJsTranslationBundle ###
+/public/js/translations/*
+###< willdurand/BazingaJsTranslationBundle ###

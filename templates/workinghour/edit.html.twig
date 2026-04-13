@@ -57,15 +57,15 @@
               <div class="row">
                 <label class="col-2 col-form-label" for="debut">Début d'utilisation</label>
                 <div class="col-4">
-                  <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker form-control d m-0" placeholder="jj/mm/aaaa" />
-                  <div class="invalid-feedback">{% trans %}The start date must be earlier than the end date.{% endtrans %}</div>
+                  <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker form-control d m-0" />
+                  <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
                 </div>
               </div>
               <div class="row">
                 <label class="col-2 col-form-label" for="fin">Fin d'utilisation</label>
                 <div class="col-4">
-                  <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker form-control f m-0" placeholder="jj/mm/aaaa" />
-                  <div class="invalid-feedback">{% trans %}The end date must be later than the start date.{% endtrans %}</div>
+                  <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker form-control f m-0" />
+                  <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
                 </div>
               </div>
             </div> <!-- id=periode -->

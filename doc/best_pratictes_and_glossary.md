@@ -163,3 +163,79 @@
 | #fin | .end-date| class used for the correct initialization of a datepicker's ending-date|
 | #debut | .start-search| class used for the starting-date of a search form with search span limitation of one year|
 | #fin | .end-search| class used for the ending-date of a search form with search span limitation of one year |
+
+
+## Translation
+
+Translation is now enabled in Planno !!  
+It can be used is templates, controllers and even JS files.
+
+The config/packages/translation.yaml file contains all the necessary information to configure the translation.
+To change the main language, adjust the default_locale variable.
+
+### Translation files
+The translations files are located in the translations directory. Their are named using the following logic : {domain}.{locale}.po
+
+Domains are group into wich translations can be organized. By default, all messages use the default 'messages' domain. Synfony also provides translation files for built-in validation and security messages in the equivalent domains. These files provides roughly 200 translation messages in 57 languages. Feel free to check out the available messages before adding a new one.  
+
+To do so, you can run the following command :
+`php bin/console debug:translation {locale}`  
+This will list all the available translation messages for a locale, their domain, and their statuses.
+
+The differents statuses :
+- empty : the translation message is used somewhere in the code
+- unused : the translation message is unused but valid
+- missing : the translation message is used in the code but not defined in the translations files of this locale
+
+`--only-unused` or `--only-missing` options can be added to the previous command to display only specific statuses.
+
+The translation files use the following logic for every message :
+- `msgid "..."` : the id of the message wich is actually the english version of it
+- `msgstr "..." :` the translation in the desired language  
+
+In english translation files, `msgid` and `msgstr` are equal.
+
+```
+## Exemple for french translation
+msgid "Add"
+msgstr "Ajouter"
+```
+
+### Fallback
+English has been defined as the fallback language when a translation message is not found in the desired locale.  
+If the message is missing, the id will be returned.
+
+### Translation inside controllers and php files
+
+```php
+// ...
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+public function index(TranslatorInterface $translator): Response
+{
+    $translated = $translator->trans('Symfony is great');
+    // ...
+}
+```
+
+### Translation inside templates and html files
+
+```html
+<div class="invalid-feedback">{% trans %}Symfony is great{% endtrans %}</div>
+```
+
+### Translation inside JS files
+
+To enable translation inside JS file, a specific translation bundle has been added (BazingaJSTranslationBundle). It implements the Symfony TranslatorInterface and provides the same trans() method.
+
+```js
+Translator.trans('Synfony is great');
+```
+
+To use it, translation files need to be exposed to the frontend with the following command :
+`php bin/console bazinga:js-translation:dump --format=js --merge-domains`  
+This needs to be run every time new translation messages are added to files. It is now integrated in the `composer install` command.
+
+### More info
+- https://symfony.com/doc/current/translation.html 
+- https://github.com/willdurand/BazingaJsTranslationBundle/blob/master/Resources/doc/index.md 
