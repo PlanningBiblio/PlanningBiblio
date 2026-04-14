@@ -39,9 +39,9 @@
               <div id="plHebdo-perso-id">
                 {% if managed | length > 1 and request_exception is null %}
                 <div class="row">
-                <label class="col-2 col-form-label" for="perso_id">Pour l'agent</label>
-                <div class="col-4">
-                  <select name="perso_id" class="ui-widget-content ui-corner-all" id="perso_id" style="text-align:center;" >
+                <label class="col-2 col-form-label" for="perso_id">{% trans%}Agent{% endtrans %}</label>
+                <div class="col-2">
+                  <select name="perso_id" class="form-select form-select-sm pe-0" id="perso_id" style="text-align: center;">
                     <option hidden disabled selected value=""></option>
                     {% for m in managed %}
                       <option value="{{ m.id }}" {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.lastname }} {{ m.firstname }}</option>
@@ -55,19 +55,19 @@
             {% endif %}
             <div id="periode">
               <div class="row">
-                <label class="col-2 col-form-label" for="debut">Début d'utilisation</label>
-                <div class="col-4">
+                <label class="col-2 col-form-label" for="debut">{% trans%}Starting date{% endtrans %} :</label>
+                <div class="col-2">
                   <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker form-control start-date m-0" />
                 </div>
               </div>
               <div class="row">
-                <label class="col-2 col-form-label" for="fin">Fin d'utilisation</label>
-                <div class="col-4">
+                <label class="col-2 col-form-label" for="fin">{% trans%}Ending date{% endtrans %} :</label>
+                <div class="col-2">
                   <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker form-control end-date m-0" />
                 </div>
               </div>
               <div class="row">
-                <div class="col-4 offset-2 invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+                <div class="col-3 offset-2 invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
               </div>
             </div> <!-- id=periode -->
             {% if thisNbSemaine is defined and copy is defined and copy != '' and nbSemaine is defined and thisNbSemaine != nbSemaine %}

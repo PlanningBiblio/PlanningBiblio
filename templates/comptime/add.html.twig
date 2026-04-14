@@ -59,7 +59,7 @@
                 <tr>
                   <td>Date de début : </td>
                   <td>
-                    <input type="text" name="debut" id="debut" class="datepicker start-date googleCalendarTrigger checkdate" style="width:97%;"/>
+                    <input type="text" name="debut" id="debut" class="datepicker start-date form-control googleCalendarTrigger checkdate" style="width:97%;"/>
                   </td>
                 </tr>
 
@@ -73,7 +73,7 @@
                 <tr>
                   <td>Date de fin : </td>
                   <td>
-                    <input type="text" name="fin" id="fin" class="datepicker end-date googleCalendarTrigger checkdate" style="width:97%;"/>
+                    <input type="text" name="fin" id="fin" class="datepicker end-date form-control googleCalendarTrigger checkdate" style="width:97%;"/>
                   </td>
                 </tr>
 
@@ -82,6 +82,10 @@
                   <td>
                     <input name="hre_fin" id="hre_fin_select" class="planno-timepicker center ui-widget-content ui-corner-all checkdate" style="width:97%;"/>
                   </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td class="invalid-feedback" style="width:auto;">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</td>
                 </tr>
 
                 <tr>
@@ -154,7 +158,7 @@
                   <td colspan="2" style="text-align:center;">
                     <input type="button" value="Annuler" onclick="document.location.href='{{ asset('holiday/?recup=1') }}';" class="btn btn-secondary"/>
                   &nbsp;&nbsp;
-                    <input type="button" value="Valider" class="btn btn-primary" onclick="verifConges();" style="margin-left:20px;" id="submit-button"/>
+                    <input role="button" type="submit" value="{% trans %}Confirm{% endtrans %}" class="btn btn-primary" onclick="verifConges();" style="margin-left:20px;" id="submit-button"/>
                     <div id="google-calendar-div" class="inline"></div>
                   </td>
                 </tr>

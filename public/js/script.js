@@ -695,8 +695,7 @@ function verif_form(champs,form){
     return false;
   }
   else{
-    if(valeur1 && valeur2 && valeur2<valeur1){
-      CJInfo("Le champ "+objet2+" doit être supérieur au champ "+objet1,"error");
+    if(valeur1 && valeur2 && valeur2 < valeur1) {
       return false;
     }
     else{
@@ -806,7 +805,7 @@ $(function(){
       $('.datepicker.start-date').removeClass('is-invalid');
       submit.removeClass('disabled');
 
-      if(debut && fin < debut) {
+      if(debut && fin && fin < debut) {
         $(this).addClass('is-invalid');
         $('.datepicker.start-date').addClass('is-invalid');
         submit.addClass('disabled');
@@ -828,7 +827,7 @@ $(function(){
       $('.datepicker.end-date').removeClass('is-invalid');
       submit.removeClass('disabled');
 
-      if(fin && debut > fin) {
+      if((fin && debut && debut > fin)) {
         $(this).addClass('is-invalid');
         $('.datepicker.end-date').addClass('is-invalid');
         submit.addClass('disabled');

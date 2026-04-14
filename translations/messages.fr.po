@@ -1,2 +1,74 @@
 msgid "mm/dd/yyyy"
 msgstr "jj/mm/aaaa"
+
+msgid "Start date"
+msgstr "Date de début"
+
+msgid "End date"
+msgstr "Date de fin" 
+
+msgid "Comment"
+msgstr "Commentaire"
+
+msgid "Text"
+msgstr "Texte"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Confirm"
+msgstr "Valider"
+
+msgid "Start"
+msgstr "Début"
+
+msgid "End"
+msgstr "Fin"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Clear"
+msgstr "Réinitialiser"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Import"
+msgstr "Importer"
+
+msgid "Everyone"
+msgstr "Tous"
+
+msgid "Deleted agents"
+msgstr "Agents supprimés"
+
+msgid "Cycle management"
+msgstr "Gestion des cycles"
+
+msgid "Enter new schedules"
+msgstr "Entrer de nouveaux horaires"
+
+msgid "Starting date"
+msgstr "Début d'utilisation"
+
+msgid "Ending date"
+msgstr "Fin d'utilisation"
+
+msgid "From %start% to %end%"
+msgstr "Du %start% au %end%"
+
+msgid "Display hours by job category"
+msgstr "Afficher les heures par groupe de postes"
+
+msgid "Sites"
+msgstr "Sites"
+
+msgid "Save changes"
+msgstr "Enregistrer les modifications"

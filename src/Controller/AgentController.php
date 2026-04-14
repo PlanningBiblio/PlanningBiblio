@@ -1588,7 +1588,7 @@ class AgentController extends BaseController
         // TODO: voir si nous pouvons retourner directement $agents (ou json_encode($agents))
         $tab =[];
         foreach ($agents as $agent) {
-            $tab[] = ['id' => $agent->getId(), 'nom' => $agent->getNom(), 'prenom' => $agent->getPrenom()];
+            $tab[] = ['id' => $agent->getId(), 'nom' => $agent->getLastname(), 'prenom' => $agent->getFirstname()];
         }
 
         return new Response(json_encode($tab));

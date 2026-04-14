@@ -13,67 +13,53 @@
   </h3>
 
   <form name="form" method="get" action="{{ asset("holiday") }}" class="noprint" onsubmit="return verif_form('debut=date1;fin=date2');">
-    <div class="container top-buttons">
-      <div class="row">
-        <div class="col">
-          <label for="debut" >Début :</label>
-          <input type="text" id="debut" name="debut" value="{{ debut }}" class="datepicker start-search"/>
+        <div class="row row-search mb-3">
+
+        <label class="col-xl-auto col-form-label mt-2" for="holiday-search-start">{% trans%}Start{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0">
+          <input id="holiday-search-start" type="text" name="debut" class="datepicker start-search" value="{{ debut }}"/>
         </div>
-        <div class="col">
-          <label>Fin :</label>
-          <input type="text" name="fin" id="fin" value="{{ fin }}" class="datepicker end-search"/>
+
+        <label class="col-xl-auto col-form-label mt-2" for="holiday-search-end">{% trans%}End{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0">
+          <input id="holiday-search-end" type="text" name="fin" class="datepicker end-search" value="{{ fin }}"/>        
         </div>
 
         {% if admin %}
-          <div class="col" style="text-align:left;">
-            <span style="padding:5px;">Agents :
-              <select name="perso_id" id="perso_id">
-                {% if perso_id == 0 %}
-                  <option value="0" selected="selected">Tous</option>
-                {% else %}
-                  <option value="0">Tous</option>
-                {% endif %}
+          <div class="col-xl-2">
+            <div class="row">
+              <label class="col-xl-auto col-form-label mt-2" for="perso-id">{% trans%}Agent{% endtrans %} :</label>
+              <select name="perso_id" id="perso_id" class="form-select form-select-sm">
+                  <option value="0" {% if perso_id == 0 %} selected="selected" {% endif %}>{% trans%}Everyone{% endtrans %}</option>            
                 {% for a in managed %}
-                  {% if a.id == perso_id %}
-                    <option value="{{ a.id }}" selected="selected">{{ a.lastname }} {{ a.firstname }}</option>
-                  {% else %}
-                    <option value="{{ a.id }}">{{ a.lastname }} {{ a.firstname }}</option>
-                  {% endif %}
+                  <option value="{{ a.id }}" {% if a.id == perso_id %} selected="selected" {% endif %}>{{ a.lastname }} {{ a.firstname }}</option>
                 {% endfor %}
               </select>
-            </span>
+            </div>
 
-            <br/>
-            <span style="padding:5px;">Agents supprimés : 
-              {% if deleted_agents %}
-                <input type="checkbox" checked="checked" name="supprimes" onclick="updateAgentsList(this, 'perso_id');"/>
-              {% else %}
-                <input type="checkbox" name="supprimes" onclick="updateAgentsList(this, 'perso_id');"/>
-              {% endif %}
-            </span>
+            <div class="form-check-prepend">
+              <label class="form-check-label" for="deleted-agent-check">{% trans%}Deleted agents{% endtrans %} :</label>              
+              <input id="deleted-agent-check" type="checkbox" value="" class="form-check-input m-1 mx-2" {% if deleted_agents %} checked {% endif %} name="supprimes" onclick="updateAgentsList(this,'perso_id');"/>            
+            </div>
           </div>
         {% endif %}
 
-        <div class="col">
-          <input type="submit" value="Rechercher" id="button-OK" class="btn btn-secondary"/>
-        </div>
-        <div class="col-3">
+        <div class="col-xl-3 ps-0">
+          <input id="button-ok" type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
           {% if show_recovery %}
-            <a href="{{ asset('holiday') }}?recup=1&reset=on" class="btn btn-secondary" >Réinitialiser</a>
+            <a role="button" href="{{ asset('holiday') }}?recup=1&reset=on" class="btn btn-secondary m-2">{% trans %}Clear{% endtrans %}</a>
           {% else %}
-            <a href="{{ asset('holiday') }}?reset=on" class="btn btn-secondary" >Réinitialiser</a>
+            <a role="button" href="{{ asset('holiday') }}?reset=on" class="btn btn-secondary m-2">{% trans %}Clear{% endtrans %}</a>
           {% endif %}
         </div>
-        <div class="col">
-          <div class="ml-auto">
-            <a href="{{ asset(addlink) }}" class="btn btn-primary">Ajouter</a>
-          </div>
+
+        <div class="col-xl text-end">        
+          <a role="button" href="{{ asset(addlink) }}" class="btn btn-primary m-2 me-0">{% trans %}Add{% endtrans %}</a>
         </div>
         {% if show_recovery %}
           <input type="hidden" name="recup" value="1"/>
         {% endif %}
       </div>
-    </div>
   </form>
 
   {% if show_recovery %}

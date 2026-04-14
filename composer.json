@@ -57,7 +57,7 @@
         "symfony/security-bundle": "*",
         "symfony/security-csrf": "*",
         "symfony/serializer": "*",
-        "symfony/translation": "7.4.*",
+        "symfony/translation": "*",
         "symfony/twig-bundle": "*",
         "symfony/validator": "*",
         "symfony/web-link": "*",

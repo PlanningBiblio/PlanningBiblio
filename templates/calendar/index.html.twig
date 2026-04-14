@@ -16,23 +16,42 @@
     <div id="div_agenda_content">
     {% if agents is iterable %}
       <form name="form" method="get" action="{{ asset('calendar') }}" onsubmit="return verif_form('debut=date1;fin=date2');">
-        Début : <input type="text" name="debut" id="debut" value={{begin}} class="datepicker start-date" />
-        &nbsp;&nbsp;Fin : <input type="text" name="fin" id="fin" value={{end}} class="datepicker end-date" />
-      {% if admin == 1 %}
-        &nbsp;&nbsp;Agent :
-        <select name="perso_id" class="ui-widget-content ui-corner-all" >
-          <option value="0" selected >&nbsp;</option>
-          {% for a in agents %}
-            {% if a.id == perso_id %}
-              <option value="{{a.id}}" selected > {{ a.nom }} {{ a.prenom }}</option>
-            {% else %}
-              <option value="{{a.id}}" > {{ a.nom }} {{ a.prenom }}</option>
-            {% endif %}
-          {% endfor %}
-        </select>
-      {% endif %}
-      &nbsp;&nbsp;<input type="submit" role="button" value="OK" aria-label="Validation de la séléction" class="btn btn-primary"/>
-      </form>
+
+        <div class="row row-search">
+
+          <label class="col-xl-auto col-form-label mt-2" for="calendar-search-start">{% trans%}Start{% endtrans %} :</label>
+          <div class="col-xl-auto ps-0">
+            <input id="calendar-search-start" type="text" name="debut" class="datepicker form-control start-date" value="{{ begin }}"/>
+          </div>
+
+          <label class="col-xl-auto col-form-label mt-2" for="calendar-search-end">{% trans%}End{% endtrans %} :</label>
+          <div class="col-xl-auto ps-0">
+            <input id="calendar-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{end}}"/>
+          </div>
+
+          {% if admin == 1 %}
+            <label class="col-xl-auto col-form-label mt-2" for="agent-search">{% trans%}Agent{% endtrans %} :</label>
+            <div class="col-xl-auto ps-0">
+              <select name="perso_id" class="form-select form-select-sm" id="agent-search" >
+                <option hidden disabled selected value=""></option>
+                {% for a in agents %}
+                  <option value="{{a.id}}" {% if a.id == perso_id %} selected {% endif %}> {{ a.nom }} {{ a.prenom }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endif %}
+
+          <div class="col-xl-3 ps-0">
+            <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
+          </div>
+
+        </div>
+
+      <div class="row">
+        <div class="invalid-feedback ps-2">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+      </div>
+
+    </form>
     {% else %}
       Aucun agent disponible
     {% endif %}

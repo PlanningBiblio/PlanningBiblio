@@ -8,24 +8,29 @@
     <div class="statistics-div">
       <div>
         <form name="form" method="post" action="{{ asset('statistics/attendeesmissing') }}" onsubmit="return verif_form('from=date1;to=date2');">
-          <table class="tableauStandard" style="margin-top:35px;">
-            <tr>
-              <td>
-                <label >Début :</label>
-                <input type="text" name="from" value="{{ from }}" class="datepicker start-date"/>
-              </td>
-              <td>
-                <label >Fin :</label>
-                <input type="text" name="to" value="{{ to }}" class="datepicker end-date"/>
-              </td>
-              <td>
-                <input type="submit" role="button" value="Rechercher" class="btn btn-secondary" />
-              </td>
-              <td>
-                <input type="button" onclick="location.href='{{ asset('statistics/attendeesmissing') }}?reset=1';" class="btn btn-secondary" value="Réinitialiser" />
-              </td>
-            </tr>
-          </table>
+          
+          <div class="row row-search m-3 mb-0">
+
+            <label class="col-xl-auto col-form-label mt-2" for="stat-presence-search-start">{% trans %}Start{% endtrans %} :</label>
+            <div class="col-xl-auto ps-0">
+              <input id="stat-presence-search-start" type="text" name="from" class="datepicker form-control start-date" value="{{ from }}"/>
+            </div>
+
+            <label class="col-xl-auto col-form-label mt-2" for="stat-presence-search-end">{% trans%}End{% endtrans %} :</label>
+            <div class="col-xl-auto ps-0">
+              <input id="stat-presence-search-end" type="text" name="to" class="datepicker form-control end-date" value="{{ to }}"/>
+            </div>
+
+            <div class="col-xl-2 ps-0">
+              <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
+              <input type="button" onclick="location.href='{{ asset('statistics/attendeesmissing') }}?reset=1';" class="btn btn-secondary" value="{% trans%}Clear{% endtrans %}" />
+            </div>
+          </div>
+
+          <div class="row m-3 mt-1">
+            <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+          </div>
+
         </form>
       </div>
 

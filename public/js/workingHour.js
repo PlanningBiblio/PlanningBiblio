@@ -245,8 +245,7 @@ function plHebdoVerifForm(){
     return false;
   }
   
-  if(fin<debut){
-    alert("La date de fin doit être supérieure à la date de début");
+  if(fin < debut) {
     return false;
   }
 

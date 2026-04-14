@@ -5,28 +5,45 @@
 {% block page %}
   <h3>Feuille de temps</h3>
   <p>Les heures affichées sur cette page sont les heures comptées en service public.</p>
-  <table>
-    <tr>
-      <td style='width:350px;'><b>Du {{ debutFr }} au {{ finFr }}</b></td>
-      <td>
-        <form name="form" method="get" action="" onsubmit="return verif_form('debut=date1;fin=date2');">
-          <input type='hidden' name='page' />
-          <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
-          <label for='debut'>Début</label>
-          <input type="text" name="debut" class="datepicker start-date" value="{{ debutFr }}" style="margin:0 20px 0 5px;" />
-          <label for='fin'>Fin</label>
-          <input type="text" name="fin" class="datepicker end-date" value="{{ finFr }}" style="margin:0 0 0 5px;" />
-          {% if groups_exist %}
-            <span id='stat-temps-aff-grp'>
-              <input type='checkbox' value='on' id='selection_groupe' name='selection_groupe' {{ checked }} />
-              <label for='selection_groupe'>Afficher les heures par groupe de postes</label>
-            </span>
-          {% endif %}
-          <input type="submit" role="button" value="Rechercher" id="submit" class="btn btn-secondary" style="margin-left:30px;"/>
-        </form>
-      </td>
-    </tr>
-  </table><br/>
+
+  <form name="form" method="get" action="" onsubmit="return verif_form('debut=date1;fin=date2');">
+    <input type='hidden' name='page' />
+    <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+
+    <div class="row row-search">
+
+      <div class="col-xl-auto">
+        <input type="text" readonly class="form-control-plaintext mt-2" id="time-period" value="{% trans with {'%start%': debutFr, '%end%' : finFr} %}From %start% to %end%{% endtrans %}">
+      </div>
+
+      <label class="col-xl-auto col-form-label mt-2" for="time-search-start">{% trans %}Start{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0">
+        <input id="time-search-start" type="text" name="debut" class="datepicker form-control start-date" value="{{ debutFr }}"/>
+      </div>
+
+      <label class="col-xl-auto col-form-label mt-2" for="time-search-end">{% trans%}End{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0">
+        <input id="time-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{ finFr }}"/>
+      </div>
+
+      {% if groups_exist %}
+        <div class="col-3 form-check" style="align-content: center;">
+          <input id="selection_groupe" type="checkbox" value="" class="form-check-input m-1 mx-2" name="selection_groupe" {{ checked }} />            
+          <label class="form-check-label" for="selection_groupe">{% trans %}Display hours by job category{% endtrans %}</label>              
+        </div>
+      {% endif %}
+
+      <div class="col-xl-2 ps-0">
+        <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+    </div>
+  
+  </form>
+  <br/>
   {% if tab|length < 1 %}
     Les plannings de la période choisie sont vides.<br/><br/><br/><br/><br/><br/>
   {% else %}

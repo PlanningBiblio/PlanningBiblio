@@ -13,13 +13,17 @@
               <table>
                 <tr>
                   <td><label>Début</label></td>
-                  <td><input type="text" name="debut" value="{{ debut }}" class="datepicker start-date"/></td>
+                  <td><input type="text" name="debut" value="{{ debut }}" class="datepicker start-date form-control"/></td>
                 </tr>
                 <tr>
                   <td><label>Fin</label></td>
-                  <td><input type="text" name="fin" value="{{ fin }}" class="datepicker end-date"/></td>
+                  <td><input type="text" name="fin" value="{{ fin }}" class="datepicker end-date form-control"/></td>
                 </tr>
                 <tr>
+                <tr>
+                  <td></td>
+                  <td class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</td>
+                </tr>
                   <td><label>Tri</label></td>
                   <td>
                     <select name='tri' class='ui-widget-content ui-corner-all' >
@@ -70,8 +74,8 @@
                 {% endif %}
                 <tr>
                   <td colspan='2' style='text-align:center;padding:10px;'>
-                    <input type="reset" role="button" value="Effacer" onclick="location.href='{{ asset('statistics/position') }}';" class="btn btn-secondary" 
-                    &nbsp;&nbsp;<input type="submit" role="button" value="Rechercher" class="btn btn-secondary" />
+                    <input type="reset" role="button" value="{% trans %}Clear{% endtrans %}" onclick="location.href='{{ asset('statistics/position') }}';" class="btn btn-secondary"/>
+                    &nbsp;&nbsp;<input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary" />
                   </td>
                 </tr>
                 <tr>
