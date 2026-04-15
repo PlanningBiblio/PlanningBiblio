@@ -19,6 +19,9 @@ final class Version20260211222723 extends AbstractMigration
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
         $this->addSql("ALTER TABLE `{$dbprefix}absences` DROP COLUMN IF EXISTS `etat`;");
+        $this->addSql("UPDATE `{$dbprefix}absences` SET `pj1` = 0 WHERE `pj1` IS NULL;");
+        $this->addSql("UPDATE `{$dbprefix}absences` SET `pj2` = 0 WHERE `pj2` IS NULL;");
+        $this->addSql("UPDATE `{$dbprefix}absences` SET `so` = 0 WHERE `so` IS NULL;");
         $this->addSql("ALTER TABLE `{$dbprefix}absences` CHANGE `pj1` `pj1` TINYINT(1) NOT NULL DEFAULT 0;");
         $this->addSql("ALTER TABLE `{$dbprefix}absences` CHANGE `pj2` `pj2` TINYINT(1) NOT NULL DEFAULT 0;");
         $this->addSql("ALTER TABLE `{$dbprefix}absences` CHANGE `so` `so` TINYINT(1) NOT NULL DEFAULT 0;");
