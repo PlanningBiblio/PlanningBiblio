@@ -201,11 +201,7 @@ class AjaxController extends BaseController
       $end = DateTime::createFromFormat('Y-m-d H:i:s', $fin);
 
       $initialTimeSlot = new TimeSlot($start, $end);
-      if ($rrule) {
-          $timeSlots = $iCalendar->getRecurringEventTimeSlots($initialTimeSlot, $rrule);
-      } else {
-          $timeSlots = [$initialTimeSlot];
-      }
+      $timeSlots = $rrule ? $iCalendar->getRecurringEventTimeSlots($initialTimeSlot, $rrule) : [$initialTimeSlot];
 
       $planningPositionRepository = $this->entityManager->getRepository(PlanningPosition::class);
 
@@ -268,7 +264,7 @@ class AjaxController extends BaseController
           if ($this->config("$config_name-apresValidation") == 0) {
               $approvedDates = $planningPositionRepository->findApprovedDatesByAgentsAndTimeSlots([$perso_id], $timeSlots);
 
-              $datesValidees = array_map(fn($date) => dateFr($date), $approvedDates);
+              $datesValidees = array_map(fn($date): ?string => dateFr($date), $approvedDates);
               if (!empty($datesValidees)) {
                   $result['users'][$perso_id]["planning_validated"]=implode(" ; ", $datesValidees);
               }
@@ -285,7 +281,7 @@ class AjaxController extends BaseController
 
           if ($sites) {
               $inProgressDates = $planningPositionRepository->findInProgressDatesBySitesAndTimeSlots($sites, $timeSlots);
-              $planningsEnElaboration = array_map(fn($date) => date("d/m/Y", strtotime($date)), $inProgressDates);
+              $planningsEnElaboration = array_map(fn($date): string => date("d/m/Y", strtotime($date)), $inProgressDates);
           }
 
           // Affichage des dates correspondantes aux plannings en cours d'élaboration

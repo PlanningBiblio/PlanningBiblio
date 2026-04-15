@@ -1851,11 +1851,7 @@ class absences
 
         $iCalendar = new ICalendar();
         $initialTimeSlot = new TimeSlot(new DateTime($debut), new DateTime($fin));
-        if ($rrule) {
-            $absenceTimeSlots = $iCalendar->getRecurringEventTimeSlots($initialTimeSlot, $rrule);
-        } else {
-            $absenceTimeSlots = [$initialTimeSlot];
-        }
+        $absenceTimeSlots = $rrule ? $iCalendar->getRecurringEventTimeSlots($initialTimeSlot, $rrule) : [$initialTimeSlot];
 
         // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
         // Recherche des plannings validés

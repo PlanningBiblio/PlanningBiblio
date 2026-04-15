@@ -36,7 +36,6 @@ class TimeSlot
      * @param DateTimeInterface $start Start date, the time component is ignored
      * @param DateTimeInterface $end End date, the time component is ignored.
      *                               Defaults to the end of $start's day
-     * @return self
      */
     public static function createAllDay(DateTimeInterface $start, ?DateTimeInterface $end = null): self
     {
@@ -51,8 +50,6 @@ class TimeSlot
      *
      * @param DateTimeInterface $start Start of date range
      * @param DateTimeInterface $end End of date range
-     *
-     * @return bool
      */
     public function intersectsWith(DateTimeInterface $start, DateTimeInterface $end): bool
     {

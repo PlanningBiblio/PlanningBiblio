@@ -160,7 +160,6 @@ class PlanningPositionRepository extends EntityRepository
      * Adds a filter to keep only rows that insersects with at least one of
      * given time slots.
      *
-     * @param QueryBuilder $qb
      * @param TimeSlot[] $timeSlots
      */
     protected function filterByTimeSlots(QueryBuilder $qb, array $timeSlots): void
