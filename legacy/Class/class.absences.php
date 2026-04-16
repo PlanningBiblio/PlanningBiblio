@@ -1850,7 +1850,7 @@ class absences
         $rrule = $this->rrule;
 
         $iCalendar = new ICalendar();
-        $initialTimeSlot = new TimeSlot(new DateTime($debut), new DateTime($fin));
+        $initialTimeSlot = TimeSlot::createFromFormat('Y-m-d H:i:s', $debut, $fin);
         $absenceTimeSlots = $rrule ? $iCalendar->getRecurringEventTimeSlots($initialTimeSlot, $rrule) : [$initialTimeSlot];
 
         // Recherche des plages de SP concernées pour ajouter cette information dans le mail.

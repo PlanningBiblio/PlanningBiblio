@@ -49,10 +49,7 @@ class ICalendar
 
         $timeSlots = [];
         foreach ($ical->events() as $event) {
-            $timeSlots[] = new TimeSlot(
-                DateTime::createFromFormat('Ymd\THis\Z', $event->dtstart),
-                DateTime::createFromFormat('Ymd\THis\Z', $event->dtend)
-            );
+            $timeSlots[] = TimeSlot::createFromFormat('Ymd\THis\Z', $event->dtstart, $event->dtend);
         }
 
         return $timeSlots;

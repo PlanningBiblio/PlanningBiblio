@@ -197,10 +197,7 @@ class AjaxController extends BaseController
 
       $fin = $fin ?: str_replace('00:00:00', '23:59:59', $debut);
 
-      $start = DateTime::createFromFormat('Y-m-d H:i:s', $debut);
-      $end = DateTime::createFromFormat('Y-m-d H:i:s', $fin);
-
-      $initialTimeSlot = new TimeSlot($start, $end);
+      $initialTimeSlot = TimeSlot::createFromFormat('Y-m-d H:i:s', $debut, $fin);
       $timeSlots = $rrule ? $iCalendar->getRecurringEventTimeSlots($initialTimeSlot, $rrule) : [$initialTimeSlot];
 
       $planningPositionRepository = $this->entityManager->getRepository(PlanningPosition::class);

@@ -46,6 +46,19 @@ class TimeSlot
     }
 
     /**
+     * Create a time slot from datetime strings
+     *
+     * @see DateTime::createFromFormat
+     */
+    public static function createFromFormat(string $format, string $start, string $end): self
+    {
+        return new self(
+            DateTime::createFromFormat($format, $start),
+            DateTime::createFromFormat($format, $end),
+        );
+    }
+
+    /**
      * Returns true if timeslot intersects with the given date range
      *
      * @param DateTimeInterface $start Start of date range

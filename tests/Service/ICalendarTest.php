@@ -17,10 +17,7 @@ class ICalendarTest extends KernelTestCase
 
         $ical = $container->get(ICalendar::class);
 
-        $initialTimeSlot = new TimeSlot(
-            DateTime::createFromFormat('Y-m-d H:i', '2026-04-07 10:30'),
-            DateTime::createFromFormat('Y-m-d H:i', '2026-04-07 12:00'),
-        );
+        $initialTimeSlot = TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-07 10:30', '2026-04-07 12:00');
 
         // Daily
         $timeSlots = $ical->getRecurringEventTimeSlots($initialTimeSlot, 'FREQ=DAILY;COUNT=4');

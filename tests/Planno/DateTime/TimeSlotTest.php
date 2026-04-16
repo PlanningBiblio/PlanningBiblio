@@ -35,6 +35,13 @@ class TimeSlotTest extends TestCase
         $this->assertEquals('2026-03-07T23:59:59.999+00:00', $timeSlot->end->format(DateTime::RFC3339_EXTENDED));
     }
 
+    public function testCreateFromFormat(): void
+    {
+        $timeSlot = TimeSlot::createFromFormat('Y-m-d H:i', '2026-03-04 10:30', '2026-03-07 10:30');
+        $this->assertEquals('2026-03-04T10:30:00.000+00:00', $timeSlot->start->format(DateTime::RFC3339_EXTENDED));
+        $this->assertEquals('2026-03-07T10:30:00.000+00:00', $timeSlot->end->format(DateTime::RFC3339_EXTENDED));
+    }
+
     public function testIntersectsWith(): void
     {
         $timeSlot = TimeSlot::createAllDay(new DateTime('2026-03-04'), new DateTime('2026-03-07'));
@@ -65,7 +72,7 @@ class TimeSlotTest extends TestCase
             'start and end are inside'
         );
 
-        $timeSlot = new TimeSlot(new DateTime('2026-03-04 10:30'), new DateTime('2026-03-04 12:00'));
+        $timeSlot = TimeSlot::createFromFormat('Y-m-d H:i', '2026-03-04 10:30', '2026-03-04 12:00');
 
         $this->assertTrue(
             $timeSlot->intersectsWith(new DateTime('2026-03-04 10:00'), new DateTime('2026-03-04 14:00')),
