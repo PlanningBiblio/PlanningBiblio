@@ -1,5 +1,17 @@
 # Changelog Planno
 
+## Version 25.10.17 (2026-04-17)
+
+### Enhancement
+
+* MT52665: ICS Import, add the prodID to the ICS-custom-exclusion function #1365
+
+### Fixes
+
+* MT52853: Resolve broken display dataTable select #1358
+* MT53004: Fix the calculation of breaktimes in Agent Controller / index #1360
+* MT52901: Remove an HTML entity from the ICS URLs of the MyAccount page #1361
+
 ## Version 25.10.16 (2026-04-03)
 
 ### Fixes
