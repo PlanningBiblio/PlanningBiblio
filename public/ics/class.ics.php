@@ -315,7 +315,7 @@ class CJICS
 
             // Run custom exclusions
             if (!empty($config['ICS-custom-exclusion'])) {
-                if ($config['ICS-custom-exclusion']($elem)) {
+                if ($config['ICS-custom-exclusion']($elem, $prodID)) {
                     continue;
                 }
             }
