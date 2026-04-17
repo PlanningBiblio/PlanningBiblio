@@ -16,31 +16,12 @@ class ConfigHelper extends BaseHelper
         $this->configRepository = $this->entityManager->getRepository(Config::class);
     }
 
-    public function getValue($name): string
-    {
-        return $this->configRepository->findOneBy(['nom' => $name])->getValue();
-    }
-
-    public function getParam($name)
-    {
-        return $this->configRepository->findOneBy(['nom' => $name]);
-    }
-
-
-    public function getParams($technical): array
-    {
-        return $this->configRepository->findBy(
-                array('technical' => $technical),
-                array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
-            );
-    }
-
     public function saveConfig($params): string
     {
             $technical = $params['technical'];
             $error = '';
 
-            $configParams = $this->getParams($technical);
+            $configParams = $this->configRepository->getParams($technical);
 
             foreach ($configParams as $cp) {
                 if (in_array($cp->getType(), ['hidden', 'info'])) {

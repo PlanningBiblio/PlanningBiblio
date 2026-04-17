@@ -28,11 +28,19 @@ class ConfigRepository extends EntityRepository
         return $config;
     }
 
+    public function getParams($technical): array
+    {
+        return $this->findBy(
+                array('technical' => $technical),
+                array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
+            );
+    }
+
     public function getParam($name) {
         return $this->findOneBy(['nom' => $name]);
     }
 
-    public function getParamValue($name) {
+    public function getValue($name) {
         return $this->getParam($name)->getValue();
     }
 

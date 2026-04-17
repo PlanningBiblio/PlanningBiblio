@@ -140,8 +140,8 @@ class ConfigController extends BaseController
         $port = filter_var($port, FILTER_SANITIZE_NUMBER_INT);
 
         if ($password == '') {
-            $configHelper = new ConfigHelper();
-            $password = decrypt($configHelper->getValue('LDAP-Password'));
+            $configRepository = $this->entityManager->getRepository(Config::class);
+            $password = decrypt($configRepository->getValue('LDAP-Password'));
         }
 
         // Connexion au serveur LDAP
