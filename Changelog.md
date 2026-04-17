@@ -1,5 +1,19 @@
 # Changelog Planno
 
+## Version 25.11.22 (2026-04-17)
+
+### Enhancement
+
+* MT46629: Use bootstrap for position's modals #1354
+* MT46629: Use bootstrap for planning's notes #1355
+* MT46629: Use bootstrap for the send ICS URL's modal #1356
+* MT46629: Use bootstrap for delete agent modals #1359
+* MT52665: ICS Import, add the prodID to the ICS-custom-exclusion function #1365
+
+### Fixes
+
+* MT52853: Resolve broken display dataTable select #1358
+
 ## Version 25.11.21 (2026-04-03)
 
 ### Enhancement
