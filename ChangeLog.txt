@@ -1,3 +1,8 @@
+*** Version 25.04.19   (2026-04-17)    ***
+- Fixes
+MT53004: Fix the calculation of breaktimes in Agent Controller / index #1360
+MT52901: Remove an HTML entity from the ICS URLs of the MyAccount page #1361
+
 *** Version 25.04.18   (2026-03-20)    ***
 - Fixes
 MT52612: Use HourHelper in AgentController #1339
