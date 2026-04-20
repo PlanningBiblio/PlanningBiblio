@@ -4,7 +4,7 @@ namespace App\Command;
 
 use App\Entity\Config;
 use App\Entity\AbsenceDocument;
-use App\Entity\NetworkConfig;
+use App\Entity\ConfigNetwork;
 use App\Planno\ConfigFinder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -42,7 +42,7 @@ class AbsenceDeleteDocumentsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->configFinder->getAll(NetworkConfig::class, $_SESSION['network']['id']);
+        $config = $this->configFinder->getAll(ConfigNetwork::class, $_SESSION['network']['id']);
         $delay = $config['Absences-DelaiSuppressionDocuments'];
 
         if (empty($delay)) {

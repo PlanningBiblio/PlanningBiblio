@@ -19,7 +19,7 @@ class SiteController extends BaseController
     #[Route('/site', name: 'site.index', methods: ['GET'])]
     public function index(): Response
     {
-        $sites = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null, 'network' => $_SESSION['network']['id']], ['name' => 'ASC']
+        $sites = $this->entityManager->getRepository(Site::class)->findBy(['deleteDate' => null, 'network' => $_SESSION['network']['id']], ['name' => 'ASC']
         );
 
         $sitesTab = [];
@@ -157,7 +157,7 @@ class SiteController extends BaseController
         }
 
         try {
-            $site->setDeletedDate(new \DateTime());
+            $site->setDeleteDate(new \DateTime());
             $this->entityManager->persist($site);
             $this->entityManager->flush();
         } catch (Exception $e) {

@@ -613,7 +613,7 @@ class Agent
         }
 
         $droits = $this->droits;
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $this->network));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $this->network));
         $multisites = count($sites_array);
 
         // Right 21 (Edit personnel) gives right 4 (Show personnel)
@@ -763,7 +763,7 @@ class Agent
      */
     public function managedSites($needed_l1, $needed_l2): array
     {
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $this->network));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $this->network));
         $sites_number = count($sites_array);
 
         // Module workinghour, no multisites.

@@ -17,7 +17,7 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
     $titre="Statistiques par $nom du $debutAlpha au $finAlpha";
 
     $lignes=array($titre,null,"Postes");
-    $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+    $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
     if ($nom=="agent") {
         $cellules=array("Nom","Prénom","Heures","Moyenne hebdo");
     } else {
@@ -341,7 +341,7 @@ class statistiques
         $totalJours=array();
         $totalSemaines=array();
 
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         if (count($sites)>1 and is_array($selectedSites)) {
             $reqSites="AND `site` IN (0,".implode(",", $selectedSites).")";
         } else {

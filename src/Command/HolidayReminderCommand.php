@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Agent;
-use App\Entity\NetworkConfig;
+use App\Entity\ConfigNetwork;
 use App\Entity\Holiday;
 use App\Entity\Manager;
 use App\Planno\ConfigFinder;
@@ -50,7 +50,7 @@ Exemple à ajouter en crontab :
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->configFinder->getAll(NetworkConfig::class, $_SESSION['network']['id']);
+        $config = $this->configFinder->getAll(ConfigNetwork::class, $_SESSION['network']['id']);
 
         if (!$config['Conges-Rappels']) {
             $message = 'Holiday reminder is disabled.';

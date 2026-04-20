@@ -91,7 +91,7 @@ class ControllerAuthorizationListener
 
         $accesses = $this->permissions[$route];
 
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         // Right 21 (Edit personnel) gives right 4 (Show personnel)
         if (in_array(21, $this->droits)) {

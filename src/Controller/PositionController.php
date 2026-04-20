@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 
 use App\Entity\Site;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -48,14 +49,16 @@ class PositionController extends BaseController
             }
         }
 
-        $p = $this->entityManager->getRepository(Position::class)->findBy(array('supprime' => NULL), array('nom'=>'ASC'));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $site_ids = array_map(function($site) { return $site->getId(); }, $sites);
+        $nbSites=count($sites);
+
+        $p = $this->entityManager->getRepository(Position::class)->findBy(array('supprime' => NULL, 'site' => $site_ids), array('nom'=>'ASC'));
         $postes = array();
         foreach($p as $poste){
             $postes[] = $poste;
         }
 
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
-        $nbSites=count($sites);
         $this->templateParams(array(
             'multisite'     => $nbSites,
             'usedPositions' => $postes_utilises,
@@ -165,9 +168,9 @@ class PositionController extends BaseController
         }
 
         // Floors, groups and skills
-        $floors = $this->entityManager->getRepository(SelectFloor::class)->findBy([], ['rang' => 'ASC']);
-        $groups = $this->entityManager->getRepository(SelectGroup::class)->findBy([], ['rang' => 'ASC']);
-        $skill_list = $this->entityManager->getRepository(Skill::class)->findBy(['supprime' => null], ['nom' => 'ASC']);
+        $floors = $this->entityManager->getRepository(SelectFloor::class)->findBy(['network_id' => $_SESSION['network']['id']], ['rang' => 'ASC']);
+        $groups = $this->entityManager->getRepository(SelectGroup::class)->findBy(['network_id' => $_SESSION['network']['id']], ['rang' => 'ASC']);
+        $skill_list = $this->entityManager->getRepository(Skill::class)->findBy(['supprime' => null, 'network_id' => $_SESSION['network']['id']], ['nom' => 'ASC']);
 
         // Used floors
         $used_floors = array();
@@ -211,16 +214,16 @@ class PositionController extends BaseController
         $db->select2("select_categories", "*", "1", "order by rang");
         $categories_list = $db->result;
 
-        $sites = $this->entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $this->entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
-        $multisite = array();
+        $multisites = array();
         $selectedSites = array();
 
         if ($nbSites>1){
-            foreach ($sites as $site) {
-                $selected = $site==$site->getId()?"selected='selected'":null;
-                $multisite[] = $site->getName();
-                $selectedSites[] = $selected;
+            foreach ($sites as $s) {
+                $selected = $site==$s->getId()?"selected='selected'":null;
+                $multisites[$s->getId()] = $s->getName();
+                $selectedSites[$s->getId()] = $selected;
             }
         }
 
@@ -248,7 +251,7 @@ class PositionController extends BaseController
             'floors'        => $floors,
             'groups'        => $groups,
             'nbSites'       => $nbSites,
-            'multisite'     => $multisite,
+            'multisites'     => $multisites,
             'skillList'     => $skill_list,
             'categoriesList'=> $categories_list,
             'usedGroups'    => $used_groups,
@@ -261,7 +264,7 @@ class PositionController extends BaseController
     }
 
     #[Route(path: '/position', name: 'position.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request, Session $session): RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $nom = $request->get('nom');
@@ -304,6 +307,7 @@ class PositionController extends BaseController
                 $position->setGroupId($groupe_id);
                 $position->setMandatory($obligatoire);
                 $position->setSite($site);
+                $position->setNetworkId($_SESSION['network']['id']);
 
                 try{
                     $this->entityManager->persist($position);

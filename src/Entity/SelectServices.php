@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -21,6 +22,9 @@ class SelectServices
 
     #[ORM\Column]
     private ?string $couleur = '';
+
+    #[ORM\Column(type: Types::INTEGER)]
+    private ?int $network_id = null;
 
     public function getId(): ?int
     {
@@ -61,5 +65,15 @@ class SelectServices
         $this->couleur = $color;
 
         return $this;
+    }
+
+    public function getNetworkId(): ?int
+    {
+        return $this->network_id;
+    }
+
+    public function setNetworkId(?int $network_id): void
+    {
+        $this->network_id = $network_id;
     }
 }

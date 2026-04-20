@@ -20,17 +20,17 @@ class Network
     private ?string $name = '';
 
     #[ORM\Column]
-    private ?\DateTime $deletedDate = null;
+    private ?\DateTime $deleteDate = null;
 
-    #[ORM\OneToMany(mappedBy: 'network', targetEntity: NetworkConfig::class)]
-    private Collection $networkConfigs;
+    #[ORM\OneToMany(mappedBy: 'network', targetEntity: ConfigNetwork::class)]
+    private Collection $configNetworks;
 
     #[ORM\OneToMany(mappedBy: 'network', targetEntity: Agent::class)]
     private Collection $agents;
 
     public function __construct()
     {
-        $this->networkConfigs = new ArrayCollection();
+        $this->configNetworks = new ArrayCollection();
         $this->agents = new ArrayCollection();
     }
 
@@ -50,20 +50,20 @@ class Network
         return $this;
     }
 
-    public function getDeletedDate(): ?\DateTime
+    public function getDeleteDate(): ?\DateTime
     {
-        return $this->deletedDate;
+        return $this->deleteDate;
     }
 
-    public function setDeletedDate(\DateTime $deletedDate): self
+    public function setDeleteDate(\DateTime $deleteDate): self
     {
-        $this->deletedDate = $deletedDate;
+        $this->deleteDate = $deleteDate;
         return $this;
     }
 
-    public function getNetworkConfigs(): Collection
+    public function getConfigNetworks(): Collection
     {
-        return $this->networkConfigs;
+        return $this->configNetworks;
     }
 
     public function getAgents(): Collection

@@ -5,7 +5,7 @@ namespace App\Command;
 use App\Entity\Absence;
 use App\Entity\Agent;
 use App\Entity\Config;
-use App\Entity\NetworkConfig;
+use App\Entity\ConfigNetwork;
 use App\Planno\ConfigFinder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -43,7 +43,7 @@ class AbsenceImportCSVCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $entityManager = $this->entityManager;
-        $config = $this->configFinder->getAll(NetworkConfig::class, $_SESSION['network']['id']);
+        $config = $this->configFinder->getAll(ConfigNetwork::class, $_SESSION['network']['id']);
 
         if (file_exists(__DIR__ . '/../../custom_options.php')) {
             include __DIR__ . '/../../custom_options.php';

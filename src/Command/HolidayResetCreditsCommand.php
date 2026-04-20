@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Agent;
-use App\Entity\NetworkConfig;
+use App\Entity\ConfigNetwork;
 use App\Entity\Holiday;
 use App\Planno\ConfigFinder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,13 +25,11 @@ require_once __DIR__ . '/../../legacy/Common/function.php';
 class HolidayResetCreditsCommand extends Command
 {
     private EntityManagerInterface $entityManager;
-    private SessionInterface $session;
     private ConfigFinder $configFinder;
 
-    public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack, ConfigFinder $configFinder)
+    public function __construct(EntityManagerInterface $entityManager, ConfigFinder $configFinder)
     {
         $this->entityManager = $entityManager;
-        $this->session = $requestStack->getSession();
         $this->configFinder = $configFinder;
         parent::__construct();
     }
@@ -57,7 +55,7 @@ class HolidayResetCreditsCommand extends Command
             }
         }
 
-        $config = $this->configFinder->getAll(NetworkConfig::class, $this->session->get('network')['id']);
+        $config = $this->configFinder->getAll(ConfigNetwork::class, $_SESSION['network']['id']);
         $transferCompTime = !empty($config['Conges-transfer-comp-time']);
 
         $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);

@@ -25,7 +25,7 @@ class personnel
     // Will be replaced by AgentRepository::get
     public function fetch($tri="nom", $actif=null, $name=null)
     {
-        $filter = array('id' => '<> 2');
+        $filter = array('id' => '<> 2', 'network_id' => $_SESSION['network']['id']);
 
         // Filtre selon le champ actif (administratif, service public)
         $actif = htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);

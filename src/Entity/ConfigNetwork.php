@@ -6,15 +6,19 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'technical_config')]
-class TechnicalConfig
+#[ORM\Table(name: 'config_network')]
+class ConfigNetwork
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'technicalConfig')]
+    #[ORM\ManyToOne(inversedBy: 'configNetworks')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Network $network = null;
+
+    #[ORM\ManyToOne(inversedBy: 'configNetworks')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Config $config = null;
 
@@ -24,6 +28,17 @@ class TechnicalConfig
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getNetwork(): ?Network
+    {
+        return $this->network;
+    }
+
+    public function setNetwork(Network $network): self
+    {
+        $this->network = $network;
+        return $this;
     }
 
     public function getConfig(): ?Config

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Config;
-use App\Entity\TechnicalConfig;
+use App\Entity\ConfigTechnical;
 use App\Planno\Notifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -74,7 +74,7 @@ class BaseController extends AbstractController
          * Some unit tests fail if we do not use  $url and $GLOBLAS['config']
          * The result return by Config::getAll may be incomplete
          */
-        $url = $this->configFinder->findOneByConfigName(TechnicalConfig::class, 'URL')
+        $url = $this->configFinder->findOneByConfigName(ConfigTechnical::class, 'URL')
             ->getValue();
 
         $GLOBALS['config']['URL'] = $url;

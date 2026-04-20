@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Agent;
-use App\Entity\NetworkConfig;
+use App\Entity\ConfigNetwork;
 use App\Entity\WorkingHour;
 use App\Planno\ConfigFinder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,7 +42,7 @@ class WorkingHourExportCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->configFinder->getAll(NetworkConfig::class, $_SESSION['network']['id']);
+        $config = $this->configFinder->getAll(ConfigNetwork::class, $_SESSION['network']['id']);
 
         if (file_exists(__DIR__ . '/../../custom_options.php')) {
             include __DIR__ . '/../../custom_options.php';

@@ -3,7 +3,7 @@
 namespace App\EventListener;
 
 use App\Entity\Config;
-use App\Entity\TechnicalConfig;
+use App\Entity\ConfigTechnical;
 use App\Planno\ConfigFinder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -27,7 +27,7 @@ class LoginListener
 
         $session = $event->getRequest()->getSession();
 
-        $config = $this->configFinder->findOneByConfigName(TechnicalConfig::class, 'URL');
+        $config = $this->configFinder->findOneByConfigName(ConfigTechnical::class, 'URL');
         $url = $config->getValue() ?? '';
 
         // Prevent user accessing to login page if he is already authenticated
@@ -62,7 +62,7 @@ class LoginListener
 
             // Anonymous login
             $login = $event->getRequest()->get('login');
-            $anonymousAuthConfig = $this->configFinder->findOneByConfigName(TechnicalConfig::class, 'Auth-Anonyme');
+            $anonymousAuthConfig = $this->configFinder->findOneByConfigName(ConfigTechnical::class, 'Auth-Anonyme');
             if ($login and $login === 'anonyme' and $anonymousAuthConfig !== null and $anonymousAuthConfig->getValue()) {
                 $_SESSION['login_id']=999999999;
                 $_SESSION['login_nom']="Anonyme";

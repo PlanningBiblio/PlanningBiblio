@@ -619,7 +619,7 @@ class HolidayController extends BaseController
         }
 
         $lang = $GLOBALS['lang'];
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $templateParams = array(
             'admin'                 => $admin || $adminN2,
             'adminN1'               => $admin,
@@ -690,7 +690,7 @@ class HolidayController extends BaseController
         $droits = $GLOBALS['droits'];
         $admin = false;
         $sites = array();
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {

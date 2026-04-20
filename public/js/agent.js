@@ -337,6 +337,12 @@ function verif_form_agent(){
     erreur = true;
     message = message + "\n- E-mail";
   }
+  if ($("input[name='sites[]']").length > 0) {
+    if (!$("input[name='sites[]']:checked").length) {
+      erreur = true;
+      message += "\n- Sites";
+    }
+  }
   
   if(erreur) {
     CJInfo(message);

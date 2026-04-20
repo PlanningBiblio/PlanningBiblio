@@ -36,16 +36,16 @@ class Config
     #[ORM\Column]
     private ?int $ordre = 0;
 
-    #[ORM\OneToMany(mappedBy: 'config', targetEntity: TechnicalConfig::class)]
-    private Collection $technicalConfig;
+    #[ORM\OneToMany(mappedBy: 'config', targetEntity: ConfigTechnical::class)]
+    private Collection $configTechnical;
 
-    #[ORM\OneToMany(mappedBy: 'config', targetEntity: NetworkConfig::class)]
-    private Collection $networkConfig;
+    #[ORM\OneToMany(mappedBy: 'config', targetEntity: ConfigNetwork::class)]
+    private Collection $configNetworks;
 
     public function __construct()
     {
-        $this->technicalConfig = new ArrayCollection();
-        $this->networkConfig = new ArrayCollection();
+        $this->configTechnical = new ArrayCollection();
+        $this->configNetworks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -137,13 +137,13 @@ class Config
         return $this;
     }
 
-    public function getTechnicalConfig(): Collection
+    public function getConfigTechnical(): Collection
     {
-        return $this->technicalConfig;
+        return $this->configTechnical;
     }
 
-    public function getNetworkConfig(): Collection
+    public function getConfigNetworks(): Collection
     {
-        return $this->networkConfig;
+        return $this->configNetworks;
     }
 }

@@ -146,7 +146,7 @@ class HolidayInfoController extends BaseController
     private function isAdmin(): bool
     {
         $droits = $GLOBALS['droits'];
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         for ($i = 1; $i <= count($sites) ; $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {

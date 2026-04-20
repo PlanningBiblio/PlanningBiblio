@@ -109,7 +109,7 @@ class PlanningController extends BaseController
         }
 
         // Index page only
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $this->templateParams(array(
             'start' => $this->dates[0]->dates[0],
             'end' => $this->dates[0]->dates[6],
@@ -372,7 +372,7 @@ class PlanningController extends BaseController
 
         // Search for agents on other sites.
         $autres_sites = array();
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         if (count($sites) > 1) {
             $db = new \db();
             $db->select2('pl_poste', array('perso_id','date','debut','fin','poste'), array('date' => "BETWEEN {$dates[0]} AND ".end($dates), 'site' => "<>$site"));
@@ -1454,7 +1454,7 @@ class PlanningController extends BaseController
 
         // Sécurité
         // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $droit = count($sites) ? (300 + $site) : 12;
         $droits_agent = $_SESSION['droits'];
 
@@ -2433,28 +2433,19 @@ class PlanningController extends BaseController
     private function setSite(Request $request): void
     {
         $session = $request->getSession();
+        $site = $request->get('site') ?? $_SESSION['site'] ?? null;
 
-        $site = $request->get('site');
-
-        // Multisites: default site is 1.
         // Site is $_GET['site'] if it is set, else we take
         // SESSION ['site'] or agent's site.
-
-        if (!$site and !empty($_SESSION['site'])) {
-            $site = $_SESSION['site'];
-        }
 
         if (!$site) {
             $p = new \personnel();
             $p->fetchById($session->get('loginId'));
-            $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
+            $site = $p->elements[0]['sites'][0] ?? null;
         }
-
-        $site = $site ? $site : 1;
 
         $_SESSION['site'] = $site;
         $session->set('site', $site);
-
         $this->site = $site;
     }
 }

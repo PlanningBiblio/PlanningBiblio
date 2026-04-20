@@ -4,8 +4,9 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\Config;
-use App\Entity\NetworkConfig;
-use App\Entity\TechnicalConfig;
+use App\Entity\ConfigNetwork;
+use App\Entity\Site;
+use App\Entity\ConfigTechnical;
 use App\Planno\Helper\ConfigHelper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,16 +21,27 @@ class ConfigController extends BaseController
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
-        $url = $this->configFinder->findOneByConfigName(TechnicalConfig::class, 'URL')
+        $url = $this->configFinder->findOneByConfigName(ConfigTechnical::class, 'URL')
             ->getValue();
 
         $technical = $request->get('options') == 'technical' ? 1 : 0;
 
-        $entityClass = $technical ? TechnicalConfig::class : NetworkConfig::class;
+        $entityClass = $technical ? ConfigTechnical::class : ConfigNetwork::class;
         $networkId = $technical ? null : $_SESSION['network']['id'];
         $configParams = $this->configFinder->findByType($entityClass, $networkId);
 
         $elements = array();
+        $sites_array = $this->entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        if (!$technical && count($sites_array) > 1) {
+            $networkInfo = new ConfigNetwork();
+            $networkInfo->setNetwork($sites_array[0]->getNetwork());
+            $networkInfo->setValue($sites_array[0]->getNetwork()->getName());
+
+            $c = (new Config())->setType('info')->setName('Nom')->setCategory('Réseau')->setComment("Nom du réseau")->setValues('')->setTechnical(0)->setOrder(0);
+            $networkInfo->setConfig($c);
+            array_unshift($configParams, $networkInfo);
+        }
+
         foreach ($configParams as $cp) {
 
             // Do not display hidden information

@@ -53,7 +53,7 @@ class Menu
         }
 
         $networkId = isset($_SESSION['network']['id']) ? (int) $_SESSION['network']['id'] : null;
-        $sites = $networkId !== null ? $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $networkId)) : array();
+        $sites = $networkId !== null ? $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $networkId)) : array();
         if (count($sites)>1) {
             foreach ($sites as $site) {
                 $menu[30][$site->getId()]['titre']=$site->getName();

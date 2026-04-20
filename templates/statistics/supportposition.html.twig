@@ -47,7 +47,7 @@
                   <td>
                     <select name='selectedSites[]' multiple='multiple' size='{{ nbSites + 1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
                       <option value='Tous'>Tous</option>
-                      {% for i in 1..nbSites %}
+                      {% for i in multisites|keys %}
                         {% if i in selectedSites %}
                           <option value='{{ i }}' selected = 'selected' >{{ multisites[i] }}</option>
                         {% else %}

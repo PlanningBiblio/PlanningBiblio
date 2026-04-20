@@ -36,7 +36,7 @@ require_once(__DIR__.'/init_plugins.php');
 
 // Vérification de la version de la base de données
 // Si la version est différente, mise à jour de la base de données
-if ($version!=$config['Version'] && $version != 'ajax') {
+if (isset($config['Version']) && $version!=$config['Version'] && $version != 'ajax') {
     require_once(__DIR__.'/../legacy/migrations/update.php');
 }
 

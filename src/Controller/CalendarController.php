@@ -56,7 +56,7 @@ class CalendarController extends BaseController
         //Sélection du personnel pour le menu déroulant
         $agent = null;
         $db = new \db();
-        $db->query("SELECT * FROM `{$GLOBALS['dbprefix']}personnel` WHERE actif='Actif' AND id > 2 ORDER by `nom`,`prenom`;");
+        $db->query("SELECT * FROM `{$GLOBALS['dbprefix']}personnel` WHERE actif='Actif' AND id > 2 AND 'network_id' = {$_SESSION['network']['id']} ORDER by `nom`,`prenom`;");
         $agents = $db->result;
 
         if(is_array($agents)){
@@ -99,7 +99,7 @@ class CalendarController extends BaseController
 
         //Plannings verrouillés
         $verrou = array();
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
         for ($i = 1; $i <= $nbSites; $i++){
             $verrou[$i]=array();

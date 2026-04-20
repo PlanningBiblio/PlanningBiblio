@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Agent;
-use App\Entity\NetworkConfig;
+use App\Entity\ConfigNetwork;
 use App\Entity\Site;
 use App\Entity\WorkingHour;
 use App\Planno\ConfigFinder;
@@ -39,7 +39,7 @@ class WorkingHourImportCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->configFinder->getAll(NetworkConfig::class, $_SESSION['network']['id']);
+        $config = $this->configFinder->getAll(ConfigNetwork::class, $_SESSION['network']['id']);
         $agentIdentifier = $config['PlanningHebdo-ImportAgentId'] ?? 'login';
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
@@ -94,7 +94,7 @@ class WorkingHourImportCommand extends Command
         // On place les éléments du fichiers dans le tableau $temps
         $temps = [];
 
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         // Pour chaque ligne
         foreach ($lines as $line) {
