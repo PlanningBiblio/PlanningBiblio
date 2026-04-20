@@ -68,7 +68,7 @@ class WorkingHourController extends BaseController
         $p = new \personnel();
         $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites_array);
         $multisites = array();
         foreach ($sites as $site) {
@@ -305,7 +305,7 @@ class WorkingHourController extends BaseController
         $remplace = null;
         $sites = array();
         $nbSemaine = $this->config('nb_semaine');
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites_array);
         $multisites = array();
 
@@ -379,7 +379,7 @@ class WorkingHourController extends BaseController
         $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $nbSemaine = $this->config('nb_semaine');
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites_array);
         $validation = "";
         $sites = array();

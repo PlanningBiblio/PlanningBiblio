@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\NetworkConfig;
+use App\Entity\ConfigNetwork;
 use App\Entity\Site;
 use App\Planno\ConfigFinder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -184,9 +184,9 @@ class AgentRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $this->configFinder->findOneByConfigName(NetworkConfig::class, $this->by_agent_param, $_SESSION['network']['id']);
+        $by_agent_param = $this->configFinder->findOneByConfigName(ConfigNetwork::class, $this->by_agent_param, $_SESSION['network']['id']);
 
-        $sites = $entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
@@ -231,9 +231,9 @@ class AgentRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $this->configFinder->findOneByConfigName(NetworkConfig::class, $this->by_agent_param, $_SESSION['network']['id']);
+        $by_agent_param = $this->configFinder->findOneByConfigName(ConfigNetwork::class, $this->by_agent_param, $_SESSION['network']['id']);
 
-        $sites = $entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $sites_number = count($sites);
 
         // Param Absences-notifications-agent-par-agent
@@ -289,12 +289,11 @@ class AgentRepository extends EntityRepository
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $this->configFinder->findOneByConfigName(NetworkConfig::class, $this->by_agent_param, $_SESSION['network']['id']);
+        $by_agent_param = $this->configFinder->findOneByConfigName(ConfigNetwork::class, $this->by_agent_param, $_SESSION['network']['id']);
 
-        $sites = $entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $sites_number = count($sites);
 
-        $sites = array(1);
         if ($this->check_by_site && $sites_number > 1) {
             $sites = array();
 
@@ -361,11 +360,11 @@ class AgentRepository extends EntityRepository
         }
 
         foreach ($sites as $i) {
-            if (in_array($this->needed_level1 + $i, $agent_rights)) {
+            if (in_array($this->needed_level1 + $i->getId(), $agent_rights)) {
                 $l1 = true;
             }
 
-            if (in_array($this->needed_level2 + $i, $agent_rights)) {
+            if (in_array($this->needed_level2 + $i->getId(), $agent_rights)) {
                 $l2 = true;
             }
         }
@@ -379,6 +378,8 @@ class AgentRepository extends EntityRepository
         $builder->select('a')
                 ->from(Agent::class, 'a')
                 ->andWhere('a.id != 2')
+                ->andWhere('a.network = :network_id')
+                ->setParameter('network_id', $_SESSION['network']['id'])
                 ->addOrderBy('a.nom', 'ASC');
 
         if (!$deleted) {
@@ -406,7 +407,7 @@ class AgentRepository extends EntityRepository
      */
     public function getSitesForAgents($agent_ids = array()): array
     {
-        $sites = $this->getEntityManager()->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $this->getEntityManager()->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         if (count($sites) == 1) {
             return array("1");
         }

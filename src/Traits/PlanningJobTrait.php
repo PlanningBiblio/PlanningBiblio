@@ -78,7 +78,7 @@ trait PlanningJobTrait
 
         // Site's name
         $siteNom = null;
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         if (count($sites_array) > 1) {
             $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
@@ -341,7 +341,7 @@ trait PlanningJobTrait
         $db = new \db();
         $dateSQL = $db->escapeString($date);
 
-        $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= '$dateSQL' OR `depart` IS NULL);");
+        $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= '$dateSQL' OR `depart` IS NULL) AND 'network_id' = {$_SESSION['network']['id']};");
 
         // Chech agents working hours.
         $verif = true;
@@ -591,7 +591,7 @@ trait PlanningJobTrait
 
         $req="SELECT * FROM `{$dbprefix}personnel` "
           ."WHERE `actif` LIKE 'Actif' AND (`arrivee` <= '$dateSQL' OR `arrivee` IS NULL) AND (`depart` >= '$dateSQL' OR `depart` IS NULL) AND `id` NOT IN ($agents_qualif) "
-          ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  ORDER BY `nom`,`prenom`;";
+          ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents) AND `network_id`=".$_SESSION['network']['id']." ORDER BY `nom`,`prenom`;";
 
         $db->query($req);
         $autres_agents_tmp = $db->result;

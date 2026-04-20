@@ -23,7 +23,9 @@ class AbsenceInfoController extends BaseController
         $query = $queryBuilder->select(array('a'))
             ->from(AbsenceInfo::class, 'a')
             ->where('a.fin >= :today')
+            ->andwhere('a.network_id = :network_id')
             ->setParameter('today', $today)
+            ->setParameter('network_id', $_SESSION['network']['id'])
             ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
             ->getQuery();
 
@@ -91,6 +93,7 @@ class AbsenceInfoController extends BaseController
             $info->setStart($start);
             $info->setEnd($end);
             $info->setComment($text);
+            $info->setNetworkId($_SESSION['network']['id']);
             $flash = "L'information a bien été enregistrée.";
         }
 

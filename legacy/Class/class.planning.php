@@ -555,7 +555,7 @@ class planning
         }
 
         $sujet=$notificationType=="nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
-        $sites_array = $entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         // Tous les agents qui doivent être notifiés.
         foreach ($perso_ids as $elem) {

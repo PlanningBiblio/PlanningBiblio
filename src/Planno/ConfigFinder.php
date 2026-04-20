@@ -2,8 +2,8 @@
 
 namespace App\Planno;
 
-use App\Entity\NetworkConfig;
-use App\Entity\TechnicalConfig;
+use App\Entity\ConfigNetwork;
+use App\Entity\ConfigTechnical;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ConfigFinder
@@ -28,7 +28,7 @@ class ConfigFinder
 
     public function findByType(string $entityClass, ?int $networkId = null): array
     {
-        if (!is_a($entityClass, NetworkConfig::class, true) && !is_a($entityClass, TechnicalConfig::class, true)) {
+        if (!is_a($entityClass, ConfigNetwork::class, true) && !is_a($entityClass, ConfigTechnical::class, true)) {
             throw new \InvalidArgumentException(sprintf('Unsupported entity class: %s', $entityClass));
         }
 
@@ -40,7 +40,7 @@ class ConfigFinder
             ->addOrderBy('c.ordre', 'ASC')
             ->addOrderBy('c.id', 'ASC');
 
-        if ($networkId !== null && is_a($entityClass, NetworkConfig::class, true)) {
+        if ($networkId !== null && is_a($entityClass, ConfigNetwork::class, true)) {
             $qb->andWhere('IDENTITY(e.network) = :networkId')
                 ->setParameter('networkId', $networkId);
         }
@@ -48,9 +48,9 @@ class ConfigFinder
         return $qb->getQuery()->getResult();
     }
 
-    public function findOneByConfigName(string $entityClass, string $name, ?int $networkId = null) : NetworkConfig|TechnicalConfig
+    public function findOneByConfigName(string $entityClass, string $name, ?int $networkId = null) : ConfigNetwork|ConfigTechnical
     {
-        if (!is_a($entityClass, NetworkConfig::class, true) && !is_a($entityClass, TechnicalConfig::class, true)) {
+        if (!is_a($entityClass, ConfigNetwork::class, true) && !is_a($entityClass, ConfigTechnical::class, true)) {
             throw new \InvalidArgumentException(sprintf('Unsupported entity class: %s', $entityClass));
         }
 
@@ -62,7 +62,7 @@ class ConfigFinder
             ->setParameter('name', $name)
             ->setMaxResults(1);
 
-        if ($networkId !== null && is_a($entityClass, NetworkConfig::class, true)) {
+        if ($networkId !== null && is_a($entityClass, ConfigNetwork::class, true)) {
             $qb->andWhere('IDENTITY(e.network) = :networkId')
                 ->setParameter('networkId', $networkId);
         }

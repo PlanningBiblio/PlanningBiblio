@@ -50,17 +50,17 @@ class AgentController extends BaseController
         $ldapBouton = ($this->config('LDAP-Host') and $this->config('LDAP-Suffix'));
         $ldifBouton = ($this->config('LDIF-File'));
 
-        $active = $active ? $active : $session->get('AgentActive', 'Actif');
+        $active = $active ?? $session->get('AgentActive', 'Actif');
         $session->set('AgentActive', $active);
 
         // Mark agents as deleted when their depart date is past today
         $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();
 
         // List of activities, contracts, services and status for bulk modification
-        $activites = $this->entityManager->getRepository(Skill::class)->findAll();
+        $activites = $this->entityManager->getRepository(Skill::class)->findBy(array("network_id"=>$_SESSION['network']['id']));
         $contrats = ['Titulaire', 'Contractuel'];
-        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
-        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findAll();
+        $services = $this->entityManager->getRepository(SelectServices::class)->findBy(array("network_id"=>$_SESSION['network']['id']));
+        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findBy(array("network_id"=>$_SESSION['network']['id']));
 
         // Hours for bulk modification
         $hours = array();
@@ -99,7 +99,13 @@ class AgentController extends BaseController
 
         // Get all agents
         $agents = $this->entityManager->getRepository(Agent::class)->get($active);
-        $sites_array = $this->entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $this->entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $agents = array_filter($agents, function($agent) use ($sites_array) {
+            if (count($sites_array) > 1) {
+                return count(array_intersect($agent->getSites(), array_map(function ($s) {return $s->getId();}, $sites_array))) > 0;
+            }
+            return true;
+        });
         $this->templateParams([
             'active'            => $active,
             'agents'            => $agents,
@@ -148,7 +154,7 @@ class AgentController extends BaseController
         $CSRFSession = $GLOBALS['CSRFSession'];
         $lang = $GLOBALS['lang'];
         $droits = $GLOBALS['droits'];
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
         if ($this->config('PlanningHebdo')) {
@@ -177,7 +183,7 @@ class AgentController extends BaseController
         $skillsAll = [];
         $skillsAllWithName = [];
 
-        $skills = $this->entityManager->getRepository(Skill::class)->findAll();
+        $skills = $this->entityManager->getRepository(Skill::class)->findBy(array("network_id"=>$_SESSION['network']['id']));
 
         foreach ($skills as $elem) {
             $skillsAllWithName[] = [$elem->getName(), $elem->getId()];
@@ -185,9 +191,9 @@ class AgentController extends BaseController
         }
 
         // Get all categories, services and statuses
-        $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
-        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
-        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findAll();
+        $categories = $this->entityManager->getRepository(SelectCategories::class)->findBy(array("network_id"=>$_SESSION['network']['id']));
+        $services = $this->entityManager->getRepository(SelectServices::class)->findBy(array("network_id"=>$_SESSION['network']['id']));
+        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findBy(array("network_id"=>$_SESSION['network']['id']));
 
         // Find the lists of distinct agent services and statuses.
         $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();
@@ -237,7 +243,7 @@ class AgentController extends BaseController
                 $sitesSelect[] = [
                     'id' => $s->getId(),
                     'name' => $s->getName(),
-                    'checked' => in_array($i, $sites) ? 1 : 0,
+                    'checked' => in_array($s->getId(), $sites) ? 1 : 0,
                 ];
             }
         }
@@ -524,7 +530,7 @@ class AgentController extends BaseController
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : '';
         $service = $params['service'] ?? null;
-        $sites = array_key_exists("sites", $params) ? $params['sites'] : [];
+        $sites = array_key_exists("sites", $params) ? $params['sites'] : ['1'];
         $statut = $params['statut'] ?? null;
 
         $postes = json_decode($params['postes']);
@@ -554,7 +560,7 @@ class AgentController extends BaseController
             }
         }
 
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         for ($i = 1; $i <= count($sites_array); $i++) {
             // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
             if (in_array((300+$i), $droits) and !in_array((1000+$i), $droits)) {

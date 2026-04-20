@@ -735,7 +735,7 @@ class absences
       
         // Multisites, n'affiche que les agents des sites choisis
                 if (!empty($sites)) {
-                    $sites = $entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+                    $sites = $entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
                     if (count($sites) > 1) {
                         $sitesAgent = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     } else {
@@ -1063,7 +1063,7 @@ class absences
         $responsables=array();
         $droitsAbsences=array();
         //	Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         if (count($sites) > 1) {
             $db=new db();
             $db->select("personnel", "temps", "id='$perso_id'");
@@ -1863,7 +1863,7 @@ class absences
         $postes=$p->elements;
     
         // Nom des sites
-        $sites_array=$GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array=$GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $sites=array(1=>null);
         if (count($sites_array)>0){
             foreach ($sites_array as $s) {
