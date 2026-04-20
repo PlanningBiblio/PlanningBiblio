@@ -38,7 +38,7 @@ class ConfigHelper extends BaseHelper
                 }
 
                 // Passwords
-                if (substr($cp->getName(), -9) == '-Password') {
+                if ($cp->getType() == 'password') {
                     if ($value == '') {
                         continue;
                     }
