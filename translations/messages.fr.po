@@ -1,6 +1,9 @@
 msgid "mm/dd/yyyy"
 msgstr "jj/mm/aaaa"
 
+msgid "MM/DD/YYYY"
+msgstr "DD/MM/YYYY"
+
 msgid "Start date"
 msgstr "Date de début"
 
@@ -72,3 +75,12 @@ msgstr "Sites"
 
 msgid "Save changes"
 msgstr "Enregistrer les modifications"
+
+msgid "Please enter a valid start date"
+msgstr "Veillez saisir une date de début valide"
+
+msgid "Please enter a valid end date"
+msgstr "Veillez saisir une date de fin valide"
+
+msgid "Please select an agent"
+msgstr "Veillez choisir un agent"

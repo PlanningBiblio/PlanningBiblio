@@ -6,7 +6,7 @@
 
   <h3>Heures de présence</h3>
   <div id="buttons">
-    <form name="form" method="get" action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm();">
+    <form name="form" method="get" action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm($(this));" novalidate>
       <div class="row row-search">
 
         <label class="col-xl-auto col-form-label mt-2" for="workinghour-search-start">{% trans%}Start{% endtrans %} :</label>
@@ -16,7 +16,7 @@
 
         <label class="col-xl-auto col-form-label mt-2" for="workinghour-search-end">{% trans%}End{% endtrans %} :</label>
         <div class="col-xl-auto ps-0">
-          <input id="workinghour-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{ fin }}"/>
+          <input id="workinghour-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{ fin }}" required/>
         </div>
 
         <div class="col-xl-4 ps-0">
@@ -33,7 +33,7 @@
       </div>
 
       <div class="row">
-        <div class="invalid-feedback ps-2">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+        <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
       </div>
 
     </form>

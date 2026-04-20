@@ -20,7 +20,7 @@
           <h3>Heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
         {% endif %}
         <div id='working_hours'>
-          <form name='form1' method='post' action="{{ asset('workinghour') }}" onsubmit='return plHebdoVerifForm();'>
+          <form name='form1' method='post' action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm($(this));" novalidate>
             {% if id > 0 and copy is null and request_exception is null %}
               <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
             {% else %}
@@ -63,7 +63,7 @@
               <div class="row">
                 <label class="col-2 col-form-label" for="fin">{% trans%}Ending date{% endtrans %} :</label>
                 <div class="col-2">
-                  <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker form-control end-date m-0" />
+                  <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker form-control end-date m-0" required/>
                 </div>
               </div>
               <div class="row">
@@ -172,7 +172,7 @@
                 {% if request_exception == true %}
                   <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="btn btn-primary" />
                 {% else %}
-                  <input type="submit" value="Enregistrer" style="margin-left:30px"; class="btn btn-primary" />
+                  <input type="submit" value="Enregistrer" style="margin-left:30px"; class="btn btn-primary"/>
                 {% endif %}
               {% else %}
                 {% if modifAutorisee == true %}

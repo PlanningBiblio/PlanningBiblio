@@ -599,6 +599,12 @@ function updateTips( text , type) {
   CJErrorHighlight( $(".validateTips"), type);
 }
 
+function verif_date2(date) {
+  format = Translator.trans('MM/DD/YYYY');
+  year = dayjs(date, format).year();
+  return dayjs(date, format, true).isValid() && year >= 1999 && year <= 2080;
+};
+
 function verif_date(d){
   // Cette fonction vérifie le format AAAA-MM-JJ saisi et la validité de la date.
   // Le séparateur est défini dans la variable separateur
@@ -638,11 +644,16 @@ function verif_date(d){
   }
   return ok;
 }
- 
-function verif_form(champs,form){
-  if(form==undefined){
-    form="form";
+
+function verif_form(champs,form='form') {
+  
+  // Checks if the form was submitted with invalid inputs and stops the submission
+  if ($('.is-invalid').length > 0) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
   }
+
   erreurs="";
   valeur1="";
   valeur2="";
@@ -779,15 +790,16 @@ $(function(){
     $("#pl-calendar").bootstrapDP({
       format: 'yyyy-mm-dd',
       todayHighlight: true,
-      language: "fr",
+      language: Translator.locale,
       toggleActive : true,
     });
 
     $("input.datepicker").bootstrapDP({
       format: 'dd/mm/yyyy',
-      language: "fr",
+      language: Translator.locale,
       todayHighlight: true,
-      autoclose: true
+      autoclose: true,
+      forceParse : false
     });
 
     $(".datepicker").addClass("center ui-widget-content");
@@ -797,47 +809,88 @@ $(function(){
     // Invalid message feedback when date interval is not valid and disabled submit button
 
     $('.datepicker.end-date').on('change',function() {
-      var debut = $('.datepicker.start-date').bootstrapDP('getDate');
-      var fin = $(this).bootstrapDP('getDate');
+      var valid_start = verif_date2($('.datepicker.start-date').val());
+      var valid_end = verif_date2($(this).val());
+      var end_required = typeof($(this).attr('required')) != 'undefined';
+      var start = $('.datepicker.start-date').bootstrapDP('getDate');
+      var end = $(this).bootstrapDP('getDate');
       var submit = $(this).closest('form').find(':submit');
       var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
 
-      $('.datepicker.start-date').removeClass('is-invalid');
-      submit.removeClass('disabled');
+      if((end == null && end_required ) || (end != null && !valid_end)){
+        $(this).addClass('is-invalid');
+        submit.addClass('disabled');
+        if(feedback.text() == Translator.trans("Please choose a valid date interval.") || !$('.datepicker.start-date').hasClass('is-invalid')){
+          $('.datepicker.start-date').removeClass('is-invalid');
+          feedback.text(Translator.trans("Please enter a valid end date"));
+          feedback.show();
+        }
+        return;
+      }
 
-      if(debut && fin && fin < debut) {
+      if (!valid_end && !valid_start){
+        return;
+      }
+
+      if(valid_end && !valid_start) {
+        $(this).removeClass('is-invalid');
+        return;
+      }
+
+      if(valid_start && valid_end && end < start) {
         $(this).addClass('is-invalid');
         $('.datepicker.start-date').addClass('is-invalid');
         submit.addClass('disabled');
+        feedback.text(Translator.trans("Please choose a valid date interval.", 'validators'));
         feedback.show();
+        return;
       }
 
-      else {
-        $(this).removeClass('is-invalid');
-        feedback.hide();
-      }
+      $(this).removeClass('is-invalid');
+      $('.datepicker.start-date').removeClass('is-invalid');
+      submit.removeClass('disabled');
+      feedback.hide()
     });
 
     $('.datepicker.start-date').on('change',function() {
-      var debut = $(this).bootstrapDP('getDate');
-      var fin = $('.datepicker.end-date').bootstrapDP('getDate');
+      var valid_start = verif_date2($(this).val());
+      var valid_end = verif_date2($('.datepicker.end-date').val());
+      var end_required = typeof($('.datepicker.end-date').attr('required')) != 'undefined';
+      var start = $(this).bootstrapDP('getDate');
+      var end = $('.datepicker.end-date').bootstrapDP('getDate');
       var submit = $(this).closest('form').find(':submit');
-      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback')
 
-      $('.datepicker.end-date').removeClass('is-invalid');
-      submit.removeClass('disabled');
+      if(!valid_start) {
+        if(valid_end) {
+          $('.datepicker.end-date').removeClass('is-invalid');
+        }
+        $(this).addClass('is-invalid');
+        submit.addClass('disabled');
+        feedback.text(Translator.trans("Please enter a valid start date"));
+        feedback.show();
+        return;
+      }
 
-      if((fin && debut && debut > fin)) {
+      if(valid_start && ((end != null && !valid_end) || (end == null && end_required ))) {
+        $(this).removeClass('is-invalid');
+        feedback.text(Translator.trans("Please enter a valid end date"));
+        return;
+      }
+
+      if((valid_end && valid_start && start > end)) {
         $(this).addClass('is-invalid');
         $('.datepicker.end-date').addClass('is-invalid');
         submit.addClass('disabled');
+        feedback.text(Translator.trans("Please choose a valid date interval.", 'validators'));
         feedback.show();
+        return;
       }
 
-      else {
-        $(this).removeClass('is-invalid');
-        feedback.hide();
-      }
+      $(this).removeClass('is-invalid');
+      $('.datepicker.end-date').removeClass('is-invalid');
+      submit.removeClass('disabled');
+      feedback.hide()
     });
 
     // Initialize the calendar end date with start date + 1 year and vice versa

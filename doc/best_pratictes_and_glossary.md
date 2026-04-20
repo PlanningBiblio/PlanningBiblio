@@ -159,8 +159,8 @@
 
 | Old | New | Comment |
 | ---- | -------- | ------- |
-| #debut | .start-date| class used for the correct initialization of a datepicker's starting-date |
-| #fin | .end-date| class used for the correct initialization of a datepicker's ending-date|
+| #debut | .start-date| required class by default that enables an invalid message when the date is empty, in an invalid format or the global interval is incorrect |
+| #fin | .end-date| **non** required class by default that enables an invalid message when the date is empty, in an invalid format or the global interval is incorrect, to enable required comportment add the `required` attribute to the input (and the `novalidate` attribute to the form to disable default tooltip diplay)|
 | #debut | .start-search| class used for the starting-date of a search form with search span limitation of one year|
 | #fin | .end-search| class used for the ending-date of a search form with search span limitation of one year |
 

@@ -6,7 +6,7 @@
   <h3>Feuille de temps</h3>
   <p>Les heures affichées sur cette page sont les heures comptées en service public.</p>
 
-  <form name="form" method="get" action="" onsubmit="return verif_form('debut=date1;fin=date2');">
+  <form name="form" method="get" action="" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
     <input type='hidden' name='page' />
     <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
 
@@ -23,7 +23,7 @@
 
       <label class="col-xl-auto col-form-label mt-2" for="time-search-end">{% trans%}End{% endtrans %} :</label>
       <div class="col-xl-auto ps-0">
-        <input id="time-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{ finFr }}"/>
+        <input id="time-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{ finFr }}" required/>
       </div>
 
       {% if groups_exist %}

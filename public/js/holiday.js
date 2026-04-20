@@ -594,6 +594,14 @@ function valideConges(){
 }
 
 function verifConges(){
+
+  // Checks if the form was submitted with invalid inputs and stops the submission
+  if ($('.is-invalid').length > 0) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+
   if($("#erreurCalcul").val()=="true"){
     information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
     return false;
@@ -749,8 +757,9 @@ function verifConges(){
                 success: function(data){
                   if(data){
                     CJInfo(data, "error");
-                  }else{
-                    $("#form").submit();
+                  }
+                  else {
+                     return true;
                   }
                 },
                 error: function(){
@@ -758,7 +767,7 @@ function verifConges(){
                 },
             });
           } else {
-            $("#form").submit(); 
+            return true;
           }
       }
     },

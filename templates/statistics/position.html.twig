@@ -9,7 +9,7 @@
       <table class="statistics-div">
         <tr style='vertical-align:top;'>
           <td id='stat-col1'>
-            <form name="form" action="{{ asset('statistics/position') }}" method="post" onsubmit="return verif_form('debut=date1;fin=date2');">
+            <form name="form" action="{{ asset('statistics/position') }}" method="post" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
               <table>
                 <tr>
                   <td><label>Début</label></td>
@@ -17,7 +17,7 @@
                 </tr>
                 <tr>
                   <td><label>Fin</label></td>
-                  <td><input type="text" name="fin" value="{{ fin }}" class="datepicker end-date form-control"/></td>
+                  <td><input type="text" name="fin" value="{{ fin }}" class="datepicker end-date form-control" required/></td>
                 </tr>
                 <tr>
                 <tr>

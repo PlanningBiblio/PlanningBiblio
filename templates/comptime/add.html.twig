@@ -11,7 +11,7 @@
       <table border="0">
         <tr style="vertical-align:top">
           <td>
-            <form name="form" action="{{ asset('comptime') }}" method="post" id="form">
+            <form name="form" action="{{ asset('comptime') }}" method="post" id="form" onsubmit="return verifConges();">
               <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
               <input type="hidden" name="reliquat" value="{{ reliquat }}" />
               <input type="hidden" name="recuperation" id="recuperation" value="{{ recuperation }}" />
@@ -158,7 +158,7 @@
                   <td colspan="2" style="text-align:center;">
                     <input type="button" value="Annuler" onclick="document.location.href='{{ asset('holiday/?recup=1') }}';" class="btn btn-secondary"/>
                   &nbsp;&nbsp;
-                    <input role="button" type="submit" value="{% trans %}Confirm{% endtrans %}" class="btn btn-primary" onclick="verifConges();" style="margin-left:20px;" id="submit-button"/>
+                    <input role="button" type="submit" value="{% trans %}Confirm{% endtrans %}" class="btn btn-primary" style="margin-left:20px;" id="submit-button"/>
                     <div id="google-calendar-div" class="inline"></div>
                   </td>
                 </tr>

@@ -1911,6 +1911,7 @@ hr {
 .form-control, .form-control:focus, .form-control-plaintext {
   color: #29495C;
   font-size: inherit;
+  border-radius: var(--bs-border-radius-sm);
 }
 
 div.form-control, div.form-control:focus {
@@ -1940,10 +1941,6 @@ select.form-select, select.form-select:focus {
 
 .form-control.is-invalid {
   padding-right: 0px;
-}
-
-div[class*='-auto'] .is-invalid ~ .invalid-feedback {
-  display: table-caption;
 }
 
 input::placeholder {

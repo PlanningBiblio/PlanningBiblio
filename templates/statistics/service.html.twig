@@ -8,7 +8,7 @@
     <table class="statistics-div">
       <tr style='vertical-align:top;'>
         <td id='stat-col1'>
-          <form name="form" id="form" action="{{ asset('statistics/service')}}" method="post" onsubmit="return verif_form('debut=date1;fin=date2');">
+          <form name="form" id="form" action="{{ asset('statistics/service')}}" method="post" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
             <input type="hidden" name="statisticsDefaultHours" id="statisticsDefaultHours" value="{{ config('Statistiques-Heures') }}" />
             <table>
               <tr>
@@ -17,7 +17,7 @@
               </tr>
               <tr>
                 <td><label >Fin</label></td>
-                <td><input type="text" name="fin" value="{{ fin }}" class="datepicker end-date form-control"/></td>
+                <td><input type="text" name="fin" value="{{ fin }}" class="datepicker end-date form-control" required/></td>
               </tr>
               <tr>
                 <td></td>

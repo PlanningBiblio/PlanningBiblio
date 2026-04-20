@@ -1,2 +1,86 @@
 msgid "mm/dd/yyyy"
 msgstr "mm/dd/yyyy"
+
+msgid "MM/DD/YYYY"
+msgstr "MM/DD/YYYY"
+
+msgid "Start date"
+msgstr "Start date"
+
+msgid "End date"
+msgstr "End date" 
+
+msgid "Comment"
+msgstr "Comment"
+
+msgid "Text"
+msgstr "Text"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Start"
+msgstr "Start"
+
+msgid "End"
+msgstr "End"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Add"
+msgstr "Add"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Everyone"
+msgstr "Everyone"
+
+msgid "Deleted agents"
+msgstr "Deleted agents"
+
+msgid "Cycle management"
+msgstr "Cycle management"
+
+msgid "Enter new schedules"
+msgstr "Enter new schedules"
+
+msgid "Starting date"
+msgstr "Starting date"
+
+msgid "Ending date"
+msgstr "Ending date"
+
+msgid "From %start% to %end%"
+msgstr "From %start% to %end%"
+
+msgid "Display hours by job category"
+msgstr ""Display hours by job category"
+
+msgid "Sites"
+msgstr "Sites"
+
+msgid "Save changes"
+msgstr "Save changes"
+
+msgid "Please enter a valid start date"
+msgstr "Please enter a valid start date"
+
+msgid "Please enter a valid end date"
+msgstr "Please enter a valid end date"
+
+msgid "Please select an agent"
+msgstr "Please select an agent"

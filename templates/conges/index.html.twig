@@ -12,54 +12,60 @@
     Liste des congés de {{ agent_name }}, de {{ debut }} à {{ fin }}.
   </h3>
 
-  <form name="form" method="get" action="{{ asset("holiday") }}" class="noprint" onsubmit="return verif_form('debut=date1;fin=date2');">
-        <div class="row row-search mb-3">
+  <form name="form" method="get" action="{{ asset("holiday") }}" class="noprint" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
+    <div class="row row-search">
 
-        <label class="col-xl-auto col-form-label mt-2" for="holiday-search-start">{% trans%}Start{% endtrans %} :</label>
-        <div class="col-xl-auto ps-0">
-          <input id="holiday-search-start" type="text" name="debut" class="datepicker start-search" value="{{ debut }}"/>
-        </div>
+      <label class="col-xl-auto col-form-label mt-2" for="holiday-search-start">{% trans%}Start{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0">
+        <input id="holiday-search-start" type="text" name="debut" class="datepicker start-date form-control" value="{{ debut }}"/>
+      </div>
 
-        <label class="col-xl-auto col-form-label mt-2" for="holiday-search-end">{% trans%}End{% endtrans %} :</label>
-        <div class="col-xl-auto ps-0">
-          <input id="holiday-search-end" type="text" name="fin" class="datepicker end-search" value="{{ fin }}"/>        
-        </div>
+      <label class="col-xl-auto col-form-label mt-2" for="holiday-search-end">{% trans%}End{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0">
+        <input id="holiday-search-end" type="text" name="fin" class="datepicker end-date form-control" value="{{ fin }}" required/>     
+      </div>
 
-        {% if admin %}
-          <div class="col-xl-2">
-            <div class="row">
-              <label class="col-xl-auto col-form-label mt-2" for="perso-id">{% trans%}Agent{% endtrans %} :</label>
-              <select name="perso_id" id="perso_id" class="form-select form-select-sm">
-                  <option value="0" {% if perso_id == 0 %} selected="selected" {% endif %}>{% trans%}Everyone{% endtrans %}</option>            
-                {% for a in managed %}
-                  <option value="{{ a.id }}" {% if a.id == perso_id %} selected="selected" {% endif %}>{{ a.lastname }} {{ a.firstname }}</option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div class="form-check-prepend">
-              <label class="form-check-label" for="deleted-agent-check">{% trans%}Deleted agents{% endtrans %} :</label>              
-              <input id="deleted-agent-check" type="checkbox" value="" class="form-check-input m-1 mx-2" {% if deleted_agents %} checked {% endif %} name="supprimes" onclick="updateAgentsList(this,'perso_id');"/>            
-            </div>
+      {% if admin %}
+        <div class="col-xl-2">
+          <div class="row">
+            <label class="col-xl-auto col-form-label mt-2" for="perso-id">{% trans%}Agent{% endtrans %} :</label>
+            <select name="perso_id" id="perso_id" class="form-select form-select-sm">
+                <option value="0" {% if perso_id == 0 %} selected="selected" {% endif %}>{% trans%}Everyone{% endtrans %}</option>            
+              {% for a in managed %}
+                <option value="{{ a.id }}" {% if a.id == perso_id %} selected="selected" {% endif %}>{{ a.lastname }} {{ a.firstname }}</option>
+              {% endfor %}
+            </select>
           </div>
-        {% endif %}
 
-        <div class="col-xl-3 ps-0">
-          <input id="button-ok" type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
-          {% if show_recovery %}
-            <a role="button" href="{{ asset('holiday') }}?recup=1&reset=on" class="btn btn-secondary m-2">{% trans %}Clear{% endtrans %}</a>
-          {% else %}
-            <a role="button" href="{{ asset('holiday') }}?reset=on" class="btn btn-secondary m-2">{% trans %}Clear{% endtrans %}</a>
-          {% endif %}
+          <div class="form-check-prepend">
+            <label class="form-check-label" for="deleted-agent-check">{% trans%}Deleted agents{% endtrans %} :</label>              
+            <input id="deleted-agent-check" type="checkbox" value="" class="form-check-input m-1 mx-2" {% if deleted_agents %} checked {% endif %} name="supprimes" onclick="updateAgentsList(this,'perso_id');"/>            
+          </div>
         </div>
+      {% endif %}
 
-        <div class="col-xl text-end">        
-          <a role="button" href="{{ asset(addlink) }}" class="btn btn-primary m-2 me-0">{% trans %}Add{% endtrans %}</a>
-        </div>
+      <div class="col-xl-3 ps-0">
+        <input id="button-ok" type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
         {% if show_recovery %}
-          <input type="hidden" name="recup" value="1"/>
+          <a role="button" href="{{ asset('holiday') }}?recup=1&reset=on" class="btn btn-secondary m-2">{% trans %}Clear{% endtrans %}</a>
+        {% else %}
+          <a role="button" href="{{ asset('holiday') }}?reset=on" class="btn btn-secondary m-2">{% trans %}Clear{% endtrans %}</a>
         {% endif %}
       </div>
+
+      <div class="col-xl text-end">        
+        <a role="button" href="{{ asset(addlink) }}" class="btn btn-primary m-2 me-0">{% trans %}Add{% endtrans %}</a>
+      </div>
+      {% if show_recovery %}
+        <input type="hidden" name="recup" value="1"/>
+      {% endif %}
+    </div>
+
+    <div class="row mb-3">
+      <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+    </div>
+
+
   </form>
 
   {% if show_recovery %}

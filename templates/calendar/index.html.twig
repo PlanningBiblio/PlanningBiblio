@@ -15,7 +15,7 @@
     {% endif %}
     <div id="div_agenda_content">
     {% if agents is iterable %}
-      <form name="form" method="get" action="{{ asset('calendar') }}" onsubmit="return verif_form('debut=date1;fin=date2');">
+      <form name="form" id="calendar-form" method="get" action="{{ asset('calendar') }}" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
 
         <div class="row row-search">
 
@@ -26,7 +26,7 @@
 
           <label class="col-xl-auto col-form-label mt-2" for="calendar-search-end">{% trans%}End{% endtrans %} :</label>
           <div class="col-xl-auto ps-0">
-            <input id="calendar-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{end}}"/>
+            <input id="calendar-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{end}}" required/>
           </div>
 
           {% if admin == 1 %}
@@ -45,10 +45,10 @@
             <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
           </div>
 
-        </div>
+        </div>required
 
       <div class="row">
-        <div class="invalid-feedback ps-2">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+        <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
       </div>
 
     </form>

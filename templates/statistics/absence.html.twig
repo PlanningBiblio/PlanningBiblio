@@ -6,7 +6,7 @@
   <div id="content-form">
     <h3>Statistiques sur les absences</h3>
     <div class="statistics-div">
-      <form name="form" method="get" action="{{ asset('statistics/absence') }}" onsubmit="return verif_form('debut=date1;fin=date2');">
+      <form name="form" method="get" action="{{ asset('statistics/absence') }}" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
         <input type="hidden" id="afficheHeures" value="{{ afficheHeures }}" />
 
         <div class="row row-search">
@@ -22,7 +22,7 @@
 
           <label class="col-xl-auto col-form-label mt-2" for="stat-absences-search-end">{% trans%}End{% endtrans %} :</label>
           <div class="col-xl-auto ps-0">
-            <input id="stat-absences-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{ fin }}"/>
+            <input id="stat-absences-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{ fin }}" required/>
           </div>
           
           {% if nbSites >1 %}

@@ -22,6 +22,9 @@
     <script type="text/JavaScript" src="{{ asset('vendor/sortable-1.15.7/sortable.min.js') }}"></script>
     <script type="text/JavaScript" src="{{ asset('bundles/bazingajstranslation/js/translator.min.js') }}"></script>
     <script src="{{ url('bazinga_jstranslation_js') }}"></script>
+    <script src="{{ asset('vendor/dayJS/dayjs.min.js')}}"></script>
+    <script src="{{ asset('vendor/dayJS/customParseFormat.js')}}"></script>
+    <script>dayjs.extend(window.dayjs_plugin_customParseFormat);</script>
 
     <!-- emoji -->
     <script type="text/JavaScript" src="{{ asset('vendor/emoji-lib/js/config.min.js') }}"></script>
