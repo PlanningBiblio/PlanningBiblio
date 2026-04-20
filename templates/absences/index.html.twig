@@ -8,18 +8,18 @@
 
 {% block page %}
   <h3>Liste des absences</h3>
-  <form name="form" id="absencesListForm" method="get" action="{{ asset('absence') }}" onsubmit="return verif_form('debut=date1;fin=date2');">
+  <form name="form" id="absencesListForm" method="get" action="{{ asset('absence') }}" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
     
-      <div class="row row-search mb-3">
+      <div class="row row-search">
 
         <label class="col-xl-auto col-form-label mt-2" for="absences-search-start">{% trans%}Start{% endtrans %} :</label>
         <div class="col-xl-auto ps-0">
-          <input id="absences-search-start" type="text" name="debut" class="datepicker start-search" value="{{ debut }}"/>
+          <input id="absences-search-start" type="text" name="debut" class="datepicker start-date form-control one-year" value="{{ debut }}"/>
         </div>
 
         <label class="col-xl-auto col-form-label mt-2" for="absences-search-end">{% trans%}End{% endtrans %} :</label>
         <div class="col-xl-auto ps-0">
-          <input id="absences-search-end" type="text" name="fin" class="datepicker end-search" value="{{ fin }}"/>
+          <input id="absences-search-end" type="text" name="fin" class="datepicker end-date form-control one-year" value="{{ fin }}" required/>
         </div>
 
         {% if managed | length > 1 %}
@@ -54,6 +54,11 @@
         
         </div>
       </div>
+
+      <div class="row mb-3">
+        <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+      </div>
+
   </form>
   
   <table id='tableAbsencesVoir' class='CJDataTable' data-sort='[[1, "asc"],[2, "asc"]]'>

@@ -893,47 +893,26 @@ $(function(){
       feedback.hide()
     });
 
-    // Initialize the calendar end date with start date + 1 year and vice versa
+    // One year limitation on research form
 
-    $(".start-search").on('changeDate', function(e) {
-      var start = $(".start-search").bootstrapDP('getDate');
-      var end = $(".end-search").bootstrapDP('getDate');
+    $(".one-year").on('change', function(e) {
+      var start = dayjs($(".start-date").val(), Translator.trans('DD/MM/YYYY'));
+      var end = dayjs($(".end-date").val(), Translator.trans('DD/MM/YYYY'));
+      var valid_start = verif_date2($(".start-date").val());
+      var valid_end = verif_date2($(".end-date").val());
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
+      var submit = $(this).closest('form').find(':submit');
 
-      if (start || end) {
-        if (!start) {
-          start = new Date();
-        }
-        if (!end) {
-          end = new Date();
-        }
-        var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
-        if (number_of_days > 367 || start > end) {
-          end.setTime(start.getTime() +  (365 * 24 * 60 * 60 * 1000));
-          $('.end-search').bootstrapDP('setDate', end.toLocaleDateString());
-        }
-      }
-    });
-
-    $(".end-search").on('changeDate', function(e) {
-      var start = $(".start-search").bootstrapDP('getDate');
-      var end = $(".end-search").bootstrapDP('getDate');
-
-      if (start || end) {
-        if (!start) {
-          start = new Date();
-        }
-        if (!end) {
-          end = new Date();
-        }
-        var number_of_days = (end - start) / (1000 * 60 * 60 * 24);
-        if (number_of_days > 367 || start > end) {
-          start.setTime(end.getTime() -  (365 * 24 * 60 * 60 * 1000));
-          $('.start-search').bootstrapDP('setDate',start.toLocaleDateString());
+      if (valid_end && valid_start){
+        if (end.diff(start, 'year', true) > 1){
+          $('.datepicker.start-date').addClass('is-invalid');
+          $('.datepicker.end-date').addClass('is-invalid');
+          submit.addClass('disabled');
+          feedback.text(Translator.trans('Search results are limited to a period of one year'));
+          feedback.show()
         }
       }
     });
-
-
 
     // Onglets
     $(".ui-tabs").tabs({
