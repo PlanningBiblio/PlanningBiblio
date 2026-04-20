@@ -44,7 +44,7 @@ class ConfigRepository extends EntityRepository
         return $this->getParam($name)->getValue();
     }
 
-    public function setParam($name, $value, $technical = 0)
+    public function setParam($name, $value, $technical = 0): void
     {
         $GLOBALS['config'][$name] = $value;
         $param = $this->findOneBy(['nom' => $name]);
