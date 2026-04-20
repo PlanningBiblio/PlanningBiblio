@@ -30,6 +30,9 @@ class AbsenceReason
     #[ORM\Column]
     private bool $teleworking = false;
 
+    #[ORM\Column(type: Types::INTEGER)]
+    private ?int $network_id = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -93,5 +96,15 @@ class AbsenceReason
         $this->valeur = $valeur;
 
         return $this;
+    }
+
+    public function getNetworkId(): ?int
+    {
+        return $this->network_id;
+    }
+
+    public function setNetworkId(?int $network_id): void
+    {
+        $this->network_id = $network_id;
     }
 }

@@ -72,7 +72,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<th>Temps de pause</th>";
     }
 
-    $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+    $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
     if (count($sites)>1) {
         $hours_tab .= "<th>Site</th>";
     }

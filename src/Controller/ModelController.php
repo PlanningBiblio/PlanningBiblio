@@ -20,8 +20,9 @@ class ModelController extends BaseController
     #[Route(path: '/model', name: 'model.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
-        $all_models = $this->entityManager->getRepository(Model::class)->findAll();
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $site_ids = array_map(function($site) { return $site->getId(); }, $sites_array);
+        $all_models = $this->entityManager->getRepository(Model::class)->findBy(array('site' => $site_ids));
 
         $models = array();
         foreach ($all_models as $model) {

@@ -68,7 +68,7 @@ include 'db.php';
 
 //config technique
 $db = new db();
-$db->query("SELECT nom, value FROM `{$dbprefix}technical_config` ct JOIN `{$dbprefix}config` c ON ct.config_id=c.id");
+$db->query("SELECT nom, value FROM `{$dbprefix}config_technical` ct JOIN `{$dbprefix}config` c ON ct.config_id=c.id");
 if ($db->result) {
     foreach ($db->result as $elem) {
         $config[$elem['nom']] = $elem['value'];
@@ -79,7 +79,7 @@ if ($db->result) {
 $db = new db();
 $network = isset($_SESSION['network']['id']) ? (int) $_SESSION['network']['id'] : null;
 if ($network !== null) {
-    $db->query("SELECT nom, value FROM `{$dbprefix}network_config` cr JOIN  `{$dbprefix}config` c ON cr.config_id=c.id WHERE network_id = $network");
+    $db->query("SELECT nom, value FROM `{$dbprefix}config_network` cr JOIN  `{$dbprefix}config` c ON cr.config_id=c.id WHERE network_id = $network");
     if ($db->result) {
         foreach ($db->result as $elem) {
             $config[$elem['nom']] = $elem['value'];

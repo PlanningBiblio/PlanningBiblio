@@ -18,7 +18,7 @@ class NotificationController extends BaseController {
     #[Route(path: '/notification', name: 'notification.index', methods: ['GET'])]
     public function index(Request $request){
         // Initialisation des variables
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
         $actif = $request->get("actif");
         $agents_liste = array();

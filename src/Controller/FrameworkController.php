@@ -10,6 +10,7 @@ use App\Planno\Framework;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,7 +22,7 @@ class FrameworkController extends BaseController
 {
     #[Route(path: '/framework', name: 'framework.index', methods: ['GET'])]
     public function index (Request $request, Session $session){
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
 
         // Tableaux
@@ -39,6 +40,14 @@ class FrameworkController extends BaseController
         $tabAffect = array();
         $db = new \db();
         $db->select2("pl_poste_tab_affect", null, null, "order by `date` asc");
+        $db->selectInnerJoin(
+            array("pl_poste_tab_affect", "site"),
+            array("site", "id"),
+            array("id", "date", "tableau", "site"),
+            array(),
+            array(),
+            array("network_id" => $_SESSION['network']['id'])
+        );
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $tabAffect[$elem['tableau']] = $elem['date'];
@@ -78,7 +87,7 @@ class FrameworkController extends BaseController
         }
 
         $db = new \db();
-        $db->select("lignes", null, null, "order by nom");
+        $db->select("lignes", null, "network_id=".$_SESSION['network']['id'], "order by nom");
         $lignes = $db->result;
         if ($lignes) {
             foreach ($lignes as &$elem) {
@@ -113,6 +122,8 @@ class FrameworkController extends BaseController
         $nom = $post["nom"];
         $site = $post["site"];
 
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+
         // Ajout
         if (!$id) {
 
@@ -122,10 +133,8 @@ class FrameworkController extends BaseController
             $numero = $db->result[0]["numero"]+1;
 
             // Insertion dans la table pl_poste_tab
-            $insert = array("nom" => trim($nom), "tableau" => $numero, "site" => "1");
-            if ($site) {
-                $insert["site"] = $site;
-            }
+            $insert = array("nom" => trim($nom), "tableau" => $numero);
+            $insert["site"] = $site ?? $sites_array[0]->getId();
         
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
@@ -167,7 +176,7 @@ class FrameworkController extends BaseController
         $CSRFToken = $GLOBALS['CSRFSession'];
         $cfgType = $request->query->get('cfg-type');
         $cfgTypeGet = $request->query->get('cfg-type');
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
 
         // Choix de l'onglet (cfg-type)
@@ -216,7 +225,7 @@ class FrameworkController extends BaseController
         $CSRFToken = $GLOBALS['CSRFSession'];
         $cfgType = $request->query->get('cfg-type');
         $tableauNumero = $request->attributes->get('id');
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
 
         // Choix de l'onglet (cfg-type)
@@ -284,7 +293,7 @@ class FrameworkController extends BaseController
 
         // Liste des lignes de séparation
         $db = new \db();
-        $db->select("lignes", null, null, "ORDER BY nom");
+        $db->select("lignes", null, "network_id=".$_SESSION['network']['id'], "ORDER BY nom");
         $lignes_sep = $db->result;
 
         // Le tableau (contenant les sous-tableaux)
@@ -581,7 +590,7 @@ class FrameworkController extends BaseController
         // Initialisation des variables
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         if(count($sites) > 1){
             foreach ($sites as $s) {
@@ -630,7 +639,7 @@ class FrameworkController extends BaseController
         $id = $request->attributes->get('id');
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         if(count($sites) > 1){
             foreach ($sites as $s) {
@@ -766,7 +775,7 @@ class FrameworkController extends BaseController
         } else {
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->insert("lignes", array("nom"=>$nom));
+            $db->insert("lignes", array("nom"=>$nom, "network_id"=>$_SESSION['network']['id']));
 
             if(!$db->error){
                 $msg = "La ligne a bien été enregistrée." ;

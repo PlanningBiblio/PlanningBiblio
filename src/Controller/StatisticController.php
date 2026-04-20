@@ -60,12 +60,12 @@ class StatisticController extends BaseController
         $tab = array();
 
         $dbprefix = $GLOBALS['dbprefix'];
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
 
         if ($nbSites > 1) {
-            foreach ($sites as $site) {
-                $multisites[$site->getId()] = $site->getName();
+            foreach ($sites as $i => $site) {
+                $multisites[$i + 1] = $site->getName();
             }
         }
 
@@ -152,8 +152,8 @@ class StatisticController extends BaseController
 
         // Agents available
         $db = new \db();
-        $db->select2('personnel', '*', array('id' => '<>2', 'actif' => 'Actif'), 'ORDER BY `nom`,`prenom`');
-        $agents_list = $db->result;
+        $db->select2('personnel', '*', array('id' => '<>2', 'actif' => 'Actif', 'network_id' => $_SESSION['network']['id']), 'ORDER BY `nom`,`prenom`');
+        $agents_list = $db->result ?? array();
 
         // Service and Status data
         if (in_array($type, ['service', 'status'])) {
@@ -169,7 +169,7 @@ class StatisticController extends BaseController
             };
 
             $db = new \db();
-            $db->select2($table);
+            $db->select2($table, '*', array('network_id' => $_SESSION['network']['id']), "ORDER BY `rang`");
             $objects = $db->result;
 
             foreach ($agents_list as $elem) {
@@ -639,7 +639,7 @@ class StatisticController extends BaseController
         $exists_absences = false;
         $exists_samedi = false;
 
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
 
         // Statistiques-Heures
@@ -1091,7 +1091,7 @@ class StatisticController extends BaseController
         $debutSQL = dateSQL($debut);
         $finSQL = dateSQL($fin);
 
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites_array);
         $sites = array();
         if ($nbSites > 1) {
@@ -1308,7 +1308,7 @@ class StatisticController extends BaseController
         $fin = $request->get("fin");
         $tri = $request->get("tri");
         $post = $request->request->all();
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
         $dbprefix = $GLOBALS['dbprefix'];
 
@@ -1885,7 +1885,7 @@ class StatisticController extends BaseController
             $groups = array();
         }
 
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
         if ($nbSites >1){
             foreach ($sites as $site) {
@@ -2073,7 +2073,7 @@ class StatisticController extends BaseController
         $tri = $request->get("tri");
         $post = $request->request->all();
 
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites);
         $dbprefix = $GLOBALS['dbprefix'];
 
@@ -2387,7 +2387,7 @@ class StatisticController extends BaseController
         $post_postes = isset($post['postes']) ? $post['postes'] : null;
         $post_sites = isset($post['selectedSites']) ? $post['selectedSites'] : null;
 
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deletedDate" => NULL, "network" => $_SESSION['network']['id']));
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $nbSites = count($sites_array);
 
         if (!array_key_exists('stat_poste_postes', $_SESSION)) {
@@ -2455,8 +2455,8 @@ class StatisticController extends BaseController
 
 
         if ($nbSites > 1 and empty($selectedSites)) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $selectedSites[] = $i;
+            foreach ($sites_array as $site) {
+                $selectedSites[] = $site->getId();
             }
         }
 

@@ -23,7 +23,7 @@ class Site
     private ?Network $network = null;
 
     #[ORM\Column]
-    private ?\DateTime $deletedDate = null;
+    private ?\DateTime $deleteDate = null;
 
     public function getId(): ?int
     {
@@ -50,13 +50,13 @@ class Site
         $this->network = $network;
     }
 
-    public function getDeletedDate(): ?\DateTime
+    public function getDeleteDate(): ?\DateTime
     {
-        return $this->deletedDate;
+        return $this->deleteDate;
     }
 
-    public function setDeletedDate(?\DateTime $deletedDate): void
+    public function setDeleteDate(?\DateTime $deleteDate): void
     {
-        $this->deletedDate = $deletedDate;
+        $this->deleteDate = $deleteDate;
     }
 }

@@ -31,14 +31,14 @@ class postes
         // Floors
         $floors = array();
         $db=new db();
-        $db->select("select_etages");
+        $db->select("select_etages", "*", "network_id=".$_SESSION['network']['id']);
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $floors[$elem['id']] = $elem['valeur'];
             }
         }
 
-        $where=array("supprime"=>null);
+        $where=array("supprime"=>null, "network_id"=>$_SESSION['network']['id']);
     
         if ($this->site) {
             $where["site"]=$this->site;

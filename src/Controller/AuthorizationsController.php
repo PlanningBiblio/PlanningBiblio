@@ -140,15 +140,15 @@ class AuthorizationsController extends BaseController
                 $_SESSION['login_nom'] = $db->result[0]['nom'];
                 $_SESSION['login_prenom'] = $db->result[0]['prenom'];
 
+                // Symfony Session
+                $session = $request->getSession();
+                $session->set('loginId', $db->result[0]['id']);
+
                 $network_id = $db->result[0]['network_id'];
                 $db = new \db();
                 $db->select2("network", "*", ["id" => $network_id]);
                 $network = $db->result ? $db->result[0] : null;
                 $_SESSION['network'] = $network;
-
-                // Symfony Session
-                $session = $request->getSession();
-                $session->set('loginId', $db->result[0]['id']);
 
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
