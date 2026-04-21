@@ -59,10 +59,10 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filter('label')->eq(2);
         $this->assertEquals($result->text('Node does not exist', false), 'Texte : ','label 3 is Texte');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker start-date"]');
+        $result = $crawler->filterXPath('//input[contains(@class, "start-date")]');
         $this->assertEquals($result->attr('name'),'debut','input datepicker name is start');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker end-date"]');
+        $result = $crawler->filterXPath('//input[contains(@class, "end-date")]');
         $this->assertEquals($result->attr('name'),'fin','input datepicker name is end');
 
         $result = $crawler->filterXPath('//textarea');

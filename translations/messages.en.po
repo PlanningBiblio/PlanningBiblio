@@ -84,3 +84,6 @@ msgstr "Please enter a valid end date"
 
 msgid "Please select an agent"
 msgstr "Please select an agent"
+
+msgid "Search results are limited to a period of one year"
+msgstr "Search results are limited to a period of one year"
