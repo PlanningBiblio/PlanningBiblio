@@ -5,19 +5,27 @@
   <script type="text/JavaScript" src="{{ asset('js/framework.js') }}"></script>
   <script type="text/JavaScript">
     $(document).ready(function(){
-      $('#copy-div').dialog({
-          autoOpen: false,
-          modal: true,
-          width: 400,
-          height: 310
-      });
-
+      
       $('.copy-table').click(function(e) {
         e.preventDefault();
         id = $(this).data('id');
-        $('#copy-div').dialog('open');
+        $('#copy-modal').modal('show');
         $('#copy-form-id').val(id);
       });
+
+      $('#copy-form').on('submit', function(e){
+        var text = sanitize_string($('#model-name').val());
+        if(!text){
+          $('#model-name').addClass('is-invalid');
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        $('#model-name').val(text);
+      })
+
+      $('#model-name').on('input', function(e){
+        $(this).removeClass('is-invalid');
+      })
 
     });
   </script>
@@ -54,9 +62,9 @@
                 <a href="{{ asset('framework') }}/{{ elem.tableau }}">
                   <span class="pl-icon pl-icon-edit" title="Modifier"></span>
                 </a>
-                <a href="" class="copy-table" data-id ="{{ elem.tableau }}">
-                  <span class="pl-icon pl-icon-copy" id="copy-tab-link{{ elem.tableau }}" title="Copier" style="border: none;"></span>
-                </a>
+                <button type="button" class="btn btn-icon copy-table" data-id ="{{ elem.tableau }}">
+                  <span class="pl-icon pl-icon-copy" id="copy-tab-link{{ elem.tableau }}" title="{% trans %}Copy{% endtrans %}"></span>
+                </button>
                 <a href="javascript:supprimeTableau({{ elem.tableau }});">
                   <span class="pl-icon pl-icon-dropblack" title="Supprimer"></span>
                 </a>
@@ -157,17 +165,34 @@
     </table>
   </div>
 
-  <div id="copy-div" style="display: none;">
-    <h3>Copie du tableau</h3>
-    <form name="form" id="copy-form" action="{{ path('framework.copy_table') }}" method="post">
-      <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
-      <input type="hidden" name="id" id="copy-form-id" value="" />
+  <div class="modal" id="copy-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="copy-modal-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="copy-modal-title">{% trans %}Copy of the selected table{% endtrans %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+        <form id="copy-form" action="{{ path('framework.copy_table') }}" method="post">
+          <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}"/>
+          <input type="hidden" name="id" id="copy-form-id" value=""/>
+          <div class="row justify-content-center">
+            <label for="model-name" class="col-auto col-form-label mt-2">{% trans %}Name of the new table{% endtrans %} :</label>
+            <div class="col-6 px-0">
+              <input type="text" class="form-control mx-0" id="model-name" name="nom" required>
+              <div class="invalid-feedback">{% trans %}Please enter a valid model name{% endtrans %}</div>
+            </div>
+          </div>
+        </form>
+      </div>
 
-      Nom du nouveau tableau<br/>
-      <input type="text" name="nom" />
-      <br/><br/><br/>
-      <input type="button" id="Cancel" value="Annuler" onclick="$('#copy-div').dialog('close');" class="btn btn-secondary"/>
-      &nbsp;&nbsp;<input type="submit" role="button" value="Copier" class="btn btn-primary"/>
-    </form>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" form="copy-form">{% trans %}Confirm{% endtrans %}</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+      </div>
+    </div>
   </div>
+</div>
+
 {% endblock %}
