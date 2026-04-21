@@ -1,0 +1,101 @@
+msgid "mm/dd/yyyy"
+msgstr "jj/mm/aaaa"
+
+msgid "MM/DD/YYYY"
+msgstr "DD/MM/YYYY"
+
+msgid "Start date"
+msgstr "Date de début"
+
+msgid "End date"
+msgstr "Date de fin" 
+
+msgid "Comment"
+msgstr "Commentaire"
+
+msgid "Text"
+msgstr "Texte"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Confirm"
+msgstr "Valider"
+
+msgid "Start"
+msgstr "Début"
+
+msgid "End"
+msgstr "Fin"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Clear"
+msgstr "Réinitialiser"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Import"
+msgstr "Importer"
+
+msgid "Everyone"
+msgstr "Tous"
+
+msgid "Deleted agents"
+msgstr "Agents supprimés"
+
+msgid "Cycle management"
+msgstr "Gestion des cycles"
+
+msgid "Enter new schedules"
+msgstr "Entrer de nouveaux horaires"
+
+msgid "Starting date"
+msgstr "Début d'utilisation"
+
+msgid "Ending date"
+msgstr "Fin d'utilisation"
+
+msgid "From %start% to %end%"
+msgstr "Du %start% au %end%"
+
+msgid "Display hours by job category"
+msgstr "Afficher les heures par groupe de postes"
+
+msgid "Sites"
+msgstr "Sites"
+
+msgid "Save changes"
+msgstr "Enregistrer les modifications"
+
+msgid "Please enter a valid start date"
+msgstr "Veillez saisir une date de début valide"
+
+msgid "Please enter a valid end date"
+msgstr "Veillez saisir une date de fin valide"
+
+msgid "Please select an agent"
+msgstr "Veillez choisir un agent"
+
+msgid "Search results are limited to a period of one year"
+msgstr "Les résultats de la recherche sont limités à une période d'un an"
+
+msgid "Copy"
+msgstr "Copier"
+
+msgid "Copy of the selected table"
+msgstr "Copie du tableau sélectionné"
+
+msgid "Name of the new table"
+msgstr "Nom du nouveau tableau"
+
+msgid "Please enter a valid model name"
+msgstr "Veuillez saisir un nom de modèle valide"
