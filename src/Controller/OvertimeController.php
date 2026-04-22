@@ -29,7 +29,8 @@ class OvertimeController extends BaseController
 
         $holiday_helper = new HolidayHelper();
 
-        $annee = $request->get('annee');
+        $start = $request->query->get('start');
+        $end = $request->query->get('end');
         $reset = $request->get('reset');
         $perso_id = $request->get('perso_id');
 
@@ -49,29 +50,39 @@ class OvertimeController extends BaseController
             $perso_id = $session->get('loginId');
         }
 
-        if (!$annee) {
-            $annee = isset($_SESSION['oups']['recup_annee'])
-                ? $_SESSION['oups']['recup_annee']
-                : (date("m")<9?date("Y")-1:date("Y"));
+        if (!$start) {
+            $start = $session->get('OvertimeStart');
+        }
+
+         if (!$end) {
+            $end = $session->get('OvertimeEnd');
         }
 
         if ($reset) {
-            $annee = date("m") < 9 ? date("Y") - 1 : date("Y");
+            $start = null;
+            $end = null;
             $perso_id = $session->get('loginId');
         }
 
-        $_SESSION['oups']['recup_annee'] = $annee;
+        // Default start & end
+        if (!$start) {
+            $start = date('d/m/Y');
+        }
+        if (!$end) {
+            $end = date('d/m/Y', strtotime(dateFr($start) . ' +1 year'));
+        }
+
+        $session->set('OvertimeStart', $start);
+        $session->set('OvertimeEnd', $end);
         $_SESSION['oups']['recup_perso_id'] = $perso_id;
 
-        $debut = $annee . '-09-01';
-        $fin = ($annee + 1) . '-08-31';
         $message = null;
 
         // Search for existing overtimes
         $c = new \conges();
         $c->admin = ($admin or $adminN2);
-        $c->debut = $debut;
-        $c->fin = $fin;
+        $c->debut = dateSQL($start);
+        $c->fin = dateSQL($end);
         if ($perso_id != 0) {
             $c->perso_id = $perso_id;
         }
@@ -86,16 +97,9 @@ class OvertimeController extends BaseController
 
         $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
-        // School year
-        $annees = array();
-        for ($d = date("Y") + 2; $d > date("Y") - 11; $d--) {
-            $annees[]= array($d, $d . '-' . ($d + 1));
-        }
-
         $this->templateParams(array(
-            'years'     => $annees,
-            'year_from' => $annee,
-            'year_to'   => $annee + 1,
+            'start'     => $start,
+            'end'       => $end,
             'admin'     => ($admin or $adminN2),
         ));
 

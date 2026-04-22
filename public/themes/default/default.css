@@ -1994,6 +1994,17 @@ select.form-select, select.form-select:focus {
   visibility: hidden;
 }
 
+.row.row-search .datepicker{
+  margin: 0.7em;
+  width: 13em ;
+}
+
+.row.row-search select{
+  width: 13em ;
+  margin: 0.6em;
+  text-align: center;
+}
+
 /* Bootstrap Grid END */
 
 /*ui-dialog START*/
