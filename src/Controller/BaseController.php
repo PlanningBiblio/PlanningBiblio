@@ -154,6 +154,19 @@ class BaseController extends AbstractController
         return $dt;
     }
 
+    protected function initBoolean(string $queryName, string $sessionName, bool $default = false): bool
+    {
+        $session = $this->request->getSession();
+
+        $value = $this->request->query->getBoolean($queryName) ?: (bool) $session->get($sessionName, $default);
+        $reset = $this->request->attributes->get('reset') === 'reset';
+        $value = $reset ? $default : $value;
+
+        $this->request->getSession()->set($sessionName, $value);
+
+        return $value;
+    }
+
     protected function csrf_protection(Request $request): bool
     {
         $submittedToken = $request->request->get('_token');

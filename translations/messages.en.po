@@ -573,3 +573,15 @@ msgstr "Requested"
 
 msgid "Comment:"
 msgstr "Comment:"
+
+msgid "Lastname"
+msgstr "Lastname"
+
+msgid "Firstname"
+msgstr "Firstname"
+
+msgid "Display all absences"
+msgstr "Display all absences"
+
+msgid "Calendar view"
+msgstr "Calendar view"
