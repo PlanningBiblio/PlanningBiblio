@@ -52,6 +52,21 @@ class AbsenceRepository extends EntityRepository
         return $qb->getQuery()->getScalarResult();
     }
 
+    public function get(?\DateTime $start = null, ?\DateTime $end = null): array
+    {
+        $start = $start ?? new \DateTime();
+        $end = $end ?? $start;
+
+        $qb = $this->createQueryBuilder('a')
+            ->select('a')
+            ->where('a.debut <= :end')
+            ->andWhere('a.fin >= :start')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end);
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function getByUserIds(array $userIds, string $calName): array
     {
         $qb = $this->createQueryBuilder('a')

@@ -1,0 +1,8 @@
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Lastname"
+msgstr "Nom"
+
+msgid "Firstname"
+msgstr "Prénom"

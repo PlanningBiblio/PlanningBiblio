@@ -2370,6 +2370,14 @@ table.dataTable th{
   margin-top: 30px;
 }
 
+.calendar-view.absence-validated {
+  background-color: #720a05;
+}
+
+.calendar-view.absence-not-validated {
+  background-color: #d1ac07;
+}
+
 @media only screen and (max-width: 1550px){
   #logo {
     width: 48px;

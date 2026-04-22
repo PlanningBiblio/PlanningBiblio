@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}- Vue calendaire{% endblock %}
+
+{% block page %}
+
+  <h3>Vue calendaire</h3>
+
+  <form name="form" id="calendar-view-form" method="get" action="{{ asset('calendar/view') }}" novalidate >
+    <div class="row row-search">
+
+      <label class="col-xl-auto col-form-label mt-2" for="absences-search-start">{% trans %}Start{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0">
+        <input id="absences-search-start" type="text" name="start" class="datepicker start-date form-control one-year" value="{{ start }}"/>
+      </div>
+
+      <label class="col-xl-auto col-form-label mt-2" for="absences-search-end">{% trans %}End{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0">
+        <input id="absences-search-end" type="text" name="end" class="datepicker end-date form-control one-year" value="{{ end }}" required/>
+      </div>
+
+      <div class="col-xl-3 ps-0">
+        <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
+        <input type="button" value="{% trans %}Clear{% endtrans %}" onclick="absences_reinit();"  class="btn btn-secondary m-2" />
+      </div>
+
+      <div class="row mb-3">
+        <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+      </div>
+  </form>
+
+  <table id="calendar-view-table" class="CJDataTable" data-responsive="false">
+    <thead>
+      <tr>
+        <th>
+          {% trans %}Agent{% endtrans %}
+        </th>
+        {% for date in allDates %}
+          <th class="dataTableNoSort">
+            {{ date | date('D d/m') }}
+          </th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for agent in agents %}
+        <tr>
+          <td>
+            {{ agent.firstname }} {{ agent.lastname }}
+          </td>
+          {% for date in allDates %}
+            <td class="calendar-view {{ allAbsences[agent.id][date | date('Y-m-d')] }}">
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}

@@ -127,6 +127,8 @@
     - 100
 "calendar.index":
     - 100
+"calendar-view.index":
+    - 100
 "config.index":
     - 20
 "config.ldap_test":
