@@ -75,10 +75,10 @@ class OvertimeControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h4[@class="noprint"]');
         $this->assertEquals('Liste des demandes d\'heures supplémentaires', $result->text('Node does not exist', false), 'h4 is Liste des demandes de récupération');
 
-        $result = $crawler->filterXPath('//input[@class="btn btn-secondary"]');
+        $result = $crawler->filterXPath('//input[contains(@class, "btn-primary")]');
         $this->assertEquals('Rechercher', $result->attr("value"),'input value is Rechercher');
 
-        $result = $crawler->filterXPath('//input[@class="btn btn-secondary"][2]');
+        $result = $crawler->filterXPath('//input[contains(@class, "btn-secondary")]');
         $this->assertEquals('Réinitialiser', $result->attr("value"),'input value is Réinitialiser');
 
         $result = $crawler->filterXPath('//th');
@@ -93,7 +93,9 @@ class OvertimeControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEmpty($result,'span logo edit title doesnt exist');
 
-        $y = date("Y");
+        $d1= date('d/m/Y');
+        $d2 = date('d/m/Y', strtotime(dateFr($d1) . ' -1 year'));
+        $d3 = date('d/m/Y', strtotime(dateFr($d1) . ' +1 year'));
         $date = new DateTime('+1 day');
 
         $overTime = new OverTime();
@@ -109,12 +111,9 @@ class OvertimeControllerTest extends PLBWebTestCase
         $entityManager->persist($overTime);
         $entityManager->flush();
 
-        if (date('m') < 9) {
-            $y -= 1;
-        }
-
         $crawler = $this->client->request('GET', '/overtime', array(
-            'annee' => "$y",
+            'start' => "$d1",
+            'end' => "$d3",
             'perso_id' => $agent->getId(),
         ));
 
@@ -126,8 +125,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $this->assertStringContainsString($date->format('d/m/Y'), $result->text('Node does not exist', false), 'Date is ok');
         $this->assertStringContainsString('0h30', $result->text('Node does not exist', false), 'heures is 0h30');
 
-        $y2 = $y - 1;
-        $crawler = $this->client->request('GET', "/overtime?annee=$y2&perso_id=" . $agent->getId());
+        $crawler = $this->client->request('GET', "/overtime?start=$d2&end=$d1&perso_id=" . $agent->getId());
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEmpty($result,'span logo edit title doesnt exist');
@@ -159,7 +157,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $entityManager->persist($overTime2);
         $entityManager->flush();
 
-        $crawler = $this->client->request('GET', "/overtime?annee=$y&perso_id=" . $agent_no_overtime->getId());
+        $crawler = $this->client->request('GET', "/overtime?start=$d1&end=$d3&perso_id=" . $agent_no_overtime->getId());
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Modifier','span logo edit title is Modifier');
