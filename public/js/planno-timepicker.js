@@ -112,7 +112,7 @@ function ValidateTime(obj) {
   var optional = typeof(obj.attr('optional')) != 'undefined';
   var valid_time = time_validation(obj.val());
 
-  if((!obj.val() && !optional ) || (obj.val() && !valid_time)){
+  if(obj.val() && !valid_time) {
     obj.addClass('is-invalid');
   }
   else {

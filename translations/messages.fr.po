@@ -252,3 +252,12 @@ msgstr "Modification de la longeur minimum du mot de passe"
 
 msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
 msgstr "La valeur minimale de caractères pour le changement de mot de passe doit être un nombre supérieur ou égal à 8."
+
+msgid "Lastname"
+msgstr "Nom"
+
+msgid "Firstname"
+msgstr "Prénom"
+
+msgid "Display all absences"
+msgstr "Afficher toutes les absences"

@@ -120,11 +120,23 @@ class BaseController extends AbstractController
         return $this->config[$key];
     }
 
-    protected function initDate(string $queryName, string $sessionName, string $when = 'today', string $format = 'd/m/Y'): ?\DateTime
+    protected function initBoolean(string $queryName, string $sessionName, bool $default = false, bool $reset = false): bool
     {
-        $dateSession = $this->request->getSession()->get($sessionName, date($format, strtotime($when)));
+        $session = $this->request->getSession()->get($sessionName, $default);
+        $value = $this->request->query->getBoolean($queryName);//, $session);
+        $value = $reset ? $default : $value;
 
+        $this->request->getSession()->set($sessionName, $value);
+
+        return $value;
+    }
+
+    protected function initDate(string $queryName, string $sessionName, string $when = 'today', string $format = 'd/m/Y', bool $reset = false): ?\DateTime
+    {
+        $default = date($format, strtotime($when));
+        $dateSession = $this->request->getSession()->get($sessionName, $default);
         $date = $this->request->query->get($queryName, $dateSession);
+        $date = $reset ? $default : $date;
 
         $this->request->getSession()->set($sessionName, $date);
 
