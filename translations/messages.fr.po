@@ -570,3 +570,15 @@ msgstr "Demandé"
 
 msgid "Comment:"
 msgstr "Commentaire :"
+
+msgid "Lastname"
+msgstr "Nom"
+
+msgid "Firstname"
+msgstr "Prénom"
+
+msgid "Display all absences"
+msgstr "Afficher toutes les absences"
+
+msgid "Calendar view"
+msgstr "Vue calendaire"

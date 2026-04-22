@@ -1937,6 +1937,10 @@ div#holiday-info .col-4 {
   font-weight: bold;
 }
 
+.btn.bi {
+  min-width: 30px;
+}
+
 .btn-icon {
   min-width :auto;
   padding: 3px;
@@ -2523,6 +2527,32 @@ table.dataTable th{
 
 #tableWorkingHourCycles_wrapper {
   margin-top: 20px;
+}
+
+.calendar-view {
+  background-color: #FFFFFF;
+}
+
+.calendar-view.attendee {
+  background-color: #DEE2E6;
+}
+
+.calendar-view.absence-validated {
+  background-color: #720a05;
+}
+
+.calendar-view.absence-not-validated {
+  background-color: #d1ac07;
+}
+
+.calendar-view.zebra {
+  background-image: repeating-linear-gradient(
+    -75deg,
+    transparent,
+    transparent 8px,
+    #DEE2E6 7px,
+    #DEE2E6 10px
+  );
 }
 
 @media only screen and (max-width: 1550px){
