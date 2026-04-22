@@ -241,8 +241,8 @@ function plHebdoVerifForm(form){
     return;
   }
 
-  // Checks that the form wasn't submitted with empty date interval
-  if (!verif_date2($('.datepicker.end-date').val()) || !verif_date2($('.datepicker.start-date').val())){
+  // Checks that the form wasn't submitted with empty date interval when there is no initialization
+  if (!date_validation($('.datepicker.end-date').val()) || !date_validation($('.datepicker.start-date').val())){
     var submit = form.find(':submit');
     var date_feedback = form.find('.invalid-feedback')
     $('.datepicker.end-date').addClass('is-invalid');

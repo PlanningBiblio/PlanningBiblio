@@ -599,10 +599,13 @@ function updateTips( text , type) {
   CJErrorHighlight( $(".validateTips"), type);
 }
 
-function verif_date2(date) {
+// Cette fonction a pour but de remplacer verif_date() sur le long terme
+// Elle permet de vérifier la validité d'une date (str) et son adéquation à un format spécifique
+// Le format de date est chargé depuis les fichiers de traduction dans la locale choisie
+
+function date_validation(date) {
   format = Translator.trans('MM/DD/YYYY');
-  year = dayjs(date, format).year();
-  return dayjs(date, format, true).isValid() && year >= 1999 && year <= 2080;
+  return dayjs(date, format, true).isValid();
 };
 
 function verif_date(d){
@@ -809,8 +812,8 @@ $(function(){
     // Invalid message feedback when date interval is not valid and disabled submit button
 
     $('.datepicker.end-date').on('change',function() {
-      var valid_start = verif_date2($('.datepicker.start-date').val());
-      var valid_end = verif_date2($(this).val());
+      var valid_start = date_validation($('.datepicker.start-date').val());
+      var valid_end = date_validation($(this).val());
       var end_required = typeof($(this).attr('required')) != 'undefined';
       var start = $('.datepicker.start-date').bootstrapDP('getDate');
       var end = $(this).bootstrapDP('getDate');
@@ -853,8 +856,8 @@ $(function(){
     });
 
     $('.datepicker.start-date').on('change',function() {
-      var valid_start = verif_date2($(this).val());
-      var valid_end = verif_date2($('.datepicker.end-date').val());
+      var valid_start = date_validation($(this).val());
+      var valid_end = date_validation($('.datepicker.end-date').val());
       var end_required = typeof($('.datepicker.end-date').attr('required')) != 'undefined';
       var start = $(this).bootstrapDP('getDate');
       var end = $('.datepicker.end-date').bootstrapDP('getDate');
@@ -898,8 +901,8 @@ $(function(){
     $(".one-year").on('change', function(e) {
       var start = dayjs($(".start-date").val(), Translator.trans('DD/MM/YYYY'));
       var end = dayjs($(".end-date").val(), Translator.trans('DD/MM/YYYY'));
-      var valid_start = verif_date2($(".start-date").val());
-      var valid_end = verif_date2($(".end-date").val());
+      var valid_start = date_validation($(".start-date").val());
+      var valid_end = date_validation($(".end-date").val());
       var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
       var submit = $(this).closest('form').find(':submit');
 
