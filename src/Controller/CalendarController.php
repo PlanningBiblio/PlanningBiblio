@@ -5,46 +5,32 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Planno\ClosingDay;
-
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 
 class CalendarController extends BaseController
 {
     #[Route(path: 'calendar', name: 'calendar.index', methods: ['GET'])]
-    public function index(Request $request, Session $session){
-        $debut = $request->query->get('debut');
-        $fin = $request->query->get('fin');
+    public function index(Request $request, Session $session): Response
+    {
+        $start = $this->initDate('debut', 'calendarStart', 'last monday');
+        $end = $this->initDate('fin', 'calendarEnd', 'next sunday');
 
-        if (!array_key_exists('agenda_debut', $_SESSION)){
-            $_SESSION['agenda_debut'] = null;
-            $_SESSION['agenda_fin'] = null;
-            $_SESSION['agenda_perso_id'] = $session->get('loginId');
+        $startSQL = $start->format('Y-m-d');
+        $endSQL = $end->format('Y-m-d');
+        
+        if (empty($session->get('calendarUserId'))) {
+            $session->set('calendarUserId', $session->get('loginId'));
         }
 
-        $debut = $debut ? $debut : $_SESSION['agenda_debut'];
-        $fin = $fin ? $fin : $_SESSION['agenda_fin'];
         $admin = in_array(3, $GLOBALS['droits']);
-        if($admin){
-            $perso_id = $request->query->getInt('perso_id');
-            $perso_id = $perso_id?$perso_id:$_SESSION['agenda_perso_id'];
-        } else {
-            $perso_id = $session->get('loginId');
-        }
+        $perso_id = $admin ? $request->query->getInt('perso_id', $session->get('calendarUserId')) : $session->get('loginId');
 
-        $d= new \datePl(date("Y-m-d"));
-        $debutSQL = $debut ? dateSQL($debut) : $d->dates[0]; //lundi de la semaine courante
-        $debut = dateFr3($debutSQL);
-        $finSQL = $fin ? dateSQL($fin) : $d->dates[6]; //lundi de la semaine courante
-        $fin = dateFr3($finSQL);
-        $_SESSION['agenda_debut'] = $debut;
-        $_SESSION['agenda_fin'] = $fin;
-        $_SESSION['agenda_perso_id'] = $perso_id;
-        $class = null;
+        $session->set('calendarUserId', $perso_id);
         $nonValides = $this->config('Agenda-Plannings-Non-Valides');
 
         //PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
@@ -69,8 +55,8 @@ class CalendarController extends BaseController
 
         // Jours fériés
         $j = new ClosingDay();
-        $j->debut=$debutSQL;
-        $j->fin=$finSQL;
+        $j->debut = $startSQL;
+        $j->fin = $endSQL;
         $j->index= "date";
         $j->fetch();
         $joursFeries=$j->elements;
@@ -104,7 +90,7 @@ class CalendarController extends BaseController
         }
 
         $db = new \db();
-        $db->select2("pl_poste_verrou", array("site","date"), array("verrou2"=>">0", "date"=>"BETWEEN $debutSQL AND $finSQL"));
+        $db->select2("pl_poste_verrou", array("site","date"), array("verrou2"=>">0", "date"=>"BETWEEN $startSQL AND $endSQL"));
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $verrou[$elem['site']][]=$elem['date'];
@@ -118,20 +104,20 @@ class CalendarController extends BaseController
             array("postes", "id"),
             array("date","debut","fin","absent","site"),
             array(array('name' => 'nom', 'as' => 'poste'), 'teleworking'),
-            array("perso_id"=>$perso_id, "date"=>"BETWEEN $debutSQL AND $finSQL"),
+            array("perso_id"=>$perso_id, "date"=>"BETWEEN $startSQL AND $endSQL"),
             array(),
             "ORDER BY date, debut, fin, site, poste"
         );
         $postes = $db->result;
 
         // Affiche des cellules vides devant le premier jour demandé de façon à avoir les lundis dans la première colonne
-        $d = new \datePl($debutSQL);
+        $d = new \datePl($startSQL);
         $cellsBefore = $d->position>0?$d->position-1:6;
 
         $nb = $cellsBefore;
-        $current = $debutSQL;
+        $current = $startSQL;
         $days = array();
-        while ($current <= $finSQL) {
+        while ($current <= $endSQL) {
             $current_postes = array();
             $date_tab = explode("-", $current);
             $date_aff = $current;
@@ -391,20 +377,20 @@ class CalendarController extends BaseController
 
         }
         //Cellules vides à la fin pour aller jusqu'au dimanche
-        $d = new \datePl($finSQL);
+        $d = new \datePl($endSQL);
         $cellsAfter = $d->position > 0 ? 7-$d->position : 0;
 
         $this->templateParams(array(
             "admin"       => $admin,
             "agent"       => $agent,
             "agents"      => $agents,
-            "begin"       => $debut,
-            "beginSQL"    => $debutSQL,
+            'begin'       => $start->format('d/m/Y'),
+            'beginSQL'    => $startSQL,
             "cellsAfter"  => $cellsAfter,
             "cellsBefore" => $cellsBefore,
             "days"        => $days,
-            "end"         => $fin,
-            "endSQL"      => $finSQL,
+            'end'         => $end->format('d/m/Y'),
+            'endSQL'      => $endSQL,
             "nbSites"     => $nbSites,
             "perso_id"    => $perso_id
         ));

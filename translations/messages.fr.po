@@ -99,3 +99,6 @@ msgstr "Nom du nouveau tableau"
 
 msgid "Please enter a valid model name"
 msgstr "Veuillez saisir un nom de modèle valide"
+
+msgid "New request"
+msgstr "Nouvelle demande"
