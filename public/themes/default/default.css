@@ -2445,6 +2445,22 @@ table.dataTable th{
   margin-top: 20px;
 }
 
+.calendar-view {
+  background-color: #FFFFFF;
+}
+
+.calendar-view.attendee {
+  background-color: #DEE2E6;
+}
+
+.calendar-view.absence-validated {
+  background-color: #720a05;
+}
+
+.calendar-view.absence-not-validated {
+  background-color: #d1ac07;
+}
+
 @media only screen and (max-width: 1550px){
   #logo {
     width: 48px;
