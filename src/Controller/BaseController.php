@@ -23,6 +23,7 @@ class BaseController extends AbstractController
     protected $logger;
     protected $notifier;
     protected $permissions;
+    protected $request;
     protected $translator;
 
     public function __construct(
@@ -32,7 +33,7 @@ class BaseController extends AbstractController
         TranslatorInterface $translator
     )
     {
-        $request = $requestStack->getCurrentRequest();
+        $this->request = $requestStack->getCurrentRequest();
 
         /*
          * TODO FIXME
@@ -117,6 +118,17 @@ class BaseController extends AbstractController
         }
 
         return $this->config[$key];
+    }
+
+    protected function initDate(string $queryName, string $sessionName, string $when = 'today', string $format = 'd/m/Y'): ?\DateTime
+    {
+        $dateSession = $this->request->getSession()->get($sessionName, date($format, strtotime($when)));
+
+        $date = $this->request->query->get($queryName, $dateSession);
+
+        $this->request->getSession()->set($sessionName, $date);
+
+        return \DateTime::createFromFormat($format, $date);
     }
 
     protected function csrf_protection(Request $request): bool

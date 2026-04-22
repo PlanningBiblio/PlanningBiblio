@@ -156,54 +156,50 @@
 {% block page %}
   <div id="content-admin">
     {% if perso_id != 0 %}
-    <h3 class="print_only">Liste des congés de {{ perso_name }}, année {{ year_from }}-{{ year_to}}</h3>
+      <h3 class="print_only">Liste des congés de {{ perso_name }}, {{ start | date('d/m/Y') }}-{{ end | date('d/m/Y') }}</h3>
     {% endif %}
     <h3 class='noprint'>Heures supplémentaires</h3>
     <div class="admin-div">
       <div id='liste'>
         <h4 class='noprint'>Liste des demandes d'heures supplémentaires</h4>
-        <form name='form' method='get' action='{{ asset("overtime") }}' class='noprint'>
-          <div class="container">
-            <span style='float:left; vertical-align:top; margin-bottom:20px;'>
-              <div class='row'>
-                <div class="col">
-                  Année : <select name='annee'>
-                    {% for elem in years %}
-                      {% if elem[0] == year_from %}
-                        <option value="{{ elem[0] }}" selected="selected">{{ elem[1] }}</option>
-                      {% else %}
-                        <option value="{{ elem[0] }}">{{ elem[1] }}</option>
-                      {% endif %}
-                    {% endfor %}
-                  </select>
-                </div>
+        <form name="form" method="get" action="{{ asset('overtime') }}" class="noprint" novalidate>
 
-                {% if admin %}
-                  <div class="col">
-                    <span style='margin-left:30px;'>Agent : </span>
-                    <select name='perso_id'>
-                      {% if perso_id == 0 %}
-                        <option value='0' selected="selected">Tous</option>
-                      {% else %}
-                        <option value='0'>Tous</option>
-                      {% endif %}
-                      {% for m in managed %}
-                        {% if m.id == perso_id %}
-                          <option value="{{ m.id }}" selected>{{ m.lastname }} {{ m.firstname }}</option>
-                        {% else %}
-                          <option value="{{ m.id }}">{{ m.lastname }} {{ m.firstname }}</option>
-                        {% endif %}
-                      {% endfor %}
-                    </select>
-                  </div>
-                {% endif %}
-                <div class="col" style="margin-left:30px;"><input type="submit" value="Rechercher" id="button-OK" class="btn btn-secondary" style="margin-top: 10px;"/></div>
-                <div class="col" style="margin-left:30px;"><input type="button" value="Réinitialiser" id="button-Effacer" class="btn btn-secondary" onclick="location.href='{{ asset('overtime') }}?reset=on'" style="margin-top: 10px;"/></div>
-                <div class="col" style="float:right; vertical-align:top; margin-top: 10px;">
-                  <button id="dialog-button" class="btn btn-primary">Nouvelle demande</button>
-                </div>
+          <div class="row row-search">
+            <label class="col-xl-auto col-form-label mt-2" for="overtime-search-start">{% trans%}Start{% endtrans %} :</label>
+            <div class="col-xl-auto ps-0">
+              <input id="overtime-search-start" type="text" name="start" class="datepicker form-control start-date" value="{{ start | date('d/m/Y') }}"/>
+            </div>
+
+            <label class="col-xl-auto col-form-label mt-2" for="overtime-search-end">{% trans%}End{% endtrans %} :</label>
+            <div class="col-xl-auto ps-0">
+              <input id="overtime-search-end" type="text" name="end" class="datepicker form-control end-date" value="{{ end | date('d/m/Y') }}" required/>
+            </div>
+
+            {% if admin %}
+              <label class="col-xl-auto col-form-label mt-2" for="agent-search">{% trans%}Agent{% endtrans %} :</label>
+              <div class="col-xl-auto ps-0">
+                <select name="perso_id" class="form-select form-select-sm" id="agent-search" >
+                  <option {% if perso_id == 0 %} selected {% endif %} value="0">{% trans %}Everyone{% endtrans %}</option>
+                  {% for m in managed %}
+                    <option value="{{m.id}}" {% if m.id == perso_id %} selected {% endif %}> {{ m.lastname }} {{ m.firstname }}</option>
+                  {% endfor %}
+                </select>
               </div>
-            </span>
+            {% endif %}
+
+            <div class="col-xl-4 ps-0">
+              <input id="button-ok" type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
+
+              <input type="button" value="{% trans%}Clear{% endtrans %}" onclick="location.href='{{ asset('overtime') }}?reset=on'" class="btn btn-secondary m-2" id="button-Effacer"/>        
+            </div>
+
+            <div class="col-xl text-end">
+              <button id="dialog-button" class="btn btn-primary m-2 me-0">{% trans%}New request{% endtrans %}</button>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
           </div>
         </form>
 
