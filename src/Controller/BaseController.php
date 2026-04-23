@@ -2,8 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Config;
-use App\Entity\ConfigTechnical;
+use App\Planno\Helper\ConfigHelper;
 use App\Planno\Notifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,12 +13,11 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Psr\Log\LoggerInterface;
-use App\Planno\ConfigFinder;
 
 class BaseController extends AbstractController
 {
     protected $entityManager;
-    protected $configFinder;
+    protected $configHelper;
     private $templateParams = [];
     protected $dispatcher;
     protected $config = [];
@@ -33,7 +31,7 @@ class BaseController extends AbstractController
         LoggerInterface $logger,
         RequestStack $requestStack,
         TranslatorInterface $translator,
-        ConfigFinder $configFinder
+        ConfigHelper $configHelper
     )
     {
         $request = $requestStack->getCurrentRequest();
@@ -59,7 +57,7 @@ class BaseController extends AbstractController
         // $this->entityManager = $entityManager;
         $this->entityManager = $GLOBALS['entityManager'];
 
-        $this->configFinder = $configFinder;
+        $this->configHelper = $configHelper;
 
         $this->templateParams = $GLOBALS['templates_params'];
 
@@ -74,8 +72,7 @@ class BaseController extends AbstractController
          * Some unit tests fail if we do not use  $url and $GLOBLAS['config']
          * The result return by Config::getAll may be incomplete
          */
-        $url = $this->configFinder->findOneByConfigName(ConfigTechnical::class, 'URL')
-            ->getValue();
+        $url = $this->configHelper->findOneByName('URL')->getValue();
 
         $GLOBALS['config']['URL'] = $url;
         $this->config = $GLOBALS['config'];

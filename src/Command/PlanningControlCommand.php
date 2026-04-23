@@ -2,12 +2,11 @@
 
 namespace App\Command;
 
-use App\Entity\ConfigNetwork;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionLock;
 use App\Entity\PlanningPositionTabAffectation;
 use App\Entity\Site;
-use App\Planno\ConfigFinder;
+use App\Planno\Helper\ConfigHelper;
 use App\Planno\Framework;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -31,12 +30,12 @@ class PlanningControlCommand extends Command
     use \App\Traits\LoggerTrait;
 
     private $entityManager;
-    private $configFinder;
+    private $configHelper;
 
-    public function __construct(EntityManagerInterface $entityManager, ConfigFinder $configFinder)
+    public function __construct(EntityManagerInterface $entityManager, ConfigHelper $configHelper)
     {
         $this->entityManager = $entityManager;
-        $this->configFinder = $configFinder;
+        $this->configHelper = $configHelper;
         parent::__construct();
     }
 
@@ -54,7 +53,7 @@ class PlanningControlCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->configFinder->getAll(ConfigNetwork::class, $_SESSION['network']['id']);
+        $config = $this->configHelper->getAll();
 
         $CSRFToken = CSRFToken();
 

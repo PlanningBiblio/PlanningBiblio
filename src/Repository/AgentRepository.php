@@ -2,13 +2,11 @@
 
 namespace App\Repository;
 
-use App\Entity\ConfigNetwork;
 use App\Entity\Site;
-use App\Planno\ConfigFinder;
+use App\Planno\Helper\ConfigHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Common\Collections\Criteria;
 
 use App\Entity\Absence;
 use App\Entity\Agent;
@@ -41,12 +39,12 @@ class AgentRepository extends EntityRepository
 
     private $check_by_site = true;
 
-    private ConfigFinder $configFinder;
+    private ConfigHelper $configHelper;
 
     public function __construct(EntityManagerInterface $registry, ClassMetadata $class)
     {
         parent::__construct($registry, $class);
-        $this->configFinder = new ConfigFinder($registry);
+        $this->configHelper = new ConfigHelper();
     }
 
     /**
@@ -184,7 +182,7 @@ class AgentRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $this->configFinder->findOneByConfigName(ConfigNetwork::class, $this->by_agent_param, $_SESSION['network']['id']);
+        $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param);
 
         $sites = $entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
@@ -231,7 +229,7 @@ class AgentRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $this->configFinder->findOneByConfigName(ConfigNetwork::class, $this->by_agent_param, $_SESSION['network']['id']);
+        $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param);
 
         $sites = $entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $sites_number = count($sites);
@@ -289,7 +287,7 @@ class AgentRepository extends EntityRepository
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $this->configFinder->findOneByConfigName(ConfigNetwork::class, $this->by_agent_param, $_SESSION['network']['id']);
+        $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param);
 
         $sites = $entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         $sites_number = count($sites);
@@ -579,8 +577,7 @@ class AgentRepository extends EntityRepository
      */
     public function getExportIcsURL($id): string
     {
-        $entityManager = $this->getEntityManager();
-        $config = $entityManager->getRepository(Config::class)->findOneBy(['nom' => 'ICS-Code']);
+        $config = $this->configHelper->findOneByName('ICS-Code');
         $url = "/ical?id=$id";
 
         if ($config->getValue()) {

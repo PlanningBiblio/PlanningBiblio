@@ -100,8 +100,8 @@ class AjaxController extends BaseController
         $planning = $request->get('planning');
 
         if ($password == '') {
-            $configRepository = $this->entityManager->getRepository(Config::class);
-            $password = decrypt($configRepository->getValue('Mail-Password'));
+            $mailPassword = $this->configHelper->findOneByName('Mail-Password');
+            $password = decrypt($mailPassword->getValue());
         }
 
         // Connexion au serveur de messagerie

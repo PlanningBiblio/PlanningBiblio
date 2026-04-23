@@ -21,14 +21,12 @@ class ConfigController extends BaseController
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
-        $url = $this->configFinder->findOneByConfigName(ConfigTechnical::class, 'URL')
+        $url = $this->configHelper->findOneByName('URL')
             ->getValue();
 
         $technical = $request->get('options') == 'technical' ? 1 : 0;
 
-        $entityClass = $technical ? ConfigTechnical::class : ConfigNetwork::class;
-        $networkId = $technical ? null : $_SESSION['network']['id'];
-        $configParams = $this->configFinder->findByType($entityClass, $networkId);
+        $configParams = $this->configHelper->findByType($technical);
 
         $elements = array();
         $sites_array = $this->entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
@@ -152,8 +150,8 @@ class ConfigController extends BaseController
         $port = filter_var($port, FILTER_SANITIZE_NUMBER_INT);
 
         if ($password == '') {
-            $configRepository = $this->entityManager->getRepository(Config::class);
-            $password = decrypt($configRepository->getValue('LDAP-Password'));
+            $LDAPPassword = $this->configHelper->findOneByName('LDAP-Password');
+            $password = decrypt($LDAPPassword->getValue());
         }
 
         // Connexion au serveur LDAP

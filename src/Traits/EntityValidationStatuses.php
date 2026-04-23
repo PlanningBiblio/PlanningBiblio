@@ -41,7 +41,7 @@ trait EntityValidationStatuses
         $show_n2 = $adminN2;
 
         // Simplified absence validation schema for workflow B
-        $configByAgent = $this->configFinder->findOneByConfigName(ConfigNetwork::class, 'Absences-notifications-agent-par-agent')->getValue();
+        $configByAgent = $this->configHelper->findOneByName('Absences-notifications-agent-par-agent')->getValue();
 
         if ($module == 'absence' && $configByAgent && $workflow == 'B') {
             $show_n1 = false;
