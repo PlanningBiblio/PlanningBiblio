@@ -2,8 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Entity\ConfigTechnical;
-use App\Planno\ConfigFinder;
+use App\Planno\Helper\ConfigHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,17 +12,17 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 class UrlListener
 {
     private EntityManagerInterface $entityManager;
-    private ConfigFinder $configFinder;
+    private ConfigHelper $configHelper;
 
-    public function __construct(EntityManagerInterface $em, ConfigFinder $configFinder)
+    public function __construct(EntityManagerInterface $em, ConfigHelper $configHelper)
     {
         $this->entityManager = $em;
-        $this->configFinder = $configFinder;
+        $this->configHelper = $configHelper;
     }
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        $config = $this->configFinder->findOneByConfigName(ConfigTechnical::class, 'URL');
+        $config = $this->configHelper->findOneByName('URL');
         $request = $event->getRequest();
 
         // See https://github.com/symfony/symfony/pull/38954

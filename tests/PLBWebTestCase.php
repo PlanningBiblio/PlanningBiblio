@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Entity\Config;
+use App\Planno\Helper\ConfigHelper;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -62,13 +63,11 @@ class PLBWebTestCase extends PantherTestCase
         }
     }
 
-    // When possible, use Config::setParam instead (see src/Repository/ConfigRepository.php)
     protected function setParam($name, $value)
     {
         $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(Config::class)
-            ->findOneBy(['nom' => $name]);
+        $configHelper = new ConfigHelper();
+        $param = $configHelper->findOneByName($name);
 
         if (!$param) {
             $this->addConfig($name, $value);

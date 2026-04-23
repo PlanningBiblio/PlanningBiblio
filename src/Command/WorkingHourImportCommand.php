@@ -3,10 +3,9 @@
 namespace App\Command;
 
 use App\Entity\Agent;
-use App\Entity\ConfigNetwork;
 use App\Entity\Site;
 use App\Entity\WorkingHour;
-use App\Planno\ConfigFinder;
+use App\Planno\Helper\ConfigHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -22,12 +21,12 @@ class WorkingHourImportCommand extends Command
 {
     use \App\Traits\LoggerTrait;
     private $entityManager;
-    private $configFinder;
+    private $configHelper;
 
-    public function __construct(EntityManagerInterface $entityManager, ConfigFinder $configFinder)
+    public function __construct(EntityManagerInterface $entityManager, ConfigHelper $configHelper)
     {
         $this->entityManager = $entityManager;
-        $this->configFinder = $configFinder;
+        $this->configHelper = $configHelper;
         parent::__construct();
     }
 
@@ -39,7 +38,7 @@ class WorkingHourImportCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->configFinder->getAll(ConfigNetwork::class, $_SESSION['network']['id']);
+        $config = $this->configHelper->getAll();
         $agentIdentifier = $config['PlanningHebdo-ImportAgentId'] ?? 'login';
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
