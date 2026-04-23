@@ -109,6 +109,7 @@ class planningHebdo
             'breaktime'     => json_encode($data['breaktime']),
             'exception'     => $data['exception'],
             'nb_semaine'    => $data['number_of_weeks'],
+            'network_id'    => $_SESSION['network']['id'],
         );
 
         // Dans le cas d'une copie (voir fonction copy)
@@ -217,7 +218,7 @@ class planningHebdo
         }
 
         // Filtre de recherche
-        $filter="1";
+        $filter="1 AND `network_id`=".$_SESSION['network']['id'];
 
         // Perso_id
         if ($this->perso_id) {

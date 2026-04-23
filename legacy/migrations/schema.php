@@ -1,11 +1,11 @@
 <?php
 /**
  * Planno
- * 
+ *
  * @file legacy/migrations/schema.php
  * @author Jérôme Combes <jerome@planningbiblio.fr>
- * 
- * @note : 
+ *
+ * @note :
  * - File schema.php, previously public/setup/db_structure.php
  * - Still used to create the database for unit tests
  */
@@ -202,7 +202,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_notifications` (
   `data` TEXT,
   PRIMARY KEY (`id`))
   ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
-  
+
 $sql[]="ALTER TABLE `{$dbprefix}pl_notifications` ADD KEY `date` (`date`), ADD KEY `site` (`site`);";
 
 $sql[]="CREATE TABLE `{$dbprefix}personnel` (

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Agent;
 use App\Entity\WorkingHour;
+use App\Entity\Site;
 use App\Planno\Helper\HourHelper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,10 +68,12 @@ class WorkingHourController extends BaseController
         $p = new \personnel();
         $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites_array);
         $multisites = array();
         foreach ($sites as $site) {
-            $multisites[$site] = $this->config("Multisites-site{$site}");
+            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+            $multisites[$site] = $s ? $s->getName() : "Site $site";
         }
 
         if ($ph_id != null) {
@@ -302,7 +305,8 @@ class WorkingHourController extends BaseController
         $remplace = null;
         $sites = array();
         $nbSemaine = $this->config('nb_semaine');
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites_array);
         $multisites = array();
 
         $managed = $this->entityManager
@@ -314,9 +318,9 @@ class WorkingHourController extends BaseController
             return $this->redirectToRoute('access-denied');
         }
 
-        for ($i = 1; $i < $nbSites+1; $i++) {
-            $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$i}");
+        foreach ($sites_array as $s) {
+            $sites[] = $s->getId();
+            $multisites[$s->getId()] = $s->getName();
         }
 
         $nomAgent = nom($perso_id, "prenom nom");
@@ -375,13 +379,15 @@ class WorkingHourController extends BaseController
         $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $nbSemaine = $this->config('nb_semaine');
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites_array);
         $validation = "";
         $sites = array();
         $multisites = array();
-        for ($i = 1; $i < $nbSites+1; $i++) {
-            $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$i}");
+
+        foreach ($sites_array as $s) {
+            $sites[] = $s->getId();
+            $multisites[$s->getId()] = $s->getName();
         }
         $exception_back = '/myaccount';
         if ($retour != '/myaccount') {

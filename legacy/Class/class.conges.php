@@ -11,6 +11,7 @@ require_once 'class.planningHebdo.php';
 require_once 'class.personnel.php';
 require_once 'class.absences.php';
 
+use App\Entity\Site;
 use App\Planno\WorkingHours;
 use App\Planno\ClosingDay;
 use App\Planno\Helper\HolidayHelper;
@@ -480,11 +481,11 @@ class conges
         // array(0,1,2), default : array(0);
         $p->supprime = $this->agents_supprimes;
         $p->fetch('nom');
-
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         foreach ($p->elements as $elem) {
             $keep = true;
 
-            if ($GLOBALS['config']['Multisites-nombre'] > 1 and !empty($this->sites)) {
+            if (count($sites) > 1 and !empty($this->sites)) {
                 $keep = false;
                 foreach ($this->sites as $site) {
                     if (is_array($elem['sites']) and in_array($site, $elem['sites'])) {
@@ -845,7 +846,8 @@ class conges
         $responsables=array();
         $droitsConges=array();
         //	Si plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par le conges
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        if (count($sites) > 1) {
             $db=new db();
             $db->select("personnel", "temps", "id='$perso_id'");
             $temps=json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
@@ -889,7 +891,7 @@ class conges
             }
             // Si les jours de conges ne concernent aucun site, on ajoute les responsables de tous les sites par sécurité
             if (empty($droitsConges)) {
-                for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
+                for ($i=1;$i<=count($sites);$i++) {
                     $droitsConges[]=400+$i;
                     $droitsConges[]=600+$i;
                 }

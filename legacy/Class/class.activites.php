@@ -30,9 +30,9 @@ class activites
         $activites=array();
         $db=new db();
         if ($this->deleted) {
-            $db->select2("activites");
+            $db->select2("activites", "*", array("network_id"=>$_SESSION['network']['id']));
         } else {
-            $db->select2("activites", null, array("supprime"=>null));
+            $db->select2("activites", null, array("supprime"=>null, "network_id"=>$_SESSION['network']['id']));
         }
       
         if ($db->result) {

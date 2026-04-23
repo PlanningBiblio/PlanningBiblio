@@ -3,8 +3,9 @@
 namespace App\Command;
 
 use App\Entity\Agent;
-use App\Entity\Config;
+use App\Entity\Site;
 use App\Entity\WorkingHour;
+use App\Planno\Helper\ConfigHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -20,10 +21,12 @@ class WorkingHourImportCommand extends Command
 {
     use \App\Traits\LoggerTrait;
     private $entityManager;
+    private $configHelper;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, ConfigHelper $configHelper)
     {
         $this->entityManager = $entityManager;
+        $this->configHelper = $configHelper;
         parent::__construct();
     }
 
@@ -35,7 +38,7 @@ class WorkingHourImportCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->entityManager->getRepository(Config::class)->getAll();
+        $config = $this->configHelper->getAll();
         $agentIdentifier = $config['PlanningHebdo-ImportAgentId'] ?? 'login';
 
         // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
@@ -89,6 +92,8 @@ class WorkingHourImportCommand extends Command
 
         // On place les éléments du fichiers dans le tableau $temps
         $temps = [];
+
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         // Pour chaque ligne
         foreach ($lines as $line) {
@@ -154,7 +159,7 @@ class WorkingHourImportCommand extends Command
             // Récupération depuis la table personnel, donc ne fonctionne que si l'agent ne travaille que sur un site
 
             // Config. monosite : $site = 1
-            if ($config['Multisites-nombre'] == 1) {
+            if (count($sites) == 1) {
                 $site = 1;
                 // Config. Multisites
             } else {

@@ -37,8 +37,8 @@
                     <td>
                       <select name='site' style='width:255px' class='ui-widget-content ui-corner-all'>
                         <option value='0'>&nbsp;</option>
-                        {% for i in 0..nbSites-1 %}
-                          <option value='{{i+1}}' {{ selectedSites[i] }}> {{ multisite[i] }} </option>
+                        {% for i in multisites|keys %}
+                          <option value='{{i}}' {{ selectedSites[i] }}> {{ multisites[i] }} </option>
                         {% endfor %}
                       </select>
                     </td>

@@ -18,7 +18,7 @@ $templates_params = array(
     'menu_entries'        => $menu['menu_entries'],
     'user_surname'        => $_SESSION['login_nom'],
     'user_firstname'      => $_SESSION['login_prenom'],
-    'planninghebdo'       => $config['PlanningHebdo'],
+    'planninghebdo'       => $config['PlanningHebdo'] ?? [],
     'ics_export'          => $config['ICS-Export'],
     'CSRFSession'         => $CSRFSession,
 );
