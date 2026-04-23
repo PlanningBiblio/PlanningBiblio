@@ -20,7 +20,7 @@ class PlanningExportUtils
     {
         // TODO / FIXME : sans doute une meilleure façon d'obtenir $entityManager (pas avec $GLOBALS)
         $this->entityManager = $entityManager;
-        $this->config = $entityManager->getRepository(Config::class)->getAll();
+        $this->config = $GLOBALS['config'];
     }
 
     /**

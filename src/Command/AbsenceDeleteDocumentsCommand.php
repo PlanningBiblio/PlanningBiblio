@@ -2,10 +2,8 @@
 
 namespace App\Command;
 
-use App\Entity\Config;
 use App\Entity\AbsenceDocument;
-use App\Entity\ConfigNetwork;
-use App\Planno\ConfigFinder;
+use App\Planno\Helper\ConfigHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -25,12 +23,12 @@ class AbsenceDeleteDocumentsCommand extends Command
 {
     use \App\Traits\LoggerTrait;
     private $entityManager;
-    private ConfigFinder $configFinder;
+    private ConfigHelper $configHelper;
 
-    public function __construct(EntityManagerInterface $entityManager, ConfigFinder $configFinder)
+    public function __construct(EntityManagerInterface $entityManager, ConfigHelper $configHelper)
     {
         $this->entityManager = $entityManager;
-        $this->configFinder = $configFinder;
+        $this->configHelper = $configHelper;
         parent::__construct();
     }
 
@@ -42,7 +40,7 @@ class AbsenceDeleteDocumentsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->configFinder->getAll(ConfigNetwork::class, $_SESSION['network']['id']);
+        $config = $this->configHelper->getAll();
         $delay = $config['Absences-DelaiSuppressionDocuments'];
 
         if (empty($delay)) {
