@@ -831,8 +831,11 @@ class planning
         // Si la plage interrogée est dans ou à cheval sur la période de sans repas
         if ($debut<$sr_fin and $fin>$sr_debut) {
 
-      // Recherche dans la base de données des autres plages concernées
-            $db=new db();
+            // Recherche dans la base de données des autres plages concernées
+            $db = new db();
+            $date = $db->escapeString($date);
+            $sr_debut = $db->escapeString($sr_debut);
+            $sr_fin = $db->escapeString($sr_fin);
 
             if (!empty($lunch_positions)) {
                 $db->select("pl_poste", "*", "date = '$date' AND debut < '$sr_fin' AND fin > '$sr_debut' AND poste NOT IN ($lunch_positions)", "ORDER BY debut,fin");

@@ -23,5 +23,7 @@ require_once "class.planning.php";
 $date=$_POST['date'];
 $site=$_POST['site'];
 $db=new db();
+$date = $db->escapeString($date);
+$site = $db->escapeString($site);
 $db->select("pl_poste_verrou", "validation2", "`date`='$date' AND `site`='$site'");
 echo json_encode($db->result[0]['validation2']);

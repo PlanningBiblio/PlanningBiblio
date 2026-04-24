@@ -22,6 +22,8 @@ $date=dateFr($_GET['date']);
 $perso_id=is_numeric($_GET['perso_id'])?$_GET['perso_id']:$_SESSION['login_id'];
 
 $db=new db();
+$date = $db->escapeString($date);
+$perso_id = $db->escapeString($perso_id);
 $db->select("recuperations", null, "`perso_id`='$perso_id' AND (`date`='$date' OR `date2`='$date')");
 if ($db->result) {
     echo "Demande";

@@ -448,17 +448,20 @@ class conges
 
     public function fetch()
     {
+        $db = new db();
+
         // Filtre de recherche
         $filter="1";
 
         // Perso_id
         if ($this->perso_id) {
-            $filter.=" AND `perso_id`='{$this->perso_id}'";
+            $perso_id = $db->escapeString($this->perso_id);
+            $filter .= " AND `perso_id`='$perso_id'";
         }
 
         // Date, debut, fin
-        $debut=$this->debut;
-        $fin=$this->fin;
+        $debut = $db->escapeString($this->debut);
+        $fin = $db->escapeString($this->fin);
         $date=date("Y-m-d")." 23:59:59";
         if ($debut) {
             $fin=$fin?$fin:$date;
@@ -485,7 +488,8 @@ class conges
         }
     
         if ($this->debit) {
-            $filter .= " AND ( `debit` = '{$this->debit}' OR `debit` IS NULL ) ";
+            $debit = $db->escapeString($this->debit);
+            $filter .= " AND ( `debit` = '$debit' OR `debit` IS NULL ) ";
         }
 
         // Recherche des agents actifs seulement
@@ -532,10 +536,11 @@ class conges
         if ($this->valide) {
             $filter.=" AND `valide`>0 AND `supprime`=0 AND `information`=0";
         }
-  
+
         // Filtre avec ID, si ID, les autres filtres sont effacés
         if ($this->id) {
-            $filter="`id`='{$this->id}'";
+            $id = $db->escapeString($this->id);
+            $filter = "`id`='$id'";
         }
 
         // Récupération des noms des agents
@@ -543,7 +548,6 @@ class conges
         $p->fetch("nom", "Actif");
         $agents=$p->elements;
 
-        $db=new db();
         $db->select("conges", "*", $filter, "ORDER BY debut,fin,saisie");
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -852,13 +856,17 @@ class conges
 
     public function getRecup()
     {
-        $debut=$this->debut?$this->debut:date("Y-m-d", strtotime("-1 month", time()));
-        $fin=$this->fin?$this->fin:date("Y-m-d", strtotime("+1 year", time()));
+        $db = new db();
+
+        $debut = $this->debut ? $db->escapeString($this->debut) : date('Y-m-d', strtotime('-1 month'));
+        $fin = $this->fin ? $db->escapeString($this->fin) : date('Y-m-d', strtotime('+1 year'));
+
         $filter="`date` BETWEEN '$debut' AND '$fin'";
 
         // Recherche avec l'id de l'agent
         if ($this->admin and $this->perso_id) {
-            $filter.=" AND `perso_id`='{$this->perso_id}'";
+            $perso_id = $db->escapeString($this->perso_id);
+            $filter .= " AND `perso_id`='$perso_id'";
         }
 
         if (!$this->admin) {
@@ -889,10 +897,10 @@ class conges
 
         // Si recupId, le filtre est réinitialisé
         if ($this->recupId) {
-            $filter="id='{$this->recupId}'";
+            $recupId = $db->escapeString($this->recupId);
+            $filter = "id='$recupId'";
         }
 
-        $db=new db();
         $db->select("recuperations", "*", $filter, "order by date,saisie");
         if ($db->result) {
             $this->elements=$db->result;
