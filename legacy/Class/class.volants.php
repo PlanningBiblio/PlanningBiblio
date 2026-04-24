@@ -70,11 +70,14 @@ class volants
             $db = new dbh();
             $db->CSRFToken = $CSRFToken;
 
-            $db->prepare("INSERT INTO `{$GLOBALS['dbprefix']}volants` (`date`, `perso_id`) VALUES ('$date', :perso_id);");
+            $db->prepare("INSERT INTO `{$GLOBALS['dbprefix']}volants` (`date`, `perso_id`) VALUES (:date, :perso_id);");
             foreach ($ids as $elem) {
-                $db->execute(array(':perso_id' => $elem));
+                $db->execute([
+                    ':date' => $date,
+                    ':perso_id' => $elem
+                ]);
             }
-      
+
             if ($db->error) {
                 $this->error = $db->error;
             }
