@@ -36,22 +36,22 @@ class OverTime
     private ?\DateTime $saisie = null;
 
     #[ORM\Column]
-    private ?int $saisie_par = null;
+    private int $saisie_par = 0;
 
     #[ORM\Column]
-    private ?int $modif = null;
+    private int $modif = 0;
 
     #[ORM\Column]
     private ?\DateTime $modification = null;
 
     #[ORM\Column]
-    private ?int $valide_n1 = null;
+    private int $valide_n1 = 0;
 
     #[ORM\Column]
     private ?\DateTime $validation_n1 = null;
 
     #[ORM\Column]
-    private ?int $valide = null;
+    private int $valide = 0;
 
     #[ORM\Column]
     private ?\DateTime $validation = null;
@@ -130,12 +130,12 @@ class OverTime
         return $this;
     }
 
-    public function getEntry(): ?int
+    public function getEntry(): int
     {
         return $this->saisie_par;
     }
 
-    public function setEntry(?int $userId): static
+    public function setEntry(int $userId): static
     {
         $this->saisie_par = $userId;
 
@@ -154,24 +154,24 @@ class OverTime
         return $this;
     }
 
-    public function getChange(): ?int
+    public function getChange(): int
     {
         return $this->modif;
     }
 
-    public function setChange(?int $userId): static
+    public function setChange(int $userId): static
     {
         $this->modif = $userId;
 
         return $this;
     }
 
-    public function getValidLevel1(): ?int
+    public function getValidLevel1(): int
     {
         return $this->valide_n1;
     }
 
-    public function setValidLevel1(?int $userId): static
+    public function setValidLevel1(int $userId): static
     {
         $this->valide_n1 = $userId;
 
@@ -190,12 +190,12 @@ class OverTime
         return $this;
     }
 
-    public function getValidLevel2(): ?int
+    public function getValidLevel2(): int
     {
         return $this->valide;
     }
 
-    public function setValidLevel2(?int $userId): static
+    public function setValidLevel2(int $userId): static
     {
         $this->valide = $userId;
 
