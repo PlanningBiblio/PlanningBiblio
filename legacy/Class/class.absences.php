@@ -702,6 +702,7 @@ class absences
         // N'affiche que les absences des agents non supprimés par défaut : $this->agents_supprimes=array(0);
         // Affiche les absences des agents supprimés si précisé : $this->agents_supprimes=array(0,1) ou array(0,1,2)
         $deletedAgents=implode("','", $this->agents_supprimes);
+        $deletedAgents = $db->escapeString($deletedAgents);
         $filter.=" AND `{$dbprefix}personnel`.`supprime` IN ('$deletedAgents') ";
 
         // Sort

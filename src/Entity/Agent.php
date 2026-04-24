@@ -708,6 +708,11 @@ class Agent
         $id = $this->id;
 
         $db=new \db();
+
+        $date = $db->escapeString($date);
+        $end = $db->escapeString($end);
+        $start = $db->escapeString($start);
+
         $db->select(
             'pl_poste',
             'poste',

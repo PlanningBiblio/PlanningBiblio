@@ -503,13 +503,14 @@ class OvertimeController extends BaseController
     #[Route('/overtime/check', name: 'overtime.check', methods: ['GET'])]
     public function check(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
-        $date = $request->get('date');
-        $perso_id = $request->get('perso_id');
+        $date = $request->query->get('date');
+        $perso_id = $request->query->getInt('perso_id');
 
         $date = dateFr($date);
         $perso_id = is_numeric($perso_id) ? $perso_id : $session->get('loginId');
 
         $db=new \db();
+        $date = $db->escapeString($date);
         $db->select("recuperations", null, "`perso_id`='$perso_id' AND (`date`='$date' OR `date2`='$date')");
         $output = $db->result ? "Demande" : "";
         return new Response($output);

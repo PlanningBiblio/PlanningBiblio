@@ -976,10 +976,12 @@ class PlanningController extends BaseController
     #[Route(path: '/planning/refresh', name: 'planning.refresh', methods: ['get'])]
     public function refreshPlanning(Request $request): Response
     {
-        $date = $request->get('date');
-        $site = $request->get('site');
+        $date = $request->query->get('date');
+        $site = $request->query->get('site');
 
         $db = new \db();
+        $date = $db->escapeString($date);
+        $site = $db->escapeString($site);
         $db->select('pl_poste_verrou', 'validation2', "`date`='$date' AND `site`='$site'");
 
         return new Response(json_encode($db->result[0]['validation2']));

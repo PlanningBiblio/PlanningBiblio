@@ -82,6 +82,7 @@ class ClosingDay
         // Recherche du jour férié correspondant à la date $date
         $tab=array();
         $db=new \db();
+        $date = $db->escapeString($date);
         $db->select("jours_feries", "*", "jour='$date'");
         if ($db->result) {
             $tab=$db->result;

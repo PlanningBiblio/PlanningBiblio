@@ -24,6 +24,11 @@ function deuxSP($date, $debut, $fin): array
 {
     $tab=array(0);
     $db=new db();
+
+    $date = $db->escapeString($date);
+    $debut = $db->escapeString($debut);
+    $fin = $db->escapeString($fin);
+
     $db->select("pl_poste", "perso_id", "absent = '0' AND date='$date' AND (debut='$fin' OR fin='$debut')", "group by perso_id");
     if ($db->result) {
         foreach ($db->result as $elem) {

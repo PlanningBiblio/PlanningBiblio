@@ -209,6 +209,9 @@ class planningHebdo
   
     public function fetch(): void
     {
+
+        $db = new db();
+
         // Recherche des services
         $p=new personnel();
         $p->fetch();
@@ -221,12 +224,14 @@ class planningHebdo
 
         // Perso_id
         if ($this->perso_id) {
+            $this->perso_id = $db->escapeString($this->perso_id);
             $filter.=" AND `perso_id`='{$this->perso_id}'";
         }
 
         // Date, debut, fin
-        $debut=$this->debut;
-        $fin=$this->fin;
+        $debut = $db->escapeString($this->debut);
+        $fin = $db->escapeString($this->fin);
+
         $date=date("Y-m-d");
         if ($debut) {
             $fin=$fin?$fin:$date;
@@ -234,7 +239,6 @@ class planningHebdo
         } else {
             $filter.=" AND `fin`>='$date'";
         }
-
 
         // Recherche des agents actifs seulement
         $perso_ids=array(0);
@@ -260,6 +264,8 @@ class planningHebdo
 
         // Filtre pour agents actifs seulement et recherche avec nom de l'agent
         $perso_ids=implode(",", $perso_ids);
+        $perso_ids = $db->escapeString($perso_ids);
+
         $filter.=" AND `perso_id` IN ($perso_ids)";
 
         // Valide
@@ -274,17 +280,16 @@ class planningHebdo
   
         // Filtre avec ID, si ID, les autres filtres sont effacés
         if ($this->id) {
+            $this->id = $db->escapeString($this->id);
             $filter="`id`='{$this->id}'";
         }
 
-        $db=new db();
         $db->select("planning_hebdo", "*", $filter, "ORDER BY debut,fin,saisie");
     
         $p=new personnel();
         $p->supprime = array(0,1,2);
         $p->fetch();
         $agents = $p->elements;
-    
 
         if ($db->result) {
             foreach ($db->result as $elem) {

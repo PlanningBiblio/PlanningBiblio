@@ -68,12 +68,17 @@ class PlanningPositionHistoryHelper extends BaseHelper
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('p.perso_id')
             ->from(PlanningPosition::class, 'p')
-            ->where("p.date = '$date'")
-            ->andwhere("p.debut = '$start'")
-            ->andwhere("p.fin = '$end'")
-            ->andwhere("p.site = $site")
-            ->andwhere("p.poste = $position")
-            ->andwhere("p.absent <> '1'");
+            ->where('p.date = :date')
+            ->andwhere('p.debut = :start')
+            ->andwhere('p.fin = :end')
+            ->andwhere('p.site = :site')
+            ->andwhere('p.poste = :position')
+            ->andwhere('p.absent <> 1')
+            ->setParameter('date', $date)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('site', $site)
+            ->setParameter('position', $position);
 
         $res = $qb->getQuery();
         $result = $res->getResult();
@@ -100,11 +105,16 @@ class PlanningPositionHistoryHelper extends BaseHelper
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('p.perso_id')
             ->from(PlanningPosition::class, 'p')
-            ->where("p.date = '$date'")
-            ->andwhere("p.debut = '$start'")
-            ->andwhere("p.fin = '$end'")
-            ->andwhere("p.site = $site")
-            ->andwhere("p.poste = $position");
+            ->where('p.date = :date')
+            ->andwhere('p.debut = :start')
+            ->andwhere('p.fin = :end')
+            ->andwhere('p.site = :site')
+            ->andwhere('p.poste = :position')
+            ->setParameter('date', $date)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('site', $site)
+            ->setParameter('position', $position);
 
         $res = $qb->getQuery();
         $result = $res->getResult();
