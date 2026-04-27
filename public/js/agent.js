@@ -494,6 +494,7 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $("#add-status-text").val(null);
+    $(this).removeClass('was-validated');
   });
 
   // Formulaire de modification des statuts (ordre, catégorie, suppression...)
@@ -601,6 +602,7 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $("#add-service-text").val(null);
+    $(this).removeClass('was-validated');
   });
 
   // Formulaire de modification des services (ordre, suppression...)

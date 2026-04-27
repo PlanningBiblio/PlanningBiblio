@@ -1,7 +1,8 @@
-Plural-Form: nplurals=3; plural = n == 0 ? 0 : n == 1 ? 1 : 2;
-
 msgid "New request"
 msgstr "Nouvelle demande"
+
+msgid "New request for overtime"
+msgstr "Nouvelle demande d'heures supplémentaires"
 
 msgid "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
 msgstr "Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires, puis saisir un commentaire."
@@ -134,3 +135,12 @@ msgstr "La demande d'heures supplémentaires doit être effectuée dans les %lim
 
 msgid "Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?"
 msgstr "Attention, la demande d'heures supplémentaires doit être effectuée dans les %limit% jours.\nEn tant qu'administrateur, vous pouvez outrepasser cette règle.\nVoulez-vous continuer ?"
+
+msgid "The request must be submitted within %limit% days"
+msgstr "La demande doit être soumise dans un délai de %limit% jours"
+
+msgid "Model name"
+msgstr "Nom du modèle"
+
+msgid "Save all week"
+msgstr "Enregistrer toute la semaine"

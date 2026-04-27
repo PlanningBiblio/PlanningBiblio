@@ -278,11 +278,11 @@
         <div class="modal-body">
           
           <p class="validateTips">Ajoutez, supprimez des statuts et modifiez l'ordre générale dans le menu déroulant.</p>
-          <form id="add-status">
+          <form id="add-status" novalidate>
             <div class="row">
-              <div class="col-5 ps-0">
-                <input type="text" id="add-status-text" class="form-control form-control-sm mb-0" style="width:100%;" required>
-                <div class="invalid-feedback ms-3" id="invalid-status">Statut invalide</div>
+              <div class="col-5">
+                <input type="text" id="add-status-text" class="form-control form-control-sm mt-2" style="width:100%;" required>
+                <div class="invalid-feedback" id="invalid-status">Statut invalide</div>
               </div>
               <div class="col-1">
                 <button type="submit" id="add-status-button" class="btn btn-primary m-2 mb-0">Ajouter</button>
@@ -347,11 +347,11 @@
         <div class="modal-body">
           
           <p class="validateTips">Ajoutez, supprimez des services et modifiez l'ordre générale dans le menu déroulant.</p>
-          <form id="add-service">
+          <form id="add-service" novalidate>
             <div class="row">
-              <div class="col-5 ps-0">
-                <input type="text" id="add-service-text" class="form-control form-control-sm mb-0" style="width:100%;" required>
-                <div class="invalid-feedback ms-3" id="invalid-service">Service invalide</div>
+              <div class="col-5">
+                <input type="text" id="add-service-text" class="form-control form-control-sm mt-2" style="width:100%;" required>
+                <div class="invalid-feedback ms-1" id="invalid-service">Service invalide</div>
               </div>
 
               <div class="col-1">

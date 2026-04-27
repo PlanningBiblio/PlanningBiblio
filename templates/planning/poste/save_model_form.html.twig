@@ -11,15 +11,21 @@
 
       <div class="modal-body">
         <form id="save-model-form">
-          <div class="form-group">
-            <label for="InputModelName" class="col-form-label">Nom du modèle</label>
-            <input type="text" id="InputModelName" name="modelName"class="form-control form-control-sm" value="{{date}}" required>
+          <div class="row mb-2 justify-content-center">
+            <label for="InputModelName" class="col-auto col-form-label">{% trans %}Model name{% endtrans %} :</label>
+            <div class="col-4">
+              <input type="text" id="InputModelName" name="modelName"class="form-control form-control-sm" value="{{date}}" required>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="WeekCheck" class="form-check-label">Enregistrer toute la semaine</label>
-            <input type="checkbox" id="WeekCheck" name="semaine" class="form-check-input m-2"/>
-        </div>
+          <div class="row mb-2 justify-content-center">
+            <div class="col-auto">
+              <div class="form-check-prepend">
+                <label for="WeekCheck" class="col-auto form-check-label">{% trans %}Save all week{% endtrans %} :</label>
+                <input class="form-check-input m-1 mx-2" type="checkbox" id="WeekCheck" name="semaine">
+              </div>
+            </div>
+          </div>
 
         <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
         <input type="hidden" name="date" value="{{ date }}" />
