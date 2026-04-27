@@ -17,8 +17,12 @@ require_once 'class.personnel.php';
 use App\Entity\Agent;
 use App\Entity\AbsenceReason;
 use App\Entity\AbsenceDocument;
+use App\Entity\PlanningPosition;
+use App\Entity\PlanningPositionLock;
 use App\Planno\WorkingHours;
 use App\Planno\ClosingDay;
+use App\Service\ICalendar;
+use App\Planno\DateTime\TimeSlot;
 
 
 class absences
@@ -267,6 +271,7 @@ class absences
             $a = new absences();
             $a->debut = $debut_sql;
             $a->fin = $fin_sql;
+            $a->rrule = $this->rrule;
             $a->perso_ids = array($agent->getId());
             $a->infoPlannings();
             $infosPlanning = $a->message;
@@ -1819,6 +1824,7 @@ class absences
     * Retourne la liste des plannings concernés (dates, horaires sites et postes) (@param $this->message @string)
     * @param $this->debut @string
     * @param $this->fin @string
+    * @param $this->rrule @string
     * @param $this->perso_id @int
     * TODO : si besoin, cette fonction peut être complétée de façon à retourner les infos sous forme de tableaux
     * (dates des plannings concernés, validés ou non, postes et sites concernés)
@@ -1828,6 +1834,8 @@ class absences
     {
         $version="absences";
         require_once 'class.postes.php';
+
+        global $entityManager;
   
         $debut=dateSQL($this->debut);
         $fin=dateSQL($this->fin);
@@ -1839,18 +1847,16 @@ class absences
         $heureDebut=substr($debut, 11);
         $heureFin=substr($fin, 11);
 
+        $rrule = $this->rrule;
+
+        $iCalendar = new ICalendar();
+        $initialTimeSlot = TimeSlot::createFromFormat('Y-m-d H:i:s', $debut, $fin);
+        $absenceTimeSlots = $rrule ? $iCalendar->getRecurringEventTimeSlots($initialTimeSlot, $rrule) : [$initialTimeSlot];
+
         // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
         // Recherche des plannings validés
-        $plannings_valides=array();
-        $db=new db();
-        $db->select2("pl_poste_verrou", "date", array("date"=>"BETWEEN $dateDebut AND $dateFin","verrou2"=>"1"));
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $plannings_valides[]=$elem['date'];
-            }
-        }
-
-        sort($plannings_valides);
+        $planningPositionLockRepository = $entityManager->getRepository(PlanningPositionLock::class);
+        $plannings_valides = $planningPositionLockRepository->findApprovedDatesByTimeSlots($absenceTimeSlots);
 
         // nom des postes
         $p=new postes();
@@ -1866,26 +1872,30 @@ class absences
         }
 
         // Recherche des plannings dans lequel apparaît l'agent
-        $plannings=array();
-        $db=new db();
-        $db->select2("pl_poste", null, array("date"=>"BETWEEN $dateDebut AND $dateFin","perso_id"=>"IN $perso_ids"), "ORDER BY date,debut,fin");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                // On exclu les créneaux horaires qui sont en dehors de l'absences
-                if ($elem['date']==$dateDebut and $elem['fin']<=$heureDebut) {
-                    continue;
+        $plannings = [];
+        $planningPositionRepository = $entityManager->getRepository(PlanningPosition::class);
+        $planningPositions = $planningPositionRepository->findByAgentsAndTimeSlots($this->perso_ids, $absenceTimeSlots);
+        foreach ($planningPositions as $planningPosition) {
+            $planningPositionDate = $planningPosition->getDate()->format('Y-m-d');
+            $planningPositionStart = new DateTime($planningPositionDate . ' ' . $planningPosition->getStart()->format('H:i:s'));
+            $planningPositionEnd = new DateTime($planningPositionDate . ' ' . $planningPosition->getEnd()->format('H:i:s'));
+            $planningPositionIntersectsWithTimeSlots = false;
+            foreach ($absenceTimeSlots as $timeSlot) {
+                if ($timeSlot->intersectsWith($planningPositionStart, $planningPositionEnd)) {
+                    $planningPositionIntersectsWithTimeSlots = true;
+                    break;
                 }
-                if ($elem['date']==$dateFin and $elem['debut']>=$heureFin) {
-                    continue;
-                }
+            }
 
-                $elem['valide']=in_array($elem['date'], $plannings_valides)?" (Valid&eacute;)":null;
-                $elem['date']=dateFr($elem['date']);
-                $elem['debut']=heure2($elem['debut']);
-                $elem['fin']=heure2($elem['fin']);
-                $elem['site']=$sites[$elem['site']];
-                $elem['poste']=$postes[$elem['poste']]['nom'];
-                $plannings[]=$elem;
+            if ($planningPositionIntersectsWithTimeSlots) {
+                $plannings[] = [
+                    'date' => dateFr($planningPosition->getDate()->format('Y-m-d')),
+                    'poste' => $planningPosition->getPosition(),
+                    'debut' => heure2($planningPosition->getStart()->format('H:i')),
+                    'fin' => heure2($planningPosition->getEnd()->format('H:i')),
+                    'site' => $sites[ $planningPosition->getSite() ],
+                    'valide' => in_array($planningPositionDate, $plannings_valides) ? " (Valid&eacute;)" : null,
+                ];
             }
         }
     

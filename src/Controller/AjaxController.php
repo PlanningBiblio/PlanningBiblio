@@ -6,7 +6,12 @@ use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Entity\Config;
 use App\Entity\Agent;
+use App\Entity\PlanningPosition;
 use App\Planno\Helper\AbsenceBlockHelper;
+use App\Planno\DateTime\TimeSlot;
+use App\Service\ICalendar;
+
+use DateTime;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -179,7 +184,7 @@ class AjaxController extends BaseController
 
 
     #[Route(path: '/ajax/holiday-absence-control', name: 'ajax.holiday.absence.control', methods: ['GET'])]
-    public function holidayAbsenceControl(Request $request): Response
+    public function holidayAbsenceControl(Request $request, ICalendar $iCalendar): Response
     {
       $session = $request->getSession();
 
@@ -189,13 +194,20 @@ class AjaxController extends BaseController
       $groupe = $request->get('groupe');
       $debut = $request->get('debut');
       $fin = $request->get('fin');
+      $recurrence = (bool) $request->get('recurrence-checkbox', false);
+      $rrule = $recurrence ? $request->get('recurrence-hidden') : null;
       $perso_ids = $request->get('perso_ids');
       $perso_ids = json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
-      // Get comma separated sites for agent
-      $sites = implode(',', $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids));
+      $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids);
 
-      $fin = $fin ?? str_replace('00:00:00', '23:59:59', $debut);
+      $fin = $fin ?: str_replace('00:00:00', '23:59:59', $debut);
+
+      $initialTimeSlot = TimeSlot::createFromFormat('Y-m-d H:i:s', $debut, $fin);
+      $timeSlots = $rrule ? $iCalendar->getRecurringEventTimeSlots($initialTimeSlot, $rrule) : [$initialTimeSlot];
+
+      $planningPositionRepository = $this->entityManager->getRepository(PlanningPosition::class);
+
       $result = array();
 
       $p = new \personnel();
@@ -253,23 +265,9 @@ class AjaxController extends BaseController
 
           // Contrôle si placé sur planning validé
           if ($this->config("$config_name-apresValidation") == 0) {
-              $datesValidees=array();
-              $dbprefix = $this->config('dbprefix');
-              $req = "SELECT `date`,`site` FROM `{$dbprefix}pl_poste` WHERE `perso_id`='$perso_id' "
-                . "AND CONCAT_WS(' ',`date`,`debut`)<'$fin' AND CONCAT_WS(' ',`date`,`fin`)>'$debut' "
-                . "GROUP BY `date`;";
+              $approvedDates = $planningPositionRepository->findApprovedDatesByAgentsAndTimeSlots([$perso_id], $timeSlots);
 
-              $db = new \db();
-              $db->query($req);
-              if ($db->result) {
-                  foreach ($db->result as $elem) {
-                      $db2 = new \db();
-                      $db2->select2("pl_poste_verrou", "*", array("date"=>$elem['date'], "site"=>$elem['site'], "verrou2"=>"1"));
-                      if ($db2->result) {
-                          $datesValidees[] = dateFr($elem['date']);
-                      }
-                  }
-              }
+              $datesValidees = array_map(fn($date): ?string => dateFr($date), $approvedDates);
               if (!empty($datesValidees)) {
                   $result['users'][$perso_id]["planning_validated"]=implode(" ; ", $datesValidees);
               }
@@ -281,36 +279,12 @@ class AjaxController extends BaseController
 
       // Contrôle si placé sur des plannings en cours d'élaboration;
       if ($this->config("$config_name-planningVide") == 0) {
-          // Dates à contrôler
-          $date_debut = substr($debut, 0, 10);
-          $date_fin = substr($fin, 0, 10);
-
           // Tableau des plannings en cours d'élaboration
           $planningsEnElaboration=array();
 
-          if ($sites != "") {
-              // Pour chaque dates
-              $date = $date_debut;
-              while ($date <= $date_fin) {
-                  // Vérifie si les plannings de tous les sites sont validés
-                  $db = new \db();
-
-                  $db->select2("pl_poste_verrou", "*", array("date"=>$date, "verrou2"=>"1", "site" => "IN $sites"));
-                  // S'ils ne sont pas tous validés, vérifie si certains d'entre eux sont commencés
-                  if ($db->nb < count($result)) {
-                      // TODO : ceci peut être amélioré en cherchant en particulier si les sites non validés sont commencés, car les sites non validés et non commencés ne nous interressent pas.
-                      // for($i=1;$i<=$this->config('Multisites-nombre');$i++){} // Attention, faire une première requête si $db->nb=0 pour éviter les erreurs foreach not array
-                      // Le nom des sites pourrait également être retourné
-
-                      $db2 = new \db();
-                      $db2->select2("pl_poste", "id", array("date"=>$date, "site" => "IN $sites"));
-                      // Si tous les sites ne sont pas validés et si certains sont commencés, on affichera la date correspondante
-                      if ($db2->result) {
-                          $planningsEnElaboration[]=date("d/m/Y", strtotime($date));
-                      }
-                  }
-                  $date = date("Y-m-d", strtotime($date." +1 day"));
-              }
+          if ($sites) {
+              $inProgressDates = $planningPositionRepository->findInProgressDatesBySitesAndTimeSlots($sites, $timeSlots);
+              $planningsEnElaboration = array_map(fn($date): string => date("d/m/Y", strtotime($date)), $inProgressDates);
           }
 
           // Affichage des dates correspondantes aux plannings en cours d'élaboration

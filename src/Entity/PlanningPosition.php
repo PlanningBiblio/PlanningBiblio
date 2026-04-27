@@ -65,6 +65,11 @@ class PlanningPosition
         return $this;
     }
 
+    public function getDate(): ?\DateTime
+    {
+        return $this->date;
+    }
+
     public function setPosition(?int $position): static
     {
         $this->poste = $position;
