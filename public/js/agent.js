@@ -459,6 +459,7 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $("#add-status-text").val(null);
+    $(this).removeClass('was-validated');
   });
 
   // Formulaire de modification des statuts (ordre, catégorie, suppression...)
@@ -521,6 +522,7 @@ $(function() {
   // Suppression message invalidité lors du changement d'input de statut
   $('#add-status-text').on('input', function(e) {
     $(this).removeClass('is-invalid');
+    $('#invalid-status').text('Statut invalide');
   })
 
   // Restaure les éléments supprimés mais non validés (pour les services et les statuts)
@@ -566,6 +568,7 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $("#add-service-text").val(null);
+    $(this).removeClass('was-validated');
   });
 
   // Formulaire de modification des services (ordre, suppression...)
@@ -625,6 +628,7 @@ $(function() {
   // Suppression message invalidité lors du changement d'input de service
   $('#add-service-text').on('input', function() {
     $(this).removeClass('is-invalid');
+    $('#invalid-service').text('Service invalide');
   })
 
   $('#ics-url-form').on('submit',function(e) {

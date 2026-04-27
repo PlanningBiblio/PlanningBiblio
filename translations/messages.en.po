@@ -1,3 +1,39 @@
+msgid "New request"
+msgstr "New request"
+
+msgid "New request for overtime"
+msgstr "New request for overtime"
+
+msgid "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
+msgstr "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
+
+msgid "Date (1st Saturday)"
+msgstr "Date (1st Saturday)"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Date (2nd Saturday) (optional)"
+msgstr "Date (2nd Saturday) (optional)"
+
+msgid "Error while saving the overtime request"
+msgstr "Error while saving the overtime request"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Hours"
+msgstr "Hours"
+
+msgid "Comment"
+msgstr "Comment"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Cancel"
+msgstr "Cancel"
+
 msgid "mm/dd/yyyy"
 msgstr "mm/dd/yyyy"
 
@@ -8,16 +44,10 @@ msgid "Start date"
 msgstr "Start date"
 
 msgid "End date"
-msgstr "End date" 
-
-msgid "Comment"
-msgstr "Comment"
+msgstr "End date"
 
 msgid "Text"
 msgstr "Text"
-
-msgid "Cancel"
-msgstr "Cancel"
 
 msgid "Delete"
 msgstr "Delete"
@@ -33,9 +63,6 @@ msgstr "End"
 
 msgid "Search"
 msgstr "Search"
-
-msgid "Agent"
-msgstr "Agent"
 
 msgid "Clear"
 msgstr "Clear"
@@ -100,5 +127,32 @@ msgstr "Name of the new table"
 msgid "Please enter a valid model name"
 msgstr "Please enter a valid model name"
 
-msgid "New request"
-msgstr "New request"
+msgid "The selected date needs to be a Saturday"
+msgstr "The selected date needs to be a Saturday"
+
+msgid "A request has already been submitted for %date%"
+msgstr "A request has already been submitted for %date%"
+
+msgid "An error occurred while verifying the saved entries"
+msgstr "An error occurred while verifying the saved entries"
+
+msgid "The second date must be posterior to the first one or empty"
+msgstr "The second date must be posterior to the first one or empty"
+
+msgid "The selected time period is invalid"
+msgstr "The selected time period is invalid"
+
+msgid "A request for overtime must be submitted within %limit% days"
+msgstr "A request for overtime must be submitted within %limit% days"
+
+msgid "Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?"
+msgstr "Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?"
+
+msgid "The request must be submitted within %limit% days"
+msgstr "The request must be submitted within %limit% days"
+
+msgid "Model name"
+msgstr "Model name"
+
+msgid "Save all week"
+msgstr "Save all week"

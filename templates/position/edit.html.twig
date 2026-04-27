@@ -180,14 +180,14 @@
 
             <div class="modal-body">
               <p class="validateTips mb-1">Ajoutez, supprimez et modifiez l'ordre des étages dans le menu déroulant.</p>
-              <form id="add-floor">
-                <div class="row">
+              <form id="add-floor" novalidate>
+                <div class="row my-3">
                   <div class="col-5">
-                    <input type="text" id="add-floor-text" class="form-control form-control-sm ms-0 mb-0" style="width:100%;" required>
-                    <div class="invalid-feedback ms-1">Etage invalide</div>
+                    <input type="text" id="add-floor-text" class="form-control" required>
+                    <div class="invalid-feedback" id="invalid-floor">Etage invalide</div>
                   </div>
                   <div class="col-1">
-                    <button type="submit" class="btn btn-primary m-2 mb-0">Ajouter</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
                   </div>
                 </div>
               </form>
@@ -238,14 +238,14 @@
 
             <div class="modal-body">
               <p class="validateTips mb-1">Ajoutez, supprimez et modifiez l'ordre des groupes dans le menu déroulant.</p>
-              <form id="add-group">
-                <div class="row">
+              <form id="add-group" novalidate>
+                <div class="row my-3">
                   <div class="col-5">
-                    <input type="text" id="add-group-text" class="form-control form-control-sm ms-0 mb-0" style="width:100%;" required>
-                    <div class="invalid-feedback ms-1">Groupe invalide</div>
+                    <input type="text" id="add-group-text" class="form-control" required>
+                    <div class="invalid-feedback" id="invalid-group">Groupe invalide</div>
                   </div>
                   <div class="col-1">
-                    <button type="submit" class="btn btn-primary m-2 mb-0">Ajouter</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
                   </div>
                 </div>
               </form>

@@ -75,12 +75,13 @@ $(function() {
   // Suppression message invalidité lors du changement d'input
   $('#add-floor-text').on('input', function(e) {
     $('#add-floor-text').removeClass('is-invalid');
+    $('#invalid-floor').text('Etage invalide');
   })
 
   // Permet d'ajouter de nouveaux etages (clic sur le bouton ajouter)
   $('#add-floor').on('submit', function(e) {
     e.preventDefault();
-    $('.invalid-feedback').text('Etage invalide');
+    $('#invalid-floor').text('Etage invalide');
 
     var text = sanitize_string($('#add-floor-text').val());
     if(!text){
@@ -115,6 +116,7 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $('#add-floor-text').val(null);
+    $(this).removeClass('was-validated');
   });
 
   // Permet de rendre la liste des groupes triable
@@ -187,12 +189,13 @@ $(function() {
   // Suppression message invalidité lors du changement d'input
   $('#add-group-text').on('input', function(e) {
     $('#add-group-text').removeClass('is-invalid');
+    $('#invalid-group').text('Groupe invalide.');
   })
 
   // Permet d'ajouter de nouveaux groupe (clic sur le bouton ajouter)
   $('#add-group').on('submit', function(e) {
     e.preventDefault();
-    $('.invalid-feedback').text('Groupe invalide.');
+    $('#invalid-group').text('Groupe invalide.');
 
     var text=sanitize_string($("#add-group-text").val());
     if(!text){
@@ -231,6 +234,7 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $('#add-group-text').val(null);
+    $(this).removeClass('was-validated');
   });
 
 });

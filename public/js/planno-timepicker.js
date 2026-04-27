@@ -4,7 +4,8 @@ plannoTimepickerParams = {
   dropdown: true,
   scrollbar: true,
   dynamic: true,
-  change: function(date) {
+  change : function(date) {
+    ValidateTime(this);
     roundTimePiker(this);
     timePickerChange(date, this);
   }
@@ -104,6 +105,19 @@ function roundTimePiker(obj) {
   }
 
   $(obj).val(formatHHmm(hours, rounded));
+}
+
+function ValidateTime(obj) {
+  $('#alert').addClass('d-none');
+  var optional = typeof(obj.attr('optional')) != 'undefined';
+  var valid_time = time_validation(obj.val());
+
+  if((!obj.val() && !optional ) || (obj.val() && !valid_time)){
+    obj.addClass('is-invalid');
+  }
+  else {
+    obj.removeClass('is-invalid');
+  }
 }
 
 function formatHHmm(hour, minute) {

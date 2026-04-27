@@ -10,12 +10,13 @@
       </div>
 
       <div class="modal-body">
-        <p class="validateTips mb-1">Ajoutez, supprimez et modifiez l'ordre des motifs dans le menu déroulant.</p>
-        <form id="add-reason">
+        <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des motifs dans le menu déroulant.</p>
+
+        <form id="add-reason" novalidate>
           <div class="row my-3">
             <div class="col-5">
-              <input type="text" id="add-reason-text" class="form-control" style="width:100%;" required>
-              <div class="invalid-feedback ms-1">Motif invalide</div>
+              <input type="text" id="add-reason-text" class="form-control" required>
+              <div class="invalid-feedback">Motif invalide</div>
             </div>
             <div class="col-1">
               <button type="submit" id="add-reason-button" class="btn btn-primary">Ajouter</button>
@@ -23,7 +24,7 @@
           </div>
         </form>
 
-        <div class="row row-header m-0 mt-2">
+        <div class="row row-header rounded-top-1 m-0 mt-2">
           <i class="col-auto p-2 bi bi-arrow-down-up" aria-hidden="true"></i>
           <span class="col-3 ps-0">Nom</span>
           <span class="col-3" >Niveau</span>

@@ -122,12 +122,13 @@ $(function() {
   // Suppression message invalidité lors du changement d'input
   $('#add-reason-text').on('input', function(e) {
     $('#add-reason-text').removeClass('is-invalid');
+    $('.invalid-feedback').text('Motif invalide');
   })
 
   // Permet d'ajouter de nouveaux motifs (clic sur le bouton ajouter)
   $('#add-reason').on('submit', function(e) {
     e.preventDefault();
-    $('.invalid-feedback').text('Motif invalide')
+    $('.invalid-feedback').text('Motif invalide');
 
     // Récupère les options du premier select "type" pour les réutiliser lors d'un ajout
     var select=$("select[id^=type_]");
@@ -197,6 +198,7 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $('#add-reason-text').val(null);
+    $(this).removeClass('was-validated');
   });
 
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
