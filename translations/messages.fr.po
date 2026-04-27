@@ -1,3 +1,39 @@
+msgid "New request"
+msgstr "Nouvelle demande"
+
+msgid "New request for overtime"
+msgstr "Nouvelle demande d'heures supplémentaires"
+
+msgid "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
+msgstr "Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires, puis saisir un commentaire."
+
+msgid "Date (1st Saturday)"
+msgstr "Date (1<sup>er</sup> samedi)"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Date (2nd Saturday) (optional)"
+msgstr "Date (2ème samedi) (optionel)"
+
+msgid "Error while saving the overtime request"
+msgstr "Erreur lors de l'enregistrement de la demande d'heures supplémentaires"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Hours"
+msgstr "Heures"
+
+msgid "Comment"
+msgstr "Commentaire"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Cancel"
+msgstr "Annuler"
+
 msgid "mm/dd/yyyy"
 msgstr "jj/mm/aaaa"
 
@@ -10,14 +46,8 @@ msgstr "Date de début"
 msgid "End date"
 msgstr "Date de fin" 
 
-msgid "Comment"
-msgstr "Commentaire"
-
 msgid "Text"
 msgstr "Texte"
-
-msgid "Cancel"
-msgstr "Annuler"
 
 msgid "Delete"
 msgstr "Supprimer"
@@ -33,9 +63,6 @@ msgstr "Fin"
 
 msgid "Search"
 msgstr "Rechercher"
-
-msgid "Agent"
-msgstr "Agent"
 
 msgid "Clear"
 msgstr "Réinitialiser"
@@ -100,9 +127,6 @@ msgstr "Nom du nouveau tableau"
 msgid "Please enter a valid model name"
 msgstr "Veuillez saisir un nom de modèle valide"
 
-msgid "New request"
-msgstr "Nouvelle demande"
-
 msgid "Call for volunteers"
 msgstr "Appel à disponibilité"
 
@@ -129,9 +153,6 @@ msgstr "Infos générales"
 
 msgid "Activities"
 msgstr "Activités"
-
-msgid "Save"
-msgstr "Enregistrer"
 
 msgid "Available activities"
 msgstr "Activités disponibles"
@@ -177,3 +198,33 @@ msgstr "Veuillez sélectionner une action à effectuer."
 
 msgid "Please select one or more agents."
 msgstr "Veuillez sélectionner un ou plusieurs agents."
+
+msgid "The selected date needs to be a Saturday"
+msgstr "La date choisie doit être un samedi"
+
+msgid "A request has already been submitted for %date%"
+msgstr "Une demande a déjà été enregistrée pour le %date%"
+
+msgid "An error occurred while verifying the saved entries"
+msgstr "Une erreur s'est produite lors de la vérification des récupérations enregistrées"
+
+msgid "The second date must be posterior to the first one or empty"
+msgstr "La deuxième date doit être postérieure à la première ou vide"
+
+msgid "The selected time period is invalid"
+msgstr "La durée sélectionnée n'est pas valide"
+
+msgid "A request for overtime must be submitted within %limit% days"
+msgstr "La demande d'heures supplémentaires doit être effectuée dans les %limit% jours"
+
+msgid "Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?"
+msgstr "Attention, la demande d'heures supplémentaires doit être effectuée dans les %limit% jours.\nEn tant qu'administrateur, vous pouvez outrepasser cette règle.\nVoulez-vous continuer ?"
+
+msgid "The request must be submitted within %limit% days"
+msgstr "La demande doit être soumise dans un délai de %limit% jours"
+
+msgid "Model name"
+msgstr "Nom du modèle"
+
+msgid "Save all week"
+msgstr "Enregistrer toute la semaine"

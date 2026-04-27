@@ -197,6 +197,7 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $('#add-reason-text').val(null);
+    $(this).removeClass('was-validated');
   });
 
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
