@@ -102,3 +102,24 @@ msgstr "Veuillez saisir un nom de modèle valide"
 
 msgid "New request"
 msgstr "Nouvelle demande"
+
+msgid "Current login"
+msgstr "Identifiant actuel"
+
+msgid "New login"
+msgstr "Nouvel indentifiant"
+
+msgid "The new login is identical to the previous one."
+msgstr "Le nouveau identifiant est identique au précédent."
+
+msgid "An error occurred while updating your login information."
+msgstr "Une erreur s'est produite lors de la mise à jour de vos identifiants de connexion."
+
+msgid "This login already exists."
+msgstr "Cet identifiant existe déjà."
+
+msgid "The login cannot be empty."
+msgstr "L'identifiant ne peut pas être vide."
+
+msgid "Change the current login"
+msgstr "Modifier l'identifiant de connexion actuel"

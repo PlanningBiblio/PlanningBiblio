@@ -228,9 +228,28 @@
 
   {% if id %}
     <tr>
-      <td>Login :</td>
-      <td><span id="login">{{ agent.login }}</span> <a id="change-login-link" href="javascript:void(0)" style="color:#29495C">Changer le login</a></td>
+      <td>{% trans %}Current login{% endtrans %} :</td>
+      <td><span id="login">{{ agent.login }}</span></td>
     </tr>
+
+    {% if not config('demo') %}
+    <form id="reset-login-form" novalidate>
+      <tr style="color:#DC3545;" >
+        <td style="display: flex;">{% trans %}New login{% endtrans %} :</td>
+        <td style="width: 400px;">
+          <div>
+            <input form="reset-login-form" type="text" class="form-control form-control-sm" id="new-login" name="new-login" style="width: 400px;" required/>
+            <div class="invalid-feedback" style="width: auto;">{% trans %}The login cannot be empty.{% endtrans %}</td>
+          </div>
+        </td>
+        <td style="display: flex;">
+          <button type="submit" form="reset-login-form" id="save-new-login-button" class="btn btn-icon">
+            <i class="bi bi-floppy-fill bi-danger py-1 px-2" title="{% trans %}Change the current login{% endtrans %}"></i>
+          </button>
+        </td>
+      </tr>
+    </form>
+    {% endif %}
 
     <tr>
       <td colspan='2'>
@@ -238,27 +257,6 @@
       </td>
     </tr>
 
-  {% endif %}
-
-  {% if not config('demo') %}
-    <div id="reset-login-form" title="Réinitialisation du login" class='noprint' style='display:none;'>
-      <form>
-        <div>
-          <label for="new_login">Nouveau login</label>
-          <input type='text' id="new_login" name="new_login"/>
-        </div>
-
-        <div class="password-error" id="login-duplicate">
-            Ce login existe déjà.
-        </div>
-        <div class="password-error" id="login-identic">
-            Le nouveau login est identique au précédent.
-        </div>
-        <div class="password-error" id="login-empty">
-            Le login ne peut pas être vide.
-        </div>
-      </form>
-    </div>
   {% endif %}
 
 </table>
