@@ -7,58 +7,45 @@
     <!--
     complet = JSON.parse('{{ postes_completNoms_json | e('js') }}');
     -->
-    $( document ).ready(function() {
-      $("#reset-login-form").dialog({
-        autoOpen: false,
-        height: 180,
-        width: 380,
-        modal: true,
-        buttons: {
-          Enregistrer: function() {
-            $('#login-duplicate').hide();
-            $('#login-empty').hide();
-            $('#login-identic').hide();
+    $(document).ready(function() {
 
-            login = $('#new_login').val();
-            agent_id = $('input[name="id"]').val();
+      tabs = $('.nav-tabs li[role="presentation"] button:not(.active)');
+      
+      $('#login').on('input', function() {
+        tabs.removeClass('disabled');
+        $(this).removeClass('is-invalid');
+        var login_val = sanitize_string($(this).val());
+        var feedback = $(this).siblings('.invalid-feedback');
+        var agent_id = $('input[name="id"]').val();
 
-            if (login == '') {
-              $('#login-empty').show();
-            } else {
-              $.ajax({
-                url: url('ajax/update_agent_login'),
-                type: "POST",
-                dataType: "html",
-                data: {_token: $('#_token').val(), login: login, id: agent_id},
-                success: function(filtered_login){
-                    $("#reset-login-form").dialog( "close" );
-                    $('#login').html(filtered_login);
-                },
-                error: function(xhr, ajaxOptions, thrownError){
-                  if (xhr.responseText == 'duplicate') {
-                    $('#login-duplicate').show();
-                  } else if (xhr.responseText == 'identic') {
-                    $('#login-identic').show();
-                  } else {
-                    information("Une erreur est survenue lors de la modification du login.","error");
-                    $(this).dialog( "close" );
-                  }
-                }
-              });
+        if(!login_val){
+          $(this).addClass('is-invalid');
+          feedback.text(Translator.trans('The login cannot be empty.'));
+          tabs.addClass('disabled');
+          return;
+        }
+
+        $.ajax({
+          url: url('ajax/check_login'),
+          type: "POST",
+          dataType: "html",
+          data: {_token: $('#_token').val(), login: login_val, id: agent_id},
+          error: function(xhr, ajaxOptions, thrownError){
+            if (xhr.responseText == 'duplicate') {
+              feedback.text(Translator.trans('This login already exists.'));
+              $('#login').addClass('is-invalid');
+              tabs.addClass('disabled');
             }
-          },
-          Annuler: function() {
-            $(this).dialog( "close" );
-          },
-        },
-      });
-
-      $('#change-login-link').on('click', function() {
-        $('#login-duplicate').hide();
-        $('#login-empty').hide();
-        $('#login-identic').hide();
-        $('#new_login').val('');
-        $('#reset-login-form').dialog('open');
+            if (xhr.responseText == 'invalid') {
+              feedback.text(Translator.trans('The login is invalid.'));
+              $('#login').addClass('is-invalid');
+              tabs.addClass('disabled');
+            }
+            else {
+              information(Translator.trans('An error occurred while updating the login information.','error'));
+            }
+          }
+        });
       });
     });
   </script>
@@ -70,201 +57,220 @@
     {% endif %}
   </h3>
 
-  <div class="ui-tabs">
-    <ul>
-      <li id="admin"><a href="#main">Infos générales</a></li>
-
-      {% if not config('Planook') %}
-        <li id="admin"><a href="#qualif">Activités</a></li>
+  <div class="container-tabs">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" type="button" role="tab" aria-controls="main" aria-selected="true">{% trans %}General information{% endtrans %}</button>
+      </li>
+       {% if not config('Planook') %}
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="qualif-tab" data-bs-toggle="tab" data-bs-target="#qualif" type="button" role="tab" aria-controls="qualif" aria-selected="false">{% trans %}Activities{% endtrans %}</button>
+      </li>
       {% endif %}
 
-      <li id="admin"><a href="#temps" id="personnel-a-li3">Heures de présence</a></li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="temps-tab" data-bs-toggle="tab" data-bs-target="#temps" type="button" role="tab" aria-controls="temps" aria-selected="false">{% trans %}Office hours{% endtrans %}</button>
+      </li>
 
       {% if showAgendasAndSync %}
-        <li id="admin"><a href="#agendas">Agendas et Synchronisation</a></li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="agendas-tab" data-bs-toggle="tab" data-bs-target="#agendas" type="button" role="tab" aria-controls="agendas" aria-selected="false">{% trans %}Calendars and Synchronization{% endtrans %}</button>
+        </li>
       {% endif %}
 
       {% if config('Conges-Enable') %}
-        <li id="admin"><a href="#conges">Congés</a></li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="conges-tab" data-bs-toggle="tab" data-bs-target="#conges" type="button" role="tab" aria-controls="conges" aria-selected="false">{% trans %}Days off{% endtrans %}</button>
+        </li>
       {% endif %}
 
-      <li id="admin"><a href="#access">Droits d'accès</a></li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="access-tab" data-bs-toggle="tab" data-bs-target="#access" type="button" role="tab" aria-controls="access" aria-selected="false">{% trans %}Access rights{% endtrans %}</button>
+      </li>
 
       {% if can_manage_agent %}
-        <li id="admin" class="ui-tab-cancel"><a href="{{ asset('agent') }}">Annuler</a></li>
-        <li id="admin" class="ui-tab-submit"><a id="post_form_agent" href="">Valider</a></li>
+        <li class="nav-item ms-auto" role="button">
+          <button class="nav-link" onclick="window.location.href='/agent'" id="cancel-tab" type="button">{% trans %}Cancel{% endtrans %}</button>
+        </li>
+        <li class="nav-item" role="button">
+          <button class="nav-link" id="post_form_agent" type="button">{% trans %}Confirm{% endtrans %}</button>
+        </li>
       {% else %}
-        <li id="admin" class="ui-tab-cancel"><a href="{{ asset('agent') }}">Fermer</a></li>
+        <li class="nav-item ms-auto" role="button">
+          <button class="nav-link" onclick="window.location.href='/agent'" id="cancel-tab" type="button">{% trans %}Cancel{% endtrans %}</button>
+        </li>
       {% endif %}
     </ul>
 
     <form method="post" action="{{ asset('agent') }}" name="form">
       <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
 
-      <div id="main" style="margin-left:70px;padding-top:30px;">
-        <input type="hidden" value="{{ action }}" name="action" />
-        <input type="hidden" value="{{ id }}" name="id" />
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab" tabindex="0">
+          <input type="hidden" value="{{ action }}" name="action" />
+          <input type="hidden" value="{{ id }}" name="id" />
 
-        {% if can_manage_agent %}
-          {% include 'agents/agent_table_edit.html.twig' %}
-        {% else %}
-          {% include 'agents/agent_table.html.twig' %}
-        {% endif %}
-      </div>
-
-      {% if not config('Planook') %}
-        <div id="qualif" style="margin-left:70px;display:none;padding-top:30px;">
           {% if can_manage_agent %}
-            {% include 'agents/skills_edit.html.twig' %}
+            {% include 'agents/agent_table_edit.html.twig' %}
           {% else %}
-            {% include 'agents/skills.html.twig' %}
+            {% include 'agents/agent_table.html.twig' %}
           {% endif %}
         </div>
-      {% endif %}
 
-      <div id="temps" style="display:none;padding-top:30px;">
-        {# raw is needed because hours_tab contains html (see hours_tables.php) #}
-        {{ hours_tab | raw }}
-      </div>
+        {% if not config('Planook') %}
+          <div class="tab-pane fade" id="qualif" role="tabpanel" aria-labelledby="qualif-tab" tabindex="0">
+            {% if can_manage_agent %}
+              {% include 'agents/skills_edit.html.twig' %}
+            {% else %}
+              {% include 'agents/skills.html.twig' %}
+            {% endif %}
+          </div>
+        {% endif %}
 
-      <div id="agendas" style="margin-left:70px;display:none;padding-top:30px;">
-        <table style="width:90%;">
-          {% if config('Hamac-csv') %}
-            <tr>
-              <td style="width:400px">Synchronisation {{ config('Hamac-motif') ?? 'Hamac' }} :</td>
-              <td>
-                {% if can_manage_agent %}
-                  <input type="checkbox" value="1" name="check_hamac" {% if agent.hamacCheck %} checked="checked" {% endif %}/>
-                {% else %}
-                  {% if agent.hamacCheck %}
-                    <span class="agent-acces-checked2 green bold">Oui</span>
-                  {% else %}
-                    <span class="agent-acces-checked2 red">Non</span>
-                  {% endif %}
-                {% endif %}
-              </td>
-            </tr>
-          {% endif %}
+        <div class="tab-pane fade m-4" id="temps" role="tabpanel" aria-labelledby="temps-tab" tabindex="0">
+          {# raw is needed because hours_tab contains html (see hours_tables.php) #}
+          {{ hours_tab | raw }}
+        </div>
 
-          {% if config('ICS-Server1') %}
-            <tr>
-              <td style="width:400px">Synchronisation de l"agenda ICS {{ config('ICS-Pattern1') ?? 'Serveur ICS N°1' }} :</td>
-              <td>
-                {% if can_manage_agent %}
-                  <input type="checkbox" value="1" name="check_ics1" {% if agent.icsCheck[0] %} checked="checked" {% endif %}/>
-                {% else %}
-                  {% if agent.icsCheck[0] %}
-                    <span class="agent-acces-checked2 green bold">Oui</span>
-                  {% else %}
-                    <span class="agent-acces-checked2 red">Non</span>
-                  {% endif %}
-                {% endif %}
-              </td>
-            </tr>
-          {% endif %}
-
-          {% if config('ICS-Server2') %}
-            <tr>
-              <td style="width:400px">Synchronisation de l'agenda ICS {{ config('ICS-Pattern2') ?? 'Serveur ICS N°2' }} :</td>
-              <td>
-                {% if can_manage_agent %}
-                  <input type="checkbox" value="1" name="check_ics2" {% if agent.icsCheck[1] %} checked="checked" {% endif %}/>
-                {% else %}
-                  {% if agent.icsCheck[1] %}
-                    <span class="agent-acces-checked2 green bold">Oui</span>
-                  {% else %}
-                    <span class="agent-acces-checked2 red">Non</span>
-                  {% endif %}
-                {% endif %}
-              </td>
-            </tr>
-          {% endif %}
-
-          {% if config('ICS-Server3') %}
-            <tr>
-              <td style="width:400px">Synchronisation de l'agenda ICS {{ config('ICS-Pattern3') ?? 'Serveur ICS N°3' }} :</td>
-              <td>
-                {% if can_manage_agent %}
-                  <input type="checkbox" value="1" name="check_ics3" {% if agent.icsCheck[2] %} checked="checked" {% endif %}/>
-                  <input type="text" value="{{ agent.icsUrl }}" name="url_ics" style="width:400px; margin-left:20px;" />
-                {% else %}
-                  {% if agent.icsCheck[2] %}
-                    <span class="agent-acces-checked2 green bold">Oui</span>
-                  {% else %}
-                    <span class="agent-acces-checked2 red">Non</span>
-                  {% endif %}
-                  <span style="margin-left:20px;">{{ agent.icsUrl }}</span>
-                {% endif %}
-              </td>
-            </tr>
-          {% endif %}
-
-          {% if id and exportIcsUrl %}
-            <tr>
-              <td style="padding-top: 20px;">Agenda Planno des plages de service public</td>
-              <td style="padding-top: 20px;" id="urlIcs"><a href="{{ config('URL') }}{{ exportIcsUrl }}">{{ config('URL') }}{{ exportIcsUrl }}</a></td>
-            </tr>
-
-            <tr>
-              <td>Agenda Planno des plages de service public et des absences</td>
-              <td id="urlIcsWithAbsences"><a href="{{ config('URL') }}{{ exportIcsUrl }}&absences=1">{{ config('URL') }}{{ exportIcsUrl }}&absences=1</a></td>
-            </tr>
-
-            {% if config('ICS-Code') %}
+        <div class="tab-pane fade" id="agendas" role="tabpanel" aria-labelledby="agendas-tab" tabindex="0">
+          <table style="width:90%;">
+            {% if config('Hamac-csv') %}
               <tr>
-                <td style="padding-top:20px;">&nbsp;</td>
-                <td style="padding-top:20px;">
-                  <a href="javascript:resetICSURL('{{ id }}', '{{ agent.firstName }} {{ agent.lastName }}');">
-                    Réinitialiser les URL des agendas Planno
-                  </a>
+                <td style="width:400px">Synchronisation {{ config('Hamac-motif') ?? 'Hamac' }} :</td>
+                <td>
+                  {% if can_manage_agent %}
+                    <input type="checkbox" value="1" name="check_hamac" {% if agent.hamacCheck %} checked="checked" {% endif %}/>
+                  {% else %}
+                    {% if agent.hamacCheck %}
+                      <span class="agent-acces-checked2 green bold">Oui</span>
+                    {% else %}
+                      <span class="agent-acces-checked2 red">Non</span>
+                    {% endif %}
+                  {% endif %}
                 </td>
               </tr>
             {% endif %}
+
+            {% if config('ICS-Server1') %}
               <tr>
-                <td>&nbsp;</td>
+                <td style="width:400px">Synchronisation de l"agenda ICS {{ config('ICS-Pattern1') ?? 'Serveur ICS N°1' }} :</td>
                 <td>
-                  <a href="javascript:sendICSURL();">
-                    Envoyer les URL à l'agent par e-mail ({{ agent.mail }})
-                  </a>
+                  {% if can_manage_agent %}
+                    <input type="checkbox" value="1" name="check_ics1" {% if agent.icsCheck[0] %} checked="checked" {% endif %}/>
+                  {% else %}
+                    {% if agent.icsCheck[0] %}
+                      <span class="agent-acces-checked2 green bold">Oui</span>
+                    {% else %}
+                      <span class="agent-acces-checked2 red">Non</span>
+                    {% endif %}
+                  {% endif %}
                 </td>
               </tr>
-          {% endif %}
+            {% endif %}
 
-          {% if config('MSGraph-ClientID') %}
-            <tr>
-              <td style="width:400px;">
-                <label for="MSGraph">Synchronisation de l'agenda Office 365 :</label>
-              </td>
-              <td>
-                {% if can_manage_agent %}
-                  <input type="checkbox" value="1" id="MSGraph" name="MSGraph" {% if agent.msGraphCheck %} checked="checked" {% endif %} />
-                {% else %}
-                  {% if agent.msGraphCheck %}
-                    <span class="agent-acces-checked2 green bold">Oui</span>
+            {% if config('ICS-Server2') %}
+              <tr>
+                <td style="width:400px">Synchronisation de l'agenda ICS {{ config('ICS-Pattern2') ?? 'Serveur ICS N°2' }} :</td>
+                <td>
+                  {% if can_manage_agent %}
+                    <input type="checkbox" value="1" name="check_ics2" {% if agent.icsCheck[1] %} checked="checked" {% endif %}/>
                   {% else %}
-                    <span class="agent-acces-checked2 red">Non</span>
+                    {% if agent.icsCheck[1] %}
+                      <span class="agent-acces-checked2 green bold">Oui</span>
+                    {% else %}
+                      <span class="agent-acces-checked2 red">Non</span>
+                    {% endif %}
                   {% endif %}
-                {% endif %}
-              </td>
-            </tr>
-          {% endif %}
+                </td>
+              </tr>
+            {% endif %}
 
-        </table>
-      </div>
+            {% if config('ICS-Server3') %}
+              <tr>
+                <td style="width:400px">Synchronisation de l'agenda ICS {{ config('ICS-Pattern3') ?? 'Serveur ICS N°3' }} :</td>
+                <td>
+                  {% if can_manage_agent %}
+                    <input type="checkbox" value="1" name="check_ics3" {% if agent.icsCheck[2] %} checked="checked" {% endif %}/>
+                    <input type="text" value="{{ agent.icsUrl }}" name="url_ics" style="width:400px; margin-left:20px;" />
+                  {% else %}
+                    {% if agent.icsCheck[2] %}
+                      <span class="agent-acces-checked2 green bold">Oui</span>
+                    {% else %}
+                      <span class="agent-acces-checked2 red">Non</span>
+                    {% endif %}
+                    <span style="margin-left:20px;">{{ agent.icsUrl }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
 
-      {% if can_manage_agent %}
-        {% include 'agents/rights_edit.html.twig' %}
-      {% else %}
-        {% include 'agents/rights.html.twig' %}
-      {% endif %}
+            {% if id and exportIcsUrl %}
+              <tr>
+                <td style="padding-top: 20px;">Agenda Planno des plages de service public</td>
+                <td style="padding-top: 20px;" id="urlIcs"><a href="{{ config('URL') }}{{ exportIcsUrl }}">{{ config('URL') }}{{ exportIcsUrl }}</a></td>
+              </tr>
 
-      {% if config('Conges-Enable') %}
-        {% if config('Conges-Mode') == 'heures' %}
-          {% include 'agents/holidays_hours.html.twig' %}
+              <tr>
+                <td>Agenda Planno des plages de service public et des absences</td>
+                <td id="urlIcsWithAbsences"><a href="{{ config('URL') }}{{ exportIcsUrl }}&absences=1">{{ config('URL') }}{{ exportIcsUrl }}&absences=1</a></td>
+              </tr>
+
+              {% if config('ICS-Code') %}
+                <tr>
+                  <td style="padding-top:20px;">&nbsp;</td>
+                  <td style="padding-top:20px;">
+                    <a href="javascript:resetICSURL('{{ id }}', '{{ agent.firstName }} {{ agent.lastName }}');">
+                      Réinitialiser les URL des agendas Planno
+                    </a>
+                  </td>
+                </tr>
+              {% endif %}
+                <tr>
+                  <td>&nbsp;</td>
+                  <td>
+                    <a href="javascript:sendICSURL();">
+                      Envoyer les URL à l'agent par e-mail ({{ agent.mail }})
+                    </a>
+                  </td>
+                </tr>
+            {% endif %}
+
+            {% if config('MSGraph-ClientID') %}
+              <tr>
+                <td style="width:400px;">
+                  <label for="MSGraph">Synchronisation de l'agenda Office 365 :</label>
+                </td>
+                <td>
+                  {% if can_manage_agent %}
+                    <input type="checkbox" value="1" id="MSGraph" name="MSGraph" {% if agent.msGraphCheck %} checked="checked" {% endif %} />
+                  {% else %}
+                    {% if agent.msGraphCheck %}
+                      <span class="agent-acces-checked2 green bold">Oui</span>
+                    {% else %}
+                      <span class="agent-acces-checked2 red">Non</span>
+                    {% endif %}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
+
+          </table>
+        </div>
+
+        {% if can_manage_agent %}
+          {% include 'agents/rights_edit.html.twig' %}
         {% else %}
-          {% include 'agents/holidays.html.twig' %}
+          {% include 'agents/rights.html.twig' %}
         {% endif %}
-      {% endif %}
+
+        {% if config('Conges-Enable') %}
+          {% if config('Conges-Mode') == 'heures' %}
+            {% include 'agents/holidays_hours.html.twig' %}
+          {% else %}
+            {% include 'agents/holidays.html.twig' %}
+          {% endif %}
+        {% endif %}
+      </div>
     </form>
   </div>
 

@@ -213,7 +213,7 @@ class AgentControllerTest extends PLBWebTestCase
 
         ///////INFOS GENERALES/////////
 
-        $result = $crawler->filterXPath('//div[@class="ui-tabs"]/ul/li');
+        $result = $crawler->filter('ul.nav-tabs li button');
 
         $this->assertEquals('Infos générales', $result->eq(0)->text('Node does not exist', false));
         $this->assertEquals('Activités', $result->eq(1)->text('Node does not exist', false));
@@ -240,7 +240,7 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Matricule :', $result->text('Node does not exist', false));
         $this->assertStringContainsString('E-mails des responsables :', $result->text('Node does not exist', false));
         $this->assertStringContainsString('Informations :', $result->text('Node does not exist', false));
-        $this->assertStringContainsString('Login :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Identifiant :', $result->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//input[@name="nom"]');
         $this->assertEquals('Dupont', $result->attr('value'));
@@ -254,8 +254,8 @@ class AgentControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//input[@name="sites[]"]')->eq(1);
         $this->assertEmpty($result->attr('checked'));
 
-        $result = $crawler->filterXPath('//span[@id="login"]');
-        $this->assertEquals($result->text('Node does not exist', false), 'jdupont');
+        $result = $crawler->filterXPath('//input[@id="login"]');
+        $this->assertEquals('jdupont', $result->attr('value'));
 
         ///////ACTIVITES/////////
 

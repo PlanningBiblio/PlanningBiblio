@@ -119,6 +119,8 @@
     - 100
 "ajax.checkpassword":
     - 100
+"ajax.check_login":
+    - 21
 "ajax.update_agent_login":
     - 21
 "ajax.sanitizehtml":

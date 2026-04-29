@@ -500,6 +500,7 @@ class AgentController extends BaseController
         $heuresTravail = $request->get('heuresTravail', 0);
         $id = $request->get('id');
         $mail = $request->get('mail');
+        $login = $request->get('login');
 
         $actif = $params['actif'];
         $action = $params['action'];
@@ -670,6 +671,7 @@ class AgentController extends BaseController
         $agent->setSkills($postes);
         $agent->setWorkingHours($temps);
         $agent->setInformation($informations);
+        $agent->setLogin($login);
         $agent->setRecoveryMenu($recup);
         $agent->setSites($sites);
         $agent->setManagersMails($managersMails);
@@ -875,6 +877,41 @@ class AgentController extends BaseController
         }
 
         return $isCurrentPassword;
+    }
+
+    #[Route(path: '/ajax/check_login', name: 'ajax.check_login', methods: ['POST'])]
+    public function check_login(Request $request)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $login = $request->get('login');
+        $agent_id = $request->get('id');
+        $response = new Response();
+
+        $login = filter_var($login, FILTER_SANITIZE_EMAIL);
+
+        $agent = $this->entityManager->find(Agent::class, $agent_id);
+
+        $duplicate = $this->entityManager
+            ->getRepository(Agent::class)
+            ->findOneBy(array('login' => $login));
+
+        if(!$login){
+            $response->setContent('invalid');
+            $response->setStatusCode(400);
+            return $response;
+        }
+
+        if ($duplicate && $login != $agent->getLogin()) {
+            $response->setContent('duplicate');
+            $response->setStatusCode(400);
+            return $response;
+        }
+
+        $response->setStatusCode(200);
+        return $response;
     }
 
     #[Route(path: '/ajax/update_agent_login', name: 'ajax.update_agent_login', methods: ['POST'])]

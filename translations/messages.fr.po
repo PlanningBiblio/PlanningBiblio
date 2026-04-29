@@ -177,3 +177,36 @@ msgstr "Veuillez sélectionner une action à effectuer."
 
 msgid "Please select one or more agents."
 msgstr "Veuillez sélectionner un ou plusieurs agents."
+
+msgid "Login"
+msgstr "Identifiant"
+
+msgid "The new login is identical to the previous one."
+msgstr "Le nouveau identifiant est identique au précédent."
+
+msgid "An error occurred while updating the login information."
+msgstr "Une erreur s'est produite lors de la mise à jour des identifiants de connexion."
+
+msgid "This login already exists."
+msgstr "Cet identifiant existe déjà."
+
+msgid "The login cannot be empty."
+msgstr "L'identifiant ne peut pas être vide."
+
+msgid "The login is invalid."
+msgstr "L'identifiant est invalide."
+
+msgid "Office hours"
+msgstr "Heures de présence"
+
+msgid "Calendars and Synchronization"
+msgstr "Agendas et Synchronisation"
+
+msgid "Days off"
+msgstr "Congés"
+
+msgid "Access rights"
+msgstr "Droits d'accès"
+
+msgid "Close"
+msgstr "Fermer"
