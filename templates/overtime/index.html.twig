@@ -135,7 +135,7 @@
             // Affiche la liste des demandes après enregistrement
             document.location.href="{{ asset('overtime') }}?msgType=success&msg="+msg+"&msg2Type="+msg2Type+"&msg2="+msg2;
             // Close the modal
-            $('add-overtime-modal').modal('hide');
+            $('#add-overtime-modal').modal('hide');
           }
           else {
             update_alert( Translator.trans("Error while saving the overtime request"));
@@ -198,7 +198,7 @@
                 <div class="col" style="margin-left:30px;"><input type="submit" value="Rechercher" id="button-OK" class="btn btn-secondary" style="margin-top: 10px;"/></div>
                 <div class="col" style="margin-left:30px;"><input type="button" value="Réinitialiser" id="button-Effacer" class="btn btn-secondary" onclick="location.href='{{ asset('overtime') }}?reset=on'" style="margin-top: 10px;"/></div>
                 <div class="col" style="float:right; vertical-align:top; margin-top: 10px;">
-                  <button id="add-overtime-button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-overtime-modal">{% trans %}New request{% endtrans %}</button>
+                  <button id="add-overtime-button" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-overtime-modal">{% trans %}New request{% endtrans %}</button>
                 </div>
               </div>
             </span>
