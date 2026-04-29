@@ -115,6 +115,7 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $('#add-floor-text').val(null);
+    $(this).removeClass('was-validated');
   });
 
   // Permet de rendre la liste des groupes triable
@@ -231,6 +232,7 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $('#add-group-text').val(null);
+    $(this).removeClass('was-validated');
   });
 
 });

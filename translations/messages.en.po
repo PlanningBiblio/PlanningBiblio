@@ -1,0 +1,146 @@
+msgid "New request"
+msgstr "New request"
+
+msgid "New request for overtime"
+msgstr "New request for overtime"
+
+msgid "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
+msgstr "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
+
+msgid "Date (1st Saturday)"
+msgstr "Date (1st Saturday)"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Date (2nd Saturday) (optional)"
+msgstr "Date (2nd Saturday) (optional)"
+
+msgid "Error while saving the overtime request"
+msgstr "Error while saving the overtime request"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Hours"
+msgstr "Hours"
+
+msgid "Comment"
+msgstr "Comment"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "mm/dd/yyyy"
+msgstr "mm/dd/yyyy"
+
+msgid "MM/DD/YYYY"
+msgstr "MM/DD/YYYY"
+
+msgid "Start date"
+msgstr "Start date"
+
+msgid "End date"
+msgstr "End date"
+
+msgid "Text"
+msgstr "Text"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Start"
+msgstr "Start"
+
+msgid "End"
+msgstr "End"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Add"
+msgstr "Add"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Everyone"
+msgstr "Everyone"
+
+msgid "Deleted agents"
+msgstr "Deleted agents"
+
+msgid "Cycle management"
+msgstr "Cycle management"
+
+msgid "Enter new schedules"
+msgstr "Enter new schedules"
+
+msgid "Starting date"
+msgstr "Starting date"
+
+msgid "Ending date"
+msgstr "Ending date"
+
+msgid "From %start% to %end%"
+msgstr "From %start% to %end%"
+
+msgid "Display hours by job category"
+msgstr "Display hours by job category"
+
+msgid "Sites"
+msgstr "Sites"
+
+msgid "Save changes"
+msgstr "Save changes"
+
+msgid "Please enter a valid start date"
+msgstr "Please enter a valid start date"
+
+msgid "Please enter a valid end date"
+msgstr "Please enter a valid end date"
+
+msgid "Please select an agent"
+msgstr "Please select an agent"
+
+msgid "Search results are limited to a period of one year"
+msgstr "Search results are limited to a period of one year"
+
+msgid "The selected date needs to be a Saturday"
+msgstr "The selected date needs to be a Saturday"
+
+msgid "A request has already been submitted for %date%"
+msgstr "A request has already been submitted for %date%"
+
+msgid "An error occurred while verifying the saved entries"
+msgstr "An error occurred while verifying the saved entries"
+
+msgid "The second date must be posterior to the first one or empty"
+msgstr "The second date must be posterior to the first one or empty"
+
+msgid "The selected time period is invalid"
+msgstr "The selected time period is invalid"
+
+msgid "A request for overtime must be submitted within %limit% days"
+msgstr "A request for overtime must be submitted within %limit% days"
+
+msgid "Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?"
+msgstr "Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?"
+
+msgid "The request must be submitted within %limit% days"
+msgstr "The request must be submitted within %limit% days"
+
+msgid "Model name"
+msgstr "Model name"
+
+msgid "Save all week"
+msgstr "Save all week"

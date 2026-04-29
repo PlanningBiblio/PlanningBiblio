@@ -4,3 +4,11 @@ framework:
         default_path: '%kernel.project_dir%/translations'
         fallbacks:
             - en
+
+bazinga_js_translation:
+    locale_fallback: en
+    default_domain: messages
+    active_domains:
+        - messages
+        - validators
+        - security

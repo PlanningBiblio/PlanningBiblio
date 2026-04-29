@@ -87,7 +87,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $this->assertEquals('Crédits', $result->eq(4)->text('Node does not exist', false), 'Crédits is table title');
         $this->assertEquals('Commentaires', $result->eq(5)->text('Node does not exist', false), 'Commentaires is table title');
 
-        $result = $crawler->filterXPath('//button[@id="dialog-button"]');
+        $result = $crawler->filterXPath('//button[@id="add-overtime-button"]');
         $this->assertEquals('Nouvelle demande', $result->text('Node does not exist', false), 'button text is Nouvelle demande');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');

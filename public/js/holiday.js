@@ -768,83 +768,52 @@ function verifConges(){
   });
 }
 
-function verifRecup(o){
-  var perso_id=$("#agent").val();
-  var retour=false;
+function one_recovery_check(date_value, agent_id){
+  // Checks that the recovery request is unique for a given date and agent
+  var retour = false;
 
   $.ajax({
     url: url('overtime/check'),
-    data: 'date=' + o.val() + '&perso_id=' + perso_id,
+    data: 'date=' + date_value + '&perso_id=' + agent_id,
     type: "get",
     async: false,
     success: function(result){
-      if(result=="Demande"){
-	o.addClass( "ui-state-error" );
-	updateTips( "Une demande a déjà été enregistrée pour le "+o.val()+".", "error" );
-      }else{
-	retour=true;
+      if(result == "Demande") {
+        update_alert( Translator.trans("A request has already been submitted for %date%", {date : date_value}));
+      }
+      else {
+	      retour = true;
       }
     },
     error: function(result){
-      updateTips( "Une erreur s'est produite lors de la vérification des récupérations enregistrées", "error");
+      update_alert( Translator.trans("An error occurred while verifying the saved entries"));
     }
   });
   return retour;
 }
 
 
-// Dialog, récupérations
-
-function checkLength( o, n, min, max ) {
-  if ( o.val().length > max || o.val().length < min || o.val() == '00:00' ) {
-    o.addClass( "ui-state-error" );
-    updateTips( "Veuillez sélectionner le nombre d'heures.", "error");
-  return false;
-  } else {
-    return true;
-  }
+function time_period_validation(time_value, min_value, max_value) {
+  // Checks whether a time value falls within the expected range
+  format = 'HH:mm';
+  min_time = dayjs(min_value, format);
+  max_time = dayjs(max_value, format);
+  time = dayjs(time_value, format);
+  return (max_time.diff(time, 'hours', true) >= 0) && (time.diff(min_time, 'hours', true) >= 0);
 }
 
-function checkInt( o, n, min, max, tips ) {
-  if ( o.val() > max || o.val() < min ) {
-    o.addClass("ui-state-error");
-    updateTips(tips, "error");
-  return false;
-  } else {
-    return true;
-  }
+function limited_range_validation(date_value, limit) {
+  // Checks whether the number of days between today and the specified date is within the limit
+  var format = Translator.trans('MM/DD/YYYY');
+  var today = dayjs();  
+  var overtime_date = dayjs(date_value, format);
+  var diff = today.diff(overtime_date, 'days');
+  return diff <= limit;
 }
 
-function checkDateAge( o, limit, n, tip ) {
-  // Calcul de la différence entre aujourd'hui et la date demandée
-  if(tip==undefined){
-    tip=true;
-  }
-  var today=new Date();
-  tmp=o.val().split("/");
-  var d=new Date(tmp[2],tmp[1]-1,tmp[0]);
-  diff=dateDiff(d,today);
-  if(diff.day>limit){
-    if(tip){
-      o.addClass( "ui-state-error" );
-      updateTips( n , "error");
-    }
-    return false;
-  } else {
-    return true;
-  }
-}
-
-function checkSamedi( o, n ) {
-  tmp=o.val().split("/");
-  var d=new Date(tmp[2],tmp[1]-1,tmp[0]);
-  if(d.getDay()!=6){
-    o.addClass( "ui-state-error" );
-    updateTips( n , "error");
-    return false;
-  } else {
-    return true;
-  }
+function saturday_check(date_value) {
+  // Checks that the specified date is a Saturday
+  return (dayjs(date_value, Translator.trans("MM/DD/YYYY")).day() == 6);
 }
 
 function change_select_perso_ids(id){

@@ -1,0 +1,146 @@
+msgid "New request"
+msgstr "Nouvelle demande"
+
+msgid "New request for overtime"
+msgstr "Nouvelle demande d'heures supplémentaires"
+
+msgid "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
+msgstr "Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires, puis saisir un commentaire."
+
+msgid "Date (1st Saturday)"
+msgstr "Date (1<sup>er</sup> samedi)"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Date (2nd Saturday) (optional)"
+msgstr "Date (2ème samedi) (optionel)"
+
+msgid "Error while saving the overtime request"
+msgstr "Erreur lors de l'enregistrement de la demande d'heures supplémentaires"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Hours"
+msgstr "Heures"
+
+msgid "Comment"
+msgstr "Commentaire"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "mm/dd/yyyy"
+msgstr "jj/mm/aaaa"
+
+msgid "MM/DD/YYYY"
+msgstr "DD/MM/YYYY"
+
+msgid "Start date"
+msgstr "Date de début"
+
+msgid "End date"
+msgstr "Date de fin" 
+
+msgid "Text"
+msgstr "Texte"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Confirm"
+msgstr "Valider"
+
+msgid "Start"
+msgstr "Début"
+
+msgid "End"
+msgstr "Fin"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Clear"
+msgstr "Réinitialiser"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Import"
+msgstr "Importer"
+
+msgid "Everyone"
+msgstr "Tous"
+
+msgid "Deleted agents"
+msgstr "Agents supprimés"
+
+msgid "Cycle management"
+msgstr "Gestion des cycles"
+
+msgid "Enter new schedules"
+msgstr "Entrer de nouveaux horaires"
+
+msgid "Starting date"
+msgstr "Début d'utilisation"
+
+msgid "Ending date"
+msgstr "Fin d'utilisation"
+
+msgid "From %start% to %end%"
+msgstr "Du %start% au %end%"
+
+msgid "Display hours by job category"
+msgstr "Afficher les heures par groupe de postes"
+
+msgid "Sites"
+msgstr "Sites"
+
+msgid "Save changes"
+msgstr "Enregistrer les modifications"
+
+msgid "Please enter a valid start date"
+msgstr "Veillez saisir une date de début valide"
+
+msgid "Please enter a valid end date"
+msgstr "Veillez saisir une date de fin valide"
+
+msgid "Please select an agent"
+msgstr "Veillez choisir un agent"
+
+msgid "Search results are limited to a period of one year"
+msgstr "Les résultats de la recherche sont limités à une période d'un an"
+
+msgid "The selected date needs to be a Saturday"
+msgstr "La date choisie doit être un samedi"
+
+msgid "A request has already been submitted for %date%"
+msgstr "Une demande a déjà été enregistrée pour le %date%"
+
+msgid "An error occurred while verifying the saved entries"
+msgstr "Une erreur s'est produite lors de la vérification des récupérations enregistrées"
+
+msgid "The second date must be posterior to the first one or empty"
+msgstr "La deuxième date doit être postérieure à la première ou vide"
+
+msgid "The selected time period is invalid"
+msgstr "La durée sélectionnée n'est pas valide"
+
+msgid "A request for overtime must be submitted within %limit% days"
+msgstr "La demande d'heures supplémentaires doit être effectuée dans les %limit% jours"
+
+msgid "Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?"
+msgstr "Attention, la demande d'heures supplémentaires doit être effectuée dans les %limit% jours.\nEn tant qu'administrateur, vous pouvez outrepasser cette règle.\nVoulez-vous continuer ?"
+
+msgid "The request must be submitted within %limit% days"
+msgstr "La demande doit être soumise dans un délai de %limit% jours"
+
+msgid "Model name"
+msgstr "Nom du modèle"
+
+msgid "Save all week"
+msgstr "Enregistrer toute la semaine"

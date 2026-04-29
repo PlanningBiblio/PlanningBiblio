@@ -3,6 +3,7 @@
 {% block specificjs %}
 <script type="text/JavaScript" src="{{ asset('js/holiday.js') }}"></script>
   <script type='text/JavaScript'>
+    var admin = {% if admin %}{{ admin }}{% else %} 0 {% endif %};
     var limitDefaut = {{ recup_delaidefaut }};
     var limitTitulaire1 = {{ recup_delaititulaire1 }};
     var limitTitulaire2 = {{ recup_delaititulaire2 }};
@@ -11,145 +12,142 @@
     var perso_id = {{ perso_id }};
     var categories = {{ categories | json_encode | raw }};
     var samediSeulement = {{ recup_samediseulement }};
+    var recup_deuxsamedis = {{ recup_deuxsamedis }}
     var oneRecoveryPerDay = {{ recup_uneparjour }};
 
     $(function() {
+      var date = $('#overtime-date'),
+          date2 = $('#overtime-date2'),
+          duration = $('#overtime-hours'),
+          commentaires = $('#overtime-comment')
 
-      var date = $( "#date" ),
-        date2 = $( "#date2" ),
-        heures = $( "#heures" ),
-        commentaires = $( "#commentaires" ),
-        allFields = $( [] ).add( date ).add( heures ).add( date2 ).add( commentaires );
+      $('#add-overtime-form').on('submit', function(e) {
+        e.preventDefault();
+        if($("#overtime-agent option:selected").val()) {
+            perso_id = $("#overtime-agent option:selected").val();
+          }
 
-      $( "#dialog-form" ).dialog({
-        autoOpen: false,
-        height: 490,
-        width: 650,
-        modal: true,
-        buttons: {
-          "Enregistrer": function() {
-        // Calcul du delai limit pour la demande de récup en fonction de la catégorie de l'agent
-        var admin=false;
-        if($("#agent option:selected").val()){
-          perso_id=$("#agent option:selected").val();
-          admin=true;
-        }
-        if(categories[perso_id]=="Titulaire"){
-          if($("#date2").val()){
-            if(limitTitulaire2 == -1){
-              limitJours=limitDefaut;
-            }else{
-              limitJours=limitTitulaire2*30;
+        // Calcul du delai limite pour la demande de récup en fonction de la catégorie de l'agent
+        if(categories[perso_id] == "Titulaire") {
+          if($("#overtime-date2").val()) {
+            if(limitTitulaire2 == -1) {
+              limitJours = limitDefaut;
             }
-          }else{
-            if(limitTitulaire1 == -1){
-              limitJours=limitDefaut;
-            }else{
-              limitJours=limitTitulaire1*30;
+            else {
+              limitJours = limitTitulaire2 * 30;
+            }
+          }
+          else {
+            if(limitTitulaire1 == -1) {
+              limitJours = limitDefaut;
+            }
+            else{
+              limitJours = limitTitulaire1 * 30;
             }
           }
         }
-        else if(categories[perso_id]=="Contractuel"){
-          if($("#date2").val()){
-            if(limitContractuel2 == -1){
-              limitJours=limitDefaut;
-            }else{
-              limitJours=limitContractuel2*7;
+        
+        else if(categories[perso_id] == "Contractuel") {
+          if($("#overtime-date2").val()) {
+            if(limitContractuel2 == -1) {
+              limitJours = limitDefaut;
             }
-          }else{
-            if(limitContractuel1 == -1){
-              limitJours=limitDefaut;
-            }else{
-              limitJours=limitContractuel1*7;
+            else {
+              limitJours = limitContractuel2 * 7;
+            }
+          }
+          else {
+            if(limitContractuel1 == -1) {
+              limitJours = limitDefaut;
+            }
+            else {
+              limitJours = limitContractuel1 * 7;
             }
           }
         }
-        else{
-          limitJours=limitDefaut;
+
+        else {
+          limitJours = limitDefaut;
         }
 
-        var bValid = true;
-        allFields.removeClass( "ui-state-error" );
-        bValid = bValid && checkRegexp( date, /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}/i, "La date doit être au format JJ/MM/AAAA" );
-        if(samediSeulement){
-          bValid = bValid && checkSamedi(date,"Vous devez choisir un samedi");
+        if(samediSeulement && !saturday_check(date.val())){
+          update_alert(Translator.trans("The selected date needs to be a Saturday"));
+          return;
         }
-        if (oneRecoveryPerDay) {
-          bValid = bValid && verifRecup($("#date"));
+
+        if (oneRecoveryPerDay && !one_recovery_check(date.val(), perso_id)){
+          return;
         }
-        if($("#date2").val()){
-          bValid = bValid && checkRegexp( date2, /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}/i, "La date doit être au format JJ/MM/AAAA" );
-          bValid = bValid && checkDate2(date, date2,"La 2ème date doit être supérieure à la première");
-          if(samediSeulement){
-            bValid = bValid && checkSamedi(date2,"Vous devez choisir un samedi");
+
+        if (recup_deuxsamedis && date2.val()){
+          if (!(date_range_validation(date.val(), date2.val(), true))){
+            update_alert(Translator.trans('The second date must be posterior to the first one or empty'));
+            return;
+          }
+          if(samediSeulement && !saturday_check(date2.val())){
+            update_alert(Translator.trans("The selected date needs to be a Saturday"));
+            return;
           }
         }
-        bValid = bValid && checkLength( heures, "heures", 4, 5 );
-        if(admin && checkDateAge( date, limitJours, "La demande d'heures supplémentaires doit être effectuée dans les "+limitJours+" jours",false)==false){
-          res=confirm("Attention, la demande d'heures supplémentaires doit être effectuée dans les "+limitJours+" jours.\nEn tant qu'administrateur, vous pouvez outrepasser cette règle.\nVoulez-vous continuer ?");
-          bValid = bValid && res;
-        }
-        else{
-          bValid = bValid && checkDateAge( date, limitJours, "La demande d'heures supplémentaires doit être effectuée dans les "+limitJours+" jours");
+
+        if (!time_period_validation(duration.val(), '00:01', '17:00')){
+          update_alert(Translator.trans("The selected time period is invalid"));          
+          return;
         }
 
-        {% if recup_deuxsamedis and recup_uneparjour %}
-            if($("#date2").val())
-              bValid = bValid && verifRecup($("#date2"));
-        {% endif %}
+        if(!limited_range_validation(date.val(), limitJours)){
+          if (admin){
+            if(!confirm(Translator.trans('Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?', {limit : limitJours}))){
+              return;
+            }
+          }
+          else {
+            update_alert(Translator.trans("The request must be submitted within %limit% days", {limit : limitJours}));
+            return;
+          }
+        }
 
-        if ( bValid ) {
-          // Enregistre la demande
-          $.ajax({
-            url: "{{ path('overtime.add') }}",
-            dataType: "json",
-            data: {date: date.val(), date2: date2.val(), heures: heures.val(), commentaires: commentaires.val(), perso_id: perso_id, CSRFToken: $('#CSRFSession').val()},
-            type: "post",
-            success: function(result){
-              if(result[0]=="Demande-OK"){
+        if (recup_deuxsamedis && date2.val() && oneRecoveryPerDay && !one_recovery_check(date2.val(), perso_id)){
+          return;
+        }
+
+        // If every condition has been verified the request is saved
+        $.ajax({
+          url: "{{ path('overtime.add') }}",
+          dataType: "json",
+          data: { date: date.val(), date2: date2.val(), 
+                  heures: duration.val(), commentaires: commentaires.val(), 
+                  perso_id: perso_id, CSRFToken: $('#CSRFSession').val()},
+          type: "post",
+          success: function(result){
+            if(result[0]=="Demande-OK"){
 
             // Préparation de l'affichage des erreurs et confirmations
-            var msg=encodeURIComponent("Votre demande a été enregistrée");
+            var msg = encodeURIComponent("Votre demande a été enregistrée");
 
-            var msg2=null;
-            var msg2Type=null;
-            if(result[1]!=undefined){
-              msg2=encodeURIComponent(result[1]);
-              msg2Type="error";
+            var msg2 = null;
+            var msg2Type = null;
+            if(result[1] != undefined){
+              msg2 = encodeURIComponent(result[1]);
+              msg2Type = "error";
             }
 
             // Affiche la liste des demandes après enregistrement
             document.location.href="{{ asset('overtime') }}?msgType=success&msg="+msg+"&msg2Type="+msg2Type+"&msg2="+msg2;
-            // Ferme le dialog
-            $( this ).dialog( "close" );
-              }else{
-            updateTips("Erreur lors de l'enregistrement de la demande d'heures supplémentaires", "error");
-              }
-            },
-            error: function (result){
-              updateTips("Erreur lors de l'enregistrement de la demande d'heures supplémentaires", "error");
-            },
-          });
-        }
-          },
-
-          Annuler: function() {
-        $( this ).dialog( "close" );
+            // Close the modal
+            $('#add-overtime-modal').modal('hide');
+          }
+          else {
+            update_alert( Translator.trans("Error while saving the overtime request"));
           }
         },
-
-        close: function() {
-          allFields.val( "" ).removeClass( "ui-state-error" );
-          $('.validateTips').text("Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires et un saisir un commentaire.");
-        }
-      });
-
-      $('#dialog-button').click(function() {
-          $('#dialog-form').dialog('open');
-          return false;
+          error: function (result){
+            update_alert( Translator.trans("Error while saving the overtime request"));
+          },
         });
+    })
+});
 
-    });
     </script>
 {% endblock %}
 
@@ -200,7 +198,7 @@
                 <div class="col" style="margin-left:30px;"><input type="submit" value="Rechercher" id="button-OK" class="btn btn-secondary" style="margin-top: 10px;"/></div>
                 <div class="col" style="margin-left:30px;"><input type="button" value="Réinitialiser" id="button-Effacer" class="btn btn-secondary" onclick="location.href='{{ asset('overtime') }}?reset=on'" style="margin-top: 10px;"/></div>
                 <div class="col" style="float:right; vertical-align:top; margin-top: 10px;">
-                  <button id="dialog-button" class="btn btn-primary">Nouvelle demande</button>
+                  <button id="add-overtime-button" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-overtime-modal">{% trans %}New request{% endtrans %}</button>
                 </div>
               </div>
             </span>
@@ -257,72 +255,88 @@
         </table>
       </div> <!-- liste -->
 
-      <div id="dialog-form" title="Nouvelle demande" class='noprint'>
-        <p class="validateTips">Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires et un saisir un commentaire.</p>
-        <form>
-          <fieldset>
-            <table class='tableauFiches'>
-              {% if admin %}
-                <tr>
-                  <td><label for="agent">Agent</label></td>
-                  <td>
-                    <select id='agent' name='agent' style='text-align:center;'>
-                      <option value=''>&nbsp;</option>
+      <div class="modal" id="add-overtime-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="add-overtime-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="add-overtime-modal-title">{% trans %}New request for overtime{% endtrans %}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              
+              <p>{% trans %}Please select the date for which your request applies and the number of overtime hours, followed by a comment.{% endtrans %}</p>
+              <form id="add-overtime-form" class="needs-validation" novalidate>  
+
+                {% if admin %}
+                <div class="row mb-3">
+                  <label for="overtime-agent" class="col-3 col-form-label mb-0">{% trans %}Agent{% endtrans %}</label>
+                  <div class="col-3">
+                    <select id="overtime-agent" name="agent" class="form-select form-select-sm" style="text-align: center;">
+                      <option hidden disabled selected value=""></option>
                       {% for m in managed %}
-                        {% if m.id == perso_id %}
-                          <option value="{{ m.id }}" selected>{{ m.lastname }} {{ m.firstname | first }}</option>
-                        {% else %}
-                          <option value="{{ m.id }}">{{ m.lastname }} {{ m.firstname | first }}</option>
-                        {% endif %}
+                        <option value="{{ m.id }}" {% if m.id == perso_id %} selected {% endif %}>{{ m.lastname }} {{ m.firstname | first }}</option>
                       {% endfor %}
                     </select>
-                  </td>
-                </tr>
-              {% endif %}
+                  </div>
+                </div>
+                {% endif %}
 
-              <tr>
-                <td>
-                  <label for="date">
+                <div class=" row mb-3">
+                  <label for="overtime-date" class="col-3 col-form-label mb-0">
                     {% if recup_deuxsamedis %}
-                        Date (1<sup>er</sup> samedi)
+                      {% trans %}Date (1st Saturday){% endtrans %}
                     {% else %}
-                        Date
+                      {% trans %}Date{% endtrans %}
                     {% endif %}
                   </label>
-                </td>
+                  <div class="col-3">
+                    <input type="text" name="date" id="overtime-date" class="ui-corner-all datepicker form-control" required/>
+                    <div class="invalid-feedback">{% trans from 'validators' %}Please enter a valid date.{% endtrans %}</div>             
+                  </div>
+                </div>
 
-                <td>
-                  <input type="text" name="date" id="date" class="text ui-widget-content ui-corner-all datepicker"/>
-                </td>
-              </tr>
+                {% if recup_deuxsamedis %}
+                <div class=" row">
+                  <label for="overtime-date2" class="col-3 col-form-label mb-0">{% trans %}Date (2nd Saturday) (optional){% endtrans %}</label>
+                  <div class="col-3">
+                    <input type="text" name="date2" id="overtime-date2" class="ui-corner-all datepicker form-control" optional/>
+                    <div class="invalid-feedback mb-3">{% trans from 'validators' %}Please enter a valid date.{% endtrans %}</div>
+                  </div>
+                </div>
+                {% endif %}
 
-              {% if recup_deuxsamedis %}
-                <tr>
-                  <td>
-                    <label  for="date2">Date (2<sup>ème</sup> samedi) (optionnel)</label>
-                  </td>
+                <div class="row mb-3">
+                  <label class="col-3 col-form-label" for="overtime-hours">{% trans %}Hours{% endtrans %}</label>
+                  <div class="col-3">
+                    <input type="text" id="overtime-hours" name="heures" class="time overtime-timepicker form-control" value="" style="text-align: center;" required/>
+                    <div class="invalid-feedback">{% trans from 'validators' %}Please enter a valid time.{% endtrans %}</div>
+                  </div>
+                </div>
 
-                  <td>
-                    <input type="text" name="date2" id="date2" class="text ui-widget-content ui-corner-all datepicker"/>
-                  </td>
-                </tr>
-              {% endif %}
+                <div class="row mb-3">
+                  <label class="col-3 col-form-label" for="overtime-comment">{% trans %}Comment{% endtrans %}</label>
+                  <div class="col-5">
+                    <textarea name="commentaires" id="overtime-comment" class="form-control ui-widget-content rounded-1"></textarea>
+                  </div>
+                </div>
 
-              <tr>
-                <td><label  for="heures">Heures</label></td>
-                <td>
-                  <input id="heures" name="heures" class="overtime-timepicker ui-widget-content ui-corner-all" value=""/>
-                </td>
-              </tr>
+              </form>
+            </div>
 
-              <tr>
-                <td><label  for="commentaires">Commentaire</label></td>
-                <td><textarea name="commentaires" id="commentaires" ></textarea></td>
-              </tr>
-            </table>
-          </fieldset>
-        </form>
+            <div class="modal-footer">
+              <div id="alert" class="alert alert-danger me-auto d-flex d-none" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2 bi-danger"></i>
+                <div id="alert-text">
+                  {% trans %}Error while saving the overtime request{% endtrans %}
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary" form="add-overtime-form">{% trans %}Save{% endtrans %}</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 {% endblock %}

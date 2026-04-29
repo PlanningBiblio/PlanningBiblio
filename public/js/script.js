@@ -146,92 +146,15 @@ function ctrl_form(champs){
     return true;
 }
 
-// checkDate1 : utilisée pour valider les formulaires Jquery-UI, la date (o) doit être supérieure ou égale à aujourd'hui
-function checkDate1( o, n) {
-  if(n==undefined){
-    n=false;
+function date_range_validation(date1_value, date2_value, strict=false) {
+  // Checks the validity of a date range
+  var format = Translator.trans('MM/DD/YYYY');
+  var date1 = dayjs(date1_value, format)
+  var date2 = dayjs(date2_value, format)
+  if (strict){
+    return (date2.diff(date1, 'day') > 0);
   }
-  var today=new Date();
-  var d=new Date();
-  tmp=o.val().split("/");
-  d.setDate(parseInt(tmp[0]));
-  d.setMonth(parseInt(tmp[1])-1);
-  d.setFullYear(parseInt(tmp[2]));
-  diff=dateDiff(today,d);
-  if(diff.day<0){
-    if(n){
-      o.addClass( "ui-state-error" );
-      updateTips( n , 'error');
-    }
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// checkDate2 : utilisée pour valider les formulaires Jquery-UI. date2 doit être supérieur à date1
-function checkDate2( date1, date2, n ) {
-  var d1=new Date();
-  tmp=date1.val().split("/");
-  d1.setDate(parseInt(tmp[0]));
-  d1.setMonth(parseInt(tmp[1])-1);
-  d1.setFullYear(parseInt(tmp[2]));
-
-  var d2=new Date();
-  tmp=date2.val().split("/");
-  d2.setDate(parseInt(tmp[0]));
-  d2.setMonth(parseInt(tmp[1])-1);
-  d2.setFullYear(parseInt(tmp[2]));
-
-  diff=dateDiff(d1,d2);
-  if(diff.day<0){
-    date2.addClass( "ui-state-error" );
-    updateTips( n , 'error');
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// checkDiff : utilisée pour valider les formulaires Jquery-U, o1 et o2 doivent avoir des valeurs différentes
-function checkDiff( o1, o2, n ) {
-  if (o1.val() == o2.val()){
-    o2.addClass( "ui-state-error" );
-    updateTips( n , 'error');
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// checkRegexp : utilisée pour valider les formulaires Jquery-UI.
-function checkRegexp( o, regexp, n ) {
-  if ( !( regexp.test( o.val() ) ) ) {
-    o.addClass( "ui-state-error" );
-    updateTips( n , 'error');
-    return false;
-  } else {
-    return true;
-  }
-}
-
-function dateDiff(date1,date2){
-  var diff={}
-  var tmp=date2-date1;
-
-  tmp=Math.floor(tmp/1000);
-  diff.sec=tmp%60;
-  
-  tmp=Math.floor((tmp-diff.sec)/60);
-  diff.min=tmp%60;
-  
-  tmp=Math.floor((tmp-diff.min)/60);
-  diff.hour=tmp%24;
-
-  tmp=Math.floor((tmp-diff.hour)/24);
-  diff.day=tmp;
-  
-  return diff;
+  return (date2.diff(date1, 'day') >= 0);
 }
   
 function dateFr(date){
@@ -582,6 +505,11 @@ function updateAgentsList(me,select_id){
   });
 }
 
+function update_alert(text){
+  $('#alert-text').text(text);
+  $('#alert').removeClass('d-none');
+}
+
 
 // updateTips : utilisée pour valider les formulaires Jquery-UI
 function updateTips( text , type) {
@@ -597,6 +525,21 @@ function updateTips( text , type) {
   $(".validateTips").html(text);
 
   CJErrorHighlight( $(".validateTips"), type);
+}
+
+// This function is intended to replace verif_date() in the long term
+// It checks the validity of a date (string) and ensures it complies with a specific format
+// The date format is loaded from the translation files for the selected locale
+
+function date_validation(date_value) {
+  format = Translator.trans('MM/DD/YYYY');
+  return dayjs(date_value, format, true).isValid();
+};
+
+function time_validation(time_value){
+  // This function checks the validity of a time value
+  format = 'HH:mm';
+  return dayjs(time_value, format, true).isValid() ;
 }
 
 function verif_date(d){
@@ -766,8 +709,23 @@ function position(object,top,left){
 }
 //	--------------------------------	FIN Aide		---------------------------------	//
 
-// Initialisations JQuery-UI
+
+// Initialisations JQuery-UI / Bootstrap
 $(function(){
+
+  $('form').on('submit', function(e){
+    if (this.checkValidity() === false || $('.is-invalid').length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    }
+    $(this).addClass('was-validated');
+  });
+
+  $('.form-control').on('change', function(e){
+    $('#alert').addClass('d-none');
+  })
+
   $(document).ready(function() {
     $(".ui-accordion").accordion({
       heightStyle: "content",
@@ -780,19 +738,49 @@ $(function(){
     $("#pl-calendar").bootstrapDP({
       format: 'yyyy-mm-dd',
       todayHighlight: true,
-      language: "fr",
+      language: Translator.locale,
       toggleActive : true,
     });
 
     $("input.datepicker").bootstrapDP({
       format: 'dd/mm/yyyy',
-      language: "fr",
+      language: Translator.locale,
       todayHighlight: true,
-      autoclose: true
+      autoclose: true,
+      forceParse : false
     });
 
     $(".datepicker").addClass("center ui-widget-content");
     $(".datepicker").attr('autocomplete','off');
+    $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
+
+    // Message display when date input is invalid
+    $('.datepicker:not(.start-date):not(.end-date)').on('change',function() {
+       var optional = typeof($(this).attr('optional')) != 'undefined';
+       var date = $(this).bootstrapDP('getDate');
+       var valid_date = date_validation($(this).val());
+
+      if((date == null && !optional ) || (date != null && !valid_date)){
+        $(this).addClass('is-invalid');
+      }
+      else {
+        $(this).removeClass('is-invalid');
+      }
+    });
+
+    // Message display when time input is invalid
+    $('.time').on('input',function(e) {
+      $('#alert').addClass('d-none');
+      var optional = typeof($(this).attr('optional')) != 'undefined';
+      var valid_time = time_validation($(this).val());
+
+      if((!$(this).val() && !optional ) || ($(this).val() && !valid_time)){
+        $(this).addClass('is-invalid');
+      }
+      else {
+        $(this).removeClass('is-invalid');
+      }
+    });
 
 
     /**
@@ -944,6 +932,7 @@ $(function(){
       minHour: '0',
       maxTime: '17:00',
       maxHour: '17',
+      dynamic: false,
     });
 
     // Initializes and creates emoji set from sprite sheet

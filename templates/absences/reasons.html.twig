@@ -11,11 +11,11 @@
 
       <div class="modal-body">
         <p class="validateTips mb-1">Ajoutez, supprimez et modifiez l'ordre des motifs dans le menu déroulant.</p>
-        <form id="add-reason">
+        <form id="add-reason" novalidate>
           <div class="row">
             <div class="col-5">
-              <input type="text" id="add-reason-text" class="form-control form-control-sm ms-0 mb-0" style="width:100%;" required>
-              <div class="invalid-feedback ms-1">Motif invalide</div>
+              <input type="text" id="add-reason-text" class="form-control form-control-sm mt-2" style="width:100%;" required>
+              <div class="invalid-feedback">Motif invalide</div>
             </div>
             <div class="col-1">
               <button type="submit" id="add-reason-button" class="btn btn-primary m-2 mb-0">Ajouter</button>
