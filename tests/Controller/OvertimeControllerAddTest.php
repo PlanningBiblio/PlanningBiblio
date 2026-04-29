@@ -32,28 +32,28 @@ class OvertimeControllerAddTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h4', 'Liste des demandes d\'heures supplémentaires');
 
-        $result = $crawler->filterXPath('//body/div[@class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
-        $this->assertStringContainsString('display: none',$result->attr('style'),'check display: none');
+        $result = $crawler->filterXPath('//div[@id="add-overtime-modal"]');
+        $this->assertEquals('true', $result->attr('aria-hidden'), 'check aria-hidden');
 
-        $button = $crawler->filterXPath('//button[@id="dialog-button"]');
+        $button = $crawler->filterXPath('//button[@id="add-overtime-button"]');
         $button->click();
 
-        $result = $crawler->filterXPath('//body/div[@class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
-        $this->assertStringContainsString('display: block',$result->attr('style'),'check display: block');
+        $result = $crawler->filterXPath('//div[@id="add-overtime-modal"]');
+        $this->assertEquals('true', $result->attr('aria-modal'), 'check aria-modal');
 
-        $result = $crawler->filterXPath('//p[@class="validateTips"]');
-        $this->assertEquals('Veuillez sélectionner le jour concerné par votre demande et le nombre d\'heures supplémentaires et un saisir un commentaire.', $result->text());
+        $result = $crawler->filterXPath('//p');
+        $this->assertEquals('Veuillez sélectionner le jour concerné par votre demande et le nombre d\'heures supplémentaires, puis saisir un commentaire.', $result->text());
 
-        $result = $crawler->filterXPath('//table[@class="tableauFiches"]/tbody/tr/td/label');
+        $result = $crawler->filterXPath('//form/div/label');
         $this->assertEquals('Date', $result->text(),'Date is a form label');
         $this->assertEquals('Heures', $result->eq(1)->text(),'Heures is a form label');
         $this->assertEquals('Commentaire', $result->eq(2)->text(),'Commentaire is form label');
 
-        $button = $crawler->selectButton('Enregistrer');
+        $button = $crawler->selectButton('Annuler');
         $button->click();
 
-        $result = $crawler->filterXPath('//body/div[@class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
-        $this->assertStringContainsString('display: block', $result->attr('style'),'check display: none');
+        $result = $crawler->filterXPath('//div[@id="add-overtime-modal"]');
+        $this->assertEquals('true', $result->attr('aria-hidden'), 'check aria-hidden');
 
     }
 }
