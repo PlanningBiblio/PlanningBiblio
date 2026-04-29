@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\PlanningPositionLines;
 use App\Entity\Position;
+use App\Entity\Site;
 use App\Planno\Framework;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +22,8 @@ class FrameworkController extends BaseController
 {
     #[Route(path: '/framework', name: 'framework.index', methods: ['GET'])]
     public function index (Request $request, Session $session){
-        $nbSites = $this->config('Multisites-nombre');
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites);
 
         // Tableaux
         $t = new Framework();
@@ -37,6 +40,14 @@ class FrameworkController extends BaseController
         $tabAffect = array();
         $db = new \db();
         $db->select2("pl_poste_tab_affect", null, null, "order by `date` asc");
+        $db->selectInnerJoin(
+            array("pl_poste_tab_affect", "site"),
+            array("site", "id"),
+            array("id", "date", "tableau", "site"),
+            array(),
+            array(),
+            array("network_id" => $_SESSION['network']['id'])
+        );
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $tabAffect[$elem['tableau']] = $elem['date'];
@@ -49,7 +60,8 @@ class FrameworkController extends BaseController
                 $elem['tabAffect'] = $utilisation;
 
                 if ($nbSites > 1){
-                    $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($elem['site']);
+                    $elem['multisite'] = $s->getName();
                 }
             }
         }
@@ -68,13 +80,14 @@ class FrameworkController extends BaseController
         if (is_array($groupes)) {
             foreach ($groupes as &$elem) {
                 if ($nbSites > 1) {
-                    $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($elem['site']);
+                    $elem['multisite'] = $s->getName();
                 }
             }
         }
 
         $db = new \db();
-        $db->select("lignes", null, null, "order by nom");
+        $db->select("lignes", null, "network_id=".$_SESSION['network']['id'], "order by nom");
         $lignes = $db->result;
         if ($lignes) {
             foreach ($lignes as &$elem) {
@@ -100,13 +113,15 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework/info', name: 'framework.save_table_info', methods: ['POST'])]
-    public function saveInfo(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
+    public function saveInfo(Request $request, Session $session): JsonResponse{
         $post = $request->request->all();
         $id = $post["id"];
         $CSRFToken = $post["CSRFToken"];
         $nombre = $post["nombre"];
         $nom = $post["nom"];
         $site = $post["site"];
+
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         // Ajout
         if (!$id) {
@@ -117,10 +132,8 @@ class FrameworkController extends BaseController
             $numero = $db->result[0]["numero"]+1;
 
             // Insertion dans la table pl_poste_tab
-            $insert = array("nom" => trim($nom), "tableau" => $numero, "site" => "1");
-            if ($site) {
-                $insert["site"] = $site;
-            }
+            $insert = array("nom" => trim($nom), "tableau" => $numero);
+            $insert["site"] = $site ?? $sites_array[0]->getId();
         
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
@@ -162,7 +175,8 @@ class FrameworkController extends BaseController
         $cfgTypeGet = $request->get("cfg-type");
         $tableauNumero = $request->request->get("numero");
         $tableauGet = $request->get("numero");
-        $nbSites = $this->config('Multisites-nombre');
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites);
 
         // Choix de l'onglet (cfg-type)
         if ($cfgTypeGet) {
@@ -185,8 +199,8 @@ class FrameworkController extends BaseController
 
         $multisites = array();
         if ($nbSites>1) {
-            for ($i = 1 ;$i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites as $s) {
+                $multisites[$s->getId()] = $s->getName();
             }
         }
 
@@ -217,7 +231,8 @@ class FrameworkController extends BaseController
         $cfgType = $request->get("cfg-type");
         $tableauNumero = $request->request->get("id");
         $tableauGet = $request->get("id");
-        $nbSites = $this->config('Multisites-nombre');
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites);
 
         // Choix du tableau
         if ($tableauGet) {
@@ -240,8 +255,8 @@ class FrameworkController extends BaseController
 
         $multisites = array();
         if ($nbSites>1) {
-            for ($i = 1 ;$i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites as $s) {
+                $multisites[$s->getId()] = $s->getName();
             }
         }
 
@@ -290,7 +305,7 @@ class FrameworkController extends BaseController
 
         // Liste des lignes de séparation
         $db = new \db();
-        $db->select("lignes", null, null, "ORDER BY nom");
+        $db->select("lignes", null, "network_id=".$_SESSION['network']['id'], "ORDER BY nom");
         $lignes_sep = $db->result;
 
         // Le tableau (contenant les sous-tableaux)
@@ -335,7 +350,8 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework', name: 'framework.save_table', methods: ['POST'])]
-    public function saveTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
+    public function saveTable (Request $request, Session $session): RedirectResponse
+    {
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableauNumero = $post['numero'];
@@ -395,7 +411,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: 'framework-table/save-line', name: 'framework.save_table_line', methods: ['POST'])]
-    public function saveTableLine(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
+    public function saveTableLine(Request $request, Session $session): JsonResponse{
         $form_post = $request->request->all();
         $CSRFToken = $form_post['CSRFToken'];
         $tableauNumero = $form_post['id'];
@@ -475,7 +491,7 @@ class FrameworkController extends BaseController
     }
 
      #[Route(path: '/framework', name: 'framework.delete_table', methods: ['DELETE'])]
-    public function deleteTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
+    public function deleteTable (Request $request, Session $session): JsonResponse{
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableau = $post['tableau'];
@@ -501,7 +517,7 @@ class FrameworkController extends BaseController
     }
 
      #[Route(path: '/framework-batch_delete', name: 'framework.delete_selected_tables', methods: ['GET'])]
-    public function deleteSelectedTables (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
+    public function deleteSelectedTables (Request $request, Session $session): JsonResponse{
         $CSRFToken = $request->get("CSRFToken");
         $ids = $request->get("ids");
         $dbprefix = $GLOBALS['dbprefix'];
@@ -521,7 +537,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework/restore_table', name: 'framework.restore_table', methods: ['POST'])]
-    public function restoreTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse {
+    public function restoreTable (Request $request, Session $session): JsonResponse {
         $CSRFToken = $request->get("CSRFToken");
         $id = $request->get("id");
         $name = $request->get("name");
@@ -582,10 +598,11 @@ class FrameworkController extends BaseController
         $id = $request->get("id");
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
-        if($this->config('Multisites-nombre') > 1){
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++){
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+        if(count($sites) > 1){
+            foreach ($sites as $s) {
+                $multisites[$s->getId()] = $s->getName();
             }
         }
 
@@ -629,10 +646,11 @@ class FrameworkController extends BaseController
         $id = $request->get("id");
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
-        if($this->config('Multisites-nombre') > 1){
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++){
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+        if(count($sites) > 1){
+            foreach ($sites as $s) {
+                $multisites[$s->getId()] = $s->getName();
             }
         }
 
@@ -680,7 +698,8 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-group', name: 'framework.save_group', methods: ['POST'])]
-    public function saveGroup (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
+    public function saveGroup (Request $request, Session $session): RedirectResponse
+    {
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         unset($post['CSRFToken']);
@@ -694,7 +713,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-group', name: 'framework.delete_group', methods: ['DELETE'])]
-    public function deleteGroup (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
+    public function deleteGroup (Request $request, Session $session): JsonResponse{
         $CSRFToken =  $request->request->get("CSRFToken");
         $id = $request->request->get("id");
         
@@ -739,7 +758,8 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-line', name: 'framework.save_line', methods: ['POST'])]
-    public function saveLine (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
+    public function saveLine (Request $request, Session $session): RedirectResponse
+    {
         $post = $request->request->all();
         $id = $post['id'];
         $nom = $post['nom'];
@@ -761,7 +781,7 @@ class FrameworkController extends BaseController
         } else {
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->insert("lignes", array("nom"=>$nom));
+            $db->insert("lignes", array("nom"=>$nom, "network_id"=>$_SESSION['network']['id']));
 
             if(!$db->error){
                 $msg = "La ligne a bien été enregistrée." ;
@@ -778,7 +798,7 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework-line', name: 'framework.delete_line', methods: ['DELETE'])]
-    public function deleteLine (Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
+    public function deleteLine (Request $request, Session $session): JsonResponse{
         $post = $request->request->all();
         $id = $post['id'];
         $CSRFToken = $post['CSRFToken'];
@@ -791,7 +811,8 @@ class FrameworkController extends BaseController
     }
 
     #[Route(path: '/framework/copy', name: 'framework.copy_table', methods: ['POST'])]
-    public function copyTable (Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
+    public function copyTable (Request $request, Session $session): RedirectResponse
+    {
 
         // Initilisation des variables
         $CSRFToken = $request->get('CSRFToken');

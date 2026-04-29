@@ -3,9 +3,9 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Agent;
-use App\Entity\Config;
 use App\Entity\WorkingHour;
 use App\Entity\WorkingHourCycle;
+use App\Planno\Helper\ConfigHelper;
 use Tests\PLBWebTestCase;
 
 class WorkingHourControllerCyclesTest extends PLBWebTestCase
@@ -13,18 +13,11 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
     public static function setUpBeforeClass(): void
     {
         global $entityManager;
+        $configHelper = new ConfigHelper();
 
-        $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'dateDebutPlHebdo'])
-            ->setValue('29/12/2025');
-
-        $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'nb_semaine'])
-            ->setValue('3');
-
-        $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'PlanningHebdo-resetCycles'])
-            ->setValue('1');
+        $configHelper->findOneByName('dateDebutPlHebdo')->setValue('29/12/2025');
+        $configHelper->findOneByName('nb_semaine')->setValue('3');
+        $configHelper->findOneByName('PlanningHebdo-resetCycles')->setValue('1');
 
 //        $entityManager->createQuery('DELETE FROM \App\Entity\Agent')->execute();
         $entityManager->createQuery('DELETE FROM \App\Entity\WorkingHour')->execute();
@@ -345,10 +338,9 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
     public function testWeekDisplayDisableCycleReset(): void
     {
         global $entityManager;
+        $configHelper = new ConfigHelper();
 
-        $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'PlanningHebdo-resetCycles'])
-            ->setValue('0');
+        $configHelper->findOneByName('PlanningHebdo-resetCycles')->setValue('0');
         $entityManager->flush();
 
         // We don't change cycles for this tests, we want them to be ignore.
@@ -422,6 +414,7 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
     public static function tearDownAfterClass(): void
     {
         global $entityManager;
+        $configHelper = new ConfigHelper();
 
         $entityManager->createQuery('DELETE FROM \App\Entity\WorkingHour')->execute();
 
@@ -430,17 +423,9 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
             $entityManager->remove($agent);
         }
 
-        $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'dateDebutPlHebdo'])
-            ->setValue('');
-
-        $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'nb_semaine'])
-            ->setValue('1');
-
-        $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'PlanningHebdo-resetCycles'])
-            ->setValue('0');
+        $configHelper->findOneByName('dateDebutPlHebdo')->setValue('');
+        $configHelper->findOneByName('nb_semaine')->setValue('1');
+        $configHelper->findOneByName('PlanningHebdo-resetCycles')->setValue('0');
 
         $entityManager->flush();
     }

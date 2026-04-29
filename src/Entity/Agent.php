@@ -135,6 +135,10 @@ class Agent
     #[ORM\OneToMany(mappedBy: 'responsable', targetEntity: Manager::class, cascade: ['ALL'])]
     private Collection $managed;
 
+    #[ORM\ManyToOne(inversedBy: 'agents')]
+    #[ORM\JoinColumn(name: "network_id", referencedColumnName: "id", nullable: false)]
+    private ?Network $network = null;
+
     public function __construct()
     {
         $this->code_ics = md5(time().rand(100, 999));
@@ -554,6 +558,16 @@ class Agent
         return $this;
     }
 
+    public function getNetwork(): ?Network
+    {
+        return $this->network;
+    }
+
+    public function setNetwork(?Network $network): void
+    {
+        $this->network = $network;
+    }
+
     public function getManaged()
     {
         return $this->managed->toArray();
@@ -599,7 +613,8 @@ class Agent
         }
 
         $droits = $this->droits;
-        $multisites = $GLOBALS['config']['Multisites-nombre'];
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $this->network));
+        $multisites = count($sites_array);
 
         // Right 21 (Edit personnel) gives right 4 (Show personnel)
         if (in_array(21, $droits)) {
@@ -645,9 +660,16 @@ class Agent
         $sites = $this->sites;
         if (is_array($sites)) {
             foreach ($sites as $site) {
-                $site_mail_config = "Multisites-site$site-mail";
-                if ($config[$site_mail_config]) {
-                    $site_mails = explode(';', $config[$site_mail_config]);
+                $db = new \db();
+                $db->select2("site_mail", "*", array("site" => $site));
+                $site_mail_config = '';
+                if($db->result){
+                    foreach ($db->result as $m){
+                        $site_mail_config .= $m['mail'] .';';
+                    }
+                }
+                if ($site_mail_config != '') {
+                    $site_mails = explode(';', $site_mail_config);
                     $site_mails = array_map('trim', $site_mails);
                     $unit_mails = array_merge($unit_mails, $site_mails);
                 }
@@ -741,7 +763,8 @@ class Agent
      */
     public function managedSites($needed_l1, $needed_l2): array
     {
-        $sites_number = $GLOBALS['config']['Multisites-nombre'];
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $this->network));
+        $sites_number = count($sites_array);
 
         // Module workinghour, no multisites.
         if ($needed_l1 == 1100) {

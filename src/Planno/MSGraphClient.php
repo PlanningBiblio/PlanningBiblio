@@ -3,7 +3,7 @@
 namespace App\Planno;
 
 use App\Entity\Agent;
-use App\Entity\Config;
+use App\Planno\Helper\ConfigHelper;
 use App\Planno\OAuth;
 use App\Planno\MSCalendarUtils;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -31,8 +31,9 @@ class MSGraphClient
     private $ignoredStatuses;
     private $stdout;
     private $user_id;
+    private ConfigHelper $configHelper;
 
-    public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full, $stdout, $user_id)
+    public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full, $stdout, $user_id, $configHelper)
     {
         $tokenURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/token";
         $authURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/authorize";
@@ -40,10 +41,7 @@ class MSGraphClient
              'scope' => 'https://graph.microsoft.com/.default'
         ];
 
-        $config = $entityManager->getRepository(Config::class)->findBy(
-            array('categorie' => 'Microsoft Graph API'),
-        );
-
+        $config = $configHelper->findBy(['categorie' => 'Microsoft Graph API']);
         $config = new ArrayCollection($config);
 
         $absenceReason = $config->filter(function($element) {return $element->getName() == 'MSGraph-AbsenceReason';})->first()->getValue();

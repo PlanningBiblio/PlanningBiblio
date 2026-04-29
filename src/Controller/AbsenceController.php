@@ -8,6 +8,7 @@ use App\Entity\Absence;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 
+use App\Entity\Site;
 use App\Planno\Helper\HourHelper;
 use App\Planno\Helper\AbsenceImportCSVHelper;
 
@@ -1079,7 +1080,8 @@ class AbsenceController extends BaseController
         }
 
         // Define access right.
-        if ($this->config('Multisites-nombre') > 1) {
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        if (count($sites) > 1) {
             $sites_agents = array();
             foreach ($agents_concernes as $elem) {
                 if (is_array($elem['sites'])) {
@@ -1548,7 +1550,8 @@ class AbsenceController extends BaseController
         }
 
         // Keep only managed agent on multi-sites mode
-        if ($this->config('Multisites-nombre') > 1 and !$this->config('Absences-notifications-agent-par-agent')) {
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        if (count($sites) > 1 and !$this->config('Absences-notifications-agent-par-agent')) {
 
             $managed_sites = array();
             for ($i = 1; $i < 31; $i++) {
@@ -1603,7 +1606,8 @@ class AbsenceController extends BaseController
         // If can validate level 2: adminN2 = true.
         $this->adminN2 = false;
         $this->admin = false;
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        for ($i = 1; $i <= count($sites); $i++) {
             if (in_array((200+$i), $this->droits)) {
                 $this->admin = true;
             }
@@ -1621,12 +1625,20 @@ class AbsenceController extends BaseController
     private function availablesReasons(): array
     {
         $db_reasons=new \db();
-        $db_reasons->select("select_abs", null, null, "order by rang");
+        $db_reasons->select("select_abs", null, 'network_id = '.$_SESSION['network']['id'], "order by rang");
 
         // Liste des motifs utilisés
         $reasons_used = array();
         $db_reasons_used = new \db();
-        $db_reasons_used->select("absences", "motif", null, "group by motif");
+        $db_reasons_used->selectInnerJoin(
+            array("absences", "perso_id"),
+            array("personnel", "id"),
+            array("motif"),
+            array(),
+            array(),
+            array("network_id" => $_SESSION['network']['id']),
+            "group by motif"
+        );
         if ($db_reasons_used->result) {
             foreach ($db_reasons_used->result as $elem) {
                 $reasons_used[] = $elem['motif'];
@@ -1675,7 +1687,7 @@ class AbsenceController extends BaseController
     {
         $date = date("Y-m-d");
         $db = new \db();
-        $db->query("SELECT * FROM `{$this->dbprefix}absences_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
+        $db->query("SELECT * FROM `{$this->dbprefix}absences_infos` WHERE `fin`>='$date' AND `network_id`='{$_SESSION['network']['id']}' ORDER BY `debut`");
         $absences_infos = array();
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -1690,7 +1702,8 @@ class AbsenceController extends BaseController
 
     private function canEdit($session, $perso_ids): bool
     {
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        for ($i = 1; $i <= count($sites); $i++) {
             if (in_array((200+$i), $this->droits) or in_array((500+$i), $this->droits)) {
                 return true;
             }

@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Entity\Manager;
 use App\Entity\Agent;
 
+use App\Entity\Site;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,7 +18,8 @@ class NotificationController extends BaseController {
     #[Route(path: '/notification', name: 'notification.index', methods: ['GET'])]
     public function index(Request $request){
         // Initialisation des variables
-        $nbSites = $this->config("Multisites-nombre");
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites);
         $actif = $request->get("actif");
         $agents_liste = array();
 
@@ -70,7 +72,10 @@ class NotificationController extends BaseController {
                 if (!empty($agent['sites'])) {
                     foreach ($agent['sites'] as $site) {
                         if ($site) {
-                            $tmp[] = $this->config("Multisites-site{$site}");
+                            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+                            if ($s !== null) {
+                                $tmp[] = $s->getName();
+                            }
                         }
                     }
                 }

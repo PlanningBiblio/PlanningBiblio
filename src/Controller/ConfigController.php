@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\Config;
+use App\Entity\ConfigNetwork;
+use App\Entity\Site;
+use App\Entity\ConfigTechnical;
 use App\Planno\Helper\ConfigHelper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,35 +21,42 @@ class ConfigController extends BaseController
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
-        $url = $this->entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'URL'])
+        $url = $this->configHelper->findOneByName('URL')
             ->getValue();
 
         $technical = $request->get('options') == 'technical' ? 1 : 0;
 
-        $configParams = $this->entityManager->getRepository(Config::class)->findBy(
-            array('technical' => $technical),
-            array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
-        );
+        $configParams = $this->configHelper->findByType($technical);
 
         $elements = array();
+        $sites_array = $this->entityManager->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        if (!$technical && count($sites_array) > 1) {
+            $networkInfo = new ConfigNetwork();
+            $networkInfo->setNetwork($sites_array[0]->getNetwork());
+            $networkInfo->setValue($sites_array[0]->getNetwork()->getName());
+
+            $c = (new Config())->setType('info')->setName('Nom')->setCategory('Réseau')->setComment("Nom du réseau")->setValues('')->setTechnical(0)->setOrder(0);
+            $networkInfo->setConfig($c);
+            array_unshift($configParams, $networkInfo);
+        }
+
         foreach ($configParams as $cp) {
 
             // Do not display hidden information
-            if ($cp->getType() == 'hidden') {
+            if ($cp->getConfig()->getType() == 'hidden') {
                 continue;
             }
 
             $elem = array(
-                'type'          => $cp->getType(),
-                'nom'           => $cp->getName(),
+                'type'          => $cp->getConfig()->getType(),
+                'nom'           => $cp->getConfig()->getName(),
                 'valeur'        => html_entity_decode($cp->getValue(), ENT_QUOTES|ENT_HTML5),
-                'valeurs'       => html_entity_decode($cp->getValues(), ENT_QUOTES|ENT_HTML5),
-                'categorie'     => $cp->getCategory(),
-                'commentaires'  => html_entity_decode($cp->getComment(), ENT_QUOTES|ENT_HTML5),
+                'valeurs'       => html_entity_decode($cp->getConfig()->getValues(), ENT_QUOTES|ENT_HTML5),
+                'categorie'     => $cp->getConfig()->getCategory(),
+                'commentaires'  => html_entity_decode($cp->getConfig()->getComment(), ENT_QUOTES|ENT_HTML5),
             );
 
-            if ($cp->getType() == 'password') {
+            if ($cp->getConfig()->getType() == 'password') {
                 $elem['valeur'] = '';
             }
             switch ($elem['type']) {
@@ -80,7 +90,7 @@ class ConfigController extends BaseController
             $elem['commentaires'] = str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
             $elem['commentaires'] = str_replace("[SERVER]", $url, $elem['commentaires']);
             $category = str_replace('_', '', $elem['categorie']);
-            $elements[$category][$cp->getName()] = $elem;
+            $elements[$category][$cp->getConfig()->getName()] = $elem;
         }
 
         $this->templateParams(array(
@@ -140,8 +150,8 @@ class ConfigController extends BaseController
         $port = filter_var($port, FILTER_SANITIZE_NUMBER_INT);
 
         if ($password == '') {
-            $configRepository = $this->entityManager->getRepository(Config::class);
-            $password = decrypt($configRepository->getValue('LDAP-Password'));
+            $LDAPPassword = $this->configHelper->findOneByName('LDAP-Password');
+            $password = decrypt($LDAPPassword->getValue());
         }
 
         // Connexion au serveur LDAP

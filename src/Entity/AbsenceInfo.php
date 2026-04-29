@@ -23,6 +23,9 @@ class AbsenceInfo
     #[ORM\Column(type: Types::TEXT)]
     private ?string $texte = '';
 
+    #[ORM\Column(type: Types::INTEGER)]
+    private ?int $network_id = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,6 +64,17 @@ class AbsenceInfo
     {
         $this->texte = $comment;
 
+        return $this;
+    }
+
+    public function getNetworkId(): ?int
+    {
+        return $this->network_id;
+    }
+
+    public function setNetworkId(?int $network_id): static
+    {
+        $this->network_id = $network_id;
         return $this;
     }
 }

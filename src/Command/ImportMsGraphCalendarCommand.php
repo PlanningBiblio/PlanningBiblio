@@ -45,8 +45,9 @@ class ImportMsGraphCalendarCommand extends Command
         $kernel = $this->getApplication()->getKernel();
         $container = $kernel->getContainer();
         $em = $container->get('doctrine')->getManager();
+        $configHelper = $container->get('App\Helper\ConfigHelper');
 
-        $config = $em->getRepository(Config::class)->getAll();
+        $config = $configHelper->getAll();
 
         $tenantid = $config['MSGraph-TenantID'];
         $clientid = $config['MSGraph-ClientID'];
@@ -57,7 +58,7 @@ class ImportMsGraphCalendarCommand extends Command
             return Command::FAILURE;
         }
 
-        $graph_client = new MSGraphClient($em, $tenantid, $clientid, $clientsecret, $input->getOption('full'), $input->getOption('stdout'), $input->getOption('user_id'));
+        $graph_client = new MSGraphClient($em, $tenantid, $clientid, $clientsecret, $input->getOption('full'), $input->getOption('stdout'), $input->getOption('user_id'), $configHelper);
         $graph_client->retrieveEvents();
 
         $this->release();
