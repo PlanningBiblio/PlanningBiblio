@@ -1382,9 +1382,10 @@ function bataille_navale(poste, date, debut, fin, perso_id, barrer, ajouter, sit
       });
 
       // Enable and disable the save planning button depending on whether it is empty or not
-      if ($('.cellSpan').length > 0 ) $('#planning-save').removeClass('disabled');
-      else {
-        if (!$('#planning-save').hasClass('disabled')) $('#planning-save').addClass('disabled');
+      if ($('.cellSpan').length > 0 ) {
+        $('#planning-save').removeClass('disabled');
+      } else {
+        $('#planning-save').addClass('disabled');
       }
 
       // cacher le menudiv

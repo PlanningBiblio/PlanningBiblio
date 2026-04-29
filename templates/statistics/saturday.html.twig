@@ -8,7 +8,7 @@
       <table class="statistics-div">
       <tr style='vertical-align:top;'>
         <td id='stat-col1'>
-          <form name="form" id="form" action="{{ asset('statistics/saturday') }}" method="post" onsubmit="return verif_form('debut=date1;fin=date2');">
+          <form name="form" id="form" action="{{ asset('statistics/saturday') }}" method="post" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
               <input type="hidden" name="statisticsDefaultHours" id="statisticsDefaultHours" value="{{ config('Statistiques-Heures') }}" />
               <table>
               <tr>
@@ -16,7 +16,7 @@
                   <label >Début</label>
                   </td>
                   <td>
-                  <input type="text" name="debut" value="{{ debut }}" class="datepicker start-date"/>
+                  <input type="text" name="debut" value="{{ debut }}" class="datepicker start-date form-control"/>
                   </td>
               </tr>
               <tr>
@@ -24,8 +24,12 @@
                   <label >Fin</label>
                   </td>
                   <td>
-                  <input type="text" name="fin" value="{{ fin }}" class="datepicker end-date"/>
+                  <input type="text" name="fin" value="{{ fin }}" class="datepicker end-date form-control" required/>
                   </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</td>
               </tr>
               <tr style='vertical-align:top'>
                   <td>
@@ -76,8 +80,8 @@
               </tr>
               <tr>
                   <td colspan='2' style='text-align:center;padding:10pt;'>
-                  <input type="button" value="Effacer" onclick="location.href='{{ asset('statistics/saturday') }}?debut=&amp;fin=&amp;agents='" class="btn btn-secondary" />
-                  &nbsp;&nbsp;<input type="submit" value="Rechercher" class="btn btn-secondary" />
+                  <input type="button" value="{% trans %}Clear{% endtrans %}" onclick="location.href='{{ asset('statistics/saturday') }}?debut=&amp;fin=&amp;agents='" class="btn btn-secondary" />
+                  &nbsp;&nbsp;<input role="button" type="submit" value="{% trans %}Search{% endtrans %}" class="btn btn-primary" />
                   </td>
               </tr>
               <tr>

@@ -17,42 +17,40 @@
                 <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
                 <input type="hidden" name="id" value="{{ id }}"/>
 
-                <table class="tableauFiches">
-                <tr>
-                    <td><label >Date de début</label> </td>
-                    <td>
-                    <input type="text" name="start" value="{{ start }}" style="width:100%;" class="datepicker start-date"/>
-                    </td>
-                </tr>
+                <div class="row my-3">
+                    <label class="col-1 col-form-label ms-2" for="start-date-block">{% trans %}Start date{% endtrans %}</label>
+                    <div class="col-2">
+                        <input type="text" id="start-date-block" name="start" value="{{ start }}" class="datepicker form-control start-date ms-2" />
+                    </div>
+                </div>
 
-                <tr>
-                    <td><label>Date de fin</label></td>
-                    <td>
-                    <input type="text" name="end" value="{{ end }}" style="width:100%;" class="datepicker end-date"/>
-                    </td>
-                </tr>
+                <div class="row">
+                    <label class="col-1 col-form-label ms-2" for="end-date-block">{% trans %}End date{% endtrans %}</label>
+                    <div class="col-2">
+                        <input type="text" id="end-date-block" name="end" value="{{ end }}" class="datepicker form-control end-date ms-2" />
+                    </div>
+                </div>
 
-                <tr>
-                    <td><label>Commentaire</label></td>
-                    <td>
-                    <textarea name="text" rows="3" cols="25" class="ui-widget-content ui-corner-all">{{ text }}</textarea>
-                    </td>
-                </tr>
+                <div class="row mb-3">
+                    <div class="col-2 offset-1 invalid-feedback ps-4">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+                </div>
 
-                <tr>
-                    <td>&nbsp;</td>
-                </tr>
+                <div class="row mb-4">
+                    <label class="col-1 col-form-label ms-2" for="comment-block">{% trans %}Comment{% endtrans %}</label>
+                    <div class="col-2">
+                        <textarea id="comment-block" name="text" value="{{ end }}" class="form-control ms-2 ui-widget-content rounded-1"/>{{ text }}</textarea> 
+                    </div>
+                </div>
 
-                <tr>
-                    <td colspan="2" style="text-align:center;">
-                    <a href="{{ asset('absence/block') }}" role="button" class="btn btn-secondary" style="margin-left:30px;">Annuler</a>
-                    {% if id %}
-                        <a href="javascript:deleteAbsenceBlock({{ id }});" role="button" class="btn btn-danger" style="margin-left:30px;">Supprimer</a>
-                    {% endif %}
-                    <input type="submit" value="Valider" role="button" class="btn btn-primary" style="margin-left:30px;"/>
-                    </td>
-                </tr>
-                </table>
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <a role="button" href="{{ asset('absence/block') }}" onclick="location.href='/workinghour?reset=on'" class="btn btn-secondary m-2">{% trans %}Cancel{% endtrans %}</a>     
+                         {% if id %}
+                            <a href="javascript:deleteAbsenceBlock({{ id }});" role="button" class="btn btn-danger m-2">{% trans %}Delete{% endtrans %}</a>
+                        {% endif %}     
+                        <input type="submit" role="button" value="{% trans %}Confirm{% endtrans %}" class="btn btn-primary m-2">
+                    </div>
+                </div>
             </form>
         </div>
     </div>

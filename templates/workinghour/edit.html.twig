@@ -20,7 +20,7 @@
           <h3>Heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
         {% endif %}
         <div id='working_hours'>
-          <form name='form1' method='post' action="{{ asset('workinghour') }}" onsubmit='return plHebdoVerifForm();'>
+          <form name="form1" method="post" action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm($(this));" novalidate>
             {% if id > 0 and copy is null and request_exception is null %}
               <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
             {% else %}
@@ -36,29 +36,39 @@
               {% else %}
                 <h3>Nouveaux horaires</h3>
               {% endif %}
-              <div id='plHebdo-perso-id'>
+              <div id="plHebdo-perso-id">
                 {% if managed | length > 1 and request_exception is null %}
-                  <label for='perso_id'>Pour l'agent</label>
-                  <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:400px; text-align:center;' >
-                    <option value=''>&nbsp;</option>
+                <div class="row">
+                <label class="col-2 col-form-label" for="perso_id">{% trans %}Agent{% endtrans %}</label>
+                <div class="col-2">
+                  <select name="perso_id" class="form-select form-select-sm pe-0" id="perso_id" style="text-align: center;">
+                    <option hidden disabled selected value=""></option>
                     {% for m in managed %}
-                      <option value='{{ m.id }}' {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.lastname }} {{ m.firstname }}</option>
+                      <option value="{{ m.id }}" {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.lastname }} {{ m.firstname }}</option>
                     {% endfor %}
                   </select>
                 {% else %}
-                  <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
+                  <input type="hidden" name="perso_id" value="{{ perso_id }}" id="perso_id" />
                 {% endif %}
               </div>
+            </div>
             {% endif %}
-            <div id='periode'>
-              <p>
-                <label  for='debut'>Début d'utilisation</label>
-                <input type="text" name="debut" {% if request_exception is null %}value="{{ debut1Fr }}"{% endif %} class="datepicker start-date" style="position:absolute; left:400px; width:200px;" />
-              </p>
-              <p>
-                <label for='fin'>Fin d'utilisation</label>
-                <input type="text" name="fin" {% if request_exception is null %}value="{{ fin1Fr }}"{% endif %} class="datepicker end-date" style="position:absolute; left:400px; width:200px;" />
-              </p>
+            <div id="periode">
+              <div class="row">
+                <label class="col-2 col-form-label" for="debut">{% trans %}Starting date{% endtrans %} :</label>
+                <div class="col-2">
+                  <input type="text" name="debut" {% if request_exception is null %} value="{{ debut1Fr }}" {% endif %} class="datepicker form-control start-date m-0" />
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-2 col-form-label" for="fin">{% trans %}Ending date{% endtrans %} :</label>
+                <div class="col-2">
+                  <input type="text" name="fin" {% if request_exception is null %} value="{{ fin1Fr }}" {% endif %} class="datepicker form-control end-date m-0" required/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-3 offset-2 invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+              </div>
             </div> <!-- id=periode -->
             {% if thisNbSemaine is defined and copy is defined and copy != '' and nbSemaine is defined and thisNbSemaine != nbSemaine %}
             <div id='cycle'>
@@ -162,7 +172,7 @@
                 {% if request_exception == true %}
                   <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="btn btn-primary" />
                 {% else %}
-                  <input type="submit" value="Enregistrer" style="margin-left:30px"; class="btn btn-primary" />
+                  <input type="submit" value="Enregistrer" style="margin-left:30px"; class="btn btn-primary"/>
                 {% endif %}
               {% else %}
                 {% if modifAutorisee == true %}

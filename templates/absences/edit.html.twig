@@ -100,7 +100,7 @@
               <tr>
                 <td class="textAlignRight"><label>Date de début</label> </td>
                 <td style='white-space:nowrap;'>
-                  <input type="text" name="debut" value="{{ debut }}" style="width:100%;" class="datepicker start-date"/>
+                  <input type="text" name="debut" value="{{ debut }}" style="width:100%;" class="datepicker start-date form-control"/>
                 </td>
               </tr>
                 {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
@@ -121,7 +121,7 @@
                   <label>Date de fin</label>
                 </td>
                 <td style='white-space:nowrap;'>
-                  <input type="text" name="fin" value="{{ fin }}" style="width:100%;" class="datepicker end-date"/>
+                  <input type="text" name="fin" value="{{ fin }}" style="width:100%;" class="datepicker end-date form-control"/>
                 </td>
               </tr>
                 {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
@@ -134,6 +134,10 @@
                     <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
                       value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
                 </td>
+              </tr>
+              <tr>
+                  <td></td>
+                  <td class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</td>
               </tr>
 
               <tr>

@@ -374,7 +374,7 @@ $(function() {
   // Suppression date de fin depuis modale d'alerte
   $('#clear-end-date').on('click', function() {
     $('#end-date-alert-modal').modal('hide');
-    $('.end-date').val('');
+    $('.end-date').bootstrapDP('setDate', '');
   });
 
   // Fermeture de la modale d'alerte
