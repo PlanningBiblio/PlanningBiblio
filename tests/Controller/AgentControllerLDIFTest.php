@@ -137,7 +137,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         );
         $this->assertEquals('sbrown20',
             $crawler->filter('#login')
-                ->text()
+                ->extract(array('value'))[0]
         );
 
         // Edit John's record
@@ -169,7 +169,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         );
         $this->assertEquals('jdoe',
             $crawler->filter('#login')
-                ->text()
+                ->extract(array('value'))[0]
         );
 
     }

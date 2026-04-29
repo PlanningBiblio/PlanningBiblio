@@ -252,3 +252,36 @@ msgstr "Modification de la longeur minimum du mot de passe"
 
 msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
 msgstr "La valeur minimale de caractères pour le changement de mot de passe doit être un nombre supérieur ou égal à 8."
+
+msgid "Login"
+msgstr "Identifiant"
+
+msgid "The new login is identical to the previous one."
+msgstr "Le nouveau identifiant est identique au précédent."
+
+msgid "An error occurred while updating the login information."
+msgstr "Une erreur s'est produite lors de la mise à jour des identifiants de connexion."
+
+msgid "This login already exists."
+msgstr "Cet identifiant existe déjà."
+
+msgid "The login cannot be empty."
+msgstr "L'identifiant ne peut pas être vide."
+
+msgid "The login is invalid."
+msgstr "L'identifiant est invalide."
+
+msgid "Working hours"
+msgstr "Heures de présence"
+
+msgid "Calendars and Synchronization"
+msgstr "Agendas et Synchronisation"
+
+msgid "Days off"
+msgstr "Congés"
+
+msgid "Access rights"
+msgstr "Droits d'accès"
+
+msgid "Close"
+msgstr "Fermer"

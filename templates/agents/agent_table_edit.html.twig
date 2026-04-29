@@ -228,8 +228,17 @@
 
   {% if id %}
     <tr>
-      <td>Login :</td>
-      <td><span id="login">{{ agent.login }}</span> <a id="change-login-link" href="javascript:void(0)" style="color:#29495C">Changer le login</a></td>
+      <td>{% trans %}Login{% endtrans %} :</td>
+      <td>
+        {% if config('demo') %}
+          <span>{{ agent.login }}</span>
+        {% else %}
+          <div>
+            <input type="text" class="form-control form-control-sm" id="login" name="login" style="width: 400px;" required value="{{ agent.login }}"/>
+            <div class="invalid-feedback" style="width: auto;">{% trans %}The login cannot be empty.{% endtrans %}</td>
+          </div>
+        {% endif %}
+      </td>
     </tr>
 
     <tr>
@@ -238,27 +247,6 @@
       </td>
     </tr>
 
-  {% endif %}
-
-  {% if not config('demo') %}
-    <div id="reset-login-form" title="Réinitialisation du login" class='noprint' style='display:none;'>
-      <form>
-        <div>
-          <label for="new_login">Nouveau login</label>
-          <input type='text' id="new_login" name="new_login"/>
-        </div>
-
-        <div class="password-error" id="login-duplicate">
-            Ce login existe déjà.
-        </div>
-        <div class="password-error" id="login-identic">
-            Le nouveau login est identique au précédent.
-        </div>
-        <div class="password-error" id="login-empty">
-            Le login ne peut pas être vide.
-        </div>
-      </form>
-    </div>
   {% endif %}
 
 </table>

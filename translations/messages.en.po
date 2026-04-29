@@ -252,3 +252,36 @@ msgstr "Modification of the minimum password length"
 
 msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
 msgstr "The minimum value of characters for password change must be a number greater than or equal to 8."
+
+msgid "Login"
+msgstr "Login"
+
+msgid "The new login is identical to the previous one."
+msgstr "The new login is identical to the previous one."
+
+msgid "An error occurred while updating the login information."
+msgstr "An error occurred while updating the login information."
+
+msgid "This login already exists."
+msgstr "This login already exists."
+
+msgid "The login cannot be empty."
+msgstr "The login cannot be empty."
+
+msgid "The login is invalid."
+msgstr "The login is invalid."
+
+msgid "Working hours"
+msgstr "Working hours"
+
+msgid "Calendars and Synchronization"
+msgstr "Calendars and Synchronization"
+
+msgid "Days off"
+msgstr "Days off"
+
+msgid "Access rights"
+msgstr "Access rights"
+
+msgid "Close"
+msgstr "Close"

@@ -59,7 +59,7 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
             $crawler->filter('input[id=mail]')->sendKeys('johnny.doe@example.com');
 
             // Submit the form
-            $button = $crawler->filter('.ui-tab-submit');
+            $button = $crawler->filter('#post_form_agent');
             $button->click();
             $this->client->waitFor('#tableAgents');
 
@@ -68,7 +68,7 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
 
             $crawler = $this->client->request('GET', '/agent/' . $id);
             $login = $crawler->filter('#login');
-            $this->assertEquals($elem[1], $login->text());
+            $this->assertEquals($elem[1],  $login->attr('value'));
         }
     }
 }

@@ -494,12 +494,13 @@ class AgentController extends BaseController
         }
 
         $params = $request->request->all();
-        $arrivee = $request->get('arrivee') ? \DateTime::createFromFormat('d/m/Y', $request->get('arrivee')) : null;
-        $depart = $request->get('depart') ? \DateTime::createFromFormat('d/m/Y', $request->get('depart')) : null;
-        $heuresHebdo = $request->get('heuresHebdo', '');
-        $heuresTravail = $request->get('heuresTravail', 0);
-        $id = $request->get('id');
-        $mail = $request->get('mail');
+        $arrivee = $request->request->get('arrivee') ? \DateTime::createFromFormat('d/m/Y', $request->get('arrivee')) : null;
+        $depart = $request->request->get('depart') ? \DateTime::createFromFormat('d/m/Y', $request->get('depart')) : null;
+        $heuresHebdo = $request->request->get('heuresHebdo', '');
+        $heuresTravail = $request->request->get('heuresTravail', 0);
+        $id = $request->request->get('id');
+        $mail = $request->request->get('mail');
+        $login = $request->request->get('login');
 
         $actif = $params['actif'];
         $action = $params['action'];
@@ -683,6 +684,10 @@ class AgentController extends BaseController
         $agent->setHolidayAnticipation($holidays['conges_anticipation']);
         $agent->setHolidayCredit($holidays['conges_credit']);
         $agent->setHolidayRemainder($holidays['conges_reliquat']);
+
+        if ($login) {
+            $agent->setLogin($login);
+        }
 
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
@@ -877,15 +882,11 @@ class AgentController extends BaseController
         return $isCurrentPassword;
     }
 
-    #[Route(path: '/ajax/update_agent_login', name: 'ajax.update_agent_login', methods: ['POST'])]
-    public function update_login(Request $request)
+    #[Route(path: '/agent/check_login', name: 'agent.check_login', methods: ['GET'])]
+    public function check_login(Request $request): Response
     {
-        if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
-        }
-
-        $login = $request->get('login');
-        $agent_id = $request->get('id');
+        $login = $request->query->get('login');
+        $agent_id = $request->query->getInt('id');
         $response = new Response();
 
         $login = filter_var($login, FILTER_SANITIZE_EMAIL);
@@ -896,28 +897,19 @@ class AgentController extends BaseController
             ->getRepository(Agent::class)
             ->findOneBy(array('login' => $login));
 
-        if ($login == $agent->getLogin()) {
-            $response->setContent('identic');
+        if (!$login) {
+            $response->setContent('invalid');
             $response->setStatusCode(400);
-
             return $response;
         }
 
         if ($duplicate && $login != $agent->getLogin()) {
             $response->setContent('duplicate');
             $response->setStatusCode(400);
-
             return $response;
         }
 
-        $agent = $this->entityManager->find(Agent::class, $agent_id);
-        $agent->setLogin($login);
-        $this->entityManager->persist($agent);
-        $this->entityManager->flush();
-
-        $response->setContent($login);
         $response->setStatusCode(200);
-
         return $response;
     }
 

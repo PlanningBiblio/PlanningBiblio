@@ -472,10 +472,11 @@ ul.nav-tabs {
   background-color: #29495C;
 }
 
-.modal-tabs {
+.container-tabs {
   border : 1px solid #29495C;
-  border-left: 4px solid #29495C; ;
+  border-left: 4px solid #29495C;
   border-radius: 4px;
+  background-color: white;
 }
 
 ul.nav-tabs li.nav-item .nav-link {
@@ -487,16 +488,18 @@ ul.nav-tabs li.nav-item .nav-link {
   color: white;
   font-size: inherit;
   margin-top: 4px;
-  margin-left: 4px;
-}
-
-ul.nav-tabs li.nav-item:first-child .nav-link {
-  margin-left: 0px;
+  margin-right: 4px;
 }
 
 ul.nav-tabs li.nav-item .nav-link.active, ul.nav-tabs li.nav-item .nav-link:hover {
   color: #29495C;
   background-color: white;
+}
+
+.tab-pane {
+  margin-left: 70px;
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
 
 .assign-remove-buttons {

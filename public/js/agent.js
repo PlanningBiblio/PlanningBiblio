@@ -314,6 +314,13 @@ function sendPassword() {
 // Contrôle des champs lors de la validation
 function verif_form_agent(){
 
+  if ($('.is-invalid').length > 0) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    return;
+  }
+
   erreur = false;
   message = "Les champs suivants sont obligatoires :";
 
@@ -329,7 +336,12 @@ function verif_form_agent(){
     erreur = true;
     message = message + "\n- E-mail";
   }
-  
+
+  if(document.form.login && !document.form.login.value) {
+    erreur = true;
+    message = message + "\n- login";
+  }
+
   if(erreur) {
     CJInfo(message);
     return false;
