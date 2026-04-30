@@ -94,6 +94,7 @@
       {% endfor %}
     </tbody>
   </table>
+
   {% if rights21 %}
     <select name="action" id="action" style="width:200px;">
       <option value=""></option>
@@ -104,134 +105,163 @@
     </select>
     <input type="button" value="Valider" class="btn btn-primary" style="margin-left:20px;" onclick="agent_list();"/>
   {% endif %}
-  <div id="dialog-form" title="{{ lang.edit_selected_users }}" class="noprint" style="display:none;">
-    <p class="validateTips"></p>
-    <form>
-      <div class="ui-tabs">
-        <ul>
-            <li><a href="#main">Infos générales</a></li>
-            <li><a href="#qualif">Activités</a></li>
-        </ul>
-        <div id="main" style="margin-left:70px;padding-top:30px;">
-          <table class="tableauFiches">
-            <tr>
-              <td>
-                <label for="statut">Statut</label>
-              </td>
-              <td>
-                <select name="statut" id="statut" style="text-align:center;">
-                  <option value="-1">{{ lang.do_not_change }}</option>
-                  <option value="">Aucun</option>
-                  {% for s in status %}
-                    <option value="{{ s.value }}">{{ s.value }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-            <tr>
-            <tr>
-              <td>
-                <label for="contrat">Contrat</label>
-              </td>
-              <td>
-                <select name="contrat" id="contrat" style="text-align:center;">
-                  <option value="-1">{{ lang.do_not_change }}</option>
-                  <option value="">Aucun</option>
-                  {% for c in contracts %}
-                    <option value={{c}}>{{ c }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="service">Service de rattachement</label>
-              </td>
-              <td style="white-space:nowrap;">
-                <select name="service" id="service" style="text-align:center;">
-                  <option value="-1">{{ lang.do_not_change }}</option>
-                  <option value="">Aucun</option>
-                  {% for se in services %}
-                    <option value="{{ se.value }}">{{ se.value }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="heures_hebdo">Heures de service public</label>
-              </td>
-              <td>
-                <select id="heures_hebdo" name="heures_hebdo" style="text-align:center;">
-                  <option value="-1">{{ lang.do_not_change }}</option>
-                  <option value="0">&nbsp;</option>
-                  {% for i in 1..101%}
-                    <option value="{{ i }}%">{{ i }}%</option>
-                  {% endfor %}
-                  {% for h in hours %}
-                    <option value="{{ h[0] }}">{{ h[1] }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="heures_travail">Heures de travail par semaine</label>
-              </td>
-              <td>
-                <select name="heures_travail" id="heures_travail" style="text-align:center;">
-                  <option value="-1">{{ lang.do_not_change }}</option>
-                  <option value="0">&nbsp;</option>
-                  {% for h in hours %}
-                    <option value="{{ h[0] }}">{{ h[1] }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-            </tr>
-            <tr>
-                <td><label for="actif">Service public / Administratif</label></td>
-                <td>
-                    <select name="actif" id="actif" style="text-align:center;">
-                      <option value="-1">{{ lang.do_not_change }}</option>
-                        <option value="Actif">Service public</option>
-                        <option value="Inactif">Administratif</option>
+
+  <div class="modal" id="modif-agent-modal" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="modif-agent-modal-title" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="modif-agent-modal-title">{% trans %}Editing selected agents{% endtrans %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form id="modif-agent-form">
+        <div class="modal-body">
+          <div class="modal-tabs">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-tab-pane" type="button" role="tab" aria-controls="info-tab-pane" aria-selected="true">{% trans %}General information{% endtrans %}</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="activities-tab" data-bs-toggle="tab" data-bs-target="#activities-tab-pane" type="button" role="tab" aria-controls="activities-tab-pane" aria-selected="false">{% trans %}Activities{% endtrans %}</button>
+              </li>
+            </ul>
+
+            <div class="tab-content p-3">
+              <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
+                  
+                <div class="row my-2">
+                  <label for="statut" class="col-4 col-form-label">{% trans %}Status{% endtrans %}</label>
+                  <div class="col-3">
+                    <select name="statut" class="form-select form-select-sm form-control" id="statut" style="text-align:center;">
+                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                      <option value="">{% trans %}None{% endtrans %}</option>
+                        {% for s in status %}
+                          <option value="{{ s.value }}">{{ s.value }}</option>
+                        {% endfor %}
                     </select>
-                </td>
-            </tr>
-          </table>
-        </div> <!-- main -->
-        <div id="qualif" style="margin-left:70px;padding-top:30px;">
-          <input type="hidden" name="postes" id="postes" value="-1"/>
-          <table style="width:90%;">
-            <tr style="vertical-align:top;">
-              <td>
-                <b>Activités disponibles</b><br/>
-                <div id="dispo_div">
-                  <select id="postes_dispo" name="postes_dispo" style="width:300px;" size="20" multiple="multiple">
-                    {% for sk in skills %}
-                      <option value="{{ sk.id }}">{{ sk.name }}</option>
-                    {% endfor %}
-                  </select>
+                  </div>
                 </div>
-              </td>
-              <td style="text-align:center;padding-top:100px;">
-                <input type="button" style="width:200px" value="Attribuer >>" onclick="select_add('postes_dispo','postes_attribues','postes',300);" class="btn btn-secondary"/><br/><br/>
-                <input type="button" style="width:200px" value="Attribuer Tout >>" onclick="select_add_all('postes_dispo','postes_attribues','postes',300);" class="btn btn-secondary"/><br/><br/>
-                <input type="button" style="width:200px" value="<< Supprimer" onclick="select_drop('postes_dispo','postes_attribues','postes',300);" class="btn btn-danger"/><br/><br/>
-                <input type="button" style="width:200px" value="<< Supprimer Tout" onclick="select_drop_all('postes_dispo','postes_attribues','postes',300);" class="btn btn-danger"/><br/><br/>
-              </td>
-              <td>
-                <b>Activités attribuées</b><br/>
-                <div id="attrib_div">
-                  <select id="postes_attribues" name="postes_attribues" style="width:300px;" size="20" multiple="multiple">
-                  </select>
+
+                <div class="row mb-2">
+                  <label for="contrat" class="col-4 col-form-label">{% trans %}Contract{% endtrans %}</label>
+                  <div class="col-3">
+                    <select name="contrat" class="form-select form-select-sm form-control" id="contrat" style="text-align:center;">
+                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                      <option value="">{% trans %}None{% endtrans %}</option>
+                        {% for c in contracts %}
+                          <option value={{c}}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
                 </div>
-              </td>
-            </tr>
-          </table>
-        </div> <!-- qualif -->
-      </div> <!-- ui-tabs -->
-    </form>
+
+                <div class="row mb-2">
+                  <label for="service" class="col-4 col-form-label">{% trans %}Home department{% endtrans %}</label>
+                  <div class="col-3">
+                    <select name="service" class="form-select form-select-sm form-control" id="service" style="text-align:center;">
+                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                      <option value="">{% trans %}None{% endtrans %}</option>
+                        {% for se in services %}
+                          <option value="{{ se.value }}">{{ se.value }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row mb-2">
+                  <label for="heures_hebdo" class="col-4 col-form-label">{% trans %}Public service hours{% endtrans %}</label>
+                  <div class="col-3">
+                  <select id="heures_hebdo" class="form-select form-select-sm form-control" name="heures_hebdo" style="text-align:center;">
+                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                      <option value="0">&nbsp;</option>
+                        {% for i in 1..100 %}
+                          <option value="{{ i }}%">{{ i }}%</option>
+                        {% endfor %}
+                        {% for h in hours %}
+                          <option value="{{ h[0] }}">{{ h[1] }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row mb-2">
+                  <label for="heures_travail" class="col-4 col-form-label">{% trans %}Hours worked per week{% endtrans %}</label>
+                  <div class="col-3">
+                  <select name="heures_travail" class="form-select form-select-sm form-control" id="heures_travail" style="text-align:center;">
+                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                      <option value="0">&nbsp;</option>
+                        {% for h in hours %}
+                          <option value="{{ h[0] }}">{{ h[1] }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <label for="actif" class="col-4 col-form-label">{% trans %}Public service{% endtrans %} / {% trans %}Administrative{% endtrans %}</label>
+                  <div class="col-3">
+                    <select name="actif" class="form-select form-select-sm form-control" id="actif" style="text-align:center;">
+                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                      <option value="Actif">{% trans %}Public service{% endtrans %}</option>
+                      <option value="Inactif">{% trans %}Administrative{% endtrans %}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="activities-tab-pane" role="tabpanel" aria-labelledby="activities-tab" tabindex="0">
+                <input type="hidden" name="postes" id="postes" value="-1"/>
+                <div class="container text-center">
+
+                  <div class="row">
+                    <div class="col mt-3">
+                      <h5>{% trans %}Available activities{% endtrans %}</h5>
+                    </div>
+                    <div class="col-3">
+                    </div>
+                    <div class="col mt-3">
+                      <h5>{% trans %}Assigned activities{% endtrans %}</h5>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col" id="dispo_div">
+                      <select id="postes_dispo" name="postes_dispo" size="20" class="form-select" multiple style="height:100%">
+                        {% for sk in skills %}
+                          <option value="{{ sk.id }}">{{ sk.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="col-3 assign-remove-buttons">
+                      <div style="display:grid;width:100%">
+                        <input type="button" value="Attribuer >>" onclick="select_add('postes_dispo','postes_attribues','postes');" class="btn btn-secondary mb-2"/>
+                        <input type="button" value="Attribuer Tout >>" onclick="select_add_all('postes_dispo','postes_attribues','postes');" class="btn btn-secondary mb-2"/>
+                        <input type="button" value="<< Supprimer" onclick="select_drop('postes_dispo','postes_attribues','postes');" class="btn btn-danger mb-2"/>
+                        <input type="button" value="<< Supprimer Tout" onclick="select_drop_all('postes_dispo','postes_attribues','postes');" class="btn btn-danger mb-2"/>
+                      </div>
+                    </div>
+
+                    <div class="col" id="attrib_div">
+                      <select id="postes_attribues" name="postes_attribues" class="form-select" size="20" multiple style="height:100%">
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" form="modif-agent-form" >{% trans %}Save{% endtrans %}</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+      </div>
+    </div>
   </div>
+</div>
 
   <div class="modal" id="delete-agent-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="delete-agent-modal-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
