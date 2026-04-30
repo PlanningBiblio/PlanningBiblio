@@ -114,3 +114,9 @@ msgstr "Accept"
 
 msgid "Cancel my change"
 msgstr "Cancel my change"
+
+msgid "Modification of the number of weeks"
+msgstr "Modification of the number of weeks"
+
+msgid "Selecting more than three weeks requires checking the \"Weekly Schedule\" option"
+msgstr "Selecting more than three weeks requires checking the \"Weekly Schedule\" option"

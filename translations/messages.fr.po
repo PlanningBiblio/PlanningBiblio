@@ -114,3 +114,9 @@ msgstr "Accepter"
 
 msgid "Cancel my change"
 msgstr "Annuler ma modification"
+
+msgid "Modification of the number of weeks"
+msgstr "Modification du nombre de semaines"
+
+msgid "Selecting more than three weeks requires checking the \"Weekly Schedule\" option"
+msgstr "Sélectionner un nombre de semaines supérieur à trois implique de cocher le paramètre \"PlanningHebdo\""
