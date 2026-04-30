@@ -7,11 +7,11 @@ msgstr "New request for overtime"
 msgid "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
 msgstr "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
 
-msgid "Date (1st Saturday)"
-msgstr "Date (1st Saturday)"
-
 msgid "Date"
 msgstr "Date"
+
+msgid "Date (1st Saturday)"
+msgstr "Date (1st Saturday)"
 
 msgid "Date (2nd Saturday) (optional)"
 msgstr "Date (2nd Saturday) (optional)"
@@ -228,3 +228,15 @@ msgstr "Model name"
 
 msgid "Save all week"
 msgstr "Save all week"
+
+msgid "Change to holiday policy"
+msgstr "Change to holiday policy"
+
+msgid "To calculate leave in days, you need to change the \"Leave-Recovery\" setting to \"Unlink\"."
+msgstr "To calculate leave in days, you need to change the \"Leave-Recovery" setting to \"Unlink\"."
+
+msgid "Accept"
+msgstr "Accept"
+
+msgid "Cancel my change"
+msgstr "Cancel my change"
