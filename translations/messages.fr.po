@@ -7,11 +7,11 @@ msgstr "Nouvelle demande d'heures supplémentaires"
 msgid "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
 msgstr "Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires, puis saisir un commentaire."
 
-msgid "Date (1st Saturday)"
-msgstr "Date (1<sup>er</sup> samedi)"
-
 msgid "Date"
 msgstr "Date"
+
+msgid "Date (1st Saturday)"
+msgstr "Date (1er samedi)"
 
 msgid "Date (2nd Saturday) (optional)"
 msgstr "Date (2ème samedi) (optionel)"
@@ -228,3 +228,27 @@ msgstr "Nom du modèle"
 
 msgid "Save all week"
 msgstr "Enregistrer toute la semaine"
+
+msgid "Change to holiday policy"
+msgstr "Modification du mode de congés"
+
+msgid "To calculate leave in days, you need to change the Conges-Recuperations setting to Dissocier."
+msgstr "Le mode de décompte des congés en jour implique de modifier le paramètre \"Conges-Recuperations\" en \"Dissocier\"."
+
+msgid "Accept"
+msgstr "Accepter"
+
+msgid "Cancel my change"
+msgstr "Annuler ma modification"
+
+msgid "Modification of the number of weeks"
+msgstr "Modification du nombre de semaines"
+
+msgid "Selecting more than three weeks requires checking the PlanningHebdo option."
+msgstr "Sélectionner un nombre de semaines supérieur à trois implique de cocher le paramètre \"PlanningHebdo\"."
+
+msgid "Modification of the minimum password length"
+msgstr "Modification de la longeur minimum du mot de passe"
+
+msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
+msgstr "La valeur minimale de caractères pour le changement de mot de passe doit être un nombre supérieur ou égal à 8."
