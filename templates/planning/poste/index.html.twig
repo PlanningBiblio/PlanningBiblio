@@ -61,17 +61,43 @@
       {% include 'planning/poste/schedule.element.html.twig' %}
 
       {% if config('Planning-AppelDispo') %}
-        <div id="pl-appelDispo-form" title="Appel à disponibilité" class='noprint' style='display:none;'>
-          <p class="validateTips" id='pl-appelDispo-tips'>
-            Envoyez un e-mail aux agents disponibles pour leur demander s'ils sont volontaires pour occuper le poste choisi.
-          </p>
+        <div class="modal" id="pl-appelDispo-modal" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="pl-appelDispo-modal-title" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
 
-          <form>
-            <label for='pl-appelDispo-sujet'>Sujet</label><br/>
-            <input type='text' id='pl-appelDispo-sujet' name='pl-appelDispo-sujet' /><br/><br/>
-            <label for='pl-appelDispo-text'>Message</label><br/>
-            <textarea id='pl-appelDispo-text' name='pl-appelDispo-text'>&nbsp;</textarea>
-          </form>
+              <div class="modal-header">
+                <h5 class="modal-title" id="pl-appelDispo-modal-title">{% trans %}Call for volunteers{% endtrans %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+
+                <div class="modal-body">
+                  <p>{% trans %}Send an email to the available agents to ask if they would like to volunteer for the selected position.{% endtrans %}</p>
+                
+                  <form id="pl-appelDispo-form">
+                    <div class="mb-3">
+                      <label for="pl-appelDispo-sujet" class="form-label"><strong>{% trans %}Subject{% endtrans %}</strong></label>
+                      <input type="text" id="pl-appelDispo-sujet" class="form-control" name="pl-appelDispo-sujet"/>
+                    </div>
+                    <div class="mb-3">
+                      <label for="pl-appelDispo-text" class="form-label"><strong>{% trans %}Message{% endtrans %}</strong></label>
+                      <textarea id="pl-appelDispo-text" name="pl-appelDispo-text" class="form-control" rows="8"></textarea>
+                    </div>
+
+                  </form>
+
+                </div>
+
+              <div class="modal-footer">
+                <div id="alert" class="alert alert-danger me-auto d-flex d-none" role="alert">
+                  <i class="bi bi-exclamation-triangle-fill me-2 bi-danger"></i>
+                  <div id="alert-text"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" form="pl-appelDispo-form">{% trans %}Send{% endtrans %}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+              </div>
+            </div>
+          </div>
         </div>
       {% endif %}
 

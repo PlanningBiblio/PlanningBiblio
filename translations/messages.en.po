@@ -87,3 +87,21 @@ msgstr "Please select an agent"
 
 msgid "Search results are limited to a period of one year"
 msgstr "Search results are limited to a period of one year"
+
+msgid "Call for volunteers"
+msgstr "Call for volunteers"
+
+msgid "Send an email to the available agents to ask if they would like to volunteer for the selected position."
+msgstr "Send an email to the available agents to ask if they would like to volunteer for the selected position."
+
+msgid "Send"
+msgstr "Send"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "An error occurred while sending the email"
+msgstr "An error occurred while sending the email"
