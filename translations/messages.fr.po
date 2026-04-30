@@ -102,3 +102,21 @@ msgstr "Veuillez saisir un nom de modèle valide"
 
 msgid "New request"
 msgstr "Nouvelle demande"
+
+msgid "Call for volunteers"
+msgstr "Appel à disponibilité"
+
+msgid "Send an email to the available agents to ask if they would like to volunteer for the selected position."
+msgstr "Envoyez un e-mail aux agents disponibles pour leur demander s'ils sont volontaires pour occuper le poste choisi."
+
+msgid "Send"
+msgstr "Envoyer"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Subject"
+msgstr "Sujet"
+
+msgid "An error occurred while sending the email"
+msgstr "Une erreur est survenue lors de l'envoi de l'e-mail"

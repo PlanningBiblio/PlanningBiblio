@@ -723,7 +723,7 @@ class PlanningController extends BaseController
     /*
      * Envoi un mail aux agents disponibles pour l'occupation d'un poste vacant.
      * Lors de la validation du formulaire "Appel à disponibilité"
-     * Script appelé par $( "#pl-appelDispo-form" ).dialog({ Envoyer ]), public/js/planning.js
+     * Script appelé par $( "#pl-appelDispo-form" ).submit(), public/js/planning.js
      */
     #[Route(path: '/planning/call-for-help/send-mail', name: 'planning.call_for_help.send_mail', methods: ['POST'])]
     public function callForHelpSendMail(Request $request)
