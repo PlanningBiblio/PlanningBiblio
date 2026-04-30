@@ -582,6 +582,10 @@ function updateAgentsList(me,select_id){
   });
 }
 
+function update_alert(text){
+  $('#alert-text').text(text);
+  $('#alert').removeClass('d-none');
+}
 
 // updateTips : utilisée pour valider les formulaires Jquery-UI
 function updateTips( text , type) {
