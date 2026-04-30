@@ -120,3 +120,60 @@ msgstr "Sujet"
 
 msgid "An error occurred while sending the email"
 msgstr "Une erreur est survenue lors de l'envoi de l'e-mail"
+
+msgid "Editing selected agents"
+msgstr "Modification des agents sélectionnés"
+
+msgid "General information"
+msgstr "Infos générales"
+
+msgid "Activities"
+msgstr "Activités"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Available activities"
+msgstr "Activités disponibles"
+
+msgid "Assigned activities"
+msgstr "Activités attribuées"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Contract"
+msgstr "Contrat"
+
+msgid "Home department"
+msgstr "Service de rattachement"
+
+msgid "Public service hours"
+msgstr "Heures de service public"
+
+msgid "Hours worked per week"
+msgstr "Heures de travail par semaine"
+
+msgid "Public service"
+msgstr "Service public"
+
+msgid "Administrative"
+msgstr "Administratif"
+
+msgid "Do not change"
+msgstr "Ne pas modifier"
+
+msgid "None"
+msgstr "Aucun"
+
+msgid "The agents were successfully modified"
+msgstr "Les agents ont été modifés avec succès"
+
+msgid "An error occurred while modifying the agents"
+msgstr "Une erreur est survenue lors de la modification des agents"
+
+msgid "Please select an action to perform."
+msgstr "Veuillez sélectionner une action à effectuer."
+
+msgid "Please select one or more agents."
+msgstr "Veuillez sélectionner un ou plusieurs agents."
