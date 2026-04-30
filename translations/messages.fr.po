@@ -102,3 +102,15 @@ msgstr "Veuillez saisir un nom de modèle valide"
 
 msgid "New request"
 msgstr "Nouvelle demande"
+
+msgid "Change to holiday policy"
+msgstr "Modification du mode de congés"
+
+msgid "To calculate leave in days, you need to change the \"Leave-Recovery\" setting to \"Unlink\"."
+msgstr "Le mode de décompte des congés en jour implique de modifier le paramètre \"Conges-Recuperations\" en \"Dissocier\"."
+
+msgid "Accept"
+msgstr "Accepter"
+
+msgid "Cancel my change"
+msgstr "Annuler ma modification"

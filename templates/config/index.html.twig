@@ -12,27 +12,17 @@
         var previous_Multisites_site{{ i }}_cycles = $('#Multisites-site{{ i }}-cycles option:selected').val();
       {% endfor %}
 
-      $('#conges_mode_dialog').dialog({
-        autoOpen: false,
-        resizable: false,
-        width: 400,
-        modal: true,
-        buttons: {
-          'Je suis d\'accord': function() {
-            $( this ).dialog( 'close' );
-            $('#Conges-Recuperations').val('1');
-          },
-          'Annuler ma modification': function() {
-            $( this ).dialog( "close" );
-            $('#Conges-Mode').val('heures');
-          }
-        }
-      });
-      $('#Conges-Mode').on('change', function() {
+      $('#Conges-Mode, #Conges-Recuperations').on('change', function() {
         conges_mode = $('#Conges-Mode').val();
         conges_recuperations = $('#Conges-Recuperations').val();
         if (conges_mode == 'jours' && conges_recuperations == 0) {
-          $( '#conges_mode_dialog' ).dialog( 'open' );
+          $('#holiday-policy-modal').modal('show');
+          if ($(this)[0] == $('#Conges-Recuperations')[0]){
+            $('#cancel-action').hide();
+          }
+          else {
+            $('#cancel-action').show();
+          }
         }
       });
 
@@ -123,8 +113,24 @@
       </div>
     </form>
 
-    <div id="conges_mode_dialog" title="Modification du mode de congés">
-     Le mode de décompte des congés en jour implique de modifier le paramètre "Conges-Recuperations" en "Dissocier".
+    <div class="modal" id="holiday-policy-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="holiday-policy-modal-title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+              <h5 class="modal-title" id="holiday-policy-modal-title">{% trans %}Change to holiday policy{% endtrans %}</h5>
+            </div>
+
+            <div class="modal-body" style="min-height: 116px; align-content: flex-end;">
+              <p>{% trans %}To calculate leave in days, you need to change the "Leave-Recovery" setting to "Unlink".{% endtrans %}</p>
+            </div>
+
+          <div class="modal-footer" style="text-align:center">
+            <button type="button" class="btn btn-primary" onclick="$('#Conges-Recuperations').val('1');" data-bs-dismiss="modal">{% trans %}Accept{% endtrans %}</button>
+            <button type="button" id="cancel-action" class="btn btn-secondary" onclick="$('#Conges-Mode').val('heures');" data-bs-dismiss="modal">{% trans %}Cancel my change{% endtrans %}</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="nb_semaine_dialog" title="Modification du nombre de semaines">

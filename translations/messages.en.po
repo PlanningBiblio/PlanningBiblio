@@ -102,3 +102,15 @@ msgstr "Please enter a valid model name"
 
 msgid "New request"
 msgstr "New request"
+
+msgid "Change to holiday policy"
+msgstr "Change to holiday policy"
+
+msgid "To calculate leave in days, you need to change the \"Leave-Recovery\" setting to \"Unlink\"."
+msgstr "To calculate leave in days, you need to change the \"Leave-Recovery" setting to \"Unlink\"."
+
+msgid "Accept"
+msgstr "Accept"
+
+msgid "Cancel my change"
+msgstr "Cancel my change"
