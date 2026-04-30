@@ -379,63 +379,42 @@ $(function() {
   })
 
   // Formulaire Appel à disponibilité
-  $( "#pl-appelDispo-form" ).dialog({
-    autoOpen: false,
-    height: 480,
-    width: 650,
-    modal: true,
-    buttons: {
-      "Envoyer": function() {
-	allFields.removeClass( "ui-state-error" );
-	var bValid = true;
+  $('#pl-appelDispo-form').on('submit', function(e) {
+    e.preventDefault();
+    var subject = $('#pl-appelDispo-sujet').val();
+    var message = $('#pl-appelDispo-text').text();
+    subject = subject.trim();
+    message = message.trim();
+    message = message.replace(/\n/g,'<br/>');
 
-	if ( bValid ) {
-	  // Envoi le mail
-	  var sujet=$( "#pl-appelDispo-sujet" ).val();
-	  var message=$( "#pl-appelDispo-text" ).text();
-	  sujet=sujet.trim();
-	  message=message.trim();
-	  message=message.replace(/\n/g,"<br/>");
-	  
-	  // L'objet appelDispoData contient les infos site, poste, date, debut, fin et agents
-	  // Variable Globale définie lors du clic sur le lien "Appel à disponibilité", fonction appelDispo
-	  // On ajoute le sujet et le message à cet objet et on l'envoi au script PHP pour l'envoi du mail
-	  appelDispoData.sujet=sujet;
-	  appelDispoData.message=message;
-	  appelDispoData.CSRFToken = $('#CSRFSession').val();
+    // L'objet appelDispoData contient les infos site, poste, date, debut, fin et agents
+    // Variable Globale définie lors du clic sur le lien "Appel à disponibilité", fonction appelDispo
+    // On ajoute le sujet et le message à cet objet et on l'envoi au script PHP pour l'envoi du mail
+    appelDispoData.sujet = subject;
+    appelDispoData.message = message;
+    appelDispoData.CSRFToken = $('#CSRFSession').val();
     appelDispoData._token = $('input[name=_token]').val();
 
-	  $( "#pl-appelDispo-form" ).dialog( "close" );
-	  
-	  $.ajax({
-	    dataType: "json",
-	    url: url('planning/call-for-help/send-mail'),
-	    type: "post",
-	    data: appelDispoData,
-	    success: function(result){
-
-	      if(result.error){
-		CJInfo(result.error,"error");
-	      }
-	      else{
-		CJInfo("L'appel à disponibilité a bien été envoyé","success");
-	      }
-	    },
-	    error: function(){
-	      updateTips("Une erreur est survenue lors de l'envoi de l'e-mail", "error");
-	    }
-	  });
-	}
+    $.ajax({
+      dataType: 'json',
+      url: url('planning/call-for-help/send-mail'),
+      type: 'post',
+      data: appelDispoData,
+      success: function(result) {
+        if(result.error) {
+          CJInfo(result.error, 'error');
+        }
+        else {
+          CJInfo('L\'appel à disponibilité a bien été envoyé','success');
+        }
+         $('#pl-appelDispo-modal').modal('hide');
       },
-
-      Annuler: function() {
-	$( this ).dialog( "close" );
+      error: function() {
+        var text = Translator.trans('An error occurred while sending the email');
+        $('#alert-text').text(text);
+        $('#alert').removeClass('d-none');
       }
-    },
-
-    close: function() {
-      allFields.removeClass( "ui-state-error" );
-    }
+    });
   });
 
   $(".cellDiv").contextmenu(function(){
@@ -1162,8 +1141,7 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents) {
       // Mise à jour du formulaire
       $( "#pl-appelDispo-sujet" ).val(sujet);
       $( "#pl-appelDispo-text" ).text(message);
-      $( '#pl-appelDispo-tips' ).text("Envoyez un e-mail aux agents disponibles pour leur demander s'ils sont volontaires pour occuper le poste choisi.");
-      $( "#pl-appelDispo-form" ).dialog( "open" );
+      $('#pl-appelDispo-modal').modal('show');
     },
 
     error: function(result) {
