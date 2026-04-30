@@ -87,3 +87,48 @@ msgstr "Please select an agent"
 
 msgid "Search results are limited to a period of one year"
 msgstr "Search results are limited to a period of one year"
+
+msgid "Editing selected agents"
+msgstr "Editing selected agents"
+
+msgid "General information"
+msgstr "General information"
+
+msgid "Activities"
+msgstr "Activities"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Available activities"
+msgstr "Available activities"
+
+msgid "Assigned activities"
+msgstr "Assigned activities"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Contract"
+msgstr "Contract"
+
+msgid "Home department"
+msgstr "Home department"
+
+msgid "Public service hours"
+msgstr "Public service hours"
+
+msgid "Hours worked per week"
+msgstr "Hours worked per week"
+
+msgid "Public service"
+msgstr "Public service"
+
+msgid "Administrative"
+msgstr "Administrative"
+
+msgid "Do not change"
+msgstr "Do not change"
+
+msgid "None"
+msgstr "None"

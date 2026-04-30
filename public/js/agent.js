@@ -6,64 +6,51 @@ $(function() {
 
   var allFields = $( [] );
 
-  $( "#dialog-form" ).dialog({
-    autoOpen: false,
-    height: 660,
-    width: 1000,
-    modal: true,
-    buttons: {
-      "Enregistrer": function() {
+  $('#modif-agent-form').on('submit', function(e){
+    e.preventDefault();
 
-        // List
-        var list = [];
-        $('.checkbox:visible:checked').each(function(){
-          list.push($(this).val());
-        });
-        list = JSON.stringify(list);
+    // List
+    var list = [];
+    $('.checkbox:visible:checked').each(function(){
+      list.push($(this).val());
+    });
+    list = JSON.stringify(list);
 
-        $.ajax({
-          url: url('agent/bulk/update'),
-            type: 'post',
-            dataType: 'json',
-            data: {
-              _token: $('input[name=_token]').val(),
-               // Main tab
-              actif: $('#actif').val(),
-              contrat: $('#contrat').val(),
-              heures_hebdo: $('#heures_hebdo').val(),
-              heures_travail: $('#heures_travail').val(),
-              service: $('#service').val(),
-              statut: $('#statut').val(),
-              // Skills tab
-              postes: $('#postes').val(),
-              list: list,
-            },
-            success: function(result){
-              if (result=='ok') {
-                var msg = 'Les agents ont été modifés avec succès';
-                var msgType = 'success';
-              } else {
-                var msg = result;
-                var msgType = 'error';
-              }
-              location.href = url('agent?msg=' + msg + '&msgType=' + msgType);
-            },
-            error: function(){
-              location.href = url('agent?msg=Une erreur est survenue lors de la modification des agents&msgType=error');
-            }
-        });
+    $.ajax({
+      url: url('agent/bulk/update'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        _token: $('input[name=_token]').val(),
+        // Main tab
+        actif: $('#actif').val(),
+        contrat: $('#contrat').val(),
+        heures_hebdo: $('#heures_hebdo').val(),
+        heures_travail: $('#heures_travail').val(),
+        service: $('#service').val(),
+        statut: $('#statut').val(),
+        // Skills tab
+        postes: $('#postes').val(),
+        list: list,
       },
 
-      "Annuler": function() {
-        $( this ).dialog( "close" );
+      success: function(result){
+        if (result=='ok') {
+          var msg = 'Les agents ont été modifés avec succès';
+          var msgType = 'success';
+        } else {
+          var msg = result;
+          var msgType = 'error';
+        }
+        location.href = url('agent?msg=' + msg + '&msgType=' + msgType);
+      },
+      
+      error: function(){
+        location.href = url('agent?msg=Une erreur est survenue lors de la modification des agents&msgType=error');
       }
-    },
+    });
+  })
 
-    close: function() {
-      allFields.val( "" ).removeClass( "ui-state-error" );
-      $('.validateTips').text("");
-    }
-  });
 });
 
 function agent_list() {
@@ -75,6 +62,11 @@ function agent_list() {
 
   // Action
   var action = $('#action').val();
+
+  if (!action){
+    alert('Veuillez sélectionner une action à effectuer.');
+    return false;
+  }
 
   switch(action) {
 
@@ -111,8 +103,7 @@ function agent_list() {
       break;
 
     case 'edit' :
-      $( "#dialog-form" ).dialog( "open" );
-
+      $('#modif-agent-modal').modal('show');
       break;
   }
 }
@@ -177,12 +168,12 @@ function select_add(select_dispo,select_attrib,hidden_attrib,width){	// Attribut
   dispo_new.sort();
   attrib_new.sort();
   
-  var attrib_aff="<select id='"+select_attrib+"' name='"+select_attrib+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
+  var attrib_aff="<select id='"+select_attrib+"' class='form-select' name='"+select_attrib+"' style='width:"+width+"px;height:100%;' size='20' multiple>";
   for(i=0;i<attrib_new.length;i++)
     attrib_aff=attrib_aff+"<option value='"+attrib_new[i][1]+"'>"+attrib_new[i][0]+"</option>";
   attrib_aff=attrib_aff+"</select>";
   
-  var dispo_aff="<select id='"+select_dispo+"' name='"+select_dispo+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
+  var dispo_aff="<select id='"+select_dispo+"' class='form-select' name='"+select_dispo+"' style='width:"+width+"px;height:100%;' size='20' multiple>";
   for(i=0;i<dispo_new.length;i++)
     dispo_aff=dispo_aff+"<option value='"+dispo_new[i][1]+"'>"+dispo_new[i][0]+"</option>";
   dispo_aff=dispo_aff+"</select>";
@@ -220,12 +211,12 @@ function select_drop(select_dispo,select_attrib,hidden_attrib,width){	// Attribu
   dispo_new.sort();
   attrib_new.sort();
   
-  var attrib_aff="<select id='"+select_attrib+"' name='"+select_attrib+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
+  var attrib_aff="<select id='"+select_attrib+"' class='form-select' name='"+select_attrib+"' style='width:"+width+"px;height:100%;' size='20' multiple>";
   for(i=0;i<attrib_new.length;i++)
     attrib_aff=attrib_aff+"<option value='"+attrib_new[i][1]+"'>"+attrib_new[i][0]+"</option>";
   attrib_aff=attrib_aff+"</select>";
   
-  var dispo_aff="<select id='"+select_dispo+"' name='"+select_dispo+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
+  var dispo_aff="<select id='"+select_dispo+"' class='form-select' name='"+select_dispo+"' style='width:"+width+"px;height:100%;' size='20' multiple>";
   for(i=0;i<dispo_new.length;i++)
     dispo_aff=dispo_aff+"<option value='"+dispo_new[i][1]+"'>"+dispo_new[i][0]+"</option>";
   dispo_aff=dispo_aff+"</select>";
@@ -238,14 +229,14 @@ function select_drop(select_dispo,select_attrib,hidden_attrib,width){	// Attribu
 function select_add_all(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
   complet.sort();
   tab_attrib=new Array();
-  var attrib_aff="<select id='"+select_attrib+"' name='"+select_attrib+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
+  var attrib_aff="<select id='"+select_attrib+"' class='form-select' name='"+select_attrib+"' style='width:"+width+"px;height:100%;' size='20' multiple>";
   for(i=0;i<complet.length;i++){
     attrib_aff=attrib_aff+"<option value='"+complet[i][1]+"'>"+complet[i][0]+"</option>";
     tab_attrib.push(complet[i][1]);
   }
   attrib_aff=attrib_aff+"</select>";
   
-  var dispo_aff="<select id='"+select_dispo+"' name='"+select_dispo+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
+  var dispo_aff="<select id='"+select_dispo+"' class='form-select' name='"+select_dispo+"' style='width:"+width+"px;height:100%;' size='20' multiple>";
   dispo_aff=dispo_aff+"</select>";
   
   document.getElementById("attrib_div").innerHTML=attrib_aff;
@@ -255,12 +246,12 @@ function select_add_all(select_dispo,select_attrib,hidden_attrib,width){	// Attr
 
 function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
   complet.sort();
-  var dispo_aff="<select id='"+select_dispo+"' name='"+select_dispo+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
+  var dispo_aff="<select id='"+select_dispo+"' class='form-select' name='"+select_dispo+"' style='width:"+width+"px; height:100%;' size='20' multiple>";
   for(i=0;i<complet.length;i++)
     dispo_aff=dispo_aff+"<option value='"+complet[i][1]+"'>"+complet[i][0]+"</option>";
   dispo_aff=dispo_aff+"</select>";
   
-  var attrib_aff="<select id='"+select_attrib+"' name='"+select_attrib+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
+  var attrib_aff="<select id='"+select_attrib+"' class='form-select' name='"+select_attrib+"' style='width:"+width+"px;height:100%;' size='20' multiple>";
   attrib_aff=attrib_aff+"</select>";
   
   document.getElementById("attrib_div").innerHTML=attrib_aff;

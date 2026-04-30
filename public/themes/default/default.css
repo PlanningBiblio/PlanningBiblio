@@ -424,9 +424,6 @@ li .agent-acces-checked2{
   border-right: 1px solid black;
 }
 
-
-
-
 .tableauFiches td{
   vertical-align:top;
   padding: 0 60px 10px 10px;
@@ -464,6 +461,45 @@ li .agent-acces-checked2{
   padding-top:20px;
   text-align:center;
 } 
+
+/* Tabs */
+
+ul.nav-tabs {
+  background-color: #29495C;
+}
+
+.modal-tabs {
+  border : 1px solid #29495C;
+  border-left: 4px solid #29495C; ;
+  border-radius: 4px;
+}
+
+ul.nav-tabs li.nav-item .nav-link {
+  border: 2px solid white;
+  border-bottom: 1px solid white;
+  border-top-left-radius : 4px;
+  border-top-right-radius: 4px;
+  background-color: #29495C;
+  color: white;
+  font-size: inherit;
+  margin-top: 4px;
+  margin-left: 4px;
+}
+
+ul.nav-tabs li.nav-item:first-child .nav-link {
+  margin-left: 0px;
+}
+
+ul.nav-tabs li.nav-item .nav-link.active, ul.nav-tabs li.nav-item .nav-link:hover {
+  color: #29495C;
+  background-color: white;
+}
+
+.assign-remove-buttons {
+  display: flex;
+  align-items: anchor-center;
+  justify-content: center;
+}
 
 /* Menu Principal */
 /* solution temp, il faudrait peut être une class spécifique pour la div top gauche*/
@@ -518,7 +554,6 @@ li .agent-acces-checked2{
   color: #29495C;
   font-weight: bold;
   font-size: 13pt;
-  padding: 5px;
   border-bottom: 5px solid transparent;
 }
 
@@ -534,7 +569,7 @@ li.nav-item a.nav-link.active, li.nav-item a.nav-link.active:hover {
   cursor: default;
 }
 
-.nav-link:hover, .nav-link.dropdown-toggle.show {
+li.nav-item a.nav-link:hover, li.nav-item a.nav-link.dropdown-toggle.show {
   color: #29495C;
   border-bottom: 5px solid #29495C;
 }
@@ -1951,6 +1986,11 @@ input[type=number] {
 select.form-select, select.form-select:focus {
   color: #29495C;
   border: 1px solid #456578;
+  border-radius: 4px;
+  font-size: inherit;
+}
+
+select.form-select:not([multiple]){
   height: 30px;
 }
 
