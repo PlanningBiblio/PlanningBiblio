@@ -13,6 +13,14 @@
 
     $( document ).ready(function() {
 
+      // To prevent form submission on enter key
+      $(window).keydown(function(event) {
+        if(event.keyCode == 13) {
+          event.preventDefault();
+          return false;
+        }
+      });
+
       var previous_nb_semaine = $('#nb_semaine option:selected').val();
       {% for i in 1..10 %}
         var previous_Multisites_site{{ i }}_cycles = $('#Multisites-site{{ i }}-cycles option:selected').val();
@@ -23,7 +31,7 @@
         conges_recuperations = $('#Conges-Recuperations').val();
         if (conges_mode == 'jours' && conges_recuperations == 0) {
           $('#holiday-policy-modal').modal('show');
-          if ($(this)[0] == $('#Conges-Recuperations')[0]){
+          if ($(this)[0] == $('#Conges-Recuperations')[0]) {
             $('#cancel-mode').hide();
           }
           else {
@@ -37,7 +45,7 @@
         planningHebdo = $('#PlanningHebdo').is(':checked');
         if (nb_semaine > 3 && !planningHebdo) {
           $('#nb-week-modal').data('previous_nb_semaine', previous_nb_semaine).modal('show');
-          if ($(this)[0] == $('#PlanningHebdo')[0]){
+          if ($(this)[0] == $('#PlanningHebdo')[0]) {
             $('#cancel-week').hide();
           }
           else {
@@ -48,23 +56,13 @@
         previous_nb_semaine = nb_semaine;
       });
 
-      $('#longueur_mot_de_passe_dialog').dialog({
-        autoOpen: false,
-        resizable: false,
-        width: 400,
-        modal: true,
-        buttons: {
-          'Valider': function() {
-            $( this ).dialog('close');
-          }
+      $('#Auth-PasswordLength').on('change', function(e) {
+        password_length = $('#Auth-PasswordLength').val();
+        if (!int_validation(password_length)  || password_length < 8) {
+          $('#password-length-modal').modal('show');
         }
       });
-      $('#Auth-PasswordLength').on('change', function() {
-        if ($('#Auth-PasswordLength').val() < 8) {
-            $('#Auth-PasswordLength').val('8');
-            $('#longueur_mot_de_passe_dialog').dialog('open');
-        }
-      });
+
       $('#Mail-IsMail-IsSMTP').on('change', function() {
         mail_config();
       });
@@ -148,8 +146,23 @@
       </div>
     </div>
 
-    <div id="longueur_mot_de_passe_dialog" title="Modification de la longeur minimum du mot de passe">
-      Le nombre de caractères minimum d'un mot de passe ne peut pas être inférieur à 8.
+    <div class="modal" id="password-length-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="password-length-modal-title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+              <h5 class="modal-title" id="password-length-modal-title">{% trans %}Modification of the minimum password length{% endtrans %}</h5>
+            </div>
+
+            <div class="modal-body" style="text-align: center;">
+              <p>{% trans %}The minimum value of characters for password change must be a number greater than or equal to 8.{% endtrans %}</p>
+            </div>
+
+          <div class="modal-footer" style="text-align:center">
+            <button type="button" class="btn btn-primary" onclick="$('#Auth-PasswordLength').val('8');" data-bs-dismiss="modal">{% trans %}Confirm{% endtrans %}</button>
+          </div>
+        </div>
+      </div>
     </div>
 
 {% endblock %}

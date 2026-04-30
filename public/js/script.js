@@ -542,6 +542,11 @@ function time_validation(time_value) {
   return dayjs(time_value, format, true).isValid() ;
 }
 
+// This function checks the validity of an integer value
+function int_validation(value) {
+  return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
+}
+
 function verif_date(d){
   // Cette fonction vérifie le format AAAA-MM-JJ saisi et la validité de la date.
   // Le séparateur est défini dans la variable separateur
