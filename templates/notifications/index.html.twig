@@ -97,52 +97,99 @@
     <input type="button" value="Modifier la sélection" class="btn btn-primary" id="update-button" />
   </form>
 
-  <div id="update-form" title="Validations / Notifications" class="noprint" style="display:none;">
-    <p class="validateTips" style="text-align:justify;">Choisissez les responsables qui ont le droit de valider les absences et congés des agents sélectionnés.<br/>Cochez la case s'ils doivent être notifiés lors de l'enregistrement d'une nouvelle absence ou demande de congés.</p>
-    <form>
-      <table class="table-validation-notification">
-        <thead style="text-align: left;">
-          <tr>
-            <th colspan="2" class="border-right"><center>Validation niveau 1</center></th>
-            <th colspan="2"><center>Validation niveau 2</center></th>
-          </tr>
-          <tr>
-            <td>Responsables</td>
-            <td class="border-right">Notifier</td>
-            <td>Responsables</td>
-            <td>Notifier</td>
-          </tr>
-        </thead>
-        <tbody>
-          {% for i in 0..8 %}
-            <tr>
-              <td>
-                <select name="responsable-{{i}}" id="responsable-{{i}}" class="responsablesl1" data-id="{{i}}">
-                  <option value="">&nbsp;</option>
-                  {% for agent in manager_level1 %}
-                      <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-              <td class="border-right">
-                <input type="checkbox" name="notification-{{i}}" id="notification-{{i}}" class="notificationsl1" data-id="{{i}}"/>
-              </td>
+  <div class="modal modal-lg" id="update-notification-modal" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="update-notification-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
 
-              <td>
-                <select name="responsablel2-{{i}}" id="responsablel2-{{i}}" class="responsablesl2" data-id="{{i}}">
-                  <option value="">&nbsp;</option>
-                  {% for agent in manager_level2 %}
-                      <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+        <form id="update-notification-form">
+          <div class="modal-header">
+            <h5 class="modal-title" id="update-notification-modal-title">{% trans %}Validations{% endtrans %} / {% trans %}Notifications{% endtrans %}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <p>{% trans %}Select the managers who are authorized to approve absences and leave requests for the selected employees.<br/>Check the box if they should be notified when a new absence or leave request is submitted.{% endtrans %}</p>
+
+            <div class="container text-center">
+              <div class="row">
+
+                <div class="col">
+                  {% trans %}Level 1 Validation{% endtrans %}
+
+                  <div class="row my-3">
+                    <div class="col">
+                      {% trans %}Manager{% endtrans %}
+                    </div>
+                    <div class="col">
+                      {% trans %}Notify{% endtrans %}
+                    </div>
+                  </div>
+
+                  {% for i in 0..8 %}
+                    <div class="row mb-3">
+                      <div class="col">
+                        <select name="responsable-{{i}}" id="responsable-{{i}}" class="responsablesl1 form-select form-select-sm form-control" data-id="{{i}}">
+                          <option selected value=""></option>
+                          {% for agent in manager_level1 %}
+                            <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                      <div class="col">
+                        <div class="form-check" style="display: flex; justify-content:center;">
+                          <input type="checkbox" class="form-check-input notificationsl1" name="notification-{{i}}" id="notification-{{i}}" data-id="{{i}}"/>
+                        </div>
+                      </div>
+                    </div>
                   {% endfor %}
-                </select>
-              </td>
-              <td>
-                <input type="checkbox" name="notificationl2-{{i}}" id="notificationl2-{{i}}" class="notificationsl2" data-id="{{i}}"/>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </form>
+                </div>
+
+                <div class="col-auto d-flex">
+                  <div class="vr"></div>
+                </div>
+
+                <div class="col">
+                  {% trans %}Level 2 Validation{% endtrans %}
+                  <div class="row my-3">
+                    <div class="col">
+                      {% trans %}Manager{% endtrans %}
+                    </div>
+                    <div class="col">
+                      {% trans %}Notify{% endtrans %}
+                    </div>
+                  </div>
+
+                  {% for i in 0..8 %}
+                    <div class="row mb-3">
+                      <div class="col">
+                        <select name="responsablel2-{{i}}" id="responsablel2-{{i}}" class="responsablesl2 form-select form-select-sm form-control" data-id="{{i}}">                        
+                          <option selected value=""></option>
+                          {% for agent in manager_level2 %}
+                            <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                      <div class="col">
+                        <div class="form-check" style="display: flex; justify-content:center;">
+                          <input type="checkbox" class="form-check-input notificationsl2" name="notificationl2-{{i}}" id="notificationl2-{{i}}" data-id="{{i}}"/>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="modal-footer" style="text-align:center">
+          <button type="submit" class="btn btn-primary" form="update-notification-form">{% trans %}Save{% endtrans %}</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+        </div>
+      </div>
+    </div>
   </div>
 {% endblock %}

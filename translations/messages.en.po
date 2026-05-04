@@ -285,3 +285,24 @@ msgstr "Access rights"
 
 msgid "Close"
 msgstr "Close"
+
+msgid "Validations"
+msgstr "Validations"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Select the managers who are authorized to approve absences and leave requests for the selected employees.<br/>Check the box if they should be notified when a new absence or leave request is submitted."
+msgstr "Select the managers who are authorized to approve absences and leave requests for the selected employees.<br/>Check the box if they should be notified when a new absence or leave request is submitted."
+
+msgid "Level 1 Validation"
+msgstr "Level 1 Validation"
+
+msgid "Level 2 Validation"
+msgstr "Level 2 Validation"
+
+msgid "Manager"
+msgstr "Manager"
+
+msgid "Notify"
+msgstr "Notify"
