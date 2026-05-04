@@ -254,6 +254,10 @@ h4{
   color : #29495C;
 }
 
+.bi-danger {
+  color: #DC3545;
+}
+
 .bi.bi-caret-right-fill {
   min-width: 16px;
   visibility: hidden;
@@ -1878,6 +1882,11 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   text-align: right;
 }
 
+#save-new-login-button i {
+  border: 1px solid #DC3545;
+  border-radius: 4px;
+}
+
 /*Buttons END*/
 
 /* Modals START */
@@ -1928,6 +1937,7 @@ hr {
   color: #29495C;
   font-size: inherit;
   border-radius: var(--bs-border-radius-sm);
+  border: 1px solid #456578;
 }
 
 div.form-control, div.form-control:focus {

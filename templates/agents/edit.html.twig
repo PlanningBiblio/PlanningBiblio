@@ -7,59 +7,47 @@
     <!--
     complet = JSON.parse('{{ postes_completNoms_json | e('js') }}');
     -->
-    $( document ).ready(function() {
-      $("#reset-login-form").dialog({
-        autoOpen: false,
-        height: 180,
-        width: 380,
-        modal: true,
-        buttons: {
-          Enregistrer: function() {
-            $('#login-duplicate').hide();
-            $('#login-empty').hide();
-            $('#login-identic').hide();
+    $(document).ready(function() {
 
-            login = $('#new_login').val();
-            agent_id = $('input[name="id"]').val();
+      $('#new-login').on('input', function(e){
+        $(this).removeClass('is-invalid');
+      });
 
-            if (login == '') {
-              $('#login-empty').show();
+      $('#save-new-login-button').on('click', function(e){
+        e.preventDefault();
+
+        var login = $('#new-login');
+        var login_val = sanitize_string(login.val());
+        var feedback = login.siblings('.invalid-feedback');
+        var agent_id = $('input[name="id"]').val();
+
+        if(!login_val){
+          login.addClass('is-invalid');
+          return;
+        }
+
+        $.ajax({
+          url: url('ajax/update_agent_login'),
+          type: "POST",
+          dataType: "html",
+          data: {_token: $('#_token').val(), login: login_val, id: agent_id},
+          success: function(filtered_login){
+              $('#login').html(filtered_login);
+              login.val(null);
+          },
+          error: function(xhr, ajaxOptions, thrownError){
+            if (xhr.responseText == 'duplicate') {
+              feedback.text(Translator.trans('This login already exists.'));
+              login.addClass('is-invalid');
+            } else if (xhr.responseText == 'identic') {
+              feedback.text(Translator.trans('The new login is identical to the previous one.'));
+              login.addClass('is-invalid');
             } else {
-              $.ajax({
-                url: url('ajax/update_agent_login'),
-                type: "POST",
-                dataType: "html",
-                data: {_token: $('#_token').val(), login: login, id: agent_id},
-                success: function(filtered_login){
-                    $("#reset-login-form").dialog( "close" );
-                    $('#login').html(filtered_login);
-                },
-                error: function(xhr, ajaxOptions, thrownError){
-                  if (xhr.responseText == 'duplicate') {
-                    $('#login-duplicate').show();
-                  } else if (xhr.responseText == 'identic') {
-                    $('#login-identic').show();
-                  } else {
-                    information("Une erreur est survenue lors de la modification du login.","error");
-                    $(this).dialog( "close" );
-                  }
-                }
-              });
+              information(Translator.trans('An error occurred while updating your login information.','error'));
             }
-          },
-          Annuler: function() {
-            $(this).dialog( "close" );
-          },
-        },
-      });
-
-      $('#change-login-link').on('click', function() {
-        $('#login-duplicate').hide();
-        $('#login-empty').hide();
-        $('#login-identic').hide();
-        $('#new_login').val('');
-        $('#reset-login-form').dialog('open');
-      });
+          }
+        });
+      })
     });
   </script>
   <h3>

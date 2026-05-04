@@ -240,7 +240,7 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Matricule :', $result->text('Node does not exist', false));
         $this->assertStringContainsString('E-mails des responsables :', $result->text('Node does not exist', false));
         $this->assertStringContainsString('Informations :', $result->text('Node does not exist', false));
-        $this->assertStringContainsString('Login :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Identifiant actuel :', $result->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//input[@name="nom"]');
         $this->assertEquals('Dupont', $result->attr('value'));

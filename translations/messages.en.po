@@ -102,3 +102,24 @@ msgstr "Please enter a valid model name"
 
 msgid "New request"
 msgstr "New request"
+
+msgid "Current login"
+msgstr "Current login"
+
+msgid "New login"
+msgstr "New login"
+
+msgid "The new login is identical to the previous one."
+msgstr "The new login is identical to the previous one."
+
+msgid "An error occurred while updating your login information."
+msgstr "An error occurred while updating your login information."
+
+msgid "This login already exists."
+msgstr "This login already exists."
+
+msgid "The login cannot be empty."
+msgstr "The login cannot be empty."
+
+msgid "Change the current login"
+msgstr "Change the current login"
