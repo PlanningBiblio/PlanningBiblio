@@ -99,3 +99,6 @@ msgstr "Name of the new table"
 
 msgid "Please enter a valid model name"
 msgstr "Please enter a valid model name"
+
+msgid "New request"
+msgstr "New request"

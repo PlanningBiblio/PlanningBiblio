@@ -23,15 +23,13 @@ class OvertimeController extends BaseController
     private Array $droits;
 
     #[Route(path: '/overtime', name: 'overtime.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request, Session $session)
     {
-        $session = $request->getSession();
+        $start = $this->initDate('start', 'overtimeStart', 'today');
+        $end = $this->initDate('end', 'overtimeEnd', '+1 year');
 
-        $holiday_helper = new HolidayHelper();
-
-        $annee = $request->get('annee');
-        $reset = $request->get('reset');
-        $perso_id = $request->get('perso_id');
+        $reset = $request->query->get('reset');
+        $perso_id = $request->query->get('perso_id');
 
         $this->droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
@@ -49,29 +47,21 @@ class OvertimeController extends BaseController
             $perso_id = $session->get('loginId');
         }
 
-        if (!$annee) {
-            $annee = isset($_SESSION['oups']['recup_annee'])
-                ? $_SESSION['oups']['recup_annee']
-                : (date("m")<9?date("Y")-1:date("Y"));
-        }
-
         if ($reset) {
-            $annee = date("m") < 9 ? date("Y") - 1 : date("Y");
+            $start = new \DateTime();
+            $end = new \DateTime('+1 year');
             $perso_id = $session->get('loginId');
         }
 
-        $_SESSION['oups']['recup_annee'] = $annee;
         $_SESSION['oups']['recup_perso_id'] = $perso_id;
 
-        $debut = $annee . '-09-01';
-        $fin = ($annee + 1) . '-08-31';
         $message = null;
 
         // Search for existing overtimes
         $c = new \conges();
         $c->admin = ($admin or $adminN2);
-        $c->debut = $debut;
-        $c->fin = $fin;
+        $c->debut = $start->format('Y-m-d');
+        $c->fin = $end->format('Y-m-d');
         if ($perso_id != 0) {
             $c->perso_id = $perso_id;
         }
@@ -86,20 +76,15 @@ class OvertimeController extends BaseController
 
         $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
-        // School year
-        $annees = array();
-        for ($d = date("Y") + 2; $d > date("Y") - 11; $d--) {
-            $annees[]= array($d, $d . '-' . ($d + 1));
-        }
-
         $this->templateParams(array(
-            'years'     => $annees,
-            'year_from' => $annee,
-            'year_to'   => $annee + 1,
+            'start'     => $start,
+            'end'       => $end,
             'admin'     => ($admin or $adminN2),
         ));
 
+        $holiday_helper = new HolidayHelper();
         $overtimes = array();
+
         foreach ($recup as $elem) {
 
           // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
