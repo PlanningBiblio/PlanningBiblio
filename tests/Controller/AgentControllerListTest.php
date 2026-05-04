@@ -95,7 +95,7 @@ class AgentControllerListTest extends PLBWebTestCase
         $button = $crawler->filterXPath('//input[@value="Valider"]');
         $button->click();
 
-        $result = $crawler->filterXPath('//div[@aria-labelledby="ui-id-1"]');
+        $result = $crawler->filterXPath('//div[@id="modif-agent-modal"]');
         $this->assertStringContainsString('display: block', $result->attr('style'));
     }
 }
