@@ -895,17 +895,34 @@ $(function(){
 
     // One year limitation on research form
 
-    $('.one-year').on('change', function(e) {
-      var start = dayjs($(".start-date").val(), Translator.trans('DD/MM/YYYY'));
-      var end = dayjs($(".end-date").val(), Translator.trans('DD/MM/YYYY'));
-      var valid_start = date_validation($(".start-date").val());
-      var valid_end = date_validation($(".end-date").val());
+    $('.start-date.one-year').on('change', function(e) {
+      var start = dayjs($('.start-date').val(), Translator.trans('DD/MM/YYYY'));
+      var end = dayjs($('.end-date').val(), Translator.trans('DD/MM/YYYY'));
+      var valid_start = date_validation($('.start-date').val());
+      var valid_end = date_validation($('.end-date').val());
       var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
 
-      if (valid_end && valid_start){
-        if (end.diff(start, 'year', true) > 1){
-          $('.datepicker.start-date').addClass('is-invalid');
-          $('.datepicker.end-date').addClass('is-invalid');
+      if (valid_end && valid_start) {
+        if (end.diff(start, 'year', true) > 1) {
+          end = start.add(1, 'year');
+          $('.end-date').val(end.format(Translator.trans('DD/MM/YYYY')));
+          feedback.text(Translator.trans('Search results are limited to a period of one year'));
+          feedback.show()
+        }
+      }
+    });
+
+    $('.end-date.one-year').on('change', function(e) {
+      var start = dayjs($('.start-date').val(), Translator.trans('DD/MM/YYYY'));
+      var end = dayjs($('.end-date').val(), Translator.trans('DD/MM/YYYY'));
+      var valid_start = date_validation($('.start-date').val());
+      var valid_end = date_validation($('.end-date').val());
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
+
+      if (valid_end && valid_start) {
+        if (end.diff(start, 'year', true) > 1) {
+          start = end.subtract(1, 'year');
+          $('.start-date').val(start.format(Translator.trans('DD/MM/YYYY')));
           feedback.text(Translator.trans('Search results are limited to a period of one year'));
           feedback.show()
         }
