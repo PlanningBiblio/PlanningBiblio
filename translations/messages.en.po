@@ -87,3 +87,15 @@ msgstr "Please select an agent"
 
 msgid "Search results are limited to a period of one year"
 msgstr "Search results are limited to a period of one year"
+
+msgid "Copy"
+msgstr "Copy"
+
+msgid "Copy of the selected table"
+msgstr "Copy of the selected table"
+
+msgid "Name of the new table"
+msgstr "Name of the new table"
+
+msgid "Please enter a valid model name"
+msgstr "Please enter a valid model name"
