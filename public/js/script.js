@@ -583,8 +583,8 @@ function updateAgentsList(me,select_id){
 }
 
 // This function will replace the updateTips function
-function updateAlert(text) {
-  text = Translator.trans(text);
+function updateAlert(text, translationOptions = null) {
+  text = Translator.trans(text, translationOptions);
   $('#alert-text').text(text);
   $('#alert').removeClass('d-none');
 }
