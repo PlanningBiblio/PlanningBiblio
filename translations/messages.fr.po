@@ -102,3 +102,27 @@ msgstr "Veuillez saisir un nom de modèle valide"
 
 msgid "New request"
 msgstr "Nouvelle demande"
+
+msgid "Change to holiday policy"
+msgstr "Modification du mode de congés"
+
+msgid "To calculate leave in days, you need to change the \"Leave-Recovery\" setting to \"Unlink\"."
+msgstr "Le mode de décompte des congés en jour implique de modifier le paramètre \"Conges-Recuperations\" en \"Dissocier\"."
+
+msgid "Accept"
+msgstr "Accepter"
+
+msgid "Cancel my change"
+msgstr "Annuler ma modification"
+
+msgid "Modification of the number of weeks"
+msgstr "Modification du nombre de semaines"
+
+msgid "Selecting more than three weeks requires checking the \"Weekly Schedule\" option"
+msgstr "Sélectionner un nombre de semaines supérieur à trois implique de cocher le paramètre \"PlanningHebdo\""
+
+msgid "Modification of the minimum password length"
+msgstr "Modification de la longeur minimum du mot de passe"
+
+msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
+msgstr "La valeur minimale de caractères pour le changement de mot de passe doit être un nombre supérieur ou égal à 8."

@@ -102,3 +102,27 @@ msgstr "Please enter a valid model name"
 
 msgid "New request"
 msgstr "New request"
+
+msgid "Change to holiday policy"
+msgstr "Change to holiday policy"
+
+msgid "To calculate leave in days, you need to change the \"Leave-Recovery\" setting to \"Unlink\"."
+msgstr "To calculate leave in days, you need to change the \"Leave-Recovery" setting to \"Unlink\"."
+
+msgid "Accept"
+msgstr "Accept"
+
+msgid "Cancel my change"
+msgstr "Cancel my change"
+
+msgid "Modification of the number of weeks"
+msgstr "Modification of the number of weeks"
+
+msgid "Selecting more than three weeks requires checking the \"Weekly Schedule\" option"
+msgstr "Selecting more than three weeks requires checking the \"Weekly Schedule\" option"
+
+msgid "Modification of the minimum password length"
+msgstr "Modification of the minimum password length"
+
+msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
+msgstr "The minimum value of characters for password change must be a number greater than or equal to 8."
