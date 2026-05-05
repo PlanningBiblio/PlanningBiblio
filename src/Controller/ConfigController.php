@@ -85,10 +85,7 @@ class ConfigController extends BaseController
 
         $this->templateParams(array(
             'elements'  => $elements,
-            'error'     => $request->query->get('error'),
-            'post'      => $request->query->get('post'),
-            'technical' => $technical,
-            'warning'   => $request->query->get('warning')
+            'technical' => $technical
         ));
 
         return $this->output('config/index.html.twig');

@@ -1,10 +1,8 @@
 /**
-Description :
-Fichier JS de la page administration / Configuration
+Description : Fichier JS des pages de configurations
 */
 
-function ldaptest(){
- 
+function ldaptest() {
   var filter = $('#LDAP-Filter').val();
   var host = $('#LDAP-Host').val();
   var idAttribute = $('#LDAP-ID-Attribute').val();
@@ -13,38 +11,38 @@ function ldaptest(){
   var protocol = $('#LDAP-Protocol').val();
   var rdn = $('#LDAP-RDN').val();
   var suffix = $('#LDAP-Suffix').val();
-  
+
   if(port == ''){
     port = '389';
   }
-  
+
   if(filter == ''){
     filter = '(objectclass=inetorgperson)';
   }
-  
+
   var pos = $('#LDAP-Test').position();
   top1 = pos.top - 10;
-  
-  $(".CJInfo").remove();
+
+  $('.CJInfo').remove();
 
   $.ajax({
     url: url('config/ldap-test'),
     type: 'post',
     dataType: 'json',
     data: {filter: filter, host: host, idAttribute: idAttribute, password : password, port: port, protocol: protocol, rdn: rdn, suffix: suffix},
-    success: function(result){
-      if(result == 'ok'){
-        CJInfo('Les paramètres LDAP sont corrects','success',top1);
-      }else if(result == 'bind'){
-        CJInfo('Les paramètres Protocol, RDN et/ou Password sont incorrects','error',top1);
-      }else if(result == 'search'){
-        CJInfo('Les paramètres Suffix, Filter et/ou ID-Attribute sont incorrects','error',top1);
-      }else{
-        CJInfo('Les paramètres LDAP Host et/ou Port sont incorrects','error',top1);
+    success: function(result) {
+      if (result == 'ok') {
+        CJInfo('Les paramètres LDAP sont corrects', 'success', top1);
+      } else if (result == 'bind') {
+        CJInfo('Les paramètres Protocol, RDN et/ou Password sont incorrects', 'error', top1);
+      } else if (result == 'search') {
+        CJInfo('Les paramètres Suffix, Filter et/ou ID-Attribute sont incorrects', 'error', top1);
+      } else {
+        CJInfo('Les paramètres LDAP Host et/ou Port sont incorrects', 'error', top1);
       }
     },
-    error: function(){
-      CJInfo('Impossible de vérifier les paramètres LDAP','error',top1);
+    error: function() {
+      CJInfo('Impossible de vérifier les paramètres LDAP', 'error', top1);
     }
   });
 }
@@ -54,29 +52,28 @@ function mail_config() {
     return;
   }
 
-  if (document.getElementById('Mail-IsMail-IsSMTP').value == 'IsMail') {
-    document.getElementById('Mail-Hostname_tr').style.display = 'none';
-    document.getElementById('Mail-Host_tr').style.display = 'none';
-    document.getElementById('Mail-Port_tr').style.display = 'none';
-    document.getElementById('Mail-SMTPSecure_tr').style.display = 'none';
-    document.getElementById('Mail-SMTPAuth_tr').style.display = 'none';
-    document.getElementById('Mail-SMTPAutoTLS_tr').style.display = 'none';
-    document.getElementById('Mail-Username_tr').style.display = 'none';
-    document.getElementById('Mail-Password_tr').style.display = 'none';
+  if ($('#Mail-IsMail-IsSMTP').val() == 'IsMail') {
+    $('#Mail-Hostname_tr').hide();
+    $('#Mail-Host_tr').hide();
+    $('#Mail-Port_tr').hide();
+    $('#Mail-SMTPSecure_tr').hide();
+    $('#Mail-SMTPAuth_tr').hide();
+    $('#Mail-SMTPAutoTLS_tr').hide();
+    $('#Mail-Username_tr').hide();
+    $('#Mail-Password_tr').hide();
   } else {
-    document.getElementById('Mail-Hostname_tr').style.display = '';
-    document.getElementById('Mail-Host_tr').style.display = '';
-    document.getElementById('Mail-Port_tr').style.display = '';
-    document.getElementById('Mail-SMTPSecure_tr').style.display = '';
-    document.getElementById('Mail-SMTPAutoTLS_tr').style.display = '';
-    document.getElementById('Mail-SMTPAuth_tr').style.display = '';
-    document.getElementById('Mail-Username_tr').style.display = '';
-    document.getElementById('Mail-Password_tr').style.display = '';
+    $('#Mail-Hostname_tr').show();
+    $('#Mail-Host_tr').show();
+    $('#Mail-Port_tr').show();
+    $('#Mail-SMTPSecure_tr').show();
+    $('#Mail-SMTPAutoTLS_tr').show();
+    $('#Mail-SMTPAuth_tr').show();
+    $('#Mail-Username_tr').show();
+    $('#Mail-Password_tr').show();
   }
 }
 
-function mailtest(){
- 
+function mailtest() {
   var enabled = $('#Mail-IsEnabled').prop('checked');
   var mailSmtp = $('#Mail-IsMail-IsSMTP').val();
   var hostname = $('#Mail-Hostname').val();
@@ -91,19 +88,19 @@ function mailtest(){
   var fromName = $('#Mail-FromName').val();
   var signature = $('#Mail-Signature').val();
   var planning = $('#Mail-Planning').val().trim();
-  
+
   var pos = $('#Mail-Test').position();
   top1 = pos.top - 10;
-  
-  $(".CJInfo").remove();
-  
-  if(enabled == 0){
-    CJInfo("Le paramètre \"Mail-IsEnabled\" est d&eacute;sactiv&eacute;","error",top1,8000);
+
+  $('.CJInfo').remove();
+
+  if(enabled == 0) {
+    CJInfo('Le paramètre "Mail-IsEnabled" est désactivé', 'error', top1, 8000);
     return false;
   }
 
-  if( !planning){
-    CJInfo("Veuillez entrer une (ou plusieurs) adresse(s) valide(s) dans le champ \"Mail-Planning\"","error",top1,8000);
+  if( !planning) {
+    CJInfo('Veuillez entrer une (ou plusieurs) adresse(s) valide(s) dans le champ "Mail-Planning"', 'error', top1, 8000);
     return false;
   }
 
@@ -128,18 +125,77 @@ function mailtest(){
     type: 'post',
     dataType: 'json',
     data: data,
-    success: function(result){
-      if(result == 'ok'){
-        CJInfo('Le mail de test a été envoyé avec succès. Vérifiez votre messagerie.','success',top1,8000);
-      }else if(result == 'socket'){
-        CJInfo('Impossible de joindre le serveur de messagerie.','error',top1,8000);
-      }else{
-        CJInfo("Une erreur est survenue lors de l'envoi du mail.#BR#"+result,'error',top1,8000);
+    success: function(result) {
+      if (result == 'ok') {
+        CJInfo('Le mail de test a été envoyé avec succès. Vérifiez votre messagerie.', 'success', top1, 8000);
+      } else if (result == 'socket') {
+        CJInfo('Impossible de joindre le serveur de messagerie.', 'error', top1, 8000);
+      } else {
+        CJInfo("Une erreur est survenue lors de l'envoi du mail.\n" + result, 'error', top1, 8000);
       }
     },
     error: function(result){
-        CJInfo("Une erreur est survenue lors de l'envoi du mail.#BR#"+result.responseText,'error',top1,8000);
+        CJInfo("Une erreur est survenue lors de l'envoi du mail.\n" + result.responseText, 'error', top1, 8000);
+    }
+  });
+}
+
+function nb_week_reset() {
+  var previous_nb_semaine = $('#nb-week-modal').data('previous_nb_semaine');
+  $('#nb_semaine option[value="' + previous_nb_semaine + '"]').prop('selected', true);
+}
+
+$( document ).ready(function() {
+  previous_nb_semaine = $('#nb_semaine option:selected').val();
+  mail_config();
+
+  // To prevent form submission on enter key
+  $(window).keydown(function(event) {
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
     }
   });
 
-}
+  $('#Conges-Mode, #Conges-Recuperations').on('change', function() {
+    conges_mode = $('#Conges-Mode').val();
+    conges_recuperations = $('#Conges-Recuperations').val();
+    if (conges_mode == 'jours' && conges_recuperations == 0) {
+      $('#holiday-policy-modal').modal('show');
+      if ($(this)[0] == $('#Conges-Recuperations')[0]) {
+        $('#cancel-mode').hide();
+      }
+      else {
+        $('#cancel-mode').show();
+      }
+    }
+  });
+
+  $('#nb_semaine, #PlanningHebdo').on('change', function() {
+    nb_semaine = $('#nb_semaine').val();
+    planningHebdo = $('#PlanningHebdo').is(':checked');
+    if (nb_semaine > 3 && !planningHebdo) {
+      $('#nb-week-modal').data('previous_nb_semaine', previous_nb_semaine).modal('show');
+      if ($(this)[0] == $('#PlanningHebdo')[0]) {
+        $('#cancel-week').hide();
+      }
+      else {
+        $('#cancel-week').show();
+      }
+      return;
+    }
+    previous_nb_semaine = nb_semaine;
+  });
+
+  $('#Auth-PasswordLength').on('change', function(e) {
+    password_length = $('#Auth-PasswordLength').val();
+    if (!int_validation(password_length) || password_length < 8) {
+      $('#password-length-modal').modal('show');
+    }
+  });
+
+  $('#Mail-IsMail-IsSMTP').on('change', function() {
+    mail_config();
+  });
+
+});

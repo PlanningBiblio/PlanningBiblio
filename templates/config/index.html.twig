@@ -2,90 +2,11 @@
 
 {% extends 'base.html.twig' %}
 
-{% block page %}
+{% block specificjs %}
   <script type="text/JavaScript" src="{{ asset('js/config.js') }}"></script>
-  <script type="text/JavaScript">
+{% endblock %}
 
-    function nb_week_reset() {
-      var previous_nb_semaine = $('#nb-week-modal').data('previous_nb_semaine');
-      $('#nb_semaine option[value="' + previous_nb_semaine + '"]').prop('selected', true);
-    }
-
-    $( document ).ready(function() {
-
-      // To prevent form submission on enter key
-      $(window).keydown(function(event) {
-        if(event.keyCode == 13) {
-          event.preventDefault();
-          return false;
-        }
-      });
-
-      var previous_nb_semaine = $('#nb_semaine option:selected').val();
-      {% for i in 1..10 %}
-        var previous_Multisites_site{{ i }}_cycles = $('#Multisites-site{{ i }}-cycles option:selected').val();
-      {% endfor %}
-
-      $('#Conges-Mode, #Conges-Recuperations').on('change', function() {
-        conges_mode = $('#Conges-Mode').val();
-        conges_recuperations = $('#Conges-Recuperations').val();
-        if (conges_mode == 'jours' && conges_recuperations == 0) {
-          $('#holiday-policy-modal').modal('show');
-          if ($(this)[0] == $('#Conges-Recuperations')[0]) {
-            $('#cancel-mode').hide();
-          }
-          else {
-            $('#cancel-mode').show();
-          }
-        }
-      });
-
-      $('#nb_semaine, #PlanningHebdo').on('change', function() {
-        nb_semaine = $('#nb_semaine').val();
-        planningHebdo = $('#PlanningHebdo').is(':checked');
-        if (nb_semaine > 3 && !planningHebdo) {
-          $('#nb-week-modal').data('previous_nb_semaine', previous_nb_semaine).modal('show');
-          if ($(this)[0] == $('#PlanningHebdo')[0]) {
-            $('#cancel-week').hide();
-          }
-          else {
-            $('#cancel-week').show();
-          }
-          return;
-        }
-        previous_nb_semaine = nb_semaine;
-      });
-
-      $('#Auth-PasswordLength').on('change', function(e) {
-        password_length = $('#Auth-PasswordLength').val();
-        if (!int_validation(password_length) || password_length < 8) {
-          $('#password-length-modal').modal('show');
-        }
-      });
-
-      $('#Mail-IsMail-IsSMTP').on('change', function() {
-        mail_config();
-      });
-      mail_config();
-    });
-  </script>
-  {% if warning %}
-    <script type="text/JavaScript">
-      CJInfo('{{ warning }}','error');
-    </script>
-  {% endif %}
-  {% if post %}
-    {% if error %}
-      <script type="text/JavaScript">
-        CJInfo('Il y a eu des erreurs pendant la modification.<br/>Veuillez vérifier la configuration.','error');
-      </script>
-    {% else %}
-      <script type="text/JavaScript">
-        CJInfo('Les modifications ont été enregistrées.','highlight');
-      </script>
-    {% endif %}
-  {% endif %}
-
+{% block page %}
   <h3>Configuration {% if technical %}technique{% else %}fonctionnelle{% endif %}</h3>
     <form name="form" action="{{ path('config.update') }}" method="post">
 
@@ -164,5 +85,4 @@
         </div>
       </div>
     </div>
-
 {% endblock %}
