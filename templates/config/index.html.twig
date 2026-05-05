@@ -58,7 +58,7 @@
 
       $('#Auth-PasswordLength').on('change', function(e) {
         password_length = $('#Auth-PasswordLength').val();
-        if (!int_validation(password_length)  || password_length < 8) {
+        if (!int_validation(password_length) || password_length < 8) {
           $('#password-length-modal').modal('show');
         }
       });
@@ -115,7 +115,7 @@
             </div>
 
             <div class="modal-body" style="text-align: center;">
-              <p>{% trans %}To calculate leave in days, you need to change the "Leave-Recovery" setting to "Unlink".{% endtrans %}</p>
+              <p>{% trans %}To calculate leave in days, you need to change the \"Conges-Recuperations\" setting to \"Dissocier\"{% endtrans %}</p>
             </div>
 
           <div class="modal-footer" style="text-align:center">
@@ -135,7 +135,7 @@
             </div>
 
             <div class="modal-body" style="text-align: center;">
-              <p>{% trans %}Selecting more than three weeks requires checking the "Weekly Schedule" option{% endtrans %}</p>
+              <p>{% trans %}Selecting more than three weeks requires checking the \"PlanningHebdo\" option{% endtrans %}</p>
             </div>
 
           <div class="modal-footer" style="text-align:center">
