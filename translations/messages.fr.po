@@ -232,7 +232,7 @@ msgstr "Enregistrer toute la semaine"
 msgid "Change to holiday policy"
 msgstr "Modification du mode de congés"
 
-msgid "To calculate leave in days, you need to change the \"Conges-Recuperations\" setting to \"Dissocier\"."
+msgid "To calculate leave in days, you need to change the Conges-Recuperations setting to Dissocier."
 msgstr "Le mode de décompte des congés en jour implique de modifier le paramètre \"Conges-Recuperations\" en \"Dissocier\"."
 
 msgid "Accept"
@@ -244,8 +244,8 @@ msgstr "Annuler ma modification"
 msgid "Modification of the number of weeks"
 msgstr "Modification du nombre de semaines"
 
-msgid "Selecting more than three weeks requires checking the \"PlanningHebdo\" option"
-msgstr "Sélectionner un nombre de semaines supérieur à trois implique de cocher le paramètre \"PlanningHebdo\""
+msgid "Selecting more than three weeks requires checking the PlanningHebdo option."
+msgstr "Sélectionner un nombre de semaines supérieur à trois implique de cocher le paramètre \"PlanningHebdo\"."
 
 msgid "Modification of the minimum password length"
 msgstr "Modification de la longeur minimum du mot de passe"

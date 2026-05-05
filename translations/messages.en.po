@@ -232,8 +232,8 @@ msgstr "Save all week"
 msgid "Change to holiday policy"
 msgstr "Change to holiday policy"
 
-msgid "To calculate leave in days, you need to change the \"Conges-Recuperations\" setting to \"Dissocier\""
-msgstr "To calculate leave in days, you need to change the \"Conges-Recuperations\" setting to \"Dissocier\""
+msgid "To calculate leave in days, you need to change the Conges-Recuperations setting to Dissocier."
+msgstr "To calculate leave in days, you need to change the \"Conges-Recuperations\" setting to \"Dissocier\"."
 
 msgid "Accept"
 msgstr "Accept"
@@ -244,8 +244,8 @@ msgstr "Cancel my change"
 msgid "Modification of the number of weeks"
 msgstr "Modification of the number of weeks"
 
-msgid "Selecting more than three weeks requires checking the \"PlanningHebdo\" option"
-msgstr "Selecting more than three weeks requires checking the \"PlanningHebdo\" option"
+msgid "Selecting more than three weeks requires checking the PlanningHebdo option."
+msgstr "Selecting more than three weeks requires checking the \"PlanningHebdo\" option."
 
 msgid "Modification of the minimum password length"
 msgstr "Modification of the minimum password length"
