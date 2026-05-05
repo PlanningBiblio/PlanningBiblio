@@ -410,9 +410,7 @@ $(function() {
          $('#pl-appelDispo-modal').modal('hide');
       },
       error: function() {
-        var text = Translator.trans('An error occurred while sending the email');
-        $('#alert-text').text(text);
-        $('#alert').removeClass('d-none');
+        updateAlert('An error occurred while sending the email');
       }
     });
   });
