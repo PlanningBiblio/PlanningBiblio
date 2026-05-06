@@ -1,5 +1,27 @@
 # Changelog Planno
 
+## Version 25.11.23 (2026-05-06)
+
+### Enhancement
+
+* MT46629: Use bootstrap for the copy framework modal #1367
+* MT46629: Use new datepicker inputs for Overtime #1368
+* MT46629: new date control with BS invalid-feedback #1369
+* MT46629: Use bootstrap for overtime modal #1370
+* MT46629: Use bootstrap for config modals #1372
+* MT46629: Use bootstrap for callForHelp modal #1373
+* MT46629: Use bootstrap for bulk agent modification #1374
+* MT46629: Move Config Javascript to public/js/config.js
+
+### Security
+
+* MT51958: Do not display password in configuration page
+* MT53227: Fix SQL Injection vulnerabilities
+
+### Dependencies
+
+* Composer update
+
 ## Version 25.11.22 (2026-04-17)
 
 ### Enhancement
