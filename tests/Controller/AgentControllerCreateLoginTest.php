@@ -10,7 +10,7 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
     {
         parent::setUp();
 
-        $this->setParam('ICS-Server3', 0);
+        $this->config->setParam('ICS-Server3', 0);
 
         $this->builder->delete(Agent::class);
     }
@@ -48,7 +48,7 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
 
         foreach ($expectedLogins as $elem) {
             // Set config
-            $this->setParam('Auth-LoginLayout', $elem[0]);
+            $this->config->setParam('Auth-LoginLayout', $elem[0]);
 
             // Open the add agent form
             $crawler = $this->client->request('GET', '/agent/add');

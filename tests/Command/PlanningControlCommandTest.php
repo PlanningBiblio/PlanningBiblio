@@ -27,17 +27,17 @@ class PlanningControlCommandTest extends PLBWebTestCase
 
     public function testPlanningImportModel(): void
     {
-        $this->setParam('Rappels-Actifs', 1);
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('Multisites-site1', 1);
-        $this->setParam('Multisites-site2', 0);
-        $this->setParam('Multisites-site3', 0);
-        $this->setParam('Multisites-site4', 0);
-        $this->setParam('Rappels-Jours', 1);
-        $this->setParam('Dimanche', 0);
-        $this->setParam('Rappels-Renfort', 0);
-        $this->setParam('Conges-Enable', 0);
-        $this->setParam('Mail-Planning', 'xxx.ss@biblibre.com');
+        $this->config->setParam('Rappels-Actifs', 1);
+        $this->config->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-site1', 1);
+        $this->config->setParam('Multisites-site2', 0);
+        $this->config->setParam('Multisites-site3', 0);
+        $this->config->setParam('Multisites-site4', 0);
+        $this->config->setParam('Rappels-Jours', 1);
+        $this->config->setParam('Dimanche', 0);
+        $this->config->setParam('Rappels-Renfort', 0);
+        $this->config->setParam('Conges-Enable', 0);
+        $this->config->setParam('Mail-Planning', 'xxx.ss@biblibre.com');
 
         $this->testPlanningControlCommandPlanningNotCreated();
 

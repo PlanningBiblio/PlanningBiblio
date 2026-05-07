@@ -17,11 +17,12 @@ class PLBWebTestCase extends PantherTestCase
     protected $client;
     protected $CSRFToken;
     protected $entityManager;
+    protected $config;
 
     /**
      * The addConfig function allows you to test additional parameters that are usually found in the custom_options.php file
      */
-    private function addConfig($name, $value): void
+    protected function addConfig($name, $value): void
     {
         $c = new Config();
         $c->setName($name);
@@ -62,7 +63,6 @@ class PLBWebTestCase extends PantherTestCase
         }
     }
 
-    // When possible, use Config::setParam instead (see src/Repository/ConfigRepository.php)
     protected function setParam($name, $value)
     {
         $GLOBALS['config'][$name] = $value;
@@ -90,6 +90,7 @@ class PLBWebTestCase extends PantherTestCase
         $this->CSRFToken = $CSRFToken;
         $this->builder = new FixtureBuilder();
         $this->entityManager = $entityManager;
+        $this->config = $entityManager->getRepository(Config::class);
 
         $_SESSION['oups']['Auth-Mode'] = 'SQL';
         $_SESSION['login_id'] = 1;

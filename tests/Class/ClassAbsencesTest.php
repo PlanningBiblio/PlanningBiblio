@@ -52,26 +52,26 @@ class ClassAbsencesTest extends PLBWebTestCase
         $absence->perso_id = 8;
         $responsables = array();
         $member = $entityManager->getRepository(Agent::class)->find(1);
-        $this->setParam('Absences-notifications-A1', '');
-        $this->setParam('Absences-notifications-A2', '');
-        $this->setParam('Absences-notifications-A3', '');
-        $this->setParam('Absences-notifications-A4', '');
-        $this->setParam('Absences-notifications-B1', '');
-        $this->setParam('Absences-notifications-B2', '');
-        $this->setParam('Absences-notifications-B3', '');
-        $this->setParam('Absences-notifications-B4', '');
+        $this->config->setParam('Absences-notifications-A1', '');
+        $this->config->setParam('Absences-notifications-A2', '');
+        $this->config->setParam('Absences-notifications-A3', '');
+        $this->config->setParam('Absences-notifications-A4', '');
+        $this->config->setParam('Absences-notifications-B1', '');
+        $this->config->setParam('Absences-notifications-B2', '');
+        $this->config->setParam('Absences-notifications-B3', '');
+        $this->config->setParam('Absences-notifications-B4', '');
         $absence->getRecipients("-A2", $responsables, $member);
         $destinataires = $absence->recipients;
         $this->assertEmpty($destinataires, 'When all Absences-notification* are empty, recipients is empty');
 
-        $this->setParam('Absences-notifications-A1', '[]');
-        $this->setParam('Absences-notifications-A2', '[]');
-        $this->setParam('Absences-notifications-A3', '[]');
-        $this->setParam('Absences-notifications-A4', '[]');
-        $this->setParam('Absences-notifications-B1', '[]');
-        $this->setParam('Absences-notifications-B2', '[]');
-        $this->setParam('Absences-notifications-B3', '[]');
-        $this->setParam('Absences-notifications-B4', '[]');
+        $this->config->setParam('Absences-notifications-A1', '[]');
+        $this->config->setParam('Absences-notifications-A2', '[]');
+        $this->config->setParam('Absences-notifications-A3', '[]');
+        $this->config->setParam('Absences-notifications-A4', '[]');
+        $this->config->setParam('Absences-notifications-B1', '[]');
+        $this->config->setParam('Absences-notifications-B2', '[]');
+        $this->config->setParam('Absences-notifications-B3', '[]');
+        $this->config->setParam('Absences-notifications-B4', '[]');
         $absence->getRecipients("-A2", $responsables, $member);
         $destinataires = $absence->recipients;
         $this->assertEmpty($destinataires, 'When all Absences-notification* are empty arrays, recipients is empty');
@@ -79,10 +79,10 @@ class ClassAbsencesTest extends PLBWebTestCase
 
     public function testGetRecipients2(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Absences-validation', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
+        $this->config->setParam('Absences-validation', 1);
         # Absence must be validated at level1 first
-        $this->setParam('Absences-Validation-N2', 1);
+        $this->config->setParam('Absences-Validation-N2', 1);
 
         # Absence reason with workflow B
         $workflow_b_reason = 'Reason with workflow B';
@@ -138,9 +138,9 @@ class ClassAbsencesTest extends PLBWebTestCase
         $this->assertEquals('agent@example.com', $this->getRecipients($id, 4)[0], "validating a workflow B absence at level 2 notifies agent");
 
         # Revert params
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Absences-validation', 0);
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('Absences-validation', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
     }
 

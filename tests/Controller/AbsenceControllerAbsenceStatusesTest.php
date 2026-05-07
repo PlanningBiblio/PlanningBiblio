@@ -17,7 +17,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testNewAbsenceWithoutRight(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -41,7 +41,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testNewAbsenceRightN1(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -68,7 +68,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testNewAbsenceRightN1AndN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -97,7 +97,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testNewAbsenceRightN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -126,7 +126,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testNewAbsenceRightN2WithAbsencesValidationN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 1);
+        $this->config->setParam('Absences-Validation-N2', 1);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -149,7 +149,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditAskedAbsenceWithoutRight(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -171,7 +171,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditAskedAbsenceRightN1(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -200,7 +200,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditAskedAbsenceRightN1AndN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -231,7 +231,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditAskedAbsenceRightN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -262,7 +262,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditAskedAbsenceRightN2WithAbsencesValidationN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 1);
+        $this->config->setParam('Absences-Validation-N2', 1);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -288,7 +288,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN1AbsenceWithoutRight(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -310,7 +310,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN1AbsenceRightN1(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -339,7 +339,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN1AbsenceRightN1AndN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -370,7 +370,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN1AbsenceRightN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -401,7 +401,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN1AbsenceRightN2WithAbsencesValidationN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 1);
+        $this->config->setParam('Absences-Validation-N2', 1);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -432,7 +432,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN2AbsenceWithoutRight(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -454,7 +454,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN2AbsenceRightN1(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -480,7 +480,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN2AbsenceRightN1AndN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -511,7 +511,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN2AbsenceRightN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -542,7 +542,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN2AbsenceRightN2WithAbsencesValidationN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 1);
+        $this->config->setParam('Absences-Validation-N2', 1);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',

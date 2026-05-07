@@ -29,11 +29,11 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
         $interval = $origin->diff($now);
         $daysBefore = (int) $interval->format('%R%a');
 
-        $this->setParam('Hamac-debug', '1');
-        $this->setParam('Hamac-motif', 'Hamac');
-        $this->setParam('Hamac-id', 'matricule');
-        $this->setParam('Hamac-status', '2,3,5');
-        $this->setParam('Hamac-csv', __DIR__ . '/../data/absences.csv');
+        $this->config->setParam('Hamac-debug', '1');
+        $this->config->setParam('Hamac-motif', 'Hamac');
+        $this->config->setParam('Hamac-id', 'matricule');
+        $this->config->setParam('Hamac-status', '2,3,5');
+        $this->config->setParam('Hamac-csv', __DIR__ . '/../data/absences.csv');
 
         $GLOBALS['config']['hamac_status_extra'] = [0,1];
         $GLOBALS['config']['hamac_status_waiting'] = [3];

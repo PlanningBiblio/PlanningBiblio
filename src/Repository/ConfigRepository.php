@@ -58,6 +58,7 @@ class ConfigRepository extends EntityRepository
             $param->setValue($value);
             // FIXME: $technical is not supposed to change, but unit tests fail if it is not forced here.
             $param->setTechnical($technical);
+            $this->getEntityManager()->flush();
         }
     }
 }

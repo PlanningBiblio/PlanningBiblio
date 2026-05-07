@@ -14,10 +14,10 @@ class AgentControllerLDIFTest extends PLBWebTestCase
 
     public function testLDIFImport(): void
     {
-        $this->setParam('LDIF-File', __DIR__ . '/../../data/ldif_sample.ldif');
-        $this->setParam('LDIF-ID-Attribute', 'uid');
-        $this->setParam('LDIF-Matricule', 'supannempid');
-        $this->setParam('Multisites-nombre', '1');
+        $this->config->setParam('LDIF-File', __DIR__ . '/../../data/ldif_sample.ldif');
+        $this->config->setParam('LDIF-ID-Attribute', 'uid');
+        $this->config->setParam('LDIF-Matricule', 'supannempid');
+        $this->config->setParam('Multisites-nombre', '1');
         $this->setUpPantherClient();
 
         $agent = $this->builder->build(Agent::class, array(
