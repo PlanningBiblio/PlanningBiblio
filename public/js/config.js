@@ -149,14 +149,6 @@ $( document ).ready(function() {
   previous_nb_semaine = $('#nb_semaine option:selected').val();
   mail_config();
 
-  // To prevent form submission on enter key
-  $(window).keydown(function(event) {
-    if(event.keyCode == 13) {
-      event.preventDefault();
-      return false;
-    }
-  });
-
   $('#Conges-Mode, #Conges-Recuperations').on('change', function() {
     conges_mode = $('#Conges-Mode').val();
     conges_recuperations = $('#Conges-Recuperations').val();

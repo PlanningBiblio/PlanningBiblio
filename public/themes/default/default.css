@@ -566,14 +566,14 @@ li.nav-item.dropdown a.nav-link.active, li.nav-item.dropdown a.nav-link.active:h
   cursor: pointer;
 }
 
-li.nav-item a.nav-link.active, li.nav-item a.nav-link.active:hover {
+li.nav-item a.nav-link.active, li.nav-item a.nav-link.active:hover, li.nav-item a.nav-link.active:focus {
   color: #29495C;
   border-bottom: 5px solid #FFD700;
   pointer-events: none;
   cursor: default;
 }
 
-li.nav-item a.nav-link:hover, li.nav-item a.nav-link.dropdown-toggle.show {
+li.nav-item a.nav-link:hover, li.nav-item a.nav-link:focus, li.nav-item a.nav-link.dropdown-toggle.show {
   color: #29495C;
   border-bottom: 5px solid #29495C;
 }
@@ -1673,9 +1673,22 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   color:#FFF;
 }
 
-/*	JQuery-UI Accordion	*/
-.ui-accordion .ui-accordion-header{
-  margin-bottom: 0px;
+/* Accordion	*/
+
+.accordion-button {
+  color: inherit;
+}
+
+.accordion-button:hover, .accordion-button:focus, .accordion-button:not(.collapsed) {
+  background-color: #FFD700;
+}
+
+.accordion-button:focus:not(:focus-visible){
+  box-shadow: none;
+}
+
+.accordion-item {
+  color : #29495C;
 }
 
 /*	Agenda	*/
@@ -2030,6 +2043,11 @@ input::placeholder {
 /* Modals END */
 
 /* Bootstrap Grid START */
+
+.row-config {
+  min-height: 30px;
+  margin-bottom: 15px;
+}
 
 .row.row-sortable {
   min-height: 45px;
