@@ -19,8 +19,8 @@ class AbsenceControllerListTest extends PLBWebTestCase
     public function testList(): void
     {
 
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('Multisites-nombre', 1);
 
         $client = static::createClient();
 
@@ -82,8 +82,8 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
     public function testListMultiSites(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 2);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('Multisites-nombre', 2);
 
         $client = static::createClient();
 
@@ -130,8 +130,8 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
     public function testListWithAbsencesNotificationsAgentParAgent(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 2);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
+        $this->config->setParam('Multisites-nombre', 2);
 
         $client = static::createClient();
 

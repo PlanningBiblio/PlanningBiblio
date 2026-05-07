@@ -10,24 +10,24 @@ class ConfigHelperTest extends PLBWebTestCase
     public function testPasswordUpdate(): void {
 
         $entityManager = $this->entityManager;
-        $repository    = $entityManager->getRepository(Config::class);
+        #TODO: Use $this
         $helper        = new ConfigHelper();
 
-        $repository->setParam('LDAP-Password', 'current_encrypted_password', 1);
+        $this->config->setParam('LDAP-Password', 'current_encrypted_password', 1);
 
         $params = array('LDAP-Password' => '', 'technical' => 1);
         $error = $helper->saveConfig($params);
 
         $this->assertEquals('', $error, 'No error has been returned');
-        $this->assertEquals('current_encrypted_password', $repository->getValue('LDAP-Password'), 'Password has not been updated (empty password)');
+        $this->assertEquals('current_encrypted_password', $this->config->getValue('LDAP-Password'), 'Password has not been updated (empty password)');
 
         $params = array('LDAP-Password' => 'NewPassword', 'technical' => 1);
         $helper->saveConfig($params);
 
         $this->assertEquals('', $error, 'No error has been returned');
-        $this->assertNotEquals('current_encrypted_password', $repository->getValue('LDAP-Password'), 'Password is not current_encrypted_password');
-        $this->assertNotEquals('NewPassword',                $repository->getValue('LDAP-Password'), 'Password is not NewPassword');
-        $this->assertNotEquals('',                           $repository->getValue('LDAP-Password'), 'Password is not empty');
+        $this->assertNotEquals('current_encrypted_password', $this->config->getValue('LDAP-Password'), 'Password is not current_encrypted_password');
+        $this->assertNotEquals('NewPassword',                $this->config->getValue('LDAP-Password'), 'Password is not NewPassword');
+        $this->assertNotEquals('',                           $this->config->getValue('LDAP-Password'), 'Password is not empty');
 
     }
 

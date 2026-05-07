@@ -18,10 +18,10 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
 
     public function testImport(): void {
         $entityManager = $this->entityManager;
-        $this->setParam('AbsImport-Reason',       'Test reason');
-        $this->setParam('AbsImport-Agent',        'matricule');
-        $this->setParam('AbsImport-ConvertBegin', "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
-        $this->setParam('AbsImport-ConvertEnd',   "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
+        $this->config->setParam('AbsImport-Reason',       'Test reason');
+        $this->config->setParam('AbsImport-Agent',        'matricule');
+        $this->config->setParam('AbsImport-ConvertBegin', "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
+        $this->config->setParam('AbsImport-ConvertEnd',   "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
 
         $loggedin = $this->builder->build(Agent::class, array(
              'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -58,7 +58,7 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
 
         # Empty start regex
         $this->builder->delete(Absence::class);
-        $this->setParam('AbsImport-ConvertBegin', '');
+        $this->config->setParam('AbsImport-ConvertBegin', '');
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
@@ -66,8 +66,8 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $this->assertEquals($results[2]['message'], 'AbsImport-ConvertBegin est vide', "Log message: AbsImport-ConvertBegin is empty");
 
         # Empty end regex
-        $this->setParam('AbsImport-ConvertBegin',  "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
-        $this->setParam('AbsImport-ConvertEnd',    '');
+        $this->config->setParam('AbsImport-ConvertBegin',  "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
+        $this->config->setParam('AbsImport-ConvertEnd',    '');
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
@@ -75,8 +75,8 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $this->assertEquals($results[3]['message'], 'AbsImport-ConvertEnd est vide', "Log message: AbsImport-ConvertEnd is empty");
 
         # Invalid start regex
-        $this->setParam('AbsImport-ConvertBegin',  "I'm an invalid start regex");
-        $this->setParam('AbsImport-ConvertEnd',    '');
+        $this->config->setParam('AbsImport-ConvertBegin',  "I'm an invalid start regex");
+        $this->config->setParam('AbsImport-ConvertEnd',    '');
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
@@ -84,8 +84,8 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
         $this->assertEquals($results[2]['message'], "I'm an invalid start regex n'est pas une expression régulière valide dans l'option de configuration AbsImport-ConvertBegin", "Log message: AbsImport-ConvertBegin is invalid");
 
         # Invalid end regex
-        $this->setParam('AbsImport-ConvertBegin', "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
-        $this->setParam('AbsImport-ConvertEnd',   "I'm an invalid end regex");
+        $this->config->setParam('AbsImport-ConvertBegin', "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
+        $this->config->setParam('AbsImport-ConvertEnd',   "I'm an invalid end regex");
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
@@ -97,9 +97,9 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
 
         # New absence, agent found by login
         $this->builder->delete(Absence::class);
-        $this->setParam('AbsImport-ConvertBegin', "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
-        $this->setParam('AbsImport-ConvertEnd',   "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
-        $this->setParam('AbsImport-Agent',        'login');
+        $this->config->setParam('AbsImport-ConvertBegin', "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
+        $this->config->setParam('AbsImport-ConvertEnd',   "/^(\d{2}\/\d{2}\/\d{4})$/\n/^(\d{2}\/\d{2}\/\d{4}) (matin)$/\n/^(\d{2}\/\d{2}\/\d{4}) (après-midi)$/");
+        $this->config->setParam('AbsImport-Agent',        'login');
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));
@@ -114,7 +114,7 @@ class AbsenceImportCSVHelperTest extends PLBWebTestCase
 
         # New absence, agent found by email
         $this->builder->delete(Absence::class);
-        $this->setParam('AbsImport-Agent', 'mail');
+        $this->config->setParam('AbsImport-Agent', 'mail');
         $helper = new AbsenceImportCSVHelper();
         $results  = $helper->import($uploadedFile, $loggedin_id);
         $absences = $entityManager->getRepository(Absence::class)->findBy(array('perso_id' => $example_agent->getId()));

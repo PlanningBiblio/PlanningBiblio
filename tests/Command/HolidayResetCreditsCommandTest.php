@@ -45,7 +45,7 @@ class HolidayResetCreditsCommandTest extends PLBWebTestCase
     
     public function testConfigOn(): void
     {
-        $this->setParam('Conges-transfer-comp-time', 1);
+        $this->config->setParam('Conges-transfer-comp-time', 1);
         
         $jdupontBefore = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
         $this->assertEquals(11, $jdupontBefore->getHolidayCredit(), 'Before jdupont conges_credit should be 11');
@@ -125,7 +125,7 @@ class HolidayResetCreditsCommandTest extends PLBWebTestCase
 
     public function testConfigOff(): void
     {
-        $this->setParam('Conges-transfer-comp-time', 0);
+        $this->config->setParam('Conges-transfer-comp-time', 0);
 
         $jdupontBefore = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
         $this->assertEquals(11, $jdupontBefore->getHolidayCredit(), 'Before jdupont conges_credit should be 11');

@@ -46,7 +46,7 @@ class LegalNoticesControllerTest extends PLBWebTestCase
         ## Vel frustra ictu cruore
         ';
 
-        $this->setParam('legalNotices', $lg);
+        $this->config->setParam('legalNotices', $lg);
 
         $crawler = $client->request('GET', '/legal-notices');
 
@@ -63,7 +63,7 @@ class LegalNoticesControllerTest extends PLBWebTestCase
         Pyramus laedar valido Ulixes, meditataque.</p>
         ';
 
-        $this->setParam('legalNotices', $lg);
+        $this->config->setParam('legalNotices', $lg);
 
         $crawler = $client->request('GET', '/legal-notices');
 

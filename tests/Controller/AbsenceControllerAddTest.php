@@ -15,8 +15,8 @@ class AbsenceControllerAddTest extends PLBWebTestCase
 
     public function testAdd(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('Multisites-nombre', 1);
 
         $this->setUpPantherClient();
 

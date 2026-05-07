@@ -15,24 +15,24 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
     public function testAddWithoutMultiSite(): void
     {
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('PlanningHebdo', 0);
-        $this->setParam('Conges-Enable', 1);
-        $this->setParam('Conges-Mode', 'Heures');
-        $this->setParam('Conges-Heures', 0);
-        $this->setParam('Conges-validation', 1);
-        $this->setParam('Conges-Validation-N2', 0);
-        $this->setParam('Conges-Recuperations', 1);
-        $this->setParam('Conges-tous', 0);
-        $this->setParam('Conges-Rappels', 0);
-        $this->setParam('Conges-Rappels-Jours', 14);
-        $this->setParam('Conges-demi-journees', 1);
-        $this->setParam('Conges-fullday-switching-time', 4);
-        $this->setParam('Conges-fullday-reference-time', '');
-        $this->setParam('Conges-planningVide', 1);
-        $this->setParam('Conges-apresValidation', 1);
-        $this->setParam('Recup-Uneparjour', 1);
+        $this->config->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('PlanningHebdo', 0);
+        $this->config->setParam('Conges-Enable', 1);
+        $this->config->setParam('Conges-Mode', 'Heures');
+        $this->config->setParam('Conges-Heures', 0);
+        $this->config->setParam('Conges-validation', 1);
+        $this->config->setParam('Conges-Validation-N2', 0);
+        $this->config->setParam('Conges-Recuperations', 1);
+        $this->config->setParam('Conges-tous', 0);
+        $this->config->setParam('Conges-Rappels', 0);
+        $this->config->setParam('Conges-Rappels-Jours', 14);
+        $this->config->setParam('Conges-demi-journees', 1);
+        $this->config->setParam('Conges-fullday-switching-time', 4);
+        $this->config->setParam('Conges-fullday-reference-time', '');
+        $this->config->setParam('Conges-planningVide', 1);
+        $this->config->setParam('Conges-apresValidation', 1);
+        $this->config->setParam('Recup-Uneparjour', 1);
         $this->setUpPantherClient();
 
         $jdevoe = $this->builder->build(Agent::class, array(
@@ -89,8 +89,8 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertCount(2, $agents_selected, 'KBoivin and ABreton are selected');
 
         //test without Conges-demi-journees
-        $this->setParam('Conges-Recuperations', 0);
-        $this->setParam('Conges-Mode', 'heures');
+        $this->config->setParam('Conges-Recuperations', 0);
+        $this->config->setParam('Conges-Mode', 'heures');
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
@@ -100,8 +100,8 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertStringNotContainsString('Demi-journée(s)',$result->text('Node does not exist', true),'test Conges-demi-journees');
 
         //test with Conges-demi-journees
-        $this->setParam('Conges-demi-journees', 1);
-        $this->setParam('Conges-Mode', 'jours');
+        $this->config->setParam('Conges-demi-journees', 1);
+        $this->config->setParam('Conges-Mode', 'jours');
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
@@ -115,7 +115,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertStringContainsString('Demandé',$result->text('Node does not exist', true),'test Conges-validation');
 
         //test without Conges-validation
-        $this->setParam('Conges-validation', 0);
+        $this->config->setParam('Conges-validation', 0);
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
@@ -123,7 +123,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertStringNotContainsString('Demandé',$result->text('Node does not exist', true),'test Conges-validation');
 
         //test Conges-Mode => heures
-        $this->setParam('Conges-Mode', 'heures');
+        $this->config->setParam('Conges-Mode', 'heures');
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
@@ -132,7 +132,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertStringNotContainsString('Nombre de jours',$result->text('Node does not exist', true),'test Conges-Mode');
 
         //test Conges-Mode => jours
-        $this->setParam('Conges-Mode', 'jours');
+        $this->config->setParam('Conges-Mode', 'jours');
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
@@ -141,9 +141,9 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertStringNotContainsString('Nombre d\'heures',$result->text('Node does not exist', true),'test Conges-Mode');
 
         //test with Conges-Heures
-        $this->setParam('Conges-Mode', 'heures');
-        $this->setParam('Conges-Recuperations', 1);
-        $this->setParam('Conges-Heures', 1);
+        $this->config->setParam('Conges-Mode', 'heures');
+        $this->config->setParam('Conges-Recuperations', 1);
+        $this->config->setParam('Conges-Heures', 1);
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
@@ -163,24 +163,24 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         //test statut with all rights
 
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('PlanningHebdo', 0);
-        $this->setParam('Conges-Enable', 1);
-        $this->setParam('Conges-Mode', 'Heures');
-        $this->setParam('Conges-Heures', 0);
-        $this->setParam('Conges-validation', 1);
-        $this->setParam('Conges-Validation-N2', 0);
-        $this->setParam('Conges-Recuperations', 1);
-        $this->setParam('Conges-tous', 0);
-        $this->setParam('Conges-Rappels', 0);
-        $this->setParam('Conges-Rappels-Jours', 14);
-        $this->setParam('Conges-demi-journees', 1);
-        $this->setParam('Conges-fullday-switching-time', 4);
-        $this->setParam('Conges-fullday-reference-time', '');
-        $this->setParam('Conges-planningVide', 1);
-        $this->setParam('Conges-apresValidation', 1);
-        $this->setParam('Recup-Uneparjour', 1);
+        $this->config->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('PlanningHebdo', 0);
+        $this->config->setParam('Conges-Enable', 1);
+        $this->config->setParam('Conges-Mode', 'Heures');
+        $this->config->setParam('Conges-Heures', 0);
+        $this->config->setParam('Conges-validation', 1);
+        $this->config->setParam('Conges-Validation-N2', 0);
+        $this->config->setParam('Conges-Recuperations', 1);
+        $this->config->setParam('Conges-tous', 0);
+        $this->config->setParam('Conges-Rappels', 0);
+        $this->config->setParam('Conges-Rappels-Jours', 14);
+        $this->config->setParam('Conges-demi-journees', 1);
+        $this->config->setParam('Conges-fullday-switching-time', 4);
+        $this->config->setParam('Conges-fullday-reference-time', '');
+        $this->config->setParam('Conges-planningVide', 1);
+        $this->config->setParam('Conges-apresValidation', 1);
+        $this->config->setParam('Recup-Uneparjour', 1);
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
@@ -194,28 +194,28 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
     public function testAddMultisite(): void
     {
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('PlanningHebdo', 0);
-        $this->setParam('Conges-Enable', 1);
-        $this->setParam('Conges-Mode', 'heures');
-        $this->setParam('Conges-Heures', 0);
-        $this->setParam('Conges-validation', 1);
-        $this->setParam('Conges-Validation-N2', 0);
-        $this->setParam('Conges-Recuperations', 1);
-        $this->setParam('Conges-tous', 0);
-        $this->setParam('Conges-tous', 0);
-        $this->setParam('Conges-Rappels-Jours', 14);
-        $this->setParam('Conges-demi-journees', 1);
-        $this->setParam('Conges-fullday-switching-time', 4);
-        $this->setParam('Conges-fullday-reference-time', '');
-        $this->setParam('Conges-planningVide', 1);
-        $this->setParam('Conges-apresValidation', 1);
-        $this->setParam('Recup-Uneparjour', 1);
+        $this->config->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('PlanningHebdo', 0);
+        $this->config->setParam('Conges-Enable', 1);
+        $this->config->setParam('Conges-Mode', 'heures');
+        $this->config->setParam('Conges-Heures', 0);
+        $this->config->setParam('Conges-validation', 1);
+        $this->config->setParam('Conges-Validation-N2', 0);
+        $this->config->setParam('Conges-Recuperations', 1);
+        $this->config->setParam('Conges-tous', 0);
+        $this->config->setParam('Conges-tous', 0);
+        $this->config->setParam('Conges-Rappels-Jours', 14);
+        $this->config->setParam('Conges-demi-journees', 1);
+        $this->config->setParam('Conges-fullday-switching-time', 4);
+        $this->config->setParam('Conges-fullday-reference-time', '');
+        $this->config->setParam('Conges-planningVide', 1);
+        $this->config->setParam('Conges-apresValidation', 1);
+        $this->config->setParam('Recup-Uneparjour', 1);
 
-        $this->setParam('Multisites-nombre', 2);
-        $this->setParam('Multisites-site1', 'Site N°1');
-        $this->setParam('Multisites-site2', 'Site N°2');
+        $this->config->setParam('Multisites-nombre', 2);
+        $this->config->setParam('Multisites-site1', 'Site N°1');
+        $this->config->setParam('Multisites-site2', 'Site N°2');
 
         $this->setUpPantherClient();
 

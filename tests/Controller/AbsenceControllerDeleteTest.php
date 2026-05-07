@@ -42,9 +42,9 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
          * The absence can be deleted
          */
 
-        $this->setParam('Absences-validation', 0);
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-validation', 0);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('Multisites-nombre', 1);
 
         $acl = [6];
         $nbAgent = 1;
@@ -110,7 +110,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
          * The absence can be deleted
          */
 
-        $this->setParam('Absences-validation', 1);
+        $this->config->setParam('Absences-validation', 1);
 
         $acl = [6];
         $nbAgent = 1;
@@ -248,7 +248,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
          * The absence can be deleted
          */
 
-        $this->setParam('Absences-validation', 1);
+        $this->config->setParam('Absences-validation', 1);
 
         $acl = [201];
         $nbAgent = 1;
@@ -384,7 +384,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
          * The absence can be deleted
          */
 
-        $this->setParam('Absences-validation', 0);
+        $this->config->setParam('Absences-validation', 0);
 
         $acl = [201];
         $nbAgent = 1;
@@ -421,8 +421,8 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
          * The absence can be deleted
          */
 
-        $this->setParam('Absences-validation', 1);
-        $this->setParam('Absences-notifications-agent-par-agent', 1);
+        $this->config->setParam('Absences-validation', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
         $agents = $this->agents;
         $managed1 = new Manager();
         $managed1->setUser($agents[0]);

@@ -39,12 +39,12 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
     {
         $file = sys_get_temp_dir() . '/plannoTestWorkingHourExport.csv';
 
-        $this->setParam('PlanningHebdo-ExportFile', $file);
-        $this->setParam('PlanningHebdo-ExportDaysBefore', 5);
-        $this->setParam('PlanningHebdo-ExportDaysAfter', 10);
-        $this->setParam('PlanningHebdo-ExportAgentId', 'matricule');
-        $this->setParam('EDTSamedi',1);
-        $this->setParam('PlanningHebdo',1);
+        $this->config->setParam('PlanningHebdo-ExportFile', $file);
+        $this->config->setParam('PlanningHebdo-ExportDaysBefore', 5);
+        $this->config->setParam('PlanningHebdo-ExportDaysAfter', 10);
+        $this->config->setParam('PlanningHebdo-ExportAgentId', 'matricule');
+        $this->config->setParam('EDTSamedi',1);
+        $this->config->setParam('PlanningHebdo',1);
 
         $this->entityManager->clear();
 

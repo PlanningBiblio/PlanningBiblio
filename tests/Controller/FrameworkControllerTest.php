@@ -23,7 +23,7 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -116,7 +116,7 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -180,7 +180,7 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -271,7 +271,7 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -320,7 +320,7 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -404,7 +404,7 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
