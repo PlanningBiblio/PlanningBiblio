@@ -8,30 +8,48 @@
     <!--	Menu	-->
     <h3>Mon Compte</h3>
 
-    <div class='ui-tabs'>
-      <ul>
+    <div class="container-tabs">
+      <ul class="nav nav-tabs" role="tablist">
+
         {% if config('PlanningHebdo') %}
-          <li><a href='#working_hours'>Mes heures de présence</a></li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="working_hours-tab" data-bs-toggle="tab" data-bs-target="#working_hours" type="button" role="tab" aria-controls="working_hours" aria-selected="true">{% trans %}My office hours{% endtrans %}</button>
+          </li>
         {% endif %}
+
         {% if config('Conges-Enable') %}
-          <li><a href='#credits'>Mes crédits</a></li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="credits-tab" data-bs-toggle="tab" data-bs-target="#credits" type="button" role="tab" aria-controls="credits" aria-selected="false">{% trans %}My credits{% endtrans %}</button>
+          </li>
         {% endif %}
-        {% if ics %}
-          <li><a href='#ics'>Agendas ICS</a></li>
+
+         {% if ics %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="ics-tab" data-bs-toggle="tab" data-bs-target="#ics" type="button" role="tab" aria-controls="ics" aria-selected="false">{% trans %}ICS Calendars{% endtrans %}</button>
+          </li>
         {% endif %}
-        <li><a href='#motDePasse'>Mon mot de passe</a></li>
+
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="motDePasse-tab" data-bs-toggle="tab" data-bs-target="#motDePasse" type="button" role="tab" aria-controls="motDePasse" aria-selected="false">{% trans %}My password{% endtrans %}</button>
+        </li>
       </ul>
+
+      <div class="tab-content">
+
       {% if config('PlanningHebdo') %}
         <!-- Working hours -->
-        <div id='working_hours'>
-          <div style='display: inline-block; width:300px;'>
-            <h3>Heures de présence</h3>
-          </div>
-          {% if config('PlanningHebdo-Agents') %}
-            <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
+        <div class="tab-pane fade show active m-4" id="working_hours" role="tabpanel" aria-labelledby="working_hours-tab" tabindex="0">
+          <div class="row">
+            <div class="col">
+              <h3>Heures de présence</h3>
+            </div>
+            {% if config('PlanningHebdo-Agents') %}
+            <div class="col" style="text-align: end;">
               <a role="button" href="{{ asset ('workinghour/add') }}?retour=/myaccount" class="btn btn-primary">Entrer de nouveaux horaires</a>
             </div>
-          {% endif %}
+            {% endif %}
+          </div>
+
           <!-- Working hours history -->
           <div id='historique'>
             <br/>
@@ -68,9 +86,10 @@
           </div> <!-- Historique' -->
         </div> <!-- working_hours -->
       {% endif %}
+      
       {% if config('Conges-Enable') %}
         <!-- Crédits -->
-        <div id='credits' style='margin-left:80px;display:none;'>
+        <div class="tab-pane fade m-4" id="credits" role="tabpanel" aria-labelledby="credits-tab" tabindex="0">
           <h3>Crédits</h3>
           <table class='tableauFiches'>
             <tr>
@@ -145,13 +164,15 @@
         </div>
       <!-- Crédits-->
       {% endif %}
+
       <!-- Mot de Passe -->
-      <div id='motDePasse' style='margin-left:80px;display:none;'>
+      <div class="tab-pane fade m-4" id="motDePasse" role="tabpanel" aria-labelledby="motDePasse-tab" tabindex="0">
         <h3>Changement de mot de passe</h3>
         {% include 'agents/elements/change_password_div.html.twig' %}
       </div> <!-- motDePasse -->
+
       <!-- Agendas ICS -->
-      <div id='ics' style='margin-left:80px;display:none;'>
+      <div class="tab-pane fade m-4" id="ics" role="tabpanel" aria-labelledby="ics-tab" tabindex="0">
         <h3>Agendas ICS</h3>
         <p>
           <ul>
@@ -167,5 +188,7 @@
           {% endif %}
         </p>
       </div> <!-- Agendas ICS -->
-    </div> <!-- ui-tabs -->
+
+      </div> <!-- tab-content -->
+    </div> <!-- nav-tabs -->
 {% endblock %}
