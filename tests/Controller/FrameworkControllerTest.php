@@ -387,11 +387,9 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals($result->text(),'Configuration du tableau "tab1"');
 
-        $result = $crawler->filterXPath('//ul[@class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all"]/li');
+        $result = $crawler->filter('ul.nav-tabs li button');
         $this->assertEquals($result->eq(0)->text(),'Infos générales');
         $this->assertEmpty($result->eq(0)->attr('aria-disabled'));
-
-
 
         $this->assertEquals($result->eq(1)->text(),'Horaires');
         $this->assertEquals($result->eq(1)->attr('aria-disabled'),'true');
@@ -444,7 +442,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals($result->text(),'Configuration du tableau "tab1"');
 
-        $result = $crawler->filterXPath('//ul[@class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all"]/li');
+        $result = $crawler->filter('ul.nav-tabs li button');
         $this->assertEquals($result->eq(0)->text(),'Infos générales');
         $this->assertEmpty($result->eq(0)->attr('aria-disabled'));
 
