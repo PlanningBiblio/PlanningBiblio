@@ -472,10 +472,11 @@ ul.nav-tabs {
   background-color: #29495C;
 }
 
-.modal-tabs {
+.container-tabs {
   border : 1px solid #29495C;
   border-left: 4px solid #29495C; ;
   border-radius: 4px;
+  background-color: white;
 }
 
 ul.nav-tabs li.nav-item .nav-link {

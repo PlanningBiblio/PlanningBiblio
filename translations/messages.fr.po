@@ -252,3 +252,15 @@ msgstr "Modification de la longeur minimum du mot de passe"
 
 msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
 msgstr "La valeur minimale de caractères pour le changement de mot de passe doit être un nombre supérieur ou égal à 8."
+
+msgid "My office hours"
+msgstr "Mes heures de présence"
+
+msgid "My credits"
+msgstr "Mes crédits"
+
+msgid "ICS Calendars"
+msgstr "Agendas ICS"
+
+msgid "My password"
+msgstr "Mon mot de passe"
