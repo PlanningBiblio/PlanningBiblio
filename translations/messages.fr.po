@@ -381,3 +381,12 @@ msgstr "Cet événement et les suivants"
 
 msgid "All events"
 msgstr "Tous les événements"
+
+msgid "Schedule"
+msgstr "Horaires"
+
+msgid "Lines"
+msgstr "Lignes"
+
+msgid "Back"
+msgstr "Retour"
