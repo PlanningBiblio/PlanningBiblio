@@ -381,3 +381,12 @@ msgstr "This event and the following ones"
 
 msgid "All events"
 msgstr "All events"
+
+msgid "Schedule"
+msgstr "Schedule"
+
+msgid "Lines"
+msgstr "Lines"
+
+msgid "Back"
+msgstr "Back"

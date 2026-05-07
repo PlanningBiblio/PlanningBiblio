@@ -465,6 +465,10 @@ li .agent-acces-checked2{
 
 /* Tabs */
 
+ul.nav-tabs li .nav-link.disabled {
+  opacity: 65%;
+}
+
 ul.nav-tabs {
   background-color: #29495C;
 }
