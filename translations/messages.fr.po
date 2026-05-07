@@ -306,3 +306,15 @@ msgstr "Responsable"
 
 msgid "Notify"
 msgstr "Notifier"
+
+msgid "My office hours"
+msgstr "Mes heures de présence"
+
+msgid "My credits"
+msgstr "Mes crédits"
+
+msgid "ICS Calendars"
+msgstr "Agendas ICS"
+
+msgid "My password"
+msgstr "Mon mot de passe"
