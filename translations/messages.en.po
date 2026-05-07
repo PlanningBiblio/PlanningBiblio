@@ -252,3 +252,12 @@ msgstr "Modification of the minimum password length"
 
 msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
 msgstr "The minimum value of characters for password change must be a number greater than or equal to 8."
+
+msgid "Schedule"
+msgstr "Schedule"
+
+msgid "Lines"
+msgstr "Lines"
+
+msgid "Back"
+msgstr "Back"
