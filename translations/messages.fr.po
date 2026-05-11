@@ -390,3 +390,51 @@ msgstr "Lignes"
 
 msgid "Back"
 msgstr "Retour"
+
+msgid "categories-info"
+msgstr "Si aucune catégorie n'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste."
+
+msgid "obligatoire-info"
+msgstr "Cochez la case "Obligatoire" si le remplissage du poste est obligatoire ou "Renfort" s'il s'agit d'un poste de renfort.\n1. Si vous recevez les rapports sur l'état de vos plannings (Configuration "Rappels"), le contrôle des postes de renforts peut être ignoré selon la configuration choisie.\n2. Une page de statistiques est dédiée aux postes de renfort. Cette page affiche les jours et heures d'utilisation des postes de renforts.\n3. La couleur de la cellule du poste peut varier dans les plannings, selon si le poste et obligatoire ou de renfort."
+
+msgid "bloquant_info"
+msgstr "Cochez la case "Non" face à "Bloquant" si vous souhaitez pouvoir placer un agent sur ce poste et sur un autre en même temps.\nDans ce cas, l'agent pourra être placé sur un poste bloquant et un ou plusieurs postes non-bloquants en même temps.\nLe contrôle vérifiant si l'agent est déjà placé ne se fera pas sur l'ensemble des postes non-bloquants.\nAfin d'obtenir des informations cohérentes, les statistiques et le calcul du quota de service public doivent être désactivés pour les postes "non-bloquants"."
+
+msgid "quotas-info"
+msgstr "Cochez la case "Non" face à "Quota de SP" si vous souhaitez que les heures de ce poste ne soient pas comptées dans le quota de service public.\nLes heures comptées dans le quota et le quota sont affichés à côté du nom de chaque agent dans le menu qui vous permet de placer les agents dans le planning et sur la page "Statistiques / Feuille de temps".\nLe nombre d'heures comptées en SP n'évoluent pas dans ce menu et sur cette page pour les postes ayant le paramètre "Quota de SP" à non.\nLes heures effectuées sur ces postes peuvent toutefois être comptées dans les statistiques (hors "Feuille de temps")."
+
+msgid "statistics-info"
+msgstr "Cochez la case "Non" face à "Statistiques" si vous ne souhaitez pas voir apparaître ce poste dans les statistiques (hors "Feuille de temps")."
+
+msgid "teleworking-info"
+msgstr "Cochez la case "Oui" face à l'option "Compatible télétravail" si l'activité désignée par ce poste peut être effectuée à distance, en télétravail.\nLes agents ne seront pas barrés des postes "Compatibles télétravail" lorsqu'ils enregistreront des absences de type "Télétravail"."
+
+msgid "lunch-info"
+msgstr "Cochez la case "Oui" face à "Poste repas" si vous souhaitez créer des lignes "Repas" ou "Pause déjeuner" dans vos tableaux.\nCes lignes seront associées à ces postes repas et l'alerte "SR (Sans Repas)" sera désactivée sur celles-ci.\nAfin d'obtenir des informations cohérentes, les statistiques et le calcul du quota de service public doivent être désactivés pour les postes "repas"."
+
+msgid "The selected settings are incompatible with each other."
+msgstr "Les paramètres sélectionnés sont incompatibles entre eux."
+
+msgid "Job title"
+msgstr "Nom du poste"
+
+msgid "Site"
+msgstr "Site"
+
+msgid "Floor"
+msgstr "Etage"
+
+msgid "Group"
+msgstr "Groupe"
+
+msgid "Mandatory"
+msgstr "Obligatoire"
+
+msgid "Support"
+msgstr "Renfort"
+
+msgid "Categories"
+msgstr "Catégories"
+
+msgid "Lunch position"
+msgstr "Poste repas"
