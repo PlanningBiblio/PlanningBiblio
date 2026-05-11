@@ -29,7 +29,7 @@ class ConfigControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(20));
 
-        $this->client->request('GET', '/config');
+        $crawler = $this->client->request('GET', '/config');
 
         $response = $this->client->getResponse()->getContent();
         $this->assertMatchesRegularExpression(
@@ -37,9 +37,7 @@ class ConfigControllerTest extends PLBWebTestCase
             $response
         );
 
-        $this->assertMatchesRegularExpression(
-            '/<span> Divers<\/span>/',
-            $response
-        );
+        $result = $crawler->filter('.accordion-button.collapsed')->eq(0);
+        $this->assertEquals($result->text(),'Divers');
     }
 }
