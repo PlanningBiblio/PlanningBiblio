@@ -393,3 +393,51 @@ msgstr "Lines"
 
 msgid "Back"
 msgstr "Back"
+
+msgid "categories-info"
+msgstr "If no category is selected, agents from all categories may be assigned to this position."
+
+msgid "obligatoire-info"
+msgstr "Check the "Obligatoire" box if the shift must be filled, or "Renfort" if it is a backup shift.\n1. If you receive reports on the status of your schedules (under "Rappels" in Settings), the backup shift check may be skipped depending on your selected settings.\n2. There is a dedicated statistics page for backup shifts. This page displays the days and times when backup shifts are used.\n3. The color of the shift cell may vary in the schedules, depending on whether the shift is mandatory or a backup shift."
+
+msgid "bloquant_info"
+msgstr "Check the "No" box next to "Bloquant" if you want to be able to assign an agent to this position and another one at the same time.\ nIn this case, the agent can be assigned to a blocking position and one or more non-blocking positions at the same time.\nThe check to verify whether the agent is already assigned will not be performed on all non-blocking positions.\nTo ensure consistent data, statistics and the calculation of the public service quota must be disabled for "non-blocking" positions."
+
+msgid "quotas-info"
+msgstr "Check the "No" box next to "Quota de SP" if you do not want the hours for this position to be counted toward the public service quota.\nThe hours counted toward the quota and the quota itself are displayed next to each agent's name in the menu that allows you to schedule agents and on the "Statistiques / Feuille de temps".\nThe number of hours counted as public service does not change in this menu or on this page for positions where the "Quota de SP" setting is set to no.\nHowever, hours worked in these positions can still be counted in the statistics (excluding the "Feuille de temps")."
+
+msgid "statistics-info"
+msgstr "Check the "No" box next to "Statistiques" if you do not want this item to appear in the statistics (excluding the "Feuille de temps")."
+
+msgid "teleworking-info"
+msgstr "Check the "Yes" box next to the "Compatible télétravail" option if the work associated with this position can be performed remotely via telework.\nEmployees will not be barred from "Compatible télétravail" positions when they record "Télétravail" absences."
+
+msgid "lunch-info"
+msgstr "Check the "Yes" box next to "Poste repas" if you want to create "Repas" or "Pause déjeuner" rows in your tables.\nThese rows will be associated with these meal shifts, and the "SR (Sans Repas)" alert will be disabled for them.\ To ensure consistent data, statistics and the calculation of the public service quota must be disabled for "meal" positions."
+
+msgid "The selected settings are incompatible with each other."
+msgstr "The selected settings are incompatible with each other."
+
+msgid "Job title"
+msgstr "Job title"
+
+msgid "Site"
+msgstr "Site"
+
+msgid "Floor"
+msgstr "Floor"
+
+msgid "Group"
+msgstr "Group"
+
+msgid "Mandatory"
+msgstr "Mandatory"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Categories"
+msgstr "Categories"
+
+msgid "Lunch position"
+msgstr "Lunch position"

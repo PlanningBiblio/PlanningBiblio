@@ -966,4 +966,10 @@ $(function(){
 
   // Infobulles
   $(document).tooltip();
+
+  $('button.tooltip-icon').each(function() {
+    var title = $(this).attr('data-bs-title');
+    $(this).attr('aria-label', title);
+  });
+
 });
