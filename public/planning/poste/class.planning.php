@@ -139,12 +139,19 @@ class planning
         // Calcul des heures de SP à effectuer pour tous les agents
         $heuresSP=calculHeuresSP($date, $this->CSRFToken);
 
+        // If the current position is a lunch position, $quotaSP is forced to false
+        $positions = $GLOBALS['entityManager']->getRepository(Position::class);
+        if ($positions->find($poste)->lunch()) {
+            $quotaSP = false;
+        }
+
         // Nombre d'heures de la cellule choisie
         $hres_cellule = 0;
+
         if ($quotaSP) {    // vérifier si le poste est compté dans les stats
             $hres_cellule = diff_heures($debut, $fin, "decimal");
         }
-    
+
         // Calcul des heures d'absences afin d'ajuster les heures de SP
         $a=new absences();
         $a->CSRFToken = $this->CSRFToken;
@@ -189,12 +196,13 @@ class planning
                     'absent'   => "<>1",
                     'date'     => "BETWEEN {$date1} AND {$date2}",
                 ),
-                array('quota_sp' => '1')
+                [
+                    'lunch' => 0,
+                    'quota_sp' => 1
+                ]
       );
 
             if ($db_heures->result) {
-
-                $positions = $GLOBALS['entityManager']->getRepository(Position::class);
 
                 // Pour chaqe résultat, on ajoute le nombre d'heures correspondant à l'agent concerné, pour le jour, la semaine et/ou les 4 semaines
                 foreach ($db_heures->result as $elem) {
@@ -205,10 +213,6 @@ class planning
                         if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                             continue 2;
                         }
-                    }
-
-                    if ($positions->find($elem['poste'])->lunch()) {
-                        continue;
                     }
 
                     // Calcul des heures de service public pour affichage à côté du nom des agents
