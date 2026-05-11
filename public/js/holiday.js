@@ -692,7 +692,7 @@ function verifConges()
 
       if (result['planning_started'] && valid == true) {
         if (admin == true) {
-          if (!confirm("Vous essayer d'enregistrer un congé sur des plannings en cours d'élaboration : "+result["planning_started"]+"\nVoulez-vous continuer ?")) {
+          if (!confirm("Vous essayez d'enregistrer un congé sur des plannings en cours d'élaboration : "+result["planning_started"]+"\nVoulez-vous continuer ?")) {
             valid = false;
           }
         } else {
@@ -703,7 +703,7 @@ function verifConges()
 
       if (result['has_block'] >= 1 && valid == true) {
         if (admin == true) {
-          if (!confirm("Vous essayer de placer un congé sur une période bloquée.\nVoulez-vous continuer ?")){
+          if (!confirm("Vous essayez de placer un congé sur une période bloquée.\nVoulez-vous continuer ?")){
             valid = false;
           }
         } else {
