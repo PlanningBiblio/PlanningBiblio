@@ -68,6 +68,21 @@ class ConfigController extends BaseController
                 case "enum2":
                     $elem['options'] = json_decode(str_replace("&#34;", '"', $elem['valeurs']), true);
                     break;
+                case 'number':
+                    $options_tab = json_decode($elem['valeurs'], true);
+                    $options = [];
+                    if (array_key_exists('min', $options_tab)) {
+                        $options[] = 'min="' . (float) $options_tab['min'] . '"';
+                    }
+                    if (array_key_exists('max', $options_tab)) {
+                        $options[] = 'max="' . (float) $options_tab['max'] . '"';
+                    }
+                    if (array_key_exists('step', $options_tab)) {
+                        $options[] = 'step="' . (float) $options_tab['step'] . '"';
+                    }
+                    $options = implode(' ', $options);
+                    $elem['options'] = $options;
+                    break;
                 case "textarea":
                     $elem['valeur'] = str_replace("<br/>", "\n", $elem['valeur']);
                     break;
