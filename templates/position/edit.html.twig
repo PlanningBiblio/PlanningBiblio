@@ -3,8 +3,9 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type="text/JavaScript" src="{{ asset('js/position.js') }}?version={{ version }}"></script>
+  <script type="text/JavaScript" src="{{ asset('js/position.js') }}"></script>
 {% endblock %}
+
 {% block page %}
   <div id="content-form">
     {% if id is defined and id is not null %}
@@ -13,7 +14,7 @@
       <h3>Ajout d'un poste</h3>
     {% endif %}
     <div class="admin-div">
-      <form method='post' action="{{ asset('position') }}" name='form'>
+      <form method="post" action="{{ asset('position') }}" name="form" onsubmit="return checkPositionForm();">
         <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}"/>
         <input type='hidden' name='group_id' value='{{ group_id }}'/>
         {% if id is defined %}
@@ -91,15 +92,15 @@
                   <tr>
                     <td><span title='Compter les heures dans le quota de service public'>Quota de SP :</span></td>
                     <td>
-                      <input type='radio' name='quota_sp' value='1' {{ quota_sp1 }}/> Oui
-                      <input type='radio' name='quota_sp' value='0' {{ quota_sp2 }}/> Non
+                      <input type="radio" name="quota_sp" id="quota_sp1" value="1" {{ quota_sp1 }}/> Oui
+                      <input type="radio" name="quota_sp" id="quota_sp2" value="0" {{ quota_sp2 }}/> Non
                     </td>
                   </tr>
                   <tr>
                     <td>Statistiques :</td>
                     <td>
-                      <input type='radio' name='statistiques' value='1' {{ stat1 }}/> Oui
-                      <input type='radio' name='statistiques' value='0' {{ stat2 }}/> Non
+                      <input type="radio" name="statistiques" id="statistics1" value="1" {{ stat1 }}/> Oui
+                      <input type="radio" name="statistiques" id="statistics2" value="0" {{ stat2 }}/> Non
                     </td>
                   </tr>
                   <tr>
@@ -110,10 +111,14 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>Poste repas :</td>
                     <td>
-                      <input type='radio' name='lunch' value='1' {{ lunch1 }}/> Oui
-                      <input type='radio' name='lunch' value='0' {{ lunch2 }}/> Non
+                      <label title="{% trans %}Le poste repas permet ...{% endtrans %}">
+                        {% trans %}Poste repas{% endtrans %} :
+                      </label>
+                    </td>
+                    <td>
+                      <input type="radio" name="lunch" id="lunch1" value="1" {{ lunch1 }}/> Oui
+                      <input type="radio" name="lunch" id="lunch2" value="0" {{ lunch2 }}/> Non
                     </td>
                   </tr>
                 {% endif %}

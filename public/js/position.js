@@ -236,3 +236,42 @@ $(function() {
   });
 
 });
+
+function checkPositionForm() {
+
+  if ($('#lunch1').prop('checked')) {
+    if ($('#statistics1').prop('checked')) {
+      CJInfo('Le paramètre poste ...');
+      return false;
+    }
+    if ($('#quota_sp1').prop('checked')) {
+      CJInfo('Le paramètre poste ...');
+      return false;
+    }
+  }
+
+  return true;
+
+
+  /*
+  TODO JS : 
+  * Générer les messages d'alertes en anglais, et les traduire en français
+  * Remplacer le CJInfo par les alertes BootStrap
+  * Gérer les cas suivants en reprenant l'exemple ci-dessus.
+
+  Incompatibilités :
+  * Bloquant = non
+    * Quota de SP doit être à non
+    * statistiques doit être à non
+    * --> l'alerte doit être au niveau du paramètre "bloquant"
+
+  * Poste repas = oui
+    * Quota de SP doit être à non
+    * statistiques doit être à non
+    * --> l'alerte doit être au niveau du paramètre "sans repas"
+
+  TODO templates :
+  * Ajouter les balises "label" avec la propriété "title" (voir ce qui est fait sur le paramètre "poste repas")
+  * Générer les messages en anglais et la traduction en français pour les proriétés title et le contenu des labels.
+  */
+}
