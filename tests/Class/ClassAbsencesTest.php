@@ -1,5 +1,6 @@
 <?php
 
+use App\Planno\Helper\ConfigHelper;
 use PHPUnit\Framework\TestCase;
 
 use App\Entity\Agent;
@@ -202,10 +203,8 @@ class ClassAbsencesTest extends PLBWebTestCase
         global $entityManager;
         $absence = new absences();
         $GLOBALS['config'][$name] = $value;
-        $param = $entityManager
-            ->getRepository(Config::class)
-            ->findOneBy(['nom' => $name]);
-
+        $configHelper = new ConfigHelper();
+        $param = $configHelper->findOneByName($name);
         $param->setValue($value);
         $entityManager->persist($param);
         $entityManager->flush();

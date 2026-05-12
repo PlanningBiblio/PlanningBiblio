@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Entity\AbsenceReason;
 use App\Entity\PlanningPosition;
 use App\Entity\Position;
+use App\Entity\Site;
 use App\Planno\WorkingHours;
 
 trait PlanningJobTrait
@@ -77,8 +78,11 @@ trait PlanningJobTrait
 
         // Site's name
         $siteNom = null;
-        if ($this->config('Multisites-nombre') > 1) {
-            $siteNom = $this->config("Multisites-site$site");
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+
+        if (count($sites_array) > 1) {
+            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+            $siteNom = $s ? $s->getName() : null;
         }
 
         // List all statuses related to
@@ -152,7 +156,7 @@ trait PlanningJobTrait
                 $start_with_journey = date('H:i:s', strtotime("-$j_time minutes", strtotime($debutSQL)));
                 $end_with_journey = date('H:i:s', strtotime("+$j_time minutes", strtotime($finSQL)));
 
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     $req = "SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` "
                         . "FROM `{$dbprefix}pl_poste` "
                         . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
@@ -337,7 +341,7 @@ trait PlanningJobTrait
         $db = new \db();
         $dateSQL = $db->escapeString($date);
 
-        $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= '$dateSQL' OR `depart` IS NULL);");
+        $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= '$dateSQL' OR `depart` IS NULL) AND 'network_id' = {$_SESSION['network']['id']};");
 
         // Chech agents working hours.
         $verif = true;
@@ -428,7 +432,7 @@ trait PlanningJobTrait
                 // This filter concerns every agents.
                 // An other filter will definitly exclude agents that
                 // are not in the requested site.
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     // index 4 is the site on which
                     // agent is working on.
 
@@ -525,7 +529,7 @@ trait PlanningJobTrait
                 }
 
                 // Remove agent working on other site.
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     if (!is_array($sites) or !in_array($site, $sites)) {
                         $exclusion[$elem['id']][] = 'sites';
@@ -587,7 +591,7 @@ trait PlanningJobTrait
 
         $req="SELECT * FROM `{$dbprefix}personnel` "
           ."WHERE `actif` LIKE 'Actif' AND (`arrivee` <= '$dateSQL' OR `arrivee` IS NULL) AND (`depart` >= '$dateSQL' OR `depart` IS NULL) AND `id` NOT IN ($agents_qualif) "
-          ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  ORDER BY `nom`,`prenom`;";
+          ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents) AND `network_id`=".$_SESSION['network']['id']." ORDER BY `nom`,`prenom`;";
 
         $db->query($req);
         $autres_agents_tmp = $db->result;
@@ -597,7 +601,7 @@ trait PlanningJobTrait
             foreach ($autres_agents_tmp as $elem) {
                 // Remove agents that doesn't work on requested site.
                 // Same check than above, but definitly remove them.
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     if (!is_array($sites) or !in_array($site, $sites)) {
                         continue;

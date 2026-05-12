@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use App\Entity\Site;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -90,7 +91,7 @@ class ControllerAuthorizationListener
 
         $accesses = $this->permissions[$route];
 
-        $multisites = $GLOBALS['config']['Multisites-nombre'];
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
 
         // Right 21 (Edit personnel) gives right 4 (Show personnel)
         if (in_array(21, $this->droits)) {
@@ -105,9 +106,9 @@ class ControllerAuthorizationListener
 
         // Multisites rights associated with page access
         $multisites_rights = array(201,301);
-        if ($multisites > 1) {
+        if (count($sites) > 1) {
             if (in_array($accesses[0], $multisites_rights)) {
-                for ($i = 1; $i <= $multisites; $i++) {
+                for ($i = 1; $i <= count($sites); $i++) {
                     $droit = $accesses[0] -1 + $i;
                     if (in_array($droit, $this->droits)) {
                         return true;

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use App\Entity\Site;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -59,11 +60,12 @@ class StatisticController extends BaseController
         $tab = array();
 
         $dbprefix = $GLOBALS['dbprefix'];
-        $nbSites = $this->config('Multisites-nombre');
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites);
 
         if ($nbSites > 1) {
-            for ($i = 1 ; $i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site$i");
+            foreach ($sites as $i => $site) {
+                $multisites[$i + 1] = $site->getName();
             }
         }
 
@@ -150,8 +152,8 @@ class StatisticController extends BaseController
 
         // Agents available
         $db = new \db();
-        $db->select2('personnel', '*', array('id' => '<>2', 'actif' => 'Actif'), 'ORDER BY `nom`,`prenom`');
-        $agents_list = $db->result;
+        $db->select2('personnel', '*', array('id' => '<>2', 'actif' => 'Actif', 'network_id' => $_SESSION['network']['id']), 'ORDER BY `nom`,`prenom`');
+        $agents_list = $db->result ?? array();
 
         // Service and Status data
         if (in_array($type, ['service', 'status'])) {
@@ -167,7 +169,7 @@ class StatisticController extends BaseController
             };
 
             $db = new \db();
-            $db->select2($table);
+            $db->select2($table, '*', array('network_id' => $_SESSION['network']['id']), "ORDER BY `rang`");
             $objects = $db->result;
 
             foreach ($agents_list as $elem) {
@@ -456,7 +458,7 @@ class StatisticController extends BaseController
     
             if ($type == 'agent') {
                 // Remove agents who are never selected and not in selected sites
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites) > 1) {
                     foreach($tab as $key => $value) {
                         if (empty($value[1])
                             and empty(array_intersect($selectedSites, $value[0]['assignedSites']))) {
@@ -637,7 +639,8 @@ class StatisticController extends BaseController
         $exists_absences = false;
         $exists_samedi = false;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites);
 
         // Statistiques-Heures
         $heures_tab_global = array();
@@ -880,8 +883,8 @@ class StatisticController extends BaseController
         
         $multisites = array();
         if ($nbSites>1) {
-            for ($i=1;$i<=$nbSites;$i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites as $site) {
+                $multisites[$site->getId()] = $site->getName();
             }
         }
         // 		--------------------------		Affichage du tableau de résultat		--------------------
@@ -1088,10 +1091,10 @@ class StatisticController extends BaseController
         $debutSQL = dateSQL($debut);
         $finSQL = dateSQL($fin);
 
-        $sites = null;
-        $nbSites = $this->config('Multisites-nombre');;
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites_array);
+        $sites = array();
         if ($nbSites > 1) {
-            $sites = array();
             if ($site == 0) {
                 for ($i = 1;$i <= $nbSites; $i++) {
                     $sites[] = $i;
@@ -1263,9 +1266,8 @@ class StatisticController extends BaseController
         $multisites = array();
         $selectedSites = array();
         if ($nbSites >1) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $selectedSites[] = $i == $site ?? $i;
-                $multisites[] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[] = $s->getName();
             }
         }
 
@@ -1306,7 +1308,8 @@ class StatisticController extends BaseController
         $fin = $request->get("fin");
         $tri = $request->get("tri");
         $post = $request->request->all();
-        $nbSites = $this->config('Multisites-nombre');
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites);
         $dbprefix = $GLOBALS['dbprefix'];
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -1527,8 +1530,8 @@ class StatisticController extends BaseController
         $session->set('statisticsTab', $tab);
         $multisites = array();
         if ($nbSites > 1) {
-            for ($i=1;$i<=$nbSites;$i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites as $site) {
+                $multisites[$site->getId()] = $site->getName();
             }
         }
 
@@ -1882,10 +1885,11 @@ class StatisticController extends BaseController
             $groups = array();
         }
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites);
         if ($nbSites >1){
-            for($i = 1; $i <= $nbSites; $i++){
-                $multisites[] = $this->config("Multisites-site$i");
+            foreach ($sites as $site) {
+                $multisites[$site->getId()] = $site->getName();
             }
         }
 
@@ -2068,8 +2072,9 @@ class StatisticController extends BaseController
         $fin = $request->get("fin");
         $tri = $request->get("tri");
         $post = $request->request->all();
-        
-        $nbSites = $this->config('Multisites-nombre');
+
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites);
         $dbprefix = $GLOBALS['dbprefix'];
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -2304,8 +2309,8 @@ class StatisticController extends BaseController
         $multisites = array();
 
         if ($nbSites>1) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites as $site) {
+                $multisites[$site->getId()] = $site->getName();
             }
         }
         foreach ($tab as &$elem) {
@@ -2382,7 +2387,8 @@ class StatisticController extends BaseController
         $post_postes = isset($post['postes']) ? $post['postes'] : null;
         $post_sites = isset($post['selectedSites']) ? $post['selectedSites'] : null;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        $nbSites = count($sites_array);
 
         if (!array_key_exists('stat_poste_postes', $_SESSION)) {
             $_SESSION['stat_poste_postes'] = null;
@@ -2449,15 +2455,15 @@ class StatisticController extends BaseController
 
 
         if ($nbSites > 1 and empty($selectedSites)) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $selectedSites[] = $i;
+            foreach ($sites_array as $site) {
+                $selectedSites[] = $site->getId();
             }
         }
 
         $multisites= [];
         if ($nbSites > 1){
-            for ($i = 1; $i <= $nbSites; $i++){
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $site) {
+                $multisites[$site->getId()] = $site->getName();
             }
         }
 
@@ -2632,9 +2638,9 @@ class StatisticController extends BaseController
             foreach($tab as $key => $elem){
                 $siteEtage = array();
                 if ($nbSites >1) {
-                    for ($i = 1; $i <= $nbSites; $i++) {
-                        if ($tab[$key]["sites"][$i] == $tab[$key][2]) {
-                            $siteEtage[] = $this->config("Multisites-site{$i}");
+                    foreach ($sites_array as $site) {
+                        if ($tab[$key]["sites"][$site->getId()] == $tab[$key][2]) {
+                            $siteEtage[] = $site->getName();
                             continue;
                         }
                     }

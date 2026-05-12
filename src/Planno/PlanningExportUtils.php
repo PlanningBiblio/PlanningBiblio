@@ -5,6 +5,7 @@ namespace App\Planno;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\Config;
+use App\Entity\Site;
 
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
@@ -19,7 +20,7 @@ class PlanningExportUtils
     {
         // TODO / FIXME : sans doute une meilleure façon d'obtenir $entityManager (pas avec $GLOBALS)
         $this->entityManager = $entityManager;
-        $this->config = $entityManager->getRepository(Config::class)->getAll();
+        $this->config = $GLOBALS['config'];
     }
 
     /**
@@ -75,9 +76,10 @@ class PlanningExportUtils
 
         // Liste des sites
         $sites = [];
-        if ($this->config['Multisites-nombre'] > 1) {
-            for ($i = 1; $i <= $this->config['Multisites-nombre']; $i++) {
-                $sites[$i] = $this->config['Multisites-site' . $i];
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
+        if (count($sites_array) > 1) {
+            foreach ($sites_array as $s) {
+                $sites[$s->getId()] = $s->getName();
             }
         }
 

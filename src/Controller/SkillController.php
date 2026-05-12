@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,7 +22,7 @@ class SkillController extends BaseController
     {
         //        Recherche des activites
 
-        $activites = $this->entityManager->getRepository(Skill::class)->findBy(array('supprime' => NULL));
+        $activites = $this->entityManager->getRepository(Skill::class)->findBy(array('supprime' => NULL, 'network_id' => $_SESSION['network']['id']));
 
         //        Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
         $activites_utilisees = array();
@@ -30,9 +31,11 @@ class SkillController extends BaseController
 
         $db = $this->entityManager->createQueryBuilder();
         $db->select('p.activites')
-           ->from(Position::class, 'p')
-           ->where('p.supprime IS NULL')
-           ->groupBy('p.activites');
+            ->from(Position::class, 'p')
+            ->where('p.supprime IS NULL')
+            ->andWhere('p.network_id = :network_id')
+            ->setParameter('network_id', $_SESSION['network']['id'])
+            ->groupBy('p.activites');
 
         $res = $db->getQuery();
         $result = $res->getResult();
@@ -48,9 +51,11 @@ class SkillController extends BaseController
 
         $db = $this->entityManager->createQueryBuilder();
         $db->select('a.postes')
-           ->from(Agent::class, 'a')
-           ->where('a.supprime <> 2')
-           ->groupBy('a.postes');
+            ->from(Agent::class, 'a')
+            ->where('a.supprime <> 2')
+            ->andWhere('a.network = :network_id')
+            ->setParameter('network_id', $_SESSION['network']['id'])
+            ->groupBy('a.postes');
 
         $res = $db->getQuery();
         $result = $res->getResult();
@@ -72,7 +77,7 @@ class SkillController extends BaseController
         }
 
         // skills used by agents
-        $agents = $this->entityManager->getRepository(Agent::class)->findAll();
+        $agents = $this->entityManager->getRepository(Agent::class)->findBy(array('supprime' => NULL, 'network' => $_SESSION['network']['id']));
         foreach ($activites as $skill) {
             foreach ($agents as $agent) {
                 if (in_array($skill->getId(), $agent->getSkills())) {
@@ -120,7 +125,7 @@ class SkillController extends BaseController
 
 
     #[Route(path: '/skill', name: 'skill.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
+    public function save(Request $request, Session $session): RedirectResponse{
         $id = $request->get('id');
         $nom = $request->get('nom');
 
@@ -135,6 +140,7 @@ class SkillController extends BaseController
             if(!$id){
                 $skill = new Skill();
                 $skill->setName($nom);
+                $skill->setNetwork($_SESSION['network']['id']);
                 try{
                     $this->entityManager->persist($skill);
                     $this->entityManager->flush();
@@ -195,4 +201,3 @@ class SkillController extends BaseController
     }
 }
 
-?>

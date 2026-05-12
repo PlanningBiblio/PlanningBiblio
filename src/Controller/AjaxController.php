@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Entity\Config;
 use App\Entity\Agent;
+use App\Entity\Site;
 use App\Planno\Helper\AbsenceBlockHelper;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -46,9 +47,10 @@ class AjaxController extends BaseController
             ->getManagedFor($session->get('loginId'));
 
         $agents = array();
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(array("deleteDate" => NULL, "network" => $_SESSION['network']['id']));
         foreach ($managed as $m) {
             if ($m->getId() == $session->get('loginId') ||
-                $this->config('Multisites-nombre') == 1 ||
+                count($sites_array) == 1 ||
                 ($sites && $m->inOneOfSites($sites))) {
 
                 $agents[] = array(
@@ -98,8 +100,8 @@ class AjaxController extends BaseController
         $planning = $request->get('planning');
 
         if ($password == '') {
-            $configRepository = $this->entityManager->getRepository(Config::class);
-            $password = decrypt($configRepository->getValue('Mail-Password'));
+            $mailPassword = $this->configHelper->findOneByName('Mail-Password');
+            $password = decrypt($mailPassword->getValue());
         }
 
         // Connexion au serveur de messagerie
@@ -371,12 +373,12 @@ class AjaxController extends BaseController
 
             $db=new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->delete("select_$menu", ['id' => "NOT IN$ids"]);
+            $db->delete("select_$menu", ['id' => "NOT IN$ids", 'network_id' => $_SESSION['network']['id']]);
 
             // Adding new items
             $db_ids = array();
             $db=new \db();
-            $db->select("select_$menu");
+            $db->select("select_$menu", "id", ["network_id" => $_SESSION['network']['id']]);
             if(!empty($db->result)){
                 foreach ($db->result as $elem) {
                     $db_ids[] = $elem['id'];
@@ -384,13 +386,11 @@ class AjaxController extends BaseController
             }
 
             foreach ($tab as $elem) {
+                $db = new \db();
+                $db->CSRFToken = $CSRFToken;
                 if (!in_array($elem->id, $db_ids)) {
-                    $db = new \db();
-                    $db->CSRFToken = $CSRFToken;
-                    $db->insert("select_$menu", ["valeur" => $elem->value, "rang" => $elem->place]);
+                    $db->insert("select_$menu", ["valeur" => $elem->value, "rang" => $elem->place, "network_id"=>$_SESSION['network']['id']]);
                 } else {
-                    $db = new \db();
-                    $db->CSRFToken = $CSRFToken;
                     $db->update("select_$menu", ["rang" => $elem->place], ["id" => $elem->id]);
                 }
             }
@@ -399,9 +399,9 @@ class AjaxController extends BaseController
 
         $db=new \db();
         $db->CSRFToken = $CSRFToken;
-        $db->delete("select_$menu");
+        $db->delete("select_$menu", "network_id=".$_SESSION['network']['id']);
         foreach ($tab as $elem) {
-            $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
+            $elements = array("valeur"=>$elem[0],"rang"=>$elem[1],"network_id"=>$_SESSION['network']['id']);
             if ($option == 'type') {
                 $elements['type'] = $elem[2];
             }

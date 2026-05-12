@@ -8,6 +8,7 @@ use App\Entity\PlanningPositionHistory;
 
 use App\Planno\WorkingHours;
 
+use App\Traits\PlanningJobTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,10 +26,10 @@ require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
 class PlanningJobController extends BaseController
 {
-    use \App\Traits\PlanningJobTrait;
+    use PlanningJobTrait;
 
     #[Route(path: '/planningjob/contextmenu', name: 'planningjob.contextmenu', methods: ['GET'])]
-    public function contextmenu(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function contextmenu(Request $request): JsonResponse
     {
         $session = $request->getSession();
 
@@ -47,7 +48,7 @@ class PlanningJobController extends BaseController
     }
 
     #[Route(path: '/ajax/planningjob/checkcopy', name: 'ajax.planningjobcheckcopy', methods: ['GET'])]
-    public function checkCopy(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function checkCopy(Request $request): JsonResponse
     {
         // Initilisation des variables
         $date = $request->get('date');

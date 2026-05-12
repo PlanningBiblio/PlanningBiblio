@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SelectStatusRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SelectStatusRepository::class)]
@@ -25,6 +26,9 @@ class SelectStatus
 
     #[ORM\Column]
     private int $categorie = 0;
+
+    #[ORM\Column(type: Types::INTEGER)]
+    private ?int $network_id = null;
 
     public function getId(): ?int
     {
@@ -77,5 +81,15 @@ class SelectStatus
         $this->categorie = $category;
 
         return $this;
+    }
+
+    public function getNetworkId(): ?int
+    {
+        return $this->network_id;
+    }
+
+    public function setNetworkId(?int $network_id): void
+    {
+        $this->network_id = $network_id;
     }
 }
