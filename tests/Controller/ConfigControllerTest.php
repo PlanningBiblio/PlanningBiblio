@@ -37,7 +37,9 @@ class ConfigControllerTest extends PLBWebTestCase
             $response
         );
 
-        $result = $crawler->filter('.accordion-button.collapsed')->eq(0);
-        $this->assertEquals($result->text(),'Divers');
+        $this->assertMatchesRegularExpression(
+            '/<button class="accordion-button collapsed".*> Divers<\/button>/',
+            $response
+        );
     }
 }
