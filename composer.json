@@ -78,6 +78,9 @@
         "symfony/web-profiler-bundle": "^6.4"
     },
     "config": {
+        "platform": {
+            "php":"8.1"
+        },
         "preferred-install": {
             "*": "dist"
         },
