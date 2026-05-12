@@ -14,7 +14,7 @@
       <h3>Ajout d'un poste</h3>
     {% endif %}
     <div class="admin-div">
-      <form method="post" action="{{ asset('position') }}" name="form" onsubmit="return checkPositionForm();">
+      <form id="edit-position-form" method="post" action="{{ asset('position') }}" name="form">
         <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}"/>
         <input type='hidden' name='group_id' value='{{ group_id }}'/>
         {% if id is defined %}
@@ -22,155 +22,223 @@
         {% else %}
             <input type='hidden' name='id' value=''/>
         {% endif %}
-        <table style='width:100%'>
-        <tr style='vertical-align:top;'>
-          <td style='width:50%'>
-              <table>
-                <tr>
-                  <td style='width:160px'>Nom du poste :</td>
-                  <td>
-                    <input type='text' value='{{ nom }}' name='nom' style='width:250px' class='ui-widget-content ui-corner-all'/>
-                  </td>
-                </tr>
-                {% if nbSites > 1 %}
-                  <tr>
-                    <td>Site</td>
-                    <td>
-                      <select name='site' style='width:255px' class='ui-widget-content ui-corner-all'>
-                        <option value='0'>&nbsp;</option>
-                        {% for i in 0..nbSites-1 %}
-                          <option value='{{i+1}}' {{ selectedSites[i] }}> {{ multisite[i] }} </option>
+        <div class="container">
+          <div class="row mb-3">
+            <div class="col">
+                <div class="container">
+                  <div class="row mb-2">
+                    <label for="position-name" class="col-4 col-form-label">Nom du poste :</label>
+                    <div class="col-4">
+                      <input id="position-name" type='text' value='{{ nom }}' name='nom' class="form-control form-control-sm"/>
+                    </div>
+                  </div>
+                  {% if nbSites > 1 %}
+                    <div class="row mb-2">
+                      <label for="site-name" class="col-4 col-form-label">Site :</label>
+                      <div class="col-4">
+                        <select id="site-name" name="site" class="form-select form-select-sm form-control">
+                          <option value='0'>&nbsp;</option>
+                          {% for i in 0..nbSites-1 %}
+                            <option value='{{i+1}}' {{ selectedSites[i] }}> {{ multisite[i] }} </option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                  {% endif %}
+                  <div class="row mb-2">
+                    <label for="etage" class="col-4 col-form-label">Etage :</label>
+                    <div class="col-4">
+                      <select name="etage" id="etage" class="form-select form-select-sm form-control">
+                        <option value=''>&nbsp;</option>
+                        {% for floor in floors %}
+                          <option value="{{floor.id}}" {% if etage == floor.id %} selected {% endif %}>{{ floor.value }}</option>                        
                         {% endfor %}
                       </select>
-                    </td>
-                  </tr>
-                {% endif %}
-                <tr>
-                  <td>Etage :</td>
-                  <td style='white-space: nowrap;'>
-                    <select name='etage' id='etage' style='width:255px' class='ui-widget-content ui-corner-all'>
-                      <option value=''>&nbsp;</option>
-                      {% for floor in floors %}
-                        <option value="{{floor.id}}" {% if etage == floor.id %} selected {% endif %}>{{ floor.value }}</option>                        
-                      {% endfor %}
-                    </select>
-                    <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-floor-modal">
+                    </div>
+                    <button type="button" class="btn btn-icon col-auto" data-bs-toggle="modal" data-bs-target="#add-floor-modal">
                       <span class="pl-icon pl-icon-add ps-3" title="Ajouter un étage"></span>
                     </button>
-                  </td>
-                </tr>
-                {% if not config('Planook') %}
-                  <tr>
-                    <td>Groupe:</td>
-                    <td style='white-space: nowrap;'>
-                      <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
-                        <option value=''>&nbsp;</option>
-                        {% for group in groups %}
-                          <option value="{{ group.id }}" {% if groupe == group.id %} selected {% endif %} >{{ group.value }}</option>
-                        {% endfor %}
-                      </select>
-                      <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-group-modal">
-                        <span class="pl-icon pl-icon-add ps-3" title="Ajouter un groupe"></span>
-                      </button>
-    
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style='padding-top:20px;'>Obligatoire / renfort :</td>
-                    <td style='padding-top:20px;'>
-                      <input type='radio' name='obligatoire' value='Obligatoire' {{ obligatoire }}/> Obligatoire
-                      <input type='radio' name='obligatoire' value='Renfort' {{ renfort }}/> Renfort
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Bloquant :</td>
-                    <td>
-                      <input type='radio' name='bloquant' value='1' {{ bloq1 }}/> Oui
-                      <input type='radio' name='bloquant' value='0' {{ bloq2 }}/> Non
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><span title='Compter les heures dans le quota de service public'>Quota de SP :</span></td>
-                    <td>
-                      <input type="radio" name="quota_sp" id="quota_sp1" value="1" {{ quota_sp1 }}/> Oui
-                      <input type="radio" name="quota_sp" id="quota_sp2" value="0" {{ quota_sp2 }}/> Non
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Statistiques :</td>
-                    <td>
-                      <input type="radio" name="statistiques" id="statistics1" value="1" {{ stat1 }}/> Oui
-                      <input type="radio" name="statistiques" id="statistics2" value="0" {{ stat2 }}/> Non
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Compatible télétravail :</td>
-                    <td>
-                      <input type='radio' name='teleworking' value='1' {{ teleworking1 }}/> Oui
-                      <input type='radio' name='teleworking' value='0' {{ teleworking2 }}/> Non
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <label title="{% trans %}Le poste repas permet ...{% endtrans %}">
-                        {% trans %}Poste repas{% endtrans %} :
-                      </label>
-                    </td>
-                    <td>
-                      <input type="radio" name="lunch" id="lunch1" value="1" {{ lunch1 }}/> Oui
-                      <input type="radio" name="lunch" id="lunch2" value="0" {{ lunch2 }}/> Non
-                    </td>
-                  </tr>
-                {% endif %}
-              </table>
-            </td>
+                  </div>
+                  {% if not config('Planook') %}
+                    <div class="row mb-4">
+                      <label for="groupe" class="col-4 col-form-label">Groupe :</label>
+                      <div class="col-4">
+                        <select name="groupe" id="groupe" class="form-select form-select-sm form-control">
+                          <option value=''>&nbsp;</option>
+                          {% for group in groups %}
+                            <option value="{{ group.id }}" {% if groupe == group.id %} selected {% endif %} >{{ group.value }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                        <button type="button" class="btn btn-icon col-auto" data-bs-toggle="modal" data-bs-target="#add-group-modal">
+                          <span class="pl-icon pl-icon-add ps-3" title="Ajouter un groupe"></span>
+                        </button>
+                    </div>
+
+                    <fieldset class="row mb-2">
+                      <legend class="col-form-label col-4 pt-0">Obligatoire / renfort
+                        <button type="button" class="tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+                        data-bs-title="{{ 'obligatoire-info'| trans()}}">
+                        <i class="bi bi-info-circle-fill"></i></button> :
+                      </legend>
+                      <div class="col-4">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="obligatoire" id="obligatoire" value="Obligatoire" {{ obligatoire }}>
+                          <label class="form-check-label" for="obligatoire">{% trans %}Obligatoire{% endtrans %}</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="obligatoire" id="renfort" value="Renfort" {{ renfort }}>
+                          <label class="form-check-label" for="renfort">{% trans %}Renfort{% endtrans %}</label>
+                        </div>
+                      </div>
+                    </fieldset>
+
+                    <fieldset class="row row-inline mb-2">
+                      <legend class="col-form-label col-4 pt-0">Bloquant
+                        <button type="button" class="tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+                        data-bs-title="{{ 'bloquant_info'| trans()}}">
+                        <i class="bi bi-info-circle-fill"></i></button> :
+                      </legend>
+                      <div class="col">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="bloquant" id="bloq1" value="1" {{ bloq1 }}>
+                          <label class="form-check-label" for="bloq1">{% trans %}Yes{% endtrans %}</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="bloquant" id="bloq2" value="0" {{ bloq2 }}>
+                          <label class="form-check-label" for="bloq2">{% trans %}No{% endtrans %}</label>
+                        </div>
+                        <div class="invalid-feedback">
+                          {% trans %}The selected settings are incompatible.{% endtrans %}
+                        </div>
+                      </div>
+                    </fieldset>
+
+                    <fieldset class="row mb-2">
+                      <legend class="col-form-label col-4 pt-0">Quota de SP
+                        <button type="button" class="tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+                        data-bs-title="{{ 'quotas-info'| trans()}}">
+                        <i class="bi bi-info-circle-fill"></i></button> :
+                      </legend>
+                      <div class="col-4">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="quota_sp" id="quota_sp1" value="1" {{ quota_sp1 }}>
+                          <label class="form-check-label" for="quota_sp1">{% trans %}Yes{% endtrans %}</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="quota_sp" id="quota_sp2" value="0" {{ quota_sp2 }}>
+                          <label class="form-check-label" for="quota_sp2">{% trans %}No{% endtrans %}</label>
+                        </div>
+                      </div>
+                    </fieldset>
+
+                    <fieldset class="row mb-2">
+                      <legend class="col-form-label col-4 pt-0">Statistiques
+                        <button type="button" class="tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+                        data-bs-title="{{ 'statistics-info'| trans()}}">
+                        <i class="bi bi-info-circle-fill"></i></button> :
+                      </legend>
+                      <div class="col-4">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="statistiques" id="statistics1" value="1" {{ stat1 }}>
+                          <label class="form-check-label" for="statistics1">{% trans %}Yes{% endtrans %}</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="statistiques" id="statistics2" value="0" {{ stat2 }}>
+                          <label class="form-check-label" for="statistics2">{% trans %}No{% endtrans %}</label>
+                        </div>
+                      </div>
+                    </fieldset>
+
+                    <fieldset class="row mb-2">
+                      <legend class="col-form-label col-4 pt-0">Compatible télétravail
+                        <button type="button" class="tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+                        data-bs-title="{{ 'teleworking-info'| trans()}}">
+                        <i class="bi bi-info-circle-fill"></i></button> :
+                      </legend>
+                      <div class="col-4">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="teleworking" id="teleworking1" value="1" {{ teleworking1 }}>
+                          <label class="form-check-label" for="teleworking1">{% trans %}Yes{% endtrans %}</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="teleworking" id="teleworking2" value="0" {{ teleworking2 }}>
+                          <label class="form-check-label" for="teleworking2">{% trans %}No{% endtrans %}</label>
+                        </div>
+                      </div>
+                    </fieldset>
+
+                    <fieldset class="row row-inline mb-2">
+                      <legend class="col-form-label col-4 pt-0">
+                        {% trans %}Poste repas{% endtrans %}
+                        <button type="button" class="tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+                        data-bs-title="{{ 'lunch-info'| trans()}}">
+                        <i class="bi bi-info-circle-fill"></i></button> :
+                      </legend>
+                      <div class="col">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="lunch" id="lunch1" value="1" {{ lunch1 }}>
+                          <label class="form-check-label" for="lunch1">{% trans %}Yes{% endtrans %}</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input mt-1" type="radio" name="lunch" id="lunch2" value="0" {{ lunch2 }}>
+                          <label class="form-check-label" for="lunch2">{% trans %}No{% endtrans %}</label>
+                        </div>
+                        <div class="invalid-feedback">
+                          {% trans %}The selected settings are incompatible.{% endtrans %}
+                        </div>
+                      </div>
+                    </fieldset>
+                  {% endif %}
+                  </div>
+            </div>
 
             {% if not config('Planook') %}
-              <td>
-                <table>
-                  <tr style='vertical-align:top;'>
-                    <td>Activités :</td>
-                    <td>
-                      {% for s in skillList %}
-                        {% if s.id in activites %}
-                          <input type="checkbox" name="activites[]" value="{{ s.id }}" checked="checked" /> {{ s.name }}<br/>
-                        {% else %}
-                          <input type="checkbox" name="activites[]" value="{{ s.id }}" /> {{ s.name }}<br/>
-                        {% endif %}
+              <div class="col">
+
+                <fieldset class="row mb-3">
+                  <legend class="col-form-label col-3 pt-0">Activités :</legend>
+                  <div class="col">
+                    {% for s in skillList %}
+                      <div class="form-check">
+                        <input class="form-check-input mt-1" type="checkbox" name="activites[]" id="activities_{{ s.id }}" value="{{ s.id }}" {% if s.id in activites %} checked {% endif %}>
+                        <label class="form-check-label" for="activities_{{ s.id }}">{{ s.name }}</label>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </fieldset>
+
+                {% if categoriesList is iterable and not categoriesList is empty %}
+                  <fieldset class="row mb-2">
+                    <legend class="col-form-label col-3 pt-0">Catégories
+                      <button type="button" class="tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
+                        data-bs-title="{{ 'categories-info'| trans()}}">
+                      <i class="bi bi-info-circle-fill"></i></button> :
+                      </legend>
+                    <div class="col">
+                      {% for c in categoriesList %}
+                        <div class="form-check">
+                          <input class="form-check-input mt-1" type="checkbox" name="categories[]" id="categories_{{ c.id }}" value="{{ c.id }}" {% if c.id in categories %} checked {% endif %}>
+                          <label class="form-check-label" for="categories_{{ c.id }}">{{ c.valeur }}</label>
+                        </div>
                       {% endfor %}
-                    </td>
-                  </tr>
-                  {% if categoriesList is iterable and not categoriesList is empty %}
-                    <tr style='vertical-align:top;'>
-                      <td style='padding-top:20px;'> Cat&eacute;gories<sup>*</sup> :</td>
-                      <td style='padding-top:26px;'>
-                        {% for c in categoriesList %}
-                          {% if c.id in categories %}
-                            <input type="checkbox" name="categories[]" value="{{ c.id }}" checked="checked" /> {{ c.valeur }}<br/>
-                          {% else %}
-                            <input type="checkbox" name="categories[]" value="{{ c.id }}" /> {{ c.valeur }}<br/>
-                          {% endif %}
-                        {% endfor %}
-                      </td>
-                    </tr>
-                  {% endif %}
-                </table>
-              </td>
+                    </div>
+                  </fieldset>
+                {% endif %}
+
+              </div>
             {% endif %}
-          </tr>
-          <tr>
-            <td colspan='2' style='text-align:center;'><br/><br/>
+          </div>
+          
+          <div class="row justify-content-md-center">
+            <div class="col-auto">
               <input type='hidden' value={{id}} name='id'/>
               <a href="{{ asset('position') }}" role="button" class="btn btn-secondary">Annuler</a>
                   &nbsp;&nbsp;&nbsp;
-              <input type="submit" role="button"  value="Valider" class="btn btn-primary"/>
-            </td>
-          </tr>
-          <tr>
-            <td colspan='2' class='noteBasDePage'>* Si aucune cat&eacute;gorie n&apos;est s&eacute;lectionn&eacute;e, les agents de toutes les cat&eacute;gories pourront &ecirc;tre plac&eacute;s sur ce poste.
-            </td>
-          </tr>
-        </table>
+              <button type="submit" role="button" class="btn btn-primary">Valider</button>
+            </div>
+          </div>
+        </div>
       </form>
 
       <!--  Modification de la liste des étages (Modale) -->
@@ -291,4 +359,10 @@
 
     </div>
   </div>
+
+  <script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+  </script>
+
 {% endblock %}

@@ -368,6 +368,29 @@ h4{
   white-space:pre-wrap;
 }
 
+.custom-tooltip {
+  --bs-tooltip-color: #29495C;
+  --bs-tooltip-opacity: 100%;
+  --bs-tooltip-bg: white ;
+  --bs-tooltip-border-radius : 4px;
+  --bs-tooltip-arrow-width: 0px;
+  --bs-tooltip-arrow-height: 0px;
+  --bs-tooltip-max-width : fit-content;
+  border : 2px solid #29495C;
+  border-radius: 4px;
+  white-space: pre ;
+}
+
+.tooltip-icon {
+  background: none;
+  border: none;
+}
+
+.tooltip-inner {
+    text-align: left;
+}
+
+
 /* Les agents */
 li .agent-acces-checked2{
   position:absolute;
@@ -1900,10 +1923,6 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 
 /* Modals START */
 
-.btn-icon {
-display: contents;
-}
-
 .modal-header {
   background-color: #FFD700 ;
   border: 1px solid;
@@ -1992,12 +2011,28 @@ input::placeholder {
   padding-right: 4px;
 }
 
+.row-inline .form-check:has(.is-invalid) ~ .invalid-feedback {
+  display: inline !important;
+}
+
 .was-validated .form-control:valid,
-.was-validated .form-select:valid,
-.was-validated .form-check-input:valid {
+.was-validated .form-select:valid {
   border-color: inherit;
   padding-right: 4px !important;
   background-image: none;
+}
+
+.was-validated .form-check-input:valid{
+  border-color: inherit;
+  padding-right: 4px !important;
+}
+
+.was-validated .form-check-input:valid:checked {
+  background-color: #29495C;
+}
+
+.was-validated .form-check-input:valid ~ .form-check-label {
+  color : inherit;
 }
 
 .was-validated .form-select:valid {
@@ -2022,6 +2057,14 @@ input::placeholder {
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
 }
 
+.form-check-input.is-invalid:checked,
+.was-validated .form-check-input.is-invalid:checked {
+  border-color: #dc3545 !important;
+  background-color: #dc3545 !important ;
+}
+
+.form-check-input.is-invalid:focus,
+.was-validated .form-check-input.is-invalid:focus,
 .form-control.is-invalid:focus,
 .was-validated .form-control.is-invalid:focus,
 .form-select.is-invalid:focus,
