@@ -8,7 +8,7 @@
 
 {% block page %}
   <h3>Configuration {% if technical %}technique{% else %}fonctionnelle{% endif %}</h3>
-    <form name="form" action="{{ path('config.update') }}" method="post">
+    <form id="config-form" name="form" action="{{ path('config.update') }}" method="post">
 
       <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
       <input type="hidden" name="technical" value="{{ technical }}" />
@@ -31,9 +31,9 @@
       </div>
 
       <div style="text-align:center;margin:20px;">
-        <a href="{{ path('home') }}" role="button" class="btn btn-secondary">Annuler</a>
+        <a href="{{ path('home') }}" role="button" class="btn btn-secondary">{% trans %}Cancel{% endtrans %}</a>
         &nbsp;&nbsp;&nbsp;
-        <input type="submit" role="button" value="Valider" class="btn btn-primary" />
+        <button type="button" role="button" class="btn btn-primary" onclick="$('#config-form').submit();">{% trans %}Confirm{% endtrans %}</button>
       </div>
     </form>
 

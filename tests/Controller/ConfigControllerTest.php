@@ -29,7 +29,7 @@ class ConfigControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(20));
 
-        $crawler = $this->client->request('GET', '/config');
+        $this->client->request('GET', '/config');
 
         $response = $this->client->getResponse()->getContent();
         $this->assertMatchesRegularExpression(

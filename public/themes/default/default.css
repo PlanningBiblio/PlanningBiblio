@@ -566,14 +566,14 @@ li.nav-item.dropdown a.nav-link.active, li.nav-item.dropdown a.nav-link.active:h
   cursor: pointer;
 }
 
-li.nav-item a.nav-link.active, li.nav-item a.nav-link.active:hover {
+li.nav-item a.nav-link.active, li.nav-item a.nav-link.active:hover, li.nav-item a.nav-link.active:focus {
   color: #29495C;
   border-bottom: 5px solid #FFD700;
   pointer-events: none;
   cursor: default;
 }
 
-li.nav-item a.nav-link:hover, li.nav-item a.nav-link.dropdown-toggle.show {
+li.nav-item a.nav-link:hover, li.nav-item a.nav-link:focus, li.nav-item a.nav-link.dropdown-toggle.show {
   color: #29495C;
   border-bottom: 5px solid #29495C;
 }
@@ -1675,20 +1675,16 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 /* Accordion	*/
 
 .accordion-button {
-  /* --bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor' stroke='%23212529' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z'/%3e%3c/svg%3e");
-  --bs-accordion-btn-active-icon: var(--bs-accordion-btn-icon);
-  --bs-accordion-btn-icon-transform : rotate(90deg); */
   color: inherit;
 }
 
-.accordion-button.collapsed:hover {
-  background-color: #CCCCCC;
+.accordion-button:hover, .accordion-button:focus, .accordion-button:not(.collapsed) {
+  background-color: #FFD700;
 }
 
-.accordion-button:not(.collapsed) {
-
+.accordion-button:focus:not(:focus-visible){
+  box-shadow: none;
 }
-
 
 .accordion-item {
   color : #29495C;
