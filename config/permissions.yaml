@@ -63,6 +63,8 @@
     - 100
 "agent.add":
     - 21
+"agent.check_login":
+    - 21
 "agent.bulk.delete":
     - 21
 "agent.bulk.update":
@@ -119,10 +121,6 @@
     - 100
 "ajax.checkpassword":
     - 100
-"ajax.check_login":
-    - 21
-"ajax.update_agent_login":
-    - 21
 "ajax.sanitizehtml":
     - 100
 "ajax.update.select.options":

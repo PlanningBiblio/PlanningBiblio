@@ -26,10 +26,10 @@
         }
 
         $.ajax({
-          url: url('ajax/check_login'),
-          type: "POST",
+          url: url('agent/check_login'),
+          type: "GET",
           dataType: "html",
-          data: {_token: $('#_token').val(), login: login_val, id: agent_id},
+          data: {login: login_val, id: agent_id},
           error: function(xhr, ajaxOptions, thrownError){
             if (xhr.responseText == 'duplicate') {
               feedback.text(Translator.trans('This login already exists.'));

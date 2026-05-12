@@ -879,15 +879,11 @@ class AgentController extends BaseController
         return $isCurrentPassword;
     }
 
-    #[Route(path: '/ajax/check_login', name: 'ajax.check_login', methods: ['POST'])]
+    #[Route(path: '/agent/check_login', name: 'agent.check_login', methods: ['GET'])]
     public function check_login(Request $request)
     {
-        if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
-        }
-
-        $login = $request->get('login');
-        $agent_id = $request->get('id');
+        $login = $request->query->get('login');
+        $agent_id = $request->query->getInt('id');
         $response = new Response();
 
         $login = filter_var($login, FILTER_SANITIZE_EMAIL);
@@ -911,50 +907,6 @@ class AgentController extends BaseController
         }
 
         $response->setStatusCode(200);
-        return $response;
-    }
-
-    #[Route(path: '/ajax/update_agent_login', name: 'ajax.update_agent_login', methods: ['POST'])]
-    public function update_login(Request $request)
-    {
-        if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
-        }
-
-        $login = $request->get('login');
-        $agent_id = $request->get('id');
-        $response = new Response();
-
-        $login = filter_var($login, FILTER_SANITIZE_EMAIL);
-
-        $agent = $this->entityManager->find(Agent::class, $agent_id);
-
-        $duplicate = $this->entityManager
-            ->getRepository(Agent::class)
-            ->findOneBy(array('login' => $login));
-
-        if ($login == $agent->getLogin()) {
-            $response->setContent('identic');
-            $response->setStatusCode(400);
-
-            return $response;
-        }
-
-        if ($duplicate && $login != $agent->getLogin()) {
-            $response->setContent('duplicate');
-            $response->setStatusCode(400);
-
-            return $response;
-        }
-
-        $agent = $this->entityManager->find(Agent::class, $agent_id);
-        $agent->setLogin($login);
-        $this->entityManager->persist($agent);
-        $this->entityManager->flush();
-
-        $response->setContent($login);
-        $response->setStatusCode(200);
-
         return $response;
     }
 
