@@ -1,3 +1,12 @@
+*** Version 25.04.20   (2026-05-13)    ***
+- Fixes
+MT53365: Fix a typo in absence.js and holiday.js #1379
+MT52706: Lunch positions hours are not counted in SP hours #1382
+
+- Security
+MT51960: Sanitize inputs on calendar page
+MT52668: Set composer's config.platform.php to 8.1 and update deps #1384
+
 *** Version 25.04.19   (2026-04-17)    ***
 - Fixes
 MT53004: Fix the calculation of breaktimes in Agent Controller / index #1360
