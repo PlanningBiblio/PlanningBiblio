@@ -17,8 +17,10 @@ require_once 'class.personnel.php';
 use App\Entity\Agent;
 use App\Entity\AbsenceReason;
 use App\Entity\AbsenceDocument;
+use App\Entity\Config;
 use App\Planno\WorkingHours;
 use App\Planno\ClosingDay;
+
 
 
 class absences
@@ -68,8 +70,12 @@ class absences
     public $unique=false;
     public $update_db = false;
 
+    private $config;
+
     public function __construct()
     {
+        $entityManager = $GLOBALS['entityManager'];
+        $this->config = $entityManager->getRepository(Config::class);
     }
 
   
@@ -105,7 +111,7 @@ class absences
         $validationText = "Demand&eacute;e";
 
         // Si le workflow est désactivé, absence directement validée
-        if (!$GLOBALS['config']['Absences-validation']) {
+        if (!$this->config->getValue('Absences-validation')) {
             $valide_n2 = 1;
             $validation_n2 = date("Y-m-d H:i:s");
             $validationText = null;
@@ -141,9 +147,9 @@ class absences
 
         // Choix des destinataires des notifications selon le degré de validation
         $notifications = 1;
-        if ($GLOBALS['config']['Absences-validation'] and $valide_n1 != 0) {
+        if ($this->config->getValue('Absences-validation') and $valide_n1 != 0) {
             $notifications = 3;
-        } elseif ($GLOBALS['config']['Absences-validation'] and $valide_n2 != 0) {
+        } elseif ($this->config->getValue('Absences-validation') and $valide_n2 != 0) {
             $notifications=4;
         }
 
@@ -244,7 +250,7 @@ class absences
             $prenom = $agent->getFirstname();
 
             // Choix des destinataires des notifications selon la configuration
-            if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
+            if ($this->config->getValue('Absences-notifications-agent-par-agent')) {
                 $a=new absences();
                 $a->getRecipients2(null, $agent->getId(), $notifications, 500, $debutSQL, $finSQL);
                 $destinataires = $a->recipients;
@@ -275,15 +281,15 @@ class absences
             // Si $this->uid : Ajout simple. Si !$this->uid : Modification, donc pas d'envoi de notification à ce niveau (envoyée via POST /absence)
             if (!$this->uid) {
                 // Titre différent si titre personnalisé (config) ou si validation ou non des absences (config)
-                if ($GLOBALS['config']['Absences-notifications-titre']) {
-                    $titre = $GLOBALS['config']['Absences-notifications-titre'];
+                if ($this->config->getValue('Absences-notifications-titre')) {
+                    $titre = $this->config->getValue('Absences-notifications-titre');
                 } else {
-                    $titre = $GLOBALS['config']['Absences-validation'] ? "Nouvelle demande d absence" : "Nouvelle absence";
+                    $titre = $this->config->getValue('Absences-validation') ? "Nouvelle demande d absence" : "Nouvelle absence";
                 }
 
                 // Si message personnalisé (config), celui-ci est inséré
-                if ($GLOBALS['config']['Absences-notifications-message']) {
-                    $message = "<b><u>{$GLOBALS['config']['Absences-notifications-message']}</u></b><br/>";
+                if ($this->config->getValue('Absences-notifications-message')) {
+                    $message = "<b><u>{$this->config->getValue('Absences-notifications-message')}</u></b><br/>";
                 } else {
                     $message = "<b><u>$titre</u></b> : ";
                 }
@@ -311,7 +317,7 @@ class absences
                 }
                 $message .= "</li>";
 
-                if ($GLOBALS['config']['Absences-validation']) {
+                if ($this->config->getValue('Absences-validation')) {
                     $message .= "<li>Validation : $validationText</li>\n";
                 }
 
@@ -651,7 +657,7 @@ class absences
 
         $filter=array("perso_id"=>$perso_id, "debut"=>"<$fin", "fin"=>">$debut");
     
-        if ($valide==true or $GLOBALS['config']['Absences-validation']==0) {
+        if ($valide==true or $this->config->getValue('Absences-validation')==0) {
             $filter["valide"]=">0";
         }
     
@@ -679,7 +685,7 @@ class absences
             $dates="`fin`>='$date'";
         }
 
-        if ($this->valide and $GLOBALS['config']['Absences-validation']) {
+        if ($this->valide and $this->config->getValue('Absences-validation')) {
             $filter.=" AND `{$dbprefix}absences`.`valide`>0 ";
         }
 
@@ -924,7 +930,7 @@ class absences
             $dates = "`fin`>='$date'";
         }
 
-        if ($this->valide and $GLOBALS['config']['Absences-validation']) {
+        if ($this->valide and $this->config->getValue('Absences-validation')) {
             $filter .= " AND `{$dbprefix}absences`.`valide`>0 ";
         }
 
@@ -1137,7 +1143,7 @@ class absences
         $agent : Model\Agent object
         */
 
-        $categories=$GLOBALS['config']["{$type}-notifications{$validation}"];
+        $categories= $this->config->getValue("{$type}-notifications{$validation}");
         $categories=json_decode(html_entity_decode(stripslashes($categories), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
         if (!is_array($categories)) {
             $categories = array();

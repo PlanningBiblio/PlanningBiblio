@@ -48,7 +48,7 @@ class ConfigRepository extends EntityRepository
     {
         // FIXME: The variable `$GLOBALS['config']` is intended for unit tests, which continue to use it.
         // Remove this line when the unit tests will no longer use it.
-        $GLOBALS['config'][$name] = $value;
+#       $GLOBALS['config'][$name] = $value;
 
         $param = $this->findOneBy(['nom' => $name]);
 

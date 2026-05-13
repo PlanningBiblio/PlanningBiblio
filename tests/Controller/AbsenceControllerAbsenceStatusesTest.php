@@ -12,7 +12,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $this->builder->delete(Agent::class);
 
-        $GLOBALS['config']['Absences-validation'] = 1;
+        $this->config->setParam('Absences-validation', 1);
     }
 
     public function testNewAbsenceWithoutRight(): void
@@ -141,6 +141,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
+        echo $crawler->html();
 
         $statuses_element = $crawler->filter('span');
 
