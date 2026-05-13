@@ -18,6 +18,7 @@ class AgentRepositoryTest extends PLBWebTestCase
 {
     protected function setUp(): void
     {
+        parent::setUp();
         global $entityManager;
         $this->entityManager = $entityManager;
         
