@@ -1029,7 +1029,7 @@ function verif_absences(ctrl_form){
       // Contrôle si des plannings sont en cours d'élaboration
       if(result["planning_started"] && retour == true){
         if(admin == true){
-          if(!confirm("Vous essayer de placer une absence sur des plannings en cours d'élaboration : "+result["planning_started"]+"\nVoulez-vous continuer ?")){
+          if(!confirm("Vous essayez de placer une absence sur des plannings en cours d'élaboration : "+result["planning_started"]+"\nVoulez-vous continuer ?")){
             retour=false;
           }
         } else {
@@ -1040,7 +1040,7 @@ function verif_absences(ctrl_form){
 
       if (result['has_block'] >= 1 && retour == true) {
         if (admin == true) {
-          if (!confirm("Vous essayer de placer une absence sur une période bloquée.\nVoulez-vous continuer ?")){
+          if (!confirm("Vous essayez de placer une absence sur une période bloquée.\nVoulez-vous continuer ?")){
             retour = false;
           }
         } else {
