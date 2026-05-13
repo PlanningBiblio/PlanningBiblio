@@ -15,7 +15,7 @@ class AgentControllerListTest extends PLBWebTestCase
 
     public function testListAgent(): void
     {
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
         $this->builder->delete(Agent::class);
         $this->setUpPantherClient();
 

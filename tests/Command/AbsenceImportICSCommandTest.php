@@ -50,36 +50,36 @@ class AbsenceImportICSCommandTest extends PLBWebTestCase
     // Test ICS Server 1 with "login" as variable
     public function testAbsenceImportICSServer1WithLogin(): void
     {
-        $this->setParam('ICS-Server1', __DIR__ . '/../data/absenceImport[login].ics');
+        $this->config->setParam('ICS-Server1', __DIR__ . '/../data/absenceImport[login].ics');
         $this->check(1, 'ICS Server 1 with login');
     }
 
     // Test ICS Server 1 with "email" as variable
     public function testAbsenceImportICSServer1WithEmail(): void
     {
-        $this->setParam('ICS-Server1', __DIR__ . '/../data/absenceImport[email].ics');
+        $this->config->setParam('ICS-Server1', __DIR__ . '/../data/absenceImport[email].ics');
         $this->check(1, 'ICS Server 1 with e-mail');
     }
 
     // Test ICS Server 1 with "mail" as variable
     public function testAbsenceImportICSServer1WithMail(): void
     {
-        $this->setParam('ICS-Server1', __DIR__ . '/../data/absenceImport[mail].ics');
+        $this->config->setParam('ICS-Server1', __DIR__ . '/../data/absenceImport[mail].ics');
         $this->check(1, 'ICS Server 1 with e-mail');
     }
 
     // Test ICS Server 1 with "matricule" as variable
     public function testAbsenceImportICSServer1WithEmployeeNumber(): void
     {
-        $this->setParam('ICS-Server1', __DIR__ . '/../data/absenceImport[matricule].ics');
+        $this->config->setParam('ICS-Server1', __DIR__ . '/../data/absenceImport[matricule].ics');
         $this->check(1, 'ICS Server 1 with employee number');
     }
 
     // Test ICS Server 3
     public function testAbsenceImportICSServer3(): void
     {
-        $this->setParam('ICS-Server1', '');
-        $this->setParam('ICS-Server3', 1);
+        $this->config->setParam('ICS-Server1', '');
+        $this->config->setParam('ICS-Server3', 1);
         $this->check(3, 'ICS Server 3');
     }
 

@@ -49,10 +49,10 @@ class WorkingHourControllerListTest extends PLBWebTestCase
 
     public function testWeekPlanningList(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('PlanningHebdo', 1);
-        $this->setParam('PlanningHebdo-notifications-agent-par-agent',1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
+        $this->config->setParam('Multisites-nombre', 1);
+        $this->config->setParam('PlanningHebdo', 1);
+        $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',1);
 
         $client = static::createClient();
 
@@ -117,10 +117,10 @@ class WorkingHourControllerListTest extends PLBWebTestCase
 
     public function testStatuses(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('PlanningHebdo', 1);
-        $this->setParam('PlanningHebdo-notifications-agent-par-agent',1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
+        $this->config->setParam('Multisites-nombre', 1);
+        $this->config->setParam('PlanningHebdo', 1);
+        $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',1);
 
         $this->setUpPantherClient();
 

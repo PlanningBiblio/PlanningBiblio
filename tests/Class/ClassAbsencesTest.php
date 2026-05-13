@@ -196,19 +196,4 @@ class ClassAbsencesTest extends PLBWebTestCase
 
         return $absence->id;
     }
-
-    protected function setParam($name, $value)
-    {
-        global $entityManager;
-        $absence = new absences();
-        $GLOBALS['config'][$name] = $value;
-        $param = $entityManager
-            ->getRepository(Config::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->setValue($value);
-        $entityManager->persist($param);
-        $entityManager->flush();
-    }
-
 }

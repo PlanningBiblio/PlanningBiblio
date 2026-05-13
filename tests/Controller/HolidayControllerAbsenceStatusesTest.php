@@ -19,7 +19,7 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
 
     public function testEditN2AbsenceRightN1AndN2(): void
     {
-        $this->setParam('Conges-Validation-N2', 0);
+        $this->config->setParam('Conges-Validation-N2', 0);
 
         $client = static::createClient();
 

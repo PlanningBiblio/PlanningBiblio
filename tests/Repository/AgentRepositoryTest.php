@@ -161,7 +161,7 @@ class AgentRepositoryTest extends PLBWebTestCase
 
     public function testGetExportIcsURLWithExistingCode(): void
     {
-        $this->setParam('ICS-Code', 1);
+        $this->config->setParam('ICS-Code', 1);
 
         $leo = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Leo']);
 

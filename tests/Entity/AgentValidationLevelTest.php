@@ -26,7 +26,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
     public function testgetValidationLevelForWorkingHours(): void
     {
 
-        $this->setParam('PlanningHebdo-notifications-agent-par-agent', 0);
+        $this->config->setParam('PlanningHebdo-notifications-agent-par-agent', 0);
 
         $agent1 = $this->builder->build(Agent::class,
             array(
@@ -70,7 +70,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
 
     public function testgetValidationLevelForWorkingHoursByAgent(): void
     {
-        $this->setParam('PlanningHebdo-notifications-agent-par-agent', 1);
+        $this->config->setParam('PlanningHebdo-notifications-agent-par-agent', 1);
 
         $agent_manager = $this->builder->build(Agent::class);
         $agent1 = $this->builder->build(Agent::class);
@@ -135,8 +135,8 @@ class AgentValidationLevelTest extends PLBWebTestCase
     public function testgetValidationLevelForAbsences(): void
     {
 
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('Multisites-nombre', 1);
 
         $agent1 = $this->builder->build(Agent::class,
             array(
@@ -182,8 +182,8 @@ class AgentValidationLevelTest extends PLBWebTestCase
     public function testgetValidationLevelForAbsencesMultiSites(): void
     {
 
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 2);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('Multisites-nombre', 2);
 
         $agent1 = $this->builder->build(Agent::class,
             array(
@@ -229,8 +229,8 @@ class AgentValidationLevelTest extends PLBWebTestCase
     public function testgetValidationLevelForAbsencesByAgent(): void
     {
 
-        $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         $agent_manager = $this->builder->build(Agent::class);
         $agent1 = $this->builder->build(Agent::class);
