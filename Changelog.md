@@ -1,5 +1,16 @@
 # Changelog Planno
 
+## Version 25.11.24 (2026-05-13)
+
+### Fixes
+
+* MT53365: Fix a typo in absence.js and holiday.js #1379
+* MT52706: Lunch positions hours are not counted in SP hours #1382
+
+### Dependencies
+
+* MT52668: Set composer's config.platform.php to 8.2 and update deps
+
 ## Version 25.11.23 (2026-05-06)
 
 ### Enhancement
@@ -21,6 +32,7 @@
 ### Dependencies
 
 * Composer update
+  * Fix CVE-2026-32935 phpseclib's AES-CBC unpadding susceptible to padding oracle timing attack
 
 ## Version 25.11.22 (2026-04-17)
 
