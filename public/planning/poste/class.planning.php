@@ -600,7 +600,10 @@ class planning
             $message .= "<br/><br/>Agent : <strong>$agent</strong>";
             $message .= "<br/>Date : <strong>".dateFr($date)."</strong>";
             $message .= $location;
-      
+
+            $url = $config['URL'] . '/' . $site . '/' . $date;
+            $link = 'Lien vers le planning du ' . dateFr($date) . ' : <a href="' . $url . '">' . $url . '</a>';
+
             // S'il y a des éléments, on ajoute la liste des postes occupés avec les horaires
             if (isset($tab[$elem])) {
                 $lines=array();
@@ -671,8 +674,7 @@ class planning
                 $message.="</ul>";
 
                 // On ajoute le lien vers le planning
-                $url = $config['URL'] . '/' . $date;
-                $message.="Lien vers le planning du ".dateFr($date)." : $url";
+                $message .= $link;
 
                 // Envoi du mail
                 $m=new CJMail();
@@ -684,9 +686,8 @@ class planning
             // S'il n'y a pas d'éléments, on écrit "Vous n'êtes plus dans le planning ..."
             } else {
                 // On ajoute le lien vers le planning
-                $url = $config['URL'] . '/' . $date;
-                $message.="<br/><br/>Vous n&apos;&ecirc;tes plus dans le planning du ".dateFr($date);
-                $message.="<br/><br/>Lien vers le planning du ".dateFr($date)." : $url";
+                $message .= '<br/><br/>Vous n\'êtes plus dans le planning du ' .dateFr($date) . '<br/><br/>';
+                $message .= $link;
 
                 // Envoi du mail
                 $m=new CJMail();
