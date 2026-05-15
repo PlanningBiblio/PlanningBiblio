@@ -236,60 +236,34 @@ $(function() {
   });
 
   $('.form-check-input').on('change', function(e){
-    $('.form-check-input.is-invalid').removeClass('is-invalid');
+    other_choice = $(this).parent('.form-check').siblings().children();
+    if (other_choice.hasClass('is-invalid')){
+      $('.form-check-input').removeClass('is-invalid');
+    }
   })
 
-  $('#edit-position-form').on('submit', function(e) {
-
-    // Check that the parameters are compatible with each other before submitting the form and displays an error message if they are not
+  $('.form-check-input').on('change', function(e){
+    // Check that the parameters are compatible with each other and displays an error message if they are not
     if ($('#lunch1').prop('checked')) {
       if ($('#statistics1').prop('checked')) {
         $('#lunch1').addClass('is-invalid');
         $('#statistics1').addClass('is-invalid');
-        return false;
       }
       if ($('#quota_sp1').prop('checked')) {
         $('#lunch1').addClass('is-invalid');
         $('#quota_sp1').addClass('is-invalid');
-        return false;
       }
     }
-
     if ($('#bloq2').prop('checked')) {
       if ($('#statistics1').prop('checked')) {
         $('#bloq2').addClass('is-invalid');
         $('#statistics1').addClass('is-invalid');
-        return false;
       }
       if ($('#quota_sp1').prop('checked')) {
         $('#bloq2').addClass('is-invalid');
         $('#quota_sp1').addClass('is-invalid');
-        return false;
       }
     }
-    return true;
-
-    /*
-    TODO JS : 
-    * Générer les messages d'alertes en anglais, et les traduire en français
-    * Remplacer le CJInfo par les alertes BootStrap
-    * Gérer les cas suivants en reprenant l'exemple ci-dessus.
-
-    Incompatibilités :
-    * Bloquant = non
-      * Quota de SP doit être à non
-      * statistiques doit être à non
-      * --> l'alerte doit être au niveau du paramètre "bloquant"
-
-    * Poste repas = oui
-      * Quota de SP doit être à non
-      * statistiques doit être à non
-      * --> l'alerte doit être au niveau du paramètre "sans repas"
-
-    TODO templates :
-    * Ajouter les balises "label" avec la propriété "title" (voir ce qui est fait sur le paramètre "poste repas")
-    * Générer les messages en anglais et la traduction en français pour les proriétés title et le contenu des labels.
-    */
   });
 
 });

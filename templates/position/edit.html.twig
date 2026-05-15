@@ -27,14 +27,14 @@
             <div class="col">
                 <div class="container">
                   <div class="row mb-2">
-                    <label for="position-name" class="col-4 col-form-label">Nom du poste :</label>
+                    <label for="position-name" class="col-4 col-form-label">{% trans %}Job title{% endtrans %} :</label>
                     <div class="col-4">
                       <input id="position-name" type='text' value='{{ nom }}' name='nom' class="form-control form-control-sm"/>
                     </div>
                   </div>
                   {% if nbSites > 1 %}
                     <div class="row mb-2">
-                      <label for="site-name" class="col-4 col-form-label">Site :</label>
+                      <label for="site-name" class="col-4 col-form-label">{% trans %}Site{% endtrans %} :</label>
                       <div class="col-4">
                         <select id="site-name" name="site" class="form-select form-select-sm form-control">
                           <option value='0'>&nbsp;</option>
@@ -46,7 +46,7 @@
                     </div>
                   {% endif %}
                   <div class="row mb-2">
-                    <label for="etage" class="col-4 col-form-label">Etage :</label>
+                    <label for="etage" class="col-4 col-form-label">{% trans %}Floor{% endtrans %} :</label>
                     <div class="col-4">
                       <select name="etage" id="etage" class="form-select form-select-sm form-control">
                         <option value=''>&nbsp;</option>
@@ -61,7 +61,7 @@
                   </div>
                   {% if not config('Planook') %}
                     <div class="row mb-4">
-                      <label for="groupe" class="col-4 col-form-label">Groupe :</label>
+                      <label for="groupe" class="col-4 col-form-label">{% trans %}Group{% endtrans %} :</label>
                       <div class="col-4">
                         <select name="groupe" id="groupe" class="form-select form-select-sm form-control">
                           <option value=''>&nbsp;</option>
@@ -84,11 +84,11 @@
                       <div class="col-4">
                         <div class="form-check form-check-inline">
                           <input class="form-check-input mt-1" type="radio" name="obligatoire" id="obligatoire" value="Obligatoire" {{ obligatoire }}>
-                          <label class="form-check-label" for="obligatoire">{% trans %}Obligatoire{% endtrans %}</label>
+                          <label class="form-check-label" for="obligatoire">Obligatoire</label>
                         </div>
                         <div class="form-check form-check-inline">
                           <input class="form-check-input mt-1" type="radio" name="obligatoire" id="renfort" value="Renfort" {{ renfort }}>
-                          <label class="form-check-label" for="renfort">{% trans %}Renfort{% endtrans %}</label>
+                          <label class="form-check-label" for="renfort">Renfort</label>
                         </div>
                       </div>
                     </fieldset>
@@ -109,7 +109,7 @@
                           <label class="form-check-label" for="bloq2">{% trans %}No{% endtrans %}</label>
                         </div>
                         <div class="invalid-feedback">
-                          {% trans %}The selected settings are incompatible.{% endtrans %}
+                          {% trans %}The selected settings are incompatible with each other.{% endtrans %}
                         </div>
                       </div>
                     </fieldset>
@@ -185,7 +185,7 @@
                           <label class="form-check-label" for="lunch2">{% trans %}No{% endtrans %}</label>
                         </div>
                         <div class="invalid-feedback">
-                          {% trans %}The selected settings are incompatible.{% endtrans %}
+                          {% trans %}The selected settings are incompatible with each other.{% endtrans %}
                         </div>
                       </div>
                     </fieldset>
@@ -197,7 +197,7 @@
               <div class="col">
 
                 <fieldset class="row mb-3">
-                  <legend class="col-form-label col-3 pt-0">Activités :</legend>
+                  <legend class="col-form-label col-3 pt-0">{% trans %}Activities{% endtrans %} :</legend>
                   <div class="col">
                     {% for s in skillList %}
                       <div class="form-check">
@@ -210,7 +210,7 @@
 
                 {% if categoriesList is iterable and not categoriesList is empty %}
                   <fieldset class="row mb-2">
-                    <legend class="col-form-label col-3 pt-0">Catégories
+                    <legend class="col-form-label col-3 pt-0">{% trans %}Categories{% endtrans %}
                       <button type="button" class="tooltip-icon" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-custom-class="custom-tooltip"
                         data-bs-title="{{ 'categories-info'| trans()}}">
                       <i class="bi bi-info-circle-fill"></i></button> :
@@ -233,9 +233,10 @@
           <div class="row justify-content-md-center">
             <div class="col-auto">
               <input type='hidden' value={{id}} name='id'/>
-              <a href="{{ asset('position') }}" role="button" class="btn btn-secondary">Annuler</a>
-                  &nbsp;&nbsp;&nbsp;
-              <button type="submit" role="button" class="btn btn-primary">Valider</button>
+              <a href="{{ asset('position') }}" role="button" class="btn btn-secondary">{% trans %}Cancel{% endtrans %}</a>
+            </div>
+            <div class="col-auto">
+              <button type="submit" role="button" class="btn btn-primary">{% trans %}Confirm{% endtrans %}</button>
             </div>
           </div>
         </div>
