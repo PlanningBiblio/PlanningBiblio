@@ -770,11 +770,11 @@ $(function(){
 
     // Message display when date input is invalid
     $('.datepicker:not(.start-date):not(.end-date)').on('change',function() {
-       var optional = typeof($(this).attr('optional')) != 'undefined';
+       var required = typeof($(this).attr('required')) != 'undefined';
        var date = $(this).bootstrapDP('getDate');
        var valid_date = date_validation($(this).val());
 
-      if ((date == null && !optional ) || (date != null && !valid_date)) {
+      if ((date == null && required ) || (date != null && !valid_date)) {
         $(this).addClass('is-invalid');
       }
       else {
@@ -785,10 +785,10 @@ $(function(){
     // Message display when time input is invalid
     $('.time').on('input',function(e) {
       $('#alert').addClass('d-none');
-      var optional = typeof($(this).attr('optional')) != 'undefined';
+      var required = typeof($(this).attr('required')) != 'undefined';
       var valid_time = time_validation($(this).val());
 
-      if ((!$(this).val() && !optional ) || ($(this).val() && !valid_time)) {
+      if ((!$(this).val() && required ) || ($(this).val() && !valid_time)) {
         $(this).addClass('is-invalid');
       }
       else {
