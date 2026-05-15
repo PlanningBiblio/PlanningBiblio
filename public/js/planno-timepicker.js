@@ -109,10 +109,10 @@ function roundTimePiker(obj) {
 
 function ValidateTime(obj) {
   $('#alert').addClass('d-none');
-  var optional = typeof(obj.attr('optional')) != 'undefined';
+  var required = typeof(obj.attr('required')) != 'undefined';
   var valid_time = time_validation(obj.val());
 
-  if((!obj.val() && !optional ) || (obj.val() && !valid_time)){
+  if((!obj.val() && required ) || (obj.val() && !valid_time)){
     obj.addClass('is-invalid');
   }
   else {
