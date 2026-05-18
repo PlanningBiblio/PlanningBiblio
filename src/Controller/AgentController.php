@@ -494,13 +494,13 @@ class AgentController extends BaseController
         }
 
         $params = $request->request->all();
-        $arrivee = $request->get('arrivee') ? \DateTime::createFromFormat('d/m/Y', $request->get('arrivee')) : null;
-        $depart = $request->get('depart') ? \DateTime::createFromFormat('d/m/Y', $request->get('depart')) : null;
-        $heuresHebdo = $request->get('heuresHebdo', '');
-        $heuresTravail = $request->get('heuresTravail', 0);
-        $id = $request->get('id');
-        $mail = $request->get('mail');
-        $login = $request->get('login');
+        $arrivee = $request->request->get('arrivee') ? \DateTime::createFromFormat('d/m/Y', $request->get('arrivee')) : null;
+        $depart = $request->request->get('depart') ? \DateTime::createFromFormat('d/m/Y', $request->get('depart')) : null;
+        $heuresHebdo = $request->request->get('heuresHebdo', '');
+        $heuresTravail = $request->request->get('heuresTravail', 0);
+        $id = $request->request->get('id');
+        $mail = $request->request->get('mail');
+        $login = $request->request->get('login');
 
         $actif = $params['actif'];
         $action = $params['action'];
@@ -671,7 +671,6 @@ class AgentController extends BaseController
         $agent->setSkills($postes);
         $agent->setWorkingHours($temps);
         $agent->setInformation($informations);
-        $agent->setLogin($login);
         $agent->setRecoveryMenu($recup);
         $agent->setSites($sites);
         $agent->setManagersMails($managersMails);
@@ -685,6 +684,10 @@ class AgentController extends BaseController
         $agent->setHolidayAnticipation($holidays['conges_anticipation']);
         $agent->setHolidayCredit($holidays['conges_credit']);
         $agent->setHolidayRemainder($holidays['conges_reliquat']);
+
+        if ($login) {
+            $agent->setLogin($login);
+        }
 
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
@@ -880,7 +883,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent/check_login', name: 'agent.check_login', methods: ['GET'])]
-    public function check_login(Request $request)
+    public function check_login(Request $request): Response
     {
         $login = $request->query->get('login');
         $agent_id = $request->query->getInt('id');
@@ -894,7 +897,7 @@ class AgentController extends BaseController
             ->getRepository(Agent::class)
             ->findOneBy(array('login' => $login));
 
-        if(!$login){
+        if (!$login) {
             $response->setContent('invalid');
             $response->setStatusCode(400);
             return $response;

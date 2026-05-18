@@ -196,7 +196,7 @@ msgstr "L'identifiant ne peut pas être vide."
 msgid "The login is invalid."
 msgstr "L'identifiant est invalide."
 
-msgid "Office hours"
+msgid "Working hours"
 msgstr "Heures de présence"
 
 msgid "Calendars and Synchronization"

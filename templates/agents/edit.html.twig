@@ -2,15 +2,16 @@
 
 {% extends 'base.html.twig' %}
 
-{% block page %}
+{% block specificjs %}
   <script type="text/JavaScript">
     <!--
     complet = JSON.parse('{{ postes_completNoms_json | e('js') }}');
     -->
-    $(document).ready(function() {
 
+    $(document).ready(function()
+    {
       tabs = $('.nav-tabs li[role="presentation"] button:not(.active)');
-      
+
       $('#login').on('input', function() {
         tabs.removeClass('disabled');
         $(this).removeClass('is-invalid');
@@ -18,7 +19,7 @@
         var feedback = $(this).siblings('.invalid-feedback');
         var agent_id = $('input[name="id"]').val();
 
-        if(!login_val){
+        if(!login_val) {
           $(this).addClass('is-invalid');
           feedback.text(Translator.trans('The login cannot be empty.'));
           tabs.addClass('disabled');
@@ -27,10 +28,10 @@
 
         $.ajax({
           url: url('agent/check_login'),
-          type: "GET",
-          dataType: "html",
+          type: 'GET',
+          dataType: 'html',
           data: {login: login_val, id: agent_id},
-          error: function(xhr, ajaxOptions, thrownError){
+          error: function(xhr, ajaxOptions, thrownError) {
             if (xhr.responseText == 'duplicate') {
               feedback.text(Translator.trans('This login already exists.'));
               $('#login').addClass('is-invalid');
@@ -49,6 +50,9 @@
       });
     });
   </script>
+{% endblock %}
+
+{% block page %}
   <h3>
     {% if id %}
       {{ agent.lastname }} {{ agent.firstname }}
@@ -60,44 +64,62 @@
   <div class="container-tabs">
     <ul class="nav nav-tabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" type="button" role="tab" aria-controls="main" aria-selected="true">{% trans %}General information{% endtrans %}</button>
+        <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" type="button" role="tab" aria-controls="main" aria-selected="true">
+          {% trans %}General information{% endtrans %}
+        </button>
       </li>
-       {% if not config('Planook') %}
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="qualif-tab" data-bs-toggle="tab" data-bs-target="#qualif" type="button" role="tab" aria-controls="qualif" aria-selected="false">{% trans %}Activities{% endtrans %}</button>
-      </li>
+      {% if not config('Planook') %}
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="qualif-tab" data-bs-toggle="tab" data-bs-target="#qualif" type="button" role="tab" aria-controls="qualif" aria-selected="false">
+            {% trans %}Activities{% endtrans %}
+          </button>
+        </li>
       {% endif %}
 
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="temps-tab" data-bs-toggle="tab" data-bs-target="#temps" type="button" role="tab" aria-controls="temps" aria-selected="false">{% trans %}Office hours{% endtrans %}</button>
+        <button class="nav-link" id="temps-tab" data-bs-toggle="tab" data-bs-target="#temps" type="button" role="tab" aria-controls="temps" aria-selected="false">
+          {% trans %}Working hours{% endtrans %}
+        </button>
       </li>
 
       {% if showAgendasAndSync %}
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="agendas-tab" data-bs-toggle="tab" data-bs-target="#agendas" type="button" role="tab" aria-controls="agendas" aria-selected="false">{% trans %}Calendars and Synchronization{% endtrans %}</button>
+          <button class="nav-link" id="agendas-tab" data-bs-toggle="tab" data-bs-target="#agendas" type="button" role="tab" aria-controls="agendas" aria-selected="false">
+            {% trans %}Calendars and Synchronization{% endtrans %}
+          </button>
         </li>
       {% endif %}
 
       {% if config('Conges-Enable') %}
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="conges-tab" data-bs-toggle="tab" data-bs-target="#conges" type="button" role="tab" aria-controls="conges" aria-selected="false">{% trans %}Days off{% endtrans %}</button>
+          <button class="nav-link" id="conges-tab" data-bs-toggle="tab" data-bs-target="#conges" type="button" role="tab" aria-controls="conges" aria-selected="false">
+            {% trans %}Days off{% endtrans %}
+          </button>
         </li>
       {% endif %}
 
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="access-tab" data-bs-toggle="tab" data-bs-target="#access" type="button" role="tab" aria-controls="access" aria-selected="false">{% trans %}Access rights{% endtrans %}</button>
+        <button class="nav-link" id="access-tab" data-bs-toggle="tab" data-bs-target="#access" type="button" role="tab" aria-controls="access" aria-selected="false">
+          {% trans %}Access rights{% endtrans %}
+        </button>
       </li>
 
       {% if can_manage_agent %}
         <li class="nav-item ms-auto" role="button">
-          <button class="nav-link" onclick="window.location.href='/agent'" id="cancel-tab" type="button">{% trans %}Cancel{% endtrans %}</button>
+          <button class="nav-link" onclick="window.location.href='/agent'" id="cancel-tab" type="button">
+            {% trans %}Cancel{% endtrans %}
+          </button>
         </li>
         <li class="nav-item" role="button">
-          <button class="nav-link" id="post_form_agent" type="button">{% trans %}Confirm{% endtrans %}</button>
+          <button class="nav-link" id="post_form_agent" type="button">
+            {% trans %}Confirm{% endtrans %}
+          </button>
         </li>
       {% else %}
         <li class="nav-item ms-auto" role="button">
-          <button class="nav-link" onclick="window.location.href='/agent'" id="cancel-tab" type="button">{% trans %}Cancel{% endtrans %}</button>
+          <button class="nav-link" onclick="window.location.href='/agent'" id="cancel-tab" type="button">
+            {% trans %}Cancel{% endtrans %}
+          </button>
         </li>
       {% endif %}
     </ul>

@@ -215,13 +215,13 @@ class AgentControllerTest extends PLBWebTestCase
 
         $result = $crawler->filter('ul.nav-tabs li button');
 
-        $this->assertEquals('Infos générales', $result->eq(0)->text('Node does not exist', false));
-        $this->assertEquals('Activités', $result->eq(1)->text('Node does not exist', false));
-        $this->assertEquals('Heures de présence', $result->eq(2)->text('Node does not exist', false));
-        $this->assertEquals('Congés', $result->eq(3)->text('Node does not exist', false));
-        $this->assertEquals('Droits d\'accès', $result->eq(4)->text('Node does not exist', false));
-        $this->assertEquals('Annuler', $result->eq(5)->text('Node does not exist', false));
-        $this->assertEquals('Valider', $result->eq(6)->text('Node does not exist', false));
+        $this->assertStringContainsString('Infos générales', $result->eq(0)->text('Node does not exist', false));
+        $this->assertStringContainsString('Activités', $result->eq(1)->text('Node does not exist', false));
+        $this->assertStringContainsString('Heures de présence', $result->eq(2)->text('Node does not exist', false));
+        $this->assertStringContainsString('Congés', $result->eq(3)->text('Node does not exist', false));
+        $this->assertStringContainsString('Droits d\'accès', $result->eq(4)->text('Node does not exist', false));
+        $this->assertStringContainsString('Annuler', $result->eq(5)->text('Node does not exist', false));
+        $this->assertStringContainsString('Valider', $result->eq(6)->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//table[@style="width:90%;"]');
 

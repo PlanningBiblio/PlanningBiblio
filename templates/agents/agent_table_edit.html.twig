@@ -229,20 +229,18 @@
   {% if id %}
     <tr>
       <td>{% trans %}Login{% endtrans %} :</td>
-      {% if config('demo') %}
-        <td>
+      <td>
+        {% if config('demo') %}
           <span>{{ agent.login }}</span>
-        </td>
-      {% else %}
-        <td>
+        {% else %}
           <div>
             <input type="text" class="form-control form-control-sm" id="login" name="login" style="width: 400px;" required value="{{ agent.login }}"/>
             <div class="invalid-feedback" style="width: auto;">{% trans %}The login cannot be empty.{% endtrans %}</td>
           </div>
-        </td>
-      {% endif %}
+        {% endif %}
+      </td>
     </tr>
-  
+
     <tr>
       <td colspan='2'>
         <a href="javascript:sendPassword();">Envoyer un nouveau mot de passe</a>

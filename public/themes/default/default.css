@@ -497,9 +497,9 @@ ul.nav-tabs li.nav-item .nav-link.active, ul.nav-tabs li.nav-item .nav-link:hove
 }
 
 .tab-pane {
-  margin-left:70px;
-  padding-top:30px;
-  padding-bottom:30px;
+  margin-left: 70px;
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
 
 .assign-remove-buttons {

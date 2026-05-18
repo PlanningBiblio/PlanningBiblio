@@ -196,8 +196,8 @@ msgstr "The login cannot be empty."
 msgid "The login is invalid."
 msgstr "The login is invalid."
 
-msgid "Office hours"
-msgstr "Office hours"
+msgid "Working hours"
+msgstr "Working hours"
 
 msgid "Calendars and Synchronization"
 msgstr "Calendars and Synchronization"
