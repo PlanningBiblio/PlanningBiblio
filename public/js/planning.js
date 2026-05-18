@@ -19,19 +19,21 @@ $(document).ready(function(){
 
   if ($('.cellSpan').length > 0 ) $('#planning-save').removeClass('disabled');
 
-  $('.pl-icon-open').on('click', function(e) {
-    $('#import-model-button').removeClass('disabled');
-    $('#import-model-button').attr('type', 'submit');
-    date = $('input[name="date"]').val();
-    site = $('input[name="site"]').val();
-    CSRFSession = $('input[name="CSRFSession"]').val();
-    params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
-    $('#model-selection').load('/modelform' + params);
-    $('#import-model-modal').modal('show');
-    return false;
+  $('#planning-import').on('click keydown', function(e) {
+    if (!event.key || event.key === 'Enter') {
+      $('#import-model-button').removeClass('disabled');
+      $('#import-model-button').attr('type', 'submit');
+      date = $('input[name="date"]').val();
+      site = $('input[name="site"]').val();
+      CSRFSession = $('input[name="CSRFSession"]').val();
+      params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
+      $('#model-selection').load('/modelform' + params);
+      $('#import-model-modal').modal('show');
+      return false;
+    }
   });
 
-   $('#duplicate-model-form').submit(function(e) {
+  $('#duplicate-model-form').submit(function(e) {
     e.preventDefault();
     save_model(true);
   });
@@ -245,7 +247,7 @@ $(function() {
           $('.pl-validation').hide();
           $('#planning-drop').show();
           $('#planning-import').show();
-          $('#icon-unlock').show();
+          $('#icon-unlock').show().focus();
           // data-verrou : pour activer le menudiv
           $('#planning-data').attr('data-verrou', 0);
           $('#undo-redo').show();
@@ -284,7 +286,7 @@ $(function() {
       success: function(result) {
         if(result[1] == 'highlight') {
           $('#icon-unlock').hide();
-          $('#icon-lock').show();
+          $('#icon-lock').show().focus();
           $('.pl-validation').html(result[2]);
           $('.pl-validation').show();
           $('#planning-drop').hide();
@@ -1371,8 +1373,10 @@ function bataille_navale(poste, date, debut, fin, perso_id, barrer, ajouter, sit
       // Enable and disable the save planning button depending on whether it is empty or not
       if ($('.cellSpan').length > 0 ) {
         $('#planning-save').removeClass('disabled');
+        $('#planning-save').attr('data-bs-toggle', 'modal');
       } else {
         $('#planning-save').addClass('disabled');
+        $('#planning-save').attr('data-bs-toggle', '');
       }
 
       // cacher le menudiv
