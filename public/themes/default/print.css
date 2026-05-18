@@ -13,31 +13,37 @@ Incluse dans les fichiers include/header.php et setup/header.php
 	color: #29495C;
 */
 
-body, #tab_titre {
+body {
   background: none;
+}
+
+#pl-header {
+  background-color: transparent;
+  height: 55px;
+  width: 90%;
+  margin: auto;
+  padding-left: 1rem;
 }
 
 #date_planning, #week_planning, #h3-Multisites, .pl-validation {
   color: #29495C;
 }
 
-.titreSemFixe {
-  padding: 3mm 10mm;
+#pl-buttons {
+  margin-right: 0;
+  padding-right: 2rem;
+}
+
+.pl-validation {
+  padding: 0;
 }
 
 #h3-Multisites {
-  margin: 0;
   font-weight: normal;
 }
 
 .pl-validation {
-  top: 15mm;
-  right: 15mm;
   font-weight: normal;
-}
-
-#divcalendrier {
-  height: 40mm;
 }
 
 a, img, .noprint, .footer, .ui-widget-header, div.ui-state-error, #messages_infos, #pl-calendar, .arrow-right {
