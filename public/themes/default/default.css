@@ -1830,6 +1830,7 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   border: 1px solid #FFD700;
   color: #29495C;
   border-radius: var(--bs-border-radius-sm);
+  --bs-btn-focus-shadow-rgb: 128, 108, 1;
 }
 
 .btn.btn-primary:hover {
@@ -1844,6 +1845,7 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   border: 1px solid #29495C;
   color: #29495C;
   border-radius: var(--bs-border-radius-sm);
+  --bs-btn-focus-shadow-rgb: 41, 73, 92;
 }
 
 .btn.btn-secondary:hover {
@@ -1875,7 +1877,15 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 }
 
 .btn-icon {
-  display: contents;
+  min-width :auto;
+  padding: 3px;
+}
+
+.btn-icon:focus {
+  color: var(--bs-body-color);
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 .ui-button-icon-only {
@@ -1899,10 +1909,6 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 /*Buttons END*/
 
 /* Modals START */
-
-.btn-icon {
-display: contents;
-}
 
 .modal-header {
   background-color: #FFD700 ;
