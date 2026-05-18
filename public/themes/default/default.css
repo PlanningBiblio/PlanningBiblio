@@ -66,12 +66,6 @@ h4{
   font-weight: bold;
 }
 
-#h3-Multisites{
-  margin: 30px 20px auto;
-  color: #FFF;
-  font-size: 20px;
-}
-
 .ui-state-error p,
 .ui-state-highlight p {
     margin-top: 15px;
@@ -195,7 +189,7 @@ h4{
   padding: 0 0 0 0;
 }
 
-#ferie,.ferie{
+.ferie {
   color: #DC3545;
   margin: 15px 0 5px 0;
 }
@@ -775,29 +769,6 @@ a.myAccountLink.active {
 /*		Plannings				*/
 /* Calendrier, titre (Semaine ...), Boutons de droite */
 
-.pl-validation {
-  margin: 0px 0 10px 0;
-  color: #FFFFFF;
-  position: absolute;
-  right: 175px;
-}
-
-/*.pl-undo {
-  color: #FFFFFF;
-  position: absolute;
-  right: 75px;
-}
-
-.pl-undo a {
-  color: #FFFFFF;
-}*/
-
-#planning-semaine {
-  padding:30px;
-}
-
-
-
 .pl-semaine-header{
   text-align: left;
   margin: 25px auto 5px auto;
@@ -815,10 +786,6 @@ a.myAccountLink.active {
   margin: 10px auto 0 auto;
   position: absolute;
   right: 5%;
-}
-
-#semaine_planning{
-  display:none;
 }
 
 /*
@@ -1113,6 +1080,58 @@ class cellule = cellule par défaut
   top: calc(50% - 8px);
 }
 
+/* Menu Planning */
+
+#pl-header {
+  background-color: #29495C;
+  margin-left: 0px;
+  margin-right: 0px;
+  height: 170px;
+}
+
+#pl-title {
+  color: #FFFFFF;
+  font-size: 15pt;
+  margin-top: 20px;
+}
+
+#pl-title div, #pl-title ul {
+  padding-top: 5px;
+}
+
+#pl-buttons {
+  text-align:right;
+  margin-top: 20px;
+  margin-right: 40px;
+}
+
+#pl-buttons button.btn-icon {
+  padding: 0px;
+}
+
+#validation {
+  align-items: flex-start;
+  padding-top: 5px;
+}
+
+.pl-validation {
+  color: #FFFFFF;
+}
+
+#ferie {
+  color: #DC3545;
+  width: fit-content;
+}
+
+#undo-redo {
+  padding-top: 5px;
+}
+
+#h3-Multisites {
+  color: #FFF;
+  font-size: 20px;
+}
+
 /* Configuration des tableaux */
 .tableaux-cfg {
   display: inline-block;
@@ -1126,37 +1145,20 @@ class cellule = cellule par défaut
   margin: 20px 0;
 }
 
-#tab_titre{	/* /index */
-  width:100%;
-  height: 145px;
-  border: none;
-  background-color: #29495C;
-  margin-bottom: 20px;
-}
-
-#tab_titre .row {
-  justify-content: space-around;
-}
-
 /* Calendrier affiché en haut des plannings */
-#pl-calendar {
-  border:0;
-  background: transparent;
-  margin: 10px 0 5px 10px;
-  width: 200px;
-}
 
 .datepicker-inline {
   background-color: white;
   width: 185px;
   font-size: 11px;
-  border: 1px solid #29495C;
   padding: 6px 4px 1px 4px;
+  border: 1px solid #29495C;
 }
 
 .datepicker {
   font-size: 12px;
   color: #29495C;
+  text-align:center;
 }
 
 .datepicker .datepicker-days table thead tr th {
@@ -1245,11 +1247,9 @@ class cellule = cellule par défaut
 }
 
 #pl-notes-div2{
-  width: 100%;
   position: relative;
-  left: 5%;
-  display: inline-block;
   margin: 15px 10px 0 0;
+  padding-left: 92px;
   text-align: left;
 }
 
@@ -1293,22 +1293,6 @@ class cellule = cellule par défaut
 	font-size:32.0pt;
 	font-family:Poppins;
 	}
-
-.titreSemFixe{
-  color:#FFFFFF;
-  text-decoration:none;
-  font-size:15pt;
-  font-family: Poppins;
-  font-weight: normal;
-  width:50%;
-  text-align:left;
-  padding: 20px 0 10px 5px;
-}
-
-.titreSemFixe div,
-.titreSemFixe ul {
-  padding-top: 5px;
-}
 
 .top-button-div {
     text-align:right;
@@ -1400,40 +1384,17 @@ img{
   border: none;
 }
 
-#tab_titre tr{
-  vertical-align:top;
-}
-
 #cal_ifram{	
   width:200px;
   height:160px;
-}
-
-#td_boutons{
-  text-align:right;
-  padding:20px 20px 0 0;
-}
-
-#td_boutons .ui-state-error{
-    text-align: left;
-}
-
-#validation{
-  font-size:13px;
-  margin:0 20px 0 0;
-}
-
-#undo-redo{
-  font-size:13px;
-  margin:5px 20px 0 0;
 }
 
 #imprimante{
   cursor:pointer;
 }
 
-#choix_tableaux{
-  margin: 75px 15px;
+#choix_tableaux {
+  margin: 60px 15px;
 }
 
 #choix_tableaux td{
@@ -1445,9 +1406,9 @@ img{
   width:180px;
 }
 
-#tableau, .tableau{
+#tableau, .tableau {
   text-align:center;
-  padding: 30px 0 0 0;
+  padding: 50px 0 0 0;
 }
 
 /*	Jours Fériés	*/
@@ -1897,6 +1858,13 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 .btn-icon {
   min-width :auto;
   padding: 3px;
+}
+
+.btn-icon:focus-visible {
+  color: var(--bs-body-color);
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 .btn-icon:focus {
@@ -2459,10 +2427,6 @@ table.dataTable th{
 
   #accountDivReverse {
     display: block;
-  }
-
-  .titreSemFixe{
-    padding: 5px 0 10px 0;
   }
 
 }
