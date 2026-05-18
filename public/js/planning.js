@@ -243,7 +243,7 @@ $(function() {
           $('.pl-validation').hide();
           $('#planning-drop').show();
           $('#planning-import').show();
-          $('#icon-unlock').show();
+          $('#icon-unlock').show().focus();
           // data-verrou : pour activer le menudiv
           $('#planning-data').attr('data-verrou', 0);
           $('#undo-redo').show();
@@ -282,7 +282,7 @@ $(function() {
       success: function(result) {
         if(result[1] == 'highlight') {
           $('#icon-unlock').hide();
-          $('#icon-lock').show();
+          $('#icon-lock').show().focus();
           $('.pl-validation').html(result[2]);
           $('.pl-validation').show();
           $('#planning-drop').hide();

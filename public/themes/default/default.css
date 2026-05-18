@@ -774,8 +774,6 @@ a.myAccountLink.active {
 .pl-validation {
   margin: 0px 0 10px 0;
   color: #FFFFFF;
-  position: absolute;
-  right: 175px;
 }
 
 /*.pl-undo {
@@ -1123,11 +1121,14 @@ class cellule = cellule par défaut
 }
 
 #tab_titre{	/* /index */
-  width:100%;
   height: 145px;
   border: none;
   background-color: #29495C;
-  margin-bottom: 20px;
+}
+
+#pl-header {
+  background-color: #29495C;
+  margin :none;
 }
 
 #tab_titre .row {
@@ -1135,23 +1136,18 @@ class cellule = cellule par défaut
 }
 
 /* Calendrier affiché en haut des plannings */
-#pl-calendar {
-  border:0;
-  background: transparent;
-  margin: 10px 0 5px 10px;
-  width: 200px;
-}
 
 .datepicker-inline {
+  background-color: white;
   width: 185px;
   font-size: 11px;
-  border: 1px solid #29495C;
   padding: 6px 4px 1px 4px;
 }
 
 .datepicker {
   font-size: 12px;
   color: #29495C;
+  text-align:center;
 }
 
 .datepicker .datepicker-days table thead tr th {
@@ -1291,12 +1287,7 @@ class cellule = cellule par défaut
 
 .titreSemFixe{
   color:#FFFFFF;
-  text-decoration:none;
   font-size:15pt;
-  font-family: Poppins;
-  font-weight: normal;
-  width:50%;
-  text-align:left;
   padding: 20px 0 10px 5px;
 }
 
@@ -1413,9 +1404,8 @@ img{
     text-align: left;
 }
 
-#validation{
-  font-size:13px;
-  margin:0 20px 0 0;
+#validation {
+  align-items: flex-start;
 }
 
 #undo-redo{
@@ -1881,7 +1871,7 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   padding: 3px;
 }
 
-.btn-icon:focus {
+.btn-icon:focus-visible {
   color: var(--bs-body-color);
   border-color: #86b7fe;
   outline: 0;
