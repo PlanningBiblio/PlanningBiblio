@@ -1082,13 +1082,13 @@ class cellule = cellule par défaut
   background-color: #29495C;
   margin-left: 0px;
   margin-right: 0px;
-  height: 160px;
+  height: 170px;
 }
 
 #pl-title{
   color: #FFFFFF;
   font-size: 15pt;
-  margin-top: 25px;
+  margin-top: 20px;
 }
 
 #pl-title div, #pl-title ul {
@@ -1097,7 +1097,7 @@ class cellule = cellule par défaut
 
 #pl-buttons {
   text-align:right;
-  margin-top: 25px;
+  margin-top: 20px;
   margin-right: 40px;
 }
 
@@ -2450,10 +2450,6 @@ table.dataTable th{
 
   #accountDivReverse {
     display: block;
-  }
-
-  #pl-title{
-    padding: 5px 0 10px 0;
   }
 
 }
