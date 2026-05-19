@@ -13,8 +13,8 @@
   </form>
 
   <div id="pl-header" class="row">
-    <div id="pl-calendar" class="col-auto m-4 datepicker {{ week_view ? 'datepickerSemaine' }}" data-date="{{date}}"></div>
-    <div class="col-7 titreSemFixe">
+    <div id="pl-calendar" class="col-auto m-4 mt-3 datepicker {{ week_view ? 'datepickerSemaine' }}" data-date="{{date}}"></div>
+    <div class="col-7" id="pl-title">
       <div class="row" id='week_planning'>
         Semaine {{ affSem }}
       </div>
@@ -24,7 +24,7 @@
       </div>
 
       {% if not week_view %}
-        <div class="row" id="date_planning">
+        <div class="row nowrap" id="date_planning">
           Planning du {{ date | datefull }}
           {% if public_holiday %}
             <font id='ferie'>{{ public_holiday }}</font>
@@ -52,71 +52,68 @@
     </div>
 
     <!-- Show action icons -->
-    <div id='td_boutons' class="col">
-
+    <div id="pl-buttons" class="col">
       <div id="validation" class="row justify-content-end">
-        {% if ( userCan('300', site) or userCan('1000', site) ) and config('CatAFinDeService') %}
-          <div id="pl-verif-categorie-A" class="col-auto"></div>
+        {% if not week_view %}
+
+          {% if ( userCan('300', site) or userCan('1000', site) ) and config('CatAFinDeService') %}
+            <div id="pl-verif-categorie-A" class="col-auto"></div>
+          {% endif %}
+
+          <div class="col-auto pl-validation" style="{{ locked ?: 'display:none'}}">
+            <u>Validation</u><br/>
+            {{ lockPerson }} {{ lockDate | datefr }}
+          </div>
+
+          {% if userCan('300', site) or userCan('1000', site) %}
+            <button id="icon-lock" type="button" class="col-auto btn btn-icon" {% if not locked %} style="display:none;" {% endif %} >
+              <span class="col-auto pl-icon pl-icon-lock pointer noprint" title="Déverrouiller le planning" ></span>
+            </button>
+            <button id="icon-unlock" type="button" class="col-auto btn btn-icon" {% if locked %} style="display:none;" {% endif %}>
+              <span id="icon-unlock" class="col-auto pl-icon pl-icon-unlock pointer noprint" title="Verrouiller le planning"></span>
+            </button>
+          {% endif %}
+
+          {% if userCan('300', site) %}
+            <button id="planning-save" type="button" class="col-auto btn btn-icon disabled" data-bs-target="#SaveModal">
+              <span class="pl-icon pl-icon-save" title="Enregistrer comme modèle"></span>
+            </button>
+
+            <button id="planning-import" type="button" class="col-auto btn btn-icon" data-bs-toggle="modal" data-bs-target="#ImportModal" style="{{ locked ? 'display:none;' }}">
+              <span class="pl-icon pl-icon-open" title="Importer un modèle"></span>
+            </button>
+
+            <button id="planning-drop" type="button" class="col-auto btn btn-icon" data-bs-toggle="modal" data-bs-target="#DropModal" style="{{ locked ? 'display:none;' }}">
+              <span class="pl-icon pl-icon-drop" title="Supprimer le planning"></span>
+            </button>
+          {% endif %}
+
         {% endif %}
 
-        <div class="col-auto pl-validation" style="{{ locked ?: 'display:none'}}">
-          <u>Validation</u><br/>
-          {{ lockPerson }} {{ lockDate | datefr }}
+          <button href="javascript:print();" onclick="location.href='javascript:print()';" class="col-auto btn btn-icon">
+            <span class="pl-icon pl-icon-printer" title="Imprimer le planning"></span>
+          </button>
+
+          <button  onclick="location.href='{{ path('home') }}'" class="col-auto btn btn-icon">
+            <span class="pl-icon pl-icon-refresh" title="Actualiser">
+          </button>
         </div>
 
-        {% if userCan('300', site) or userCan('1000', site) %}
-          <button id="icon-lock" type="button" class="col-auto btn btn-icon" {% if not locked %} style="display:none;" {% endif %} >
-            <span class="col-auto pl-icon pl-icon-lock pointer noprint" title="Déverrouiller le planning" ></span>
-          </button>
-          <button id="icon-unlock" type="button" class="col-auto btn btn-icon" {% if locked %} style="display:none;" {% endif %}>
-            <span id="icon-unlock" class="col-auto pl-icon pl-icon-unlock pointer noprint" title="Verrouiller le planning"></span>
-          </button>
-        {% endif %}
+      {% if (userCan('300', site) or userCan('1000', site)) and not locked and not week_view %}
+      <div class="row justify-content-end" id="undo-redo" style="{{ locked ? 'display:none;' }}">
+        <button id="undo-action" onclick="location.href='javascript:vois(0)';" class="col-auto btn btn-icon {% if not undoable %} isDisabled {% endif %}">
+          <span class="pl-icon pl-icon-undo"></span>
+        </butonn>
 
-        {% if not week_view  and userCan('300', site) %}
-          <button id="planning-save" type="button" class="col-auto btn btn-icon disabled" data-bs-toggle="modal" data-bs-target="#SaveModal">
-            <span class="pl-icon pl-icon-save" title="Enregistrer comme modèle"></span>
-          </button>
-
-          <button id="planning-import" type="button" class="col-auto btn btn-icon" data-bs-toggle="modal" data-bs-target="#ImportModal" style="{{ locked ? 'display:none;' }}">
-            <span class="pl-icon pl-icon-open" title="Importer un modèle"></span>
-          </button>
-
-          <button id="planning-drop" type="button" class="col-auto btn btn-icon" data-bs-toggle="modal" data-bs-target="#DropModal" style="{{ locked ? 'display:none;' }}">
-            <span class="pl-icon pl-icon-drop" title="Supprimer le planning"></span>
-          </button>
-        {% endif %}
-
-        <button href="javascript:print();" onclick="location.href='javascript:print()';" class="col-auto btn btn-icon">
-          <span class="pl-icon pl-icon-printer" title="Imprimer le planning"></span>
-        </button>
-
-        <button  onclick="location.href='{{ path('home') }}'" class="col-auto btn btn-icon">
-          <span class="pl-icon pl-icon-refresh" title="Actualiser">
+        <button class="col-auto btn btn-icon {% if not redoable %} isDisabled {% endif %}" id="redo-action" onclick="location.href='javascript:vois(0)';">
+          <span class="pl-icon pl-icon-redo"></span>
         </button>
       </div>
+      {% endif %}
 
-      <div class="row">
-        {% if (userCan('300', site) or userCan('1000', site)) and not locked %}
-          <div id='undo-redo' class='pl-undo' style="{{ locked ? 'display:none;' }}">
-            {% if undoable %}
-              <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> -
-            {% else %}
-              <a id="undo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> -
-            {% endif %}
-
-            {% if redoable %}
-              <a id="redo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-redo"></span></a>
-            {% else %}
-              <a id="redo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-redo"></span></a>
-            {% endif %}
-          </div>
-        {% endif %}
-
-      </div>
       {% if config('Multisites-nombre') > 1 %}
         <div class="row">
-          <h3 id='h3-Multisites'>{{ siteName(site) }}</h3>
+          <h3 id="h3-Multisites" class="mt-3 pe-2">{{ siteName(site) }}</h3>
         </div>
       {% endif %}
     </div>
