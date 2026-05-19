@@ -6,7 +6,7 @@ Fichier regroupant les fonctions JavaScript utiles à la gestion des notificatio
 $(function() {
 
   // Affiche la boite de dialogue permettant la modification des notifications
-  $("#update-button").click(function() {
+  $('#update-button').click(function() {
 
     if (!$('.checkboxes:visible:checked').length) {
       alert('Veuillez sélectionner un ou plusieurs agents.');
@@ -15,7 +15,7 @@ $(function() {
 
     // Liste des agents sélectionnés
     var tab = [];
-    $('.checkboxes:checked:visible').each(function(){
+    $('.checkboxes:checked:visible').each(function() {
       tab.push($(this).val());
     });
 
@@ -29,35 +29,35 @@ $(function() {
       updateFormOpen([id]);
     });
 
-  $('#update-notification-form').on('submit', function(e){
+  $('#update-notification-form').on('submit', function(e) {
     e.preventDefault();
 
     // Liste des responsables
     var tab = [];
-    $('.responsablesl1').each(function(){
-      if($(this).val()){
+    $('.responsablesl1').each(function() {
+      if($(this).val()) {
         tab.push($(this).val());
       }
     });
-    
+
     responsables = JSON.stringify(tab);
 
     // Liste des responsables recevant les notifications
     var tab = [];
-    $('.notificationsl1:checked').each(function(){
+    $('.notificationsl1:checked').each(function() {
       var id = $(this).attr('data-id');
-      tab.push($('#responsable-'+id).val());
+      tab.push($('#responsable-' + id).val());
     });
-    
+
     notifications = JSON.stringify(tab);
 
     var tab = [];
-    $('.responsablesl2').each(function(){
-      if($(this).val()){
+    $('.responsablesl2').each(function() {
+      if($(this).val()) {
         tab.push($(this).val());
       }
     });
-    
+
     responsablesl2 = JSON.stringify(tab);
 
     // Liste des responsables recevant les notifications
@@ -72,20 +72,21 @@ $(function() {
     // Enregistrement dans la base de données
     $.ajax({
       url: url('notification'),
-      type: "post",
-      datatype: "json",
+      type: 'post',
+      datatype: 'json',
       data: {
+          _token: $('#_token').val(),
           agents: agents,
           responsables: responsables,
           responsablesl2: responsablesl2,
           notifications: notifications,
           notificationsl2: notificationsl2,
-          CSRFToken: $('#CSRFToken').val()},
-      success: function(result){
+      },
+      success: function(result) {
         window.location.reload();
       },
-      error: function(result){
-        CJInfo("Une erreur est survenue lors de l'enregistrement des responsables", "error");
+      error: function(result) {
+        CJInfo('Une erreur est survenue lors de l\'enregistrement des responsables', 'error');
         $('#update-notification-modal').modal('hide');
       }
     });
@@ -156,7 +157,7 @@ function updateFormOpen(tab){
   }
 
   // Ouvre le formulaire
-  $("#update-notification-modal").modal("show");
+  $('#update-notification-modal').modal('show');
   return false;
 
 }

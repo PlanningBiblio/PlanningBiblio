@@ -98,98 +98,98 @@
   </form>
 
   <div class="modal modal-lg" id="update-notification-modal" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="update-notification-modal-title" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
 
-      <form id="update-notification-form">
-        <div class="modal-header">
-          <h5 class="modal-title" id="update-notification-modal-title">{% trans %}Validations{% endtrans %} / {% trans %}Notifications{% endtrans %}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+        <form id="update-notification-form">
+          <div class="modal-header">
+            <h5 class="modal-title" id="update-notification-modal-title">{% trans %}Validations{% endtrans %} / {% trans %}Notifications{% endtrans %}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
 
-        <div class="modal-body">
-          <p>{% trans %}Select the managers who are authorized to approve absences and leave requests for the selected employees.<br/>Check the box if they should be notified when a new absence or leave request is submitted.{% endtrans %}</p>
-          
-          <div class="container text-center">
-            <div class="row">
+          <div class="modal-body">
+            <p>{% trans %}Select the managers who are authorized to approve absences and leave requests for the selected employees.<br/>Check the box if they should be notified when a new absence or leave request is submitted.{% endtrans %}</p>
 
-              <div class="col">
-                {% trans %}Level 1 Validation{% endtrans %}
+            <div class="container text-center">
+              <div class="row">
 
-                <div class="row my-3">
-                  <div class="col">
-                    {% trans %}Manager{% endtrans %}
-                  </div>
-                  <div class="col">
-                    {% trans %}Notify{% endtrans %}
-                  </div>
-                </div>
+                <div class="col">
+                  {% trans %}Level 1 Validation{% endtrans %}
 
-                {% for i in 0..8 %}
-                  <div class="row mb-3">
+                  <div class="row my-3">
                     <div class="col">
-                      <select name="responsable-{{i}}" id="responsable-{{i}}" class="responsablesl1 form-select form-select-sm form-control" data-id="{{i}}">
-                        <option selected value=""></option>
-                        {% for agent in manager_level1 %}
-                          <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
-                        {% endfor %}
-                      </select>
+                      {% trans %}Manager{% endtrans %}
                     </div>
-
                     <div class="col">
-                      <div class="form-check" style="display: flex; justify-content:center;">
-                        <input type="checkbox" class="form-check-input notificationsl1" name="notification-{{i}}" id="notification-{{i}}" data-id="{{i}}"/>
-                      </div>
+                      {% trans %}Notify{% endtrans %}
                     </div>
                   </div>
-                {% endfor %}
-              </div>
-
-              <div class="col-auto d-flex">
-                <div class="vr"></div>
-              </div>
-
-              <div class="col">
-                {% trans %}Level 2 Validation{% endtrans %}
-                <div class="row my-3">
-                  <div class="col">
-                    {% trans %}Manager{% endtrans %}
-                  </div>
-                  <div class="col">
-                    {% trans %}Notify{% endtrans %}
-                  </div>
-                </div>
 
                   {% for i in 0..8 %}
-                  <div class="row mb-3">
-                    <div class="col">
-                      <select name="responsablel2-{{i}}" id="responsablel2-{{i}}" class="responsablesl2 form-select form-select-sm form-control" data-id="{{i}}">                        
-                        <option selected value=""></option>
-                        {% for agent in manager_level2 %}
-                          <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
+                    <div class="row mb-3">
+                      <div class="col">
+                        <select name="responsable-{{i}}" id="responsable-{{i}}" class="responsablesl1 form-select form-select-sm form-control" data-id="{{i}}">
+                          <option selected value=""></option>
+                          {% for agent in manager_level1 %}
+                            <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
 
-                    <div class="col">
-                      <div class="form-check" style="display: flex; justify-content:center;">
-                        <input type="checkbox" class="form-check-input notificationsl2" name="notificationl2-{{i}}" id="notificationl2-{{i}}" data-id="{{i}}"/>
+                      <div class="col">
+                        <div class="form-check" style="display: flex; justify-content:center;">
+                          <input type="checkbox" class="form-check-input notificationsl1" name="notification-{{i}}" id="notification-{{i}}" data-id="{{i}}"/>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                {% endfor %}
-              </div>
+                  {% endfor %}
+                </div>
 
+                <div class="col-auto d-flex">
+                  <div class="vr"></div>
+                </div>
+
+                <div class="col">
+                  {% trans %}Level 2 Validation{% endtrans %}
+                  <div class="row my-3">
+                    <div class="col">
+                      {% trans %}Manager{% endtrans %}
+                    </div>
+                    <div class="col">
+                      {% trans %}Notify{% endtrans %}
+                    </div>
+                  </div>
+
+                  {% for i in 0..8 %}
+                    <div class="row mb-3">
+                      <div class="col">
+                        <select name="responsablel2-{{i}}" id="responsablel2-{{i}}" class="responsablesl2 form-select form-select-sm form-control" data-id="{{i}}">                        
+                          <option selected value=""></option>
+                          {% for agent in manager_level2 %}
+                            <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                      <div class="col">
+                        <div class="form-check" style="display: flex; justify-content:center;">
+                          <input type="checkbox" class="form-check-input notificationsl2" name="notificationl2-{{i}}" id="notificationl2-{{i}}" data-id="{{i}}"/>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+
+              </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
 
-      <div class="modal-footer" style="text-align:center">
-        <button type="submit" class="btn btn-primary" form="update-notification-form">{% trans %}Save{% endtrans %}</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+        <div class="modal-footer" style="text-align:center">
+          <button type="submit" class="btn btn-primary" form="update-notification-form">{% trans %}Save{% endtrans %}</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 {% endblock %}
