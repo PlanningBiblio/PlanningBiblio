@@ -741,12 +741,6 @@ $(function(){
   })
 
   $(document).ready(function() {
-    $(".ui-accordion").accordion({
-      heightStyle: "content",
-      collapsible: "true",
-      active: "false"
-    });
-
     $(".ui-button").button();
 
     $("#pl-calendar").bootstrapDP({
