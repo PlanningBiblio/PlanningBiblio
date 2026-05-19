@@ -19,14 +19,16 @@ $(document).ready(function(){
 
   if ($('.cellSpan').length > 0 ) $('#planning-save').removeClass('disabled');
 
-  $('.pl-icon-open').on('click', function(e){
-    date = $('input[name="date"]').val();
-    site = $('input[name="site"]').val();
-    CSRFSession = $('input[name="CSRFSession"]').val();
-    params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
-    $('#model-selection').load('/modelform' + params);
-    $('#ImportModal').modal('show');
-    return false;
+  $('#planning-import').on('click keydown', function(e){
+    if (!event.key || event.key === "Enter") {
+      date = $('input[name="date"]').val();
+      site = $('input[name="site"]').val();
+      CSRFSession = $('input[name="CSRFSession"]').val();
+      params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
+      $('#model-selection').load('/modelform' + params);
+      $('#ImportModal').modal('show');
+      return false;
+    }
   });
 
    $('#duplicate-model-form').submit(function(e) {
