@@ -55,6 +55,7 @@ final class CalendarViewController extends BaseController
                 $date = new \datePl($current->format('Y-m-d'));
                 $weekId = $date->semaine3;
                 $dayIndex = ($day + (7 * $weekId) -7) - 1;
+                $mediumHour = \DateTime::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' 12:00:00');
 
                 // Mark attendees
                 foreach($workingHours as $wh) {
@@ -66,13 +67,26 @@ final class CalendarViewController extends BaseController
                         $hoursHelper = new WorkingHours($times);
                         $hours = $hoursHelper->hoursOf($dayIndex);
 
-                        // TODO, check AM / PM if $halfDays = true
                         if (!empty($hours)) {
-                            $cell0 = 'attendee';
+                            // Half day check
+                            if ($halfDays) {
+                                foreach ($hours as $hour) {
+                                    if ($hour[0] < '12:00:00') {
+                                        $cell0 = 'attendee';
+                                    }
+                                    if ($hour[1] > '12:00:00') {
+                                        $cell1 = 'attendee';
+                                    }
+                                }
+                            // Full day check
+                            } else {
+                                $cell0 = 'attendee';
+                            }
                         }
                     }
                 }
 
+                // Mark absences
                 if ($cell0 == 'attendee' or $displayAllAbsences) {
                     foreach($absences as $absence) {
                         // Mark validated absences
@@ -81,7 +95,16 @@ final class CalendarViewController extends BaseController
                             and $absence->getEnd() >= $current
                             and $absence->getValidLevel2() > 0
                         ) {
-                            $cell0 = 'absence-validated';
+                            if ($halfDays) {
+                                if ($absence->getStart() < $mediumHour) {
+                                    $cell0 = 'absence-validated';
+                                }
+                                if ($absence->getEnd() > $mediumHour) {
+                                    $cell1 = 'absence-validated';
+                                }
+                            } else {
+                                $cell0 = 'absence-validated';
+                            }
                         }
 
                         // Mark not validated absences
@@ -89,14 +112,20 @@ final class CalendarViewController extends BaseController
                             and $absence->getStart() <= $current
                             and $absence->getEnd() >= $current
                             and $absence->getValidLevel2() <= 0
-                            and $cell0 != 'validated'
                         ) {
-                            $cell0 = 'absence-not-validated';
+                            if ($halfDays) {
+                                if ($absence->getStart() < $mediumHour and $cell0 != 'absence-validated') {
+                                    $cell0 = 'absence-not-validated';
+                                }
+                                if ($absence->getEnd() > $mediumHour and $cell1 != 'absence-validated') {
+                                    $cell1 = 'absence-not-validated';
+                                }
+                            } elseif ($cell0 != 'validated') {
+                                $cell0 = 'absence-not-validated';
+                            }
                         }
                     }
                 }
-                // tmp
-                $cell1 = $cell0;
             }
         }
 
