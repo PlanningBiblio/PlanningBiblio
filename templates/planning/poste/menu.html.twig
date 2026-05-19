@@ -99,17 +99,17 @@
           </button>
         </div>
 
-      {% if (userCan('300', site) or userCan('1000', site)) and not locked and not week_view %}
       <div class="row justify-content-end" id="undo-redo" style="{{ locked ? 'display:none;' }}">
-        <button id="undo-action" onclick="location.href='javascript:vois(0)';" class="col-auto btn btn-icon {% if not undoable %} isDisabled {% endif %}">
-          <span class="pl-icon pl-icon-undo"></span>
-        </butonn>
+        {% if (userCan('300', site) or userCan('1000', site)) and not week_view %}
+          <button id="undo-action" onclick="location.href='javascript:void(0)';" class="col-auto btn btn-icon {% if not undoable %} isDisabled {% endif %}">
+            <span class="pl-icon pl-icon-undo"></span>
+          </butonn>
 
-        <button class="col-auto btn btn-icon {% if not redoable %} isDisabled {% endif %}" id="redo-action" onclick="location.href='javascript:vois(0)';">
-          <span class="pl-icon pl-icon-redo"></span>
-        </button>
+          <button class="col-auto btn btn-icon {% if not redoable %} isDisabled {% endif %}" id="redo-action" onclick="location.href='javascript:void(0)';">
+            <span class="pl-icon pl-icon-redo"></span>
+          </button>
+        {% endif %}
       </div>
-      {% endif %}
 
       {% if config('Multisites-nombre') > 1 %}
         <div class="row">
