@@ -252,3 +252,24 @@ msgstr "Modification of the minimum password length"
 
 msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
 msgstr "The minimum value of characters for password change must be a number greater than or equal to 8."
+
+msgid "Validations"
+msgstr "Validations"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Select the managers who are authorized to approve absences and leave requests for the selected employees.<br/>Check the box if they should be notified when a new absence or leave request is submitted."
+msgstr "Select the managers who are authorized to approve absences and leave requests for the selected employees.<br/>Check the box if they should be notified when a new absence or leave request is submitted."
+
+msgid "Level 1 Validation"
+msgstr "Level 1 Validation"
+
+msgid "Level 2 Validation"
+msgstr "Level 2 Validation"
+
+msgid "Manager"
+msgstr "Manager"
+
+msgid "Notify"
+msgstr "Notify"
