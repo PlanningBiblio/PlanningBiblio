@@ -1889,12 +1889,12 @@ class absences
 
             if ($planningPositionIntersectsWithTimeSlots) {
                 $plannings[] = [
-                    'date' => dateFr($planningPosition->getDate()->format('Y-m-d')),
+                    'date' => $planningPosition->getDate()->format('d/m/Y'),
                     'poste' => $planningPosition->getPosition(),
-                    'debut' => heure2($planningPosition->getStart()->format('H:i')),
-                    'fin' => heure2($planningPosition->getEnd()->format('H:i')),
+                    'debut' => $planningPosition->getStart()->format('H\hi'),
+                    'fin' => $planningPosition->getEnd()->format('H\hi'),
                     'site' => $sites[ $planningPosition->getSite() ],
-                    'valide' => in_array($planningPositionDate, $plannings_valides) ? " (Valid&eacute;)" : null,
+                    'valide' => in_array($planningPositionDate, $plannings_valides) ? " (Validé)" : null,
                 ];
             }
         }

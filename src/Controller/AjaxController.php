@@ -188,8 +188,8 @@ class AjaxController extends BaseController
       $groupe = $request->get('groupe');
       $debut = $request->get('debut');
       $fin = $request->get('fin');
-      $recurrence = (bool) $request->get('recurrence-checkbox', false);
-      $rrule = $recurrence ? $request->get('recurrence-hidden') : null;
+      $recurrence = $request->query->getBoolean('recurrence-checkbox');
+      $rrule = $recurrence ? $request->query->get('recurrence-hidden') : null;
       $perso_ids = $request->get('perso_ids');
       $perso_ids = json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
