@@ -764,7 +764,6 @@ $(function(){
       forceParse : false
     });
 
-    $(".datepicker").addClass("center ui-widget-content");
     $(".datepicker").attr('autocomplete','off');
     $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
 
