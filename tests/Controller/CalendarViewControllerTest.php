@@ -23,7 +23,7 @@ final class CalendarViewControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, [99,100]);
 
-        $this->client->request('GET', '/calendar/view');
+        $this->client->request('GET', '/absence/calendar/view');
 
         self::assertResponseIsSuccessful();
     }

@@ -1,3 +1,3 @@
 function calendarViewReset() {
-  document.location.href = url('calendar/view/reset');
+  document.location.href = url('absence/calendar/view/reset');
 }

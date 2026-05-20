@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class CalendarViewController extends BaseController
 {
-    #[Route('/calendar/view/{reset?}', name: 'calendar-view.index')]
+    #[Route('/absence/calendar/view/{reset?}', name: 'calendar-view.index')]
     public function index(Request $request): Response
     {
         $reset = $request->attributes->get('reset') == 'reset';

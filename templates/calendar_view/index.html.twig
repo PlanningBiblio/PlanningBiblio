@@ -10,7 +10,7 @@
 
   <h3>Vue calendaire</h3>
 
-  <form name="form" id="calendar-view-form" method="get" action="{{ asset('calendar/view') }}" novalidate >
+  <form name="form" id="calendar-view-form" method="get" action="{{ path('calendar-view.index') }}" novalidate >
     <div class="row row-search">
 
       <label class="col-xl-auto col-form-label mt-2" for="absences-search-start">{% trans %}Start{% endtrans %} :</label>
