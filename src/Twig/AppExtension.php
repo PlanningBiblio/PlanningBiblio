@@ -217,7 +217,7 @@ class AppExtension extends AbstractExtension
             (preg_match('/^([^?]*)/', $requested_url, $match));
             $uri = substr($match[0], strlen($config['URL']));
 
-            return (bool) preg_match('/(\/[0-9]{4}((-[0-9]{2}){2})|\/week|\/detached|\A\/$|\A\/[0-9]{1,2}$)/', $uri);
+            return (bool) preg_match('/(\/[0-9]{4}((-[0-9]{2}){2})|\/week|\A\/$|\A\/[0-9]{1,2}$)/', $uri);
         }
 
         if(strpos($requested_url, "{$config['URL']}/$menu") !== false){
@@ -229,7 +229,7 @@ class AppExtension extends AbstractExtension
             $admin_pages = array(
                 'skill', 'agent', 'position',
                 'model', 'framework', 'closingday',
-                'workinghour', 'config', 'notification');
+                'workinghour', 'detached', 'config', 'notification');
 
             foreach ($admin_pages as $page) {
                 if(strpos($requested_url, "{$config['URL']}/$page") !== false){
