@@ -206,6 +206,7 @@ class PlanningPositionRepository extends EntityRepository
         $qb->select('DISTINCT p.date');
         $qb->andWhere($qb->expr()->in('p.perso_id', ':perso_ids'));
         $qb->setParameter('perso_ids', $agentIds);
+        $qb->orderBy('p.date');
 
         $this->filterByTimeSlots($qb, $timeSlots);
 
@@ -233,6 +234,7 @@ class PlanningPositionRepository extends EntityRepository
         $qb->select('DISTINCT p.date');
         $qb->andWhere($qb->expr()->in('p.site', ':site_ids'));
         $qb->setParameter('site_ids', $siteIds);
+        $qb->orderBy('p.date');
 
         $this->filterByTimeSlots($qb, $timeSlots);
 
