@@ -1110,10 +1110,6 @@ class cellule = cellule par défaut
   color: #FFFFFF;
 }
 
-#semaine_planning{
-  display:none;
-}
-
 #ferie {
   color: #DC3545;
   width: fit-content;
