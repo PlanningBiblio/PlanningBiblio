@@ -10,20 +10,29 @@ use App\Entity\WorkingHour;
 use App\Planno\WorkingHours;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class CalendarViewController extends BaseController
 {
     #[Route('/absence/calendar/view/{reset?}', name: 'calendar-view.index')]
-    public function index(Request $request): Response
+    public function index(Request $request, Session $session): Response
     {
-        $reset = $request->attributes->get('reset') == 'reset';
+        $changeDates = $request->query->get('changeDates');
+        $reset = $request->query->getBoolean('reset');
 
         $start = $this->initDate('start', 'calendarViewStart', 'last monday', 'd/m/Y', $reset);
-        $end = $this->initDate('end', 'calendarViewEnd', 'next sunday', 'd/m/Y', $reset);
+        $end = $this->initDate('end', 'calendarViewEnd', 'second sunday', 'd/m/Y', $reset);
         $displayAllAbsences = $this->initBoolean('all-absences', 'calendarViewAllAbsences', false, $reset);
 
-        $agents = $this->entityManager->getRepository(Agent::class)->get();
+        if ($changeDates) {
+            $start = $start->modify($changeDates);
+            $end = $end->modify($changeDates);
+            $session->set('calendarViewStart', $start->format('d/m/Y'));
+            $session->set('calendarViewEnd', $end->format('d/m/Y'));
+        }
+
+        $agents = $this->entityManager->getRepository(Agent::class)->get('Actif');
         $absences = $this->entityManager->getRepository(Absence::class)->get($start, $end);
         $holidays = $this->entityManager->getRepository(Holiday::class)->get($start, $end);
         $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get($start, $end, true);
@@ -57,6 +66,12 @@ final class CalendarViewController extends BaseController
                 $dayIndex = ($day + (7 * $weekId) -7) - 1;
                 $mediumHour = \DateTime::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' 12:00:00');
 
+                // Zebra on Sundays
+                if (!$this->config['Dimanche'] and $current->format('N') == 7) {
+                    $cell0 = 'zebra';
+                    $cell1 = 'zebra';
+                }
+
                 // Mark attendees
                 foreach($workingHours as $wh) {
                     if ($wh->getUser() == $agent->getId()
@@ -87,7 +102,7 @@ final class CalendarViewController extends BaseController
                 }
 
                 // Mark absences
-                if ($cell0 == 'attendee' or $displayAllAbsences) {
+                if ($cell0 == 'attendee' or $cell1 == 'attendee' or $displayAllAbsences) {
                     foreach($absences as $absence) {
                         // Mark validated absences
                         if ($absence->getUserId() == $agent->getId()

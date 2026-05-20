@@ -23,8 +23,16 @@
         <input id="absences-search-end" type="text" name="end" class="datepicker end-date form-control one-year" value="{{ end }}" required/>
       </div>
 
-      <label class="col-xl-auto col-form-label mt-2" for="all-absences">{% trans %}Display all absences{% endtrans %} :</label>
       <div class="col-xl-auto ps-0">
+        <a href="{{ path('calendar-view.index', {changeDates: '-1 week'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-left"></a>
+      </div>
+
+      <div class="col-xl-auto ps-0">
+        <a href="{{ path('calendar-view.index', {changeDates: '+1 week'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-right"></a>
+      </div>
+
+      <label class="col-xl-auto col-form-label mt-2" for="all-absences">{% trans %}Display all absences{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0 m-2">
         <input type="checkbox" value="1" id="all-absences" name="all-absences" class="m-2" {{ displayAllAbsences }}/>
       </div>
 
@@ -53,8 +61,8 @@
       {% if halfDays %}
         <tr>
           {% for date in allDates %}
-            <th>A.M.</th>
-            <th>P.M.</th>
+            <th class="dataTableNoSort" >A.M.</th>
+            <th class="dataTableNoSort" >P.M.</th>
           {% endfor %}
         </tr>
       {% endif %}

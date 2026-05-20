@@ -1874,6 +1874,9 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   font-weight: bold;
 }
 
+.btn.bi {
+  min-width: 30px;
+}
 .btn-icon {
   display: contents;
 }
@@ -2460,6 +2463,15 @@ table.dataTable th{
 .calendar-view.absence-not-validated {
   background-color: #d1ac07;
 }
+
+.calendar-view.zebra {
+  background-image: repeating-linear-gradient(
+    -75deg,
+    transparent,
+    transparent 8px,
+    #DEE2E6 7px,
+    #DEE2E6 10px
+  );
 
 @media only screen and (max-width: 1550px){
   #logo {
