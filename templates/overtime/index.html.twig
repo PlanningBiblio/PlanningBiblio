@@ -255,7 +255,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="add-overtime-modal-title">{% trans %}New request for overtime{% endtrans %}</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
             </div>
             <div class="modal-body">
               
@@ -325,8 +325,8 @@
                   {% trans %}Error while saving the overtime request{% endtrans %}
                 </div>
               </div>
-              <button type="submit" class="btn btn-primary" form="add-overtime-form">{% trans %}Save{% endtrans %}</button>
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+              <button type="submit" class="btn btn-primary" form="add-overtime-form">{% trans %}Save{% endtrans %}</button>
             </div>
           </div>
         </div>

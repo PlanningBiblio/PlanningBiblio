@@ -8,21 +8,28 @@
     <input type="hidden" name="site" value="{{ site }}" />
 
     {% if models | length == 0 %}
-      <div style="margin: 20px auto;">
-        Aucun modèle enregistré
+      <div class="row">
+        <p>
+          {% trans %}No models saved{% endtrans %}
+        </p>
+        <script>
+          $('#import-model-button').addClass('disabled');
+          $('#import-model-button').attr('type', 'button');
+        </script>
       </div>
 
     {% else %}
-      <div style="margin: 20px auto;" class="important">
-        Attention, le planning actuel sera remplacé par le modèle
+      <div class="row">
+        <p class="important">
+          {% trans %}Please note that the current schedule will be replaced by the new model{% endtrans %}
+        </p>
       </div>
 
       {% if models | length > 1 %}
 
-        <div style="margin: 20px auto;display: table;">
-          Sélectionnez le modèle à importer
-          <br />
-          <select name="model" id="model" class="form-select form-select-sm" aria-label="Séléction du modèle" style="margin-top: 8px; text-align: center;">
+        <div class="row mb-2 justify-content-center">
+          <label for="model" class="form-label">{% trans %}Select the template to import{% endtrans %} :</label>
+          <select name="model" id="model" class="form-select form-select-sm" style="max-width: fit-content;text-align:center;">
             <option hidden disabled selected value=""></option>
             {% for m in models %}
               <option value="{{ m.modelId }}">{{ m.name }}{% if m.isWeek %} (semaine){% endif %}</option>
@@ -34,15 +41,21 @@
 
         {% set model = models | first  %}
         <input type="hidden" name="model" id="model" value="{{ model.modelId }}" />
-        <div style="margin: 20px auto;">
-          Importer le modèle "{{ model.name }}"{%if model.isWeek %} (semaine){% endif %} ?
+        <div class="row">
+          <p>
+            {% trans with {'%name%': model.name} %}Import the "%name%" model{% endtrans %}{%if model.isWeek %}({% trans %}week{% endtrans %}){% endif %} ?
+          </p>
         </div>
 
     {% endif %}
 
-    <div class="form-group" style="margin: 20px auto;">
-      <label for="AbsentsCheck" class="form-check-label">Importer les absents ?</label>
-      <input type="checkbox" id="AbsentsCheck" name="absents" class="form-check-input m-2" checked="checked"/>
+    <div class="row mt-3 mb-2 justify-content-center">
+      <div class="col-auto">
+        <div class="form-check-prepend">
+          <label for="absents-check" class="col-auto form-check-label">{% trans %}Import absent agents{% endtrans %} :</label>
+          <input class="form-check-input m-1 mx-2" type="checkbox" id="absents-check" name="absents" checked="checked">
+        </div>
+      </div>
     </div>
 
   {% endif %}

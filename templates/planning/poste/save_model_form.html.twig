@@ -1,28 +1,28 @@
 {# planning/poste/save_model_form.html.twig #}
 
-<div class="modal" id="SaveModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="saveModalTitle" aria-hidden="true">
+<div class="modal" id="save-model-modal" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="save-model-modal-title" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title" id="saveModalTitle">Enregistrement du planning du {{ date | datefr }} comme modèle</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="save-model-modal-title">{% trans with {'%date%': date | date('d/m/Y')} %}Saving a template (%date%){% endtrans %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
       </div>
 
-      <div class="modal-body">
+      <div class="modal-body" style="min-height: 108px;">
         <form id="save-model-form">
-          <div class="row mb-2 justify-content-center">
-            <label for="InputModelName" class="col-auto col-form-label">{% trans %}Model name{% endtrans %} :</label>
+          <div class="row mb-2 justify-content-center" style="align-items: center;">
+            <label for="input-model-name" class="col-auto col-form-label">{% trans %}Model name{% endtrans %} :</label>
             <div class="col-4">
-              <input type="text" id="InputModelName" name="modelName"class="form-control form-control-sm" value="{{date}}" required>
+              <input type="text" id="input-model-name" name="modelName"class="form-control form-control-sm" value="{{date}}" required>
             </div>
           </div>
 
           <div class="row mb-2 justify-content-center">
             <div class="col-auto">
               <div class="form-check-prepend">
-                <label for="WeekCheck" class="col-auto form-check-label">{% trans %}Save all week{% endtrans %} :</label>
-                <input class="form-check-input m-1 mx-2" type="checkbox" id="WeekCheck" name="semaine">
+                <label for="week-check" class="col-auto form-check-label">{% trans %}Save all week{% endtrans %} :</label>
+                <input class="form-check-input m-1 mx-2" type="checkbox" id="week-check" name="semaine">
               </div>
             </div>
           </div>
@@ -34,31 +34,33 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="submit" form="save-model-form" class="btn btn-primary" >Enregistrer</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+        <button type="submit" form="save-model-form" class="btn btn-primary">{% trans %}Save{% endtrans %}</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal" id="DuplicateModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="saveModalTitle" aria-hidden="true">
+<div class="modal" id="duplicate-model-modal" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="duplicate-model-modal-title" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
       <form id="duplicate-model-form">
         <div class="modal-header">
-          <h5 class="modal-title" id="saveModalTitle">Enregistrement du planning du {{ date | datefr }} comme modèle</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="duplicate-model-modal-title">{% trans with {'%date%': date | date('d/m/Y')} %}Saving a template (%date%){% endtrans %}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
         </div>
 
-        <div class="modal-body" style="min-height: 116px; align-content: flex-end;">
-          <p>Un modèle avec ce nom existe déjà. <br> Voulez vous le remplacer ?</p>
+        <div class="modal-body">
+          <p style="text-align: center;">
+            {% trans %}A model with that name already exists{% endtrans %}.<br>{% trans %}Would you like to replace it{% endtrans %} ?
+          </p>
         </div>
       </form>
 
-      <div class="modal-footer" style="text-align:center">
-        <button type="submit" class="btn btn-danger" form="duplicate-model-form" >Oui</button>
-        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#SaveModal">Non</button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#save-model-modal">{% trans %}No{% endtrans %}</button>
+        <button type="submit" class="btn btn-danger" form="duplicate-model-form" >{% trans %}Yes{% endtrans %}</button>
       </div>
     </div>
   </div>

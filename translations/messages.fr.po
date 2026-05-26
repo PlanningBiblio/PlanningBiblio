@@ -283,6 +283,51 @@ msgstr "Congés"
 msgid "Access rights"
 msgstr "Droits d'accès"
 
+msgid "Yes"
+msgstr "Oui"
+
+msgid "No"
+msgstr "Non"
+
+msgid "Saving a template (%date%)"
+msgstr "Enregistrement d'un modèle (%date%)"
+
+msgid "Importing a template"
+msgstr "Importation d'un modèle"
+
+msgid "Import the "%name%" model"
+msgstr "Importer le modèle "%name%""
+
+msgid "A model with that name already exists"
+msgstr "Un modèle avec ce nom existe déjà"
+
+msgid "Would you like to replace it"
+msgstr "Voulez-vous le remplacer"
+
+msgid "Import absent agents"
+msgstr "Importes les agents absents"
+
+msgid "week"
+msgstr "semaine"
+
+msgid "Please note that the current schedule will be replaced by the new model"
+msgstr "Attention, le planning actuel sera remplacé par le modèle"
+
+msgid "No models saved"
+msgstr "Aucun modèle enregistré"
+
+msgid "Select the template to import"
+msgstr "Sélectionnez le modèle à importer"
+
+msgid "Delete the schedule"
+msgstr "Supression du planning"
+
+msgid "Week"
+msgstr "Semaine"
+
+msgid "Day"
+msgstr "Jour"
+
 msgid "Close"
 msgstr "Fermer"
 
@@ -318,3 +363,21 @@ msgstr "Agendas ICS"
 
 msgid "My password"
 msgstr "Mon mot de passe"
+
+msgid "Do you want to delete the schedule for the day %day% or for the week (from %first_day_week% to %last_day_week%)"
+msgstr "Voulez-vous supprimer le planning du jour %day% ou de la semaine (du %first_day_week% au %last_day_week%)"
+
+msgid "Are you sure you want to delete the schedule for %day%"
+msgstr "Êtes vous sûr de vouloir supprimer le planning du %day%"
+
+msgid "Are you sure you want to delete the schedule for the week (%start% to %end%)"
+msgstr "Êtes vous sûr de vouloir supprimer le planning de la semaine (%start% au %end%)"
+
+msgid "This event only"
+msgstr "Uniquement cet événement"
+
+msgid "This event and the following ones"
+msgstr "Cet événement et les suivants"
+
+msgid "All events"
+msgstr "Tous les événements"

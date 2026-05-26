@@ -301,7 +301,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="add-status-title">Liste des statuts</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
         </div>
         <div class="modal-body">
           
@@ -313,7 +313,7 @@
                 <div class="invalid-feedback" id="invalid-status">Statut invalide</div>
               </div>
               <div class="col-1">
-                <button type="submit" id="add-status-button" class="btn btn-primary">Ajouter</button>
+                <button type="submit" id="add-status-button" class="btn btn-primary">{% trans %}Add{% endtrans %}</button>
               </div>
             </div>
           </form>
@@ -357,8 +357,8 @@
         </div>
 
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" form="arrange-statuses">Enregister</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+          <button type="submit" class="btn btn-primary" form="arrange-statuses">{% trans %}Save{% endtrans %}</button>
         </div>
 
       </div>
@@ -370,7 +370,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="add-service-title">Liste des services</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
         </div>
         <div class="modal-body">
           
@@ -383,7 +383,7 @@
               </div>
 
               <div class="col-1">
-                <button type="submit" id="add-service-button" class="col-1 btn btn-primary">Ajouter</button>
+                <button type="submit" id="add-service-button" class="col-1 btn btn-primary">{% trans %}Add{% endtrans %}</button>
               </div>
             </div>
           </form>
@@ -417,8 +417,8 @@
         </div>
 
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" form="arrange-services">Enregister</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+          <button type="submit" class="btn btn-primary" form="arrange-services">{% trans %}Save{% endtrans %}</button>
         </div>
 
       </div>
@@ -430,7 +430,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="ics-url-modal-title">Envoi des URL des agendas Planno</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
       </div>
       <div class="modal-body">
         
@@ -454,8 +454,8 @@
 
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" form="ics-url-form">Envoyer</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+        <button type="submit" class="btn btn-primary" form="ics-url-form">{% trans %}Send{% endtrans %}</button>
       </div>
     </div>
   </div>

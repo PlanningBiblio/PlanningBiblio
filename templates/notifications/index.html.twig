@@ -104,7 +104,7 @@
         <form id="update-notification-form">
           <div class="modal-header">
             <h5 class="modal-title" id="update-notification-modal-title">{% trans %}Validations{% endtrans %} / {% trans %}Notifications{% endtrans %}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
           </div>
 
           <div class="modal-body">
@@ -185,9 +185,9 @@
           </div>
         </form>
 
-        <div class="modal-footer" style="text-align:center">
-          <button type="submit" class="btn btn-primary" form="update-notification-form">{% trans %}Save{% endtrans %}</button>
+        <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+          <button type="submit" class="btn btn-primary" form="update-notification-form">{% trans %}Save{% endtrans %}</button>
         </div>
       </div>
     </div>

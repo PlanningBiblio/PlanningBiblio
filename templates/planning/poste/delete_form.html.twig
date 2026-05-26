@@ -1,37 +1,40 @@
 {# planning/poste/delete_form.html.twig #}
 
-<div class="modal" id="DropModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal" id="drop-model-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="drop-model-modal-title" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Supression du planning </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="drop-model-modal-title">{% trans %}Delete the schedule{% endtrans %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
       </div>
       <div class="modal-body" style="text-align:center">
-        <p>Voulez vous supprimer le planning du jour ({{ date | datefr }})</p>
-        <p>ou de la semaine (du {{ start | datefr }} au {{ end | datefr }}) ?</p>
-
+        <p>
+          {% trans with {'%day%': date | date('d/m/Y'), '%first_day_week%' : start | date('d/m/Y'), '%last_day_week%' : end | date('d/m/Y') } %}Do you want to delete the schedule for the day %day% or for the week (from %first_day_week% to %last_day_week%){% endtrans %} ?
+        </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#DropDayModal">Jour</button>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#DropWeekModal">Semaine</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#drop-day-modal">{% trans %}Day{% endtrans %}</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#drop-week-modal">{% trans %}Week{% endtrans %}</button>
       </div>
     </div>
   </div>
 </div>
 
 
-<div class="modal" id="DropDayModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal" id="drop-day-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="drop-day-modal-title" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Supression du planning</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="drop-day-modal-title">{% trans %}Delete the schedule{% endtrans %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
       </div>
-      <div class="modal-body" style="text-align:center; min-height : 109px;align-content: center;">
+      <div class="modal-body" style="text-align:center;">
 
-        <p style="padding: 5px;">Êtes vous sûr de vouloir supprimer le planning du {{ date | datefr }} ?</p>
+        <p class="px-2">
+          {% trans with {'%day%': date | date('d/m/Y') } %}Are you sure you want to delete the schedule for %day%{% endtrans %} ?
+        </p>
+
         <form id="delete-planning-day-form" action="{{ asset('deleteplanning') }}" method="post">
 
         <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
@@ -43,23 +46,25 @@
       </div>
 
       <div class="modal-footer">
-        <button type="submit" class="btn btn-danger" form="delete-planning-day-form">Oui</button>
-        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#DropModal">Non</button>
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#drop-model-modal">{% trans %}No{% endtrans %}</button>
+        <button type="submit" class="btn btn-danger" form="delete-planning-day-form">{% trans %}Yes{% endtrans %}</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal" id="DropWeekModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal" id="drop-week-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="drop-week-modal-title" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Supression du planning </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="drop-week-modal-title">{% trans %}Delete the schedule{% endtrans %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
       </div>
-      <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
+      <div class="modal-body" style="text-align:center;">
         
-        <p>Êtes vous sûr de vouloir supprimer le planning de la semaine ({{ start | datefr }} au {{ end | datefr }}) ?</p>
+        <p>
+          {% trans with {'%start%': start | date('d/m/Y'), '%end%' : end | date('d/m/Y') } %}Are you sure you want to delete the schedule for the week (%start% to %end%){% endtrans %} ?
+        </p>
         <form id="delete-planning-week-form" action="{{ asset('deleteplanning') }}" method="post">
           <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
           <input type="hidden" name="week" value="1" />
@@ -69,8 +74,8 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-danger" form="delete-planning-week-form">Oui</button>
-        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#DropModal">Non</button>
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#drop-model-modal">{% trans %}No{% endtrans %}</button>
+        <button type="submit" class="btn btn-danger" form="delete-planning-week-form">{% trans %}Yes{% endtrans %}</button>
       </div>
     </div>
   </div>

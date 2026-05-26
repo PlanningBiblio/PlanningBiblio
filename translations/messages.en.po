@@ -283,6 +283,51 @@ msgstr "Days off"
 msgid "Access rights"
 msgstr "Access rights"
 
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
+msgid "Saving a template (%date%)"
+msgstr "Saving a template (%date%)"
+
+msgid "Importing a template"
+msgstr "Importing a template"
+
+msgid "Import the "%name%" model"
+msgstr "Import the "%name%" model"
+
+msgid "A model with that name already exists"
+msgstr "A model with that name already exists"
+
+msgid "Would you like to replace it"
+msgstr "Would you like to replace it"
+
+msgid "Import absent agents"
+msgstr "Import absent agents"
+
+msgid "week"
+msgstr "week"
+
+msgid "Please note that the current schedule will be replaced by the new model"
+msgstr "Please note that the current schedule will be replaced by the new model"
+
+msgid "No models saved"
+msgstr "No models saved"
+
+msgid "Select the template to import"
+msgstr "Select the template to import"
+
+msgid "Delete the schedule"
+msgstr "Delete the schedule"
+
+msgid "Week"
+msgstr "Week"
+
+msgid "Day"
+msgstr "Day"
+
 msgid "Close"
 msgstr "Close"
 
@@ -318,3 +363,21 @@ msgstr "ICS Calendars"
 
 msgid "My password"
 msgstr "My password"
+
+msgid "Do you want to delete the schedule for the day %day% or for the week (from %first_day_week% to %last_day_week%)"
+msgstr "Do you want to delete the schedule for the day %day% or for the week (from %first_day_week% to %last_day_week%)"
+
+msgid "Are you sure you want to delete the schedule for %day%"
+msgstr "Are you sure you want to delete the schedule for %day%"
+
+msgid "Are you sure you want to delete the schedule for the week (%start% to %end%)"
+msgstr "Are you sure you want to delete the schedule for the week (%start% to %end%)"
+
+msgid "This event only"
+msgstr "This event only"
+
+msgid "This event and the following ones"
+msgstr "This event and the following ones"
+
+msgid "All events"
+msgstr "All events"
