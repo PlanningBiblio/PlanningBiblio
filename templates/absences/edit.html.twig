@@ -311,42 +311,42 @@
           <p>La modification des règles de récurrence n'est pas possible.</p>
         </div>
 
-        <div class="modal modal-lg" id="recurrence-modification-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="recurrence-modification-title" aria-hidden="true">
+        <div class="modal modal-lg" id="recurrence-modification-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="recurrence-modification-title" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="recurrence-modification-title">Modification d'une absence récurrente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
               </div>
               <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
                 <p>Souhaitez-vous modifier uniquement cet événement, cet événement et ceux qui le suivent dans la série ou tous les événements de la série ?</p>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="modification-current">Uniquement cet événement</button>
-                <button type="button" class="btn btn-primary" id="modification-next">Cet événement et les suivants</button>
-                <button type="button" class="btn btn-primary" id="modification-all">Tous les événements</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                <button type="button" class="btn btn-primary" id="modification-current">{% trans %}This event only{% endtrans %}</button>
+                <button type="button" class="btn btn-primary" id="modification-next">{% trans %}This event and the following ones{% endtrans %}</button>
+                <button type="button" class="btn btn-primary" id="modification-all">{% trans %}All events{% endtrans %}</button>
               </div>
             </div>
           </div>
         </div>
 
 
-        <div class="modal modal-lg" id="recurrence-suppression-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="recurrence-suppression-title" aria-hidden="true">
+        <div class="modal modal-lg" id="recurrence-suppression-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="recurrence-suppression-title" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="recurrence-suppression-title">Suppression d'une absence récurrente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
               </div>
               <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
                 <p>Souhaitez-vous supprimer uniquement cet événement, cet événement et ceux qui le suivent dans la série ou tous les événements de la série ?</p>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="deletion-current">Uniquement cet événement</button>
-                <button type="button" class="btn btn-danger" id="deletion-next">Cet événement et les suivants</button>
-                <button type="button" class="btn btn-danger" id="deletion-all">Tous les événements</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                <button type="button" class="btn btn-danger" id="deletion-current">{% trans %}This event only{% endtrans %}</button>
+                <button type="button" class="btn btn-danger" id="deletion-next">{% trans %}This event and the following ones{% endtrans %}</button>
+                <button type="button" class="btn btn-danger" id="deletion-all">{% trans %}All events{% endtrans %}</button>
               </div>
             </div>
           </div>

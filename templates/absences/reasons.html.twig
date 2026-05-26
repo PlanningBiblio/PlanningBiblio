@@ -6,7 +6,7 @@
 
       <div class="modal-header">
         <h5 class="modal-title" id="add-reason-modal-title">Liste des motifs d'absences</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
       </div>
 
       <div class="modal-body">
@@ -18,7 +18,7 @@
               <div class="invalid-feedback">Motif invalide</div>
             </div>
             <div class="col-1">
-              <button type="submit" id="add-reason-button" class="btn btn-primary">Ajouter</button>
+              <button type="submit" id="add-reason-button" class="btn btn-primary">{% trans %}Add{% endtrans %}</button>
             </div>
           </div>
         </form>
@@ -74,8 +74,8 @@
 
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" form="arrange-reasons">Enregister</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+        <button type="submit" class="btn btn-primary" form="arrange-reasons">{% trans %}Save{% endtrans %}</button>
       </div>
     </div>
   </div>

@@ -287,12 +287,12 @@
 
       </div>
 
-      <div class="modal" id="end-date-alert-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="end-date-modal-title" aria-hidden="true">
+      <div class="modal" id="end-date-alert-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="end-date-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="end-date-modal-title">Date de fin de récurrence</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
             </div>
             <div class="modal-body">
               Pour les absences récurrentes, la date de fin ne doit pas être saisie dans le formulaire d'absence mais dans la fenêtre de configuration de la récurrence.
@@ -301,20 +301,20 @@
             </div>
 
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id="clear-end-date">Oui</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}No{% endtrans %}</button>
+              <button type="button" class="btn btn-primary" id="clear-end-date">{% trans %}Yes{% endtrans %}</button>
             </div>
           </div>
         </div>
       </div>
       
-      <div class="modal" id="recurrence-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="recurrence-modal-title" aria-hidden="true">
+      <div class="modal" id="recurrence-modal" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="recurrence-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
 
             <div class="modal-header">
               <h5 class="modal-title" id="recurrence-modal-title">Récurrence absence</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
             </div>
 
             <div class="modal-body" style="font-size: 1.10em;">
@@ -423,8 +423,8 @@
             </div>
 
             <div class="modal-footer">
-              <button type="submit" form="recurrence-form" class="btn btn-primary" >Enregistrer</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Annuler</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+              <button type="submit" form="recurrence-form" class="btn btn-primary">{% trans %}Save{% endtrans %}</button>
             </div>
 
           </div>

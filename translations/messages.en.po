@@ -372,3 +372,12 @@ msgstr "Are you sure you want to delete the schedule for %day%"
 
 msgid "Are you sure you want to delete the schedule for the week (%start% to %end%)"
 msgstr "Are you sure you want to delete the schedule for the week (%start% to %end%)"
+
+msgid "This event only"
+msgstr "This event only"
+
+msgid "This event and the following ones"
+msgstr "This event and the following ones"
+
+msgid "All events"
+msgstr "All events"

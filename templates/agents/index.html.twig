@@ -112,7 +112,7 @@
 
       <div class="modal-header">
         <h5 class="modal-title" id="modif-agent-modal-title">{% trans %}Editing selected agents{% endtrans %}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
       </div>
 
       <form id="modif-agent-form">
@@ -256,8 +256,8 @@
       </form>
 
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" form="modif-agent-form" >{% trans %}Save{% endtrans %}</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+        <button type="submit" class="btn btn-primary" form="modif-agent-form" >{% trans %}Save{% endtrans %}</button>
       </div>
     </div>
   </div>
@@ -268,7 +268,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="delete-agent-modal-title">Supression d'un agent</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
         </div>
         <div class="modal-body" style="text-align:center;">
           
@@ -279,12 +279,12 @@
           </form>
         </div>
             <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}No{% endtrans %}</button>
               {% if active != "Supprimé" %}
-                <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-agent-validation-modal">Oui</button>
+                <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-agent-validation-modal">{% trans %}Yes{% endtrans %}</button>
               {% else %}
-                <button type="submit" class="btn btn-danger" form="delete-agent-form">Oui</button>
+                <button type="submit" class="btn btn-danger" form="delete-agent-form">{% trans %}Yes{% endtrans %}</button>
               {% endif %}
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
             </div>
         </div>
       </div>
@@ -297,7 +297,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="delete-agent-validation-modal-title">Supression d'un agent</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
           </div>
           <div class="modal-body" style="min-height:86px">
 
@@ -314,8 +314,8 @@
           </form>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-danger" form="delete-agent-validation-form">Supprimer</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+            <button type="submit" class="btn btn-danger" form="delete-agent-validation-form">{% trans %}Delete{% endtrans %}</button>
           </div>
         </div>
       </div>

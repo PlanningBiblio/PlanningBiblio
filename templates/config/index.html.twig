@@ -39,9 +39,9 @@
               <p>{% trans %}To calculate leave in days, you need to change the Conges-Recuperations setting to Dissocier.{% endtrans %}</p>
             </div>
 
-          <div class="modal-footer" style="text-align:center">
-            <button type="button" class="btn btn-primary" onclick="$('#Conges-Recuperations').val('1');" data-bs-dismiss="modal">{% trans %}Accept{% endtrans %}</button>
+          <div class="modal-footer">
             <button type="button" id="cancel-mode" class="btn btn-secondary" onclick="$('#Conges-Mode').val('heures');" data-bs-dismiss="modal">{% trans %}Cancel my change{% endtrans %}</button>
+            <button type="button" class="btn btn-primary" onclick="$('#Conges-Recuperations').val('1');" data-bs-dismiss="modal">{% trans %}Accept{% endtrans %}</button>
           </div>
         </div>
       </div>
@@ -59,9 +59,9 @@
               <p>{% trans %}Selecting more than three weeks requires checking the PlanningHebdo option.{% endtrans %}</p>
             </div>
 
-          <div class="modal-footer" style="text-align:center">
-            <button type="button" class="btn btn-primary" onclick="$('#PlanningHebdo').prop('checked', true);" data-bs-dismiss="modal">{% trans %}Accept{% endtrans %}</button>
+          <div class="modal-footer">
             <button type="button" id="cancel-week" class="btn btn-secondary" onclick="nb_week_reset();" data-bs-dismiss="modal">{% trans %}Cancel my change{% endtrans %}</button>
+            <button type="button" class="btn btn-primary" onclick="$('#PlanningHebdo').prop('checked', true);" data-bs-dismiss="modal">{% trans %}Accept{% endtrans %}</button>
           </div>
         </div>
       </div>
@@ -79,7 +79,7 @@
               <p>{% trans %}The minimum value of characters for password change must be a number greater than or equal to 8.{% endtrans %}</p>
             </div>
 
-          <div class="modal-footer" style="text-align:center">
+          <div class="modal-footer">
             <button type="button" class="btn btn-primary" onclick="$('#Auth-PasswordLength').val('8');" data-bs-dismiss="modal">{% trans %}Confirm{% endtrans %}</button>
           </div>
         </div>

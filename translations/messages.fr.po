@@ -372,3 +372,12 @@ msgstr "Êtes vous sûr de vouloir supprimer le planning du %day%"
 
 msgid "Are you sure you want to delete the schedule for the week (%start% to %end%)"
 msgstr "Êtes vous sûr de vouloir supprimer le planning de la semaine (%start% au %end%)"
+
+msgid "This event only"
+msgstr "Uniquement cet événement"
+
+msgid "This event and the following ones"
+msgstr "Cet événement et les suivants"
+
+msgid "All events"
+msgstr "Tous les événements"
