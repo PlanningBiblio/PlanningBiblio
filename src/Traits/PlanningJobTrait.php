@@ -706,9 +706,9 @@ trait PlanningJobTrait
                 $destinataires = count(explode(";", $db->result[0]['destinataires']));
                 $s = $destinataires > 1 ? 's' : null;
 
-                $nbEnvoiInfo = "L&apos;appel &agrave; disponibilit&eacute; a d&eacute;j&agrave; &eacute;t&eacute; envoy&eacute; $nbEnvoi fois&#013;";
-                $nbEnvoiInfo .= "Dernier envoi le $dateEnvoi &agrave; $heureEnvoi&#013;";
-                $nbEnvoiInfo .= "$destinataires personne{$s} contact&eacute;e{$s}";
+                $nbEnvoiInfo = "L'appel à disponibilité a déjà été envoyé $nbEnvoi fois.\n";
+                $nbEnvoiInfo .= "Dernier envoi le $dateEnvoi à $heureEnvoi.\n";
+                $nbEnvoiInfo .= "$destinataires personne{$s} contactée{$s}.";
             }
 
             $agents_appel_dispo = array();

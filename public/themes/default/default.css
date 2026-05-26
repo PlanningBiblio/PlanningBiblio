@@ -204,6 +204,9 @@ h4{
   color: #DC3545 !important;
 }
 
+.warning-text {
+  color: #DC3545;
+}
 
 .absences-pj{
   display:inline;
@@ -360,12 +363,6 @@ h4{
 
 .pl-icon-redo {
   background:url("images/icon/redo_white_24dp.svg") no-repeat center;
-}
-
-/* Info-bulles */
-.ui-tooltip{
-  /* Permet les sauts de lignes avec l'entité .&#013; */
-  white-space:pre-wrap;
 }
 
 /* Les agents */
@@ -1146,6 +1143,7 @@ class cellule = cellule par défaut
 }
 
 .datepicker-inline {
+  background-color: white;
   width: 185px;
   font-size: 11px;
   border: 1px solid #29495C;
@@ -1891,10 +1889,6 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-.ui-button-icon-only {
-  min-width: 10px;
-}
-
 .top-buttons .col,
 .top-buttons .col-3 {
   padding: 10px 15px;
@@ -2078,27 +2072,6 @@ input::placeholder {
 
 /* Bootstrap Grid END */
 
-/*ui-dialog START*/
-
-.ui-dialog {
-  background: #FFFFFF;
-  border: 1px solid #999999;
-  color: #29495C;
-  padding: 0 0 0 0;
-}
-
-#reset-login-form.ui-dialog-content {
-  padding: 1.5em 1em 0.5em 1em;
-}
-
-.ui-dialog-titlebar {
-  background: #FFD700;
-  border: 1px solid #FFD700;
-  color: #29495C;
-}
-
-/*ui-dialog END*/
-
 /*Table START*/
 
 table.dataTable th{
@@ -2106,13 +2079,6 @@ table.dataTable th{
   border: 1px solid #456578;
   border-right-color: #000;
   color: #FFFFFF;
-}
-
-
-.ui-button-table{
-  background: #29495C;
-  border: 1px solid #FFFFFF;
-
 }
 
 #tablePlanningAbsences_wrapper{
