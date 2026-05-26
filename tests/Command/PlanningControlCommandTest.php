@@ -86,7 +86,7 @@ class PlanningControlCommandTest extends PLBWebTestCase
 
         $select->selectByValue('1');
 
-        $button = $crawler->filter('#ImportModal .modal-footer button')->eq(0);
+        $button = $crawler->filter('#import-model-modal .modal-footer button')->eq(1);
         $button->click();
         $this->client->waitFor('#tableau');
         $crawler = $this->client->refreshCrawler();
