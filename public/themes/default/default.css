@@ -1977,8 +1977,6 @@ select.form-select, select.form-select:focus {
   border: 1px solid #456578;
   border-radius: 4px;
   font-size: inherit;
-  padding-right: 4px;
-  padding-left: 4px;
 }
 
 select.form-select:not([multiple]) {

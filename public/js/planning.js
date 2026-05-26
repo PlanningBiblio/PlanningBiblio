@@ -20,12 +20,14 @@ $(document).ready(function(){
   if ($('.cellSpan').length > 0 ) $('#planning-save').removeClass('disabled');
 
   $('.pl-icon-open').on('click', function(e){
+    $('#import-model-button').removeClass('disabled');
+    $('#import-model-button').attr('type', 'submit');
     date = $('input[name="date"]').val();
     site = $('input[name="site"]').val();
     CSRFSession = $('input[name="CSRFSession"]').val();
     params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
     $('#model-selection').load('/modelform' + params);
-    $('#ImportModal').modal('show');
+    $('#import-model-modal').modal('show');
     return false;
   });
 
@@ -72,7 +74,7 @@ $(document).ready(function(){
 
         if (result == 'model exists' && erase == false) {
           $('.modal').modal('hide');
-          $('#DuplicateModal').modal('show');
+          $('#duplicate-model-modal').modal('show');
         }
         
         if (result == 'ok') {
