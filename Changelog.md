@@ -1,5 +1,31 @@
 # Changelog Planno
 
+## Version 25.11.25 (2026-05-27)
+
+### Enhancement
+
+* MT46629: Replace the update login modal with an inline field #1375
+* MT46629: Use bootstrap for notification update modal #1376
+* MT46629: Use bootstrap for myAccount tabs #1377
+* MT46629: Homogenize the sortable modal #1381
+* MT46629: Move detached menu from planning to administration #1390
+* MT46629: Modals adjustments, button order and translation #1392
+* MT46629: Clean unused jquery-UI css classes #1393
+
+### Fixes
+
+* MT52818: Add html link in email for planning update #1386
+* MT53517: Quick fix display of import CSV absences #1391
+* MT51989: Consider recurrence rule when checking absence #1363
+
+### Security
+
+* MT51958: Do not display password in configuration page, Follow up
+
+### Dependencies
+
+### Plumbing
+
 ## Version 25.11.24 (2026-05-13)
 
 ### Fixes
