@@ -11,7 +11,7 @@ final class Version20260511133006 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Update the Auth-PasswordLength parameter type from text to number';
+        return 'MT46629: Update the Auth-PasswordLength parameter type from text to number';
     }
 
     public function up(Schema $schema): void

@@ -54,7 +54,7 @@
           {% elseif v.type == 'text' or v.type == '' %}
             <input type="text" name="{{ v.nom }}" id="{{ v.nom }}" value="{{ v.valeur }}" style="width:400px;"/>
           {% elseif v.type == 'number' %}
-            <input type="number" name="{{ v.nom }}" id="{{ v.nom }}" value="{{ v.valeur }}" {{ v.options }} style="width:400px;"/>
+            <input type="number" name="{{ v.nom }}" id="{{ v.nom }}" value="{{ v.valeur }}" {{ v.options | raw }} style="width:400px;"/>
           {% elseif v.type == 'password' %}
             <input type="password" name="{{ v.nom }}" id="{{ v.nom }}" value="{{ v.valeur }}" style="width:400px;"/>
           {% elseif v.type == 'date' %}
