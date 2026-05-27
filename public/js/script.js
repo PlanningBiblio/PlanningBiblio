@@ -339,7 +339,7 @@ function deleteAjax(id, route, message) {
                 window.location.href=url(route);
             },
             error: function(result){
-              CJInfo('Une erreur est survenue lors de la suppression', 'error');
+              stackAlert('An error occurred during deletion', 'error');
             }
         });
     }
@@ -379,26 +379,6 @@ function heure4(heure){
     heure += 'h00';
   }
   return heure;
-}
-
-
-function information(message,type,top,time){
-  if(top==undefined){
-    top=60;
-  }
-  
-  if(time==undefined){
-    time=5000;
-  }
-
-  if(typeof(timeoutJSInfo)!== "undefined"){
-    window.clearTimeout(timeoutJSInfo);
-  }
-  $("#JSInformation").remove();
-  $("body").append("<div id='JSInformation'>"+message+"</div>");
-  CJErrorHighlight($("#JSInformation"),type);
-  position($("#JSInformation"),top,"center");
-  timeoutJSInfo=window.setTimeout("$('#JSInformation').remove()",time);
 }
 
 function removeAccents(strAccents){
@@ -444,10 +424,10 @@ function resetICSURL(id, nom)
       success: function(result){
         $("#urlIcs").html("<a href='"+result.url+"'>"+result.url+"</a>");
         $("#urlIcsWithAbsences").html("<a href='"+result.url+"&absences=1'>"+result.url+"&absences=1</a>");
-        CJInfo("L'URL du calendrier a été réinitialisée avec succès","success");
+        stackAlert('L\'URL du calendrier a été réinitialisée avec succès');
       },
       error: function(result){
-        CJInfo("Une erreur est survenue lors de la réinitialisation de l'URL<br/>"+result.responseText,"error");
+        stackAlert('Une erreur est survenue lors de la réinitialisation de l\'URL \n' + result.responseText, 'error');
       }
     });
   }
@@ -498,50 +478,34 @@ function updateAgentsList(me,select_id){
       result=JSON.parse(result);
       $("#"+select_id).html("<option value='0'>Tous</option>");
       for(key in result){
-	$("#"+select_id).append("<option value='"+result[key]["id"]+"'>"+result[key]["nom"]+" "+result[key]["prenom"]+"</option>");
-	if(result[key]["id"]==index){
-	  in_array=true;
-	}
+        $('#' + select_id).append('<option value="' + result[key]['id'] + '">' + result[key]['nom'] + ' ' + result[key]['prenom'] + '</option>');
+        if(result[key]['id'] == index) {
+          in_array=true;
+        }
       }
       index=in_array?index:0;
       $("#"+select_id).val(index);
       highlight($('#' + select_id).closest('div.col-xl-2'));
+      // highlight($('#' + select_id).parent('.row'));
     },
     error: function(){
-      information("Une erreur est survenue lors de la mise à jour de la liste des agents.","error");
+      stackAlert('Une erreur est survenue lors de la mise à jour de la liste des agents.', 'error');
     }
   });
 }
 
-// This function will replace the updateTips function
 function updateAlert(text, translationOptions = null) {
   text = Translator.trans(text, translationOptions);
   $('#alert-text').text(text);
   $('#alert').removeClass('d-none');
 }
 
-function hideAlert(){
+function hideAlert() {
   $('#alert').addClass('d-none');
 }
 
 function highlight(obj) {
   obj.addClass('highlight');setTimeout(() => {obj.removeClass('highlight');}, 3000);
-}
-
-// updateTips : utilisée pour valider les formulaires Jquery-UI
-function updateTips( text , type) {
-  if ( type == undefined ) {
-    type = null;
-  }
-  else if ( type == "success" ) {
-    type = "highlight";
-  }
-  
-  text = text.replace("\n", "<br/>");
-
-  $(".validateTips").html(text);
-
-  CJErrorHighlight( $(".validateTips"), type);
 }
 
 // This function is intended to replace verif_date() in the long term
@@ -666,7 +630,7 @@ function verif_form(champs, form='form', callback=null)
   }
   
   if(erreurs){
-    CJInfo("Les champs suivants sont obligatoires :<ul>"+erreurs+"</ul>","error");
+    stackAlert('Les champs suivants sont obligatoires :<ul>' + erreurs + '</ul>', 'error');
     return false;
   }
   else{

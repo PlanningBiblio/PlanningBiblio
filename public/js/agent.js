@@ -303,10 +303,10 @@ function sendPassword() {
       id: $('input[name=id]').val(),
     },
     success: function(result) {
-      CJInfo(result[0], result[1]);
+      stackAlert(result[0], result[1]);
     },
     error: function() {
-      CJInfo('Une errreur est survenue lors de l\'envoi du mot de passe', 'error');
+      stackAlert('Une errreur est survenue lors de l\'envoi du mot de passe', 'error');
     }
   });
 }
@@ -343,17 +343,17 @@ function verif_form_agent(){
   }
 
   if(erreur) {
-    CJInfo(message);
+    stackAlert(message, 'error');
     return false;
   }
 
   if(!verif_mail(document.form.mail.value)) {
-    CJInfo("Adresse e-mail invalide");
+    stackAlert('Adresse e-mail invalide', 'error');
     return false;
   }
 
   if ($('.invalid').length) {
-    CJInfo("Des valeurs sont invalides dans l'onglet \"Congés\"");
+    stackAlert('Des valeurs sont invalides dans l\'onglet "Congés"', 'error');
     return false;
   }
 
@@ -657,14 +657,14 @@ $(function() {
       },
       success: function(result) {
         if(result.error) {
-          updateTips(result.error, 'error');
+          stackAlert(result.error, 'error');
         } else {
-          CJInfo('L\'e-mail a bien été envoyé', 'success');
+          stackAlert('L\'e-mail a bien été envoyé');
           $('#ics-url-modal').modal('hide');
         }
       },
       error: function(){
-        updateTips('Une erreur est survenue lors de l\'envoi de l\'e-mail', 'error');
+        stackAlert('Une erreur est survenue lors de l\'envoi de l\'e-mail', 'error');
       }
     });
   });

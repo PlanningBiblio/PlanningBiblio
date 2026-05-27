@@ -494,10 +494,11 @@ $(function() {
       method: 'POST',
       data: 'id=' + id + '&pj=' + pj + '&checked=' + checked + '&CSRFToken=' + CSRFToken,
       success: function(){
-        information('Modification enregistrée', 'highlight');
+        $('#alert-stack-top-center').remove();
+        stackAlert('Modification enregistrée');
       },
       error: function(){
-        information('Attention, la modification n\'a pas pu être enregistrée', 'error');
+        stackAlert('Attention, la modification n\'a pas pu être enregistrée', 'error');
       }
     });
   });
@@ -605,7 +606,7 @@ function update_validation_statuses() {
       highlight($('tr#validation-line'));
     },
     error: function(xhr, ajaxOptions, thrownError) {
-      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts", 'error');
+      stackAlert('Une erreur s\'est produite lors de la mise à jour de la liste des statuts', 'error');
     }
   });
 }
@@ -858,13 +859,13 @@ function verif_absences() {
   }
 
   if($("select[name=motif] option:selected").attr("disabled")=="disabled"){
-    CJInfo("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.","error");
+    stackAlert('Le motif sélectionné n\'est pas valide.\nVeuillez le modifier s\'il vous plaît.', 'error');
     return false;
   }
 
   if($("select[name=motif]").val().toLowerCase()=="autre" || $("select[name=motif]").val().toLowerCase()=="other"){
     if($("input[name=motif_autre]").val()==""){
-      CJInfo("Veuillez choisir un motif.","error");
+      stackAlert('Veuillez choisir un motif.', 'error');
       return false;
     }
   }
@@ -877,7 +878,7 @@ function verif_absences() {
 
   // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
   if(perso_ids.length<1){
-    CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
+    stackAlert('Veuillez sélectionner un ou plusieurs agents', 'error');
     return false;
   }
 
@@ -967,7 +968,7 @@ function verif_absences() {
             retour=false;
           }
         } else {
-          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car les plannings sont en cours d'élaboration :#BR#"+result["planning_started"], "error");
+          stackAlert('Vous ne pouvez pas enregistrer d\'absences pour les dates suivantes car les plannings sont en cours d\'élaboration :\n' + result['planning_started'], 'error');
           retour=false;
         }
       }
@@ -978,7 +979,7 @@ function verif_absences() {
             retour = false;
           }
         } else {
-          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car elles rentrent en conflit avec une période bloquée.", "error");
+          stackAlert('Vous ne pouvez pas enregistrer d\'absences pour les dates suivantes car elles rentrent en conflit avec une période bloquée.', 'error');
           retour = false;
         }
       }
@@ -1007,14 +1008,14 @@ function verif_absences() {
           if(!confirm(message +"\nVoulez-vous continuer ?"))
             retour=false;
           } else {
-            CJInfo("Vous ne pouvez pas ajouter d'absences car " + message.replace("\n", "#BR#"), "error");
+            stackAlert('Vous ne pouvez pas ajouter d\'absences car ' + message, 'error');
             retour=false;
           }
         }
       }
     },
     error: function(result){
-      information("Une erreur est survenue.","error");
+      stackAlert('Une erreur est survenue.', 'error');
       retour=false;
     }
   });

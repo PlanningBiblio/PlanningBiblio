@@ -55,14 +55,14 @@
         type: "post",
         data: data,
         success: function(){
-          CJInfo("Le tableau a été enregistré","highlight");
+          stackAlert('Le tableau a été enregistré');
           return true;
         },
         error: function(request, status, error){
           if (request.responseText == '"used"') {
-            CJInfo('Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.','error');
+            stackAlert('Ce tableau est déjà utilisé. Vous ne pouvez pas modifier les horaires.', 'error');
           } else {
-            CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.","error");
+            stackAlert('Une erreur est survenue lors de l\'enregistrement du tableau.', 'error');
           }
           return false;
         }
@@ -155,7 +155,16 @@
             </table>
           </form>
         </div>
-        <div class="important">Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</div>
+
+        <div class="row justify-content-center">
+          <div class="col-auto">
+            <div class="alert alert-danger" role="alert">
+              <i class="bi bi-exclamation-triangle-fill bi-danger me-2"></i> 
+              Important : Vous devez cliquer sur "Valider" avant de changer d'onglet
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div class="tab-pane fade {% if  cfgType == 1  %} active show {% endif %} m-4" id="div_horaires" role="tabpanel" aria-labelledby="div_horaires-tab" tabindex="0">
@@ -219,9 +228,18 @@
                 </div> <!-- tab_horaires_{{tableau}} & div_horaires_{{tableau}} -->
               {% endfor %}
             {% endif %}
-        </form>
-      </div>
-        <div class="important">Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</div>
+          </form>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-auto">
+            <div class="alert alert-danger" role="alert">
+              <i class="bi bi-exclamation-triangle-fill bi-danger me-2"></i> 
+              Important : Vous devez cliquer sur "Valider" avant de changer d'onglet
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div class="tab-pane fade m-4" id="div_lignes" role="tabpanel" aria-labelledby="div_lignes-tab" tabindex="0">
@@ -286,11 +304,18 @@
             {% endif %}
           </form>
         </div>
-        <div class="highlight">
-          <sup>*</sup> Classe CSS appliqué sur le tableau. Permet d'en personnaliser l'affichage.
+
+        <div class="row justify-content-center">
+          <div class="col-auto">
+            <div class="alert alert-info" role="alert">
+              <i class="bi bi-info-circle-fill bi-information me-2"></i> 
+              <sup>*</sup> Classe CSS appliqué sur le tableau. Permet d'en personnaliser l'affichage.
+            </div>
+          </div>
         </div>
 
       </div>
+
     </div>
   </div>
 

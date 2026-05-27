@@ -243,7 +243,7 @@ function currentCredits() {
         }
     },
     error: function(xhr, ajaxOptions, thrownError){
-      information("Impossible de récupérer le compte de congés actuel.","error");
+      stackAlert('Impossible de récupérer le compte de congés actuel.', 'error');
     },
   });
 }
@@ -306,6 +306,8 @@ function calculCredit(){
     async: false,
     success: function(result){
       var msg=result[0];
+      $('#alert-stack-top-center').remove();
+
       if(result.error == true) {
         $("#erreurCalcul").val("true");
         document.form.elements["heures"].value=0;
@@ -313,9 +315,8 @@ function calculCredit(){
         $('#nbHeures').val('0h00');
         highlight($('#nbHeures'));
         highlight($('#nbJours'));
-        information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
+        stackAlert('Aucun planning de présence enregistré pour cette période - calcul impossible.', 'error');
       } else {
-        $("#JSInformation").remove();
         var balance_date = result.recover[0];  // Date de début, affichée pour le réajustement des crédits disponibles
         var balance = result.recover[1];       // Crédits de récupérations disponibles à la date choisie
 
@@ -373,11 +374,12 @@ function calculCredit(){
     },
     error: function(xhr, ajaxOptions, thrownError){
       var congesMode = $('#conges-mode').val();
+      $('#alert-stack-top-center').remove();
 
       if (congesMode == 'heures') {
-        information("Impossible de calculer le nombre d'heures correspondant au congé demandé.","error");
+        stackAlert('Impossible de calculer le nombre d\'heures correspondant au congé demandé.', 'error');
       } else {
-        information("Impossible de calculer le nombre de jours correspondant au congé demandé.","error");
+        stackAlert('Impossible de calculer le nombre de jours correspondant au congé demandé.', 'error');
       }
     },
   });
@@ -493,9 +495,9 @@ function calculRestes(){
       recuperation = recuperation - heures;
       recuperation_prev = recuperation_prev - heures;
 
-      $('.recup-alert').remove();
+      $('#alert-stack-top-center').remove();
       if(recuperation < 0){
-        CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
+        stackAlert('Le crédit de récupération ne peut pas être négatif.', 'error')
         highlight($('.balance_tr'));
       }
     }
@@ -633,7 +635,7 @@ function supprimeConges(retour){
         location.href = retour;
       },
       error: function(){
-        information("Une erreur est survenue lors de la suppresion du congé.","error");
+        stackAlert('Une erreur est survenue lors de la suppresion du congé.', 'error');
       }
     });
   }
@@ -655,7 +657,7 @@ function verifConges()
   }
 
   if($("#erreurCalcul").val()=="true"){
-    information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
+    stackAlert('Aucun planning de présence enregistré pour cette période - calcul impossible.', 'error');
     return false;
   }
 
@@ -679,7 +681,7 @@ function verifConges()
 
   // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
   if(perso_ids.length<1){
-    CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
+    stackAlert('Veuillez sélectionner un ou plusieurs agents', 'error');
     return false;
   }
 
@@ -695,15 +697,17 @@ function verifConges()
   debut = debut + ' ' + hre_debut;
   fin = fin + ' ' + hre_fin;
 
+  $('#alert-stack-top-center').remove();
+
   // Vérifions si les dates sont correctement saisies
   if($("#debut").val()==""){
-    information("Veuillez choisir la date de début","error");
+    stackAlert('Veuillez choisir la date de début', 'error');
     return false;
   }
 
   // Vérifions si les dates sont cohérentes
   if (debut >= fin) {
-    information("La date de fin doit être supérieure à la date de début","error");
+    stackAlert('La date de fin doit être supérieure à la date de début', 'error');
     return false;
   }
   
@@ -714,10 +718,10 @@ function verifConges()
     isRegularization = true;
   }
   if(recuperation < 0 && isRegularization == false) {
-    $('.recup-alert').remove();
+    $('#alert-stack-top-center').remove();
     highlight($('.balance_tr'));
     if ($('#validation').val() > 0) {
-      CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
+      stackAlert('Le crédit de récupération ne peut pas être négatif.', 'error');
       return false;
     } else {
       if (!confirm("Attention!\nLe crédit de récupération ne peut pas être négatif.\nCette demande ne pourra pas être validée tant que le crédit restera insufisant.\nVoulez-vous continuer ?")) {
@@ -740,7 +744,7 @@ function verifConges()
 
       for (i in result['users']) {
         if (result['users'][i]['holiday'] != undefined) {
-          CJInfo("Un congé a déjà été demandé par " + result['users'][i]['nom'] + " " + result['users'][i]['holiday'], "error");
+          stackAlert('Un congé a déjà été demandé par %agent% %holiday%', 'error', undefined, undefined, {'agent' : result['users'][i]['nom'], 'holiday': result['users'][i]['holiday']});
           valid = false;
         }
       }
@@ -751,7 +755,7 @@ function verifConges()
             valid = false;
           }
         } else {
-          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car les plannings sont en cours d'élaboration :#BR#"+result["planning_started"], "error");
+          stackAlert('Vous ne pouvez pas enregistrer d\'absences pour les dates suivantes car les plannings sont en cours d\'élaboration :\n %plannings%', 'error', undefined, undefined, {'plannings' : result["planning_started"]});
           valid = false;
         }
       }
@@ -762,7 +766,7 @@ function verifConges()
             valid = false;
           }
         } else {
-          CJInfo("Vous ne pouvez pas enregistrer de congés pour les dates suivantes car elles rentrent en conflit avec une période bloquée.", "error");
+          stackAlert('Vous ne pouvez pas enregistrer de congés pour les dates suivantes car elles rentrent en conflit avec une période bloquée.', 'error');
           valid = false;
         }
       }
@@ -792,7 +796,7 @@ function verifConges()
           if(!confirm(message +"\nVoulez-vous continuer ?"))
             valid = false;
           } else {
-            CJInfo("Vous ne pouvez pas enregsitrer de congés car " + message.replace("\n", "#BR#"), "error");
+            stackAlert('Vous ne pouvez pas enregistrer de congés car ' + message, 'error');
             valid = false;
           }
         }
@@ -808,14 +812,14 @@ function verifConges()
                 async: false,
                 success: function(data){
                   if(data){
-                    CJInfo(data, "error");
+                    stackAlert(data, 'error');
                   }
                   else {
                      return true;
                   }
                 },
                 error: function(){
-                  CJInfo("Une erreur est survenue lors de l'enregistrement du congé","error");
+                  stackAlert('Une erreur est survenue lors de l\'enregistrement du congé', 'error');
                 },
             });
           } else {
@@ -824,7 +828,7 @@ function verifConges()
       }
     },
     error: function(){
-      information("Une erreur est survenue lors de l'enregistrement du congé","error");
+      stackAlert('Une erreur est survenue lors de l\'enregistrement du congé', 'error');
     },
   });
   return valid;
@@ -971,7 +975,7 @@ function update_validation_statuses() {
       highlight($('div#validation-line'));
     },
     error: function(xhr, ajaxOptions, thrownError) {
-      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts", 'error');
+      stackAlert('Une erreur s\'est produite lors de la mise à jour de la liste des statuts', 'error');
     }
   });
 }

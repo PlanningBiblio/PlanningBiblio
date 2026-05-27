@@ -234,7 +234,7 @@ h4{
   margin-left: 10px;
 }
 
-/*	Icônes		*/
+/* Icônes START */
 
 .bi {
   color : #29495C;
@@ -242,6 +242,18 @@ h4{
 
 .bi-danger {
   color: var(--bs-danger-text-emphasis);
+}
+
+.bi-warning {
+  color: var(--bs-warning-text-emphasis);
+}
+
+.bi-information {
+  color: var(--bs-info-text-emphasis);
+}
+
+.bi-success {
+  color: var(--bs-success-text-emphasis);
 }
 
 .bi.bi-caret-right-fill {
@@ -369,6 +381,7 @@ h4{
 .tooltip-inner {
     text-align: left;
 }
+/* Icônes END */
 
 /* Les agents */
 li .agent-acces-checked2{
@@ -382,7 +395,8 @@ li .agent-acces-checked2{
 }
 
 
-/* Les tableaux */
+/* Les tableaux START */
+
 .tableauStandard,.tableauFiches{
   border-spacing: 0px;
   border-collapse: collapse;
@@ -468,7 +482,9 @@ li .agent-acces-checked2{
   text-align:center;
 } 
 
-/* Tabs */
+/* Les tableaux END */
+
+/* Bootstrap Tabs START */
 
 ul.nav-tabs li .nav-link.disabled {
   opacity: 65%;
@@ -514,6 +530,8 @@ ul.nav-tabs li.nav-item .nav-link.active, ul.nav-tabs li.nav-item .nav-link:hove
   justify-content: center;
 }
 
+/* Bootstrap Tabs END */
+
 /* Menu Principal */
 /* solution temp, il faudrait peut être une class spécifique pour la div top gauche*/
 /* solution provoque des bugss dans les tableaux */
@@ -523,7 +541,7 @@ ul.nav-tabs li.nav-item .nav-link.active, ul.nav-tabs li.nav-item .nav-link:hove
   width:15%;
 }
 
-/* Menu Bootstrap */
+/* Bootstrap Menu START */
 .navbar {
   background-color: white;
 }
@@ -589,6 +607,7 @@ li.nav-item a.nav-link:hover, li.nav-item a.nav-link:focus, li.nav-item a.nav-li
 
 ul.dropdown-menu {
   padding: 0px;
+  z-index: 1052;
 }
 
 ul.dropdown-menu a.dropdown-item {
@@ -628,6 +647,8 @@ ul.dropdown-menu a.dropdown-item.active , a.dropdown-item.active:hover {
   visibility: hidden; 
   z-index:20; 
 }
+
+/* Bootstrap Menu END */
 
 /* Menu top */
 .topgauche{
@@ -1156,7 +1177,26 @@ class cellule = cellule par défaut
   margin: 20px 0;
 }
 
-/* Calendrier affiché en haut des plannings */
+#tab_titre {	/* /index */
+  width:100%;
+  height: 145px;
+  border: none;
+  background-color: #29495C;
+  margin-bottom: 20px;
+}
+
+#tab_titre .row {
+  justify-content: space-around;
+}
+
+/* Datepicker START */
+
+#pl-calendar {
+  border:0;
+  background: transparent;
+  margin: 10px 0 5px 10px;
+  width: 200px;
+}
 
 .datepicker-inline {
   background-color: white;
@@ -1245,6 +1285,8 @@ class cellule = cellule par défaut
 .datepicker.form-control {
   text-align: center;
 }
+
+/* Datepicker END */
 
 .pl-highlight {
   background: #f0e68c;
@@ -1450,7 +1492,7 @@ img{
   padding-right: 5px;
 }
 
-/* Elements "sortable" (gestion des motifs d'absences, des statuts des agents */
+/* Elements "sortable" (gestion des motifs d'absences, des statuts des agents ...) */
 ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
 ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 30px; }
 ul[id$="-sortable"] li span { margin-left: -1.3em; }
@@ -1529,7 +1571,7 @@ div.presents-absents {
   background:#FFD700;
 }
 
-/*	DataTables */
+/*	DataTables START */
 .dataTable tbody tr.odd {
   background-color:#F0F0F0;
 }
@@ -1648,6 +1690,8 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   background-color: #29495C;
   color: #F0F0F0;
 }
+
+/*	DataTables END */
 
 .ellipsis{
   color:#FFF;
@@ -1838,7 +1882,7 @@ div#holiday-info .col-4 {
   margin: 40px auto auto;
 }
 
-/*Buttons START*/
+/* Bootstrap Buttons START */
 
 .btn.btn-primary , .btn.btn-primary:focus, .btn.btn-primary:active {
   background-color: #FFD700;
@@ -1929,7 +1973,7 @@ div#holiday-info .col-4 {
   text-align: right;
 }
 
-/*Buttons END*/
+/* Bootstrap Buttons END */
 
 /* Highlight effect START*/
 
@@ -1944,7 +1988,7 @@ div#holiday-info .col-4 {
 
 /* Highlight effect END*/
 
-/* Modals START */
+/* Bootstrap Modals START */
 
 .modal-header {
   background-color: #FFD700 ;
@@ -1979,6 +2023,10 @@ hr {
   align-items: center;
   justify-content: center;
 }
+
+/* Bootstrap Modals END */
+
+/* Form elements START */
 
 .form-control, .form-control:focus, 
 .row.row-search .form-control-plaintext {
@@ -2062,24 +2110,6 @@ input::placeholder {
 }
 
 .was-validated .form-select:valid {
-  border-color: inherit;
-  padding-right: 2.25rem !important;
-  background-image: none;
-}
-
-.was-validated .form-check-input:valid {
-  border-color: inherit;
-}
-
-.was-validated .form-check-input:valid:checked {
-  background-color: #29495C;
-}
-
-.was-validated .form-check-input:valid ~ .form-check-label {
-  color : inherit;
-}
-
-.was-validated .form-select:valid {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
 }
 
@@ -2117,7 +2147,7 @@ input::placeholder {
   box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
 }
 
-/* Modals END */
+/* Form elements END */
 
 /* Bootstrap Grid START */
 

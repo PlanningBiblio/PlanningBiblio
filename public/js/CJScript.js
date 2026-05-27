@@ -57,92 +57,86 @@ function CJDataTableStripe() {
   });
 }
 
-function CJErrorHighlight(e, type, icon) {
-    if (!icon) {
-        if (type === 'highlight') {
-            icon = 'ui-icon-info';
-        } else {
-            icon = 'ui-icon-alert';
-        }
-    }
-    return e.each(function() {
-        $(this).addClass('ui-widget');
-
-        var alertHtml = '<div class="ui-state-' + type + ' ui-corner-all" style="padding:0 .7em;">';
-        alertHtml += '<p style="text-align:center;">';
-        alertHtml += '<span class="ui-icon ' + icon + '" style="float:left;margin-right: .3em;"></span>';
-        alertHtml += $(this).html();
-        alertHtml += '</p>';
-        alertHtml += '</div>';
-
-        $(this).html(alertHtml);
-    });
-}
-
 /**
- * @function CJInfo
- * Affiche des messages d'erreur ou d'information en haut de l'application
- * @param string message : message à afficher, utiliser #BR# pour les sauts de lignes
- * @param string type : type de message, valeurs = success ou error
- * @param int top : position haute du message en pixel, default=82
- * @param int time : temps d'affichage en milisecondes, default=8000
- * @param string myClass : permet d'attribuer une classe au div affichant le message pour agir dessus à postériori (ex : $(".myClass").remove(); )
+ * @function stackAlert
+ * Generates a stacked alert. Uses BS alerts classes and comportment.
+ * @param string message : message to display
+ * @param string type :  message type; possible values: info, success, error or warning
+ * @param int timeout : display duration in milliseconds; if timeout = 0, the alert is permanent
+ * @param int position : position on the screen; possible values: combination of top/bottom and left/center/right
+ * @param array translationOptions : message additional translation information (variables, domains ...)
  */
-function CJInfo(message,type,top,time,myClass){
-  if(type==undefined || type=="success"){
-  	type="highlight";
+
+function stackAlert(message, type='success', timeout=7000, position='top-center', translationOptions = null)
+{
+  type = (type === 'error') ? 'danger' : type;
+
+  // Translate the message
+  message = Translator.trans(message, translationOptions);
+  message = message.replace(/#BR#/g,"<br/>&emsp;&emsp;");
+  message = message.replace(/\n/g,"<br/>&emsp;&emsp;");
+
+  const close_msg = Translator.trans('Close');
+
+  // Map of types with associated icons (Bootstrap Icons).
+  const icons = {
+    info: 'bi-info-circle-fill bi-information',
+    success: 'bi-check-circle-fill bi-success',
+    warning: 'bi-exclamation-triangle-fill bi-warning',
+    danger: 'bi-exclamation-triangle-fill bi-danger'
+  };
+
+  // Map of positions with associated CSS coordinates
+  const positions = {
+    'top-right': { top: '70px', right: '20px' },
+    'bottom-right': { bottom: '20px', right: '20px' },
+    'top-left':	{ top: '70px', left: '20px' },
+    'bottom-left': { bottom: '20px', left: '20px' },
+    'top-center': { top: '70px', left: '50%', transform: 'translateX(-50%)' },
+    'bottom-center': { bottom: '20px', left: '50%', transform: 'translateX(-50%)' }
+  };
+
+  // Unique ID for the alert (used for DOM manipulation)
+  const alertId = 'alert-' + Date.now();
+
+  // ID of the container for the current position
+  const containerId = 'alert-stack-' + position;
+  let $container = $('#' + containerId);
+
+  // If the container doesn't exist, it initializes it
+  if (!$container.length) {
+    $container = $('<div>', {
+      id: containerId,
+      css: $.extend({
+        position: 'fixed',
+        zIndex: 1050,
+        minWidth: '25%'
+      }, positions[position])
+    }).appendTo('body');
+
+    // Center the container if necessary
+    if (positions[position].transform) {
+      $container.css('transform', positions[position].transform);
+    }
   }
 
-  if(top==undefined){
-    top=82;
+  // Builds the HTML for the alert and inserts it into the container
+  const alertHtml = `
+  <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show mb-2" role="alert"">
+    <i class="bi ${icons[type]} me-2"></i> 
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="${close_msg}"></button>
+    </div>`;
+
+  $container.append(alertHtml);
+
+  // Dismiss automatically the alert after the timeout if timeout > 0
+  if (timeout > 0) {
+    setTimeout(() => {$('#' + alertId).alert('close');}, timeout);
   }
 
-  if(time==undefined){
-    time=8000;
-  }
-
-  if(myClass==undefined){
-    myClass=null;
-  }
-
-  if(typeof(timeoutCJInfo)!== 'undefined' && time != 'permanent'){
-    window.clearTimeout(timeoutCJInfo);
-  }
-
-  var id=1;
-  $(".CJInfo").each(function(){
-    id=$(this).attr("data-id")>=id?($(this).attr("data-id")+1):id;
-    top=$(this).position().top+$(this).height()+5;
-  });
-
-  message=message.replace(/#BR#/g,"<br/>");
-  message=message.replace(/\n/g,"<br/>");
-
-  $("body").append("<div class='CJInfo noprint "+myClass+"' id='CJInfo"+id+"' data-id='"+id+"'>"+message+"</div>");
-  CJErrorHighlight($("#CJInfo"+id),type);
-  CJPosition($("#CJInfo"+id),top,"center");
-
-  if( time != 'permanent' ){
-    timeoutCJInfo=window.setTimeout(function(){
-      var height=$("#CJInfo"+id).height();
-      $("#CJInfo"+id).remove();
-      $(".CJInfo").each(function(){
-              var top=$(this).position().top-height;
-              $(this).css("top",top);
-      });
-    },time);
-  }
-}
-
-function CJPosition(object,top,left){
-  object.css("position","absolute");
-  object.css("z-index",10);
-  object.css("top",top);
-  if(left=="center"){
-    left=($(window).width()-object.width())/2;
-    object.css("left",left);
-  }
-}
+  return this;
+};
 
 // Fonction JQuery
 $(function(){
