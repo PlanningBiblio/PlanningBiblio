@@ -61,7 +61,7 @@ $(document).ready(function(){
             $('#save-model-form input[name="modelName"]').val(result);
         },
         error: function(xhr, ajaxOptions, thrownError){
-            CJInfo('Impossible d\'enregistrer le modèle', 'error');
+            stackAlert('Impossible d\'enregistrer le modèle', 'error');
             return;
         }
     });
@@ -82,13 +82,13 @@ $(document).ready(function(){
         
         if (result == 'ok') {
           $('.modal').modal('hide');
-          if( erase == true) msg = 'Le modèle ' + modelName + ' a bien été remplacé.';
-          else msg = 'Le modèle ' + modelName + ' a bien été enregistré.';
-          CJInfo(msg, 'success');
+          if( erase == true) msg = 'Le modèle %name% a bien été remplacé.';
+          else msg = 'Le modèle %name% a bien été enregistré.';
+          stackAlert(msg, undefined, undefined, undefined, {'name' : modelName});
         }
       },
       error: function(jqXHR, textStatus, errorThrown){
-        CJInfo(result.responseText,'error');
+        stackAlert(result.responseText, 'error');
       }
     });
   };
@@ -136,7 +136,7 @@ $(document).ready(function(){
         afficheTableauxDiv();
       },
       error: function(result){
-	      CJInfo(result.responseText, 'error');
+	      stackAlert(result.responseText, 'error');
       }
     });
   }
@@ -209,12 +209,12 @@ $(document).ready(function(){
                 bataille_navale(job, date, cFrom, to, agents, '', '', site, '', null, cellid);
             }
             if (result.unavailables) {
-                var message = "Les agents suivants n'ont pas été placés car ils sont indisponibles de " + heureFr(cFrom) + " à " + heureFr(to) + " : " + result.unavailables;
-                CJInfo(message, 'error');
+                var message = 'Les agents suivants n\'ont pas été placés car ils sont indisponibles de %from% à %to% : %agents%';
+                stackAlert(message, 'error', undefined, undefined, {'from' : heureFr(cFrom) , 'to' : heureFr(to), 'agents' : result.unavailables });
             }
         },
         error: function(){
-            CJInfo("Une erreur est survenue lors de la copie.", "error");
+            stackAlert('Une erreur est survenue lors de la copie.', 'error');
         }
     });
   });
@@ -256,11 +256,11 @@ $(function() {
 
         // Affichage des lignes vides
         $('.pl-line').show();
-        CJInfo(result[0],result[1]);
+        stackAlert(result[0]);
       },
 
       error: function(result){
-        CJInfo('Erreur lors du dévérrouillage du planning', 'error');
+        stackAlert('Erreur lors du dévérrouillage du planning', 'error');
       }
     });
   });
@@ -307,11 +307,11 @@ $(function() {
         // Masque les lignes vides
         hideEmptyLines();
 
-        CJInfo(result[0], result[1]);
+        stackAlert(result[0]);
       },
 
       error: function(result) {
-        CJInfo('Erreur lors de la validation du planning', 'error');
+        stackAlert('Erreur lors de la validation du planning', 'error');
       }
     });
   });
@@ -353,7 +353,7 @@ $(function() {
 
       success: function(result) {
         if(result.error) {
-          CJInfo(result.error, 'error');
+          stackAlert(result.error, 'error');
         } else {
           if(result.notes) {
             $('#pl-notes-button').text('Modifier le commentaire');
@@ -373,13 +373,13 @@ $(function() {
           // Met à jour le texte affiché en bas du planning
           $('#pl-notes-div1').html(result.notes);
           $('#pl-notes-div1-validation').html(suppression + result.validation);
-          CJInfo('Le commentaire a été modifié avec succès', 'success');
+          stackAlert('Le commentaire a été modifié avec succès');
           // Ferme le dialog
         }
         $('#pl-notes-modal').modal('hide');
       },
       error: function() {
-        updateTips('Une erreur est survenue lors de l\'enregistrement du commentaire', 'error');
+        stackAlert('Une erreur est survenue lors de l\'enregistrement du commentaire', 'error');
       }
     });
   })
@@ -412,15 +412,15 @@ $(function() {
       data: appelDispoData,
       success: function(result) {
         if(result.error) {
-          CJInfo(result.error, 'error');
+          stackAlert(result.error, 'error');
         }
         else {
-          CJInfo('L\'appel à disponibilité a bien été envoyé','success');
+          stackAlert('L\'appel à disponibilité a bien été envoyé');
         }
          $('#pl-appelDispo-modal').modal('hide');
       },
       error: function() {
-        updateAlert('An error occurred while sending the email');
+        stackAlert('An error occurred while sending the email');
       }
     });
   });
@@ -505,7 +505,7 @@ $(function() {
       },
 
       error: function(result){
-	CJInfo("Impossible d'afficher le menu des agents.#BR#"+result.responseText,"error");
+        stackAlert('Impossible d\'afficher le menu des agents.\n' + result.responseText, 'error');
       }
     });
     return false ;
@@ -1156,7 +1156,7 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents) {
     },
 
     error: function(result) {
-      CJInfo(result.responseText, 'error');
+      stackAlert(result.responseText, 'error');
     }
   });
 }
@@ -1390,7 +1390,7 @@ function bataille_navale(poste, date, debut, fin, perso_id, barrer, ajouter, sit
     },
 
     error: function(result) {
-      CJInfo('Une erreur est survenue lors de l\'enregistrement du planning.', 'error');
+      stackAlert('Une erreur est survenue lors de l\'enregistrement du planning.', 'error');
     }
   });
 
@@ -1572,7 +1572,7 @@ function planningNotifications(date, site, CSRFToken) {
     success: function(result) {
     },
     error: function(result) {
-      CJInfo(result.responseText, 'error');
+      stackAlert(result.responseText, 'error');
     }
   });
 }
@@ -1602,7 +1602,7 @@ function refresh_poste() {
       },
 
       error: function(result) {
-        CJInfo(result.responseText, 'error');
+        stackAlert(result.responseText, 'error');
         setTimeout('refresh_poste()', 30000);
     }
   });
@@ -1625,12 +1625,12 @@ function verif_categorieA(){
     data: {date: date, site: site},
     success: function(result) {
       if(result == 'false') {
-        if (!$('.missingCategoryA')[0]) {
-          CJInfo('Attention, pas d\'agent de catégorie A en fin de service.', 'error', 82, 999999, 'missingCategoryA');
+        if ($('#alert-stack-top-center div.alert').length == 0) {
+          stackAlert('Attention, pas d\'agent de catégorie A en fin de service.', 'error', 0);
         }
       } else {
-        if ($('.missingCategoryA')[0]) {
-          $('.missingCategoryA')[0].remove();
+        if ($('#alert-stack-top-center div.alert').length > 0) {
+          $('#alert-stack-top-center').remove();
         }
       }
     }
@@ -1642,7 +1642,7 @@ function showInformationMessages(messages){
   if (messages.length < 1) return false;
 
   var msg = messages[currentIndex];
-  CJInfo(msg, null, null, 5000, null);
+  stackAlert(msg);
   var delay = 5000;
   if (currentIndex === messages.length - 1) {
     delay = 10000;

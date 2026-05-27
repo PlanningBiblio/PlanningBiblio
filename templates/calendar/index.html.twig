@@ -2,10 +2,6 @@
 
 {% extends 'base.html.twig' %}
 
-{% block specificjs %}
-  <script type="text/JavaScript" src="{{ asset('js/calendar.js') }}"></script>
-{% endblock %}
-
 {% block page %}
   <div id="div_agenda">
     {% if agent is not null %}
@@ -56,9 +52,7 @@
       Aucun agent disponible
     {% endif %}
 
-    {% if beginSQL > endSQL  %}
-    <p class="information"> La date de fin doit être supérieure à la date de début </p>
-    {% elseif agent is not null and days %}
+    {% if agent is not null and days %}
       <br/>
       <table cellpadding="10" cellspacing="0" border="0" id="tab_agenda">
         <thead>

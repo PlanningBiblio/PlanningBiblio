@@ -73,13 +73,13 @@ $(function() {
       data: {ids: ids, date: $('#date').val(), CSRFToken: $('#CSRFSession').val(), },
       success: function(result){
         if(result.error){
-          CJInfo("Une erreur est survenue lors de l'enregistrement des informations", 'error');
+          stackAlert('An error occurred while saving the information', 'error');
         } else {
-          CJInfo('Vos modifications ont été enregistrées avec succès', 'success');
+          stackAlert('Vos modifications ont été enregistrées avec succès');
         }
       },
       error: function(){
-        CJInfo("Une erreur est survenue lors de l'enregistrement des informations", 'error');
+        stackAlert('An error occurred while saving the information', 'error');
       }
     });
     

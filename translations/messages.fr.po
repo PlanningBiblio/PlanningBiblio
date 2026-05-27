@@ -477,3 +477,11 @@ msgstr "Poser des congés"
 
 msgid "Requesting compensation for overtime"
 msgstr "Poser des récupérations"
+
+#. Error messages
+
+msgid "An error occurred during deletion"
+msgstr "Une erreur est survenue lors de la suppression"
+
+msgid "An error occurred while saving the information"
+msgstr "Une erreur est survenue lors de l'enregistrement des informations"

@@ -86,7 +86,7 @@ $(function() {
         window.location.reload();
       },
       error: function(result) {
-        CJInfo('Une erreur est survenue lors de l\'enregistrement des responsables', 'error');
+        stackAlert('Une erreur est survenue lors de l\'enregistrement des responsables', 'error');
         $('#update-notification-modal').modal('hide');
       }
     });

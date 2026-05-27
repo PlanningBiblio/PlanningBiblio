@@ -477,3 +477,11 @@ msgstr "Requesting holidays"
 
 msgid "Requesting compensation for overtime"
 msgstr "Requesting compensation for overtime"
+
+#. Error messages
+
+msgid "An error occurred during deletion"
+msgstr "An error occurred during deletion"
+
+msgid "An error occurred while saving the information"
+msgstr "An error occurred while saving the information"
