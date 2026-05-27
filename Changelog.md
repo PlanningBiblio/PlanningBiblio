@@ -1,5 +1,15 @@
 # Changelog Planno
 
+## Version 25.10.19 (2026-05-27)
+
+### Fixes
+
+* MT52818: Add html link in email for planning update #1386
+
+### Security
+
+* MT51958: Do not display password in configuration page
+
 ## Version 25.10.18 (2026-05-13)
 
 ### Fixes
