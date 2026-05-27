@@ -1101,6 +1101,10 @@ class cellule = cellule par défaut
   margin-right: 40px;
 }
 
+#pl-buttons button.btn-icon {
+  padding: 0px;
+}
+
 #validation {
   align-items: flex-start;
   padding-top: 5px;
