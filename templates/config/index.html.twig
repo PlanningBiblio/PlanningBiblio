@@ -8,91 +8,102 @@
 
 {% block page %}
   <h3>Configuration {% if technical %}technique{% else %}fonctionnelle{% endif %}</h3>
-    <form id="config-form" name="form" action="{{ path('config.update') }}" method="post">
+  <form id="config-form" name="form" action="{{ path('config.update') }}" method="post">
 
-      <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
-      <input type="hidden" name="technical" value="{{ technical }}" />
+    <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
+    <input type="hidden" name="technical" value="{{ technical }}" />
 
-      <div class="accordion" id="accordion">
-      {% set i = 0 %}
-      {% for key,val in elements %}
-        <div class="accordion-item">
-          <h3 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{i}}"  aria-expanded="false" aria-controls="collapse_{{i}}">{{ key }}</button>
-          </h3>
-          <div id="collapse_{{ i }}" class="accordion-collapse collapse" data-bs-parent="#accordion">
-            <div class="accordion-body">
-              {% include 'config/category.html.twig' with { 'vars': val } %}
-            </div>
+    <div class="accordion" id="accordion">
+    {% set i = 0 %}
+    {% for key,val in elements %}
+      <div class="accordion-item">
+        <h3 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{i}}"  aria-expanded="false" aria-controls="collapse_{{i}}">
+            {{ key }}
+          </button>
+        </h3>
+        <div id="collapse_{{ i }}" class="accordion-collapse collapse" data-bs-parent="#accordion">
+          <div class="accordion-body">
+            {% include 'config/category.html.twig' with { 'vars': val } %}
           </div>
         </div>
-        {% set i = i + 1 %}
-      {% endfor %}
       </div>
+      {% set i = i + 1 %}
+    {% endfor %}
+    </div>
 
-      <div style="text-align:center;margin:20px;">
-        <a href="{{ path('home') }}" role="button" class="btn btn-secondary">{% trans %}Cancel{% endtrans %}</a>
-        &nbsp;&nbsp;&nbsp;
-        <button type="button" role="button" class="btn btn-primary" onclick="$('#config-form').submit();">{% trans %}Confirm{% endtrans %}</button>
-      </div>
-    </form>
+    <div style="text-align:center;margin:20px;">
+      <a href="{{ path('home') }}" role="button" class="btn btn-secondary m-2">{% trans %}Cancel{% endtrans %}</a>
+      <button type="button" role="button" class="btn btn-primary m-2" onclick="$('#config-form').submit();">{% trans %}Confirm{% endtrans %}</button>
+    </div>
+  </form>
 
-    <div class="modal" id="holiday-policy-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="holiday-policy-modal-title" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
+  <div class="modal" id="holiday-policy-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="holiday-policy-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
 
-            <div class="modal-header">
-              <h5 class="modal-title" id="holiday-policy-modal-title">{% trans %}Change to holiday policy{% endtrans %}</h5>
-            </div>
+        <div class="modal-header">
+          <h5 class="modal-title" id="holiday-policy-modal-title">{% trans %}Change to holiday policy{% endtrans %}</h5>
+        </div>
 
-            <div class="modal-body" style="text-align: center;">
-              <p>{% trans %}To calculate leave in days, you need to change the Conges-Recuperations setting to Dissocier.{% endtrans %}</p>
-            </div>
+        <div class="modal-body" style="text-align: center;">
+          <p>{% trans %}To calculate leave in days, you need to change the Conges-Recuperations setting to Dissocier.{% endtrans %}</p>
+        </div>
 
-          <div class="modal-footer" style="text-align:center">
-            <button type="button" class="btn btn-primary" onclick="$('#Conges-Recuperations').val('1');" data-bs-dismiss="modal">{% trans %}Accept{% endtrans %}</button>
-            <button type="button" id="cancel-mode" class="btn btn-secondary" onclick="$('#Conges-Mode').val('heures');" data-bs-dismiss="modal">{% trans %}Cancel my change{% endtrans %}</button>
-          </div>
+        <div class="modal-footer" style="text-align:center">
+          <button type="button" class="btn btn-primary" onclick="$('#Conges-Recuperations').val('1');" data-bs-dismiss="modal">
+            {% trans %}Accept{% endtrans %}
+          </button>
+          <button type="button" id="cancel-mode" class="btn btn-secondary" onclick="$('#Conges-Mode').val('heures');" data-bs-dismiss="modal">
+            {% trans %}Cancel my change{% endtrans %}
+          </button>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="modal" id="nb-week-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="nb-week-modal-title" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
+  <div class="modal" id="nb-week-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="nb-week-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
 
-            <div class="modal-header">
-              <h5 class="modal-title" id="nb-week-modal-title">{% trans %}Modification of the number of weeks{% endtrans %}</h5>
-            </div>
+        <div class="modal-header">
+          <h5 class="modal-title" id="nb-week-modal-title">{% trans %}Modification of the number of weeks{% endtrans %}</h5>
+        </div>
 
-            <div class="modal-body" style="text-align: center;">
-              <p>{% trans %}Selecting more than three weeks requires checking the PlanningHebdo option.{% endtrans %}</p>
-            </div>
+        <div class="modal-body" style="text-align: center;">
+          <p>{% trans %}Selecting more than three weeks requires checking the PlanningHebdo option.{% endtrans %}</p>
+        </div>
 
-          <div class="modal-footer" style="text-align:center">
-            <button type="button" class="btn btn-primary" onclick="$('#PlanningHebdo').prop('checked', true);" data-bs-dismiss="modal">{% trans %}Accept{% endtrans %}</button>
-            <button type="button" id="cancel-week" class="btn btn-secondary" onclick="nb_week_reset();" data-bs-dismiss="modal">{% trans %}Cancel my change{% endtrans %}</button>
-          </div>
+        <div class="modal-footer" style="text-align:center">
+          <button type="button" class="btn btn-primary" onclick="$('#PlanningHebdo').prop('checked', true);" data-bs-dismiss="modal">
+            {% trans %}Accept{% endtrans %}
+          </button>
+          <button type="button" id="cancel-week" class="btn btn-secondary" onclick="nb_week_reset();" data-bs-dismiss="modal">
+            {% trans %}Cancel my change{% endtrans %}
+          </button>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="modal" id="password-length-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="password-length-modal-title" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
+  <div class="modal" id="password-length-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="password-length-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
 
-            <div class="modal-header">
-              <h5 class="modal-title" id="password-length-modal-title">{% trans %}Modification of the minimum password length{% endtrans %}</h5>
-            </div>
+        <div class="modal-header">
+          <h5 class="modal-title" id="password-length-modal-title">{% trans %}Modification of the minimum password length{% endtrans %}</h5>
+        </div>
 
-            <div class="modal-body" style="text-align: center;">
-              <p>{% trans %}The minimum value of characters for password change must be a number greater than or equal to 8.{% endtrans %}</p>
-            </div>
+        <div class="modal-body" style="text-align: center;">
+          <p>{% trans %}The minimum value of characters for password change must be a number greater than or equal to 8.{% endtrans %}</p>
+        </div>
 
-          <div class="modal-footer" style="text-align:center">
-            <button type="button" class="btn btn-primary" onclick="$('#Auth-PasswordLength').val('8');" data-bs-dismiss="modal">{% trans %}Confirm{% endtrans %}</button>
-          </div>
+        <div class="modal-footer" style="text-align:center">
+          <button type="button" class="btn btn-primary" onclick="$('#Auth-PasswordLength').val('8');" data-bs-dismiss="modal">
+            {% trans %}Confirm{% endtrans %}
+          </button>
         </div>
       </div>
     </div>
+  </div>
 {% endblock %}
