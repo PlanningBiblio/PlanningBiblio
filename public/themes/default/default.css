@@ -261,6 +261,18 @@ h4{
   color: var(--bs-danger-text-emphasis);
 }
 
+.bi-warning {
+  color: var(--bs-warning-text-emphasis);
+}
+
+.bi-information {
+  color: var(--bs-info-text-emphasis);
+}
+
+.bi-success {
+  color: var(--bs-success-text-emphasis);
+}
+
 .bi.bi-caret-right-fill {
   min-width: 16px;
   visibility: hidden;

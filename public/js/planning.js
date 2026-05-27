@@ -253,7 +253,7 @@ $(function() {
 
         // Affichage des lignes vides
         $('.pl-line').show();
-        CJInfo(result[0],result[1]);
+        stackAlert(result[0], 'info', 7000);
       },
 
       error: function(result){
@@ -304,7 +304,7 @@ $(function() {
         // Masque les lignes vides
         hideEmptyLines();
 
-        CJInfo(result[0], result[1]);
+        stackAlert(result[0], 'info', 7000);
       },
 
       error: function(result) {

@@ -116,6 +116,83 @@ function CJInfo(message,type,top,time,myClass){
   }
 }
 
+/**
+ * @function stackAlert
+ * Generates a stacked alert. Uses BS alerts classes and comportment.
+ * @param string message : message to display
+ * @param string type :  message type; possible values: info, success, error or warning
+ * @param int timeout : display duration in milliseconds; if timeout = 0, the alert is permanent
+ * @param int position : position on the screen; possible values: combination of top/bottom and left/center/right
+ */
+
+function stackAlert(message, type='info', timeout=5000, position='top-center'){
+
+  type = (type === 'error') ? 'danger' : type;
+  icon = (type === 'info') ? 'information' : type;
+
+  // Translate the message
+  message = Translator.trans(message) ;
+
+  // Map of types with associated icons (Bootstrap Icons).
+	const icons = {
+		info: 'bi-info-circle-fill',
+		success: 'bi-check-circle-fill',
+		warning: 'bi-exclamation-triangle-fill',
+		danger: 'bi-exclamation-triangle-fill',
+	};
+	
+  //  Map of positions with associated CSS coordinates
+	const positions = {
+		'top-right': { top: '70px', right: '20px' },
+		'bottom-right': { bottom: '20px', right: '20px' },
+		'top-left':	{ top: '70px', left: '20px' },
+		'bottom-left': { bottom: '20px', left: '20px' },
+		'top-center': { top: '70px', left: '50%', transform: 'translateX(-50%)' },
+		'bottom-center': { bottom: '20px', left: '50%', transform: 'translateX(-50%)' }
+	};
+
+  // Unique ID for the alert (used for DOM manipulation)
+	const alertId = 'alert-' + Date.now();
+
+  // ID of the container for the current position
+	const containerId = 'alert-stack-' + position;
+	let $container = $('#' + containerId);
+
+  // If the container doesn't exist, it initializes it
+	if (!$container.length) {
+		$container = $('<div>', {
+			id: containerId,
+			css: $.extend({
+				position: 'fixed',
+				zIndex: 1050,
+				minWidth: '25%'
+			}, positions[position])
+		}).appendTo('body');
+
+    // Center the container if necessary
+		if (positions[position].transform) {
+			$container.css('transform', positions[position].transform);
+		}
+	}
+
+  // Builds the HTML for the alert and inserts it into the container
+	const alertHtml = `
+		<div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert" style="margin-bottom: 10px;">
+			<i class="bi bi-${icon} ${icons[type]} me-2"></i> 
+			${message}
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans %}Close{% endtrans %}"></button>
+		</div>`;
+
+	$container.append(alertHtml);
+
+  // Dismiss automatically the alert after the timeout if timeout > 0
+	if (timeout > 0) {
+		setTimeout(() => {$('#' + alertId).alert('close');}, timeout);
+	}
+
+	return this;
+};
+
 function CJPosition(object,top,left){
   object.css("position","absolute");
   object.css("z-index",10);
