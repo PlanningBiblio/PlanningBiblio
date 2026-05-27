@@ -76,7 +76,7 @@
 {% endblock %}
 
 {% block page %}
-  {% if tableauNom == "" %}
+  {% if tableauNumero is null %}
      <h3>Nouveau tableau</h3>
   {% else %}
       <h3>Configuration du tableau "{{ tableauNom }}"</h3>
@@ -90,20 +90,30 @@
   <div id="tabs" class="container-tabs" data-active="{{ cfgType }}" >
     <ul class="nav nav-tabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="infos-tab" data-bs-toggle="tab" data-bs-target="#div_infos" type="button" role="tab" aria-controls="div_infos" aria-selected="true">{% trans %}General information{% endtrans %}</button>
+        <button class="nav-link active" id="infos-tab" data-bs-toggle="tab" data-bs-target="#div_infos" type="button" role="tab" aria-controls="div_infos" aria-selected="true">
+          {% trans %}General information{% endtrans %}
+        </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link {% if used %}disabled" aria-disabled="true" {% endif %} id="horaires-tab" data-bs-toggle="tab" data-bs-target="#div_horaires" type="button" role="tab" aria-controls="div_horaires" aria-selected="false">{% trans %}Schedule{% endtrans %}</button>
+        <button class="nav-link {% if used %}disabled" aria-disabled="true" {% endif %} id="horaires-tab" data-bs-toggle="tab" data-bs-target="#div_horaires" type="button" role="tab" aria-controls="div_horaires" aria-selected="false">
+          {% trans %}Schedule{% endtrans %}
+        </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link {% if used %}disabled" aria-disabled="true" {% endif %} id="lignes-tab" data-bs-toggle="tab" data-bs-target="#div_lignes" type="button" role="tab" aria-controls="div_lignes" aria-selected="false">{% trans %}Lines{% endtrans %}</button>
+        <button class="nav-link {% if used %}disabled" aria-disabled="true" {% endif %} id="lignes-tab" data-bs-toggle="tab" data-bs-target="#div_lignes" type="button" role="tab" aria-controls="div_lignes" aria-selected="false">
+          {% trans %}Lines{% endtrans %}
+        </button>
       </li>
 
       <li class="nav-item ms-auto" role="button">
-        <button class="nav-link" onclick="window.location.href='/framework'" id="cancel-tab" type="button">{% trans %}Back{% endtrans %}</button>
+        <button class="nav-link" onclick="window.location.href='/framework'" id="cancel-tab" type="button">
+          {% trans %}Back{% endtrans %}
+        </button>
       </li>
       <li class="nav-item" role="button">
-        <button class="nav-link" onclick="window.location.href='javascript:tableauxInfos();'" type="button">{% trans %}Confirm{% endtrans %}</button>
+        <button class="nav-link" onclick="window.location.href='javascript:tableauxInfos();'" type="button">
+          {% trans %}Confirm{% endtrans %}
+        </button>
       </li>
     </ul>
 
