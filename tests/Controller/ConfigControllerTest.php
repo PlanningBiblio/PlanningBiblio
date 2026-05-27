@@ -38,7 +38,7 @@ class ConfigControllerTest extends PLBWebTestCase
         );
 
         $this->assertMatchesRegularExpression(
-            '/<button class="accordion-button collapsed".*> Divers<\/button>/',
+            '/<button class="accordion-button collapsed".*>\n *Divers\n *<\/button>/',
             $response
         );
     }
