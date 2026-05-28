@@ -902,34 +902,6 @@ $(function(){
       }
     });
 
-    // Onglets
-    $(".ui-tabs").tabs({
-      active: $(".ui-tabs").attr("data-active"),
-      // Fonctions personnalisées pour les tabs .ui-tab-cancel et .ui-tab-submit dans personnel/modif.php
-      beforeActivate: function(event,ui){
-	if($(ui.newTab).hasClass("ui-tab-cancel")){
- 	  window.location.href=$(".ui-tab-cancel > a").attr("href");
-	  return false;
-	}
-	if($(ui.newTab).hasClass("ui-tab-submit")){
- 	  var command=$(".ui-tab-submit > a").attr("href");
-	  if(command.substring(0,11)=="javascript:"){
-	    command=command.substring(11,command.length);
-	    eval(command);
-	  }
-	  return false;
-	}
-      },
-      disabled: $(".ui-tabs").attr("data-disabled") ? jQuery.parseJSON($(".ui-tabs").attr("data-disabled")) : []
-    });
-    $(".ui-tab-submit").css("position","absolute");
-    $(".ui-tab-submit").css("right",5);
-    $(".ui-tab-submit").css("top",7);
-    var right=$(".ui-tab-submit").length>0?$(".ui-tab-submit").width()+10:5;
-    $(".ui-tab-cancel").css("position","absolute");
-    $(".ui-tab-cancel").css("right",right);
-    $(".ui-tab-cancel").css("top",7);
-
     granularity = $('form #granularity').val();
     step = setTimePickerStep(granularity);
 
