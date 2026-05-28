@@ -228,23 +228,25 @@ function tableauxInfos(){
 
 $(function(){
   used = $('#used').val();
-  // Adaptation du bouton de validation en fonction de l'onglet actif (page index.php)
-  $("#infos").click(function(){
-    $(".tableaux-valide").attr("href","javascript:tableauxInfos();");
-  });
 
-  $("#horaires").click(function(){
-    if (used == 1) {
-      return false;
-    }
-    $(".tableaux-valide").attr("href","javascript:document.form2.submit();");
-  });
+  $(".tab-validation").on("click", function(e) {
+    e.preventDefault();
 
-  $("#lignes").click(function(){
-    if (used == 1) {
-      return false;
+    id = $('.nav-link.active[role=tab]').attr('id');
+
+    if (id == 'infos-tab'){
+      tableauxInfos();
     }
-    $(".tableaux-valide").attr("href","javascript:configLignes();");
+
+    if (id == 'horaires-tab' && used == 0) {
+      document.form2.submit();
+    }
+
+    if (id == 'lignes-tab' && used == 0){
+      configLignes();
+    }
+
+    return false ;
   });
 
   // Récupération de tableaux supprimés (page index.php)

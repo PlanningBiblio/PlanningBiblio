@@ -6,10 +6,6 @@
   <script type='text/JavaScript'>
     $("document").ready(function(){
 
-      if($('#tabs').attr('data-active') == 1) {
-        $('.tableaux-valide').attr('href', 'javascript:document.form2.submit();');
-      }
-
       // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
       $(".tab_select").each(function(){
         var myClass=$(this).find(":selected").attr("class");
@@ -87,20 +83,21 @@
   {% endif %}
   <input type='hidden' name='used' id='used' value="{{ used }}" />
 
-  <div id="tabs" class="container-tabs" data-active="{{ cfgType }}" >
+  <div id="tabs" class="container-tabs">
+
     <ul class="nav nav-tabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="infos-tab" data-bs-toggle="tab" data-bs-target="#div_infos" type="button" role="tab" aria-controls="div_infos" aria-selected="true">
+        <button class="nav-link {% if cfgType != 1 %} active {% endif %}" id="infos-tab" data-bs-toggle="tab" data-bs-target="#div_infos" type="button" role="tab" aria-controls="div_infos" aria-selected="false">
           {% trans %}General information{% endtrans %}
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link {% if used %}disabled" aria-disabled="true" {% endif %} id="horaires-tab" data-bs-toggle="tab" data-bs-target="#div_horaires" type="button" role="tab" aria-controls="div_horaires" aria-selected="false">
+        <button class="nav-link {% if used %}disabled{% elseif  cfgType == 1  %} active {% endif %}" {% if used %}aria-disabled="true"{% endif %} id="horaires-tab" data-bs-toggle="tab" data-bs-target="#div_horaires" type="button" role="tab" aria-controls="div_horaires" aria-selected="false">
           {% trans %}Schedule{% endtrans %}
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link {% if used %}disabled" aria-disabled="true" {% endif %} id="lignes-tab" data-bs-toggle="tab" data-bs-target="#div_lignes" type="button" role="tab" aria-controls="div_lignes" aria-selected="false">
+        <button class="nav-link {% if used %}disabled{% endif %}" {% if used %}aria-disabled="true"{% endif %} id="lignes-tab" data-bs-toggle="tab" data-bs-target="#div_lignes" type="button" role="tab" aria-controls="div_lignes" aria-selected="false">
           {% trans %}Lines{% endtrans %}
         </button>
       </li>
@@ -111,14 +108,14 @@
         </button>
       </li>
       <li class="nav-item" role="button">
-        <button class="nav-link" onclick="window.location.href='javascript:tableauxInfos();'" type="button">
+        <button class="nav-link tab-validation" type="button">
           {% trans %}Confirm{% endtrans %}
         </button>
       </li>
     </ul>
 
     <div class="tab-content">
-      <div class="tab-pane fade show active m-4" id="div_infos" role="tabpanel" aria-labelledby="div_infos-tab" tabindex="0">
+      <div class="tab-pane fade {% if cfgType != 1 %} active show {% endif %} m-4" id="div_infos" role="tabpanel" aria-labelledby="div_infos-tab" tabindex="0">
         <div style='min-height:350px;'>
           <form name='form' action="{{ asset('index.php') }}" method='get'>
             <input type='hidden' name='id' id='id' value="{{ tableauNumero }}" />
@@ -161,7 +158,7 @@
         <div class="important">Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</div>
       </div>
 
-      <div class="tab-pane fade m-4" id="div_horaires" role="tabpanel" aria-labelledby="div_horaires-tab" tabindex="0">
+      <div class="tab-pane fade {% if  cfgType == 1  %} active show {% endif %} m-4" id="div_horaires" role="tabpanel" aria-labelledby="div_horaires-tab" tabindex="0">
         <div style='min-height:350px;'>
           <form name='form2' action="{{ asset('framework') }}" method='post'>
             <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}" />
