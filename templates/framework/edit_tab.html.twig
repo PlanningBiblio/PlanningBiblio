@@ -97,7 +97,7 @@
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link {% if used %}disabled{% endif %}" {% if used %}aria-disabled="true"{% endif %} id="lignes-tab" data-bs-toggle="tab" data-bs-target="#div_lignes" type="button" role="tab" aria-controls="div_lignes" aria-selected="false">
+        <button class="nav-link {% if used %} disabled {% endif %}" {% if used %}aria-disabled="true"{% endif %} id="lignes-tab" data-bs-toggle="tab" data-bs-target="#div_lignes" type="button" role="tab" aria-controls="div_lignes" aria-selected="false">
           {% trans %}Lines{% endtrans %}
         </button>
       </li>
@@ -116,38 +116,38 @@
 
     <div class="tab-content">
       <div class="tab-pane fade {% if cfgType != 1 %} active show {% endif %} m-4" id="div_infos" role="tabpanel" aria-labelledby="div_infos-tab" tabindex="0">
-        <div style='min-height:350px;'>
-          <form name='form' action="{{ asset('index.php') }}" method='get'>
-            <input type='hidden' name='id' id='id' value="{{ tableauNumero }}" />
+        <div style="min-height:350px;">
+          <form name="form" action="{{ asset('index.php') }}" method="get">
+            <input type="hidden" name="id" id="id" value="{{ tableauNumero }}" />
             <h3>Informations générales</h3>
-            <table class='tableauFiche'>
+            <table class="tableauFiche">
               <tr>
                 <td>Nom :</td>
                 <td>
-                  <input type='text' id='nom' value="{{ tableauNom }}"  style='width:300px;'/>
+                  <input type="text" id="nom" value="{{ tableauNom }}" style="width:300px;"/>
                 </td>
               </tr>
               {% if nbSites > 1 %}
                 <tr>
                   <td>Affecter au site :</td>
                   <td>
-                    <select id='site' style='width:300px;' {% if used %}disabled{% endif %}>
-                      <option value=''>&nbsp;</option>
+                    <select id="site" style="width:300px;" {% if used %} disabled {% endif %}>
+                      <option value=""></option>
                       {% for i in 1..nbSites %}
-                        <option value='{{ i }}' {{ (i == site) ? "selected='selected'":" "}} >{{ multisites[i] }}</option>
+                        <option value="{{ i }}" {% if i == site %} selected {% endif %} >{{ multisites[i] }}</option>
                       {% endfor %}
                     </select>
                   </td>
                 </tr>
               {% else %}
-                <input type='hidden' value='1' id='site' />
+                <input type="hidden" value="1" id="site" />
               {% endif %}
               <tr>
                 <td>Nombre de tableaux :</td>
                 <td>
-                  <select name='nombre' id='nombre' style='width:300px;' {% if used %}disabled{% endif %}>
+                  <select name="nombre" id="nombre" style="width:300px;" {% if used %} disabled {% endif %}>
                     {% for i in 1..16 %}
-                      <option value='{{ i }}' {{ (i == nombre) ? "selected='selected'":" "}} >{{ i }}</option>
+                      <option value="{{ i }}" {% if i == nombre %} selected {% endif %} >{{ i }}</option>
                     {% endfor %}
                   </select>
                 </td>
@@ -159,21 +159,21 @@
       </div>
 
       <div class="tab-pane fade {% if  cfgType == 1  %} active show {% endif %} m-4" id="div_horaires" role="tabpanel" aria-labelledby="div_horaires-tab" tabindex="0">
-        <div style='min-height:350px;'>
-          <form name='form2' action="{{ asset('framework') }}" method='post'>
-            <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}" />
-            <input type='hidden' name='cfg-type' value='1' />
-            <input type='hidden' name='numero' value="{{ tableauNumero }}" />
-            <input type='hidden' name='action' value='modif' />
+        <div style="min-height:350px;">
+          <form name="form2" action="{{ asset('framework') }}" method="post">
+            <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
+            <input type="hidden" name="cfg-type" value="1" />
+            <input type="hidden" name="numero" value="{{ tableauNumero }}" />
+            <input type="hidden" name="action" value="modif" />
             <h3>Configuration des horaires</h3>
             {% if tableaux is not empty %}
               {% for t in tableaux %}
                 {% set numero = loop.index %}
                 {% set tableau = t.tableau %}
-                <div id='div_horaires_{{tableau}}' style='display:inline-block; vertical-align:top; padding-bottom:30px;'>
-                  <table id='tab_horaires_{{tableau}}'>
+                <div id="div_horaires_{{tableau}}" style="display:inline-block; vertical-align:top; padding-bottom:30px;">
+                  <table id="tab_horaires_{{tableau}}">
                     <tr>
-                      <td colspan='2' ><strong>Tableau {{numero}}</strong></td>
+                      <td colspan="2"><strong>Tableau {{numero}}</strong></td>
                     </tr>
                     {% set i = loop.index0 %}
                     {% for elem in t.horaires %}
@@ -189,13 +189,13 @@
                             class="planno-timepicker framework-timepicker"
                             value="{{ elem.fin ? elem.fin | date('H:i') : '' }}"
                             style="text-align: center;"/>
-                          <span class='pl-icon pl-icon-dropblack' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{i}}').hide();"></span>
+                          <span class="pl-icon pl-icon-dropblack" title="Supprimer" style="margin-left:5px;cursor:pointer;" onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{i}}').hide();"></span>
                         </td>
                       </tr>
                       {% set i = i + 1 %}
                     {% endfor %}
                     {% for j in 0..25 %}
-                      <tr id='tr_{{tableau}}_{{j}}' style='display:none;'>
+                      <tr id="tr_{{tableau}}_{{j}}" style="display:none;">
                         <td>
                           <input name="debut_{{tableau}}_{{i}}"
                             class="planno-timepicker framework-timepicker"
@@ -205,18 +205,18 @@
                           <input name="fin_{{tableau}}_{{i}}"
                             class="planno-timepicker framework-timepicker"
                             value=""/>
-                          <span class='pl-icon pl-icon-dropblack' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{j}}').hide();"></span>
+                          <span class="pl-icon pl-icon-dropblack" title="Supprimer" style="margin-left:5px;cursor:pointer;" onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{j}}').hide();"></span>
                         </td>
                       </tr>
                       {% set i = i + 1 %}
                     {% endfor %}
                     <tr>
                       <td>
-                        <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer' onclick="add_horaires('{{tableau}}');"></span>
+                        <span class="pl-icon pl-icon-add" title="Ajouter" style="cursor:pointer" onclick="add_horaires('{{tableau}}');"></span>
                       </td>
                     </tr>
                   </table>
-                </div> <!-- tab_horaires_{{tableau}} &amp; div_horaires_{{tableau}} -->
+                </div> <!-- tab_horaires_{{tableau}} & div_horaires_{{tableau}} -->
               {% endfor %}
             {% endif %}
         </form>
@@ -225,22 +225,22 @@
       </div>
 
       <div class="tab-pane fade m-4" id="div_lignes" role="tabpanel" aria-labelledby="div_lignes-tab" tabindex="0">
-        <div style='min-height:350px;'>
-          <form name='form4' action="{{ asset('index.php')}}" method='post'>
-            <input type='hidden' name='page' value='planning/postes_cfg/modif.php' />
-            <input type='hidden' name='cfg-type' value='lignes' />
-            <input type='hidden' name='numero' value='{{ tableauNumero }}' />
+        <div style="min-height:350px;">
+          <form name="form4" action="{{ asset('index.php') }}" method="post">
+            <input type="hidden" name="page" value="planning/postes_cfg/modif.php" />
+            <input type="hidden" name="cfg-type" value="lignes" />
+            <input type="hidden" name="numero" value="{{ tableauNumero }}" />
             <h3>Configuration des lignes</h3>
             {% if tableauNumero is not null %}
-              <table style='min-width:1250px; width:100%;' cellspacing='0' cellpadding='0' border='1' >
+              <table style="min-width:1250px; width:100%;" cellspacing="0" cellpadding="0" border="1" >
                 {% for tab in tabs %}
-                  <tr class='tr_horaires' style='text-align:center;'>
-                    <td style='white-space:nowrap;text-align:left;'>
-                      Titre <input type='text' name='select_{{ tab.nom }}Titre_0' class='tr_horaires select_titre' style='text-align:center;white-space:nowrap;' value="{{ tab.titre }}"/>&nbsp;
+                  <tr class="tr_horaires" style="text-align:center;">
+                    <td style="white-space:nowrap;text-align:left;">
+                      Titre <input type="text" name="select_{{ tab.nom }}Titre_0" class="tr_horaires select_titre" style="text-align:center;white-space:nowrap;" value="{{ tab.titre }}"/>&nbsp;
                       Classe<sup>*</sup>
-                      <input type='text' name='select_{{ tab.nom }}Classe_0' class='tr_horaires select_titre' style='text-align:center;width:120px;' value="{{ tab.classe }}"/>
+                      <input type="text" name="select_{{ tab.nom }}Classe_0" class="tr_horaires select_titre" style="text-align:center;width:120px;" value="{{ tab.classe }}"/>
                       <a href="javascript:ajout('select_{{ tab.nom }}_',-1);">
-                        <span class='pl-icon pl-icon-add-white' title='Ajouter'></span>
+                        <span class="pl-icon pl-icon-add-white" title="Ajouter"></span>
                       </a>
                     </td>
                     {% for horaire in tab.horaires %}
@@ -248,37 +248,37 @@
                     {% endfor %}
                   </tr>
                   {% for i in 0..100 %}
-                    <tr id='tr_select_{{ tab.nom }}_{{ i }}' {{  (tab.lignes[i] is defined) ? " ": "style='display:none;'"}}>
-                      <td id='td_select_{{ tab.nom }}_{{ i }}_0' style='white-space:nowrap;'>
-                        <select name='select_{{ tab.nom }}_{{ i }}' style='width:200px;color:black;font-weight:normal;' class='tab_select'>
-                          <option value=''>&nbsp;</option>
+                    <tr id="tr_select_{{ tab.nom }}_{{ i }}" {% if tab.lignes[i] is not defined %} style="display:none;" {% endif %}>
+                      <td id="td_select_{{ tab.nom }}_{{ i }}_0" style="white-space:nowrap;">
+                        <select name="select_{{ tab.nom }}_{{ i }}" style="width:200px;color:black;font-weight:normal;" class="tab_select">
+                          <option value=""></option>
                           {% if postes is iterable and postes is not empty %}
                             {% for poste in postes %}
-                              <option value='{{ poste.id }}' {{ (tab.lignes[i] is defined and tab.lignes[i].type =="poste" and poste.id == tab.lignes[i].poste ) ? "selected='selected'" : " " }} {{ poste.obligatoire == "Obligatoire" ? "class='td_obligatoire'" : "class='td_renfort'"}}>{{ poste.nom }} ({{ poste.etage }})</option>
+                              <option value="{{ poste.id }}" {% if tab.lignes[i] is defined and tab.lignes[i].type == 'poste' and poste.id == tab.lignes[i].poste %} selected {% endif %} {{ poste.obligatoire == 'Obligatoire' ? 'class="td_obligatoire"' : 'class="td_renfort"' }}>{{ poste.nom }} ({{ poste.etage }})</option>
                             {% endfor %}
                           {% endif %}
                           {% for ligne_sep in lignes_sep %}
-                            <option value='{{ ligne_sep.id }}Ligne' class='tr_horaires' {{ (tab.lignes[i] is defined and tab.lignes[i].type =="ligne" and ligne_sep.id == tab.lignes[i].poste) ? "selected='selected'" : " " }} style='font-weight:normal;'>{{ ligne_sep.nom }}</option>
+                            <option value="{{ ligne_sep.id }}Ligne" class="tr_horaires" {% if tab.lignes[i] is defined and tab.lignes[i].type == 'ligne' and ligne_sep.id == tab.lignes[i].poste %} selected {% endif %} style="font-weight:normal;">{{ ligne_sep.nom }}</option>
                           {% endfor %}
                         </select>&nbsp;&nbsp;
                         <a href="javascript:ajout('select_{{ tab.nom }}_',{{ i }});">
-                          <span class='pl-icon pl-icon-add' title='Ajouter'></span>
+                          <span class="pl-icon pl-icon-add" title="Ajouter"></span>
                         </a>
                         <a href="javascript:supprime_tab('{{ tab.nom }}_',{{ i }});">
-                          <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
+                          <span class="pl-icon pl-icon-dropblack" title="Supprimer"></span>
                         </a>
                       </td>
                       {% for horaire in tab.horaires %}
                         {% set j = loop.index %}
-                        <td id='td_select_{{tab.nom}}_{{i}}_{{j}}' {{ i ~'_'~ j in tab.cellules_grises == true ? "class='cellule_grise'" : ""}} colspan='{{ horaire.colspan }}' style='text-align:center;'>
-                          <input type='checkbox' name='checkbox_{{tab.nom}}_{{i}}_{{j}}' {{ i ~'_'~ j in tab.cellules_grises == true ? "checked='checked'" : "" }} onclick='couleur2(this,"td_select_{{tab.nom}}_{{i}}_{{j}}");'/>
+                        <td id="td_select_{{tab.nom}}_{{i}}_{{j}}" {% if i ~'_'~ j in tab.cellules_grises %} class="cellule_grise" {% endif %} colspan="{{ horaire.colspan }}" style="text-align:center;">
+                          <input type="checkbox" name="checkbox_{{tab.nom}}_{{i}}_{{j}}" {% if i ~'_'~ j in tab.cellules_grises %} checked {% endif %} onclick="couleur2(this, 'td_select_{{tab.nom}}_{{i}}_{{j}}');"/>
                           <span> G </span>
                         </td>
                       {% endfor %}
-                      <td id='td_select_{{ tab.nom }}_{{ i }}' colspan='{{ tab.colspan }}' style='display:none;'>
+                      <td id="td_select_{{ tab.nom }}_{{ i }}" colspan="{{ tab.colspan }}" style="display:none;">
                     </tr>
                   {% endfor %}
-                  <tr class='tr_espace'>
+                  <tr class="tr_espace">
                     <td></td>
                   </tr>
                 {% endfor %}
@@ -286,7 +286,7 @@
             {% endif %}
           </form>
         </div>
-        <div class='highlight'>
+        <div class="highlight">
           <sup>*</sup> Classe CSS appliqué sur le tableau. Permet d'en personnaliser l'affichage.
         </div>
 

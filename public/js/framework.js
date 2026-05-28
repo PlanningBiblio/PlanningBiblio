@@ -229,12 +229,12 @@ function tableauxInfos(){
 $(function(){
   used = $('#used').val();
 
-  $(".tab-validation").on("click", function(e) {
+  $('.tab-validation').on('click', function(e) {
     e.preventDefault();
 
     id = $('.nav-link.active[role=tab]').attr('id');
 
-    if (id == 'infos-tab'){
+    if (id == 'infos-tab') {
       tableauxInfos();
     }
 
@@ -242,7 +242,7 @@ $(function(){
       document.form2.submit();
     }
 
-    if (id == 'lignes-tab' && used == 0){
+    if (id == 'lignes-tab' && used == 0) {
       configLignes();
     }
 
