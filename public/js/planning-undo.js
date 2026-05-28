@@ -47,7 +47,7 @@ function undo() {
       });
     },
     error: function(result){
-      CJInfo('Impossible d\'annuler la dernière action. Une erreur s\'est produite','error');
+      stackAlert('Impossible d\'annuler la dernière action. Une erreur s\'est produite','error');
     }
   });
 }

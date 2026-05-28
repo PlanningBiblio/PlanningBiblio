@@ -20,10 +20,8 @@ function ldaptest() {
     filter = '(objectclass=inetorgperson)';
   }
 
-  var pos = $('#LDAP-Test').position();
-  top1 = pos.top - 10;
 
-  $('.CJInfo').remove();
+  $('#alert-stack-top-center').remove();
 
   $.ajax({
     url: url('config/ldap-test'),
@@ -32,17 +30,17 @@ function ldaptest() {
     data: {filter: filter, host: host, idAttribute: idAttribute, password : password, port: port, protocol: protocol, rdn: rdn, suffix: suffix},
     success: function(result) {
       if (result == 'ok') {
-        CJInfo('Les paramètres LDAP sont corrects', 'success', top1);
+        stackAlert('Les paramètres LDAP sont corrects');
       } else if (result == 'bind') {
-        CJInfo('Les paramètres Protocol, RDN et/ou Password sont incorrects', 'error', top1);
+        stackAlert('Les paramètres Protocol, RDN et/ou Password sont incorrects', 'error');
       } else if (result == 'search') {
-        CJInfo('Les paramètres Suffix, Filter et/ou ID-Attribute sont incorrects', 'error', top1);
+        stackAlert('Les paramètres Suffix, Filter et/ou ID-Attribute sont incorrects', 'error');
       } else {
-        CJInfo('Les paramètres LDAP Host et/ou Port sont incorrects', 'error', top1);
+        stackAlert('Les paramètres LDAP Host et/ou Port sont incorrects', 'error');
       }
     },
     error: function() {
-      CJInfo('Impossible de vérifier les paramètres LDAP', 'error', top1);
+      stackAlert('Impossible de vérifier les paramètres LDAP', 'error');
     }
   });
 }
@@ -89,18 +87,16 @@ function mailtest() {
   var signature = $('#Mail-Signature').val();
   var planning = $('#Mail-Planning').val().trim();
 
-  var pos = $('#Mail-Test').position();
-  top1 = pos.top - 10;
 
-  $('.CJInfo').remove();
+  $('#alert-stack-top-center').remove();
 
   if(enabled == 0) {
-    CJInfo('Le paramètre "Mail-IsEnabled" est désactivé', 'error', top1, 8000);
+    stackAlert('Le paramètre "Mail-IsEnabled" est désactivé', 'error');
     return false;
   }
 
   if( !planning) {
-    CJInfo('Veuillez entrer une (ou plusieurs) adresse(s) valide(s) dans le champ "Mail-Planning"', 'error', top1, 8000);
+    stackAlert('Veuillez entrer une (ou plusieurs) adresse(s) valide(s) dans le champ "Mail-Planning"', 'error');
     return false;
   }
 
@@ -127,15 +123,15 @@ function mailtest() {
     data: data,
     success: function(result) {
       if (result == 'ok') {
-        CJInfo('Le mail de test a été envoyé avec succès. Vérifiez votre messagerie.', 'success', top1, 8000);
+        stackAlert('Le mail de test a été envoyé avec succès. Vérifiez votre messagerie.');
       } else if (result == 'socket') {
-        CJInfo('Impossible de joindre le serveur de messagerie.', 'error', top1, 8000);
+        stackAlert('Impossible de joindre le serveur de messagerie.', 'error');
       } else {
-        CJInfo("Une erreur est survenue lors de l'envoi du mail.\n" + result, 'error', top1, 8000);
+        stackAlert('Une erreur est survenue lors de l\'envoi du mail.\n' + result, 'error');
       }
     },
     error: function(result){
-        CJInfo("Une erreur est survenue lors de l'envoi du mail.\n" + result.responseText, 'error', top1, 8000);
+        stackAlert('Une erreur est survenue lors de l\'envoi du mail.\n' + result.responseText, 'error');
     }
   });
 }

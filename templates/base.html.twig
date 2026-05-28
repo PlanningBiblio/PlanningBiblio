@@ -58,19 +58,19 @@
   <body>
     <!-- Affichage des messages d'erreur ou de confirmation venant de la page précedente-->
     {% if msg  and msg !='null' %}
-      <script type='text/JavaScript'>CJInfo('{{ msg | nl2br }}','{{ msgType }}');</script>
+      <script type='text/JavaScript'>stackAlert('{{ msg | nl2br }}','{{ msgType }}');</script>
     {% endif %}
 
     {% if msg2 and msg2 !='null' %}
-      <script type='text/JavaScript'>CJInfo('{{ msg2 }}','{{ msg2Type }}', 82, 15000);</script>
+      <script type='text/JavaScript'>stackAlert('{{ msg2 }}','{{ msg2Type }}', 15000);</script>
     {% endif %}
 
     <!-- Symfony flashMessages -->
     {% for flashMessage in app.session.flashbag.get('error') %}
-        <script type='text/JavaScript'>CJInfo('{{ flashMessage }}','error', 82, 15000);</script>
+        <script type='text/JavaScript'>stackAlert('{{ flashMessage }}','error', 15000);</script>
     {% endfor %}
     {% for flashMessage in app.session.flashbag.get('notice') %}
-        <script type='text/JavaScript'>CJInfo('{{ flashMessage }}','success', 82, 15000);</script>
+        <script type='text/JavaScript'>stackAlert('{{ flashMessage }}','success', 15000);</script>
     {% endfor %}
 
     <div style='position:relative;top:30px;' class='noprint'></div>

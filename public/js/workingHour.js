@@ -223,10 +223,10 @@ function plHebdoSupprime(id){
       success: function(){
         // On cache la ligne du planning supprimée dans le tableau
         CJDataTableHideRow("#tr_"+id);
-        CJInfo("Le planning a été supprimé","success");
+        stackAlert('Le planning a été supprimé');
       },
       error: function(){
-        CJInfo("Erreur lors de la suppression du planning de présence","error");
+        stackAlert('Erreur lors de la suppression du planning de présence','error');
       }
     });
   }

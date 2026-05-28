@@ -33,10 +33,10 @@ function supprimeGroupe(id){
           tr=tr.next("tr");
         }
         $("#tr-groupe-"+id).remove();
-        CJInfo("Le groupe \""+nom+"\" a été supprimé avec succès","success");
+        stackAlert('Le groupe "%nom%" a été supprimé avec succès', undefined, undefined, undefined, {'nom' : nom});
       },
       error: function(result){
-        CJInfo("Une erreur est survenue lors de la suppression du groupe \""+nom+"\"","error");
+        stackAlert('Une erreur est survenue lors de la suppression du groupe "%nom%"','error', undefined, undefined, {"nom" : nom});
       }
     });
   }
@@ -64,10 +64,10 @@ function supprimeLigne(id){
           tr=tr.next("tr");
         }
         $("#tr-ligne-"+id).remove();
-        CJInfo("Le ligne \""+nom+"\" a été supprimée avec succès","success");
+        stackAlert('La ligne "%nom%" a été supprimée avec succès', undefined, undefined, undefined, {"nom" : nom});
       },
       error: function(result){
-        CJInfo("Une erreur est survenue lors de la suppression de la ligne \""+nom+"\"","error");
+        stackAlert('Une erreur est survenue lors de la suppression de la ligne "%nom%"', 'error', undefined, undefined, {'nom' : nom});
       }
     });
   }
@@ -87,7 +87,7 @@ function supprimeTableau(tableau){
         window.location.href = url('framework');
       },
       error: function(result){
-        CJInfo("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"\n"+result.responseText,"error");
+        stackAlert('Une erreur est survenue lors de la suppression du tableau "%nom%"\n' + result.responseText, 'error', undefined, undefined, {'nom' : nom});
       }
     });
   }
@@ -200,7 +200,7 @@ function supprime_select(classe,page){
         window.location.href= url('framework?msgType=success&msg=' + msg);
       },
       error: function(){
-        CJInfo("Une erreur est survenue lors de la suppression.","error");
+        stackAlert('An error occurred during deletion', 'error');
       }
     });
   }
@@ -221,7 +221,7 @@ function tableauxInfos(){
       }
     },
     error: function(result){
-      CJInfo("Une erreur est survenue lors de la modification des informations\n"+result.responseText,"error");
+      stackAlert('Une erreur est survenue lors de la modification des informations\n' + result.responseText, 'error');
     }
   });
 }
@@ -264,7 +264,7 @@ $(function(){
             location.href = url('framework');
           },
           error: function(){
-            CJInfo('Une erreur est survenue lors de la récupération du tableau "' + name + '".',"error");
+            stackAlert('Une erreur est survenue lors de la récupération du tableau "%name%"', 'error', undefined, undefined, {'name' : name});
           }
         });
       }

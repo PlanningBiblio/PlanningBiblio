@@ -330,7 +330,7 @@ function deleteAjax(id, route, message) {
                 window.location.href=url(route);
             },
             error: function(result){
-              CJInfo('Une erreur est survenue lors de la suppression', 'error');
+              stackAlert('An error occurred during deletion', 'error');
             }
         });
     }
@@ -435,10 +435,10 @@ function resetICSURL(id, nom)
       success: function(result){
         $("#urlIcs").html("<a href='"+result.url+"'>"+result.url+"</a>");
         $("#urlIcsWithAbsences").html("<a href='"+result.url+"&absences=1'>"+result.url+"&absences=1</a>");
-        CJInfo("L'URL du calendrier a été réinitialisée avec succès","success");
+        stackAlert('L\'URL du calendrier a été réinitialisée avec succès');
       },
       error: function(result){
-        CJInfo("Une erreur est survenue lors de la réinitialisation de l'URL<br/>"+result.responseText,"error");
+        stackAlert('Une erreur est survenue lors de la réinitialisation de l\'URL \n' + result.responseText, 'error');
       }
     });
   }
@@ -644,7 +644,7 @@ function verif_form(champs, form='form', callback=null)
   }
   
   if(erreurs){
-    CJInfo("Les champs suivants sont obligatoires :<ul>"+erreurs+"</ul>","error");
+    stackAlert('Les champs suivants sont obligatoires :<ul>'+ erreurs +'</ul>','error');
     return false;
   }
   else{

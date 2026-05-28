@@ -123,22 +123,25 @@ function CJInfo(message,type,top,time,myClass){
  * @param string type :  message type; possible values: info, success, error or warning
  * @param int timeout : display duration in milliseconds; if timeout = 0, the alert is permanent
  * @param int position : position on the screen; possible values: combination of top/bottom and left/center/right
+ * @param array translationOptions : message additional translation information (variables, domains ...)
  */
 
-function stackAlert(message, type='info', timeout=5000, position='top-center'){
+function stackAlert(message, type='success', timeout=7000, position='top-center', translationOptions = null){
 
   type = (type === 'error') ? 'danger' : type;
-  icon = (type === 'info') ? 'information' : type;
 
   // Translate the message
-  message = Translator.trans(message) ;
+  message = Translator.trans(message, translationOptions);
+  message = message.replace(/#BR#/g,"<br/>&emsp;&emsp;");
+  message = message.replace(/\n/g,"<br/>&emsp;&emsp;");
+  close_msg = Translator.trans('Close');
 
   // Map of types with associated icons (Bootstrap Icons).
 	const icons = {
-		info: 'bi-info-circle-fill',
-		success: 'bi-check-circle-fill',
-		warning: 'bi-exclamation-triangle-fill',
-		danger: 'bi-exclamation-triangle-fill',
+		info: 'bi-info-circle-fill bi-information',
+		success: 'bi-check-circle-fill bi-success',
+    warning: 'bi-exclamation-triangle-fill bi-warning',
+		danger: 'bi-exclamation-triangle-fill bi-danger'
 	};
 	
   //  Map of positions with associated CSS coordinates
@@ -177,10 +180,10 @@ function stackAlert(message, type='info', timeout=5000, position='top-center'){
 
   // Builds the HTML for the alert and inserts it into the container
 	const alertHtml = `
-		<div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert" style="margin-bottom: 10px;">
-			<i class="bi bi-${icon} ${icons[type]} me-2"></i> 
+		<div id="${alertId}" class="alert alert-${type} alert-dismissible fade show mb-2" role="alert"">
+			<i class="bi ${icons[type]} me-2"></i> 
 			${message}
-			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans %}Close{% endtrans %}"></button>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="${close_msg}"></button>
 		</div>`;
 
 	$container.append(alertHtml);

@@ -251,7 +251,7 @@ h4{
   margin-left: 10px;
 }
 
-/*	Icônes		*/
+/*	Icônes START */
 
 .bi {
   color : #29495C;
@@ -377,6 +377,8 @@ h4{
   background:url("images/icon/redo_white_24dp.svg") no-repeat center;
 }
 
+/*	Icônes END */
+
 /* Les agents */
 li .agent-acces-checked2{
   position:absolute;
@@ -389,7 +391,8 @@ li .agent-acces-checked2{
 }
 
 
-/* Les tableaux */
+/* Les tableaux START */
+
 .tableauStandard,.tableauFiches{
   border-spacing: 0px;
   border-collapse: collapse;
@@ -475,7 +478,9 @@ li .agent-acces-checked2{
   text-align:center;
 } 
 
-/* Tabs */
+/* Les tableaux END */
+
+/* Bootstrap Tabs START */
 
 ul.nav-tabs {
   background-color: #29495C;
@@ -517,6 +522,8 @@ ul.nav-tabs li.nav-item .nav-link.active, ul.nav-tabs li.nav-item .nav-link:hove
   justify-content: center;
 }
 
+/* Bootstrap Tabs END */
+
 /* Menu Principal */
 /* solution temp, il faudrait peut être une class spécifique pour la div top gauche*/
 /* solution provoque des bugss dans les tableaux */
@@ -526,7 +533,7 @@ ul.nav-tabs li.nav-item .nav-link.active, ul.nav-tabs li.nav-item .nav-link:hove
   width:15%;
 }
 
-/* Menu Bootstrap */
+/* Bootstrap Menu START */
 .navbar {
   background-color: white;
 }
@@ -592,6 +599,7 @@ li.nav-item a.nav-link:hover, li.nav-item a.nav-link.dropdown-toggle.show {
 
 ul.dropdown-menu {
   padding: 0px;
+  z-index: 1052;
 }
 
 ul.dropdown-menu a.dropdown-item {
@@ -631,6 +639,8 @@ ul.dropdown-menu a.dropdown-item.active , a.dropdown-item.active:hover {
   visibility: hidden; 
   z-index:20; 
 }
+
+/* Bootstrap Menu END */
 
 /* Menu top */
 .topgauche{
@@ -1146,7 +1156,8 @@ class cellule = cellule par défaut
   justify-content: space-around;
 }
 
-/* Calendrier affiché en haut des plannings */
+/* Datepicker START */
+
 #pl-calendar {
   border:0;
   background: transparent;
@@ -1236,6 +1247,8 @@ class cellule = cellule par défaut
   color: white;
   border: none;
 }
+
+/* Datepicker END */
 
 .pl-highlight {
   background: #f0e68c;
@@ -1482,7 +1495,7 @@ img{
   padding-right: 5px;
 }
 
-/* Elements "sortable" (gestion des motifs d'absences, des statuts des agents */
+/* Elements "sortable" (gestion des motifs d'absences, des statuts des agents ...) */
 ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
 ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 30px; }
 ul[id$="-sortable"] li span { margin-left: -1.3em; }
@@ -1561,7 +1574,7 @@ div.presents-absents {
   background:#FFD700;
 }
 
-/*	DataTables */
+/*	DataTables START */
 .dataTable tbody tr.odd {
   background-color:#F0F0F0;
 }
@@ -1680,6 +1693,8 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   background-color: #29495C;
   color: #F0F0F0;
 }
+
+/*	DataTables END */
 
 .ellipsis{
   color:#FFF;
@@ -1836,7 +1851,7 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   margin: 40px auto auto;
 }
 
-/*Buttons START*/
+/* Bootstrap Buttons START */
 
 .btn.btn-primary , .btn.btn-primary:focus, .btn.btn-primary:active {
   background-color: #FFD700;
@@ -1915,9 +1930,9 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   text-align: right;
 }
 
-/*Buttons END*/
+/* Bootstrap Buttons END */
 
-/* Modals START */
+/* Bootstrap Modals START */
 
 .modal-header {
   background-color: #FFD700 ;
@@ -1952,6 +1967,10 @@ hr {
   align-items: center;
   justify-content: center;
 }
+
+/* Bootstrap Modals END */
+
+/* Form elements START */
 
 .form-control, .form-control:focus, .form-control-plaintext {
   color: #29495C;
@@ -2039,7 +2058,7 @@ input::placeholder {
   box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
 }
 
-/* Modals END */
+/* Form elements END */
 
 /* Bootstrap Grid START */
 

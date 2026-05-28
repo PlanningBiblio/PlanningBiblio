@@ -381,3 +381,11 @@ msgstr "This event and the following ones"
 
 msgid "All events"
 msgstr "All events"
+
+#. Error messages
+
+msgid "An error occurred during deletion"
+msgstr "An error occurred during deletion"
+
+msgid "An error occurred while saving the information"
+msgstr "An error occurred while saving the information"

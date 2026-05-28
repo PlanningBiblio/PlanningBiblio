@@ -438,9 +438,9 @@ function calculRestes(){
       recuperation = recuperation - heures;
       recuperation_prev = recuperation_prev - heures;
 
-      $('.recup-alert').remove();
+      $('#alert-stack-top-center').remove();
       if(recuperation < 0){
-        CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
+        stackAlert('Le crédit de récupération ne peut pas être négatif.', 'error')
         $(".balance_tr").effect("highlight",null,4000);
       }
     }
@@ -624,7 +624,7 @@ function verifConges()
 
   // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
   if(perso_ids.length<1){
-    CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
+    stackAlert('Veuillez sélectionner un ou plusieurs agents', 'error');
     return false;
   }
 
@@ -659,10 +659,10 @@ function verifConges()
     isRegularization = true;
   }
   if(recuperation < 0 && isRegularization == false) {
-    $('.recup-alert').remove();
+    $('#alert-stack-top-center').remove();
     $(".balance_tr").effect("highlight",null,4000);
     if ($('#validation').val() > 0) {
-      CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
+      stackAlert('Le crédit de récupération ne peut pas être négatif.', 'error');
       return false;
     } else {
       if (!confirm("Attention!\nLe crédit de récupération ne peut pas être négatif.\nCette demande ne pourra pas être validée tant que le crédit restera insufisant.\nVoulez-vous continuer ?")) {
@@ -685,7 +685,7 @@ function verifConges()
 
       for (i in result['users']) {
         if (result['users'][i]['holiday'] != undefined) {
-          CJInfo("Un congé a déjà été demandé par " + result['users'][i]['nom'] + " " + result['users'][i]['holiday'], "error");
+          stackAlert('Un congé a déjà été demandé par %agent% %holiday%', 'error', undefined, undefined, {'agent' : result['users'][i]['nom'], 'holiday': result['users'][i]['holiday']});
           valid = false;
         }
       }
@@ -696,7 +696,7 @@ function verifConges()
             valid = false;
           }
         } else {
-          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car les plannings sont en cours d'élaboration :#BR#"+result["planning_started"], "error");
+          stackAlert('Vous ne pouvez pas enregistrer d\'absences pour les dates suivantes car les plannings sont en cours d\'élaboration :\n %plannings%', 'error', undefined, undefined, {'plannings' : result["planning_started"]});
           valid = false;
         }
       }
@@ -707,7 +707,7 @@ function verifConges()
             valid = false;
           }
         } else {
-          CJInfo("Vous ne pouvez pas enregistrer de congés pour les dates suivantes car elles rentrent en conflit avec une période bloquée.", "error");
+          stackAlert('Vous ne pouvez pas enregistrer de congés pour les dates suivantes car elles rentrent en conflit avec une période bloquée.', 'error');
           valid = false;
         }
       }
@@ -737,7 +737,7 @@ function verifConges()
           if(!confirm(message +"\nVoulez-vous continuer ?"))
             valid = false;
           } else {
-            CJInfo("Vous ne pouvez pas enregsitrer de congés car " + message.replace("\n", "#BR#"), "error");
+            stackAlert('Vous ne pouvez pas enregistrer de congés car ' + message, 'error');
             valid = false;
           }
         }
@@ -753,14 +753,14 @@ function verifConges()
                 async: false,
                 success: function(data){
                   if(data){
-                    CJInfo(data, "error");
+                    stackAlert(data, "error");
                   }
                   else {
                      return true;
                   }
                 },
                 error: function(){
-                  CJInfo("Une erreur est survenue lors de l'enregistrement du congé","error");
+                  stackAlert('Une erreur est survenue lors de l\'enregistrement du congé','error');
                 },
             });
           } else {

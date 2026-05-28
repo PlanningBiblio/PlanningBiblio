@@ -59,14 +59,14 @@
         type: "post",
         data: data,
         success: function(){
-          CJInfo("Le tableau a été enregistré","highlight");
+          stackAlert('Le tableau a été enregistré');
           return true;
         },
         error: function(request, status, error){
           if (request.responseText == '"used"') {
-            CJInfo('Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.','error');
+            stackAlert('Ce tableau est déjà utilisé. Vous ne pouvez pas modifier les horaires.','error');
           } else {
-            CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.","error");
+            stackAlert('Une erreur est survenue lors de l\'enregistrement du tableau.','error');
           }
           return false;
         }

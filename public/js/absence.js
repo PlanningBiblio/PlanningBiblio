@@ -871,13 +871,13 @@ function verif_absences(ctrl_form){
     return false;
 
   if($("select[name=motif] option:selected").attr("disabled")=="disabled"){
-    CJInfo("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.","error");
+    stackAlert('Le motif sélectionné n\'est pas valide.\nVeuillez le modifier s\'il vous plaît.','error');
     return false;
   }
 
   if($("select[name=motif]").val().toLowerCase()=="autre" || $("select[name=motif]").val().toLowerCase()=="other"){
     if($("input[name=motif_autre]").val()==""){
-      CJInfo("Veuillez choisir un motif.","error");
+      stackAlert('Veuillez choisir un motif.','error');
       return false;
     }
   }
@@ -890,7 +890,7 @@ function verif_absences(ctrl_form){
 
   // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
   if(perso_ids.length<1){
-    CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
+    stackAlert('Veuillez sélectionner un ou plusieurs agents','error');
     return false;
   }
 
@@ -980,7 +980,7 @@ function verif_absences(ctrl_form){
             retour=false;
           }
         } else {
-          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car les plannings sont en cours d'élaboration :#BR#"+result["planning_started"], "error");
+          stackAlert('Vous ne pouvez pas enregistrer d\'absences pour les dates suivantes car les plannings sont en cours d\'élaboration :\n'+result["planning_started"], 'error');
           retour=false;
         }
       }
@@ -991,7 +991,7 @@ function verif_absences(ctrl_form){
             retour = false;
           }
         } else {
-          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car elles rentrent en conflit avec une période bloquée.", "error");
+          stackAlert('Vous ne pouvez pas enregistrer d\'absences pour les dates suivantes car elles rentrent en conflit avec une période bloquée.', 'error');
           retour = false;
         }
       }
@@ -1020,7 +1020,7 @@ function verif_absences(ctrl_form){
           if(!confirm(message +"\nVoulez-vous continuer ?"))
             retour=false;
           } else {
-            CJInfo("Vous ne pouvez pas ajouter d'absences car " + message.replace("\n", "#BR#"), "error");
+            stackAlert('Vous ne pouvez pas ajouter d\'absences car ' + message, 'error');
             retour=false;
           }
         }
