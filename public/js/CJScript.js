@@ -8,6 +8,24 @@ Fichier : CJScript.js
 
  DataTable.type('date', 'className', 'dt-left');
 
+function CJDataTableLogLevelFilter() {
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+         var max = $('#maxLevel').val();
+         if (!max) return true;
+         return data[1] <= max;
+       });
+
+     $('#maxLevel').on('change', function() {
+        CJDataTableDraw();
+     });
+}
+
+function CJDataTableDraw() {
+    $(".CJDataTable").each(function(){
+        $(this).DataTable().draw();
+    });
+}
+
 function CJDataTableHideRow(selector){
   // (.hide mieux que .remove car si .remove, la ligne réapparait lors de l'utilisation des tris
   $(selector).hide();
@@ -149,6 +167,7 @@ $(function(){
   Sur les balises th de l'entête, les classes suivantes permettent de définir le type de données contenues dans les cellules 
   pour trier correctement les colonnes :
   - dataTableNoSort : La colonne ne sera pas triable
+  - dataTableHide: la colonne sera masquée
   - dataTableDateFR : La colonne contient des dates au format JJ-MM-AAAA [HH:mm:ss]. 
       Si seule l'heure est affichée, le tri considère que la date est celle du jour
   - dataTableDateFR-fin : La colonne des dates de fin
@@ -207,6 +226,9 @@ $(function(){
 	else if(th[i].hasClass("dataTableNoSort")){
 	  aoCol.push({"bSortable":false});
 	}
+    else if(th[i].hasClass("dataTableHide")){
+      aoCol.push({"visible":false});
+    }
     // For accentuated string
     else if(th[i].hasClass('clear-string')){
       aoCol.push({'sType': 'clear-string'});

@@ -23,24 +23,25 @@
         <table id="tableAbsencesImportResult" class="CJDataTable">
           <thead>
             <th>Ligne</th>
+            <th class="dataTableHide">Niveau</th>
             <th>Type</th>
             <th>Message</th>
           </thead>
           <tbody>
             {% for log in importLog %}
-              {% if log.type < 4 %}
               <tr>
                 <td>{{ log.line }}</td>
-                <td data-order="{{ log.type }}">
+                <td>{{ log.type }}</td>
+                <td>
                   {% if log.type == 1 %}<div class="red">Erreur</div>
                   {% elseif log.type == 2 %}<div class="orange">Avertissement</div>
                   {% elseif log.type == 3 %}<div class="green">Information</div>
                   {% elseif log.type == 4 %}Débogage
+                  {% else %}Inconnu
                   {% endif %}
                 </td>
                 <td>{{ log.message | striptags('<a>') | raw }}</td>
               </tr>
-              {% endif %}
             {% endfor %}
           </tbody>
         </table>
