@@ -24,18 +24,18 @@ Planno est un logiciel libre développé en PHP-MySQL permettant de réaliser le
   - CURL (si identification CAS)
   - LDAP (si utilisation avec un serveur LDAP)
 
-### Licence GNU/GPL
+### Licence AGPL
 
 Planno est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
-suivant les termes de la "GNU General Public License", telle que publiée par la 
-Free Software Foundation (version 2 et au dela).
+suivant les termes de la "GNU AFFERO GENERAL PUBLIC LICENSE", telle que publiée par la 
+Free Software Foundation (version 3 et au dela).
 
 Planno est distribué dans l'espoir qu'il vous sera utile, mais SANS AUCUNE GARANTIE :
 sans même la garantie implicite de COMMERCIALISABILITÉ ni d'ADÉQUATION À UN OBJECTIF PARTICULIER.
 Consultez la Licence Générale Publique GNU pour plus de détails.
 
-Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec ce programme (fichier LICENSE); 
-si ce n'est pas le cas, consultez : http://www.gnu.org/licenses
+Vous devriez avoir reçu une copie de la licence avec ce programme (fichier LICENSE.md); 
+si ce n'est pas le cas, consultez : https://www.gnu.org/licenses/agpl-3.0.html
 
 ### Ressources installées via composer:
 

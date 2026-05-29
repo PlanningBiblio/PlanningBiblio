@@ -19,7 +19,7 @@
             "email": "sarah.deborde@biblibre.com"
         }
     ],
-    "license": "GPL-2.0-or-later",
+    "license": "AGPL-3.0-or-later",
     "require": {
         "php": "^8.2 || ^8.3",
         "apereo/phpcas": "^1.3",

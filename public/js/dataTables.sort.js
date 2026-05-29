@@ -1,6 +1,6 @@
 /*
 Planning Biblio, Version 2.5.4
-Licence GNU/GPL (version 2 et au dela)
+Licence AGPL (version 3 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 

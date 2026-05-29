@@ -1,7 +1,7 @@
 <?php
 /**
  * Planno
- * Licence GNU/GPL (version 2 et au dela)
+ * Licence AGPL (version 3 et au dela)
  * Voir les fichiers README.md et LICENSE
  * 
  * @file public/include/function.php
