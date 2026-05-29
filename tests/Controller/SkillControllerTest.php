@@ -47,17 +47,17 @@ class SkillControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Ajout d\'une activité');
 
-        $result=$crawler->filterXPath('//table[@class="tableauFiches"]');
-        $this->assertStringContainsString(' Nom :', $result->text('Node does not exist', false), 'label is Nom');
+        $label = $crawler->filter('label[for=skill-name]');
+        $this->assertStringContainsString('Nom :', $label->text(), 'The label is incorrect');
 
-        $result=$crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
-        $this->assertEquals($result->attr('name'),'nom','check input for name');
+        $input = $crawler->filter('input#skill-name');
+        $this->assertEquals($input->attr('name'),'nom','check input for name');
 
-        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $confirmButton = $crawler->filter('button.btn-primary');
+        $this->assertEquals($confirmButton->text(),'Valider','The submit button value should be Valider');
 
-        $class = $crawler->filterXPath('//input[@class="btn btn-secondary"]');
-        $this->assertEquals($class->attr('value'),'Annuler','input submit value is Annuler');
+        $cancelButton = $crawler->filter('button.btn-secondary');
+        $this->assertEquals($cancelButton->text(),'Annuler','The cancel button value should be Annuler');
     }
 
     public function testFormEdit(): void
@@ -84,17 +84,17 @@ class SkillControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Modification de l\'activité');
 
-        $result=$crawler->filterXPath('//table[@class="tableauFiches"]');
-        $this->assertStringContainsString(' Nom :', $result->text('Node does not exist', false), 'label is Nom');
+        $label = $crawler->filter('label[for=skill-name]');
+        $this->assertStringContainsString('Nom :', $label->text(), 'The label is incorrect');
 
-        $result=$crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
-        $this->assertEquals($result->attr('value'),'security','check input for name');
+        $input=$crawler->filter('input#skill-name');
+        $this->assertEquals($input->attr('value'),'security','check input for name');
 
-        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $confirmButton = $crawler->filter('button.btn-primary');
+        $this->assertEquals($confirmButton->text(),'Valider','The submit button value should be Valider');
 
-        $class = $crawler->filterXPath('//input[@class="btn btn-secondary"]');
-        $this->assertEquals($class->attr('value'),'Annuler','input submit value is Annuler');
+        $cancelButton = $crawler->filter('button.btn-secondary');
+        $this->assertEquals($cancelButton->text(),'Annuler','The cancel button value should be Annuler');
     }
 
     public function testSkillList(): void

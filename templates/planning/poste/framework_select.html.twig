@@ -11,8 +11,8 @@
         <tr>
           <td>Choix d'un tableau : </td>
           <td>
-            <select name="tab" class="ui-widget-content ui-corner-all">
-              <option value="">&nbsp;</option>
+            <select name="tab" class="form-select form-select-sm">
+              <option hidden disabled selected value="">&nbsp;</option>
                 {% for framework in frameworks %}
                   {% if framework.site == site %}
                     <option value="{{ framework.tableau }}">{{ framework.nom }}</option>
@@ -38,8 +38,8 @@
           <tr>
             <td>Choix d'un groupe : </td>
             <td>
-              <select name="group" class="ui-widget-content ui-corner-all">
-                <option value="">&nbsp;</option>
+              <select name="group" class="form-select form-select-sm">
+              <option hidden disabled selected value="">&nbsp;</option>
                 {% for group in groups %}
                   {% if group.site == site or config('Multisites-nombre') < 2 %}
                     <option value="{{ group.id }}">{{ group.nom }}</option>

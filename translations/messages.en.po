@@ -447,3 +447,6 @@ msgstr "That name is already taken"
 
 msgid "Group name"
 msgstr "Group name"
+
+msgid "Name"
+msgstr "Name"

@@ -12,7 +12,7 @@
         </td>
         <td>Voir les agents</td>
         <td style="width:150px;">
-          <select name="actif" id="showAgentSelect" onchange="document.form2.submit();"  class="ui-widget-content ui-corner-all">
+          <select name="actif" id="showAgentSelect" onchange="document.form2.submit();"  class="form-select form-select-sm ms-2">
             <option value="Actif"{% if active == 'Actif' %} selected="selected" {% endif %}>Service public</option>
             <option value="Inactif" {% if active == 'Inactif' %} selected="selected" {% endif %}>Administratif</option>
             {% if rights21 %}

@@ -447,3 +447,6 @@ msgstr "Ce nom est déjà utilisé"
 
 msgid "Group name"
 msgstr "Nom du groupe"
+
+msgid "Name"
+msgstr "Nom"
