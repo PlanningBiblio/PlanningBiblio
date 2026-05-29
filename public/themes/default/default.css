@@ -1253,6 +1253,10 @@ class cellule = cellule par défaut
   border: none;
 }
 
+.datepicker.form-control {
+  text-align: center;
+}
+
 .pl-highlight {
   background: #f0e68c;
 }

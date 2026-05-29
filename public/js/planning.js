@@ -41,6 +41,7 @@ $(document).ready(function(){
   $('#save-model-form').submit(function(e) {
     e.preventDefault();
     save_model();
+    $(this).removeClass('was-validated');
   });
 
   function save_model(erase = 0) {
