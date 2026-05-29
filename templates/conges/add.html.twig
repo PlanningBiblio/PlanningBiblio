@@ -76,7 +76,7 @@
                          <br /><br />
                       {% endif %}
 
-                      <select name="perso_id" id="perso_ids" class="{% if agents_multiples %}agents_multiples{% endif %} ui-widget-content ui-corner-all" style="margin-bottom:20px; width:100%;">
+                      <select name="perso_id" id="perso_ids" class="{% if agents_multiples %}agents_multiples{% endif %} form-select form-select-sm" style="margin-bottom:20px; width:100%;">
                       {% if agents_multiples %}
                         <option value="0" selected="selected"> -- Ajoutez un agent --</option>
                           {% if conges_tous %}
@@ -126,7 +126,7 @@
                   <td class="textAlignRight">Heure de début : </td>
                   <td>
                     <input name="hre_debut" id="hre_debut_select"
-                      class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:100%;"
+                      class="planno-timepicker checkdate center form-control form-control-sm" style="width:100%;"
                       value="{{ hre_debut is defined ? hre_debut | date('H:i') : '' }}"/>
                   </td>
                 </tr>
@@ -149,7 +149,7 @@
                   <td class="textAlignRight">Heure de fin : </td>
                   <td>
                     <input name="hre_fin" id="hre_fin_select"
-                      class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:100%;"
+                      class="planno-timepicker checkdate center form-control form-control-sm" style="width:100%;"
                       value="{{ hre_fin is defined ? hre_fin | date('H:i') : '' }}"/>
                   </td>
                 </tr>

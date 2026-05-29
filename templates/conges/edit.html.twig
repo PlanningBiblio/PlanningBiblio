@@ -108,7 +108,7 @@
           {% endif %}
             <td>Heure de début : </td>
             <td>
-              <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:40%" 
+              <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate center form-control form-control-sm" style="width:40%" 
                 value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}"/>
             </td>
           </tr>
@@ -155,7 +155,7 @@
 
             <td>Heure de fin : </td>
             <td>
-              <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" style="width:40%"
+              <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center form-control form-control-sm" style="width:40%"
                 value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
             </td>
           </tr>

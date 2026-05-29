@@ -46,6 +46,6 @@ body {
   font-weight: normal;
 }
 
-a, img, .noprint, .footer, .ui-widget-header, div.ui-state-error, #messages_infos, #pl-calendar, .arrow-right, .tooltip {
+a, img, .noprint, .footer, #messages_infos, #pl-calendar, .arrow-right, .tooltip {
   display:none;
 }

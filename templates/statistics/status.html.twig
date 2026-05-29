@@ -36,7 +36,7 @@
                   <label>Statuts</label>
                 </td>
                 <td>
-                  <select name='status[]' multiple='multiple' size='20' onchange='verif_select("status");' class='ui-widget-content ui-corner-all' >
+                  <select name='status[]' multiple='multiple' size='20' onchange='verif_select("status");' class="form-select form-select-sm" >
                   {% if objects is iterable %}
                       <option value='Tous'>Tous</option>
                       {% for o in objects %}
@@ -51,7 +51,7 @@
                   <label for="statisticsHours" >Heures<sup>*</sup></label>
                 </td>
                 <td>
-                  <textarea name="statisticsHours" id="statisticsHours" rows="7" class="ui-widget-content ui-corner-all">{{ statisticsHours }}</textarea><br/>
+                  <textarea name="statisticsHours" id="statisticsHours" rows="7" class="form-control">{{ statisticsHours }}</textarea><br/>
                   <a href="javascript:statisticsGetDefaultHours()" id="statisticsDefaultHours_link">Charger les heures par défaut</a>
                 </td>
               </tr>
@@ -61,7 +61,7 @@
                     <label >Sites</label>
                   </td>
                   <td>
-                    <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
+                    <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class="form-select form-select-sm" >
                       <option value='Tous'>Tous</option>
                       {% for i in 1..nbSites %}
                         <option value='{{ i }}' {{ (i in selectedSites)?"selected = 'selected'":" " }}>{{ multisites[i] }}</option>

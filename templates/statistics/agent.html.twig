@@ -26,13 +26,13 @@
               <tr style='vertical-align:top'>
                 <td><label >Agents</label></td>
                 <td>
-                  <select name='agent[]' multiple='multiple' size='20' onchange='verif_select("agent");' class='ui-widget-content ui-corner-all' >
+                  <select name='agent[]' multiple='multiple' size='20' onchange='verif_select("agent");' class="form-select form-select-sm" >
                     {% if agents_list is iterable %}
                       <option value='Tous'>Tous</option>
                       {% for elem in agents_list %}
                         {% if agents is defined %}
                           {% if elem.id in agents %}
-                            <option value='{{ elem.id }}' selected='selected'>{{ elem.nom }} {{ elem.prenom }}</option>}
+                            <option value='{{ elem.id }}' selected='selected'>{{ elem.nom }} {{ elem.prenom }}</option>
                           {% else %}
                             <option value='{{ elem.id }}'>{{ elem.nom }} {{ elem.prenom }}</option>
                           {% endif %}
@@ -47,7 +47,7 @@
                   <label for="statisticsHours" >Heures<sup>*</sup></label>
                 </td>
                 <td>
-                  <textarea name="statisticsHours" id="statisticsHours" rows="7" class="ui-widget-content ui-corner-all">{{ statisticsHours }}</textarea><br/>
+                  <textarea name="statisticsHours" id="statisticsHours" rows="7" class="form-control">{{ statisticsHours }}</textarea><br/>
                   <a href="javascript:statisticsGetDefaultHours()" id="statisticsDefaultHours_link">Charger les heures par défaut</a>
                 </td>
               </tr>
@@ -57,7 +57,7 @@
                     <label >Sites</label>
                   </td>
                   <td>
-                    <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
+                    <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class="form-select form-select-sm" >
                       <option value='Tous'>Tous</option>
                         {% for i in 1..nbSites %}
                           {% if i in selectedSites %}

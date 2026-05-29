@@ -17,7 +17,7 @@
           Voir les agents
         </td>
         <td style="width:150px;">
-          <select name="actif" onchange="document.form2.submit();" class="ui-widget-content ui-corner-all">
+          <select name="actif" onchange="document.form2.submit();" class="form-select form-select-sm ms-2">
             <option value="Actif" {{ actif == 'Actif' ? "selected='selected'" : "" }} >Service public</option>
             <option value="Inactif" {{ actif == 'Inactif' ? "selected='selected'" : "" }}>Administratif</option>
           </select>

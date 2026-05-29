@@ -26,7 +26,7 @@
                 </tr>
                   <td><label>Tri</label></td>
                   <td>
-                    <select name='tri' class='ui-widget-content ui-corner-all' >
+                    <select name='tri' class="form-select form-select-sm" >
                       <option value='cmp_01'{% if tri is same as('cmp_01') %}selected='selected'{% endif %}>Nom du poste</option>
                       <option value='cmp_02' {% if tri is same as('cmp_02') %}selected='selected'{% endif %}>Etage</option>
                       <option value='cmp_03' {% if tri is same as('cmp_03') %}selected='selected'{% endif %}>Obligatoire</option>
@@ -39,7 +39,7 @@
                 <tr style='vertical-align:top'>
                   <td><label>Postes</label></td>
                   <td>
-                    <select name='postes[]' multiple='multiple' size='20' onchange='verif_select("postes");' class='ui-widget-content ui-corner-all' >
+                    <select name='postes[]' multiple='multiple' size='20' onchange='verif_select("postes");' class="form-select form-select-sm" >
                       {% if postes_list is not empty %}
                         <option value='Tous'>Tous</option>
                           {% for elem in postes_list %}
@@ -59,7 +59,7 @@
                   <tr style='vertical-align:top'>
                     <td><label>Sites</label></td>
                     <td>
-                      <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
+                      <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class="form-select form-select-sm" >
                         <option value='Tous'>Tous</option>
                           {% for i in 1..nbSites %}
                             {% if i in selectedSites %}
