@@ -27,26 +27,7 @@ $(function() {
       $('#recurrence-checkbox').attr('checked','checked');
     }
 
-    // MT53517 Quick fix, to be continued
-    // Filtrer les résultats d'un import CSV par niveau de log
-    // var table = $('#tableAbsencesImportResult').DataTable({
-    //         'language' : { 'url' : url('js/dataTables.french.lang.json') },
-    //         'iDisplayLength': 25,
-    //         columnDefs: [
-    //             { target: 1, visible: false }
-    //         ]
-    //     }
-    // );
-
-    // $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-    //     var max = $('#maxLevel').val();
-    //     if (!max) return true;
-    //     return data[1] <= max;
-    //   });
-
-    // $('#maxLevel').on('change', function() {
-    //     table.draw();
-    // });
+    CJDataTableLogLevelFilter();
 
   });
 
