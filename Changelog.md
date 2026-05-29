@@ -1,5 +1,16 @@
 # Changelog Planno
 
+## Version 25.11.26 (2026-05-29)
+
+### Enhancement
+
+* MT46629: Use bootstrap for framework tabs #1378
+* MT46629: Use bootstrap for config's accordion #1380
+
+### License
+
+* Change the license from GPLv2 to AGPLv3
+
 ## Version 25.11.25 (2026-05-27)
 
 ### Enhancement
