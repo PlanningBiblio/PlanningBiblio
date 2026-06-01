@@ -28,69 +28,69 @@
   <form name="form" method="post" action="{{ asset('notification') }}" onsubmit="return confirm('Etes vous sûr de vouloir supprimer les agents sélectionnés ?');">
     <table id="tableAgents" class="CJDataTable" data-sort='[[1, "asc"],[2, "asc"]]'>
       <thead>
-        <tr>
-          <th class="dataTableNoSort aLeft" >
-            <input type="checkbox" class="CJCheckAll"/>
-          </th>
-          <th>Nom</th>
-          <th>Prénom</th>
-          <th>Service</th>
-          <th>Statut</th>
-          {% if config('Multisites-nombre') > 1 %}
-            <th>Sites</th>
-          {% endif %}
-          <th>Validations / notifications niveau 1</th>
-          <th>Validations / notifications niveau 2</th>
-        </tr>
+      <tr>
+        <th class="dataTableNoSort aLeft" >
+          <input type="checkbox" class="CJCheckAll"/>
+        </th>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Service</th>
+        <th>Statut</th>
+        {% if nbSites > 1 %}
+          <th>Sites</th>
+        {% endif %}
+        <th>Validations / notifications niveau 1</th>
+        <th>Validations / notifications niveau 2</th>
+      </tr>
       </thead>
       <tbody>
-        {% for agent in agents %}
-          <tr>
-            <td style="white-space:nowrap;">
-              <input type="checkbox" name="chk{{loop.index0}}" value="{{ agent.id }}" class="checkboxes"/>
-              <span class="pl-icon pl-icon-edit pointer" title="Modifier" data-id="{{ agent.id }}"></span>
-            </td>
-            <td>{{ agent.nom }}</td>
-            <td>{{ agent.prenom }}</td>
-            <td>{{ agent.service }}</td>
-            <td>{{ agent.statut }}</td>
-            {% if config('Multisites-nombre')>1 and agent.sites_list is defined %}
-                <td>{{ agent.sites_list }}</td>
-            {% elseif config('Multisites-nombre')>1 and not agent.sites_list is defined %}
-                <td>&nbsp;</td>
-            {% endif %}
-            <td>
-              {% for manager in agent.managers %}
-                {% if manager.level1 %}
-                  <span class="managerl1_{{ agent.id }}"
-                        data-manager="{{ manager.manager.id }}"
-                        data-notif="{{ manager.level1Notification }}">
+      {% for agent in agents %}
+        <tr>
+          <td style="white-space:nowrap;">
+            <input type="checkbox" name="chk{{loop.index0}}" value="{{ agent.id }}" class="checkboxes"/>
+            <span class="pl-icon pl-icon-edit pointer" title="Modifier" data-id="{{ agent.id }}"></span>
+          </td>
+          <td>{{ agent.nom }}</td>
+          <td>{{ agent.prenom }}</td>
+          <td>{{ agent.service }}</td>
+          <td>{{ agent.statut }}</td>
+          {% if nbSites>1 and agent.sites_list is defined %}
+            <td>{{ agent.sites_list }}</td>
+          {% elseif nbSites>1 and not agent.sites_list is defined %}
+            <td>&nbsp;</td>
+          {% endif %}
+          <td>
+            {% for manager in agent.managers %}
+              {% if manager.level1 %}
+                <span class="managerl1_{{ agent.id }}"
+                      data-manager="{{ manager.manager.id }}"
+                      data-notif="{{ manager.level1Notification }}">
                     {{ manager.manager.lastname }} {{ manager.manager.firstname | first }}
-                    {% if manager.level1Notification %}
-                     - Notifications
-                    {% endif %}
+                  {% if manager.level1Notification %}
+                    - Notifications
+                  {% endif %}
                   </span>
-                  <br />
-                {% endif %}
-              {% endfor %}
-            </td>
-            <td>
-              {% for manager in agent.managers %}
-                {% if manager.level2 %}
-                  <span class="managerl2_{{ agent.id }}"
-                        data-manager="{{ manager.manager.id }}"
-                        data-notif="{{ manager.level2Notification }}">
+                <br />
+              {% endif %}
+            {% endfor %}
+          </td>
+          <td>
+            {% for manager in agent.managers %}
+            {% if manager.level2 %}
+            <span class="managerl2_{{ agent.id }}"
+                  data-manager="{{ manager.manager.id }}"
+                  data-notif="{{ manager.level2Notification }}">
                     {{ manager.manager.lastname }} {{ manager.manager.firstname | first }}
-                    {% if manager.level2Notification %}
-                     - Notifications
-                    {% endif %}
+              {% if manager.level2Notification %}
+                - Notifications
+              {% endif %}
                   <span>
                   <br />
                 {% endif %}
-              {% endfor %}
-            </td>
-          </tr>
-        {% endfor %}
+                    {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
       </tbody>
     </table>
     <input type="hidden" name="CSRFToken" id="CSRFToken" value="{{ CSRFToken }}" />
@@ -113,39 +113,37 @@
             <div class="container text-center">
               <div class="row">
 
-                <div class="col">
+          <div class="col">
                   {% trans %}Level 1 Validation{% endtrans %}
-
-                  <div class="row my-3">
-                    <div class="col">
-                      {% trans %}Manager{% endtrans %}
-                    </div>
-                    <div class="col">
-                      {% trans %}Notify{% endtrans %}
-                    </div>
+          <div class="row my-3">
+        <div class="col">
+        {% trans %}Manager{% endtrans %}
+          </div>
+          <div class="col">
+          {% trans %}Notify{% endtrans %}
+        </div>
                   </div>
 
-                  {% for i in 0..8 %}
-                    <div class="row mb-3">
-                      <div class="col">
-                        <select name="responsable-{{i}}" id="responsable-{{i}}" class="responsablesl1 form-select form-select-sm form-control" data-id="{{i}}">
-                          <option selected value=""></option>
-                          {% for agent in manager_level1 %}
-                            <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
-                          {% endfor %}
-                        </select>
-                      </div>
-
-                      <div class="col">
+        {% for i in 0..8 %}
+          <div class="row mb-3">
+            <div class="col">
+              <select name="responsable-{{i}}" id="responsable-{{i}}" class="responsablesl1form-select form-select-sm form-control" data-id="{{i}}">
+                <option selected value=""></option>
+                {% for agent in manager_level1 %}
+                  <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col">
                         <div class="form-check" style="display: flex; justify-content:center;">
-                          <input type="checkbox" class="form-check-input notificationsl1" name="notification-{{i}}" id="notification-{{i}}" data-id="{{i}}"/>
-                        </div>
+              <input type="checkbox" class="form-check-input notificationsl1" name="notification-{{i}}" id="notification-{{i}}"  data-id="{{i}}"/>
+            </div>
                       </div>
                     </div>
                   {% endfor %}
                 </div>
 
-                <div class="col-auto d-flex">
+            <div class="col-auto d-flex">
                   <div class="vr"></div>
                 </div>
 
@@ -163,22 +161,22 @@
                   {% for i in 0..8 %}
                     <div class="row mb-3">
                       <div class="col">
-                        <select name="responsablel2-{{i}}" id="responsablel2-{{i}}" class="responsablesl2 form-select form-select-sm form-control" data-id="{{i}}">                        
-                          <option selected value=""></option>
-                          {% for agent in manager_level2 %}
-                            <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
-                          {% endfor %}
-                        </select>
-                      </div>
+              <select name="responsablel2-{{i}}" id="responsablel2-{{i}}" class="responsablesl2form-select form-select-sm form-control" data-id="{{i}}">
+                <option selected value=""></option>
+                {% for agent in manager_level2 %}
+                  <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                {% endfor %}
+              </select>
+            </div>
 
                       <div class="col">
-                        <div class="form-check" style="display: flex; justify-content:center;">
-                          <input type="checkbox" class="form-check-input notificationsl2" name="notificationl2-{{i}}" id="notificationl2-{{i}}" data-id="{{i}}"/>
-                        </div>
+            <div class="form-check" style="display: flex; justify-content:center;">
+              <input type="checkbox" class="form-check-input notificationsl2" name="notificationl2-{{i}}" id="notificationl2-{{i}}"  data-id="{{i}}"/>
+            </div>
                       </div>
-                    </div>
-                  {% endfor %}
-                </div>
+          </div>
+        {% endfor %}
+        </div>
 
               </div>
             </div>

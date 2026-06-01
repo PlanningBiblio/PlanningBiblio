@@ -54,6 +54,7 @@ class ControllerAuthorizationListener
         $loginId = $event->getRequest()->getSession()->get('loginId');
         $accesses = $this->entityManager->getRepository(Access::class)->findBy(array('page' => $page));
         $logged_in = $this->entityManager->find(Agent::class, $loginId);
+        $sites_array = $event->getRequest()->getSession()->get('sites', []);
 
         $route = $event->getRequest()->attributes->get('_route');
 
@@ -77,20 +78,18 @@ class ControllerAuthorizationListener
             return;
         }
 
-        if (!$this->canAccess($route)) {
+        if (!$this->canAccess($route, $sites_array)) {
             $this->triggerAccessDenied($event);
         }
     }
 
-    private function canAccess($route): bool
+    private function canAccess($route, $sites_array): bool
     {
         if (!isset($this->permissions[$route])) {
             return true;
         }
 
         $accesses = $this->permissions[$route];
-
-        $multisites = $GLOBALS['config']['Multisites-nombre'];
 
         // Right 21 (Edit personnel) gives right 4 (Show personnel)
         if (in_array(21, $this->droits)) {
@@ -105,9 +104,9 @@ class ControllerAuthorizationListener
 
         // Multisites rights associated with page access
         $multisites_rights = array(201,301);
-        if ($multisites > 1) {
+        if (count($sites_array) > 1) {
             if (in_array($accesses[0], $multisites_rights)) {
-                for ($i = 1; $i <= $multisites; $i++) {
+                for ($i = 1; $i <= count($sites_array); $i++) {
                     $droit = $accesses[0] -1 + $i;
                     if (in_array($droit, $this->droits)) {
                         return true;

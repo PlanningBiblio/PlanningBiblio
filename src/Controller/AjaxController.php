@@ -40,20 +40,19 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/agents-by-sites', name: 'ajax.agentsbysites', methods: ['GET'])]
-    public function agentsBySites(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function agentsBySites(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
-        $session = $request->getSession();
-
         $sites = json_decode($request->get('sites'));
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($session->get('loginId'));
+            ->getManagedFor($session->get('loginId'), 0, $session->get('sites'));
 
         $agents = array();
+        $sites_array = $session->get('sites', []);
         foreach ($managed as $m) {
             if ($m->getId() == $session->get('loginId') ||
-                $this->config('Multisites-nombre') == 1 ||
+                count($sites_array) == 1 ||
                 ($sites && $m->inOneOfSites($sites))) {
 
                 $agents[] = array(
@@ -199,7 +198,7 @@ class AjaxController extends BaseController
       $perso_ids = $request->get('perso_ids');
       $perso_ids = json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
-      $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids);
+      $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids, $session->get('sites'));
 
       $fin = $fin ?: str_replace('00:00:00', '23:59:59', $debut);
 
@@ -296,7 +295,7 @@ class AjaxController extends BaseController
           ->getRepository(Agent::class)
           ->setModule($type == 'absence' ? 'absence' : 'holiday')
           ->forAgent($perso_ids[0])
-          ->getValidationLevelFor($session->get('loginId'));
+          ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
       $result['admin'] = ($adminN1 or $adminN2);
 

@@ -61,12 +61,12 @@ $logged_in = $entityManager->find(Agent::class, $loginId);
 $droits = $logged_in ? $logged_in->getACL() : array();
 $_SESSION['droits'] = array_merge($droits, array(99));
 
-$theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
+$theme=$config['Affichage-theme'] ?? "default";
 if (!file_exists("themes/$theme/$theme.css")) {
     $theme="default";
 }
 
-$themeJQuery = $config['Affichage-theme'] ?$config['Affichage-theme'] : "default";
+$themeJQuery = $config['Affichage-theme'] ?? "default";
 if (!file_exists("themes/$themeJQuery/jquery-ui.min.css")) {
     $themeJQuery="default";
 }

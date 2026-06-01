@@ -1,51 +1,49 @@
-{# agents/rights.html.twig #}
+{# agents/rights_edit.html.twig #}
 
 <div class="tab-pane fade" id="access" role="tabpanel" aria-labelledby="access-tab" tabindex="0">
-  <ul>
-    {% for category, elem in rights %}
-      <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
-      {% for right in elem.rights %}
-        <li>
-          {% if right.checked %}
-            {{ right.groupe }}<label class='agent-acces-checked2 green bold'>Oui</label>
-          {% else %}
-            {{ right.groupe }}<label class='agent-acces-checked2 red'>Non</label>
-          {% endif %}
-        </li>
-      {% endfor %}
+  {% for category, elem in rights %}
+    <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
+    {% for right in elem.rights %}
+      {% if right.checked %}
+        <input type='checkbox' name='droits[]' checked="checked" value='{{ right.groupe_id }}' style='margin:0 10px 0 20px;'/>{{ right.groupe }}<br/>
+      {% else %}
+        <input type='checkbox' name='droits[]' value='{{ right.groupe_id }}' style='margin:0 10px 0 20px;'/>{{ right.groupe }}<br/>
+      {% endif %}
     {% endfor %}
-  </ul>
+  {% endfor %}
 
-  {% if config('Multisites-nombre') > 1 %}
+  {% if multisites %}
     <table style='margin-top:50px;'>
       <thead>
-        <tr>
-          <th>&nbsp;</th>
-          {% for s in sites_for_rights %}
-            <th class='center' style='padding:0 10px;'>{{ s.site_name }}</th>
-          {% endfor %}
-        </tr>
+      <tr>
+        <th>&nbsp;</th>
+        {% for s in sites_for_rights %}
+          <th class='center' style='padding:0 10px;'>{{ s.site_name }}</th>
+        {% endfor %}
+      </tr>
       </thead>
       <tbody>
-        {% for category, elem in rights_sites %}
+      {% for category, elem in rights_sites %}
+        <tr>
+          <td>
+            <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
+          </td>
+        </tr>
+        {% for right in elem.rights %}
           <tr>
-            <td>
-              <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
-            </td>
-          </tr>
-          {% for right in elem.rights %}
-            <tr>
-              <td>{{ right.groupe }}</td>
-              {% for s in right.sites %}
+            <td>{{ right.groupe }}</td>
+            {% for s in right.sites %}
+              <td class='center'>
                 {% if s.checked %}
-                  <td class='center green bold'>Oui</td>
+                  <input type='checkbox' name='droits[]' checked="checked" value='{{ s.groupe_id }}' />
                 {% else %}
-                  <td class='center red'>Non</td>
+                  <input type='checkbox' name='droits[]' value='{{ s.groupe_id }}' />
                 {% endif %}
-              {% endfor %}
-            </tr>
-          {% endfor %}
+              </td>
+            {% endfor %}
+          </tr>
         {% endfor %}
+      {% endfor %}
       </tbody>
     </table>
   {% endif %}
