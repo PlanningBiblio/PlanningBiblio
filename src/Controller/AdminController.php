@@ -5,12 +5,13 @@ namespace App\Controller;
 use App\Controller\BaseController;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Attribute\Route;
 
 class AdminController extends BaseController
 {
     #[Route(path: '/admin', name: 'admin.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request, Session $session)
     {
         $droits = $GLOBALS['droits'];
 
@@ -18,7 +19,8 @@ class AdminController extends BaseController
         $access_model = false;
         $access_working_hours = false;
 
-        for ($i=1; $i<=$this->config('Multisites-nombre'); $i++) {
+        $sites_array = $session->get('sites', []);
+        for ($i=1; $i<=count($sites_array); $i++) {
             if (in_array((300 + $i), $droits)) {
                 $access_model = true;
             }

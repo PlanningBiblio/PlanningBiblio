@@ -60,7 +60,7 @@ class AbsenceController extends BaseController
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
         if ($admin or $adminN2) {
             $perso_id = $request->query->filter('perso_id', -1, \FILTER_SANITIZE_NUMBER_INT, ['flags' => \FILTER_NULL_ON_FAILURE]);
@@ -119,7 +119,7 @@ class AbsenceController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
-            ->getManagedFor($session->get('loginId'));
+            ->getManagedFor($session->get('loginId'), 0, $session->get('sites'));
 
         // Liste des agents à conserver :
         $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
@@ -232,7 +232,7 @@ class AbsenceController extends BaseController
         list($this->admin, $this->adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
         $this->agents_multiples = (($this->admin or $this->adminN2) or in_array(9, $this->droits));
 
@@ -243,7 +243,7 @@ class AbsenceController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
-            ->getManagedFor($session->get('loginId'));
+            ->getManagedFor($session->get('loginId'), 0, $session->get('sites'));
 
         // If logged in agent has the permission
         // to "create absences for other agents",
@@ -293,7 +293,7 @@ class AbsenceController extends BaseController
         $this->droits = $GLOBALS['droits'];
         $this->session = $session;
 
-        $this->setAdminPermissions();
+        $this->setAdminPermissions($session->get('sites', []));
 
         $this->agents_multiples = ($this->admin or $this->adminN2 or in_array(9, $this->droits));
         $this->edit_own_absences = ($this->admin or $this->adminN2 or in_array(6, $this->droits));
@@ -464,7 +464,7 @@ class AbsenceController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
-            ->getManagedFor($session->get('loginId'), 1);
+            ->getManagedFor($session->get('loginId'), 1, $session->get('sites'));
 
         // If logged in agent has the permission
         // to "create absences for other agents",
@@ -540,7 +540,7 @@ class AbsenceController extends BaseController
         $perso_ids = $a->elements['perso_ids'];
         $uid = $a->elements['uid'];
 
-        $this->setAdminPermissions();
+        $this->setAdminPermissions($session->get('sites', []));
 
         // If "Absences-notifications-agent-par-agent" is enabled,
         // check if logged in agent can manage all agents in absence.
@@ -766,7 +766,7 @@ class AbsenceController extends BaseController
         $entity_id = $request->query->get('id');
         $workflow = $request->query->get('workflow', 'A');
 
-        $this->templateParams($this->getStatusesParams($agent_ids, $module, $entity_id, $workflow));
+        $this->templateParams($this->getStatusesParams($agent_ids, $module, $entity_id, $workflow, $request->getSession()->get('sites')));
 
         return $this->output('/common/validation-statuses.html.twig');
     }
@@ -1079,7 +1079,8 @@ class AbsenceController extends BaseController
         }
 
         // Define access right.
-        if ($this->config('Multisites-nombre') > 1) {
+        $sites_array = $session->get('sites', []);
+        if (count($sites_array) > 1) {
             $sites_agents = array();
             foreach ($agents_concernes as $elem) {
                 if (is_array($elem['sites'])) {
@@ -1549,7 +1550,8 @@ class AbsenceController extends BaseController
         }
 
         // Keep only managed agent on multi-sites mode
-        if ($this->config('Multisites-nombre') > 1 and !$this->config('Absences-notifications-agent-par-agent')) {
+        $sites_array = $session->get('sites', []);
+        if (count($sites_array) > 1 and !$this->config('Absences-notifications-agent-par-agent')) {
 
             $managed_sites = array();
             for ($i = 1; $i < 31; $i++) {
@@ -1598,13 +1600,13 @@ class AbsenceController extends BaseController
         return $valid_ids;
     }
 
-    private function setAdminPermissions(): void
+    private function setAdminPermissions($sites_array): void
     {
         // If can validate level 1: admin = true.
         // If can validate level 2: adminN2 = true.
         $this->adminN2 = false;
         $this->admin = false;
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((200+$i), $this->droits)) {
                 $this->admin = true;
             }
@@ -1691,7 +1693,8 @@ class AbsenceController extends BaseController
 
     private function canEdit($session, $perso_ids): bool
     {
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        $sites_array = $session->get('sites', []);
+        for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((200+$i), $this->droits) or in_array((500+$i), $this->droits)) {
                 return true;
             }

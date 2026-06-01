@@ -50,7 +50,7 @@ class HolidayController extends BaseController
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
         if (($admin or $adminN2) and $perso_id==null) {
             $perso_id = $_SESSION['oups']['conges_perso_id'] ?? $session->get('loginId');
@@ -112,7 +112,7 @@ class HolidayController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($session->get('loginId'), $agents_supprimes);
+            ->getManagedFor($session->get('loginId'), $agents_supprimes, $session->get('sites'));
         $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
         // Recherche des agents pour la fonction nom()
@@ -351,7 +351,7 @@ class HolidayController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
         if (!$adminN1 and !$adminN2 and $perso_id != $session->get('loginId')) {
             return $this->output('access-denied.html.twig');
@@ -554,7 +554,7 @@ class HolidayController extends BaseController
         if ($perso_id) {
             $agentRepository->forAgent($perso_id);
         }
-        list($admin, $adminN2) = $agentRepository->getValidationLevelFor($session->get('loginId'));
+        list($admin, $adminN2) = $agentRepository->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
         if (!$perso_id) {
             $perso_id = $session->get('loginId');
@@ -563,7 +563,7 @@ class HolidayController extends BaseController
         $sites_select = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedSitesFor($session->get('loginId'));
+            ->getManagedSitesFor($session->get('loginId'), $session->get('sites'));
 
         $agents_multiples = (($admin || $adminN2) && $this->config('Conges-Recuperations') == 1);
 
@@ -618,6 +618,7 @@ class HolidayController extends BaseController
         }
 
         $lang = $GLOBALS['lang'];
+        $sites_array = $session->get('sites', []);
         $templateParams = array(
             'admin'                 => $admin || $adminN2,
             'adminN1'               => $admin,
@@ -657,6 +658,7 @@ class HolidayController extends BaseController
             'selected_agent_id'     => $perso_id,
             'sites_select'          => $sites_select,
             'show_allday'           => $show_allday,
+            'multisites'            => count($sites_array)>1,
         );
 
         $this->templateParams($templateParams);
@@ -687,8 +689,9 @@ class HolidayController extends BaseController
         $droits = $GLOBALS['droits'];
         $admin = false;
         $sites = array();
+        $sites_array = $session->get('sites', []);
 
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
                 $admin = true;
                 $sites[] = $i;
@@ -744,7 +747,7 @@ class HolidayController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($session->get('loginId'), $agents_supprimes);
+            ->getManagedFor($session->get('loginId'), $agents_supprimes, $session->get('sites'));
 
         $c = new \conges();
         if ($agents_supprimes) {

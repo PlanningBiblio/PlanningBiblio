@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\PlanningPositionLines;
 use App\Entity\Position;
+use App\Entity\Site;
 use App\Planno\Framework;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -19,8 +20,9 @@ require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 class FrameworkController extends BaseController
 {
     #[Route(path: '/framework', name: 'framework.index', methods: ['GET'])]
-    public function index (Request $request, Session $session){
-        $nbSites = $this->config('Multisites-nombre');
+    public function index (Session $session){
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
 
         // Tableaux
         $t = new Framework();
@@ -49,7 +51,8 @@ class FrameworkController extends BaseController
                 $elem['tabAffect'] = $utilisation;
 
                 if ($nbSites > 1){
-                    $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($elem['site']);
+                    $elem['multisite'] = $s->getName();
                 }
             }
         }
@@ -68,7 +71,8 @@ class FrameworkController extends BaseController
         if (is_array($groupes)) {
             foreach ($groupes as &$elem) {
                 if ($nbSites > 1) {
-                    $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($elem['site']);
+                    $elem['multisite'] = $s->getName();
                 }
             }
         }
@@ -163,7 +167,8 @@ class FrameworkController extends BaseController
         $CSRFToken = $GLOBALS['CSRFSession'];
         $cfgType = $request->query->get('cfg-type');
         $cfgTypeGet = $request->query->get('cfg-type');
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
 
         // Choix de l'onglet (cfg-type)
         if ($cfgTypeGet) {
@@ -179,8 +184,8 @@ class FrameworkController extends BaseController
 
         $multisites = array();
         if ($nbSites>1) {
-            for ($i = 1 ;$i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[$s->getId()] = $s->getName();
             }
         }
 
@@ -211,7 +216,8 @@ class FrameworkController extends BaseController
         $CSRFToken = $GLOBALS['CSRFSession'];
         $cfgType = $request->query->get('cfg-type');
         $tableauNumero = $request->attributes->get('id');
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
 
         // Choix de l'onglet (cfg-type)
         if (!$cfgType and in_array("cfg_type", $_SESSION)) {
@@ -229,8 +235,8 @@ class FrameworkController extends BaseController
 
         $multisites = array();
         if ($nbSites>1) {
-            for ($i = 1 ;$i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[$s->getId()] = $s->getName();
             }
         }
 
@@ -575,10 +581,11 @@ class FrameworkController extends BaseController
         // Initialisation des variables
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
+        $sites_array = $session->get('sites', []);
 
-        if ($this->config('Multisites-nombre') > 1) {
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+        if(count($sites_array) > 1){
+            foreach ($sites_array as $s) {
+                $multisites[$s->getId()] = $s->getName();
             }
         }
 
@@ -623,10 +630,11 @@ class FrameworkController extends BaseController
         $id = $request->attributes->get('id');
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
+        $sites_array = $session->get('sites', []);
 
-        if ($this->config('Multisites-nombre') > 1) {
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+        if(count($sites_array) > 1){
+            foreach ($sites_array as $s) {
+                $multisites[$s->getId()] = $s->getName();
             }
         }
 

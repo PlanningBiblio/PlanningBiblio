@@ -54,7 +54,7 @@ class PlanningController extends BaseController
 
     #[Route(path: '/{date?}', name: 'home', methods: ['GET'], requirements: ['date' => '\d{4}-\d{2}-\d{2}'])]
     #[Route(path: '/{site}/{date?}', name: 'homeWithSite', methods: ['GET'], requirements: ['site' => '\d+', 'date' => '\d{4}-\d{2}-\d{2}'])]
-    public function index(Request $request)
+    public function index(Request $request, Session $session)
     {
         // Show all week plannings.
         if (!$request->get('date') and !empty($_SESSION['week'])) {
@@ -106,8 +106,8 @@ class PlanningController extends BaseController
         if (empty($redoables)) {
             $redoable = 0;
         }
-
         // Index page only
+        $sites_array = $session->get('sites', []);
         $this->templateParams(array(
             'start' => $this->dates[0]->dates[0],
             'end' => $this->dates[0]->dates[6],
@@ -121,6 +121,7 @@ class PlanningController extends BaseController
             'redoable' => $redoable,
             'show_framework_select' => $show_framework_select,
             'comments' => $comments[$date][$site],
+            'nbSites' => count($sites_array),
         ));
 
 
@@ -369,7 +370,8 @@ class PlanningController extends BaseController
 
         // Search for agents on other sites.
         $autres_sites = array();
-        if ($this->config('Multisites-nombre') > 1) {
+        $sites_array = $session->get('sites', []);
+        if (count($sites_array) > 1) {
             $db = new \db();
             $db->select2('pl_poste', array('perso_id','date','debut','fin','poste'), array('date' => "BETWEEN {$dates[0]} AND ".end($dates), 'site' => "<>$site"));
             if ($db->result) {
@@ -1452,7 +1454,8 @@ class PlanningController extends BaseController
 
         // Sécurité
         // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
-        $droit = ($this->config['Multisites-nombre'] > 1) ? (300 + $site) : 12;
+        $sites_array = $session->get('sites', []);
+        $droit = count($sites_array) ? (300 + $site) : 12;
         $droits_agent = $_SESSION['droits'];
 
         if (!in_array((300 + $site), $droits_agent) and !in_array((1000 + $site), $droits_agent)) {

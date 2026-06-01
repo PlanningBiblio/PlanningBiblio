@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Entity\Site;
 use App\Planno\OpenIDConnect;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -143,6 +144,7 @@ class AuthorizationsController extends BaseController
                 // Symfony Session
                 $session = $request->getSession();
                 $session->set('loginId', $db->result[0]['id']);
+                $session->set('sites', $GLOBALS['entityManager']->getRepository(Site::class)->findBy(["deletedDate" => null]));
 
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
@@ -254,6 +256,7 @@ class AuthorizationsController extends BaseController
             // Symfony Session
             $session = $request->getSession();
             $session->set('loginId', $db->result[0]['id']);
+            $session->set('sites', $GLOBALS['entityManager']->getRepository(Site::class)->findBy(["deletedDate" => null]));
 
             // Create CSRF Token
             $CSRFToken = CSRFToken();

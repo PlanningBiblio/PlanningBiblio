@@ -6,10 +6,10 @@
   <script type="text/JavaScript">
     grp_nom=new Array();
     {% for elem in groupes %}
-      grp_nom.push("{{ elem.nom | lower }}");
+    grp_nom.push("{{ elem.nom | lower }}");
     {% endfor %}
   </script>
-  {% if config('Multisites-nombre') > 1 %}
+  {% if multisites|length > 1 %}
     <script type="text/JavaScript">
       $(document).ready(function(){
         $(".hiddenOptions").hide();
@@ -42,16 +42,16 @@
               <input type="text" name="nom" id="Nom" value="{{ groupe.nom }}" class="ui-widget-content ui-corner-all" onkeyup="ctrl_nom(this);"/>
             </td>
             <td style="padding-left:30px;color:red;"><font id="nom_utilise" style="display:none;">
-              Ce nom est déjà utilisé</font>
+                Ce nom est déjà utilisé</font>
             </td>
           </tr>
-          {% if config('Multisites-nombre') > 1 %}
+          {% if multisites|length > 1 %}
             <tr>
               <td class="textAlignRight">Site</td>
               <td>
                 <select name="site" id="selectSite" class="ui-widget-content ui-corner-all" onchange="tabOptions(this)">
                   <option value="">&nbsp;</option>
-                  {% for i in 1..config('Multisites-nombre') %}
+                  {% for i in 1..multisites|length %}
                     <option value="{{ i }}" {{ groupe.site == i ? "selected='selected'" : ""}}>{{ multisites[i] }}</option>
                   {% endfor %}
                 </select>

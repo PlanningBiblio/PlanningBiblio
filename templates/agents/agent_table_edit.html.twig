@@ -31,13 +31,13 @@
       <td style='white-space:nowrap'>
         <select name='statut' id='statut' style='width:405px'>
           <option value=''>Aucun</option>
-            {%for elem in statuts %}
-              {% if elem.value == agent.status %}
-                <option selected="selected" value="{{ elem.value }}">{{ elem.value }}</option>
-              {% else %}
-                <option value="{{ elem.value }}">{{ elem.value }}</option>
-              {% endif %}
-            {% endfor %}
+          {%for elem in statuts %}
+            {% if elem.value == agent.status %}
+              <option selected="selected" value="{{ elem.value }}">{{ elem.value }}</option>
+            {% else %}
+              <option value="{{ elem.value }}">{{ elem.value }}</option>
+            {% endif %}
+          {% endfor %}
         </select>
         <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-status-modal">
           <span class="pl-icon pl-icon-add" title="Ajouter un statut"></span>
@@ -146,7 +146,7 @@
     </td>
   </tr>
 
-  {% if config('Multisites-nombre') > 1 %}
+  {% if multisites %}
     <tr style='vertical-align:top;'>
       <td>Sites :</td>
       <td>
@@ -247,6 +247,27 @@
       </td>
     </tr>
 
+  {% endif %}
+
+  {% if not config('demo') %}
+    <div id="reset-login-form" title="Réinitialisation du login" class='noprint' style='display:none;'>
+      <form>
+        <div>
+          <label for="new_login">Nouveau login</label>
+          <input type='text' id="new_login" name="new_login"/>
+        </div>
+
+        <div class="password-error" id="login-duplicate">
+          Ce login existe déjà.
+        </div>
+        <div class="password-error" id="login-identic">
+          Le nouveau login est identique au précédent.
+        </div>
+        <div class="password-error" id="login-empty">
+          Le login ne peut pas être vide.
+        </div>
+      </form>
+    </div>
   {% endif %}
 
 </table>
