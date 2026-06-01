@@ -75,6 +75,7 @@ final class Version20260522122456 extends AbstractMigration
         ");
 
         $this->addSql("UPDATE `{$dbprefix}postes` SET site=1 WHERE site=0");
+
         $this->addSql("DELETE FROM `{$dbprefix}config` WHERE nom LIKE 'Multisites-site%'");
         $this->addSql("DELETE FROM `{$dbprefix}config` WHERE nom = 'Multisites-nombre'");
     }

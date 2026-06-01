@@ -1839,8 +1839,7 @@ class absences
     {
         $version="absences";
         require_once 'class.postes.php';
-        global $entityManager;
-
+global $entityManager;
         $debut=dateSQL($this->debut);
         $fin=dateSQL($this->fin);
         $perso_ids=implode(",", $this->perso_ids);

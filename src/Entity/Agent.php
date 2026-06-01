@@ -647,13 +647,16 @@ class Agent
             foreach ($sites as $site) {
                 $db = new \db();
                 $db->select2("site_mail", "*", array("site_id" => $site));
-                if ($db->result) {
-                    foreach ($db->result as $m) {
-                        $mail = trim($m['mail']);
-                        if ($mail !== '') {
-                            $unit_mails[] = $mail;
-                        }
+                $site_mail_config = '';
+                if($db->result){
+                    foreach ($db->result as $m){
+                        $site_mail_config .= $m['mail'] .';';
                     }
+                }
+                if ($site_mail_config != '') {
+                    $site_mails = explode(';', $site_mail_config);
+                    $site_mails = array_map('trim', $site_mails);
+                    $unit_mails = array_merge($unit_mails, $site_mails);
                 }
             }
         }
