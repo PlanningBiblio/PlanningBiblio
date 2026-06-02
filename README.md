@@ -20,6 +20,7 @@ Planno est un logiciel libre développé en PHP-MySQL permettant de réaliser le
   - Mysqli
   - PDO
   - PDO-Mysql
+  - Sockets
   - XML
   - CURL (si identification CAS)
   - LDAP (si utilisation avec un serveur LDAP)

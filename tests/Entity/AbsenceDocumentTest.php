@@ -76,6 +76,8 @@ class AbsenceDocumentTest extends PLBWebTestCase
 
         $date = new \DateTime('2022-10-09');
 
+
+        // TODO: Use AbsenceDocumentController->add
         $absenceDoc = new AbsenceDocument();
         $absenceDoc->setFilename('fichier');
         $absenceDoc->setDate($date);
