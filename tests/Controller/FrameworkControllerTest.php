@@ -304,10 +304,10 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals($result->text(),"Nouveau groupe");
 
-        $result = $crawler->filterXPath('//table[@class="tableauFiches"]/tbody/tr/td');
-        $this->assertEquals($result->text(),"Nom du groupe");
+        $result = $crawler->filter('label[for="Nom"]');
+        $this->assertEquals($result->text(),"Nom du groupe :");
 
-        $result = $crawler->filterXPath('//td[@style="padding-top:20px;text-align:justify;"]');
+        $result = $crawler->filter('p');
         $this->assertEquals($result->text(),"Choisissez les tableaux que vous souhaitez affecter à chacun des jours de la semaine");
 
         $table_list = $this->getSelectValues('lundi');
