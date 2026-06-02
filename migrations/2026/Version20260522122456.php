@@ -39,6 +39,13 @@ final class Version20260522122456 extends AbstractMigration
         ");
 
         $this->addSql("
+        INSERT IGNORE INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`)
+        SELECT '50','73','Configuration des sites','/site',NULL FROM DUAL
+        WHERE NOT EXISTS (
+            SELECT 1 FROM (SELECT 1 FROM `{$dbprefix}menu` WHERE `url`='/site' LIMIT 1) AS _existing
+        )");
+
+        $this->addSql("
         INSERT IGNORE INTO `{$dbprefix}site` (`id`, `name`, `deletedDate`)
         SELECT 
             CAST(SUBSTRING(nom, LENGTH('Multisites-site') + 1) AS UNSIGNED), valeur, NULL FROM `{$dbprefix}config`
