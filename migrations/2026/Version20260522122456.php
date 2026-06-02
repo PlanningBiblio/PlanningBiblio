@@ -18,7 +18,6 @@ final class Version20260522122456 extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        // Fixed: Removed the trailing comma after PRIMARY KEY (`id`)
         $this->addSql("CREATE TABLE IF NOT EXISTS `{$dbprefix}site` (
             id int(20) NOT NULL AUTO_INCREMENT,
             name varchar(255) NOT NULL DEFAULT '',
@@ -34,11 +33,15 @@ final class Version20260522122456 extends AbstractMigration
              KEY `site_id` (`site_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
 
-        $this->addSql("INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES('50','73','Configuration des sites','/site',NULL)");
-
-        // Migration des sites
         $this->addSql("
-        INSERT INTO `{$dbprefix}site` (`id`, `name`, `deletedDate`)
+        INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`)
+        SELECT '50','73','Configuration des sites','/site',NULL FROM DUAL
+        WHERE NOT EXISTS (
+            SELECT 1 FROM (SELECT 1 FROM `{$dbprefix}menu` WHERE `url`='/site' LIMIT 1) AS _existing
+        )");
+
+        $this->addSql("
+        INSERT IGNORE INTO `{$dbprefix}site` (`id`, `name`, `deletedDate`)
         SELECT 
             CAST(SUBSTRING(nom, LENGTH('Multisites-site') + 1) AS UNSIGNED), valeur, NULL FROM `{$dbprefix}config`
         WHERE nom LIKE 'Multisites-site%'
@@ -68,6 +71,9 @@ final class Version20260522122456 extends AbstractMigration
         ) numbers
         ON CHAR_LENGTH(valeur) - CHAR_LENGTH(REPLACE(valeur, ';', '')) >= numbers.n - 1
         WHERE nom LIKE 'Multisites-site%-mail'
+        AND NOT EXISTS (
+            SELECT 1 FROM (SELECT 1 FROM `{$dbprefix}site_mail` LIMIT 1) AS _existing
+        )
         ");
 
         $this->addSql("UPDATE `{$dbprefix}postes` SET site=1 WHERE site=0");

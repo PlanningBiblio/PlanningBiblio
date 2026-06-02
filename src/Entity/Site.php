@@ -18,7 +18,7 @@ class Site
     #[ORM\Column(type: Types::TEXT)]
     private ?string $name = '';
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTime $deletedDate = null;
 
     public function getId(): ?int

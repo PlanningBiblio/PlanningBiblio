@@ -213,9 +213,9 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->config->setParam('Conges-apresValidation', 1);
         $this->config->setParam('Recup-Uneparjour', 1);
 
-        $this->config->setParam('Multisites-nombre', 2);
-        $this->config->setParam('Multisites-site1', 'Site N°1');
-        $this->config->setParam('Multisites-site2', 'Site N°2');
+        $conn = $this->entityManager->getConnection();
+        $conn->executeStatement('DELETE FROM site');
+        $conn->executeStatement("INSERT INTO site (id, name, deletedDate) VALUES (1, 'Site N°1', NULL), (2, 'Site N°2', NULL)");
 
         $this->setUpPantherClient();
 

@@ -18,6 +18,7 @@ use App\Entity\PlanningPositionLock;
 use App\Entity\PlanningPositionModel;
 use App\Entity\RecurringAbsence;
 use App\Entity\SaturdayWorkingHours;
+use App\Entity\Site;
 use App\Entity\WorkingHour;
 use App\Entity\Config;
 use App\Planno\Helper\HourHelper;
@@ -35,6 +36,20 @@ class AgentRepository extends EntityRepository
     private $agent_id;
 
     private $check_by_site = true;
+
+    /**
+     * Liste des sites actifs, utilisée comme valeur par défaut lorsque l'appelant
+     * ne fournit pas de sites (ex. : session « sites » non renseignée, contexte hors
+     * multisite, tests). Équivaut au contenu de $session->get('sites').
+     *
+     * @return Site[]
+     */
+    private function activeSites(): array
+    {
+        return $this->getEntityManager()
+            ->getRepository(Site::class)
+            ->findBy(['deletedDate' => null]);
+    }
 
     /**
      * @return mixed[]
@@ -167,8 +182,10 @@ class AgentRepository extends EntityRepository
     /**
      * @return array{id: int<1, max>, name: mixed}[]
      */
-    public function getManagedSitesFor($loggedin_id, $sites_array): array
+    public function getManagedSitesFor($loggedin_id, $sites_array = null): array
     {
+        $sites_array = $sites_array ?? $this->activeSites();
+
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
         $by_agent_param = $entityManager->getRepository(Config::class)
@@ -213,8 +230,10 @@ class AgentRepository extends EntityRepository
         return $sites_select;
     }
 
-    public function getManagedFor($loggedin_id, $deleted, $sites_array)
+    public function getManagedFor($loggedin_id, $deleted, $sites_array = null)
     {
+        $sites_array = $sites_array ?? $this->activeSites();
+
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
         $by_agent_param = $entityManager->getRepository(Config::class)
@@ -268,8 +287,9 @@ class AgentRepository extends EntityRepository
         return array($loggedin);
     }
 
-    public function getValidationLevelFor($loggedin_id, String $workflow, array $sites_array): array
+    public function getValidationLevelFor($loggedin_id, String $workflow, ?array $sites_array = null): array
     {
+        $sites_array = $sites_array ?? $this->activeSites();
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
@@ -386,8 +406,10 @@ class AgentRepository extends EntityRepository
     /**
      * @return mixed[]
      */
-    public function getSitesForAgents($agent_ids, $sites_array): array
+    public function getSitesForAgents($agent_ids, $sites_array = null): array
     {
+        $sites_array = $sites_array ?? $this->activeSites();
+
         $entityManager = $this->getEntityManager();
         if (count($sites_array) <= 1) {
             return array("1");
