@@ -515,3 +515,18 @@ msgstr "Ajout d'une information sur les absences"
 
 msgid "Edit information about absences"
 msgstr "Modification d'une information sur les absences"
+
+msgid "Files cannot be scanned, upload is disabled"
+msgstr "Les fichiers ne peuvent pas être analysés, le chargement de fichier est désactivé"
+
+msgid "The file contained malware and was deleted"
+msgstr "Le fichier contenait un logiciel malveillant et a été supprimé"
+
+msgid "The file was too big"
+msgstr "Le fichier est trop lourd"
+
+msgid "An error occured"
+msgstr "Une erreur est survenue"
+
+msgid "ClamAV is configured but not available: this file should not have been uploaded"
+msgstr "ClamAV est configuré mais n'est pas disponible : ce fichier n'aurait pas dû être téléversé"
