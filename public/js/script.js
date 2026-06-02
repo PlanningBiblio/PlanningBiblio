@@ -546,6 +546,12 @@ function time_validation(time_value) {
   return dayjs(time_value, format, true).isValid() ;
 }
 
+// This function checks the validity of a text input
+function text_validation(text_value) {
+  text = sanitize_string(text_value);
+  return (text !== "") ;
+}
+
 // This function checks the validity of an integer value
 function int_validation(value) {
   return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
@@ -731,11 +737,55 @@ function position(object,top,left){
 // Initialisations JQuery-UI / Bootstrap
 $(function(){
 
+  /* 
+    The following code allows .form-control elements to have inline 
+    validity messages with the default BS validity comportment 
+
+    The necessary template structure for it to work is the following :
+      <div class="col-?">
+        <input class="form-control"/>
+      </div>
+      <div class="col-auto">
+        <div class="invalid-feedback"></div>
+      </div>
+  */
+
+  // Select the item to keep track of
+  const element = document.querySelector('.form-control');
+
+  // Create a MutationObserver
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      inline_feedback = element.parentNode.nextElementSibling.children[0];
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+
+        // If .is-invalid class is added to the element, show the inline feedback 
+        if (element.classList.contains('is-invalid')) {
+          inline_feedback.classList.add('d-flex');
+        }
+
+        // If .is-invalid class is removed from the element, hide the inline feedback 
+        if (!element.classList.contains('is-invalid')) {
+          inline_feedback.classList.remove('d-flex');
+        }
+      }
+    });
+  });
+
+  // Configurate the observer to keep track of attributes changes, specifically class addition and deletion
+  observer.observe(element, {
+    attributes: true,
+    attributeFilter: ['class']
+  });
+
   $('form').on('submit', function(e){
     if (this.checkValidity() === false || $('.is-invalid').length > 0) {
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
+
+      // Enables inline-feedback
+      $('.form-control:invalid').addClass('is-invalid');
     }
     $(this).addClass('was-validated');
   });
@@ -780,7 +830,6 @@ $(function(){
 
     // Message display when time input is invalid
     $('.time').on('input',function(e) {
-      $('#alert').addClass('d-none');
       var required = typeof($(this).attr('required')) != 'undefined';
       var valid_time = time_validation($(this).val());
 
@@ -792,7 +841,21 @@ $(function(){
       }
     });
 
-    // Invalid message feedback when date interval is not valid and disabled submit button
+    // Message display when text input is invalid
+
+    $('input[type=text]').on('keyup',function(e) {
+      var required = typeof($(this).attr('required')) != 'undefined';
+      var valid_text = text_validation($(this).val());
+      
+      if ((!valid_text && required)) {
+        $(this).addClass('is-invalid');
+      }
+      else {
+        $(this).removeClass('is-invalid');
+      }
+    });
+
+    // Message display when date interval is invalid
     $('.datepicker.end-date').on('change',function() {
       var valid_start = date_validation($('.datepicker.start-date').val());
       var valid_end = date_validation($(this).val());
