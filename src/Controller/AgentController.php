@@ -236,7 +236,7 @@ class AgentController extends BaseController
                 $sitesSelect[] = [
                     'id' => $s->getId(),
                     'name' => $s->getName(),
-                    'checked' => in_array($i, $sites) ? 1 : 0,
+                    'checked' => in_array($s->getId(), $sites) ? 1 : 0,
                 ];
             }
         }

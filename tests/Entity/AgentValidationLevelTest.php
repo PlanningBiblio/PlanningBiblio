@@ -2,6 +2,7 @@
 
 use App\Entity\Agent;
 use App\Entity\Manager;
+use App\Entity\Site;
 use PHPUnit\Framework\TestCase;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
@@ -183,7 +184,9 @@ class AgentValidationLevelTest extends PLBWebTestCase
     {
 
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->config->setParam('Multisites-nombre', 2);
+
+        $this->builder->build(Site::class, array('name' => 'Site 2'));
+        $sites = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null]);
 
         $agent1 = $this->builder->build(Agent::class,
             array(
@@ -194,7 +197,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
 
         list($adminN1, $adminN2) = $this->entityManager->getRepository(Agent::class)
             ->setModule('absence')
-            ->getValidationLevelFor($agent1->getId(), 'A', []);
+            ->getValidationLevelFor($agent1->getId(), 'A', $sites);
 
         $this->assertTrue($adminN1, 'Agent 1 has admin level 1 for absences');
         $this->assertTrue($adminN2, 'Agent 1 has admin level 2 for absences');
@@ -207,7 +210,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
 
         list($adminN1, $adminN2) = $this->entityManager->getRepository(Agent::class)
             ->setModule('absence')
-            ->getValidationLevelFor($agent2->getId(), 'A', []);
+            ->getValidationLevelFor($agent2->getId(), 'A', $sites);
 
         $this->assertTrue($adminN1, 'Agent 2 has admin level 1 for absence');
         $this->assertFalse($adminN2, 'Agent 2 doesn\'t admin level 2 for absence');
@@ -220,7 +223,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
 
         list($adminN1, $adminN2) = $this->entityManager->getRepository(Agent::class)
             ->setModule('absence')
-            ->getValidationLevelFor($agent3->getId(), 'A', []);
+            ->getValidationLevelFor($agent3->getId(), 'A', $sites);
 
         $this->assertFalse($adminN1, 'Agent 3 doesn\'t have admin level 1 for absence');
         $this->assertTrue($adminN2, 'Agent 3 have admin level 2 for absence');

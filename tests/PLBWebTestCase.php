@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Entity\Config;
+use App\Entity\Site;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -111,6 +112,7 @@ class PLBWebTestCase extends PantherTestCase
         $crawler = $this->client->request('GET', '/login');
         $session = $this->client->getRequest()->getSession();
         $session->set('loginId', $agent->getId());
+        $session->set('sites', $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null]));
         $session->save();
     
         $cookie = new Cookie($session->getName(), $session->getId());

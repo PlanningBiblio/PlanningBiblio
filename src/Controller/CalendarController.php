@@ -281,7 +281,7 @@ class CalendarController extends BaseController
                     $site = $horaires[4];
                     if ($site != '-1') {
                         $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
-                        $site_name = $s->nom();
+                        $site_name = $s->getName();
                     } else {
                         $site_name = '';
                     }
