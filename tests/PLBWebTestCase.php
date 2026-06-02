@@ -75,6 +75,16 @@ class PLBWebTestCase extends PantherTestCase
         $this->entityManager = $entityManager;
         $this->config = $entityManager->getRepository(Config::class);
 
+        // Isolation : remet la table `site` à un unique site par défaut entre chaque test.
+        // Des tests multisite y insèrent plusieurs sites ; sans ce reset, l'état fuit vers
+        // les tests suivants (comptages d'agents/listes faussés par le filtrage par site).
+        // TRUNCATE (et non DELETE) pour réinitialiser l'AUTO_INCREMENT : les tests qui
+        // créent un 2e site via FixtureBuilder comptent sur un id déterministe (2).
+        $conn = $entityManager->getConnection();
+        $conn->executeStatement('TRUNCATE TABLE site_mail');
+        $conn->executeStatement('TRUNCATE TABLE site');
+        $conn->executeStatement("INSERT INTO site (id, name, deletedDate) VALUES (1, 'Site par défaut', NULL)");
+
         $_SESSION['oups']['Auth-Mode'] = 'SQL';
         $_SESSION['login_id'] = 1;
         $_SESSION['oups']['CSRFToken'] = $CSRFToken;
