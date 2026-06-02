@@ -7,6 +7,7 @@ use App\Entity\AbsenceDocument;
 use App\Entity\Absence;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
+use App\Service\ClamAvScanner;
 
 use App\Planno\Helper\HourHelper;
 use App\Planno\Helper\AbsenceImportCSVHelper;
@@ -222,7 +223,7 @@ class AbsenceController extends BaseController
 
 
     #[Route(path: '/absence/add', name: 'absence.add', methods: ['GET'])]
-    public function add(Request $request)
+    public function add(Request $request, ClamAvScanner $scanner)
     {
         $session = $request->getSession();
 
@@ -308,7 +309,7 @@ class AbsenceController extends BaseController
     }
 
     #[Route(path: '/absence', name: 'absence.save', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session, ClamAvScanner $scanner)
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -347,8 +348,22 @@ class AbsenceController extends BaseController
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
 
-            $file->move($ad->upload_dir() . $result['id'] . '/' . $ad->getId(), $filename);
-
+            $destination_dir = $ad->upload_dir() . $result['id'] . '/' . $ad->getId();
+            $file->move($destination_dir, $filename);
+            if ($scanner->isEnabled()) {
+                $scan_file = $destination_dir . '/' . $filename;
+                $clean = $scanner->scan($scan_file);
+                if ($clean == 1) {
+                    $this->logger->info("ClamAV is enabled and $scan_file is clean");
+                } else {
+                    $this->logger->critical("ClamAV is enabled and $scan_file is unsafe, deleting it");
+                    # We did not prevent the AbsenceDocument creation, so we can use ->deleteFile();
+                    $ad->deleteFile();
+                    $this->entityManager->remove($ad);
+                    $this->entityManager->flush();
+                    $result['msg2'] .= " Le fichier attaché présentait des risques et a été supprimé.";
+                }
+            }
         }
 
         $msg = $result['msg'];
