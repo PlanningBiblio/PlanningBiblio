@@ -3,8 +3,8 @@
 namespace App\Command;
 
 use App\Entity\Agent;
-use App\Entity\Config;
 use App\Entity\WorkingHour;
+use App\Planno\Helper\ConfigHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -23,12 +23,14 @@ require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 class WorkingHourExportCommand extends Command
 {
     use \App\Traits\LoggerTrait;
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
+    private ConfigHelper $configHelper;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, ConfigHelper $configHelper)
     {
-        $this->entityManager = $entityManager;
         parent::__construct();
+        $this->entityManager = $entityManager;
+        $this->configHelper = $configHelper;
     }
 
     protected function configure(): void
@@ -39,7 +41,7 @@ class WorkingHourExportCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->entityManager->getRepository(Config::class)->getAll();
+        $config = $this->configHelper->getAll();
 
         if (file_exists(__DIR__ . '/../../custom_options.php')) {
             include __DIR__ . '/../../custom_options.php';

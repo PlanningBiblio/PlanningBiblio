@@ -50,7 +50,7 @@ class Menu
             }
         }
 
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
+        if (isset($GLOBALS['config']['Multisites-nombre']) && $GLOBALS['config']['Multisites-nombre'] > 1) {
             for ($i=0;$i<$GLOBALS['config']['Multisites-nombre'];$i++) {
                 $j=$i+1;
                 $menu[30][$j]['titre']=$GLOBALS['config']["Multisites-site".$j];
