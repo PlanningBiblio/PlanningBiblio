@@ -52,13 +52,18 @@ class ConfigRepository extends EntityRepository
 
         $param = $this->findOneBy(['nom' => $name]);
 
+        // Crée le paramètre s'il n'existe pas encore (les autres champs prennent les
+        // valeurs par défaut de l'entité Config : type='text', commentaires='', etc.).
         if (!$param) {
-            # error
-        } else {
-            $param->setValue($value);
-            // FIXME: $technical is not supposed to change, but unit tests fail if it is not forced here.
-            $param->setTechnical($technical);
-            $this->getEntityManager()->flush();
+            $param = new Config();
+            $param->setName($name);
         }
+
+        $param->setValue($value);
+        // FIXME: $technical is not supposed to change, but unit tests fail if it is not forced here.
+        $param->setTechnical($technical);
+
+        $this->getEntityManager()->persist($param);
+        $this->getEntityManager()->flush();
     }
 }
