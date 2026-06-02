@@ -390,3 +390,9 @@ msgstr "Lignes"
 
 msgid "Back"
 msgstr "Retour"
+
+msgid "That name is already taken"
+msgstr "Ce nom est déjà utilisé"
+
+msgid "Group name"
+msgstr "Nom du groupe"
