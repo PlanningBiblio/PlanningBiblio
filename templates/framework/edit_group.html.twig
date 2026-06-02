@@ -32,61 +32,70 @@
       <h3> Nouveau groupe </h3>
     {% endif %}
     <div class="admin-div">
-      <form name="form" method="post" action="{{ asset('framework-group') }}" onsubmit="return ctrl_form({{champs}});">
+      <form name="form" method="post" action="{{ asset('framework-group') }}" novalidate>
         <input type="hidden" name="id" value="{{ id }}" />
         <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
-        <table class="tableauFiches">
-          <tr>
-            <td class="textAlignRight">Nom du groupe</td>
-            <td>
-              <input type="text" name="nom" id="Nom" value="{{ groupe.nom }}" class="ui-widget-content ui-corner-all" onkeyup="ctrl_nom(this);"/>
-            </td>
-            <td style="padding-left:30px;color:red;"><font id="nom_utilise" style="display:none;">
-              Ce nom est déjà utilisé</font>
-            </td>
-          </tr>
-          {% if config('Multisites-nombre') > 1 %}
-            <tr>
-              <td class="textAlignRight">Site</td>
-              <td>
-                <select name="site" id="selectSite" class="ui-widget-content ui-corner-all" onchange="tabOptions(this)">
-                  <option value="">&nbsp;</option>
+
+        <div class="row my-2 gx-5">
+          <label class="col-2 col-form-label text-end" for="Nom">
+            {% trans %} Group name {% endtrans %} :
+          </label>
+          <div class="col-2">
+            <input type="text" name="nom" id="Nom" value="{{ groupe.nom }}" class="form-control form-control-sm" required/>
+          </div>
+          <div class="col-auto">
+            <div class="invalid-feedback" id="name-feedback">
+              {% trans from 'validators' %} This value should not be blank. {% endtrans %}
+            </div>
+          </div>
+        </div>
+
+        {% if config('Multisites-nombre') > 1 %}
+          <div class="row gx-5">
+            <label class="col-2 col-form-label text-end" for="selectSite">
+              {% trans %} Site {% endtrans %} :
+            </label>
+            <div class="col-2">
+              <select name="site" id="selectSite" class="form-select form-select-sm" onchange="tabOptions(this)">
+                  <option value=""></option>
                   {% for i in 1..config('Multisites-nombre') %}
-                    <option value="{{ i }}" {{ groupe.site == i ? "selected='selected'" : ""}}>{{ multisites[i] }}</option>
+                    <option value="{{ i }}" {% if groupe.site == i %} selected {% endif %}>{{ multisites[i] }}</option>
                   {% endfor %}
-                </select>
-              </td>
-            </tr>
-          {% endif %}
-          <tr>
-            <td colspan="2" style="padding-top:20px;text-align:justify;">
-              Choisissez les tableaux que vous souhaitez affecter à chacun des jours de la semaine
-            </td>
-          </tr>
-          {% for jour in semaine %}
-            <tr>
-              <td style="padding-left:20px;" class="textAlignRight">{{ jour }}</td>
-              <td>
-                <select name="{{ jour }}" id="{{ jour }}" class="ui-widget-content ui-corner-all">
-                  <option value="">&nbsp;</option>
+              </select>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="row">
+          <p> Choisissez les tableaux que vous souhaitez affecter à chacun des jours de la semaine</p>
+        </div>
+
+        {% for jour in semaine %}
+          <div class="row gx-5">
+            <label class="col-2 col-form-label text-end" for="{{ jour }}">{{ jour }} :</label>
+            <div class="col-2">
+              <select name="{{ jour }}" id="{{ jour }}" class="form-select form-select-sm" required>
+                 <option value=""></option>
                   {% for tab in tableaux %}
-                    {% if id is null %}
-                      <option value="{{ tab.tableau }}" class="optionSite{{tab.site}} hiddenOptions">{{ tab.nom }}</option>
-                    {% else %}
-                      <option value="{{ tab.tableau }}" {{ tab.tableau == groupe[jour] ? "selected='selected'" : ""}} class="optionSite{{tab.site}} hiddenOptions">{{ tab.nom }}</option>
-                    {% endif %}
+                    <option value="{{ tab.tableau }}" {% if id and tab.tableau == groupe[jour] %} selected {% endif %} class="optionSite{{tab.site}} hiddenOptions">{{ tab.nom }}</option>
                   {% endfor %}
-                </select>
-              </td>
-            </tr>
-          {% endfor %}
-          <tr>
-            <td colspan="2" style="text-align:center;padding-top:20px;">
-              <input type="button" value="Annuler" onclick="document.location.href='{{ asset('framework')}}';" class="btn btn-secondary"/>
-              <input type="submit" role="button" value="Valider" style="margin-left:30px;" id="submit" class="btn btn-primary"/>
-            </td>
-          </tr>
-        </table>
+              </select>
+            </div>
+          </div>
+        {% endfor %}
+
+        <div class="row my-4 gx-5">
+          <div class="col-1 offset-1">
+            <button type="button" onclick="document.location.href='{{ asset('framework')}}';" class="btn btn-secondary">
+              {% trans %} Cancel {% endtrans %}
+            </button>
+          </div>
+          <div class="col-1">
+            <button type="submit" id="submit" class="btn btn-primary">
+              {% trans %} Confirm {% endtrans %}
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   </div>
