@@ -441,3 +441,9 @@ msgstr "Catégories"
 
 msgid "Lunch position"
 msgstr "Poste repas"
+
+msgid "That name is already taken"
+msgstr "Ce nom est déjà utilisé"
+
+msgid "Group name"
+msgstr "Nom du groupe"
