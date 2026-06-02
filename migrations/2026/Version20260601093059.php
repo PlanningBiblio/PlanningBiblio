@@ -36,18 +36,24 @@ final class Version20260601093059 extends AbstractMigration
             KEY `config_id` (`config_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
 
-        $this->addSql("UPDATE `{$dbprefix}config` SET `technical` = 1 WHERE `nom` IN ('Version', 'URL')");
+        $this->addSql("UPDATE `{$dbprefix}config` SET `technical` = 1 WHERE `nom` IN ('Version', 'URL', 'LDAP-Password')");
+        $this->addSql("DELETE FROM `{$dbprefix}config_technical`");
+        $this->addSql("DELETE FROM `{$dbprefix}config_network`");
         $this->addSql("INSERT INTO `{$dbprefix}config_technical` (`config_id`, `value`) SELECT id, valeur FROM `{$dbprefix}config` WHERE technical = 1");
         $this->addSql("INSERT INTO `{$dbprefix}config_network` (`config_id`, `network_id`, `value`) SELECT id, 1, valeur FROM `{$dbprefix}config` WHERE technical = 0");
-        $this->addSql("ALTER TABLE `{$dbprefix}config` DROP COLUMN `valeur`");
+        $this->addSql("ALTER TABLE `{$dbprefix}config` DROP COLUMN IF EXISTS `valeur`");
     }
 
     public function down(Schema $schema): void
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("DROP TABLE IF EXISTS `{$dbprefix}network_config`");
-        $this->addSql("DROP TABLE IF EXISTS `{$dbprefix}network_config`");
+        $this->addSql("ALTER TABLE `{$dbprefix}config` ADD COLUMN `valeur` TEXT NOT NULL");
+        $this->addSql("UPDATE `{$dbprefix}config` c INNER JOIN `{$dbprefix}config_technical` ct ON ct.config_id = c.id SET c.valeur = ct.value");
+        $this->addSql("UPDATE `{$dbprefix}config` c INNER JOIN `{$dbprefix}config_network` cn ON cn.config_id = c.id SET c.valeur = cn.value WHERE cn.network_id = 1");
+        $this->addSql("UPDATE `{$dbprefix}config` SET `technical` = 0 WHERE `nom` IN ('Version', 'URL', 'LDAP-Password')");
+        $this->addSql("DROP TABLE IF EXISTS `{$dbprefix}config_technical`");
+        $this->addSql("DROP TABLE IF EXISTS `{$dbprefix}config_network`");
     }
 
     public function isTransactional(): bool

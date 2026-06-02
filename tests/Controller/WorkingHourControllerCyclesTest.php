@@ -13,13 +13,13 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
     public static function setUpBeforeClass(): void
     {
         global $entityManager;
+        $_SESSION['login_id'] = 1;
         $configHelper = new ConfigHelper();
 
-        $configHelper->findOneByName('dateDebutPlHebdo')->setValue('29/12/2025');
-        $configHelper->findOneByName('nb_semaine')->setValue('3');
-        $configHelper->findOneByName('PlanningHebdo-resetCycles')->setValue('1');
+        $configHelper->setParam('dateDebutPlHebdo', '29/12/2025');
+        $configHelper->setParam('nb_semaine', '3');
+        $configHelper->setParam('PlanningHebdo-resetCycles', '1');
 
-//        $entityManager->createQuery('DELETE FROM \App\Entity\Agent')->execute();
         $entityManager->createQuery('DELETE FROM \App\Entity\WorkingHour')->execute();
         $entityManager->createQuery('DELETE FROM \App\Entity\WorkingHourCycle')->execute();
 
@@ -133,6 +133,17 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
         $entityManager->persist($aurelieWorkingHour);
         $entityManager->persist($delphineWorkingHour);
         $entityManager->flush();
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // PLBWebTestCase::setUp restaure la config pristine avant chaque test : on ré-applique
+        // ici la config de classe posée dans setUpBeforeClass (sinon elle serait perdue).
+        $this->config->setParam('dateDebutPlHebdo', '29/12/2025');
+        $this->config->setParam('nb_semaine', '3');
+        $this->config->setParam('PlanningHebdo-resetCycles', '1');
     }
 
     private function testWeekDisplay($tests): void

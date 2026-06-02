@@ -10,7 +10,7 @@ class ConfigHelper extends BaseHelper
 {
     private function getContextNetworkId(): ?int
     {
-        return isset($_SESSION['login_id']) ? 1 : null; //will be modified once the networks are implemented
+        return 1;
     }
 
     public function saveConfig($params): string
@@ -21,12 +21,19 @@ class ConfigHelper extends BaseHelper
         $configParams = $this->findByType($technical);
 
         foreach ($configParams as $cp) {
-            if (in_array($cp->getConfig()->getType(), ['hidden', 'info'])) {
+            $type = $cp->getConfig()->getType();
+            if (in_array($type, ['hidden', 'info'])) {
                 continue;
             }
-            // boolean and checkboxes elements.
+
             if (!isset($params[$cp->getConfig()->getName()])) {
-                $params[$cp->getConfig()->getName()] = $cp->getConfig()->getType() == 'boolean' ? '0' : array();
+                if ($type == 'boolean') {
+                    $params[$cp->getConfig()->getName()] = '0';
+                } elseif ($type == 'checkboxes') {
+                    $params[$cp->getConfig()->getName()] = array();
+                } else {
+                    continue;
+                }
             }
             $value = $params[$cp->getConfig()->getName()];
 
@@ -47,7 +54,7 @@ class ConfigHelper extends BaseHelper
             }
 
             if ($cp->getConfig()->getType() == 'color') {
-                $value = filter_var($value, FILTER_CALLBACK, ['options' => 'sanitize_color']);
+                $value = filter_var($value, FILTER_CALLBACK, ['options' => 'sanitize_color']) ?: '';
             }
 
             try {
@@ -72,6 +79,8 @@ class ConfigHelper extends BaseHelper
             # error
         } else {
             $param->setValue($value);
+            $this->entityManager->persist($param);
+            $this->entityManager->flush();
         }
     }
 

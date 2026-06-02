@@ -14,9 +14,13 @@ class EntityValidationStatusesTest extends PLBWebTestCase
 {
     use \App\Traits\EntityValidationStatuses;
 
+    protected $configHelper;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->configHelper = $this->config;
 
         $this->builder->delete(Agent::class);
     }
