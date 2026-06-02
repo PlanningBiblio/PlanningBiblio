@@ -37,7 +37,7 @@
         <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
 
         <div class="row my-2 gx-5">
-          <label class="col-2 col-form-label right" for="Nom">{% trans %}Group name{% endtrans %} :</label>
+          <label class="col-2 col-form-label aRight" for="Nom">{% trans %}Group name{% endtrans %} :</label>
           <div class="col-2">
             <input type="text" name="nom" id="Nom" value="{{ groupe.nom }}" class="form-control form-control-sm" required/>
           </div>
@@ -48,7 +48,7 @@
 
         {% if config('Multisites-nombre') > 1 %}
           <div class="row gx-5">
-            <label class="col-2 col-form-label right" for="selectSite">{% trans %}Site{% endtrans %} :</label>
+            <label class="col-2 col-form-label aRight" for="selectSite">{% trans %}Site{% endtrans %} :</label>
             <div class="col-2">
               <select name="site" id="selectSite" class="form-select form-select-sm" onchange="tabOptions(this)">
                   <option hidden disabled selected value=""></option>
@@ -66,7 +66,7 @@
 
         {% for jour in semaine %}
           <div class="row gx-5">
-            <label class="col-2 col-form-label right" for="{{ jour }}">{{ jour }} :</label>
+            <label class="col-2 col-form-label aRight" for="{{ jour }}">{{ jour }} :</label>
             <div class="col-2">
               <select name="{{ jour }}" id="{{ jour }}" class="form-select form-select-sm" required>
                  <option selected value=""></option>
