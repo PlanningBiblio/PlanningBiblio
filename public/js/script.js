@@ -512,6 +512,10 @@ function updateAlert(text, translationOptions = null) {
   $('#alert').removeClass('d-none');
 }
 
+function hideAlert(){
+  $('#alert').addClass('d-none');
+}
+
 // updateTips : utilisée pour valider les formulaires Jquery-UI
 function updateTips( text , type) {
   if ( type == undefined ) {

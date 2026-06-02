@@ -415,7 +415,6 @@ $(function() {
   // Formulaire d'ajout de nouveau statut
   $('#add-status').on('submit', function(e) {
     e.preventDefault();
-    $('#invalid-status').text('Statut invalide');
     // Récupère les options du premier select "catégorie" pour les réutiliser lors d'un ajout
     var select = $('select[id^=categorie_]');
     var select_id = select.attr('id');
@@ -526,10 +525,14 @@ $(function() {
   // Suppression message invalidité lors du changement d'input de statut
   $('#add-status-text').on('input', function(e) {
     $(this).removeClass('is-invalid');
+    $('#invalid-status').text('Statut invalide');
   })
 
   // Restaure les éléments supprimés mais non validés (pour les services et les statuts)
   $('[id^=add-][id$=-modal]').on('hidden.bs.modal', function() {
+    id = $(this).attr('id').replace('-modal', '');
+    $('#'+ id + '-text').val('').removeClass('is-invalid');
+    $('#' + id).removeClass('was-validated');
     $('[id$=_sortable] li:hidden').each(function() {
 	    $(this).show();
     });
@@ -538,7 +541,6 @@ $(function() {
   // Formulaire d'ajout de nouveaux services
   $('#add-service').on('submit', function(e) {
     e.preventDefault();
-    $('#invalid-service').text('Service invalide');
     var text = sanitize_string($('#add-service-text').val());
     if (!text) {
       $('#add-service-text').addClass('is-invalid');
@@ -631,6 +633,7 @@ $(function() {
   // Suppression message invalidité lors du changement d'input de service
   $('#add-service-text').on('input', function() {
     $(this).removeClass('is-invalid');
+    $('#invalid-service').text('Service invalide');
   })
 
   $('#ics-url-form').on('submit',function(e) {

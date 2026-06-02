@@ -67,6 +67,8 @@ $(function() {
   });
 
   $('#add-floor-modal').on('hidden.bs.modal', function() {
+    $('#add-floor-text').val('').removeClass('is-invalid');
+    $('#add-floor').removeClass('was-validated');
     $('#floors_sortable li:hidden').each(function() {
       $(this).show();
     });
@@ -75,12 +77,12 @@ $(function() {
   // Suppression message invalidité lors du changement d'input
   $('#add-floor-text').on('input', function(e) {
     $('#add-floor-text').removeClass('is-invalid');
+    $('#invalid-floor').text('Etage invalide');
   })
 
   // Permet d'ajouter de nouveaux etages (clic sur le bouton ajouter)
   $('#add-floor').on('submit', function(e) {
     e.preventDefault();
-    $('.invalid-feedback').text('Etage invalide');
 
     var text = sanitize_string($('#add-floor-text').val());
     if(!text){
@@ -92,7 +94,7 @@ $(function() {
     var exist = false;
     $('#floors_sortable > li > span').each(function() {
       if($(this).text().toLowerCase() == text.toLowerCase()){
-        $('.invalid-feedback').text('Un étage avec ce nom existe déjà.');
+        $('#invalid-floor').text('Un étage avec ce nom existe déjà.');
         $('#add-floor-text').addClass('is-invalid');
         exist = true;
         return;
@@ -180,6 +182,8 @@ $(function() {
   });
 
   $('#add-group-modal').on('hidden.bs.modal', function() {
+    $('#add-group-text').val('').removeClass('is-invalid');
+    $('#add-group').removeClass('was-validated');
     $('#groups_sortable li:hidden').each(function() {
       $(this).show();
     });
@@ -188,12 +192,12 @@ $(function() {
   // Suppression message invalidité lors du changement d'input
   $('#add-group-text').on('input', function(e) {
     $('#add-group-text').removeClass('is-invalid');
+    $('#invalid-group').text('Groupe invalide.');
   })
 
   // Permet d'ajouter de nouveaux groupe (clic sur le bouton ajouter)
   $('#add-group').on('submit', function(e) {
     e.preventDefault();
-    $('.invalid-feedback').text('Groupe invalide.');
 
     var text=sanitize_string($("#add-group-text").val());
     if(!text){
@@ -206,7 +210,7 @@ $(function() {
 
     $('#groups_sortable > li > span').each(function() {
       if($(this).text().toLowerCase() == text.toLowerCase()){
-        $('.invalid-feedback').text('Un groupe avec ce nom existe déjà.');
+        $('#invalid-group').text('Un groupe avec ce nom existe déjà.');
         $('#add-group-text').addClass('is-invalid');
         exist = true;
         return;

@@ -21,6 +21,11 @@
           duration = $('#overtime-hours'),
           commentaires = $('#overtime-comment')
 
+      $('#add-overtime-modal').on('hidden.bs.modal', function() {
+        $('#add-overtime-form').removeClass('was-validated');
+        hideAlert();
+      });
+
       $('#add-overtime-form').on('submit', function(e) {
         e.preventDefault();
         if($("#overtime-agent option:selected").val()) {
