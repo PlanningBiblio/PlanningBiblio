@@ -8,7 +8,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\WorkingHour;
 use App\Entity\Agent;
 use DateTime;
-use App\Entity\Config;
 use Tests\PLBWebTestCase;
 
 class WorkingHourImportCommandTest extends PLBWebTestCase

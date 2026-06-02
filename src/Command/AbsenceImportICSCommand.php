@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Agent;
-use App\Entity\Config;
+use App\Planno\Helper\ConfigHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -23,12 +23,14 @@ class AbsenceImportICSCommand extends Command
 {
     use \App\Traits\LoggerTrait;
 
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
+    private ConfigHelper $configHelper;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, ConfigHelper $configHelper)
     {
-        $this->entityManager = $entityManager;
         parent::__construct();
+        $this->entityManager = $entityManager;
+        $this->configHelper = $configHelper;
     }
 
     protected function configure(): void
@@ -39,7 +41,7 @@ class AbsenceImportICSCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $config = $this->entityManager->getRepository(Config::class)->getAll();
+        $config = $this->configHelper->getAll();
 
         $CSRFToken = CSRFToken();
 

@@ -3,8 +3,6 @@
 namespace App\Planno;
 
 use App\Entity\AbsenceReason;
-use App\Entity\Agent;
-use App\Entity\Config;
 use App\Entity\Site;
 
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
@@ -13,14 +11,13 @@ require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 
 class PlanningExportUtils
 {
-    private $config;
     private $entityManager;
+    private $config;
 
     public function __construct($entityManager)
     {
-        // TODO / FIXME : sans doute une meilleure façon d'obtenir $entityManager (pas avec $GLOBALS)
         $this->entityManager = $entityManager;
-        $this->config = $entityManager->getRepository(Config::class)->getAll();
+        $this->config = $GLOBALS['config'];
     }
 
     /**

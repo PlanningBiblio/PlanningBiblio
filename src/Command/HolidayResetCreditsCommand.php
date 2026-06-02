@@ -3,8 +3,8 @@
 namespace App\Command;
 
 use App\Entity\Agent;
-use App\Entity\Config;
 use App\Entity\Holiday;
+use App\Planno\Helper\ConfigHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -21,12 +21,14 @@ require_once __DIR__ . '/../../legacy/Common/function.php';
 )]
 class HolidayResetCreditsCommand extends Command
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
+    private ConfigHelper $configHelper;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, ConfigHelper $configHelper)
     {
-        $this->entityManager = $entityManager;
         parent::__construct();
+        $this->entityManager = $entityManager;
+        $this->configHelper = $configHelper;
     }
 
     protected function configure(): void
@@ -50,7 +52,7 @@ class HolidayResetCreditsCommand extends Command
             }
         }
 
-        $config = $this->entityManager->getRepository(Config::class)->getAll();
+        $config = $this->configHelper->getAll();
         $transferCompTime = !empty($config['Conges-transfer-comp-time']);
 
         $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);

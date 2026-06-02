@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
-use App\Entity\Config;
 use App\Entity\WorkingHourCycle;
+use App\Planno\Helper\ConfigHelper;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -12,6 +14,15 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class WorkingHourCycleRepository extends EntityRepository
 {
+
+    private ConfigHelper $configHelper;
+
+    public function __construct(EntityManagerInterface $registry, ClassMetadata $class)
+    {
+        parent::__construct($registry, $class);
+        $this->configHelper = new ConfigHelper();
+    }
+
 
     /**
     * @return $result Returns an array of WorkingHourCycle
@@ -42,7 +53,7 @@ class WorkingHourCycleRepository extends EntityRepository
     public function findFirstWeek($date): ?string
     {
         $entityManager = $this->getEntityManager();
-        $configResetCycles = $entityManager->getRepository(Config::class)->findOneBy(['nom' => 'PlanningHebdo-resetCycles'])->getValue();
+        $configResetCycles = $this->configHelper->findOneByName('PlanningHebdo-resetCycles')->getValue();
 
         if ($configResetCycles == 0) {
             return null;

@@ -68,9 +68,22 @@ include 'db.php';
 
 // Get config values from DB
 $db = new db();
-$db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `id`;");
-foreach ($db->result as $elem) {
-  $config[$elem['nom']] = $elem['valeur'];
+$db->query("SELECT nom, value FROM `{$dbprefix}config_technical` ct JOIN `{$dbprefix}config` c ON ct.config_id=c.id");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $config[$elem['nom']] = $elem['value'];
+    }
+}
+
+$db = new db();
+$network_id = 1; //will be modified once the networks are implemented
+if ($network_id !== null) {
+    $db->query("SELECT nom, value FROM `{$dbprefix}config_network` cr JOIN  `{$dbprefix}config` c ON cr.config_id=c.id WHERE network_id = $network_id");
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $config[$elem['nom']] = $elem['value'];
+        }
+    }
 }
 
 /** Get custom options

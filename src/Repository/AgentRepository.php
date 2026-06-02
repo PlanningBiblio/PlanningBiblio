@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Planno\Helper\ConfigHelper;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 
@@ -22,6 +24,7 @@ use App\Entity\Site;
 use App\Entity\WorkingHour;
 use App\Entity\Config;
 use App\Planno\Helper\HourHelper;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 class AgentRepository extends EntityRepository
 {
@@ -36,6 +39,14 @@ class AgentRepository extends EntityRepository
     private $agent_id;
 
     private $check_by_site = true;
+
+    private ConfigHelper $configHelper;
+
+    public function __construct(EntityManagerInterface $registry, ClassMetadata $class)
+    {
+        parent::__construct($registry, $class);
+        $this->configHelper = new ConfigHelper();
+    }
 
     /**
      * Liste des sites actifs, utilisée comme valeur par défaut lorsque l'appelant
@@ -188,14 +199,13 @@ class AgentRepository extends EntityRepository
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => $this->by_agent_param]);
+        $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param)->getValue();
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled.
         $managed_sites = array();
-        if ($by_agent_param->getValue()) {
+        if ($by_agent_param) {
 
             foreach ($loggedin->getManaged() as $m) {
                 $sites = $m->getUser()->getSites();
@@ -209,12 +219,11 @@ class AgentRepository extends EntityRepository
         $rights = $loggedin->getACL();
 
         $sites_select = array();
-
         foreach ($sites_array as $site) {
             $siteId = $site['id'];
             $name = $site['name'];
 
-            if ($by_agent_param->getValue()) {
+            if ($by_agent_param) {
                 if (in_array($siteId, $managed_sites)) {
                     $sites_select[] = ['id' => $siteId, 'name' => $name];
                 }
@@ -236,13 +245,12 @@ class AgentRepository extends EntityRepository
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => $this->by_agent_param]);
+        $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param)->getValue();
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled.
-        if ($by_agent_param->getValue()) {
+        if ($by_agent_param) {
             $managed = array_map(function($m) {
                 return $m->getUser();
             }, $loggedin->getManaged());
@@ -293,8 +301,7 @@ class AgentRepository extends EntityRepository
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => $this->by_agent_param]);
+        $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param)->getValue();
 
         $sites = array(1);
         if ($this->check_by_site && count($sites_array) > 1) {
@@ -317,7 +324,7 @@ class AgentRepository extends EntityRepository
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled and we ask for a specific agent.
-        if ($by_agent_param->getValue() and $this->agent_id) {
+        if ($by_agent_param and $this->agent_id) {
             if ($loggedin->isManagerOf(array($this->agent_id), 'level1')) {
                 $l1 = true;
             }
@@ -337,7 +344,7 @@ class AgentRepository extends EntityRepository
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled but no agent is specified.
         // So look for max admin level on managed agents.
-        if ($by_agent_param->getValue()) {
+        if ($by_agent_param) {
             $managed = $this->getManagedFor($loggedin_id, 0, $sites_array);
             foreach ($managed as $m) {
                 if ($loggedin->isManagerOf(array($m->getId()), 'level1')) {
@@ -570,8 +577,7 @@ class AgentRepository extends EntityRepository
      */
     public function getExportIcsURL($id): string
     {
-        $entityManager = $this->getEntityManager();
-        $config = $entityManager->getRepository(Config::class)->findOneBy(['nom' => 'ICS-Code']);
+        $config = $this->configHelper->findOneByName('ICS-Code');
         $url = "/ical?id=$id";
 
         if ($config->getValue()) {

@@ -2,7 +2,9 @@
 
 namespace App\Command;
 
+use App\Planno\Helper\ConfigHelper;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -23,6 +25,16 @@ class ImportMsGraphCalendarCommand extends Command
 {
     use LockableTrait;
 
+    private EntityManagerInterface $entityManager;
+    private ConfigHelper $configHelper;
+
+    public function __construct(EntityManagerInterface $entityManager, ConfigHelper $configHelper)
+    {
+        parent::__construct();
+        $this->entityManager = $entityManager;
+        $this->configHelper = $configHelper;
+    }
+
     protected function configure(): void
     {
         $this
@@ -42,11 +54,7 @@ class ImportMsGraphCalendarCommand extends Command
             return Command::FAILURE;
         }
 
-        $kernel = $this->getApplication()->getKernel();
-        $container = $kernel->getContainer();
-        $em = $container->get('doctrine')->getManager();
-
-        $config = $em->getRepository(Config::class)->getAll();
+        $config = $this->configHelper->getAll();
 
         $tenantid = $config['MSGraph-TenantID'];
         $clientid = $config['MSGraph-ClientID'];
@@ -57,7 +65,7 @@ class ImportMsGraphCalendarCommand extends Command
             return Command::FAILURE;
         }
 
-        $graph_client = new MSGraphClient($em, $tenantid, $clientid, $clientsecret, $input->getOption('full'), $input->getOption('stdout'), $input->getOption('user_id'));
+        $graph_client = new MSGraphClient($this->entityManager, $tenantid, $clientid, $clientsecret, $input->getOption('full'), $input->getOption('stdout'), $input->getOption('user_id'), $this->configHelper);
         $graph_client->retrieveEvents();
 
         $this->release();

@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
-use App\Entity\Config;
 use App\Entity\Agent;
 use App\Entity\PlanningPosition;
 use App\Planno\Helper\AbsenceBlockHelper;
@@ -102,8 +100,8 @@ class AjaxController extends BaseController
         $planning = $request->get('planning');
 
         if ($password == '') {
-            $configRepository = $this->entityManager->getRepository(Config::class);
-            $password = decrypt($configRepository->getValue('Mail-Password'));
+            $mailPassword = $this->configHelper->findOneByName('Mail-Password')->getValue();
+            $password = decrypt($mailPassword);
         }
 
         // Connexion au serveur de messagerie

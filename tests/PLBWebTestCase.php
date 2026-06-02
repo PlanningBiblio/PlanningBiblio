@@ -4,6 +4,8 @@ namespace Tests;
 
 use App\Entity\Config;
 use App\Entity\Site;
+use App\Entity\ConfigNetwork;
+use App\Planno\Helper\ConfigHelper;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -27,8 +29,14 @@ class PLBWebTestCase extends PantherTestCase
     {
         $c = new Config();
         $c->setName($name);
-        $c->setValue($value);
+
+        $cn = new ConfigNetwork();
+        $cn->setConfig($c);
+        $cn->setValue($value);
+        $cn->setNetworkId(1);
         $this->entityManager->persist($c);
+        $this->entityManager->persist($cn);
+        $this->entityManager->flush();
     }
 
     protected function setData($dataSet = 'default')
@@ -66,10 +74,7 @@ class PLBWebTestCase extends PantherTestCase
 
     protected function setParam($name, $value)
     {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(Config::class)
-            ->findOneBy(['nom' => $name]);
+        $param = $this->config->findOneByName($name);
 
         if (!$param) {
             $this->addConfig($name, $value);
@@ -91,7 +96,7 @@ class PLBWebTestCase extends PantherTestCase
         $this->CSRFToken = $CSRFToken;
         $this->builder = new FixtureBuilder();
         $this->entityManager = $entityManager;
-        $this->config = $entityManager->getRepository(Config::class);
+        $this->config = new ConfigHelper();
 
         $conn = $entityManager->getConnection();
         $conn->executeStatement('TRUNCATE TABLE site_mail');
@@ -123,7 +128,7 @@ class PLBWebTestCase extends PantherTestCase
         }, $siteEntities);
         $session->set('sites', $sitesData);
         $session->save();
-    
+
         $cookie = new Cookie($session->getName(), $session->getId());
         $this->client->getCookieJar()->set($cookie);
     }
