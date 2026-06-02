@@ -51,6 +51,8 @@ $(function() {
   });
 
   $('#add-reason-modal').on('hidden.bs.modal', function() {
+    $('#add-reason-text').val('').removeClass('is-invalid');
+    $('#add-reason').removeClass('was-validated');
     $('#reasons_sortable li:hidden').each(function() {
       $(this).show();
     });
@@ -123,12 +125,12 @@ $(function() {
   // Suppression message invalidité lors du changement d'input
   $('#add-reason-text').on('input', function(e) {
     $('#add-reason-text').removeClass('is-invalid');
+    $('#invalid-reason').text('Motif invalide');
   })
 
   // Permet d'ajouter de nouveaux motifs (clic sur le bouton ajouter)
   $('#add-reason').on('submit', function(e) {
     e.preventDefault();
-    $('.invalid-feedback').text('Motif invalide')
 
     // Récupère les options du premier select "type" pour les réutiliser lors d'un ajout
     var select=$("select[id^=type_]");
@@ -159,7 +161,7 @@ $(function() {
     var exist = false;
     $('#reasons_sortable > li > span').each(function() {
       if($(this).text().toLowerCase() == text.toLowerCase()) {
-        $('.invalid-feedback').text('Motif invalide. Un motif avec ce nom existe déjà.')
+        $('#invalid-reason').text('Motif invalide. Un motif avec ce nom existe déjà.')
         $('#add-reason-text').addClass('is-invalid');
         exist = true;
         return;
