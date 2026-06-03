@@ -34,11 +34,9 @@ final class Version20260522122456 extends AbstractMigration
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
 
         $this->addSql("
-        INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`)
-        SELECT '50','73','Configuration des sites','/site',NULL FROM DUAL
-        WHERE NOT EXISTS (
-            SELECT 1 FROM (SELECT 1 FROM `{$dbprefix}menu` WHERE `url`='/site' LIMIT 1) AS _existing
-        )");
+        INSERT IGNORE INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`)
+        VALUES ('50', '73', 'Configuration des sites', '/site', NULL);
+        ");
 
         $this->addSql("
         INSERT IGNORE INTO `{$dbprefix}site` (`id`, `name`, `deletedDate`)
@@ -77,7 +75,6 @@ final class Version20260522122456 extends AbstractMigration
         ");
 
         $this->addSql("UPDATE `{$dbprefix}postes` SET site=1 WHERE site=0");
-
         $this->addSql("DELETE FROM `{$dbprefix}config` WHERE nom LIKE 'Multisites-site%'");
         $this->addSql("DELETE FROM `{$dbprefix}config` WHERE nom = 'Multisites-nombre'");
     }
@@ -86,15 +83,41 @@ final class Version20260522122456 extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("DROP TABLE IF EXISTS `{$dbprefix}site`");
+        $this->addSql("
+            INSERT INTO `{$dbprefix}config` (nom, valeur)
+            SELECT
+                CONCAT('Multisites-site', id),
+                name
+            FROM `{$dbprefix}site`
+            WHERE deletedDate IS NULL
+        ");
+
+        $this->addSql("
+        INSERT INTO `{$dbprefix}config` (nom, valeur)
+        SELECT
+            CONCAT('Multisites-site', site_id, '-mail'),
+            GROUP_CONCAT(mail SEPARATOR ';')
+        FROM `{$dbprefix}site_mail`
+        GROUP BY site_id
+        ");
+
+        $this->addSql("
+        INSERT INTO `{$dbprefix}config` (nom, valeur)
+        SELECT
+            'Multisites-nombre',
+            COUNT(*)
+        FROM `{$dbprefix}site`
+        WHERE deletedDate IS NULL
+        ");
+
+        $this->addSql("UPDATE `{$dbprefix}postes` SET site = 0 WHERE site = 1");
+        $this->addSql("DELETE FROM `{$dbprefix}menu` WHERE url = '/site'");
         $this->addSql("DROP TABLE IF EXISTS `{$dbprefix}site_mail`");
-
-        $this->addSql("DELETE FROM `{$dbprefix}menu` WHERE url='/site'");
-
+        $this->addSql("DROP TABLE IF EXISTS `{$dbprefix}site`");
     }
 
-     public function isTransactional(): bool
-     {
-         return false;
-     }
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
