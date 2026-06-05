@@ -372,26 +372,6 @@ function heure4(heure){
   return heure;
 }
 
-
-function information(message,type,top,time){
-  if(top==undefined){
-    top=60;
-  }
-  
-  if(time==undefined){
-    time=5000;
-  }
-
-  if(typeof(timeoutJSInfo)!== "undefined"){
-    window.clearTimeout(timeoutJSInfo);
-  }
-  $("#JSInformation").remove();
-  $("body").append("<div id='JSInformation'>"+message+"</div>");
-  CJErrorHighlight($("#JSInformation"),type);
-  position($("#JSInformation"),top,"center");
-  timeoutJSInfo=window.setTimeout("$('#JSInformation').remove()",time);
-}
-
 function removeAccents(strAccents){
   strAccents = strAccents.split('');
   strAccentsOut = new Array();
@@ -505,27 +485,10 @@ function updateAgentsList(me,select_id){
   });
 }
 
-// This function will replace the updateTips function
 function updateAlert(text, translationOptions = null) {
   text = Translator.trans(text, translationOptions);
   $('#alert-text').text(text);
   $('#alert').removeClass('d-none');
-}
-
-// updateTips : utilisée pour valider les formulaires Jquery-UI
-function updateTips( text , type) {
-  if ( type == undefined ) {
-    type = null;
-  }
-  else if ( type == "success" ) {
-    type = "highlight";
-  }
-  
-  text = text.replace("\n", "<br/>");
-
-  $(".validateTips").html(text);
-
-  CJErrorHighlight( $(".validateTips"), type);
 }
 
 // This function is intended to replace verif_date() in the long term

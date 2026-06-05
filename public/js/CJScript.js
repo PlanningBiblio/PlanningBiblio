@@ -39,83 +39,6 @@ function CJDataTableStripe() {
   });
 }
 
-function CJErrorHighlight(e, type, icon) {
-    if (!icon) {
-        if (type === 'highlight') {
-            icon = 'ui-icon-info';
-        } else {
-            icon = 'ui-icon-alert';
-        }
-    }
-    return e.each(function() {
-        $(this).addClass('ui-widget');
-
-        var alertHtml = '<div class="ui-state-' + type + ' ui-corner-all" style="padding:0 .7em;">';
-        alertHtml += '<p style="text-align:center;">';
-        alertHtml += '<span class="ui-icon ' + icon + '" style="float:left;margin-right: .3em;"></span>';
-        alertHtml += $(this).html();
-        alertHtml += '</p>';
-        alertHtml += '</div>';
-
-        $(this).html(alertHtml);
-    });
-}
-
-/**
- * @function CJInfo
- * Affiche des messages d'erreur ou d'information en haut de l'application
- * @param string message : message à afficher, utiliser #BR# pour les sauts de lignes
- * @param string type : type de message, valeurs = success ou error
- * @param int top : position haute du message en pixel, default=82
- * @param int time : temps d'affichage en milisecondes, default=8000
- * @param string myClass : permet d'attribuer une classe au div affichant le message pour agir dessus à postériori (ex : $(".myClass").remove(); )
- */
-function CJInfo(message,type,top,time,myClass){
-  if(type==undefined || type=="success"){
-  	type="highlight";
-  }
-
-  if(top==undefined){
-    top=82;
-  }
-
-  if(time==undefined){
-    time=8000;
-  }
-
-  if(myClass==undefined){
-    myClass=null;
-  }
-
-  if(typeof(timeoutCJInfo)!== 'undefined' && time != 'permanent'){
-    window.clearTimeout(timeoutCJInfo);
-  }
-
-  var id=1;
-  $(".CJInfo").each(function(){
-    id=$(this).attr("data-id")>=id?($(this).attr("data-id")+1):id;
-    top=$(this).position().top+$(this).height()+5;
-  });
-
-  message=message.replace(/#BR#/g,"<br/>");
-  message=message.replace(/\n/g,"<br/>");
-
-  $("body").append("<div class='CJInfo noprint "+myClass+"' id='CJInfo"+id+"' data-id='"+id+"'>"+message+"</div>");
-  CJErrorHighlight($("#CJInfo"+id),type);
-  CJPosition($("#CJInfo"+id),top,"center");
-
-  if( time != 'permanent' ){
-    timeoutCJInfo=window.setTimeout(function(){
-      var height=$("#CJInfo"+id).height();
-      $("#CJInfo"+id).remove();
-      $(".CJInfo").each(function(){
-              var top=$(this).position().top-height;
-              $(this).css("top",top);
-      });
-    },time);
-  }
-}
-
 /**
  * @function stackAlert
  * Generates a stacked alert. Uses BS alerts classes and comportment.
@@ -195,16 +118,6 @@ function stackAlert(message, type='success', timeout=7000, position='top-center'
 
 	return this;
 };
-
-function CJPosition(object,top,left){
-  object.css("position","absolute");
-  object.css("z-index",10);
-  object.css("top",top);
-  if(left=="center"){
-    left=($(window).width()-object.width())/2;
-    object.css("left",left);
-  }
-}
 
 // Fonction JQuery
 $(function(){
