@@ -363,6 +363,7 @@ $(function() {
               var suppression = 'Suppression du commentaire : ';
             } else {
               $('.emoji-picker-textarea').addClass('is-invalid');
+              $('#pl-notes-text').removeClass('is-invalid');
               return;
             }
           }
@@ -379,6 +380,10 @@ $(function() {
       }
     });
   })
+
+  $('#pl-notes-modal').on('hidden.bs.modal', function() {
+    $('.emoji-wysiwyg-editor').removeClass('is-invalid');
+  });
 
   // Formulaire Appel à disponibilité
   $('#pl-appelDispo-form').on('submit', function(e) {

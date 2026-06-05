@@ -957,7 +957,6 @@ $(function(){
 
     $('.emoji-wysiwyg-editor').on('input', function() {
       $(this).removeClass('is-invalid');
-      $(this).prev('textarea').removeClass('is-invalid');
     })
   });
 
