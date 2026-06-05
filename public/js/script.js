@@ -489,18 +489,18 @@ function updateAgentsList(me,select_id){
       result=JSON.parse(result);
       $("#"+select_id).html("<option value='0'>Tous</option>");
       for(key in result){
-	$("#"+select_id).append("<option value='"+result[key]["id"]+"'>"+result[key]["nom"]+" "+result[key]["prenom"]+"</option>");
-	if(result[key]["id"]==index){
-	  in_array=true;
-	}
+        $("#"+select_id).append("<option value='"+result[key]["id"]+"'>"+result[key]["nom"]+" "+result[key]["prenom"]+"</option>");
+        if(result[key]["id"]==index){
+          in_array=true;
+        }
       }
       index=in_array?index:0;
       $("#"+select_id).val(index);
 
-      $("#"+select_id).closest("span").effect("highlight",{color: "#FFD700"},2000);
+      $("#"+select_id).parent(".row").effect("highlight",{color: "#FFD700"},2000);
     },
     error: function(){
-      information("Une erreur est survenue lors de la mise à jour de la liste des agents.","error");
+      stackAlert('Une erreur est survenue lors de la mise à jour de la liste des agents.','error');
     }
   });
 }

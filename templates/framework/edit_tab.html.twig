@@ -146,7 +146,16 @@
           </table>
         </form>
       </div>
-      <div class="important">Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</div>
+
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle-fill bi-danger me-2"></i> 
+            Important : Vous devez cliquer sur "Valider" avant de changer d'onglet
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <div id='div_horaires' style='display:none;'>
@@ -210,9 +219,18 @@
               </div> <!-- tab_horaires_{{tableau}} &amp; div_horaires_{{tableau}} -->
             {% endfor %}
           {% endif %}
-       </form>
-     </div>
-      <div class="important">Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</div>
+        </form>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle-fill bi-danger me-2"></i> 
+            Important : Vous devez cliquer sur "Valider" avant de changer d'onglet
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <div id='div_lignes' style='display:none;'>
@@ -277,8 +295,13 @@
           {% endif %}
         </form>
       </div>
-      <div class='highlight'>
-        <sup>*</sup> Classe CSS appliqué sur le tableau. Permet d'en personnaliser l'affichage.
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle-fill bi-information me-2"></i> 
+            <sup>*</sup> Classe CSS appliqué sur le tableau. Permet d'en personnaliser l'affichage.
+          </div>
+        </div>
       </div>
     </div>
   </div>

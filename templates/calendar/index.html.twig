@@ -56,9 +56,7 @@
       Aucun agent disponible
     {% endif %}
 
-    {% if beginSQL > endSQL  %}
-    <p class="information"> La date de fin doit être supérieure à la date de début </p>
-    {% elseif agent is not null and days %}
+    {% if agent is not null and days %}
       <br/>
       <table cellpadding="10" cellspacing="0" border="0" id="tab_agenda">
         <thead>

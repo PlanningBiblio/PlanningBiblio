@@ -375,7 +375,7 @@ $(function() {
         $('#pl-notes-modal').modal('hide');
       },
       error: function() {
-        updateTips('Une erreur est survenue lors de l\'enregistrement du commentaire', 'error');
+        stackAlert('Une erreur est survenue lors de l\'enregistrement du commentaire', 'error');
       }
     });
   })
@@ -412,7 +412,7 @@ $(function() {
          $('#pl-appelDispo-modal').modal('hide');
       },
       error: function() {
-        updateAlert('An error occurred while sending the email');
+        stackAlert('An error occurred while sending the email');
       }
     });
   });

@@ -12,6 +12,4 @@ $(document).ready(function() {
     $(this).css('width', width);
   });
 
-  // Formatting error messages
-  CJErrorHighlight($('.information'), 'error');
 });

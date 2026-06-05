@@ -189,7 +189,7 @@ function currentCredits() {
       $('input[name="anticipation"]').val(credits.holiday_debit_decimal);
     },
     error: function(xhr, ajaxOptions, thrownError){
-      information("Impossible de récupérer le compte de congés actuel.","error");
+      stackAlert('Impossible de récupérer le compte de congés actuel.','error');
     },
   });
 }
@@ -258,9 +258,11 @@ function calculCredit(){
         $("#nbHeures").text("0h00");
         $("#nbHeures").effect("highlight",null,3000);
         $("#nbJours").effect("highlight",null,3000);
-        information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
-      } else {
-        $("#JSInformation").remove();
+        $('#alert-stack-top-center').remove();
+        stackAlert('Aucun planning de présence enregistré pour cette période - calcul impossible.','error');
+      } 
+      else {
+        $('#alert-stack-top-center').remove();
         var balance_date = result.recover[0];  // Date de début, affichée pour le réajustement des crédits disponibles
         var balance = result.recover[1];       // Crédits de récupérations disponibles à la date choisie
 
@@ -318,11 +320,12 @@ function calculCredit(){
     },
     error: function(xhr, ajaxOptions, thrownError){
       var congesMode = $('#conges-mode').val();
+      $('#alert-stack-top-center').remove();
 
       if (congesMode == 'heures') {
-        information("Impossible de calculer le nombre d'heures correspondant au congé demandé.","error");
+        stackAlert('Impossible de calculer le nombre d\'heures correspondant au congé demandé.','error');
       } else {
-        information("Impossible de calculer le nombre de jours correspondant au congé demandé.","error");
+        stackAlert('Impossible de calculer le nombre de jours correspondant au congé demandé.','error');
       }
     },
   });
@@ -578,7 +581,7 @@ function supprimeConges(retour){
         location.href = retour;
       },
       error: function(){
-        information("Une erreur est survenue lors de la suppresion du congé.","error");
+        stackAlert('Une erreur est survenue lors de la suppresion du congé.','error');
       }
     });
   }
@@ -600,7 +603,7 @@ function verifConges()
   }
 
   if($("#erreurCalcul").val()=="true"){
-    information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
+    stackAlert("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
     return false;
   }
 
@@ -640,15 +643,17 @@ function verifConges()
   debut = debut + ' ' + hre_debut;
   fin = fin + ' ' + hre_fin;
 
+  $('#alert-stack-top-center').remove();
+
   // Vérifions si les dates sont correctement saisies
   if($("#debut").val()==""){
-    information("Veuillez choisir la date de début","error");
+    stackAlert('Veuillez choisir la date de début','error');
     return false;
   }
 
   // Vérifions si les dates sont cohérentes
   if (debut >= fin) {
-    information("La date de fin doit être supérieure à la date de début","error");
+    stackAlert('La date de fin doit être supérieure à la date de début','error');
     return false;
   }
   
@@ -769,7 +774,7 @@ function verifConges()
       }
     },
     error: function(){
-      information("Une erreur est survenue lors de l'enregistrement du congé","error");
+      stackAlert('Une erreur est survenue lors de l\'enregistrement du congé','error');
     },
   });
   return valid;
@@ -917,7 +922,7 @@ function update_validation_statuses() {
       $('tr#validation-line').effect("highlight",null,2000);
     },
     error: function(xhr, ajaxOptions, thrownError) {
-      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
+      stackAlert('Une erreur s\'est produite lors de la mise à jour de la liste des statuts', 'error');
     }
   });
 }

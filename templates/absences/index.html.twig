@@ -24,7 +24,7 @@
 
       {% if managed | length > 1 %}
         <div class="col-xl-2">
-          <div class="row">
+          <div class="row rounded-1" >
             <label class="col-xl-auto col-form-label mt-2" for="perso-id">{% trans %}Agent{% endtrans %} :</label>
             <select name="perso_id" id="perso_id" class="form-select form-select-sm">
                 <option value="0" {% if perso_id == 0 %} selected="selected" {% endif %}>{% trans %}Everyone{% endtrans %}</option>            
@@ -120,25 +120,13 @@
           {% if can_manage_sup_doc %}
             <td style='text-align:center;'>
               <div class='absences-pj'>
-                {% if abs.pj1 %}
-                  <input type='checkbox' id="pj1-{{ abs.id }}" checked="checked"/>
-                {% else %}
-                  <input type='checkbox' id="pj1-{{ abs.id }}"/>
-                {% endif %}
+                <input type='checkbox' id="pj1-{{ abs.id }}" {% if abs.pj1 %} checked="checked" {% endif %}/>
               </div>
               <div class='absences-pj'>
-                {% if abs.pj2 %}
-                  <input type='checkbox' id="pj2-{{ abs.id }}" checked="checked"/>
-                {% else %}
-                  <input type='checkbox' id="pj2-{{ abs.id }}"/>
-                {% endif %}
+                <input type='checkbox' id="pj2-{{ abs.id }}" {% if abs.pj2 %} checked="checked" {% endif %}/>
               </div>
               <div class='absences-pj'>
-                {% if abs.so %}
-                  <input type='checkbox' id="so-{{ abs.id }}" checked="checked"/>
-                {% else %}
-                  <input type='checkbox' id="so-{{ abs.id }}"/>
-                {% endif %}
+                <input type='checkbox' id="so-{{ abs.id }}" {% if abs.so %} checked="checked" {% endif %}/>
               </div>
             </td>
           {% endif %}

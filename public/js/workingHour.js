@@ -305,7 +305,7 @@ function plHebdoVerifForm(form) {
       }
     },
     error: function(result){
-      information(result.responseText, 'error');
+      stackAlert(result.responseText, 'error');
       retour = false;
     }
   });

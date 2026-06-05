@@ -503,10 +503,11 @@ $(function() {
       method: 'POST',
       data: 'id=' + id + '&pj=' + pj + '&checked=' + checked + '&CSRFToken=' + CSRFToken,
       success: function(){
-        information('Modification enregistrée', 'highlight');
+        $('#alert-stack-top-center').remove();
+        stackAlert('Modification enregistrée');
       },
       error: function(){
-        information('Attention, la modification n\'a pas pu être enregistrée', 'error');
+        stackAlert('Attention, la modification n\'a pas pu être enregistrée', 'error');
       }
     });
   });
@@ -614,7 +615,7 @@ function update_validation_statuses() {
       $('tr#validation').effect("highlight",null,2000);
     },
     error: function(xhr, ajaxOptions, thrownError) {
-      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
+      stackAlert('Une erreur s\'est produite lors de la mise à jour de la liste des statuts', 'error');
     }
   });
 }
@@ -1027,7 +1028,7 @@ function verif_absences(ctrl_form){
       }
     },
     error: function(result){
-      information("Une erreur est survenue.","error");
+      stackAlert('Une erreur est survenue.','error');
       retour=false;
     }
   });

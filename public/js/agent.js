@@ -654,14 +654,14 @@ $(function() {
       },
       success: function(result) {
         if(result.error) {
-          updateTips(result.error, 'error');
+          stackAlert(result.error, 'error');
         } else {
           stackAlert('L\'e-mail a bien été envoyé');
           $('#ics-url-modal').modal('hide');
         }
       },
       error: function(){
-        updateTips('Une erreur est survenue lors de l\'envoi de l\'e-mail', 'error');
+        stackAlert('Une erreur est survenue lors de l\'envoi de l\'e-mail', 'error');
       }
     });
   });
