@@ -12,7 +12,7 @@
     <div class="row row-search">
 
       <div class="col-xl-auto">
-        <input type="text" readonly class="form-control-plaintext mt-2" id="time-period" value="{% trans with {'%start%': debutFr, '%end%' : finFr} %}From %start% to %end%{% endtrans %}">
+        <input type="text" readonly class="form-control-plaintext form-control-sm mt-2 px-2" id="time-period" value="{% trans with {'%start%': debutFr, '%end%' : finFr} %}From %start% to %end%{% endtrans %}">
       </div>
 
       <label class="col-xl-auto col-form-label mt-2" for="time-search-start">{% trans %}Start{% endtrans %} :</label>
@@ -27,7 +27,7 @@
 
       {% if groups_exist %}
         <div class="col-3 form-check" style="align-content: center;">
-          <input id="selection_groupe" type="checkbox" value="" class="form-check-input m-1 mx-2" name="selection_groupe" {{ checked }} />            
+          <input id="selection_groupe" type="checkbox" value="" class="form-check-input mx-2" name="selection_groupe" {{ checked }} />            
           <label class="form-check-label" for="selection_groupe">{% trans %}Display hours by job category{% endtrans %}</label>              
         </div>
       {% endif %}

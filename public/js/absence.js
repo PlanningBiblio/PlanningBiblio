@@ -204,9 +204,9 @@ $(function() {
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
   $("select[name=motif]").change(function(){
     if($(this).val().toLowerCase()=="autre" || $(this).val().toLowerCase()=="other"){
-      $("#tr_motif_autre").show();
+      $("#motif_autre").show();
     }else{
-      $("#tr_motif_autre").hide();
+      $("#motif_autre").hide();
       $("input[name=motif_autre]").val("");
     }
   });

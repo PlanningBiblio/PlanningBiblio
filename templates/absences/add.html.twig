@@ -17,274 +17,219 @@
     </script>
     <h3>Ajouter une absence</h3>
     <div class="admin-div">
-      <table class="info-align">
-        <tr style='vertical-align:top'>
-          <td style='width:560px;'>
+      
+      <form id="form" name="form" action="/absence" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+        <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
+        <input type="hidden" id="admin" value="{{ admin }}" />
+        <input type="hidden" id="login_id" value="{{ loggedin_id }}" />
 
-            <form id="form" name='form' action='/absence' method='post' enctype='multipart/form-data'>
-              <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
-              <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
-              <input type='hidden' id='admin' value='{{ admin }}' />
-              <input type='hidden' id='login_id' value='{{ loggedin_id }}' />
+        <fieldset class="row my-2 gx-5">
+          <legend class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agent{% endtrans %}{% if agents_multiples %}(s){% endif %} :</legend>
+          <div class="col-3">
 
-              <table class='tableauFiches'>
-                <tr>
-                  <td class="textAlignRight">
-                    {% if agents_multiples %}
-                      <label >Agent(s)</label>
-                    {% else %}
-                      <label >Agent</label>
-                    {% endif %}
-                  </td>
+            {% if agents_multiples %}
+              {% if agent_preselection %}
+                <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/>
+              {% endif %}
 
-                  <td colspan='2'>
-                    {% if agents_multiples %}
-                      {% if agent_preselection %}
-                        <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/>
-                      {% endif %}
-
-                      <ul id='perso_ul1' class='perso_ul'>
-                        {% if agent_preselection %}
-                          <li id='li{{ loggedin_id }}' class='perso_ids_li'>
-                            {{ loggedin_name }} {{ loggedin_firstname }}
-                            {% if admin %}
-                              <span class='perso-drop' onclick="supprimeAgent({ loggedin_id });">
-                                <span class='pl-icon pl-icon-dropblack'></span>
-                              </span>
-                            {% endif %}
-                          </li>
-                        {% endif %}
-                      </ul>
-
-                      <ul id='perso_ul2' class='perso_ul'></ul>
-                      <ul id='perso_ul3' class='perso_ul'></ul>
-                      <ul id='perso_ul4' class='perso_ul'></ul>
-                      <ul id='perso_ul5' class='perso_ul'></ul>
-                  
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>&nbsp;</td>
-                  <td>
-                    <select name="perso_id" id="perso_ids" class="ui-widget-content ui-corner-all" style="margin-bottom:20px; width: 100%;">
-                      <option value='0' selected='selected'>-- Ajoutez un agent --</option>
-                      {% if config('Absences-tous') %}
-                        <option value='tous'>Tous les agents</option>
-                      {% endif %}
-
-                      {% for a in agents %}
-                        {% if a.id == loggedin_id and agent_preselection %}
-                          <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">
-                            {{ a.lastname }} {{ a.firstname }}
-                          </option>
-                        {% else %}
-                          <option value='{{ a.id }}' id='option{{ a.id }}'>
-                            {{ a.lastname }} {{ a.firstname }}
-                          </option>
-                        {% endif %}
-                      {% endfor %}
-                    </select>
-                    {% else %}
-                      <input type='hidden' name='perso_id' value='{{ loggedin_id }}' class='perso_ids_hidden' />
-                      {{ loggedin_name }} {{ loggedin_firstname }}
-
-                    {% endif %}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="textAlignRight">
-                    <label >Journée(s) entière(s) </label>
-                  </td>
-
-                  <td>
-                    <input type='checkbox' name='allday' {% if fullday_checked %} checked="checked" {% endif %} onclick='all_day();'/>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="textAlignRight">
-                    <label >Date de début </label>
-                  </td>
-
-                  <td style='white-space:nowrap;'>
-                    <input type="text" name="debut" value="" style="width:100%;" class="datepicker start-date form-control" id="absence-start"/>
-                  </td>
-                </tr>
-
-                <tr id='hre_debut' {% if fullday_checked %} style='display:none;' {% endif %}>
-                  <td class="textAlignRight">
-                    <label >Heure de début </label>
-                  </td>
-
-                  <td>
-                    <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value=""/>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="textAlignRight">
-                    <label >Date de fin </label>
-                  </td>
-
-                  <td style='white-space:nowrap;'>
-                    <input type="text" name="fin" value="" style="width:100%;" class="datepicker end-date form-control" id="absence-end"/>
-                  </td>
-                </tr>
-
-                <tr id='hre_fin' {% if fullday_checked %} style='display:none;' {% endif %}>
-                  <td class="textAlignRight">
-                    <label >Heure de fin </label>
-                  </td>
-
-                  <td>
-                    <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value=""/>
-                  </td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</td>
-                </tr>
-
-                <tr>
-                  <td style='padding-bottom:30px;' class="textAlignRight">
-                    <label for="recurrence-checkbox" class="form-check-label">Récurrence</label>
-                  </td>
-
-                  <td style='padding-bottom:30px;'>
-                    <input type="checkbox" id="recurrence-checkbox" name="recurrence-checkbox" class="form-check-input" style="margin-top: 3px;"/>
-                    <span id='recurrence-info' style="display:none; padding-left: 5px;">
-                      <span id='recurrence-summary'>&nbsp;</span>
-                      <a href='#' id='recurrence-link' style="margin-left:6px;">Modifier</a>
+              <ul id='perso_ul1' class='perso_ul'>
+              {% if agent_preselection %}
+                <li id='li{{ loggedin_id }}' class='perso_ids_li'>
+                  {{ loggedin_name }} {{ loggedin_firstname }}
+                  {% if admin %}
+                    <span class='perso-drop' onclick="supprimeAgent({ loggedin_id });">
+                      <span class='pl-icon pl-icon-dropblack'></span>
                     </span>
+                  {% endif %}
+                </li>
+              {% endif %}
+            </ul>
 
-                    <input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />
-                  </td>
-                </tr>
+            <ul id='perso_ul2' class='perso_ul'></ul>
+            <ul id='perso_ul3' class='perso_ul'></ul>
+            <ul id='perso_ul4' class='perso_ul'></ul>
+            <ul id='perso_ul5' class='perso_ul'></ul>
 
-                <tr>
-                  <td class="textAlignRight">
-                    <label >Motif </label>
-                  </td>
+            <select name="perso_id" id="perso_ids" class="form-select form-select-sm my-3">
+              <option value='0' selected='selected'>-- Ajoutez un agent --</option>
+              {% if config('Absences-tous') %}
+                <option value='tous'>Tous les agents</option>
+              {% endif %}
 
-                  <td style='white-space:nowrap;'>
-                    <select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>
-                      <option value=''></option>
-                      {% for r in reasons %}
-                        {% if r.type == 2 %}
-                          <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="padding20">
-                            &nbsp;&nbsp;&nbsp;{{ r.valeur }}
-                          </option>
-                        {% else %}
-                          {% if r.type == 1 %}
-                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" disabled="disabled">
-                              {{ r.valeur }}
-                            </option>
-                          {% else %}
-                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold">
-                              {{ r.valeur }}
-                            </option>
-                          {% endif %}
-                        {% endif %}
-                      {% endfor %}
-                    </select>
-
-                    {% if admin and not config('Planook') %}
-                      <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-reason-modal">
-                        <span class="pl-icon pl-icon-add" title="Ajouter un motif"></span>
-                      </button>
-                    {% endif %}
-                  </td>
-                </tr>
-
-                <tr style='display:none;' id='tr_motif_autre'>
-                  <td class="textAlignRight">
-                    <label >Motif (autre)</label>
-                  </td>
-
-                  <td>
-                    <input type='text' name='motif_autre' style='width:100%;' class='ui-widget-content ui-corner-all'/>
-                  </td>
-                </tr>
-
-                <tr style='vertical-align:top;'>
-                  <td class="textAlignRight">
-                    <label >Commentaires </label>
-                  </td>
-
-                  <td>
-                    <textarea name='commentaires' cols='16' rows='5' class='ui-widget-content ui-corner-all'></textarea>
-                  </td>
-                </tr>
-
-                {% if right701 %}
-                  <tr style='vertical-align:top;'>
-                    <td class="textAlignRight">
-                      <label >Pièces justificatives</label>
-                    </td>
-
-                    <td>
-                      <div class='absences-pj-fiche'>
-                        PJ1 <input type='checkbox' name='pj1' id='pj1' />
-                      </div>
-
-                      <div class='absences-pj-fiche'>
-                        PJ2 <input type='checkbox' name='pj2' id='pj2' />
-                      </div>
-
-                      <div class='absences-pj-fiche'>
-                        SO <input type='checkbox' name='so' id='so' />
-                      </div>
-                    </td>
-                  </tr>
+              {% for a in agents %}
+                {% if a.id == loggedin_id and agent_preselection %}
+                  <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">
+                    {{ a.lastname }} {{ a.firstname }}
+                  </option>
+                {% else %}
+                  <option value='{{ a.id }}' id='option{{ a.id }}'>
+                    {{ a.lastname }} {{ a.firstname }}
+                  </option>
                 {% endif %}
+              {% endfor %}
+            </select>
 
-                <tr style='vertical-align:top;'>
-                  <td class="textAlignRight">
-                    <label >Attacher un document</label>
-                  </td>
-                  <td><input type="file" name="documentFile" id="documentFile" /></td>
-                </tr>
+            {% else %}
+              <input type='hidden' name='perso_id' value='{{ loggedin_id }}' class='perso_ids_hidden' />{{ loggedin_name }} {{ loggedin_firstname }}
+            {% endif %}
+          </div>
+        </fieldset>
 
-                {% if config('Absences-validation') %}
-                  <tr id="validation-line">
-                    <td class="textAlignRight">
-                      <label >État </label>
-                    </td>
+        <div class="row mb-2 gx-5 form-check-prepend">
+          <label class="col-2 col-form-label aRight form-check-label" for="allday-check" >Journée(s) entière(s) :</label>
+          <div class="col-3">
+            <input id="allday-check" type="checkbox" name="allday" {% if fullday_checked %} checked="checked" {% endif %} onclick="all_day();" class="form-check-input" style="margin-top: 10px;"/>
+          </div>             
+        </div>
 
-                    <td id="validation-statuses"></td>
-                  </tr>
+        <div class="row gx-5 mb-2">
+          <label class="col-2 col-form-label aRight" for="absence-start">Date de début :</label>
+          <div class="col-3">
+            <input type="text" name="debut" value="" class="datepicker start-date form-control" id="absence-start"/>
+          </div>             
+        </div>
+
+        <div class="row gx-5 mb-2" id="hre_debut" {% if fullday_checked %} style="display:none;" {% endif %}>
+          <label class="col-2 col-form-label aRight" for="absence-start-hour">Heure de début :</label>
+          <div class="col-3">
+            <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker form-control form-control-sm" value="" id="absence-start-hour"/>
+          </div>             
+        </div>
+
+        <div class="row gx-5 mb-2">
+          <label class="col-2 col-form-label aRight" for="absence-end">Date de fin :</label>
+          <div class="col-3">
+              <input type="text" name="fin" value="" class="datepicker end-date form-control" id="absence-end"/>
+          </div>             
+        </div>
+
+        <div class="row gx-5 mb-2" id="hre_fin" {% if fullday_checked %} style="display:none;" {% endif %}>
+          <label class="col-2 col-form-label aRight" for="absence-end-hour">Heure de fin :</label>
+          <div class="col-3">
+            <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker form-control form-control-sm" value="" id="absence-end-hour"/>
+          </div>             
+        </div>
+
+        <div class="row mb-2">
+          <div class="invalid-feedback offset-4">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+        </div>
+
+        <div class="row mb-2 gx-5 form-check-prepend">
+          <label class="col-2 col-form-label aRight form-check-label" for="recurrence-checkbox" >Récurrence :</label>
+          <div class="col-3">
+            <input type="checkbox" id="recurrence-checkbox" name="recurrence-checkbox" class="form-check-input" style="margin-top: 10px;"/>
+            <span id="recurrence-info" style="display:none;" class="col-11 mt-2">
+              <span id="recurrence-summary" class="mx-3">&nbsp;</span>
+              <a href="#" id="recurrence-link">Modifier</a>
+            </span>
+            <input type="hidden" name="recurrence-hidden" id="recurrence-hidden"/>
+          </div>             
+        </div>
+
+        <div class="row gx-5 mb-2">
+          <label class="col-2 col-form-label aRight" for="motif">Motif :</label>
+          <div class="col-3">
+            <select name="motif" id="motif" class="form-select form-select-sm">
+              <option hidden disabled selected value=""></option>
+              {% for r in reasons %}
+                {% if r.type == 2 %}
+                  <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="padding20">
+                    &nbsp;&nbsp;&nbsp;{{ r.valeur }}
+                  </option>
+                {% else %}
+                  {% if r.type == 1 %}
+                    <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" disabled="disabled">
+                      {{ r.valeur }}
+                    </option>
+                  {% else %}
+                    <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold">
+                      {{ r.valeur }}
+                    </option>
+                  {% endif %}
                 {% endif %}
+              {% endfor %}
+            </select>
+          </div>  
+          {% if admin and not config('Planook') %}
+            <div class="col-auto p-0">
+              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-reason-modal">
+                <span class="pl-icon pl-icon-add" title="Ajouter un motif"></span>
+              </button>
+            </div> 
+          {% endif %}
+                    
+        </div>
 
-                <tr>
-                  <td>&nbsp;</td>
-                </tr>
+        <div class="row gx-5 mb-2" id="motif_autre" style="display:none;">
+          <label class="col-2 col-form-label aRight" for="motif2">Motif (autre) :</label>
+          <div class="col-3">
+            <input id="motif2" type="text" name="motif_autre" class="form-control form-control-sm"/>
+          </div>             
+        </div>
 
-                <tr>
-                  <td colspan='2' style='text-align:Right;'>
-                  <input type="button" class="btn btn-secondary" value="Annuler" onclick="document.location.href='{{asset('absence')}}';" />
-                    &nbsp;&nbsp;
-                    <input type="submit" class="btn btn-primary" value="Valider" />
+        <div class="row gx-5 mb-2">
+          <label class="col-2 col-form-label aRight" for="absence-comment">Commentaires :</label>
+          <div class="col-3">
+            <textarea id="absence-comment" name="commentaires" rows="5" class="form-control "></textarea>
+          </div>             
+        </div>
 
-                  </td>
-                </tr>
-              </table>
-            </form>
-          </td>
+        {% if right701 %}
+        <fieldset class="row mb-2 gx-5">
+          <legend class="col-form-label col-2 aRight">Pièces justificatives : </legend>
+          <div class="col-3 mt-2">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="pj1" id="pj1">
+              <label class="form-check-label" for="pj1">PJ1</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="pj2" id="pj2">
+              <label class="form-check-label" for="pj2">PJ2</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="so" id="so">
+              <label class="form-check-label" for="so">SO</label>
+            </div>
+          </div>
+        </fieldset>
+        {% endif %}
 
-        </tr>
-      </table>
+        <div class="row gx-5 mb-2">
+          <label class="col-2 col-form-label aRight" for="documentFile">Attacher un document :</label>
+          <div class="col-3">
+            <input type="file" name="documentFile" id="documentFile"/>
+          </div>             
+        </div>
+
+        {% if config('Absences-validation') %}
+          <div class="row gx-5 mb-2" id="validation-line">
+            <label class="col-2 col-form-label aRight" for="documentFile">État :</label>
+            <div class="col-3" style="align-items: center;display: flex;" >
+              <div id="validation-statuses"></div>
+            </div>             
+          </div> 
+        {% endif %}
+
+        <div class="row my-3">
+          <div class="col-3 offset-2">
+            <input type="button" class="btn btn-secondary m-2" value="Annuler" onclick="document.location.href='{{asset('absence')}}';" />
+            <input type="submit" class="btn btn-primary m-2" value="Valider" />
+          </div>
+        </div> 
+
+      </form>
       
       {#Messages d'informations absences#}
-      <div class="red info-align">
+      <div class="row red">
         {% if abences_infos %}
+        <div class="col-3 offset-2">
           <b>Informations congés / absences :</b><br/>
           {% for a in abences_infos %}
             Du {{ a.debut_fr }} au {{ a.fin_fr }} : {{ a.texte }}<br/>
           {% endfor %}
+        </div>
         {% endif %}
-
       </div>
 
       <div class="modal" id="end-date-alert-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="end-date-modal-title" aria-hidden="true">
@@ -339,31 +284,31 @@
                 <legend class="col-form-label col-4">Répéter le :</legend>
                 <div class="col-8 p-0 pt-2 pb-2">
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day1" value="MO">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day1" value="MO">
                     <label  for="recurrence-by-day1">Lundi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day2" value="TU">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day2" value="TU">
                     <label  for="recurrence-by-day2">Mardi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day3" value="WE">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day3" value="WE">
                     <label  for="recurrence-by-day3">Mercredi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day4" value="TH">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day4" value="TH">
                     <label  for="recurrence-by-day4">Jeudi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day5" value="FR">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day5" value="FR">
                     <label  for="recurrence-by-day5">Vendredi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day6" value="SA">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day6" value="SA">
                     <label  for="recurrence-by-day6">Samedi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day mt-1" type="checkbox" id="recurrence-by-day0" value="SU">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day0" value="SU">
                     <label  for="recurrence-by-day0">Dimanche</label>
                   </div>
                 </div>
@@ -395,16 +340,16 @@
                     <input class="form-check-input recurrence-data recurrence-end" name="recurrence-end" type="radio" id="recurrence-end1" value="never" checked>
                     <label class="form-check-label" for="recurrence-end1">Jamais</label>
                   </div>
-                  <div class="form-check">
+                  <div class="form-check" style="display: flex;align-items: baseline;">
                     <input class="form-check-input recurrence-data recurrence-end" name="recurrence-end" type="radio" id="recurrence-end2" value="count">
-                    <label class="form-check-label" for="recurrence-end2" style="display: block ruby;">Après
+                    <label class="form-check-label ms-2" for="recurrence-end2" style="display: block ruby;">Après
                       <input type="number" min="1" max="100" step="1" class="col-1 form-control form-control-sm recurrence-data" id="recurrence-count" placeholder="30" style="max-width: 60px;">
                       répétitions</label>
                   </div>
-                  <div class="form-check">
+                  <div class="form-check" style="display: flex;align-items: baseline;">
                     <input class="form-check-input recurrence-data recurrence-end" name="recurrence-end" type="radio" id="recurrence-end3" value="until">
-                    <label class="form-check-label" for="recurrence-end3">Le 
-                      <input type="text" id="recurrence-until" class="datepicker recurrence-data" style="width: 150px;"/>
+                    <label class="form-check-label ms-2" for="recurrence-end3" style="display: block ruby;">Le 
+                      <input type="text" id="recurrence-until" class="datepicker recurrence-data form-control" style="width: 150px;"/>
                     </label>
                   </div>
                 </div>

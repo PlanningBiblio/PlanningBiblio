@@ -914,7 +914,7 @@ function update_validation_statuses() {
     success: function(result){
       $("#validation-statuses").html(result);
 
-      $('tr#validation-line').effect("highlight",null,2000);
+      $('div#validation-line').effect("highlight",null,2000);
     },
     error: function(xhr, ajaxOptions, thrownError) {
       information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
