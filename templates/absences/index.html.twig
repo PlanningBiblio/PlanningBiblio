@@ -36,7 +36,7 @@
 
           <div class="form-check-prepend">
             <label class="form-check-label" for="deleted-agent-check">{% trans %}Deleted agents{% endtrans %} :</label>              
-            <input id="deleted-agent-check" type="checkbox" value="" class="form-check-input m-1 mx-2" {% if agents_deleted %} checked {% endif %} name="supprimes" onclick="updateAgentsList(this,'perso_id');"/>
+            <input id="deleted-agent-check" type="checkbox" value="" class="form-check-input mx-2" {% if agents_deleted %} checked {% endif %} name="supprimes" onclick="updateAgentsList(this,'perso_id');"/>
           </div>
         </div>
       {% endif %}

@@ -34,9 +34,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
-        $statuses_element = $crawler->filter('span');
+        $statuses_element = $crawler->filter('#validation-state');
 
-        $this->assertEquals('Demandée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
+        $this->assertEquals('Demandée', $statuses_element->attr('value'), 'NewAbsenceWithoutRight show asked');
     }
 
     public function testNewAbsenceRightN1(): void
@@ -142,9 +142,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
-        $statuses_element = $crawler->filter('span');
+        $statuses_element = $crawler->filter('#validation-state');
 
-        $this->assertEquals('Demandée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
+        $this->assertEquals('Demandée', $statuses_element->attr('value'), 'NewAbsenceWithoutRight show asked');
     }
 
     public function testEditAskedAbsenceWithoutRight(): void
@@ -164,9 +164,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_element = $crawler->filter('span');
+        $statuses_element = $crawler->filter('#validation-state');
 
-        $this->assertEquals('Demandée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
+        $this->assertEquals('Demandée', $statuses_element->attr('value'), 'NewAbsenceWithoutRight show asked');
     }
 
     public function testEditAskedAbsenceRightN1(): void
@@ -280,9 +280,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_element = $crawler->filter('span');
+        $statuses_element = $crawler->filter('#validation-state');
 
-        $this->assertEquals('Demandée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
+        $this->assertEquals('Demandée', $statuses_element->attr('value'), 'NewAbsenceWithoutRight show asked');
 
     }
 
@@ -303,9 +303,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_element = $crawler->filter('span');
+        $statuses_element = $crawler->filter('#validation-state');
 
-        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
+        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_element->attr('value'), 'NewAbsenceWithoutRight show asked');
     }
 
     public function testEditN1AbsenceRightN1(): void
@@ -447,9 +447,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_element = $crawler->filter('span');
+        $statuses_element = $crawler->filter('#validation-state');
 
-        $this->assertEquals('Acceptée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
+        $this->assertEquals('Acceptée', $statuses_element->attr('value'), 'NewAbsenceWithoutRight show asked');
     }
 
     public function testEditN2AbsenceRightN1(): void
@@ -472,9 +472,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_element = $crawler->filter('span');
+        $statuses_element = $crawler->filter('#validation-state');
 
-        $this->assertEquals('Refusée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
+        $this->assertEquals('Refusée', $statuses_element->attr('value'), 'NewAbsenceWithoutRight show asked');
 
     }
 

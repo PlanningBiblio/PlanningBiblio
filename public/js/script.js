@@ -270,6 +270,7 @@ function addAbsenceDocument(id) {
         data: form_data,
         success: function(id) {
             refreshAbsenceDocumentList(id);
+            $('#documentFile').val(''); 
             return false;
         }.bind(this, id)
     });
@@ -280,11 +281,19 @@ function refreshAbsenceDocumentList(id) {
             url: url('absences/documents/' + id),
             type: 'GET',
             success: function(result) {
-                listString = "<ul id='documentsList'>";
+                listString = '<div class="col-6" id="documentsList">';
                 jQuery.each(result, function() {
-                    listString += '<li id="document_' + this.id + '"><a href="/absences/document/' + this.id + '">' + this.filename + '</a> <a href="javascript:deleteAbsenceDocument(' + this.id + ');">supprimer</a/</li>';
-                });
-                listString += "</ul>";
+                    listString +=
+                      `<div class="row gx-5" id="document_` + this.id + `">
+                        <div class="col-6">
+                          <a type="link" class="btn btn-link text-start" href="/absences/document/` + this.id + `">` + this.filename + `</a>
+                        </div>
+                        <div class="col-auto ps-0">
+                          <button type="button" class="btn btn-link text-start" onclick="deleteAbsenceDocument(` + this.id + `);">Supprimer</button>
+                        </div>
+                      </div>`;
+                  });
+                listString += '</div>';
                 $("#documentsList").replaceWith(listString);
                 return false;
             }
