@@ -2094,6 +2094,24 @@ input::placeholder {
 
 /* Bootstrap Grid END */
 
+/* Tooltips START */
+
+.custom-tooltip {
+  --bs-tooltip-color: #29495C;
+  --bs-tooltip-opacity: 100%;
+  --bs-tooltip-bg: white ;
+  --bs-tooltip-border-radius : 4px;
+  --bs-tooltip-arrow-width: 0px;
+  --bs-tooltip-arrow-height: 0px;
+  --bs-tooltip-max-width : fit-content;
+  border : 1px solid #29495C;
+  border-radius: 4px;
+  white-space: pre ;
+}
+
+/* Tooltips END */
+
+
 /*Table START*/
 
 table.dataTable th{

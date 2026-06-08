@@ -75,31 +75,31 @@
             </div>
 
             {% if userCan('300', site) or userCan('1000', site) %}
-              <span id="icon-lock" class="pl-icon pl-icon-lock pointer noprint" title="Déverrouiller le planning" {% if not locked %} style="display:none;" {% endif %}></span>
-              <span id="icon-unlock" class="pl-icon pl-icon-unlock pointer noprint" title="Verrouiller le planning" {% if locked %} style="display:none;" {% endif %}></span>
+              <span role="button" id="icon-lock" class="pl-icon pl-icon-lock pointer noprint" title="{% trans %}Unlock the schedule{% endtrans %}" {% if not locked %} style="display:none;" {% endif %}></span>
+              <span role="button" id="icon-unlock" class="pl-icon pl-icon-unlock pointer noprint" title="{% trans %}Lock the schedule{% endtrans %}" {% if locked %} style="display:none;" {% endif %}></span>
             {% endif %}
 
             {% if userCan('300', site) %}
 
               <button id="planning-save" type="button" class="btn btn-icon disabled" data-bs-toggle="modal" data-bs-target="#save-model-modal">
-                <span class="pl-icon pl-icon-save" title="Enregistrer comme modèle"></span>
+                <span class="pl-icon pl-icon-save" title="{% trans %}Save as model{% endtrans %}"></span>
               </button>
 
               <button id="planning-import" type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#import-model-modal" style="{{ locked ? 'display:none;' }}">
-                <span class="pl-icon pl-icon-open" title="Importer un modèle"></span>
+                <span class="pl-icon pl-icon-open" title="{% trans %}Import a model{% endtrans %}"></span>
               </button>
 
               <button id="planning-drop" type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#drop-model-modal" style="{{ locked ? 'display:none;' }}">
-                <span class="pl-icon pl-icon-drop" title="Supprimer le planning"></span>
+                <span class="pl-icon pl-icon-drop" title="{% trans %}Delete the schedule{% endtrans %}"></span>
               </button>
             {% endif %}
 
             <a href="javascript:print();">
-              <span class="pl-icon pl-icon-printer" title="Imprimer le planning"></span>
+              <span class="pl-icon pl-icon-printer" title="{% trans %}Print the schedule{% endtrans %}"></span>
             </a>
 
             <a href="{{ path('home') }}">
-              <span class="pl-icon pl-icon-refresh" title="Actualiser">
+              <span class="pl-icon pl-icon-refresh" title="{% trans %}Refresh{% endtrans %}">
             </a>
 
           </div>
