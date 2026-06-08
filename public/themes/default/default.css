@@ -20,10 +20,6 @@ body,a,input,select,textarea,button {
 	font-size:13px;
 	}
 
-b{
-  font-weight: normal;
-}
-
 .left-border{
   padding: 10px 19px 6px 19px;
   border-left:  1px solid #000;
@@ -209,11 +205,6 @@ h4{
   text-align:center;
 }
 
-.absences-pj-fiche{
-  display:inline;
-  margin-right:40px;
-}
-
 .absences-motif-div{
   height: 20px;
   font-weight: bold;
@@ -224,7 +215,6 @@ h4{
 
 /* Absences récurrentes */
 #recurrence-summary {
-  max-width:165px;
   white-space: normal;
 }
 
@@ -237,6 +227,10 @@ h4{
   display: inline-block;
   vertical-align: top;
   white-space: normal;
+}
+
+#perso_ul1 li:first-of-type {
+  margin-top: 6px;
 }
 
 /* .perso-drop : suppression des agents sélectionés dans les pages absences/* */
@@ -1180,7 +1174,7 @@ class cellule = cellule par défaut
 .datepicker {
   font-size: 12px;
   color: #29495C;
-  text-align:center;
+  text-align: center;
 }
 
 .datepicker .datepicker-days table thead tr th {
@@ -1870,6 +1864,11 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   box-shadow: none;
 }
 
+.btn.btn-link {
+  color: #29495C;
+  font-weight: normal;
+}
+
 .btn {
   min-width: 105px;
   font-family: Poppins;
@@ -1948,14 +1947,16 @@ hr {
   justify-content: center;
 }
 
-.form-control, .form-control:focus, .form-control-plaintext {
+.form-control, .form-control:focus, 
+.row.row-search .form-control-plaintext {
   color: #29495C;
   font-size: inherit;
   border-radius: var(--bs-border-radius-sm);
   border: 1px solid #456578;
+  background-color: white;
 }
 
-div.form-control, div.form-control:focus {
+div.form-control, div.form-control:focus, .form-control-plaintext {
   color: #29495C;
 }
 
@@ -1965,7 +1966,7 @@ input.form-check-input:checked {
 }
 
 input.form-check-input {
-  margin-top: 0.5em;
+  margin-top: .25rem;
   border: 1px solid;
 }
 
@@ -2001,15 +2002,22 @@ input::placeholder {
 }
 
 .was-validated .form-control:valid,
+.was-validated .form-check-input:valid,
 .was-validated .form-select:valid {
   border-color: inherit;
-  padding-right: 4px !important;
+}
+
+.was-validated .form-control:valid,
+.was-validated .form-select:valid {
   background-image: none;
 }
 
-.was-validated .form-check-input:valid {
-  border-color: inherit;
+.was-validated .form-control:valid {
   padding-right: 4px !important;
+}
+
+.was-validated .form-select:valid {
+  padding-right: 2.25rem !important;
 }
 
 .was-validated .form-check-input:valid:checked {
@@ -2136,10 +2144,6 @@ table.dataTable th{
   border-radius: 5px;
   margin: 20px 0 0 0;
   padding: 20px;
-}
-
-.info-align{
-  display: inline-block;
 }
 
 #admin .ui-state-default, .ui-widget-header .ui-state-default {
