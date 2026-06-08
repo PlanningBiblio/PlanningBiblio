@@ -63,7 +63,7 @@ class StatisticController extends BaseController
 
         if ($nbSites > 1) {
             foreach ($sites_array as $site) {
-                $multisites[$site->getId()] = $site->getName();
+                $multisites[$site['id']] = $site['name'];
             }
         }
 
@@ -882,7 +882,7 @@ class StatisticController extends BaseController
         $multisites = array();
         if ($nbSites>1) {
             foreach ($sites_array as $site) {
-                $multisites[$site->getId()] = $site->getName();
+                $multisites[$site['id']] = $site['name'];
             }
         }
         // 		--------------------------		Affichage du tableau de résultat		--------------------
@@ -1264,7 +1264,7 @@ class StatisticController extends BaseController
         $multisites = array();
         if ($nbSites >1) {
             foreach ($sites_array as $s) {
-                $multisites[] = $s->getName();
+                $multisites[] = $s['name'];
             }
         }
 
@@ -1528,7 +1528,7 @@ class StatisticController extends BaseController
         $multisites = array();
         if ($nbSites > 1) {
             foreach ($sites_array as $site) {
-                $multisites[$site->getId()] = $site->getName();
+                $multisites[$site['id']] = $site['name'];
             }
         }
 
@@ -1887,7 +1887,7 @@ class StatisticController extends BaseController
         $nbSites = count($sites_array);
         if ($nbSites >1){
             foreach ($sites_array as $site) {
-                $multisites[$site->getId()] = $site->getName();
+                $multisites[$site['id']] = $site['name'];
             }
         }
 
@@ -2308,7 +2308,7 @@ class StatisticController extends BaseController
 
         if ($nbSites>1) {
             foreach ($sites_array as $site) {
-                $multisites[$site->getId()] = $site->getName();
+                $multisites[$site['id']] = $site['name'];
             }
         }
         foreach ($tab as &$elem) {
@@ -2461,7 +2461,7 @@ class StatisticController extends BaseController
         $multisites= [];
         if ($nbSites > 1){
             foreach ($sites_array as $site) {
-                $multisites[$site->getId()] = $site->getName();
+                $multisites[$site['id']] = $site['name'];
             }
         }
 
@@ -2637,8 +2637,8 @@ class StatisticController extends BaseController
                 $siteEtage = array();
                 if ($nbSites >1) {
                     foreach ($sites_array as $site) {
-                        if ($tab[$key]["sites"][$site->getId()] == $tab[$key][2]) {
-                            $siteEtage[] = $site->getName();
+                        if ($tab[$key]["sites"][$site['id']] == $tab[$key][2]) {
+                            $siteEtage[] = $site['name'];
                             continue;
                         }
                     }

@@ -144,7 +144,11 @@ class AuthorizationsController extends BaseController
                 // Symfony Session
                 $session = $request->getSession();
                 $session->set('loginId', $db->result[0]['id']);
-                $session->set('sites', $GLOBALS['entityManager']->getRepository(Site::class)->findBy(["deletedDate" => null]));
+                $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+                $sitesData = array_map(function ($site) {
+                    return ['id' => $site->getId(), 'name' => $site->getName()];
+                }, $siteEntities);
+                $session->set('sites', $sitesData);
 
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
@@ -256,7 +260,11 @@ class AuthorizationsController extends BaseController
             // Symfony Session
             $session = $request->getSession();
             $session->set('loginId', $db->result[0]['id']);
-            $session->set('sites', $GLOBALS['entityManager']->getRepository(Site::class)->findBy(["deletedDate" => null]));
+            $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+            $sitesData = array_map(function ($site) {
+                return ['id' => $site->getId(), 'name' => $site->getName()];
+            }, $siteEntities);
+            $session->set('sites', $sitesData);
 
             // Create CSRF Token
             $CSRFToken = CSRFToken();

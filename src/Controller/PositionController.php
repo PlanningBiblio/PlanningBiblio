@@ -218,8 +218,8 @@ class PositionController extends BaseController
 
         if ($nbSites>1){
             foreach ($sites_array as $site) {
-                $selected = $site==$site->getId()?"selected='selected'":null;
-                $multisite[] = $site->getName();
+                $selected = $site==$site['id']?"selected='selected'":null;
+                $multisite[] = $site['name'];
                 $selectedSites[] = $selected;
             }
         }

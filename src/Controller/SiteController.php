@@ -22,14 +22,14 @@ class SiteController extends BaseController
         $sitesTab = [];
 
         foreach ($sites_array as $site) {
-            $mails = $this->entityManager->getRepository(SiteMail::class)->findBy(['site' => $site->getId()]);
+            $mails = $this->entityManager->getRepository(SiteMail::class)->findBy(['site' => $site['id']]);
 
             $mailsValues = array_map(fn($m) => $m->getMail(), $mails);
             $mailsAffiches = array_slice($mailsValues, 0, 3);
 
             $sitesTab[] = [
-                'id' => $site->getId(),
-                'name' => $site->getName(),
+                'id' => $site['id'],
+                'name' => $site['name'],
                 'mails' => implode('; ', $mailsValues),
                 'mailsAffiches' => implode('; ', $mailsAffiches) . (count($mailsValues) > 3 ? ' ...' : ''),
             ];
@@ -127,7 +127,11 @@ class SiteController extends BaseController
             $this->logger->error($e->getMessage());
         }
 
-        $session->set('sites', $this->entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL)));
+        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+        $sitesData = array_map(function ($site) {
+            return ['id' => $site->getId(), 'name' => $site->getName()];
+        }, $siteEntities);
+        $session->set('sites', $sitesData);
         return $this->redirectToRoute('site.index');
     }
 
@@ -160,7 +164,11 @@ class SiteController extends BaseController
             return $this->json("Erreur lors de la suppression", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $session->set('sites', $this->entityManager->getRepository(Site::class)->findBy(array("deletedDate" => NULL)));
+        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+        $sitesData = array_map(function ($site) {
+            return ['id' => $site->getId(), 'name' => $site->getName()];
+        }, $siteEntities);
+        $session->set('sites', $sitesData);
         return $this->json("Ok");
     }
 
