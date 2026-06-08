@@ -39,7 +39,7 @@ class ModelController extends BaseController
         $sites = array();
         if ($multi_sites !== 0) {
             foreach ($sites_array as $site) {
-                $sites[$site->getId()] = $site->getName();
+                $sites[$site['id']] = $site['name'];
             }
         }
 

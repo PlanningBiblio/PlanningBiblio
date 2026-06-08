@@ -319,8 +319,8 @@ class WorkingHourController extends BaseController
         }
 
         foreach ($sites_array as $s) {
-            $sites[] = $s->getId();
-            $multisites[$s->getId()] = $s->getName();
+            $sites[] = $s['id'];
+            $multisites[$s['id']] = $s['name'];
         }
 
         $nomAgent = nom($perso_id, "prenom nom");
@@ -385,8 +385,8 @@ class WorkingHourController extends BaseController
         $sites = array();
         $multisites = array();
         foreach ($sites_array as $s) {
-            $sites[] = $s->getId();
-            $multisites[$s->getId()] = $s->getName();
+            $sites[] = $s['id'];
+            $multisites[$s['id']] = $s['name'];
         }
         $exception_back = '/myaccount';
         if ($retour != '/myaccount') {

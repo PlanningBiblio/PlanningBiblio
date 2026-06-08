@@ -295,7 +295,7 @@ class AppExtension extends AbstractExtension
         foreach ($sites as $site) {
             $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
             if ($s !== null) {
-                $displayedSites[] = $s->getName();
+                $displayedSites[] = $s['name'];
             }
         }
 

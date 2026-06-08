@@ -185,7 +185,7 @@ class FrameworkController extends BaseController
         $multisites = array();
         if ($nbSites>1) {
             foreach ($sites_array as $s) {
-                $multisites[$s->getId()] = $s->getName();
+                $multisites[$s['id']] = $s['name'];
             }
         }
 
@@ -236,7 +236,7 @@ class FrameworkController extends BaseController
         $multisites = array();
         if ($nbSites>1) {
             foreach ($sites_array as $s) {
-                $multisites[$s->getId()] = $s->getName();
+                $multisites[$s['id']] = $s['name'];
             }
         }
 
@@ -585,7 +585,7 @@ class FrameworkController extends BaseController
 
         if(count($sites_array) > 1){
             foreach ($sites_array as $s) {
-                $multisites[$s->getId()] = $s->getName();
+                $multisites[$s['id']] = $s['name'];
             }
         }
 
@@ -634,7 +634,7 @@ class FrameworkController extends BaseController
 
         if(count($sites_array) > 1){
             foreach ($sites_array as $s) {
-                $multisites[$s->getId()] = $s->getName();
+                $multisites[$s['id']] = $s['name'];
             }
         }
 

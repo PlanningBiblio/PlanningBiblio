@@ -211,8 +211,8 @@ class AgentRepository extends EntityRepository
         $sites_select = array();
 
         foreach ($sites_array as $site) {
-            $siteId = $site->getId();
-            $name = $site->getName();
+            $siteId = $site['id'];
+            $name = $site['name'];
 
             if ($by_agent_param->getValue()) {
                 if (in_array($siteId, $managed_sites)) {
@@ -301,7 +301,7 @@ class AgentRepository extends EntityRepository
             $sites = array();
 
             foreach ($sites_array as $site) {
-                $sites[] = $site->getId();
+                $sites[] = $site['id'];
             }
 
             // will only check for agent sites

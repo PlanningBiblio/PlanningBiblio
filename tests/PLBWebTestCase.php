@@ -75,11 +75,6 @@ class PLBWebTestCase extends PantherTestCase
         $this->entityManager = $entityManager;
         $this->config = $entityManager->getRepository(Config::class);
 
-        // Isolation : remet la table `site` à un unique site par défaut entre chaque test.
-        // Des tests multisite y insèrent plusieurs sites ; sans ce reset, l'état fuit vers
-        // les tests suivants (comptages d'agents/listes faussés par le filtrage par site).
-        // TRUNCATE (et non DELETE) pour réinitialiser l'AUTO_INCREMENT : les tests qui
-        // créent un 2e site via FixtureBuilder comptent sur un id déterministe (2).
         $conn = $entityManager->getConnection();
         $conn->executeStatement('TRUNCATE TABLE site_mail');
         $conn->executeStatement('TRUNCATE TABLE site');
@@ -104,7 +99,11 @@ class PLBWebTestCase extends PantherTestCase
         $crawler = $this->client->request('GET', '/login');
         $session = $this->client->getRequest()->getSession();
         $session->set('loginId', $agent->getId());
-        $session->set('sites', $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null]));
+        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+        $sitesData = array_map(function ($site) {
+            return ['id' => $site->getId(), 'name' => $site->getName()];
+        }, $siteEntities);
+        $session->set('sites', $sitesData);
         $session->save();
     
         $cookie = new Cookie($session->getName(), $session->getId());

@@ -235,9 +235,9 @@ class AgentController extends BaseController
         if (count($sites_array) > 1) {
             foreach ($sites_array as $s) {
                 $sitesSelect[] = [
-                    'id' => $s->getId(),
-                    'name' => $s->getName(),
-                    'checked' => in_array($s->getId(), $sites) ? 1 : 0,
+                    'id' => $s['id'],
+                    'name' => $s['name'],
+                    'checked' => in_array($s['id'], $sites) ? 1 : 0,
                 ];
             }
         }
@@ -335,7 +335,7 @@ class AgentController extends BaseController
         if (count($sites_array) > 1) {
             $sites_for_rights = array();
             foreach ($sites_array as $s) {
-                $sites_for_rights[] = array('site_name' => $s->getName());
+                $sites_for_rights[] = array('site_name' => $s['name']);
             }
 
             $this->templateParams(array('sites_for_rights' => $sites_for_rights));
