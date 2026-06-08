@@ -733,6 +733,25 @@ function position(object,top,left){
 }
 //	--------------------------------	FIN Aide		---------------------------------	//
 
+//	--------------------------------	Tooltips		---------------------------------	//
+
+function initTooltips() {
+  // Select every element with a title attribute
+  $('[title]').each(function() {
+    $(this).attr('data-bs-toggle', 'tooltip');
+    $(this).attr('data-bs-custom-class', 'custom-tooltip');
+    if (!$(this).attr('data-bs-placement')) {
+      $(this).attr('data-bs-placement', 'bottom');
+    }
+  });
+
+  // Initialize the tooltips on those
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+}
+
+//	--------------------------------	END Tooltips		---------------------------------	//
+
 
 // Initialisations JQuery-UI / Bootstrap
 $(function(){
@@ -986,12 +1005,7 @@ $(function(){
     })
   });
 
-  // Infobulles
-  $(document).tooltip();
-
-  $('button.tooltip-icon').each(function() {
-    var title = $(this).attr('data-bs-title');
-    $(this).attr('aria-label', title);
-  });
+  // Tooltips
+  initTooltips();
 
 });

@@ -461,7 +461,6 @@ $(function() {
         // Affichage des tableaux
         initContextMenu(result);
 
-        
         // Largeur du tableau 1 (on s'adapte à la longueur des lignes)
         $("#menudiv1").css("width",250);
         var width = $('#menudiv1 > table').width() +20;
@@ -543,6 +542,7 @@ function initContextMenu(data) {
   $("body").append("<div id='menudiv2'></div>");
   fillContextMenuLevel1(data);
   fillContextMenuLevel2(data);
+  initTooltips();
 }
 
 function fillContextMenuLevel2(data) {
@@ -1036,6 +1036,9 @@ function contextMenuTitle(data) {
 }
 
 function emptyContextMenu() {
+  $('.tooltip').each(function() {
+    $(this).remove();
+  });
   $("#menudiv1").remove();
   $("#menudiv2").remove();
 }
@@ -1343,6 +1346,8 @@ function bataille_navale(poste, date, debut, fin, perso_id, barrer, ajouter, sit
         // Complète le tableau cellules initialisé au chargement de la page et contenant toutes les cellules ajoutées par la fonction bataille_navale
         cellules.push($('#cellule' + cellule + '_' + i));
       }
+
+      initTooltips();
 
       // Ajout du widget pour copier les agents dans
       // la cellule immédiatement à droite.

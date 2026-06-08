@@ -69,24 +69,24 @@
 
             {% if userCan('300', site) or userCan('1000', site) %}
               <button id="icon-lock" type="button" class="col-auto btn btn-icon" {% if not locked %} style="display:none;" {% endif %} >
-                <span class="col-auto pl-icon pl-icon-lock pointer" title="Déverrouiller le planning" ></span>
+                <span class="col-auto pl-icon pl-icon-lock pointer" title="{% trans %}Unlock the schedule{% endtrans %}" ></span>
               </button>
               <button id="icon-unlock" type="button" class="col-auto btn btn-icon" {% if locked %} style="display:none;" {% endif %}>
-                <span class="col-auto pl-icon pl-icon-unlock pointer" title="Verrouiller le planning"></span>
+                <span class="col-auto pl-icon pl-icon-unlock pointer" title="{% trans %}Lock the schedule{% endtrans %}"></span>
               </button>
             {% endif %}
 
             {% if userCan('300', site) %}
               <button id="planning-save" type="button" class="col-auto btn btn-icon disabled" data-bs-toggle="modal" data-bs-target="#save-model-modal">
-                <span class="pl-icon pl-icon-save" title="Enregistrer comme modèle"></span>
+                <span class="pl-icon pl-icon-save" title="{% trans %}Save as model{% endtrans %}"></span>
               </button>
 
               <button id="planning-import" type="button" class="col-auto btn btn-icon" data-bs-toggle="modal" data-bs-target="#import-model-modal" style="{{ locked ? 'display:none;' }}">
-                <span class="pl-icon pl-icon-open" title="Importer un modèle"></span>
+                <span class="pl-icon pl-icon-open" title="{% trans %}Import a model{% endtrans %}"></span>
               </button>
 
               <button id="planning-drop" type="button" class="col-auto btn btn-icon" data-bs-toggle="modal" data-bs-target="#drop-model-modal" style="{{ locked ? 'display:none;' }}">
-                <span class="pl-icon pl-icon-drop" title="Supprimer le planning"></span>
+                <span class="pl-icon pl-icon-drop" title="{% trans %}Delete the schedule{% endtrans %}"></span>
               </button>
             {% endif %}
 

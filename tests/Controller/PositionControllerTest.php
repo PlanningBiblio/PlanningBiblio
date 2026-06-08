@@ -117,7 +117,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','input submit value is Annuler');
 
         $result = $crawler->filterXPath('//button[@class="tooltip-icon"]')->eq(6);
-        $this->assertEquals('Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste.', $result->attr('data-bs-title'), 'tooltip is ok');
+        $this->assertEquals('Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste.', $result->attr('title'), 'tooltip is ok');
     }
 
     public function testFormEdit(): void
@@ -224,7 +224,7 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','input submit value is Annuler');
 
         $result = $crawler->filterXPath('//button[@class="tooltip-icon"]')->eq(6);
-        $this->assertEquals('Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste.', $result->attr('data-bs-title'), 'tooltip is ok');
+        $this->assertEquals('Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste.', $result->attr('title'), 'tooltip is ok');
     }
 
     public function testPositionList(): void

@@ -322,7 +322,7 @@ msgstr "Aucun modèle enregistré"
 msgid "Select the template to import"
 msgstr "Sélectionnez le modèle à importer"
 
-msgid "Delete the schedule"
+msgid "Deletion of the schedule"
 msgstr "Supression du planning"
 
 msgid "Week"
@@ -447,3 +447,27 @@ msgstr "Ce nom est déjà utilisé"
 
 msgid "Group name"
 msgstr "Nom du groupe"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Import a model"
+msgstr "Importer un modèle"
+
+msgid "Save as model"
+msgstr "Enregistrer comme modèle"
+
+msgid "Delete the schedule"
+msgstr "Supprimer le planning"
+
+msgid "Print the schedule"
+msgstr "Imprimer le planning"
+
+msgid "Refresh"
+msgstr "Actualiser"
+
+msgid "Unlock the schedule"
+msgstr "Déverrouiller le planning"
+
+msgid "Lock the schedule"
+msgstr "Verrouiller le planning"
