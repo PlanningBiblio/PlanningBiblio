@@ -204,6 +204,10 @@ h4{
   color: #DC3545;
 }
 
+#documentsList .btn-link , #add-file {
+  text-align: left;
+}
+
 .absences-pj{
   display:inline;
   padding:0 8px;
@@ -1880,6 +1884,11 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   border: 1px solid #cd1b19;
   color: #fff;
   box-shadow: none;
+}
+
+.btn.btn-link {
+  color: #29495C;
+  font-weight: normal;
 }
 
 .btn {

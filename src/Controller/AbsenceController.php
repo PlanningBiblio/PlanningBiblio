@@ -240,6 +240,11 @@ class AbsenceController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
+        $default = array('perso_ids' => array(), 'nom' => $_SESSION['login_nom'], 
+                         'prenom'=> $_SESSION['login_prenom'], 'perso_id' => $session->get('loginId'), 
+                         'motif' => null, 'motif_autre' => null, 'commentaires' => null, 'pj1' => false,
+                         'pj2' => false, 'so' => false, 'editable' => false);
+
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('absence')
@@ -262,20 +267,31 @@ class AbsenceController extends BaseController
         }
 
         $this->templateParams(array(
-            'abences_infos'         => $this->absenceInfos(),
+            'id'                    => null,
+            'access'                => false,
+            'debut'                 => null,
+            'hre_debut'             => '00:00:00',
+            'fin'                   => null,
+            'hre_fin'               => '23:59:59',
+            'absence'               => $default,
+            'agents'                => array(),
+            'absences_infos'        => $this->absenceInfos(),
+            'absences_tous'         => $this->config('Absences-tous'),
+            'absences_validation'   => $this->config('Absences-validation'),
             'admin'                 => $this->admin || $this->adminN2,
             'adminN1'               => $this->admin ? 1 : 0,
             'adminN2'               => $this->adminN2 ? 1 : 0,
             'agent_preselection'    => $agent_preselection,
-            'agents'                => $managed,
+            'managed'               => $managed,
             'agents_multiples'      => $this->agents_multiples,
             'CSRFToken'             => $GLOBALS['CSRFSession'],
-            'fullday_checked'       => $this->config('Absences-journeeEntiere'),
+            'fullday'               => $this->config('Absences-journeeEntiere'),
             'loggedin_id'           => $session->get('loginId'),
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'reason_types'          => $this->reasonTypes(),
             'reasons'               => $this->availablesReasons(),
+            'display_autre'         => false,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
         ));
 
@@ -481,16 +497,20 @@ class AbsenceController extends BaseController
             'access'                => $acces,
             'absences_tous'         => $this->config('Absences-tous'),
             'absences_validation'   => $this->config('Absences-validation'),
+            'absences_infos'        => $this->absenceInfos(),
             'admin'                 => $admin ? 1 : 0,
+            'adminN1'               => $adminN1 ? 1 : 0,
             'adminN2'               => $adminN2 ? 1 : 0,
             'agents_multiples'      => $agents_multiples,
             'agents'                => $agents,
-            'agents_tous'           => $managed,
+            'managed'               => $managed,
+            'agent_preselection'    => null,
             'absence'               => $absence,
             'debut'                 => $debut,
             'fin'                   => $fin,
             'hre_debut'             => $hre_debut,
             'hre_fin'               => $hre_fin,
+            'fullday'               => ($hre_debut == '00:00:00' && $hre_fin == '23:59:59'),
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'loggedin_id'           => $session->get('loginId'),
             'loggedin_name'         => $_SESSION['login_nom'],
@@ -502,7 +522,7 @@ class AbsenceController extends BaseController
         ));
 
         $this->templateParams(array('documents' => $this->getDocuments($a)));
-        return $this->output('absences/edit.html.twig');
+        return $this->output('absences/add.html.twig');
     }
 
     #[Route(path: '/absence', name: 'absence.delete', methods: ['DELETE'])]

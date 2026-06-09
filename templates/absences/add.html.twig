@@ -8,242 +8,327 @@
 
 {% block page %}
 <div id="content-form">
-    <script type='text/JavaScript'>
+    <script type="text/JavaScript">
       $( document ).ready(function() {
         $('#form').submit(function() {
-          return verif_absences("debut=date1;fin=date2;motif");
+          return verif_absences('debut=date1;fin=date2;motif');
         });
       });
     </script>
-    <h3>Ajouter une absence</h3>
+    {% if id %}
+      <h3>Modification de l'absence</h3>
+    {% else %}
+      <h3>Ajouter une absence</h3>
+    {% endif %}
+
     <div class="admin-div">
+
+      {% if id and not access %}
+        <div class="row">
+          <p class="mb-1">Vous n'êtes pas autorisé(e) à modifier cette absence.</p>
+        </div>
+        <div class="row mb-3">
+          <a href="{{ asset('absence') }}">Retour à la liste des absences</a><br/><br/>
+        </div>
+
+      {% else %}
       
-      <form id="form" name="form" action="/absence" method="post" enctype="multipart/form-data" novalidate>
-        <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
-        <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
-        <input type="hidden" id="admin" value="{{ admin }}" />
-        <input type="hidden" id="login_id" value="{{ loggedin_id }}" />
+        {% if id %}
+          <form name="form" id="form" method="post" action="{{ asset('absence') }}" novalidate>
+            <input type="hidden" name="perso_id" value="{{ absence.perso_id }}" />
+            <input type="hidden" name="groupe" id="groupe" value="{{ absence.groupe }}" />
+            <input type="hidden" name="rrule" id="rrule" value="{{ absence.rrule }}" />
+            <input type="hidden" name="recurrence-modif" id="recurrence-modif" value="" />
+            <input type="hidden" name="absence_status" id="absence_status" value="{{ absence.status }}" />
+            <input type="hidden" name="id" value="{{ id }}"/>
+
+            {% for agent in agents %}
+              <input type="hidden" name="perso_ids[]" value="{{ agent.perso_id}}" id="hidden{{ agent.perso_id}}" class="perso_ids_hidden"/>
+              <input type="hidden" id="agent_{{ agent.perso_id }}" value="{{ agent.nom }} {{ agent.prenom }} {% if agent.deleted > 0 %} (supprimé) {% endif %}" />
+            {% endfor %}
+
+        {% else %}
+
+          <form id="form" name="form" action="/absence" method="post" enctype="multipart/form-data" novalidate>
+
+        {% endif %}
+
+          <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+          <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
+          <input type="hidden" id="admin" value="{{ admin }}" />
+          <input type="hidden" id="login_id" value="{{ loggedin_id }}" />
 
       
-        {% if agents_multiples %}
-          <fieldset class="row my-2 gx-5">
-            <legend class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agent{% endtrans %}(s) :</legend>
-            <div class="col-auto">
+          {% if agents_multiples %}
+            <fieldset class="row my-2 gx-5">
+              <legend class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agent{% endtrans %}(s) :</legend>
+              <div class="col-auto">
 
-              {% if agent_preselection %}
-                <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/>
-              {% endif %}
-
-              <ul id="perso_ul1" class="perso_ul">
                 {% if agent_preselection %}
-                  <li id="li{{ loggedin_id }}" class="perso_ids_li">
-                    {{ loggedin_name }} {{ loggedin_firstname }}
-                    {% if admin %}
-                      <button type="button" class="perso-drop btn btn-icon p-0" onclick="supprimeAgent({ loggedin_id });" title="{% trans %}Delete{% endtrans %}">
-                        <span class="pl-icon pl-icon-dropblack"></span>
-                      </button>
-                    {% endif %}
-                  </li>
-                {% endif %}
-              </ul>
-            </div>
-
-            <div class="col-auto"><ul id='perso_ul2' class='perso_ul'></ul></div>
-            <div class="col-auto"><ul id='perso_ul3' class='perso_ul'></ul></div>
-            <div class="col-auto"><ul id='perso_ul4' class='perso_ul'></ul></div>
-            <div class="col-auto"><ul id='perso_ul5' class='perso_ul'></ul></div>
-          </fieldset>
-          
-          <div class="row mb-2 gx-5">
-            <div class="col-3 offset-2">
-              <select name="perso_id" id="perso_ids" class="form-select form-select-sm my-3">
-                <option value="0" selected="selected">-- Ajoutez un agent --</option>
-                {% if config('Absences-tous') %}
-                  <option value='tous'>Tous les agents</option>
+                  <input type="hidden" name="perso_ids[]" value="{{ loggedin_id }}" id="hidden{{ loggedin_id }}" class="perso_ids_hidden"/>
                 {% endif %}
 
-                {% for a in agents %}
-                  {% if a.id == loggedin_id and agent_preselection %}
-                    <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">
-                      {{ a.lastname }} {{ a.firstname }}
-                    </option>
-                  {% else %}
-                    <option value='{{ a.id }}' id='option{{ a.id }}'>
-                      {{ a.lastname }} {{ a.firstname }}
-                    </option>
+                <ul id="perso_ul1" class="perso_ul">
+                  {% if agent_preselection %}
+                    <li id="li{{ loggedin_id }}" class="perso_ids_li">
+                      {{ loggedin_name }} {{ loggedin_firstname }}
+                      {% if admin %}
+                        <button type="button" class="perso-drop btn btn-icon p-0" onclick="supprimeAgent({ loggedin_id });" title="{% trans %}Delete{% endtrans %}">
+                          <span class="pl-icon pl-icon-dropblack"></span>
+                        </button>
+                      {% endif %}
+                    </li>
                   {% endif %}
+                </ul>
+              </div>
+
+              <div class="col-auto"><ul id="perso_ul2" class="perso_ul"></ul></div>
+              <div class="col-auto"><ul id="perso_ul3" class="perso_ul"></ul></div>
+              <div class="col-auto"><ul id="perso_ul4" class="perso_ul"></ul></div>
+              <div class="col-auto"><ul id="perso_ul5" class="perso_ul"></ul></div>
+            </fieldset>
+          
+            <div class="row mb-2 gx-5">
+              <div class="col-3 offset-2">
+                <select name="perso_id" id="perso_ids" class="form-select form-select-sm my-3">
+                  <option value="0" selected="selected">-- Ajoutez un agent --</option>
+                  {% if config('Absences-tous') %}
+                    <option value="tous">Tous les agents</option>
+                  {% endif %}
+
+                {% for a in managed %}
+                  <option value="{{ a.id }}" id="option{{ a.id }}" {% if a.id in absence.perso_ids or (a.id == loggedin_id and agent_preselection) %} style="display:none;" {% endif %}>
+                    {{ a.lastname }} {{ a.firstname }}
+                  </option>
                 {% endfor %}
+                
               </select>
             </div>
           </div>
 
-        {% else %}
+          {% elseif agents | length > 1 %}
 
-          <div class="row my-2 gx-5">
-            <label class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agent{% endtrans %} :</label>
+            <div class="row my-2 gx-5">
+              <label class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agents{% endtrans %} :</label>
+              <div class="col-3">
+                <ul id="perso_ul1">
+                  {% for a in agents %}
+                    <li>{{ a.nom }} {{ a.prenom }}</li>
+                  {% endfor %}
+                </ul>
+              </div>             
+            </div>
+
+          {% else %}
+
+            <div class="row my-2 gx-5">
+              <label class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agent{% endtrans %} :</label>
+              <div class="col-3">
+                <input type="text" id="perso_ul1" readonly class="form-control-plaintext" value="{{ absence.nom }} {{ absence.prenom }}">
+                <input type="hidden" name="perso_id" value="{{ absence.perso_id }}" class="perso_ids_hidden" />
+              </div>    
+            </div>
+
+          {% endif %}
+
+          <div class="row mb-2 gx-5 form-check-prepend">
+            <label class="col-2 col-form-label aRight form-check-label" for="allday-check" >Journée(s) entière(s) :</label>
             <div class="col-3">
-              <input type='hidden' name='perso_id' value='{{ loggedin_id }}' class='perso_ids_hidden' />
-              <input type="text" id="perso_ul1" readonly class="form-control-plaintext" value="{{ loggedin_name }} {{ loggedin_firstname }}">
+              <input id="allday-check" type="checkbox" name="allday" {% if fullday %} checked="checked" {% endif %} onclick="all_day();" class="form-check-input" style="margin-top: 10px;"/>
             </div>             
           </div>
 
-        {% endif %}
+          <div class="row gx-5 mb-2">
+            <label class="col-2 col-form-label aRight" for="absence-start">Date de début :</label>
+            <div class="col-3">
+              <input type="text" name="debut" value="{{ debut }}" class="datepicker start-date form-control" id="absence-start" required/>
+            </div>             
+          </div>
 
-        <div class="row mb-2 gx-5 form-check-prepend">
-          <label class="col-2 col-form-label aRight form-check-label" for="allday-check" >Journée(s) entière(s) :</label>
-          <div class="col-3">
-            <input id="allday-check" type="checkbox" name="allday" {% if fullday_checked %} checked="checked" {% endif %} onclick="all_day();" class="form-check-input" style="margin-top: 10px;"/>
-          </div>             
-        </div>
+          <div class="row gx-5 mb-2" id="hre_debut" {% if fullday %} style="display:none;" {% endif %}>
+            <label class="col-2 col-form-label aRight" for="absence-start-hour">Heure de début :</label>
+            <div class="col-3">
+              <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker form-control form-control-sm" value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}" id="absence-start-hour"/>
+            </div>             
+          </div>
 
-        <div class="row gx-5 mb-2">
-          <label class="col-2 col-form-label aRight" for="absence-start">Date de début :</label>
-          <div class="col-3">
-            <input type="text" name="debut" value="" class="datepicker start-date form-control" id="absence-start" required/>
-          </div>             
-        </div>
+          <div class="row gx-5 mb-2">
+            <label class="col-2 col-form-label aRight" for="absence-end">Date de fin :</label>
+            <div class="col-3">
+                <input type="text" name="fin" value="{{ fin }}" class="datepicker end-date form-control" id="absence-end"/>
+            </div>             
+          </div>
 
-        <div class="row gx-5 mb-2" id="hre_debut" {% if fullday_checked %} style="display:none;" {% endif %}>
-          <label class="col-2 col-form-label aRight" for="absence-start-hour">Heure de début :</label>
-          <div class="col-3">
-            <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker form-control form-control-sm" value="" id="absence-start-hour"/>
-          </div>             
-        </div>
+          <div class="row gx-5 mb-2" id="hre_fin" {% if fullday %} style="display:none;" {% endif %}>
+            <label class="col-2 col-form-label aRight" for="absence-end-hour">Heure de fin :</label>
+            <div class="col-3">
+              <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker form-control form-control-sm" value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}" id="absence-end-hour"/>
+            </div>             
+          </div>
 
-        <div class="row gx-5 mb-2">
-          <label class="col-2 col-form-label aRight" for="absence-end">Date de fin :</label>
-          <div class="col-3">
-              <input type="text" name="fin" value="" class="datepicker end-date form-control" id="absence-end"/>
-          </div>             
-        </div>
+          <div class="row mb-2">
+            <div class="invalid-feedback offset-2">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+          </div>
 
-        <div class="row gx-5 mb-2" id="hre_fin" {% if fullday_checked %} style="display:none;" {% endif %}>
-          <label class="col-2 col-form-label aRight" for="absence-end-hour">Heure de fin :</label>
-          <div class="col-3">
-            <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker form-control form-control-sm" value="" id="absence-end-hour"/>
-          </div>             
-        </div>
+          <div class="row mb-2 gx-5 form-check-prepend">
+            <label class="col-2 col-form-label aRight form-check-label" for="recurrence-checkbox" >Récurrence :</label>
+            <div class="col-3">
+              <input type="checkbox" id="recurrence-checkbox" name="recurrence-checkbox" class="form-check-input" style="margin-top: 10px;" {% if id %}disabled{% endif %}/>
+              <span id="recurrence-info" style="display:none;" class="col-11 mt-2">
+                <span id="recurrence-summary" class="mx-3">&nbsp;</span>
+                <a href="#" id="recurrence-link" {% if id %}style="display:none;"{% endif %} >Modifier</a>
+              </span>
+              <input type="hidden" name="recurrence-hidden" id="recurrence-hidden"/>
+            </div>             
+          </div>
 
-        <div class="row mb-2">
-          <div class="invalid-feedback offset-2">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
-        </div>
-
-        <div class="row mb-2 gx-5 form-check-prepend">
-          <label class="col-2 col-form-label aRight form-check-label" for="recurrence-checkbox" >Récurrence :</label>
-          <div class="col-3">
-            <input type="checkbox" id="recurrence-checkbox" name="recurrence-checkbox" class="form-check-input" style="margin-top: 10px;"/>
-            <span id="recurrence-info" style="display:none;" class="col-11 mt-2">
-              <span id="recurrence-summary" class="mx-3">&nbsp;</span>
-              <a href="#" id="recurrence-link">Modifier</a>
-            </span>
-            <input type="hidden" name="recurrence-hidden" id="recurrence-hidden"/>
-          </div>             
-        </div>
-
-        <div class="row gx-5 mb-2">
-          <label class="col-2 col-form-label aRight" for="motif">Motif :</label>
-          <div class="col-3">
-            <select name="motif" id="motif" class="form-select form-select-sm" required>
-              <option hidden disabled selected value=""></option>
-              {% for r in reasons %}
-                {% if r.type == 2 %}
-                  <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="padding20">
-                    &nbsp;&nbsp;&nbsp;{{ r.valeur }}
-                  </option>
-                {% else %}
-                  {% if r.type == 1 %}
+          <div class="row gx-5 mb-2">
+            <label class="col-2 col-form-label aRight" for="motif">Motif :</label>
+            <div class="col-3">
+              <select name="motif" id="motif" class="form-select form-select-sm" required>
+                <option hidden disabled selected value=""></option>
+                {% for r in reasons %}
+                  {% if r.type == 2 %}
+                    <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="padding20" {% if r.valeur == absence.motif %} selected {% endif %}>
+                      &nbsp;&nbsp;&nbsp;{{ r.valeur }}
+                    </option>
+                  {% elseif r.type == 1 %}
                     <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" disabled="disabled">
                       {{ r.valeur }}
                     </option>
                   {% else %}
-                    <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold">
+                    <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" {% if r.valeur == absence.motif %} selected {% endif %}>
                       {{ r.valeur }}
                     </option>
                   {% endif %}
-                {% endif %}
+                {% endfor %}
+              </select>
+            </div>  
+            {% if admin and not config('Planook') %}
+              <div class="col-auto p-0">
+                <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-reason-modal">
+                  <span class="pl-icon pl-icon-add" title="Ajouter un motif"></span>
+                </button>
+              </div> 
+            {% endif %}        
+          </div>
+
+          <div class="row gx-5 mb-2" id="motif_autre" {% if not display_autre %}style="display:none;"{% endif %}>
+            <label class="col-2 col-form-label aRight" for="motif2">Motif (autre) :</label>
+            <div class="col-3">
+              <input id="motif2" type="text" name="motif_autre" class="form-control form-control-sm" value="{{ absence.motif_autre }}"/>
+            </div>             
+          </div>
+
+          <div class="row gx-5 mb-2">
+            <label class="col-2 col-form-label aRight" for="absence-comment">Commentaires :</label>
+            <div class="col-3">
+              <textarea id="absence-comment" name="commentaires" rows="5" class="form-control ">{{ absence.commentaires }}</textarea>
+            </div>             
+          </div>
+
+          {% if right701 %}
+          <fieldset class="row mb-2 gx-5">
+            <legend class="col-form-label col-2 aRight">Pièces justificatives : </legend>
+            <div class="col-3 mt-2">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="pj1" id="pj1" {% if absence.pj1 %} checked {% endif %}>
+                <label class="form-check-label" for="pj1">PJ1</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="pj2" id="pj2" {% if absence.pj2 %} checked {% endif %}>
+                <label class="form-check-label" for="pj2">PJ2</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="so" id="so" {% if absence.so %} checked {% endif %}>
+                <label class="form-check-label" for="so">SO</label>
+              </div>
+            </div>
+          </fieldset>
+          {% endif %}
+
+          {% if id %}
+          <div class="row gx-5 mb-2">
+            <label class="col-2 col-form-label aRight" for="documentFile">Documents attachés :</label>
+            <div class="col-6" id="documentsList">
+              {% for document in documents %}
+                <div class="row gx-5" id="document_{{ document.id}}">
+                  <div class="col-6">
+                    <button type="link" class="btn btn-link" href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</button>
+                  </div>
+                  {% if absence.editable %}
+                    <div class="col-auto ps-0">
+                      <button type="button" class="btn btn-link" onclick="deleteAbsenceDocument({{ document.id }});">Supprimer</button>
+                    </div>
+                  {% endif %}
+                </div>
               {% endfor %}
-            </select>
-          </div>  
-          {% if admin and not config('Planook') %}
-            <div class="col-auto p-0">
-              <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-reason-modal">
-                <span class="pl-icon pl-icon-add" title="Ajouter un motif"></span>
-              </button>
+            </div>             
+          </div>
+          {% endif %}
+
+          <div class="row gx-5 mb-2">
+            <label class="col-2 col-form-label aRight" for="documentFile">Attacher un document :</label>
+            <div class="col-3">
+              <input type="file" name="documentFile" id="documentFile" class="form-control"/>
+            </div>
+            {% if absence.editable %}
+              <div class="col-auto ps-0">
+                <button id="add-file" type="button" class="btn btn-link" onclick="addAbsenceDocument({{ id }});">Ajouter</button>
+              </div>
+            {% endif %}         
+          </div>
+
+          {% if config('Absences-validation') %}
+            <div class="row gx-5 mb-2" id="validation-line">
+              <label class="col-2 col-form-label aRight" for="validation-state">{% if id %}Validation{% else %}État{% endif %} :</label>
+              <div class="col-3">
+                <div id="validation-statuses"></div>
+              </div>             
             </div> 
           {% endif %}
-                    
-        </div>
 
-        <div class="row gx-5 mb-2" id="motif_autre" style="display:none;">
-          <label class="col-2 col-form-label aRight" for="motif2">Motif (autre) :</label>
-          <div class="col-3">
-            <input id="motif2" type="text" name="motif_autre" class="form-control form-control-sm"/>
-          </div>             
-        </div>
+          {% if id %}
+            <div class="row gx-5 mb-2">
+              <label class="col-2 col-form-label aRight" for="request-date">Demande :</label>
+              <div class="col-3">
+                <input type="text" readonly class="form-control-plaintext" id="request-date" value="{{ absence.demande }}">
+              </div>             
+            </div> 
+          {% endif %}
 
-        <div class="row gx-5 mb-2">
-          <label class="col-2 col-form-label aRight" for="absence-comment">Commentaires :</label>
-          <div class="col-3">
-            <textarea id="absence-comment" name="commentaires" rows="5" class="form-control "></textarea>
-          </div>             
-        </div>
-
-        {% if right701 %}
-        <fieldset class="row mb-2 gx-5">
-          <legend class="col-form-label col-2 aRight">Pièces justificatives : </legend>
-          <div class="col-3 mt-2">
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="checkbox" name="pj1" id="pj1">
-              <label class="form-check-label" for="pj1">PJ1</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="checkbox" name="pj2" id="pj2">
-              <label class="form-check-label" for="pj2">PJ2</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="checkbox" name="so" id="so">
-              <label class="form-check-label" for="so">SO</label>
+          <div class="row my-3">
+            <div class="col-auto offset-2">
+              {% if id %}
+                {% if not absence.editable %}
+                  <a href="{{ asset('absence') }}" class="btn btn-primary">Retour</a>
+                {% else %}
+                  <input type="button" class="btn btn-danger m-2" value="Supprimer" id="absence-bouton-suppression" data-id="{{ id }}"/> 
+                  <input type="button" class="btn btn-secondary m-2" value="Annuler"onclick="document.location.href='{{asset('absence')}}';"/> 
+                  <input type="submit" class="btn btn-primary m-2" value="Valider"/>
+                {% endif %}
+              {% else %}
+                <input type="button" class="btn btn-secondary m-2" value="Annuler"onclick="document.location.href='{{asset('absence')}}';"/> 
+                <input type="submit" class="btn btn-primary m-2" value="Valider"/>
+              {% endif %}
             </div>
           </div>
-        </fieldset>
-        {% endif %}
 
-        <div class="row gx-5 mb-2">
-          <label class="col-2 col-form-label aRight" for="documentFile">Attacher un document :</label>
-          <div class="col-3">
-            <input type="file" name="documentFile" id="documentFile"/>
-          </div>             
-        </div>
+        </form>
 
-        {% if config('Absences-validation') %}
-          <div class="row gx-5 mb-2" id="validation-line">
-            <label class="col-2 col-form-label aRight" for="validation-state">État :</label>
-            <div class="col-3">
-              <div id="validation-statuses"></div>
-            </div>             
-          </div> 
-        {% endif %}
-
-        <div class="row my-3">
-          <div class="col-3 offset-2">
-            <input type="button" class="btn btn-secondary m-2" value="Annuler" onclick="document.location.href='{{asset('absence')}}';" />
-            <input type="submit" class="btn btn-primary m-2" value="Valider" />
+        {#Messages d'informations absences#}
+        {% if absences_infos %}
+          <div class="row red">
+            <div class="col-3 offset-2">
+              <b>Informations congés / absences :</b><br/>
+                {% for a in absences_infos %}
+                  Du {{ a.debut_fr }} au {{ a.fin_fr }} : {{ a.texte }}<br/>
+                {% endfor %}
+            </div>
           </div>
-        </div> 
-
-      </form>
-      
-      {#Messages d'informations absences#}
-      <div class="row red">
-        {% if abences_infos %}
-        <div class="col-3 offset-2">
-          <b>Informations congés / absences :</b><br/>
-          {% for a in abences_infos %}
-            Du {{ a.debut_fr }} au {{ a.fin_fr }} : {{ a.texte }}<br/>
-          {% endfor %}
-        </div>
         {% endif %}
-      </div>
+
+      {% endif %}
 
       <div class="modal" id="end-date-alert-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="end-date-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -388,6 +473,47 @@
           </div>
         </div>
       </div>
+
+      <div class="modal modal-lg" id="recurrence-modification-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="recurrence-modification-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="recurrence-modification-title">Modification d'une absence récurrente</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
+            </div>
+            <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
+              <p>Souhaitez-vous modifier uniquement cet événement, cet événement et ceux qui le suivent dans la série ou tous les événements de la série ?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+              <button type="button" class="btn btn-primary" id="modification-current">{% trans %}This event only{% endtrans %}</button>
+              <button type="button" class="btn btn-primary" id="modification-next">{% trans %}This event and the following ones{% endtrans %}</button>
+              <button type="button" class="btn btn-primary" id="modification-all">{% trans %}All events{% endtrans %}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal modal-lg" id="recurrence-suppression-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="recurrence-suppression-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="recurrence-suppression-title">Suppression d'une absence récurrente</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
+            </div>
+            <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
+              <p>Souhaitez-vous supprimer uniquement cet événement, cet événement et ceux qui le suivent dans la série ou tous les événements de la série ?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+              <button type="button" class="btn btn-danger" id="deletion-current">{% trans %}This event only{% endtrans %}</button>
+              <button type="button" class="btn btn-danger" id="deletion-next">{% trans %}This event and the following ones{% endtrans %}</button>
+              <button type="button" class="btn btn-danger" id="deletion-all">{% trans %}All events{% endtrans %}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {% include 'absences/reasons.html.twig' %}
     </div>
   </div>
