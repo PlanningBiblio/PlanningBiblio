@@ -29,10 +29,11 @@ class activites
     {
         $activites=array();
         $db=new db();
+        $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
         if ($this->deleted) {
-            $db->select2("activites");
+            $db->select2("activites", "*", ['network_id' => $networkId]);
         } else {
-            $db->select2("activites", null, array("supprime"=>null));
+            $db->select2("activites", null, ["supprime"=>null, 'network_id' => $networkId]);
         }
       
         if ($db->result) {

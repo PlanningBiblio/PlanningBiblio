@@ -11,6 +11,7 @@ use App\Service\ICalendar;
 
 use DateTime;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -38,7 +39,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/agents-by-sites', name: 'ajax.agentsbysites', methods: ['GET'])]
-    public function agentsBySites(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
+    public function agentsBySites(Request $request, Session $session): JsonResponse
     {
         $sites = json_decode($request->get('sites'));
         $managed = $this->entityManager
@@ -65,7 +66,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/holiday-delete', name: 'ajax.holidaydelete', methods: ['GET'])]
-    public function deleteHoliday(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function deleteHoliday(Request $request): JsonResponse
     {
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');
@@ -79,7 +80,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/mail-test', name: 'ajax.mailtest', methods: ['POST'])]
-    public function mailTest(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function mailTest(Request $request, Session $session): JsonResponse
     {
 
         include_once(__DIR__ . '/../../legacy/Common/config.php');
@@ -317,7 +318,7 @@ class AjaxController extends BaseController
      * TODO: Faire en sorte de conserver les ID dans la base de données et façon à les utiliser comme clé.
      */
     #[Route(path: '/ajax/update-select-options', name: 'ajax.update.select.options', methods: ['POST'])]
-    public function updateSelectOptions(Request $request)
+    public function updateSelectOptions(Request $request, Session $session)
     {
         if (!$this->csrf_protection($request)) {
            return $this->redirectToRoute('access-denied');
@@ -326,6 +327,7 @@ class AjaxController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
         $menu = $request->get('menu');
         $option = $request->get('option');
+        $networkId = $session->get('networkId', 1);
 
         $tab = $_POST['tab'];
 
@@ -342,12 +344,12 @@ class AjaxController extends BaseController
 
             $db=new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->delete("select_$menu", ['id' => "NOT IN$ids"]);
+            $db->delete("select_$menu", ['id' => "NOT IN$ids", 'network_id' => $networkId]);
 
             // Adding new items
             $db_ids = array();
             $db=new \db();
-            $db->select("select_$menu");
+            $db->select("select_$menu", "id", ['network_id' => $networkId]);
             if(!empty($db->result)){
                 foreach ($db->result as $elem) {
                     $db_ids[] = $elem['id'];
@@ -355,13 +357,11 @@ class AjaxController extends BaseController
             }
 
             foreach ($tab as $elem) {
+                $db = new \db();
+                $db->CSRFToken = $CSRFToken;
                 if (!in_array($elem->id, $db_ids)) {
-                    $db = new \db();
-                    $db->CSRFToken = $CSRFToken;
-                    $db->insert("select_$menu", ["valeur" => $elem->value, "rang" => $elem->place]);
+                    $db->insert("select_$menu", ["valeur" => $elem->value, "rang" => $elem->place, "network_id" => $networkId]);
                 } else {
-                    $db = new \db();
-                    $db->CSRFToken = $CSRFToken;
                     $db->update("select_$menu", ["rang" => $elem->place], ["id" => $elem->id]);
                 }
             }
@@ -370,9 +370,9 @@ class AjaxController extends BaseController
 
         $db=new \db();
         $db->CSRFToken = $CSRFToken;
-        $db->delete("select_$menu");
+        $db->delete("select_$menu", ["network_id" => $networkId]);
         foreach ($tab as $elem) {
-            $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
+            $elements = array("valeur"=>$elem[0],"rang"=>$elem[1],"network_id"=>$networkId);
             if ($option == 'type') {
                 $elements['type'] = $elem[2];
             }

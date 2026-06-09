@@ -186,7 +186,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
 
         $this->builder->build(Site::class, array('name' => 'Site 2'));
-        $sites = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null]);
+        $sites = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null, 'network' => 1]);
 
         $agent1 = $this->builder->build(Agent::class,
             array(

@@ -94,7 +94,7 @@ class WorkingHourImportCommand extends Command
         // On place les éléments du fichiers dans le tableau $temps
         $temps = [];
 
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL, 'network' => $this->configHelper->getContextNetworkId()]);
 
         // Pour chaque ligne
         foreach ($lines as $line) {

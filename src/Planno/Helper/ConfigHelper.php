@@ -5,12 +5,32 @@ namespace App\Planno\Helper;
 use App\Entity\ConfigNetwork;
 use App\Entity\ConfigTechnical;
 use Exception;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ConfigHelper extends BaseHelper
 {
-    private function getContextNetworkId(): ?int
+    private RequestStack $requestStack;
+
+    public function __construct(RequestStack $requestStack = null)
     {
-        return 1;
+        parent::__construct();
+        $this->requestStack = $requestStack;
+    }
+
+
+    public function getContextNetworkId(): ?int
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        if (!$request) {
+            return 1;
+        }
+
+        $session = $request->hasSession() ? $request->getSession() : null;
+        if (!$session) {
+            return 1;
+        }
+
+        return (int)$session->get('networkId', 1);
     }
 
     public function saveConfig($params): string

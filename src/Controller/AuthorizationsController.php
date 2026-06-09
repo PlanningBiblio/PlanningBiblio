@@ -135,7 +135,7 @@ class AuthorizationsController extends BaseController
             // Log login and client IP if success login.
             loginSuccess($login, $CSRFToken);
             $db = new \db();
-            $db->select2("personnel", "id,nom,prenom", array("login"=>$login));
+            $db->select2("personnel", "id,nom,prenom,network_id", array("login"=>$login));
             if ($db->result) {
                 $_SESSION['login_id'] = $db->result[0]['id'];
                 $_SESSION['login_nom'] = $db->result[0]['nom'];
@@ -144,11 +144,13 @@ class AuthorizationsController extends BaseController
                 // Symfony Session
                 $session = $request->getSession();
                 $session->set('loginId', $db->result[0]['id']);
-                $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+                $networkId = $db->result[0]['network_id'];
+                $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null, "network" => $networkId]);
                 $sitesData = array_map(function ($site) {
                     return ['id' => $site->getId(), 'name' => $site->getName()];
                 }, $siteEntities);
                 $session->set('sites', $sitesData);
+                $session->set('networkId', $networkId);
 
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
@@ -242,7 +244,7 @@ class AuthorizationsController extends BaseController
 
             // Check if user login exists in database.
             $db = new \db();
-            $db->select2('personnel', array('id','nom','prenom'), array('login' => 'LIKE' . $login, 'supprime' => '0'));
+            $db->select2('personnel', array('id','nom','prenom','network_id'), array('login' => 'LIKE' . $login, 'supprime' => '0'));
 
             // If user's login doesn't exist,
             // show an unauthorized message
@@ -260,11 +262,13 @@ class AuthorizationsController extends BaseController
             // Symfony Session
             $session = $request->getSession();
             $session->set('loginId', $db->result[0]['id']);
-            $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+            $networkId = $db->result[0]['network_id'];
+            $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null, "network" => $networkId]);
             $sitesData = array_map(function ($site) {
                 return ['id' => $site->getId(), 'name' => $site->getName()];
             }, $siteEntities);
             $session->set('sites', $sitesData);
+            $session->set('networkId', $networkId);
 
             // Create CSRF Token
             $CSRFToken = CSRFToken();

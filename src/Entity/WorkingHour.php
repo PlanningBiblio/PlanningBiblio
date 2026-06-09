@@ -66,6 +66,9 @@ class WorkingHour
     #[ORM\Column]
     private int $nb_semaine = 1;
 
+    #[ORM\Column(type: Types::INTEGER)]
+    private ?int $network_id = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -118,7 +121,7 @@ class WorkingHour
 
         return $this;
     }
-    
+
     public function getEnd(): ?\DateTime
     {
         return $this->fin;
@@ -250,7 +253,7 @@ class WorkingHour
 
         return $this;
     }
-    
+
     public function getException(): int
     {
         return $this->exception;
@@ -273,5 +276,15 @@ class WorkingHour
         $this->nb_semaine = $number;
 
         return $this;
+    }
+
+    public function getNetworkId(): ?int
+    {
+        return $this->network_id;
+    }
+
+    public function setNetworkId(?int $network_id): void
+    {
+        $this->network_id = $network_id;
     }
 }

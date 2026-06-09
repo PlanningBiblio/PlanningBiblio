@@ -135,6 +135,9 @@ class Agent
     #[ORM\OneToMany(mappedBy: 'responsable', targetEntity: Manager::class, cascade: ['ALL'])]
     private Collection $managed;
 
+    #[ORM\Column(type: Types::INTEGER)]
+    private ?int $network_id = null;
+
     public function __construct()
     {
         $this->code_ics = md5(time().rand(100, 999));
@@ -568,6 +571,16 @@ class Agent
     {
         $this->managed->add($managed);
         $managed->setManager($this);
+    }
+
+    public function getNetworkId(): ?int
+    {
+        return $this->network_id;
+    }
+
+    public function setNetworkId(?int $network_id): void
+    {
+        $this->network_id = $network_id;
     }
 
     public function isManagerOf($agent_ids = array(), $requested_level = null): bool

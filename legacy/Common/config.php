@@ -75,17 +75,6 @@ if ($db->result) {
     }
 }
 
-$db = new db();
-$network_id = 1; //will be modified once the networks are implemented
-if ($network_id !== null) {
-    $db->query("SELECT nom, value FROM `{$dbprefix}config_network` cr JOIN  `{$dbprefix}config` c ON cr.config_id=c.id WHERE network_id = $network_id");
-    if ($db->result) {
-        foreach ($db->result as $elem) {
-            $config[$elem['nom']] = $elem['value'];
-        }
-    }
-}
-
 /** Get custom options
  * custom_options.php may contain extra config values
  * Example : $config['demo'] = 1; $config['demo-password'] = 'My_demo_password';

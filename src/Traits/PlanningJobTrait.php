@@ -341,7 +341,8 @@ trait PlanningJobTrait
         $db = new \db();
         $dateSQL = $db->escapeString($date);
 
-        $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= '$dateSQL' OR `depart` IS NULL);");
+        $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
+        $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= '$dateSQL' OR `depart` IS NULL) AND 'network_id' = $networkId");
 
         // Chech agents working hours.
         $verif = true;
@@ -591,7 +592,7 @@ trait PlanningJobTrait
 
         $req="SELECT * FROM `{$dbprefix}personnel` "
           ."WHERE `actif` LIKE 'Actif' AND (`arrivee` <= '$dateSQL' OR `arrivee` IS NULL) AND (`depart` >= '$dateSQL' OR `depart` IS NULL) AND `id` NOT IN ($agents_qualif) "
-          ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  ORDER BY `nom`,`prenom`;";
+          ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents) AND `network_id`=".$networkId ." ORDER BY `nom`,`prenom`;";
 
         $db->query($req);
         $autres_agents_tmp = $db->result;

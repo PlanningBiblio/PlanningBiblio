@@ -2433,28 +2433,24 @@ class PlanningController extends BaseController
     private function setSite(Request $request): void
     {
         $session = $request->getSession();
-
         $site = $request->get('site');
+        $sessionSite = $session->get('site');
 
-        // Multisites: default site is 1.
-        // Site is $_GET['site'] if it is set, else we take
-        // SESSION ['site'] or agent's site.
-
-        if (!$site and !empty($_SESSION['site'])) {
-            $site = $_SESSION['site'];
+        if (!$site and !empty($sessionSite)) {
+            $site = $sessionSite;
         }
 
         if (!$site) {
             $p = new \personnel();
             $p->fetchById($session->get('loginId'));
-            $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
+            $site = $p->elements[0]['sites'][0] ?? null;
         }
 
-        $site = $site ? $site : 1;
+        if (!$site) {
+            $site = $session->get('sites')[0]['id'] ?? null;
+        }
 
-        $_SESSION['site'] = $site;
         $session->set('site', $site);
-
         $this->site = $site;
     }
 }

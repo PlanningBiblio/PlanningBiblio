@@ -18,6 +18,7 @@ class AdminInfoController extends BaseController
     #[Route(path: '/admin/info', name: 'admin.info.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
+        $networkId = $session->get('networkId', 1);
         $today = date('Ymd');
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
@@ -25,6 +26,8 @@ class AdminInfoController extends BaseController
         $query = $queryBuilder->select(array('a'))
             ->from(AdminInfo::class, 'a')
             ->where($queryBuilder->expr()->gte('a.fin', $today))
+            ->andwhere('a.network_id = :network_id')
+            ->setParameter('network_id', $networkId)
             ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
             ->getQuery();
 
@@ -69,6 +72,7 @@ class AdminInfoController extends BaseController
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
+        $networkId = $session->get('networkId', 1);
 
         $id = $request->get('id');
         $start = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('start'));
@@ -98,6 +102,7 @@ class AdminInfoController extends BaseController
             $info->setStart($start);
             $info->setEnd($end);
             $info->setComment($text);
+            $info->setNetworkId($networkId);
             $flash = "L'information a bien été enregistrée.";
         }
 

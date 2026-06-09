@@ -225,6 +225,7 @@ class AbsenceController extends BaseController
     public function add(Request $request)
     {
         $session = $request->getSession();
+        $networkId = $session->get('networkId', 1);
 
         $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
@@ -262,7 +263,7 @@ class AbsenceController extends BaseController
         }
 
         $this->templateParams(array(
-            'abences_infos'         => $this->absenceInfos(),
+            'abences_infos'         => $this->absenceInfos($session->get('networkId', 1)),
             'admin'                 => $this->admin || $this->adminN2,
             'adminN1'               => $this->admin ? 1 : 0,
             'adminN2'               => $this->adminN2 ? 1 : 0,
@@ -275,7 +276,7 @@ class AbsenceController extends BaseController
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'reason_types'          => $this->reasonTypes(),
-            'reasons'               => $this->availablesReasons(),
+            'reasons'               => $this->availablesReasons($networkId),
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
         ));
 
@@ -343,6 +344,8 @@ class AbsenceController extends BaseController
     public function edit(Request $request)
     {
         $session = $request->getSession();
+        $sites_array = $session->get('sites', []);
+        $networkId = $session->get('networkId', 1);
 
         $id = $request->attributes->getInt('id');
 
@@ -376,7 +379,7 @@ class AbsenceController extends BaseController
                 ->getRepository(Agent::class)
                 ->setModule('absence')
                 ->forAgent($agent['perso_id'])
-                ->getValidationLevelFor($session->get('loginId'), $workflow);
+                ->getValidationLevelFor($session->get('loginId'), $workflow, $sites_array);
 
             $adminN1 = $N1 === false ? $N1 : $adminN1;
             $adminN2 = $N2 === false ? $N2 : $adminN2;
@@ -495,7 +498,7 @@ class AbsenceController extends BaseController
             'loggedin_id'           => $session->get('loginId'),
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
-            'reasons'               => $this->availablesReasons(),
+            'reasons'               => $this->availablesReasons($networkId),
             'reason_types'          => $this->reasonTypes(),
             'display_autre'         => $display_autre,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
@@ -1621,7 +1624,7 @@ class AbsenceController extends BaseController
     /**
      * @return mixed[]
      */
-    private function availablesReasons(): array
+    private function availablesReasons(int $networkId): array
     {
         $db_reasons=new \db();
         $db_reasons->select("select_abs", null, null, "order by rang");
@@ -1629,7 +1632,15 @@ class AbsenceController extends BaseController
         // Liste des motifs utilisés
         $reasons_used = array();
         $db_reasons_used = new \db();
-        $db_reasons_used->select("absences", "motif", null, "group by motif");
+        $db_reasons_used->selectInnerJoin(
+            array("absences", "perso_id"),
+            array("personnel", "id"),
+            array("motif"),
+            array(),
+            array(),
+            array("network_id" => $networkId),
+            "group by motif"
+        );
         if ($db_reasons_used->result) {
             foreach ($db_reasons_used->result as $elem) {
                 $reasons_used[] = $elem['motif'];
@@ -1674,11 +1685,11 @@ class AbsenceController extends BaseController
     /**
      * @return mixed[]
      */
-    private function absenceInfos(): array
+    private function absenceInfos(int $networkId): array
     {
         $date = date("Y-m-d");
         $db = new \db();
-        $db->query("SELECT * FROM `{$this->dbprefix}absences_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
+        $db->query("SELECT * FROM `{$this->dbprefix}absences_infos` WHERE `fin`>='$date' AND `network_id`='{$networkId}' ORDER BY `debut`");
         $absences_infos = array();
         if ($db->result) {
             foreach ($db->result as $elem) {

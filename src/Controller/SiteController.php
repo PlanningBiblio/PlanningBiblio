@@ -127,7 +127,7 @@ class SiteController extends BaseController
             $this->logger->error($e->getMessage());
         }
 
-        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null, 'network' => $session->get('networkId', 1)]);
         $sitesData = array_map(function ($site) {
             return ['id' => $site->getId(), 'name' => $site->getName()];
         }, $siteEntities);
@@ -148,6 +148,10 @@ class SiteController extends BaseController
             return $this->json("Impossible de supprimer le site par défaut", Response::HTTP_FORBIDDEN);
         }
 
+        if (count($session->get('sites')) == 1) {
+            return $this->json("Impossible de supprimer ce site, vous devez avoir au moins un site", Response::HTTP_FORBIDDEN);
+        }
+
         $agents_of_site = $this->entityManager->getRepository(Agent::class)->getAgentsForSite($site->getId());
         if (count($agents_of_site) > 0) {
             return $this->json("Impossible de supprimer le site car il est associé à des agents : "
@@ -164,7 +168,7 @@ class SiteController extends BaseController
             return $this->json("Erreur lors de la suppression", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null, 'network' => $session->get('networkId', 1)]);
         $sitesData = array_map(function ($site) {
             return ['id' => $site->getId(), 'name' => $site->getName()];
         }, $siteEntities);

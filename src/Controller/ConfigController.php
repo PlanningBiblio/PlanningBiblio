@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Config;
+use App\Entity\ConfigNetwork;
+use App\Entity\Network;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -10,18 +13,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConfigController extends BaseController
 {
     #[Route(path: '/config/{options?}', name: 'config.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request, Session $session): Response
     {
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
-
         $url = $this->configHelper->findOneByName('URL')->getValue();
-
         $technical = $request->get('options') == 'technical' ? 1 : 0;
-
         $configParams = $this->configHelper->findByType($technical);
 
         $elements = array();
+        if ($technical) {
+            $configParams = $this->insertNetworkInfo($session->get('networkId'), $configParams);
+        }
+
         foreach ($configParams as $cp) {
 
             // Do not display hidden information
@@ -151,5 +155,18 @@ class ConfigController extends BaseController
         }
 
         return new Response(json_encode($return));
+    }
+
+    private function insertNetworkInfo(int $networkId, array $configParams): array
+    {
+        $network = $this->entityManager->getRepository(Network::class)->find($networkId);
+        $networkInfo = new ConfigNetwork();
+        $networkInfo->setNetworkId($networkId);
+        $networkInfo->setValue($network->getName());
+
+        $c = (new Config())->setType('info')->setName('Réseau')->setCategory(' Divers')->setComment("Nom du réseau")->setValues('')->setTechnical(1)->setOrder(0);
+        $networkInfo->setConfig($c);
+        array_unshift($configParams, $networkInfo);
+        return $configParams;
     }
 }

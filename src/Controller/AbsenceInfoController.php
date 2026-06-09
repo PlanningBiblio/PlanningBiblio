@@ -16,6 +16,7 @@ class AbsenceInfoController extends BaseController
     #[Route(path: '/absences/info', name: 'absences.info.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
+        $networkId = $session->get('networkId', 1);
         $today = date('Y-m-d');
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
@@ -23,7 +24,9 @@ class AbsenceInfoController extends BaseController
         $query = $queryBuilder->select(array('a'))
             ->from(AbsenceInfo::class, 'a')
             ->where('a.fin >= :today')
+            ->andwhere('a.network_id = :network_id')
             ->setParameter('today', $today)
+            ->setParameter('network_id', $networkId)
             ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
             ->getQuery();
 
@@ -91,6 +94,7 @@ class AbsenceInfoController extends BaseController
             $info->setStart($start);
             $info->setEnd($end);
             $info->setComment($text);
+            $info->setNetworkId($session->get('networkId', 1));
             $flash = "L'information a bien été enregistrée.";
         }
 

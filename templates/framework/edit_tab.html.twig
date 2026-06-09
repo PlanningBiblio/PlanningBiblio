@@ -133,7 +133,7 @@
                   <td>
                     <select id="site" style="width:300px;" {% if used %} disabled {% endif %}>
                       <option value=""></option>
-                      {% for i in 1..nbSites %}
+                      {% for i in multisites|keys %}
                         <option value="{{ i }}" {% if i == site %} selected {% endif %} >{{ multisites[i] }}</option>
                       {% endfor %}
                     </select>

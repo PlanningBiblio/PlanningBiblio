@@ -19,9 +19,9 @@ class SkillController extends BaseController
     #[Route(path: '/skill', name: 'skill.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
+        $networkId = $session->get('networkId', 1);
         //        Recherche des activites
-
-        $activites = $this->entityManager->getRepository(Skill::class)->findBy(array('supprime' => NULL));
+        $activites = $this->entityManager->getRepository(Skill::class)->findBy(array('supprime' => NULL, 'network_id' => $networkId));
 
         //        Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
         $activites_utilisees = array();
@@ -30,9 +30,11 @@ class SkillController extends BaseController
 
         $db = $this->entityManager->createQueryBuilder();
         $db->select('p.activites')
-           ->from(Position::class, 'p')
-           ->where('p.supprime IS NULL')
-           ->groupBy('p.activites');
+            ->from(Position::class, 'p')
+            ->where('p.supprime IS NULL')
+            ->andWhere('p.network_id = :network_id')
+            ->setParameter('network_id', $networkId)
+            ->groupBy('p.activites');
 
         $res = $db->getQuery();
         $result = $res->getResult();
@@ -48,9 +50,11 @@ class SkillController extends BaseController
 
         $db = $this->entityManager->createQueryBuilder();
         $db->select('a.postes')
-           ->from(Agent::class, 'a')
-           ->where('a.supprime <> 2')
-           ->groupBy('a.postes');
+            ->from(Agent::class, 'a')
+            ->where('a.supprime <> 2')
+            ->andWhere('a.network_id = :network_id')
+            ->setParameter('network_id', $networkId)
+            ->groupBy('a.postes');
 
         $res = $db->getQuery();
         $result = $res->getResult();
@@ -72,7 +76,7 @@ class SkillController extends BaseController
         }
 
         // skills used by agents
-        $agents = $this->entityManager->getRepository(Agent::class)->findAll();
+        $agents = $this->entityManager->getRepository(Agent::class)->findBy(array('supprime' => NULL, 'network_id' => $networkId));
         foreach ($activites as $skill) {
             foreach ($agents as $agent) {
                 if (in_array($skill->getId(), $agent->getSkills())) {
@@ -123,6 +127,7 @@ class SkillController extends BaseController
     public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $id = $request->get('id');
         $nom = $request->get('nom');
+        $networkId = $session->get('networkId', 1);
 
         if(!$nom){
             $session->getFlashbag()->add('error',"Le nom ne peut pas être vide");
@@ -135,6 +140,7 @@ class SkillController extends BaseController
             if(!$id){
                 $skill = new Skill();
                 $skill->setName($nom);
+                $skill->setNetworkId($networkId);
                 try{
                     $this->entityManager->persist($skill);
                     $this->entityManager->flush();
@@ -192,7 +198,7 @@ class SkillController extends BaseController
             $session->getFlashBag()->add('notice',"L'activité a bien été supprimée");
             return $this->json("Ok");
         }
+        return $this->json("Error");
     }
 }
 
-?>

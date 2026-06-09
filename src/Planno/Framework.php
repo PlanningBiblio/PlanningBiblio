@@ -58,11 +58,26 @@ class Framework
     public function fetchAll(): void
     {
         $db = new \db();
+        $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
         if ($this->supprime) {
             $date=date("Y-m-d H:i:s", strtotime("- 1 year"));
-            $db->select2("pl_poste_tab", null, array("supprime"=>">=$date"));
+            $db->selectInnerJoin(
+                array("pl_poste_tab", "site"),
+                array("site", "id"),
+                array("id", "tableau", "nom", "site", "supprime"),
+                array(),
+                array("supprime" => ">=$date"),
+                array("network_id" => $networkId),
+            );
         } else {
-            $db->select2("pl_poste_tab", null, array("supprime"=>null));
+            $db->selectInnerJoin(
+                array("pl_poste_tab", "site"),
+                array("site", "id"),
+                array("id", "tableau", "nom", "site", "supprime"),
+                array(),
+                array("supprime" => null),
+                array("network_id" => $networkId),
+            );
         }
         $tab=$db->result;
         if (is_array($tab)) {
@@ -73,8 +88,16 @@ class Framework
 
     public function fetchAllGroups(): void
     {
+        $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
         $db = new \db();
-        $db->select2("pl_poste_tab_grp", null, array("supprime"=>null));
+        $db->selectInnerJoin(
+            array("pl_poste_tab_grp", "site"),
+            array("site", "id"),
+            array("id", "nom", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche", "site", "supprime"),
+            array(),
+            array("supprime" => null),
+            array("network_id" => $networkId)
+        );
         $tab=$db->result;
         if (is_array($tab)) {
             usort($tab, "cmp_nom");

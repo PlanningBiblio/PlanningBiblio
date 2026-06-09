@@ -48,17 +48,18 @@ class AgentController extends BaseController
         $ldapBouton = ($this->config('LDAP-Host') and $this->config('LDAP-Suffix'));
         $ldifBouton = ($this->config('LDIF-File'));
 
-        $active = $active ? $active : $session->get('AgentActive', 'Actif');
+        $active = $active ?? $session->get('AgentActive', 'Actif');
         $session->set('AgentActive', $active);
 
         // Mark agents as deleted when their depart date is past today
         $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();
 
+        $networkId = $session->get('networkId', 1);
         // List of activities, contracts, services and status for bulk modification
-        $activites = $this->entityManager->getRepository(Skill::class)->findAll();
+        $activites = $this->entityManager->getRepository(Skill::class)->findBy(['network_id' => $networkId]);
         $contrats = ['Titulaire', 'Contractuel'];
-        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
-        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findAll();
+        $services = $this->entityManager->getRepository(SelectServices::class)->findBy(['network_id' => $networkId]);
+        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findBy(['network_id' => $networkId]);
 
         // Hours for bulk modification
         $hours = array();
@@ -98,6 +99,12 @@ class AgentController extends BaseController
         // Get all agents
         $agents = $this->entityManager->getRepository(Agent::class)->get($active);
         $sites_array = $session->get('sites', []);
+        $agents = array_filter($agents, function($agent) use ($sites_array) {
+            if (count($sites_array) > 1) {
+                return count(array_intersect($agent->getSites(), array_map(function ($s) {return $s['id'];}, $sites_array))) > 0;
+            }
+            return true;
+        });
 
         $this->templateParams([
             'active'            => $active,
@@ -148,6 +155,7 @@ class AgentController extends BaseController
         $lang = $GLOBALS['lang'];
         $droits = $GLOBALS['droits'];
         $sites_array = $session->get('sites', []);
+        $networkId = $session->get('networkId', 1);
 
         // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
         if ($this->config('PlanningHebdo')) {
@@ -176,7 +184,7 @@ class AgentController extends BaseController
         $skillsAll = [];
         $skillsAllWithName = [];
 
-        $skills = $this->entityManager->getRepository(Skill::class)->findAll();
+        $skills = $this->entityManager->getRepository(Skill::class)->findBy(['network_id' => $networkId]);
 
         foreach ($skills as $elem) {
             $skillsAllWithName[] = [$elem->getName(), $elem->getId()];
@@ -184,9 +192,9 @@ class AgentController extends BaseController
         }
 
         // Get all categories, services and statuses
-        $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
-        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
-        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findAll();
+        $categories = $this->entityManager->getRepository(SelectCategories::class)->findBy(['network_id' => $networkId]);
+        $services = $this->entityManager->getRepository(SelectServices::class)->findBy(['network_id' => $networkId]);
+        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findBy(['network_id' => $networkId]);
 
         // Find the lists of distinct agent services and statuses.
         $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();
@@ -497,6 +505,8 @@ class AgentController extends BaseController
             return $this->redirectToRoute('access-denied');
         }
 
+        $networkId = $session->get('networkId', 1);
+
         $params = $request->request->all();
         $arrivee = $request->request->get('arrivee') ? \DateTime::createFromFormat('d/m/Y', $request->get('arrivee')) : null;
         $depart = $request->request->get('depart') ? \DateTime::createFromFormat('d/m/Y', $request->get('depart')) : null;
@@ -689,6 +699,7 @@ class AgentController extends BaseController
         $agent->setHolidayAnticipation($holidays['conges_anticipation']);
         $agent->setHolidayCredit($holidays['conges_credit']);
         $agent->setHolidayRemainder($holidays['conges_reliquat']);
+        $agent->setNetworkId($networkId);
 
         if ($login) {
             $agent->setLogin($login);

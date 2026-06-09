@@ -95,6 +95,7 @@ class planningHebdo
         unset($data['CSRFToken']);
 
         $actuel = ($data['debut'] <= date('Y-m-d') and date('Y-m-d') <= $data['fin']) ? 1 : 0;
+        $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
 
         $insert = array(
             'actuel'        => $actuel,
@@ -109,6 +110,7 @@ class planningHebdo
             'breaktime'     => json_encode($data['breaktime']),
             'exception'     => $data['exception'],
             'nb_semaine'    => $data['number_of_weeks'],
+            'network_id'    => $networkId,
         );
 
         // Dans le cas d'une copie (voir fonction copy)
@@ -220,7 +222,8 @@ class planningHebdo
         }
 
         // Filtre de recherche
-        $filter="1";
+        $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
+        $filter="1 AND network_id = $networkId";
 
         // Perso_id
         if ($this->perso_id) {

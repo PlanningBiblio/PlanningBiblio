@@ -3,14 +3,15 @@
 namespace App\Entity;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'site')]
-class Site
+#[ORM\Table(name: 'network')]
+class Network
 {
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
@@ -19,12 +20,17 @@ class Site
     #[ORM\Column(type: Types::TEXT)]
     private ?string $name = '';
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
     private ?DateTime $deletedDate = null;
 
-    #[ORM\ManyToOne(targetEntity: Network::class, inversedBy: 'sites')]
-    #[ORM\JoinColumn(name: 'network_id', referencedColumnName: 'id', nullable: true)]
-    private ?Network $network = null;
+    #[ORM\OneToMany(mappedBy: 'network', targetEntity: Site::class)]
+    private Collection $sites;
+
+    public function __construct()
+    {
+        $this->sites = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -36,9 +42,10 @@ class Site
         return $this->name;
     }
 
-    public function setName(?string $name): void
+    public function setName(string $name): self
     {
         $this->name = $name;
+        return $this;
     }
 
     public function getDeletedDate(): ?DateTime
@@ -46,18 +53,14 @@ class Site
         return $this->deletedDate;
     }
 
-    public function setDeletedDate(?DateTime $deletedDate): void
+    public function setDeletedDate(DateTime $deletedDate): self
     {
         $this->deletedDate = $deletedDate;
+        return $this;
     }
 
-    public function getNetwork(): ?Network
+    public function getSites(): Collection
     {
-        return $this->network;
-    }
-
-    public function setNetwork(?Network $network): void
-    {
-        $this->network = $network;
+        return $this->sites;
     }
 }

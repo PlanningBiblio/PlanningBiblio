@@ -61,6 +61,18 @@ $logged_in = $entityManager->find(Agent::class, $loginId);
 $droits = $logged_in ? $logged_in->getACL() : array();
 $_SESSION['droits'] = array_merge($droits, array(99));
 
+$networkId = $session->get('networkId', 1);
+if (!empty($networkId)) {
+    $db = new \db();
+    $dbprefix = $GLOBALS['config']['dbprefix'] ?? $_ENV['DATABASE_PREFIX'];
+    $db->query("SELECT nom, value FROM `{$dbprefix}config_network` cr JOIN `{$dbprefix}config` c ON cr.config_id=c.id WHERE network_id = " . (int)$networkId);
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $GLOBALS['config'][$elem['nom']] = $elem['value'];
+        }
+    }
+}
+
 $theme = $config['Affichage-theme'] ?? "default";
 if (!file_exists("themes/$theme/$theme.css")) {
     $theme="default";

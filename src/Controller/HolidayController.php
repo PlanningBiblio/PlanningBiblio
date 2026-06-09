@@ -563,7 +563,7 @@ class HolidayController extends BaseController
         $sites_select = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedSitesFor($session->get('loginId'), $session->get('sites'));
+            ->getManagedSitesFor($session->get('loginId'), $session->get('sites', []));
 
         $agents_multiples = (($admin || $adminN2) && $this->config('Conges-Recuperations') == 1);
 

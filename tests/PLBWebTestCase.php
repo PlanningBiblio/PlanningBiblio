@@ -122,7 +122,7 @@ class PLBWebTestCase extends PantherTestCase
         $crawler = $this->client->request('GET', '/login');
         $session = $this->client->getRequest()->getSession();
         $session->set('loginId', $agent->getId());
-        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null, 'network' => 1]);
         $sitesData = array_map(function ($site) {
             return ['id' => $site->getId(), 'name' => $site->getName()];
         }, $siteEntities);

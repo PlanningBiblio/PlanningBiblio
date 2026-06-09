@@ -40,12 +40,12 @@ class AgentRepository extends EntityRepository
 
     private $check_by_site = true;
 
-    private ConfigHelper $configHelper;
+    private ?ConfigHelper $configHelper;
 
-    public function __construct(EntityManagerInterface $registry, ClassMetadata $class)
+    public function __construct(EntityManagerInterface $registry, ClassMetadata $class, ConfigHelper $configHelper = null)
     {
         parent::__construct($registry, $class);
-        $this->configHelper = new ConfigHelper();
+        $this->configHelper = $configHelper;
     }
 
     /**
@@ -57,9 +57,11 @@ class AgentRepository extends EntityRepository
      */
     private function activeSites(): array
     {
-        return $this->getEntityManager()
-            ->getRepository(Site::class)
-            ->findBy(['deletedDate' => null]);
+        $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
+        $siteEntities = $this->getEntityManager()->getRepository(Site::class)->findBy(['deletedDate' => null, "network" => $networkId]);
+        return array_map(function ($site) {
+            return ['id' => $site->getId(), 'name' => $site->getName()];
+        }, $siteEntities);
     }
 
     /**
@@ -199,7 +201,11 @@ class AgentRepository extends EntityRepository
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param)->getValue();
+        if ($this->configHelper !== null) {
+            $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param)->getValue();
+        } else {
+            $by_agent_param = $GLOBALS['config'][$this->by_agent_param] ?? null;
+        }
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
@@ -245,7 +251,11 @@ class AgentRepository extends EntityRepository
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param)->getValue();
+        if ($this->configHelper !== null) {
+            $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param)->getValue();
+        } else {
+            $by_agent_param = $GLOBALS['config'][$this->by_agent_param] ?? null;
+        }
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
@@ -301,7 +311,11 @@ class AgentRepository extends EntityRepository
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
-        $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param)->getValue();
+        if ($this->configHelper !== null) {
+            $by_agent_param = $this->configHelper->findOneByName($this->by_agent_param)->getValue();
+        } else {
+            $by_agent_param = $GLOBALS['config'][$this->by_agent_param] ?? null;
+        }
 
         $sites = array(1);
         if ($this->check_by_site && count($sites_array) > 1) {
@@ -384,11 +398,14 @@ class AgentRepository extends EntityRepository
 
     public function getAgentsList($deleted = 0)
     {
+        $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
         $builder = $this->getEntityManager()->createQueryBuilder();
         $builder->select('a')
-                ->from(Agent::class, 'a')
-                ->andWhere('a.id != 2')
-                ->addOrderBy('a.nom', 'ASC');
+            ->from(Agent::class, 'a')
+            ->andWhere('a.id != 2')
+            ->andWhere('a.network_id = :network_id')
+            ->setParameter('network_id', $networkId)
+            ->addOrderBy('a.nom', 'ASC');
 
         if (!$deleted) {
             $builder->andWhere('a.supprime = 0');

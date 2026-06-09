@@ -23,6 +23,7 @@ class FrameworkController extends BaseController
     public function index (Session $session){
         $sites_array = $session->get('sites', []);
         $nbSites = count($sites_array);
+        $networkId = $session->get('networkId', 1);
 
         // Tableaux
         $t = new Framework();
@@ -38,7 +39,14 @@ class FrameworkController extends BaseController
         // Dernières utilisations des tableaux
         $tabAffect = array();
         $db = new \db();
-        $db->select2("pl_poste_tab_affect", null, null, "order by `date` asc");
+        $db->selectInnerJoin(
+            array("pl_poste_tab_affect", "site"),
+            array("site", "id"),
+            array("id", "date", "tableau", "site"),
+            array(),
+            array(),
+            array("network_id" => $networkId)
+        );
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $tabAffect[$elem['tableau']] = $elem['date'];
@@ -78,7 +86,7 @@ class FrameworkController extends BaseController
         }
 
         $db = new \db();
-        $db->select("lignes", null, null, "order by nom");
+        $db->select("lignes", null, "network_id=".$networkId, "order by nom");
         $lignes = $db->result;
         if ($lignes) {
             foreach ($lignes as &$elem) {
@@ -112,14 +120,23 @@ class FrameworkController extends BaseController
         $nombre = $post["nombre"];
         $nom = $post["nom"];
         $site = $post["site"];
+        $networkId = $session->get('networkId', 1);
 
         // Ajout
         if (!$id) {
 
         // Recherche du numero de tableau à utiliser
             $db = new \db();
-            $db->select2("pl_poste_tab", array(array("name" => "MAX(tableau)", "as" => "numero")));
-            $numero = $db->result[0]["numero"]+1;
+            $db->selectInnerJoin(
+                array("pl_poste_tab", "site"),
+                array("site", "id"),
+                array("tableau"),
+                array(),
+                array(),
+                array("network_id" => $networkId)
+            );
+
+            $numero = max(array_column($db->result, 'tableau')) + 1;
 
             // Insertion dans la table pl_poste_tab
             $insert = array("nom" => trim($nom), "tableau" => $numero, "site" => "1");
@@ -218,6 +235,7 @@ class FrameworkController extends BaseController
         $tableauNumero = $request->attributes->get('id');
         $sites_array = $session->get('sites', []);
         $nbSites = count($sites_array);
+        $networkId = $session->get('networkId', 1);
 
         // Choix de l'onglet (cfg-type)
         if (!$cfgType and in_array("cfg_type", $_SESSION)) {
@@ -284,7 +302,7 @@ class FrameworkController extends BaseController
 
         // Liste des lignes de séparation
         $db = new \db();
-        $db->select("lignes", null, null, "ORDER BY nom");
+        $db->select("lignes", null, 'network_id='.$networkId, "ORDER BY nom");
         $lignes_sep = $db->result;
 
         // Le tableau (contenant les sous-tableaux)
@@ -749,6 +767,7 @@ class FrameworkController extends BaseController
         $id = $post['id'];
         $nom = $post['nom'];
         $CSRFToken = $post['CSRFToken'];
+        $networkId = $session->get('networkId', 1);
 
         if ($id){
             $db = new \db();
@@ -766,7 +785,7 @@ class FrameworkController extends BaseController
         } else {
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->insert("lignes", array("nom"=>$nom));
+            $db->insert("lignes", array("nom"=>$nom, "network_id"=>$networkId));
 
             if(!$db->error){
                 $msg = "La ligne a bien été enregistrée." ;

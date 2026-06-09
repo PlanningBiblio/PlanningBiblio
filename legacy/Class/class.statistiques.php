@@ -17,7 +17,8 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
     $titre="Statistiques par $nom du $debutAlpha au $finAlpha";
 
     $lignes=array($titre,null,"Postes");
-    $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+    $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
+    $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL, 'network' => $networkId]);
     if ($nom=="agent") {
         $cellules=array("Nom","Prénom","Heures","Moyenne hebdo");
     } else {
@@ -341,7 +342,8 @@ class statistiques
         $totalJours=array();
         $totalSemaines=array();
 
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL, 'network' => $networkId]);
         if (count($sites_array)>1 and is_array($selectedSites)) {
             $reqSites="AND `site` IN (0,".implode(",", $selectedSites).")";
         } else {

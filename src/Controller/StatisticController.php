@@ -45,6 +45,7 @@ class StatisticController extends BaseController
         // Initialization of variables
         $route = $request->attributes->get('_route');
         $type = str_replace('statistics.', '', $route);
+        $networkId = $session->get('networkId', 1);
 
         $data = array();
         $data_tab = null;
@@ -150,8 +151,8 @@ class StatisticController extends BaseController
 
         // Agents available
         $db = new \db();
-        $db->select2('personnel', '*', array('id' => '<>2', 'actif' => 'Actif'), 'ORDER BY `nom`,`prenom`');
-        $agents_list = $db->result;
+        $db->select2('personnel', '*', array('id' => '<>2', 'actif' => 'Actif', 'network_id' => $networkId), 'ORDER BY `nom`,`prenom`');
+        $agents_list = $db->result ?? [];
 
         // Service and Status data
         if (in_array($type, ['service', 'status'])) {
@@ -167,8 +168,8 @@ class StatisticController extends BaseController
             };
 
             $db = new \db();
-            $db->select2($table);
-            $objects = $db->result;
+            $db->select2($table, '*', array('network_id' => $networkId));
+            $objects = $db->result ?? [];
 
             foreach ($agents_list as $elem) {
                 $id = null;

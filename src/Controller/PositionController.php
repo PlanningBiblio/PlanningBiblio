@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Controller\BaseController;
-
 use App\Entity\Site;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -22,6 +20,7 @@ class PositionController extends BaseController
     #[Route(path: '/position', name: 'position.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
+        $networkId = $session->get('networkId', 1);
         //            Affichage de la liste des postes
         $groupe = "Tous";
         $this->templateParams(array('groupe' =>$groupe));
@@ -48,7 +47,7 @@ class PositionController extends BaseController
             }
         }
 
-        $p = $this->entityManager->getRepository(Position::class)->findBy(array('supprime' => NULL), array('nom'=>'ASC'));
+        $p = $this->entityManager->getRepository(Position::class)->findBy(array('supprime' => NULL, 'network_id' => $networkId), array('nom'=>'ASC'));
         $postes = array();
         foreach($p as $poste){
             $postes[] = $poste;
@@ -117,6 +116,8 @@ class PositionController extends BaseController
     #[Route(path: '/position/{id}', name: 'position.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session)
     {
+        $networkId = $session->get('networkId', 1);
+
         // Initialisation des variables
         $id = $request->get('id');
 
@@ -165,9 +166,9 @@ class PositionController extends BaseController
         }
 
         // Floors, groups and skills
-        $floors = $this->entityManager->getRepository(SelectFloor::class)->findBy([], ['rang' => 'ASC']);
-        $groups = $this->entityManager->getRepository(SelectGroup::class)->findBy([], ['rang' => 'ASC']);
-        $skill_list = $this->entityManager->getRepository(Skill::class)->findBy(['supprime' => null], ['nom' => 'ASC']);
+        $floors = $this->entityManager->getRepository(SelectFloor::class)->findBy(['network_id' => $networkId], ['rang' => 'ASC']);
+        $groups = $this->entityManager->getRepository(SelectGroup::class)->findBy(['network_id' => $networkId], ['rang' => 'ASC']);
+        $skill_list = $this->entityManager->getRepository(Skill::class)->findBy(['supprime' => null, 'network_id' => $networkId], ['nom' => 'ASC']);
 
         // Used floors
         $used_floors = array();
@@ -248,13 +249,13 @@ class PositionController extends BaseController
             'floors'        => $floors,
             'groups'        => $groups,
             'nbSites'       => $nbSites,
-            'multisite'     => $multisite,
+            'multisites'     => $multisite,
             'skillList'     => $skill_list,
             'categoriesList'=> $categories_list,
             'usedGroups'    => $used_groups,
             'usedFloors'    => $used_floors,
             'selectedSites' => $selectedSites,
-            'CSRFToken'     => $GLOBALS['CSRFSession']
+            'CSRFToken'     => $GLOBALS['CSRFSession'],
             )
         );
         return $this->output('position/edit.html.twig');
@@ -266,6 +267,7 @@ class PositionController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
         $nom = $request->get('nom');
         $id = $request->get('id');
+        $networkId = $session->get('network_id', 1);
 
         if (!$nom) {
             $session->getFlashBag()->add('error',"Le nom est obligatoire");
@@ -304,6 +306,7 @@ class PositionController extends BaseController
                 $position->setGroupId($groupe_id);
                 $position->setMandatory($obligatoire);
                 $position->setSite($site);
+                $position->setNetworkId($networkId);
 
                 try{
                     $this->entityManager->persist($position);

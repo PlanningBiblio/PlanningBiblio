@@ -41,7 +41,8 @@ class PresentSet
         }
 
         $presents = array();
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL, 'network' => $networkId]);
         foreach ($this->db->result as $elem) {
             // Exclude agents who are not working on the request site
             if (count($sites_array) > 1 and $this->site != 0 ) {

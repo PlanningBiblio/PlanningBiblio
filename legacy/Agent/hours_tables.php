@@ -72,7 +72,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<th>Temps de pause</th>";
     }
 
-    $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+    $networkId = $_SESSION['_sf2_attributes']['networkId'] ?? $_SESSION['networkId'] ?? 1;
     if (count($sites_array)>1) {
         $hours_tab .= "<th>Site</th>";
     }
@@ -179,8 +179,8 @@ for ($j = 0; $j < $nb_semaine; $j++) {
                 $hours_tab .= "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
                 $hours_tab .= "<option value='' class='edt-site-0'>&nbsp;</option>\n";
                 foreach ($sites_array as $site) {
-                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$site->getId()) ? "selected='selected'" : null;
-                    $hours_tab .= "<option value='". $site->getId() ."' $selected class='edt-site-". $site->getId() ."'>" . $site->getName() . "</option>\n";
+                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$site['id']) ? "selected='selected'" : null;
+                    $hours_tab .= "<option value='". $site['id'] ."' $selected class='edt-site-". $site['id'] ."'>" . $site['name'] . "</option>\n";
                 }
                 $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4] == -1) ? "selected='selected'" : null;
                 $hours_tab .= "<option value='-1' $selected class='edt-site--1'>Tout site</option>\n";
